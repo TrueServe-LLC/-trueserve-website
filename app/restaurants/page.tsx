@@ -38,14 +38,23 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         ];
     }
 
-    // Map counties to cities (Mock logic until DB has counties)
+    // Map counties and states to cities (Mock logic until DB has robust geo-search)
     const countyMap: Record<string, string> = {
         'mecklenburg': 'Charlotte',
         'anoka': 'Ramsey'
     };
 
-    // Check if term contains a known county
+    const stateMap: Record<string, string> = {
+        'nc': 'Charlotte',
+        'north carolina': 'Charlotte',
+        'mn': 'Ramsey',
+        'minnesota': 'Ramsey'
+    };
+
+    // Check if term contains a known county or state
     let mappedCityFromCounty: string | undefined;
+
+    // Check counties
     for (const [county, city] of Object.entries(countyMap)) {
         if (term.includes(county)) {
             mappedCityFromCounty = city;
@@ -53,11 +62,21 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         }
     }
 
+    // Check states if no county match
+    if (!mappedCityFromCounty) {
+        for (const [state, city] of Object.entries(stateMap)) {
+            if (term.includes(state)) {
+                mappedCityFromCounty = city;
+                break;
+            }
+        }
+    }
+
     const matchedLocation = validLocations.find(loc => {
         const cityMatch = term.includes(loc.city.toLowerCase());
         const zipMatch = loc.zipPrefixes.some((prefix: string) => term.includes(prefix));
-        const countyMatch = mappedCityFromCounty === loc.city;
-        return cityMatch || zipMatch || countyMatch;
+        const countyOrStateMatch = mappedCityFromCounty === loc.city;
+        return cityMatch || zipMatch || countyOrStateMatch;
     });
 
     // Default metadata if no match found (or show empty state)
@@ -135,31 +154,34 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
     return (
         <div className="min-h-screen">
             <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
-                <div className="container flex justify-between items-center">
+                <div className="container flex flex-col md:flex-row gap-4 justify-between items-center">
                     <Link href="/" className="flex items-center gap-2 group">
                         <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
                         <span className="text-2xl font-black tracking-tighter">
                             True<span className="text-gradient">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4 items-center">
+                    <div className="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
                         {/* Location Input Form */}
-                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors">
+                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full md:w-auto">
                             <button className="btn btn-sm btn-ghost join-item border-none hover:bg-transparent pointer-events-none px-3">📍</button>
                             <input
                                 name="location"
                                 defaultValue={location}
                                 placeholder="City, County, State or Zip"
-                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-32 focus:w-48 transition-all text-sm placeholder:text-slate-500"
+                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full md:w-32 focus:md:w-48 transition-all text-sm placeholder:text-slate-500"
                                 autoComplete="off"
                             />
                         </form>
 
-                        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+                        <div className="hidden md:block">
+                            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+                        </div>
+
                         <input
                             type="text"
                             placeholder="Search for food..."
-                            className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary w-64"
+                            className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary w-full md:w-64"
                         />
                     </div>
                 </div>
@@ -233,7 +255,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {restaurants.length === 0 ? (
                         <div className="col-span-4 text-center py-12 text-slate-400">
                             <p className="text-xl">No restaurants found in {location}.</p>

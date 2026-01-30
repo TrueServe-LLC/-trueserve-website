@@ -12,12 +12,13 @@ export default function Home() {
               True<span className="text-gradient">Serve</span>
             </span>
           </Link>
-          <div className="flex gap-4">
+          <div className="flex gap-4 hidden md:flex">
             <Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link>
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
             <Link href="/restaurants" className="hover:text-primary transition-colors">Restaurants</Link>
             <Link href="/admin" className="hover:text-primary transition-colors">Admin Portal</Link>
           </div>
+          {/* Mobile Menu Placeholder (Hamburger would go here, for now just hiding links on small screens to prevent overflow) */}
         </div>
       </nav>
 
@@ -115,9 +116,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Feature Cards */}
         <section className="container py-20 border-t border-white/5">
-          <div className="grid grid-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Link href="/driver" className="card group">
               <h3 className="text-2xl mb-4 group-hover:text-primary transition-colors">Driver Portal</h3>
               <p className="text-slate-400 mb-4">
