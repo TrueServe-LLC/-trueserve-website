@@ -38,10 +38,26 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         ];
     }
 
+    // Map counties to cities (Mock logic until DB has counties)
+    const countyMap: Record<string, string> = {
+        'mecklenburg': 'Charlotte',
+        'anoka': 'Ramsey'
+    };
+
+    // Check if term contains a known county
+    let mappedCityFromCounty: string | undefined;
+    for (const [county, city] of Object.entries(countyMap)) {
+        if (term.includes(county)) {
+            mappedCityFromCounty = city;
+            break;
+        }
+    }
+
     const matchedLocation = validLocations.find(loc => {
         const cityMatch = term.includes(loc.city.toLowerCase());
         const zipMatch = loc.zipPrefixes.some((prefix: string) => term.includes(prefix));
-        return cityMatch || zipMatch;
+        const countyMatch = mappedCityFromCounty === loc.city;
+        return cityMatch || zipMatch || countyMatch;
     });
 
     // Default metadata if no match found (or show empty state)
@@ -130,7 +146,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                             <input
                                 name="location"
                                 defaultValue={location}
-                                placeholder="City, State or Zip"
+                                placeholder="City, County, State or Zip"
                                 className="input input-sm join-item bg-transparent border-none focus:outline-none w-32 focus:w-48 transition-all text-sm placeholder:text-slate-500"
                                 autoComplete="off"
                             />
@@ -148,7 +164,15 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
 
             <main className="container py-8 animate-fade-in">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <h1 className="text-4xl font-bold font-black tracking-tight">Popular in {location}</h1>
+                    <div>
+                        <h1 className="text-4xl font-bold font-black tracking-tight">Popular in {location}</h1>
+                        <div className="flex gap-2 mt-2 text-xs font-medium text-slate-500">
+                            <span>Quick Switch:</span>
+                            <Link href="?location=Charlotte, NC" className="hover:text-primary transition-colors">Charlotte, NC</Link>
+                            <span className="opacity-50">|</span>
+                            <Link href="?location=Ramsey, MN" className="hover:text-primary transition-colors">Ramsey, MN</Link>
+                        </div>
+                    </div>
                     <div className="flex gap-3">
                         <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
