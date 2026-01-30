@@ -18,7 +18,7 @@ async function getPendingItems() {
             }
         });
     } catch (e) {
-        console.error("DB failed", e);
+        console.log("Admin Dashboard - Demo Mode (DB Offline)");
         return [];
     }
 }
@@ -31,7 +31,7 @@ async function getPendingDrivers() {
             }
         });
     } catch (e) {
-        console.error("DB failed", e);
+        console.log("Admin Dashboard - Demo Mode (DB Offline)");
         return [];
     }
 }

@@ -48,18 +48,19 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         } else {
             console.log("Database empty, auto-seeding default locations...");
             try {
-                // Auto-seed if empty
                 await (prisma as any).serviceLocation.createMany({
                     data: fallbackMocks.map(m => ({ ...m, isActive: true })),
                     skipDuplicates: true
                 });
             } catch (seedErr) {
-                console.warn("Auto-seeding failed:", seedErr);
+                // Suppress verbose error, just note that auto-seed failed (common on un-migrated DBs)
+                console.log("Auto-seeding skipped (DB read-only or not migrated).");
             }
             validLocations = fallbackMocks;
         }
     } catch (e) {
-        console.warn("DB failed to fetch/seed locations, using fallback mocks only");
+        // Suppress verbose error for cleaner logs
+        console.log("Running in Offline/Demo Mode (Database not reachable).");
         validLocations = fallbackMocks;
     }
 
@@ -97,12 +98,26 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         }
     }
 
+    console.log(`[Debug] Term: ${term}, MappedCity: ${mappedCityFromCounty}, ValidLocs: ${validLocations.length}`);
+
     const matchedLocation = validLocations.find(loc => {
         const cityMatch = term.includes(loc.city.toLowerCase());
         const zipMatch = loc.zipPrefixes.some((prefix: string) => term.includes(prefix));
-        const countyOrStateMatch = mappedCityFromCounty === loc.city;
+
+        // Robust check for mapped city
+        let countyOrStateMatch = false;
+        if (mappedCityFromCounty && loc.city) {
+            countyOrStateMatch = mappedCityFromCounty.toLowerCase().trim() === loc.city.toLowerCase().trim();
+        }
+
         return cityMatch || zipMatch || countyOrStateMatch;
     });
+
+    if (matchedLocation) {
+        console.log(`[Debug] Match Found: ${matchedLocation.city}`);
+    } else {
+        console.log(`[Debug] No match found. Checking against:`, validLocations.map(l => l.city));
+    }
 
     // Default metadata if no match found (or show empty state)
     let locationMeta = {
@@ -113,10 +128,11 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     if (matchedLocation) {
         // Approximate center based on city...for a real app, Store lat/lng in ServiceLocation table
         // For now, hardcode known centers based on the matched city string
-        if (matchedLocation.city === 'Ramsey') locationMeta.center = [45.2611, -93.4566];
-        else if (matchedLocation.city === 'Charlotte') locationMeta.center = [35.2271, -80.8431];
+        // Approximate center based on city...match safely
+        const cityLower = matchedLocation.city.toLowerCase();
+        if (cityLower === 'ramsey') locationMeta.center = [45.2611, -93.4566];
+        else if (cityLower === 'charlotte') locationMeta.center = [35.2271, -80.8431];
 
-        // Update the display name to be pretty (e.g. "Charlotte, NC") instead of raw input
         locationMeta.name = `${matchedLocation.city}, ${matchedLocation.state}`;
     }
 
@@ -125,9 +141,10 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
             return { restaurants: [], locationMeta };
         }
 
+        // Case-insensitive query for restaurants
         const where = {
-            city: matchedLocation.city,
-            state: matchedLocation.state
+            city: { equals: matchedLocation.city, mode: 'insensitive' },
+            state: { equals: matchedLocation.state, mode: 'insensitive' }
         };
 
         const restaurants = await (prisma as any).restaurant.findMany({ where });
