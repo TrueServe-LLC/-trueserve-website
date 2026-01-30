@@ -164,7 +164,8 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         return { restaurants: mappedRestaurants, locationMeta };
 
     } catch (error) {
-        console.warn("Database connection fallback/empty:", error);
+        // Suppress verbose DB error for cleaner logs (Supabase often pauses free tier)
+        console.log("Supabase unavailable (or query failed), using Offline Mocks.");
 
         const allMocks = [
             // Charlotte Mock
@@ -175,8 +176,10 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         ];
 
         if (matchedLocation) {
+            // Case-insensitive filtering for mocks
+            const targetCity = matchedLocation.city.toLowerCase().trim();
             return {
-                restaurants: allMocks.filter(r => r.city === matchedLocation.city),
+                restaurants: allMocks.filter(r => r.city.toLowerCase() === targetCity),
                 locationMeta
             };
         }
