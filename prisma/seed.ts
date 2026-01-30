@@ -157,7 +157,31 @@ async function main() {
         })
     }
 
-    console.log(`Seeding finished. Added users, restaurants in Charlotte & Ramsey, and a sample order.`)
+
+    // 5. Create Service Locations
+    await prisma.serviceLocation.upsert({
+        where: { city_state: { city: 'Charlotte', state: 'NC' } },
+        update: {},
+        create: {
+            city: 'Charlotte',
+            state: 'NC',
+            zipPrefixes: ['282', '280', '281'],
+            isActive: true,
+        }
+    })
+
+    await prisma.serviceLocation.upsert({
+        where: { city_state: { city: 'Ramsey', state: 'MN' } },
+        update: {},
+        create: {
+            city: 'Ramsey',
+            state: 'MN',
+            zipPrefixes: ['553', '550'],
+            isActive: true,
+        }
+    })
+
+    console.log(`Seeding finished. Added users, restaurants in Charlotte & Ramsey, locations, and a sample order.`)
 }
 
 main()

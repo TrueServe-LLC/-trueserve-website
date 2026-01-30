@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Map from "@/components/Map";
 
@@ -7,20 +8,40 @@ import { prisma } from "@/lib/prisma";
 async function getRestaurants(locationInput: string) {
     const term = locationInput.toLowerCase();
 
-    // Smart matching logic for mock/fallback data
-    // In a real app, this would be a geospatial query
+    // 1. Fetch Valid Service Locations
+    let validLocations: any[] = [];
+    try {
+        // @ts-ignore - Schema update pending DB fix
+        validLocations = await prisma.serviceLocation.findMany({ where: { isActive: true } });
+    } catch (e) {
+        console.warn("DB failed to fetch locations, using fallback mocks");
+        validLocations = [
+            { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'] },
+            { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'] }
+        ];
+    }
 
-    // Charlotte matchers: "charlotte", "nc", "282" (zip prefix)
-    const isCharlotte = term.includes("charlotte") || term.includes("nc") || term.includes("282");
+    // Smart matcher strictly against valid locations
+    const matchedLocation = validLocations.find(loc => {
+        const cityMatch = term.includes(loc.city.toLowerCase());
+        const stateMatch = term.includes(loc.state.toLowerCase());
+        const zipMatch = loc.zipPrefixes.some((prefix: string) => term.includes(prefix));
 
-    // Ramsey matchers: "ramsey", "mn", "553" (zip prefix)
-    const isRamsey = term.includes("ramsey") || term.includes("mn") || term.includes("553");
+        // Match if (City AND State) OR (City only if unique enough logic.. simplifying directly to City check for now) OR Zip
+        return cityMatch || zipMatch;
+    });
 
     try {
-        let where: any = {};
-        if (isCharlotte) where = { city: "Charlotte" };
-        else if (isRamsey) where = { city: "Ramsey" };
-        else if (term) where = { city: "UNKNOWN_LOCATION" }; // Force empty if searching for unknown place
+        if (!matchedLocation) {
+            // Return empty with a specific flag or just empty let the UI handle "No results"
+            // But to be helpful, we return empty list which UI translates to "Area not served"
+            return [];
+        }
+
+        const where = {
+            city: matchedLocation.city,
+            state: matchedLocation.state
+        };
 
         // @ts-ignore - Schema update pending DB fix
         const restaurants = await prisma.restaurant.findMany({ where });
@@ -47,14 +68,11 @@ async function getRestaurants(locationInput: string) {
             { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN" },
         ];
 
-        if (isCharlotte) return allMocks.filter(r => r.city === "Charlotte");
-        if (isRamsey) return allMocks.filter(r => r.city === "Ramsey");
+        if (matchedLocation) {
+            return allMocks.filter(r => r.city === matchedLocation.city);
+        }
 
-        // If a specific location was searched but didn't match our known mocks, return empty
-        if (term && term !== "charlotte, nc") return [];
-
-        // Default show all if no specific search or default view
-        return allMocks;
+        return [];
     }
 }
 
