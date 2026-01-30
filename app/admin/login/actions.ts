@@ -8,8 +8,10 @@ export async function login(formData: FormData) {
     const password = formData.get("password") as string;
 
     // Dummy validation
-    // Dummy validation
-    if (email === "admin@trueserve.com" && password === "admin") {
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@trueserve.com";
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin";
+
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
         (await cookies()).set("admin_session", "true", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",

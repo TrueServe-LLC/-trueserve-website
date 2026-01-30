@@ -28,7 +28,7 @@ export default function AdminLogin() {
                         <input
                             name="email"
                             type="email"
-                            defaultValue="admin@trueserve.com"
+                            placeholder="Use the email from your .env file"
                             className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-white"
                             required
                         />
@@ -38,7 +38,7 @@ export default function AdminLogin() {
                         <input
                             name="password"
                             type="password"
-                            defaultValue="admin"
+                            placeholder="Use the password from your .env file"
                             className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-white"
                             required
                         />
