@@ -29,8 +29,10 @@ export default function LocationButton() {
 
             if (distCharlotte < distRamsey && distCharlotte < threshold) {
                 router.push("?location=Charlotte, NC");
+                router.refresh();
             } else if (distRamsey < distCharlotte && distRamsey < threshold) {
                 router.push("?location=Ramsey, MN");
+                router.refresh();
             } else {
                 alert("We do not currently serve your area. Try searching for 'Charlotte' or 'Ramsey'.");
             }

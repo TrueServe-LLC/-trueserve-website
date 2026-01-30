@@ -30,9 +30,14 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     // 1. Fetch Valid Service Locations
     let validLocations: any[] = [];
     try {
-        validLocations = await (prisma as any).serviceLocation.findMany({ where: { isActive: true } });
+        const dbLocations = await (prisma as any).serviceLocation.findMany({ where: { isActive: true } });
+        if (dbLocations && dbLocations.length > 0) {
+            validLocations = dbLocations;
+        } else {
+            throw new Error("No active locations found in DB");
+        }
     } catch (e) {
-        console.warn("DB failed to fetch locations, using fallback mocks");
+        console.warn("DB failed to fetch locations or was empty, using fallback mocks");
         validLocations = [
             { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'] },
             { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'] }
