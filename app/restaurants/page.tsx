@@ -4,32 +4,41 @@ import Map from "@/components/Map";
 import { prisma } from "@/lib/prisma";
 
 // We adapt the DB model to the UI for now since we don't have ratings/tags in DB yet
-async function getRestaurants(location?: string) {
+async function getRestaurants(locationInput: string) {
+    const term = locationInput.toLowerCase();
+
+    // Smart matching logic for mock/fallback data
+    // In a real app, this would be a geospatial query
+
+    // Charlotte matchers: "charlotte", "nc", "282" (zip prefix)
+    const isCharlotte = term.includes("charlotte") || term.includes("nc") || term.includes("282");
+
+    // Ramsey matchers: "ramsey", "mn", "553" (zip prefix)
+    const isRamsey = term.includes("ramsey") || term.includes("mn") || term.includes("553");
+
     try {
-        const where = location === "Charlotte, NC"
-            ? { city: "Charlotte" }
-            : location === "Ramsey, MN"
-                ? { city: "Ramsey" }
-                : {};
+        let where: any = {};
+        if (isCharlotte) where = { city: "Charlotte" };
+        else if (isRamsey) where = { city: "Ramsey" };
+        else if (term) where = { city: "UNKNOWN_LOCATION" }; // Force empty if searching for unknown place
 
         // @ts-ignore - Schema update pending DB fix
         const restaurants = await prisma.restaurant.findMany({ where });
 
-        if (restaurants.length === 0) throw new Error("No DB data"); // Trigger mock fallback if empty
+        if (restaurants.length === 0) throw new Error("No DB data or empty search");
 
         return restaurants.map((r: any, index: number) => ({
             id: r.id,
             name: r.name,
-            rating: 4.8, // Mocked for now
+            rating: 4.8,
             image: r.imageUrl || "/restaurant1.jpg",
-            tags: ["Italian", "Pizza", "Pasta"], // Mocked for now
+            tags: ["Italian", "Pizza", "Pasta"],
             description: r.description,
-            // Offset coordinates slightly so they don't overlay
             coords: [r.lat || (40.7128 + (index * 0.01)), r.lng || (-74.0060 + (index * 0.01))] as [number, number]
         }));
     } catch (error) {
-        console.warn("Database connection failed or empty, falling back to mock data");
-        // Fallback mock data with locations
+        console.warn("Database connection fallback/empty:", error);
+
         const allMocks = [
             // Charlotte Mock
             { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC" },
@@ -38,24 +47,29 @@ async function getRestaurants(location?: string) {
             { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN" },
         ];
 
-        if (location === "Charlotte, NC") {
-            return allMocks.filter(r => r.city === "Charlotte");
-        } else if (location === "Ramsey, MN") {
-            return allMocks.filter(r => r.city === "Ramsey");
-        }
+        if (isCharlotte) return allMocks.filter(r => r.city === "Charlotte");
+        if (isRamsey) return allMocks.filter(r => r.city === "Ramsey");
+
+        // If a specific location was searched but didn't match our known mocks, return empty
+        if (term && term !== "charlotte, nc") return [];
+
+        // Default show all if no specific search or default view
         return allMocks;
     }
 }
 
 export default async function RestaurantFinder({ searchParams }: { searchParams: { location?: string } }) {
-    const location = searchParams?.location || "Charlotte, NC"; // Default to Charlotte
+    const location = searchParams?.location || "Charlotte, NC";
     const restaurants = await getRestaurants(location);
+    const term = location.toLowerCase();
 
-    const mapCenter = location === "Charlotte, NC"
-        ? [35.2271, -80.8431] as [number, number]
-        : location === "Ramsey, MN"
-            ? [45.2611, -93.4566] as [number, number]
-            : [35.2271, -80.8431] as [number, number];
+    // Determine map center based on matched location
+    let mapCenter: [number, number] = [35.2271, -80.8431]; // Default Charlotte
+    if (term.includes("ramsey") || term.includes("mn") || term.includes("553")) {
+        mapCenter = [45.2611, -93.4566];
+    } else if (term.includes("charlotte") || term.includes("nc") || term.includes("282")) {
+        mapCenter = [35.2271, -80.8431];
+    }
 
     return (
         <div className="min-h-screen">
@@ -68,16 +82,18 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                         </span>
                     </Link>
                     <div className="flex gap-4 items-center">
-                        <div className="dropdown dropdown-end">
-                            <div tabIndex={0} role="button" className="btn btn-sm btn-ghost gap-2 border-white/10">
-                                📍 {location}
-                                <span className="text-[10px]">▼</span>
-                            </div>
-                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100/90 backdrop-blur rounded-box w-52 mt-4 border border-white/10">
-                                <li><Link href="/restaurants?location=Charlotte, NC">Charlotte, NC</Link></li>
-                                <li><Link href="/restaurants?location=Ramsey, MN">Ramsey, MN</Link></li>
-                            </ul>
-                        </div>
+                        {/* Location Input Form */}
+                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors">
+                            <button className="btn btn-sm btn-ghost join-item border-none hover:bg-transparent pointer-events-none px-3">📍</button>
+                            <input
+                                name="location"
+                                defaultValue={location}
+                                placeholder="City, State or Zip"
+                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-32 focus:w-48 transition-all text-sm placeholder:text-slate-500"
+                                autoComplete="off"
+                            />
+                        </form>
+
                         <Link href="/" className="hover:text-primary transition-colors">Home</Link>
                         <input
                             type="text"
