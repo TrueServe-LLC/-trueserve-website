@@ -27,21 +27,30 @@ interface LocationMeta {
 async function getRestaurants(locationInput: string): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
     const term = locationInput.toLowerCase();
 
+    // Define fallbacks (mocks)
+    const fallbackMocks = [
+        { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'] },
+        { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'] }
+    ];
+
     // 1. Fetch Valid Service Locations
     let validLocations: any[] = [];
     try {
         const dbLocations = await (prisma as any).serviceLocation.findMany({ where: { isActive: true } });
+
         if (dbLocations && dbLocations.length > 0) {
-            validLocations = dbLocations;
+            validLocations = [...dbLocations];
+            // Ensure essential mocks are present if missing from DB (e.g. partial seed)
+            for (const mock of fallbackMocks) {
+                const exists = validLocations.find(l => l.city === mock.city && l.state === mock.state);
+                if (!exists) validLocations.push(mock);
+            }
         } else {
-            throw new Error("No active locations found in DB");
+            validLocations = fallbackMocks;
         }
     } catch (e) {
         console.warn("DB failed to fetch locations or was empty, using fallback mocks");
-        validLocations = [
-            { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'] },
-            { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'] }
-        ];
+        validLocations = fallbackMocks;
     }
 
     // Map counties and states to cities (Mock logic until DB has robust geo-search)
