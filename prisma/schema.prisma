@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profiles (Admin, Merchant, Driver, Customer)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(CUSTOMER)
+  isMember  Boolean  @default(false) // Membership toggle
+  balance   Decimal  @default(0) // For Instant Payments/Payouts
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  driverProfile     Driver?
+  restaurantProfile Restaurant? // If user is a merchant
+  orders            Order[]
+  sentMessages      ChatMessage[] @relation("SentMessages")
+  receivedMessages  ChatMessage[] @relation("ReceivedMessages")
+}
+
+enum Role {
+  ADMIN
+  MERCHANT
+  DRIVER
+  CUSTOMER
+}
+
+// Restaurant model
+model Restaurant {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  address     String
+  imageUrl    String?
+  ownerId     String   @unique
+  owner       User     @relation(fields: [ownerId], references: [id])
+  avgPrepTime Int      @default(15) // Prep-time prediction (minutes)
+  lat         Float? // Location for routing
+  lng         Float? // Location for routing
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  menuItems MenuItem[]
+  orders    Order[]
+}
+
+// Menu Items
+model MenuItem {
+  id           String      @id @default(cuid())
+  name         String
+  description  String?
+  price        Decimal
+  imageUrl     String?
+  prepTime     Int         @default(10) // Specific item prep time
+  status       ItemStatus  @default(PENDING)
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orderItems   OrderItem[]
+}
+
+enum ItemStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+// Driver Profile
+model Driver {
+  id            String       @id @default(cuid())
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id])
+  status        DriverStatus @default(OFFLINE)
+  vehicleType   String?
+  currentLat    Float? // Real-time tracking
+  currentLng    Float? // Real-time tracking
+  balance       Decimal      @default(0) // Instant Payout balance
+  totalEarnings Decimal      @default(0) // Transparent Pay
+  rating        Float        @default(5.0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  orders Order[]
+}
+
+enum DriverStatus {
+  ONLINE
+  OFFLINE
+  BUSY
+}
+
+// Orders
+model Order {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id])
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  driverId     String?
+  driver       Driver?     @relation(fields: [driverId], references: [id])
+  status       OrderStatus @default(PENDING)
+  total        Decimal
+
+  // Transparent Pay Engine
+  distance Float? // km
+  basePay  Decimal?
+  boostPay Decimal?
+  totalPay Decimal? // Driver's cut
+
+  // Prep-time & ETA
+  prepTimeStart DateTime?
+  prepTimeEnd   DateTime?
+  estimatedETA  DateTime?
+
+  // Status Flags
+  isRefunded Boolean @default(false)
+
+  posReference String?  @unique // The LogKey for POS/Transaction tracking
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items OrderItem[]
+}
+
+// Chat System
+model ChatMessage {
+  id         String   @id @default(cuid())
+  content    String
+  senderId   String
+  receiverId String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id])
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  price      Decimal
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  READY_FOR_PICKUP
+  PICKED_UP
+  DELIVERED
+  CANCELLED
+}
