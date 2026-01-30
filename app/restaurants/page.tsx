@@ -4,14 +4,13 @@ import Map from "@/components/Map";
 
 import { prisma } from "@/lib/prisma";
 
-// We adapt the DB model to the UI for now since we don't have ratings/tags in DB yet
+
 async function getRestaurants(locationInput: string) {
     const term = locationInput.toLowerCase();
 
     // 1. Fetch Valid Service Locations
     let validLocations: any[] = [];
     try {
-        // @ts-ignore - Schema update pending DB fix
         validLocations = await prisma.serviceLocation.findMany({ where: { isActive: true } });
     } catch (e) {
         console.warn("DB failed to fetch locations, using fallback mocks");
@@ -21,21 +20,29 @@ async function getRestaurants(locationInput: string) {
         ];
     }
 
-    // Smart matcher strictly against valid locations
     const matchedLocation = validLocations.find(loc => {
         const cityMatch = term.includes(loc.city.toLowerCase());
         const stateMatch = term.includes(loc.state.toLowerCase());
         const zipMatch = loc.zipPrefixes.some((prefix: string) => term.includes(prefix));
-
-        // Match if (City AND State) OR (City only if unique enough logic.. simplifying directly to City check for now) OR Zip
         return cityMatch || zipMatch;
     });
 
+    // Default metadata if no match found (or show empty state)
+    let locationMeta = {
+        name: locationInput,
+        center: [35.2271, -80.8431] as [number, number] // Default fallback
+    };
+
+    if (matchedLocation) {
+        // Approximate center based on city - for a real app, Store lat/lng in ServiceLocation table!
+        // For now, hardcode known centers based on the matched city string
+        if (matchedLocation.city === 'Ramsey') locationMeta.center = [45.2611, -93.4566];
+        else if (matchedLocation.city === 'Charlotte') locationMeta.center = [35.2271, -80.8431];
+    }
+
     try {
         if (!matchedLocation) {
-            // Return empty with a specific flag or just empty let the UI handle "No results"
-            // But to be helpful, we return empty list which UI translates to "Area not served"
-            return [];
+            return { restaurants: [], locationMeta };
         }
 
         const where = {
@@ -48,7 +55,7 @@ async function getRestaurants(locationInput: string) {
 
         if (restaurants.length === 0) throw new Error("No DB data or empty search");
 
-        return restaurants.map((r: any, index: number) => ({
+        const mappedRestaurants = restaurants.map((r: any, index: number) => ({
             id: r.id,
             name: r.name,
             rating: 4.8,
@@ -57,6 +64,9 @@ async function getRestaurants(locationInput: string) {
             description: r.description,
             coords: [r.lat || (40.7128 + (index * 0.01)), r.lng || (-74.0060 + (index * 0.01))] as [number, number]
         }));
+
+        return { restaurants: mappedRestaurants, locationMeta };
+
     } catch (error) {
         console.warn("Database connection fallback/empty:", error);
 
@@ -69,25 +79,23 @@ async function getRestaurants(locationInput: string) {
         ];
 
         if (matchedLocation) {
-            return allMocks.filter(r => r.city === matchedLocation.city);
+            return {
+                restaurants: allMocks.filter(r => r.city === matchedLocation.city),
+                locationMeta
+            };
         }
 
-        return [];
+        // Return empty if no match found in mocks either
+        return { restaurants: [], locationMeta };
     }
 }
 
 export default async function RestaurantFinder({ searchParams }: { searchParams: { location?: string } }) {
     const location = searchParams?.location || "Charlotte, NC";
-    const restaurants = await getRestaurants(location);
-    const term = location.toLowerCase();
+    const { restaurants, locationMeta } = await getRestaurants(location);
 
-    // Determine map center based on matched location
-    let mapCenter: [number, number] = [35.2271, -80.8431]; // Default Charlotte
-    if (term.includes("ramsey") || term.includes("mn") || term.includes("553")) {
-        mapCenter = [45.2611, -93.4566];
-    } else if (term.includes("charlotte") || term.includes("nc") || term.includes("282")) {
-        mapCenter = [35.2271, -80.8431];
-    }
+    // Use the metadata returned from our logic
+    const mapCenter = locationMeta.center;
 
     return (
         <div className="min-h-screen">
