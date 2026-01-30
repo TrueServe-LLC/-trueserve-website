@@ -5,13 +5,31 @@ import Map from "@/components/Map";
 import { prisma } from "@/lib/prisma";
 
 
-async function getRestaurants(locationInput: string) {
+
+interface Restaurant {
+    id: string;
+    name: string;
+    rating: number;
+    image: string;
+    tags: string[];
+    description: string;
+    coords: [number, number];
+    city?: string;
+    state?: string;
+}
+
+interface LocationMeta {
+    name: string;
+    center: [number, number];
+}
+
+async function getRestaurants(locationInput: string): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
     const term = locationInput.toLowerCase();
 
     // 1. Fetch Valid Service Locations
     let validLocations: any[] = [];
     try {
-        validLocations = await prisma.serviceLocation.findMany({ where: { isActive: true } });
+        validLocations = await (prisma as any).serviceLocation.findMany({ where: { isActive: true } });
     } catch (e) {
         console.warn("DB failed to fetch locations, using fallback mocks");
         validLocations = [
@@ -33,7 +51,7 @@ async function getRestaurants(locationInput: string) {
     };
 
     if (matchedLocation) {
-        // Approximate center based on city - for a real app, Store lat/lng in ServiceLocation table!
+        // Approximate center based on city...for a real app, Store lat/lng in ServiceLocation table
         // For now, hardcode known centers based on the matched city string
         if (matchedLocation.city === 'Ramsey') locationMeta.center = [45.2611, -93.4566];
         else if (matchedLocation.city === 'Charlotte') locationMeta.center = [35.2271, -80.8431];
@@ -51,7 +69,7 @@ async function getRestaurants(locationInput: string) {
 
         // @ts-ignore - Schema update pending DB fix
         // @ts-ignore - Schema update pending DB fix
-        const restaurants = await prisma.restaurant.findMany({ where });
+        const restaurants = await (prisma as any).restaurant.findMany({ where });
 
         if (restaurants.length === 0) throw new Error("No DB data or empty search");
 
