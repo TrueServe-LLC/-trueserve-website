@@ -46,10 +46,20 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
                 if (!exists) validLocations.push(mock);
             }
         } else {
+            console.log("Database empty, auto-seeding default locations...");
+            try {
+                // Auto-seed if empty
+                await (prisma as any).serviceLocation.createMany({
+                    data: fallbackMocks.map(m => ({ ...m, isActive: true })),
+                    skipDuplicates: true
+                });
+            } catch (seedErr) {
+                console.warn("Auto-seeding failed:", seedErr);
+            }
             validLocations = fallbackMocks;
         }
     } catch (e) {
-        console.warn("DB failed to fetch locations or was empty, using fallback mocks");
+        console.warn("DB failed to fetch/seed locations, using fallback mocks only");
         validLocations = fallbackMocks;
     }
 
