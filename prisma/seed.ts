@@ -69,7 +69,7 @@ async function main() {
     // 3. Create Restaurants
 
     // Charlotte, NC Restaurants
-    const charlotteRestaurant1 = await prisma.restaurant.create({
+    const charlotteRestaurant1 = await (prisma as any).restaurant.create({
         data: {
             name: 'Carolina BBQ Pit',
             description: 'Slow-cooked pulled pork and ribs.',
@@ -89,7 +89,7 @@ async function main() {
         },
     })
 
-    const charlotteRestaurant2 = await prisma.restaurant.create({
+    const charlotteRestaurant2 = await (prisma as any).restaurant.create({
         data: {
             name: 'Queen City Burger',
             description: 'Gourmet burgers and shakes.',
@@ -111,7 +111,7 @@ async function main() {
 
     // Ramsey, MN Restaurants
     // Need another merchant for this one technically but reusing for simplicity as ownership isn't key to this test
-    const ramseyRestaurant1 = await prisma.restaurant.create({
+    const ramseyRestaurant1 = await (prisma as any).restaurant.create({
         data: {
             name: 'North Star Diner',
             description: 'Comfort food and hearty breakfasts.',
@@ -159,7 +159,7 @@ async function main() {
 
 
     // 5. Create Service Locations
-    await prisma.serviceLocation.upsert({
+    await (prisma as any).serviceLocation.upsert({
         where: { city_state: { city: 'Charlotte', state: 'NC' } },
         update: {},
         create: {
@@ -170,7 +170,7 @@ async function main() {
         }
     })
 
-    await prisma.serviceLocation.upsert({
+    await (prisma as any).serviceLocation.upsert({
         where: { city_state: { city: 'Ramsey', state: 'MN' } },
         update: {},
         create: {
