@@ -6,7 +6,7 @@
 
 :root {
   --background: #080c14;
-  --foreground: #f0f4f8;
+  --foreground: #f1a137;
   --primary: #448c89;
   /* Teal */
   --primary-hover: #3b7a77;
@@ -82,7 +82,7 @@ button {
 
 .btn-primary {
   background-color: var(--primary);
-  color: white;
+  color: rgb(0, 0, 0);
   box-shadow: 0 4px 14px 0 rgba(68, 140, 137, 0.3);
 }
 
