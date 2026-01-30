@@ -79,7 +79,6 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             </div>
                         ) : (
                             <div className="flex items-center gap-2">
-                                <span className="text-slate-400 text-sm">Payments Not Configured</span>
                                 <form action={async () => {
                                     "use server";
                                     await connectStripe();

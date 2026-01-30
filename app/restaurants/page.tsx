@@ -190,7 +190,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
             <main className="container py-8 animate-fade-in">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <h1 className="text-4xl font-bold font-black tracking-tight">Popular in {locationMeta.name}</h1>
+                        <h1 className="text-4xl font-bold font-black tracking-tight">{locationMeta.name}</h1>
                     </div>
                     <div className="flex gap-3">
                         <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">

@@ -10,7 +10,7 @@ const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLa
 const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), { ssr: false });
 
-// Import RecenterMap dynamically to avoid SSR issues with useMap
+// Import RecenterMazp dynamically to avoid SSR issues with useMap
 const RecenterMap = dynamic(() => import("./RecenterMap"), { ssr: false });
 
 interface RestaurantLocation {
