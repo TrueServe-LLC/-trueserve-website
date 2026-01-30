@@ -1,8 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import url('leaflet/dist/leaflet.css');
+@import "tailwindcss";
 
 :root {
   --background: #080c14;
