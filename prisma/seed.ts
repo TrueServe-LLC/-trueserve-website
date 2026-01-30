@@ -66,34 +66,66 @@ async function main() {
         },
     })
 
-    // 3. Create Restaurant
-    const restaurant = await prisma.restaurant.create({
+    // 3. Create Restaurants
+
+    // Charlotte, NC Restaurants
+    const charlotteRestaurant1 = await prisma.restaurant.create({
         data: {
-            name: 'Bella Italia',
-            description: 'Authentic Italian cuisine with homemade pasta.',
-            address: '123 Mott St, New York, NY 10013',
-            imageUrl: '/restaurant1.jpg', // Placeholder image path
+            name: 'Carolina BBQ Pit',
+            description: 'Slow-cooked pulled pork and ribs.',
+            address: '200 S Tryon St, Charlotte, NC 28202',
+            city: 'Charlotte',
+            state: 'NC',
+            imageUrl: '/restaurant1.jpg',
+            lat: 35.2271,
+            lng: -80.8431,
             ownerId: merchantUser.id,
             menuItems: {
                 create: [
-                    {
-                        name: 'Margherita Pizza',
-                        description: 'Classic tomato, mozzarella, and basil.',
-                        price: 14.99,
-                        imageUrl: '/pizza.jpg',
-                    },
-                    {
-                        name: 'Spaghetti Carbonara',
-                        description: 'Creamy sauce with guanciale and pecorino.',
-                        price: 18.50,
-                        imageUrl: '/carbonara.jpg',
-                    },
-                    {
-                        name: 'Tiramisu',
-                        description: 'Coffee-soaked ladyfingers dessert.',
-                        price: 8.00,
-                        imageUrl: '/tiramisu.jpg',
-                    },
+                    { name: 'Pulled Pork Platter', description: 'With carolina gold sauce.', price: 16.99, imageUrl: '/pork.jpg', status: 'APPROVED' },
+                    { name: 'Ribs Half Rack', description: 'Fall off the bone ribs.', price: 22.50, imageUrl: '/ribs.jpg', status: 'APPROVED' },
+                ],
+            },
+        },
+    })
+
+    const charlotteRestaurant2 = await prisma.restaurant.create({
+        data: {
+            name: 'Queen City Burger',
+            description: 'Gourmet burgers and shakes.',
+            address: '100 N Tryon St, Charlotte, NC 28202',
+            city: 'Charlotte',
+            state: 'NC',
+            imageUrl: '/restaurant2.jpg',
+            lat: 35.2280,
+            lng: -80.8440,
+            owner: { connect: { id: admin.id } }, // Just using admin as owner for demo diversity or create another user if needed, sticking to existing users for simplicity
+            menuItems: {
+                create: [
+                    { name: 'Classic Smash', description: 'Double patty, cheese, onions.', price: 12.99, imageUrl: '/burger.jpg', status: 'APPROVED' },
+                ],
+            },
+        },
+    })
+
+
+    // Ramsey, MN Restaurants
+    // Need another merchant for this one technically but reusing for simplicity as ownership isn't key to this test
+    const ramseyRestaurant1 = await prisma.restaurant.create({
+        data: {
+            name: 'North Star Diner',
+            description: 'Comfort food and hearty breakfasts.',
+            address: '14200 St Francis Blvd, Ramsey, MN 55303',
+            city: 'Ramsey',
+            state: 'MN',
+            imageUrl: '/restaurant3.jpg',
+            lat: 45.2611,
+            lng: -93.4566,
+            owner: { create: { email: 'ramsey.owner@trueserve.com', name: 'Ramsey Owner', role: Role.MERCHANT } }, // Creating a new owner on the fly
+            menuItems: {
+                create: [
+                    { name: 'Lumberjack Breakfast', description: 'Eggs, pancakes, bacon, sausage.', price: 15.99, imageUrl: '/breakfast.jpg', status: 'APPROVED' },
+                    { name: 'Walleye Sandwich', description: 'Fresh caught walleye on a bun.', price: 18.50, imageUrl: '/walleye.jpg', status: 'APPROVED' },
                 ],
             },
         },
@@ -101,23 +133,23 @@ async function main() {
 
     // 4. Create an Order
     // First, find a menu item ID
-    const pizza = await prisma.menuItem.findFirst({
-        where: { name: 'Margherita Pizza', restaurantId: restaurant.id },
+    const porkPlatter = await prisma.menuItem.findFirst({
+        where: { name: 'Pulled Pork Platter', restaurantId: charlotteRestaurant1.id },
     })
 
-    if (pizza) {
+    if (porkPlatter) {
         await prisma.order.create({
             data: {
                 userId: customerUser.id,
-                restaurantId: restaurant.id,
+                restaurantId: charlotteRestaurant1.id,
                 status: OrderStatus.PREPARING,
-                total: pizza.price,
+                total: porkPlatter.price,
                 items: {
                     create: [
                         {
-                            menuItemId: pizza.id,
+                            menuItemId: porkPlatter.id,
                             quantity: 1,
-                            price: pizza.price,
+                            price: porkPlatter.price,
                         },
                     ],
                 },
@@ -125,7 +157,7 @@ async function main() {
         })
     }
 
-    console.log(`Seeding finished. Added users, restaurant "${restaurant.name}", and a sample order.`)
+    console.log(`Seeding finished. Added users, restaurants in Charlotte & Ramsey, and a sample order.`)
 }
 
 main()

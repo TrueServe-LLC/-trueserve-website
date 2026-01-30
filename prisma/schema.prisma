@@ -46,6 +46,8 @@ model Restaurant {
   ownerId     String   @unique
   owner       User     @relation(fields: [ownerId], references: [id])
   avgPrepTime Int      @default(15) // Prep-time prediction (minutes)
+  city        String?  @default("Ramsey") // Default for migration
+  state       String?  @default("MN") // Default for migration
   lat         Float? // Location for routing
   lng         Float? // Location for routing
   createdAt   DateTime @default(now())

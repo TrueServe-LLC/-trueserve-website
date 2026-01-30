@@ -4,11 +4,20 @@ import Map from "@/components/Map";
 import { prisma } from "@/lib/prisma";
 
 // We adapt the DB model to the UI for now since we don't have ratings/tags in DB yet
-async function getRestaurants() {
+async function getRestaurants(location?: string) {
     try {
-        const restaurants = await prisma.restaurant.findMany();
-        if (restaurants.length === 0) return []; // Allow empty if DB works but no data
-        return restaurants.map((r, index) => ({
+        const where = location === "Charlotte, NC"
+            ? { city: "Charlotte" }
+            : location === "Ramsey, MN"
+                ? { city: "Ramsey" }
+                : {};
+
+        // @ts-ignore - Schema update pending DB fix
+        const restaurants = await prisma.restaurant.findMany({ where });
+
+        if (restaurants.length === 0) throw new Error("No DB data"); // Trigger mock fallback if empty
+
+        return restaurants.map((r: any, index: number) => ({
             id: r.id,
             name: r.name,
             rating: 4.8, // Mocked for now
@@ -16,21 +25,37 @@ async function getRestaurants() {
             tags: ["Italian", "Pizza", "Pasta"], // Mocked for now
             description: r.description,
             // Offset coordinates slightly so they don't overlay
-            coords: [40.7128 + (index * 0.01), -74.0060 + (index * 0.01)] as [number, number]
+            coords: [r.lat || (40.7128 + (index * 0.01)), r.lng || (-74.0060 + (index * 0.01))] as [number, number]
         }));
     } catch (error) {
-        console.warn("Database connection failed, falling back to mock data:", error);
-        // Fallback mock data so the app doesn't crash
-        return [
-            { id: "1", name: "Bella Italia (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["Italian", "Pizza", "Pasta"], description: "Authentic Italian cuisine", coords: [40.7128, -74.0060] as [number, number] },
-            { id: "2", name: "Spice Route (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Indian", "Curry", "Spicy"], description: "Spicy and delicious", coords: [40.7228, -74.0160] as [number, number] },
-            { id: "3", name: "Tokyo Sushi (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Japanese", "Sushi", "Fresh"], description: "Fresh sushi daily", coords: [40.7028, -73.9960] as [number, number] },
+        console.warn("Database connection failed or empty, falling back to mock data");
+        // Fallback mock data with locations
+        const allMocks = [
+            // Charlotte Mock
+            { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC" },
+            { id: "2", name: "Queen City Burger (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Burgers", "American"], description: "Gourmet burgers", coords: [35.2280, -80.8440] as [number, number], city: "Charlotte", state: "NC" },
+            // Ramsey Mock
+            { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN" },
         ];
+
+        if (location === "Charlotte, NC") {
+            return allMocks.filter(r => r.city === "Charlotte");
+        } else if (location === "Ramsey, MN") {
+            return allMocks.filter(r => r.city === "Ramsey");
+        }
+        return allMocks;
     }
 }
 
-export default async function RestaurantFinder() {
-    const restaurants = await getRestaurants();
+export default async function RestaurantFinder({ searchParams }: { searchParams: { location?: string } }) {
+    const location = searchParams?.location || "Charlotte, NC"; // Default to Charlotte
+    const restaurants = await getRestaurants(location);
+
+    const mapCenter = location === "Charlotte, NC"
+        ? [35.2271, -80.8431] as [number, number]
+        : location === "Ramsey, MN"
+            ? [45.2611, -93.4566] as [number, number]
+            : [35.2271, -80.8431] as [number, number];
 
     return (
         <div className="min-h-screen">
@@ -42,7 +67,17 @@ export default async function RestaurantFinder() {
                             True<span className="text-gradient">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 items-center">
+                        <div className="dropdown dropdown-end">
+                            <div tabIndex={0} role="button" className="btn btn-sm btn-ghost gap-2 border-white/10">
+                                📍 {location}
+                                <span className="text-[10px]">▼</span>
+                            </div>
+                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100/90 backdrop-blur rounded-box w-52 mt-4 border border-white/10">
+                                <li><Link href="/restaurants?location=Charlotte, NC">Charlotte, NC</Link></li>
+                                <li><Link href="/restaurants?location=Ramsey, MN">Ramsey, MN</Link></li>
+                            </ul>
+                        </div>
                         <Link href="/" className="hover:text-primary transition-colors">Home</Link>
                         <input
                             type="text"
@@ -55,7 +90,7 @@ export default async function RestaurantFinder() {
 
             <main className="container py-8 animate-fade-in">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <h1 className="text-4xl font-bold font-black tracking-tight">Popular Near You</h1>
+                    <h1 className="text-4xl font-bold font-black tracking-tight">Popular in {location}</h1>
                     <div className="flex gap-3">
                         <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -86,7 +121,7 @@ export default async function RestaurantFinder() {
 
                 <div className="mb-8">
                     <Map
-                        center={[40.7128, -74.0060]}
+                        center={mapCenter}
                         zoom={13}
                         restaurants={restaurants.map(r => ({ id: r.id, name: r.name, coords: r.coords }))}
                     />
@@ -116,8 +151,8 @@ export default async function RestaurantFinder() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {restaurants.length === 0 ? (
                         <div className="col-span-4 text-center py-12 text-slate-400">
-                            <p className="text-xl">No restaurants found yet.</p>
-                            <p className="text-sm mt-2">Check back later or run the seed script!</p>
+                            <p className="text-xl">No restaurants found in {location}.</p>
+                            <p className="text-sm mt-2">Try a different location or check back later!</p>
                         </div>
                     ) : (
                         restaurants.map((rest) => (

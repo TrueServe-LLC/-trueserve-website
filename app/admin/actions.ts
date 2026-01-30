@@ -65,6 +65,10 @@ export async function approveDriver(id: string) {
 }
 
 export async function connectStripe(_formData?: FormData) {
+    const session = (await cookies()).get("admin_session");
+    if (!session) {
+        redirect("/admin/login");
+    }
     redirect("https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create");
 }
 
