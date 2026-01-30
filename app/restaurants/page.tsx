@@ -71,6 +71,9 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         // For now, hardcode known centers based on the matched city string
         if (matchedLocation.city === 'Ramsey') locationMeta.center = [45.2611, -93.4566];
         else if (matchedLocation.city === 'Charlotte') locationMeta.center = [35.2271, -80.8431];
+
+        // Update the display name to be pretty (e.g. "Charlotte, NC") instead of raw input
+        locationMeta.name = `${matchedLocation.city}, ${matchedLocation.state}`;
     }
 
     try {
@@ -165,7 +168,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
             <main className="container py-8 animate-fade-in">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <h1 className="text-4xl font-bold font-black tracking-tight">Popular in {location}</h1>
+                        <h1 className="text-4xl font-bold font-black tracking-tight">Popular in {locationMeta.name}</h1>
                         <div className="flex gap-2 mt-2 text-xs font-medium text-slate-500">
                             <span>Quick Switch:</span>
                             <Link href="?location=Charlotte, NC" className="hover:text-primary transition-colors">Charlotte, NC</Link>
