@@ -11,7 +11,6 @@ async function getRestaurants(locationInput: string) {
     // 1. Fetch Valid Service Locations
     let validLocations: any[] = [];
     try {
-        // @ts-ignore - Schema update pending DB fix
         validLocations = await prisma.serviceLocation.findMany({ where: { isActive: true } });
     } catch (e) {
         console.warn("DB failed to fetch locations, using fallback mocks");
@@ -182,12 +181,12 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                         </p>
                     </div>
                     <div className="flex gap-4 items-center shrink-0">
-                        <div className="flex -space-x-2">
-                            <div className="h-8 w-12 bg-white/10 rounded-md border border-white/10 flex items-center justify-center text-[8px] text-slate-400 backdrop-blur-sm">Bank L</div>
-                            <div className="h-8 w-12 bg-white/10 rounded-md border border-white/10 flex items-center justify-center text-[8px] text-slate-400 backdrop-blur-sm">Bank S</div>
-                            <div className="h-8 w-12 bg-white/10 rounded-md border border-white/10 flex items-center justify-center text-[8px] text-slate-400 backdrop-blur-sm">Bank V</div>
+                        <div className="flex gap-4 items-center shrink-0">
+                            {/* Banks removed as requested */}
+                            <Link href="/rewards" className="btn btn-primary text-xs py-2 px-6">
+                                Visit Rewards Store
+                            </Link>
                         </div>
-                        <button className="btn btn-primary text-xs py-2 px-6">Visit Rewards Store</button>
                     </div>
                 </div>
 
