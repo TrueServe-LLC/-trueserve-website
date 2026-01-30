@@ -127,9 +127,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     </div>
                 </section>
 
-                <div className="grid grid-2 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Menu Approval Section */}
-                    <section>
+                    <section className="col-span-2">
                         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                             📋 Menu Approvals
                             <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">{pendingItems.length}</span>
@@ -170,33 +170,6 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             {pendingItems.length === 0 && (
                                 <p className="text-slate-500 italic">No menu items pending approval.</p>
                             )}
-                        </div>
-                    </section>
-
-                    {/* Driver Management Section */}
-                    <section>
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            🚗 Driver Fleet
-                            <span className="bg-secondary/20 text-secondary text-xs px-2 py-1 rounded-full">{drivers.length}</span>
-                        </h2>
-                        <div className="space-y-4">
-                            {drivers.map((driver) => (
-                                <div key={driver.id} className="card p-6 border-slate-700/50">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className="font-bold">{driver.user.name}</h3>
-                                        <span className="text-xs text-slate-400">{driver.vehicleType}</span>
-                                    </div>
-                                    <p className="text-sm text-slate-400 mb-4">{driver.user.email}</p>
-                                    <div className="flex gap-2">
-                                        <button className="btn btn-outline text-xs py-2 px-4 border-slate-700">
-                                            View Profile
-                                        </button>
-                                        <button className="btn btn-outline text-xs py-2 px-4 border-slate-700 text-emerald-400">
-                                            Active
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </section>
                 </div>

@@ -1,6 +1,7 @@
 
 import Link from "next/link";
 import Map from "@/components/Map";
+import LocationButton from "@/components/LocationButton";
 
 import { prisma } from "@/lib/prisma";
 
@@ -162,9 +163,8 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                         </span>
                     </Link>
                     <div className="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-                        {/* Location Input Form */}
                         <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full md:w-auto">
-                            <button className="btn btn-sm btn-ghost join-item border-none hover:bg-transparent pointer-events-none px-3">📍</button>
+                            <LocationButton />
                             <input
                                 name="location"
                                 defaultValue={location}
@@ -191,12 +191,6 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h1 className="text-4xl font-bold font-black tracking-tight">Popular in {locationMeta.name}</h1>
-                        <div className="flex gap-2 mt-2 text-xs font-medium text-slate-500">
-                            <span>Quick Switch:</span>
-                            <Link href="?location=Charlotte, NC" className="hover:text-primary transition-colors">Charlotte, NC</Link>
-                            <span className="opacity-50">|</span>
-                            <Link href="?location=Ramsey, MN" className="hover:text-primary transition-colors">Ramsey, MN</Link>
-                        </div>
                     </div>
                     <div className="flex gap-3">
                         <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">

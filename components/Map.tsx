@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import Link from "next/link";
-// Leaflet must be imported dynamically in Next.js because it uses window
 import dynamic from "next/dynamic";
 
 const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), { ssr: false });
+
+// Import RecenterMap dynamically to avoid SSR issues with useMap
+const RecenterMap = dynamic(() => import("./RecenterMap"), { ssr: false });
 
 interface RestaurantLocation {
     id: string;
@@ -24,9 +26,7 @@ export default function Map({ center, zoom = 13, restaurants = [] }: {
 }) {
     const [leaflet, setLeaflet] = useState<any>(null);
 
-    // Leaflet fix for Next.js - only run on client
     useEffect(() => {
-        // Import leaflet only on client
         import("leaflet").then((L) => {
             setLeaflet(L);
             // @ts-ignore
@@ -50,6 +50,7 @@ export default function Map({ center, zoom = 13, restaurants = [] }: {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+                <RecenterMap center={center} />
 
                 {/* User/Center Marker */}
                 {/* @ts-ignore */}
@@ -75,4 +76,3 @@ export default function Map({ center, zoom = 13, restaurants = [] }: {
         </div>
     );
 }
-
