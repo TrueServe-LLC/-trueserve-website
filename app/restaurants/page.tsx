@@ -312,37 +312,54 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                         </div>
                     ) : (
                         restaurants.map((rest) => (
-                            <div key={rest.id} className="card group hover:scale-[1.02] transition-transform duration-300 p-0 overflow-hidden">
-                                <div className="h-40 bg-slate-700 relative">
-                                    {/* Use Next.js Image component for optimization if possible, but standard img for external URLs or dynamic paths */}
-                                    {rest.image && (
+                            <Link
+                                href={`/restaurants/${rest.id}`}
+                                key={rest.id}
+                                className="card group p-0 overflow-hidden border-0 bg-transparent hover:bg-white/5 transition-all duration-300 block relative"
+                            >
+                                <div className="h-48 w-full relative overflow-hidden rounded-2xl">
+                                    {rest.image ? (
                                         <img
                                             src={rest.image}
                                             alt={rest.name}
-                                            className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                                         />
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-3">
-                                        <div>
-                                            <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors leading-tight">{rest.name}</h3>
-                                            <p className="text-[10px] text-slate-300 line-clamp-1">{rest.description}</p>
+                                    ) : (
+                                        <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-500">
+                                            No Image
                                         </div>
+                                    )}
+
+                                    {/* Rating badge */}
+                                    <div className="absolute bottom-3 right-3 bg-white/10 backdrop-blur-md border border-white/20 px-2 py-1 rounded-full text-xs font-bold text-white flex items-center gap-1 shadow-lg">
+                                        <span>★</span> {rest.rating}
                                     </div>
-                                    <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold text-yellow-400">
-                                        ★ {rest.rating}
+
+                                    {/* Favorite / Promo badge could go here */}
+                                    <div className="absolute top-3 left-3 bg-primary text-black text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-md">
+                                        Free Delivery
                                     </div>
                                 </div>
-                                <div className="p-4">
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {rest.tags.map(tag => (
-                                            <span key={tag} className="text-xs bg-white/5 px-2 py-1 rounded text-slate-400">{tag}</span>
-                                        ))}
+
+                                <div className="pt-3 px-1">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors leading-tight">
+                                            {rest.name}
+                                        </h3>
+                                        <span className="text-xs font-medium text-slate-400 bg-slate-800/50 px-2 py-1 rounded-full">
+                                            15-25 min
+                                        </span>
                                     </div>
-                                    <Link href={`/restaurants/${rest.id}`} className="w-full btn btn-primary text-sm py-2 block text-center">
-                                        Order Now
-                                    </Link>
+                                    <p className="text-sm text-slate-400 line-clamp-1 mb-2">
+                                        {rest.tags.join(" • ")}
+                                    </p>
+                                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                                        <span>$0 Delivery Fee</span>
+                                        <span>•</span>
+                                        <span className="text-emerald-400 font-medium">Zero Surcharge</span>
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))
                     )}
                 </div>

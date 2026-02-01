@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { placeOrder } from "../actions";
 
 interface MenuItem {
@@ -17,9 +18,10 @@ interface MenuClientProps {
 }
 
 export default function MenuClient({ restaurantId, items }: MenuClientProps) {
+    const router = useRouter();
     const [cart, setCart] = useState<{ [key: string]: number }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [result, setResult] = useState<{ message: string; success?: boolean; posReference?: string } | null>(null);
+    const [payment, setPayment] = useState({ cardNumber: '', expiry: '', cvc: '' });
 
     const addToCart = (itemId: string) => {
         setCart(prev => ({
@@ -46,8 +48,6 @@ export default function MenuClient({ restaurantId, items }: MenuClientProps) {
         return sum + (item ? Number(item.price) * quantity : 0);
     }, 0);
 
-    const [payment, setPayment] = useState({ cardNumber: '', expiry: '', cvc: '' });
-
     const handlePlaceOrder = async () => {
         if (!payment.cardNumber || !payment.expiry || !payment.cvc) {
             alert("Please enter payment details.");
@@ -61,33 +61,19 @@ export default function MenuClient({ restaurantId, items }: MenuClientProps) {
         });
 
         const response = await placeOrder(restaurantId, cartItems, payment);
-        setResult(response);
-        if (response.success) {
+
+        if (response.success && response.orderId) {
             setCart({});
             setPayment({ cardNumber: '', expiry: '', cvc: '' });
+            // Redirect to tracking page
+            router.push(`/orders/${response.orderId}`);
+        } else {
+            alert(response.message || "Failed to place order");
+            setIsSubmitting(false);
         }
-        setIsSubmitting(false);
     };
 
-    if (result?.success) {
-        return (
-            <div className="card p-12 text-center animate-fade-in border-emerald-500/30 bg-emerald-500/5">
-                <div className="text-6xl mb-4">🎉</div>
-                <h2 className="text-3xl font-bold mb-2">Order Received!</h2>
-                <p className="text-slate-400 mb-6">{result.message}</p>
-                <div className="bg-slate-900/50 p-4 rounded-xl border border-white/10 max-w-xs mx-auto mb-8">
-                    <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">POS LogKey</p>
-                    <p className="text-xl font-mono font-bold text-primary">{result.posReference}</p>
-                </div>
-                <button
-                    onClick={() => setResult(null)}
-                    className="btn btn-primary"
-                >
-                    Order Again
-                </button>
-            </div>
-        );
-    }
+    // Success view removed in favor of redirect
 
     return (
         <div className="grid grid-3 gap-12 items-start">
