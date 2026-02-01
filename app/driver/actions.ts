@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 export type DriverApplicationState = {
     message: string;
@@ -41,9 +42,12 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             const { data: newUser, error: createError } = await supabase
                 .from('User')
                 .insert({
+                    id: uuidv4(),
                     name,
                     email,
                     role: 'DRIVER',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
                 })
                 .select()
                 .single();
@@ -58,9 +62,12 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         const { error: driverError } = await supabase
             .from('Driver')
             .insert({
+                id: uuidv4(),
                 userId: userId,
                 vehicleType,
                 status: "OFFLINE",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             });
 
         if (driverError) {

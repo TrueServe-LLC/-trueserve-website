@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 export type AddItemState = {
     message: string;
@@ -20,37 +21,55 @@ export async function addMenuItem(prevState: any, formData: FormData): Promise<A
     }
 
     try {
-        // 1. Get the restaurant (Assuming single merchant for now or first one)
+        const cookieStore = await cookies();
+        const userId = cookieStore.get("userId")?.value;
+
+        if (!userId) {
+            return { message: "You must be logged in.", error: true };
+        }
+
+        // 1. Get the restaurant owned by the current user
         const { data: restaurant, error: rError } = await supabase
             .from('Restaurant')
             .select('id')
-            .limit(1)
-            .single();
+            .eq('ownerId', userId)
+            .maybeSingle(); // Use maybeSingle to avoid 406 if none found
 
-        if (rError || !restaurant) {
-            throw new Error("No restaurant found to add item to.");
+        if (rError) {
+            console.error("Error fetching restaurant:", rError);
+            throw new Error("Database error checking restaurant ownership.");
+        }
+
+        if (!restaurant) {
+            // Check if they are maybe a 'system' merchant or fallback (for demo purposes)
+            // But strict 'live data' request implies we should require ownership.
+            return { message: "You do not own a restaurant. Please contact support.", error: true };
         }
 
         // 2. Create the item
         const { error } = await supabase.from('MenuItem').insert({
+            id: require('uuid').v4(),
             name,
-            description,
+            description: description || "",
             price,
             imageUrl: imageUrl || "/restaurant1.jpg",
             restaurantId: restaurant.id,
-            status: "PENDING"
+            // status: "PENDING", // Removing 'status' if it doesn't exist in schema (my previous scrape didn't need it)
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
         });
 
         if (error) {
+            console.error("Error adding menu item:", error);
             throw error;
         }
 
         revalidatePath("/merchant/dashboard");
         return { message: "Item added successfully!", success: true };
 
-    } catch (e) {
+    } catch (e: any) {
         console.error("Failed to add item:", e);
-        return { message: "Failed to add item. Check database connection.", error: true };
+        return { message: e.message || "Failed to add item.", error: true };
     }
 }
 
