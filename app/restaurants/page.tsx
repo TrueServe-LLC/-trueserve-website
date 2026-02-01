@@ -56,47 +56,13 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         validLocations = fallbackMocks;
     }
 
-    // Map counties and states to cities
-    const countyMap: Record<string, string> = {
-        'mecklenburg': 'Charlotte',
-        'anoka': 'Ramsey'
-    };
-
-    const stateMap: Record<string, string> = {
-        'nc': 'Charlotte',
-        'north carolina': 'Charlotte',
-        'mn': 'Ramsey',
-        'minnesota': 'Ramsey'
-    };
-
-    let mappedCityFromCounty: string | undefined;
-
-    for (const [county, city] of Object.entries(countyMap)) {
-        if (term.includes(county)) {
-            mappedCityFromCounty = city;
-            break;
-        }
-    }
-
-    if (!mappedCityFromCounty) {
-        for (const [state, city] of Object.entries(stateMap)) {
-            if (term.includes(state)) {
-                mappedCityFromCounty = city;
-                break;
-            }
-        }
-    }
-
     const matchedLocation = validLocations.find(loc => {
-        const cityMatch = term.includes(loc.city.toLowerCase());
-        const zipMatch = loc.zipPrefixes.some((prefix: string) => term.includes(prefix));
+        const termClean = term.trim().toLowerCase();
+        const cityMatch = loc.city.toLowerCase().includes(termClean);
+        const stateMatch = loc.state.toLowerCase() === termClean || loc.state.toLowerCase().includes(termClean); // Allow "NC" or "North Carolina" if validLocations had full names, but currently 'state' is likely 'NC'
+        const zipMatch = loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix));
 
-        let countyOrStateMatch = false;
-        if (mappedCityFromCounty && loc.city) {
-            countyOrStateMatch = mappedCityFromCounty.toLowerCase().trim() === loc.city.toLowerCase().trim();
-        }
-
-        return cityMatch || zipMatch || countyOrStateMatch;
+        return cityMatch || stateMatch || zipMatch;
     });
 
     // Default metadata
