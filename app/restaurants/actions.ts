@@ -21,8 +21,22 @@ export async function placeOrder(
     cartItems: { id: string; price: number; quantity: number }[],
     paymentDetails?: { cardNumber: string; expiry: string; cvc: string }
 ): Promise<OrderState> {
+    console.log(`[PlaceOrder] Received order for restaurant ${restaurantId}`, { count: cartItems.length, payment: paymentDetails ? "Present" : "Missing" });
+
     if (cartItems.length === 0) {
-        return { message: "Your cart is empty.", error: true };
+        return { message: "Your cart is empty.", error: true, success: false };
+    }
+
+    if (!paymentDetails || !paymentDetails.cardNumber) {
+        return { message: "Payment details are required.", error: true, success: false };
+    }
+
+    // SIMULATED PAYMENT PROCESSING
+    await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5s delay
+
+    // Mock Decline Logic
+    if (paymentDetails.cardNumber.endsWith("0000")) {
+        return { message: "Payment Declined: Card reported lost or stolen (Mock).", error: true, success: false };
     }
 
     try {
@@ -44,12 +58,13 @@ export async function placeOrder(
 
         // Fallback to Demo User if not logged in
         if (!user) {
+            console.log("[PlaceOrder] No logged in user. Creating Guest User...");
             const { data: newUser, error: createError } = await supabase
                 .from('User')
                 .insert({
                     id: uuidv4(),
-                    email: `customer-${Date.now()}@example.com`,
-                    name: "Demo Customer",
+                    email: `guest-${Date.now()}@trueserve.com`, // Changed domain to look internal
+                    name: "Guest Customer",
                     role: "CUSTOMER",
                     updatedAt: new Date().toISOString(),
                     createdAt: new Date().toISOString()
@@ -57,34 +72,43 @@ export async function placeOrder(
                 .select()
                 .single();
 
-            if (createError) throw createError;
+            if (createError) {
+                console.error("[PlaceOrder] Guest User Creation Failed:", createError);
+                throw new Error("Failed to initialize guest session.");
+            }
             user = newUser;
-            // Optionally set cookie here for future? Maybe better not to auto-login guest checkout.
         }
 
         // 4. Create Order
+        console.log(`[PlaceOrder] Creating order for user ${user.id}...`);
         const { data: order, error: orderError } = await supabase
             .from('Order')
             .insert({
-                userId: user?.id,
+                userId: user.id,
                 restaurantId: restaurantId,
                 total: total,
                 status: "PENDING",
                 posReference: posReference,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             })
             .select()
             .single();
 
         if (orderError || !order) {
-            throw orderError || new Error("Failed to create order");
+            console.error("[PlaceOrder] Order Creation Failed:", orderError);
+            throw new Error("Failed to create order record.");
         }
 
         // 5. Create Order Items
         const orderItemsData = cartItems.map(item => ({
+            id: uuidv4(),
             orderId: order.id,
             menuItemId: item.id,
             quantity: item.quantity,
-            price: item.price
+            price: item.price,
+            updatedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString()
         }));
 
         const { error: itemsError } = await supabase
@@ -92,13 +116,16 @@ export async function placeOrder(
             .insert(orderItemsData);
 
         if (itemsError) {
-            console.error("Failed to create order items:", itemsError);
-            // In a real app, we might want to rollback the order here
-            throw itemsError;
+            console.error("[PlaceOrder] Order Items Failed:", itemsError);
+            // In a real app, delete the order here to rollback
+            throw new Error("Failed to add items to order.");
         }
 
         revalidatePath("/merchant/dashboard");
         revalidatePath("/admin/dashboard");
+        revalidatePath("/driver/dashboard");
+
+        console.log(`[PlaceOrder] Success! Order ID: ${order.id}`);
 
         return {
             message: "Order placed successfully!",
@@ -107,8 +134,12 @@ export async function placeOrder(
             posReference: posReference
         };
 
-    } catch (e) {
-        console.error("Failed to place order:", e);
-        return { message: "Failed to place order. Please try again.", error: true };
+    } catch (e: any) {
+        console.error("[PlaceOrder] Exception:", e);
+        return {
+            message: e.message || "Failed to place order. Please try again.",
+            error: true,
+            success: false
+        };
     }
 }
