@@ -256,26 +256,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                     />
                 </div>
 
-                {/* Loyalty & Rewards Banner */}
-                <div className="mb-12 card border-secondary/20 bg-secondary/5 flex flex-col md:flex-row items-center justify-between gap-6 p-6">
-                    <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-xl font-bold text-white">Loyalty & Rewards Hub</h3>
-                            <span className="bg-secondary text-[#0a0f1a] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">Active</span>
-                        </div>
-                        <p className="text-sm text-slate-400 max-w-2xl">
-                            Earn 5 points for every $1 spent. Plus, use <strong>card-linked offers</strong> from partner banks for instant cash back.
-                        </p>
-                    </div>
-                    <div className="flex gap-4 items-center shrink-0">
-                        <div className="flex gap-4 items-center shrink-0">
-                            {/* Banks removed as requested */}
-                            <Link href="/rewards" className="btn btn-primary text-xs py-2 px-6">
-                                Visit Rewards Store
-                            </Link>
-                        </div>
-                    </div>
-                </div>
+
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {restaurants.length === 0 ? (

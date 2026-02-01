@@ -25,9 +25,28 @@ async function seedRealRestaurants() {
     await supabase.from('Order').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await supabase.from('MenuItem').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await supabase.from('Restaurant').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    // We keep Users and Drivers to avoid complexity, or checking if merchant exists.
+    await supabase.from('ServiceLocation').delete().neq('id', '00000000-0000-0000-0000-000000000000');
 
-
+    // 0.1 Seed Service Locations
+    console.log('Seeding Service Locations...');
+    await supabase.from('ServiceLocation').insert([
+        {
+            city: 'Charlotte',
+            state: 'NC',
+            zipPrefixes: ['282', '280', '281'],
+            isActive: true,
+            updatedAt: now,
+            createdAt: now
+        },
+        {
+            city: 'Pineville',
+            state: 'NC',
+            zipPrefixes: ['28134'],
+            isActive: true,
+            updatedAt: now,
+            createdAt: now
+        }
+    ]);
 
     const restaurants = [
         {
@@ -40,9 +59,9 @@ async function seedRealRestaurants() {
             description: "A cocktail bar & restaurant located in the heart of historic Pineville.",
             imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&q=80&w=1000",
             menu: [
-                { name: "Garrison Burger", price: 16.00, description: "Double patty, sharp cheddar, bacon jam." },
-                { name: "Fish & Chips", price: 18.00, description: "Beer battered cod, house tartar sauce." },
-                { name: "Truffle Fries", price: 9.00, description: "Parmesan, truffle oil, parsley." }
+                { name: "Garrison Burger", price: 16.00, description: "Double patty, sharp cheddar, bacon jam.", imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=500" },
+                { name: "Fish & Chips", price: 18.00, description: "Beer battered cod, house tartar sauce.", imageUrl: "https://images.unsplash.com/photo-1579202673506-ca3ce28943ef?auto=format&fit=crop&q=80&w=500" },
+                { name: "Truffle Fries", price: 9.00, description: "Parmesan, truffle oil, parsley.", imageUrl: "https://images.unsplash.com/photo-1573080496982-b9418e224d1c?auto=format&fit=crop&q=80&w=500" }
             ]
         },
         {
@@ -55,9 +74,9 @@ async function seedRealRestaurants() {
             description: "Premier dining destination offering steaks and seafood.",
             imageUrl: "https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80&w=1000",
             menu: [
-                { name: "Ribeye Steak", price: 34.00, description: "12oz USDA Prime, garlic butter." },
-                { name: "Seared Salmon", price: 26.00, description: "Lemon beurre blanc, asparagus." },
-                { name: "Lobster Bisque", price: 12.00, description: "Rich creamy soup with lobster chunks." }
+                { name: "Ribeye Steak", price: 34.00, description: "12oz USDA Prime, garlic butter.", imageUrl: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&q=80&w=500" },
+                { name: "Seared Salmon", price: 26.00, description: "Lemon beurre blanc, asparagus.", imageUrl: "https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&q=80&w=500" },
+                { name: "Lobster Bisque", price: 12.00, description: "Rich creamy soup with lobster chunks.", imageUrl: "https://images.unsplash.com/photo-1547592166-23acbe32263b?auto=format&fit=crop&q=80&w=500" }
             ]
         },
         {
@@ -70,9 +89,9 @@ async function seedRealRestaurants() {
             description: "Authentic German cuisine and beer garden.",
             imageUrl: "https://images.unsplash.com/photo-1574672280200-e840d21e8e54?auto=format&fit=crop&q=80&w=1000",
             menu: [
-                { name: "Wiener Schnitzel", price: 22.00, description: "Breaded veal cutlet, lemon, potato salad." },
-                { name: "Bratwurst Platter", price: 18.00, description: "Grilled sausages, sauerkraut, mashed potatoes." },
-                { name: "Pretzel & Cheese", price: 10.00, description: "Giant bavarian pretzel with beer cheese." }
+                { name: "Wiener Schnitzel", price: 22.00, description: "Breaded veal cutlet, lemon, potato salad.", imageUrl: "https://images.unsplash.com/photo-1599921841143-819065a5a2ec?auto=format&fit=crop&q=80&w=500" },
+                { name: "Bratwurst Platter", price: 18.00, description: "Grilled sausages, sauerkraut, mashed potatoes.", imageUrl: "https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?auto=format&fit=crop&q=80&w=500" },
+                { name: "Pretzel & Cheese", price: 10.00, description: "Giant bavarian pretzel with beer cheese.", imageUrl: "https://images.unsplash.com/photo-1573166675921-076ea6b621ce?auto=format&fit=crop&q=80&w=500" }
             ]
         },
         {
@@ -85,9 +104,9 @@ async function seedRealRestaurants() {
             description: "Comfort food with flair. Breakfast all day.",
             imageUrl: "https://images.unsplash.com/photo-1551024601-562963525c54?auto=format&fit=crop&q=80&w=1000",
             menu: [
-                { name: "Fried Chicken & Waffle", price: 17.00, description: "Half chicken, strawberry butter." },
-                { name: "Meatloaf Plate", price: 15.00, description: "Mash, gravy, green beans." },
-                { name: "Charleston Shrimp & Grits", price: 18.00, description: "Andouille sausage, creamy grits." }
+                { name: "Fried Chicken & Waffle", price: 17.00, description: "Half chicken, strawberry butter.", imageUrl: "https://images.unsplash.com/photo-1626082927389-d584393e5005?auto=format&fit=crop&q=80&w=500" },
+                { name: "Meatloaf Plate", price: 15.00, description: "Mash, gravy, green beans.", imageUrl: "https://images.unsplash.com/photo-1551326844-360292689435?auto=format&fit=crop&q=80&w=500" },
+                { name: "Charleston Shrimp & Grits", price: 18.00, description: "Andouille sausage, creamy grits.", imageUrl: "https://images.unsplash.com/photo-1535400255456-984241443b29?auto=format&fit=crop&q=80&w=500" }
             ]
         },
         {
@@ -100,9 +119,9 @@ async function seedRealRestaurants() {
             description: "Traditional Mexican dishes and margaritas.",
             imageUrl: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=1000",
             menu: [
-                { name: "Carne Asada", price: 19.00, description: "Grilled steak, rice, beans, tortillas." },
-                { name: "Street Tacos", price: 12.00, description: "Three tacos (steak, pastor, or chicken)." },
-                { name: "Churros", price: 6.00, description: "Cinnamon sugar, caramel dipping sauce." }
+                { name: "Carne Asada", price: 19.00, description: "Grilled steak, rice, beans, tortillas.", imageUrl: "https://images.unsplash.com/photo-1574868461014-d46ca0d922e9?auto=format&fit=crop&q=80&w=500" },
+                { name: "Street Tacos", price: 12.00, description: "Three tacos (steak, pastor, or chicken).", imageUrl: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=500" },
+                { name: "Churros", price: 6.00, description: "Cinnamon sugar, caramel dipping sauce.", imageUrl: "https://images.unsplash.com/photo-1624371414361-e670edf4898d?auto=format&fit=crop&q=80&w=500" }
             ]
         },
         {
@@ -115,9 +134,9 @@ async function seedRealRestaurants() {
             description: "Local favorite spot for quick bites and drinks.",
             imageUrl: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&q=80&w=1000",
             menu: [
-                { name: "Pulled Pork Sandwich", price: 11.00, description: "BBQ sauce, slaw, brioche bun." },
-                { name: "Chili Cheese Fries", price: 8.00, description: "House chili, cheddar melt." },
-                { name: "Wings (10)", price: 14.00, description: "Buffalo, BBQ, or Lemon Pepper." }
+                { name: "Pulled Pork Sandwich", price: 11.00, description: "BBQ sauce, slaw, brioche bun.", imageUrl: "https://images.unsplash.com/photo-1619537903549-0981d6bca911?auto=format&fit=crop&q=80&w=500" },
+                { name: "Chili Cheese Fries", price: 8.00, description: "House chili, cheddar melt.", imageUrl: "https://images.unsplash.com/photo-1582239696734-7832822a945b?auto=format&fit=crop&q=80&w=500" },
+                { name: "Wings (10)", price: 14.00, description: "Buffalo, BBQ, or Lemon Pepper.", imageUrl: "https://images.unsplash.com/photo-1527477396000-64ca9c00173f?auto=format&fit=crop&q=80&w=500" }
             ]
         }
     ];
@@ -168,7 +187,7 @@ async function seedRealRestaurants() {
                 description: m.description,
                 price: m.price,
                 status: 'APPROVED',
-                imageUrl: null, // Skipping specific images for menu items for now
+                imageUrl: m.imageUrl,
                 updatedAt: now,
                 createdAt: now
             }));
