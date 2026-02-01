@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 import dynamic from "next/dynamic";
 
 const LeafletMap = dynamic(() => import("@/components/LeafletMap"), {
-    ssr: false,
     loading: () => <div className="h-[400px] w-full bg-slate-800 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Map...</div>
 });
 
