@@ -1,8 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
-import { OrderStatus } from "@prisma/client";
 
 export type AddItemState = {
     message: string;
@@ -22,46 +21,50 @@ export async function addMenuItem(prevState: any, formData: FormData): Promise<A
 
     try {
         // 1. Get the restaurant (Assuming single merchant for now or first one)
-        // In real app: get userId from session -> find restaurant
-        const restaurant = await prisma.restaurant.findFirst();
+        const { data: restaurant, error: rError } = await supabase
+            .from('Restaurant')
+            .select('id')
+            .limit(1)
+            .single();
 
-        if (!restaurant) {
+        if (rError || !restaurant) {
             throw new Error("No restaurant found to add item to.");
         }
 
         // 2. Create the item
-        await prisma.menuItem.create({
-            data: {
-                name,
-                description,
-                price,
-                imageUrl: imageUrl || "/restaurant1.jpg", // Default placeholder
-                restaurantId: restaurant.id,
-            },
+        const { error } = await supabase.from('MenuItem').insert({
+            name,
+            description,
+            price,
+            imageUrl: imageUrl || "/restaurant1.jpg",
+            restaurantId: restaurant.id,
+            status: "PENDING"
         });
+
+        if (error) {
+            throw error;
+        }
 
         revalidatePath("/merchant/dashboard");
         return { message: "Item added successfully!", success: true };
 
     } catch (e) {
         console.error("Failed to add item:", e);
-        // Graceful fallback for demo
-        if ((e as any).code === 'P1001' || (e as any).message?.includes("Can't reach database")) {
-            return {
-                message: "Item simulated! (Database is offline). Refresh to see change (mocked).",
-                success: true
-            };
-        }
         return { message: "Failed to add item. Check database connection.", error: true };
     }
 }
 
-export async function updateOrderStatus(orderId: string, status: OrderStatus | string) {
+export async function updateOrderStatus(orderId: string, status: string) {
     try {
-        await prisma.order.update({
-            where: { id: orderId },
-            data: { status: status as OrderStatus }
-        });
+        const { error } = await supabase
+            .from('Order')
+            .update({ status })
+            .eq('id', orderId);
+
+        if (error) {
+            throw error;
+        }
+
         revalidatePath("/merchant/dashboard");
         return { success: true };
     } catch (e) {
@@ -71,13 +74,18 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus | s
 }
 export async function refundOrder(orderId: string) {
     try {
-        await prisma.order.update({
-            where: { id: orderId },
-            data: {
+        const { error } = await supabase
+            .from('Order')
+            .update({
                 isRefunded: true,
                 status: 'CANCELLED'
-            } as any
-        });
+            })
+            .eq('id', orderId);
+
+        if (error) {
+            throw error;
+        }
+
         revalidatePath("/merchant/dashboard");
         return { success: true };
     } catch (e) {

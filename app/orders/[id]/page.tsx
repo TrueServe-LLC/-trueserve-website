@@ -1,5 +1,4 @@
-
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Map from "@/components/Map";
@@ -7,14 +6,28 @@ import ChatWindow from "@/components/ChatWindow";
 
 async function getOrder(id: string) {
     try {
-        return await prisma.order.findUnique({
-            where: { id },
-            include: {
-                restaurant: true,
-                driver: { include: { user: true } },
-                items: { include: { menuItem: true } }
-            }
-        });
+        const { data: order, error } = await supabase
+            .from('Order')
+            .select(`
+                *,
+                restaurant:Restaurant(*),
+                driver:Driver(
+                    *,
+                    user:User(*)
+                ),
+                items:OrderItem(
+                    *,
+                    menuItem:MenuItem(*)
+                )
+            `)
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            console.error("Supabase Error (getOrder):", error);
+            return null;
+        }
+        return order;
     } catch (e) {
         return null;
     }

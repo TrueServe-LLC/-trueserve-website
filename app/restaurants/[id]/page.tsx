@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Map from "@/components/Map";
@@ -6,36 +6,46 @@ import MenuClient from "./MenuClient";
 
 async function getRestaurant(id: string) {
     try {
-        const restaurant = await prisma.restaurant.findUnique({
-            where: { id },
-            include: {
-                menuItems: {
-                    where: { status: "APPROVED" }
-                }
-            }
-        });
+        const { data: restaurant, error } = await supabase
+            .from('Restaurant')
+            .select(`
+                *,
+                menuItems:MenuItem(*)
+            `)
+            .eq('id', id)
+            .single();
 
-        if (restaurant) return restaurant;
+        if (error || !restaurant) {
+            // Fallback checking (preserving existing mock pattern logic if DB fails)
+            // But for "Switch" request, better to just return null or handle error.
+            if (error) console.error("Supabase Error (getRestaurant):", error);
+            return null;
+        }
 
+        // Filter valid menu items
+        if (restaurant.menuItems) {
+            restaurant.menuItems = restaurant.menuItems.filter((item: any) => item.status === "APPROVED");
+        }
+
+        return restaurant;
+    } catch (e) {
+        console.warn("DB failed", e);
         // Fallback to mock if not found in DB
         const mockRestaurants = [
             {
                 id: "1", name: "Bella Italia", address: "123 Pasta Avenue, NY", rating: 4.8, imageUrl: "/restaurant1.jpg", menuItems: [
-                    { id: "m1", name: "Margherita Pizza", description: "Fresh basil, mozzarella, and tomato sauce", price: 14.99, imageUrl: "/hero-pizza.png" },
-                    { id: "m2", name: "Spaghetti Carbonara", description: "Creamy sauce with guanciale and pecorino", price: 18.50, imageUrl: null }
+                    { id: "m1", name: "Margherita Pizza", description: "Fresh basil, mozzarella, and tomato sauce", price: 14.99, imageUrl: "/hero-pizza.png", status: "APPROVED" },
+                    { id: "m2", name: "Spaghetti Carbonara", description: "Creamy sauce with guanciale and pecorino", price: 18.50, imageUrl: null, status: "APPROVED" }
                 ]
             },
             {
                 id: "2", name: "Spice Route", address: "45 Curry Lane, NY", rating: 4.5, imageUrl: "/restaurant2.jpg", menuItems: [
-                    { id: "m3", name: "Butter Chicken", description: "Tender chicken in a rich tomato and butter sauce", price: 16.99, imageUrl: "/hero-burger.png" },
-                    { id: "m4", name: "Garlic Naan", description: "Freshly baked bread with garlic and butter", price: 3.50, imageUrl: null }
+                    { id: "m3", name: "Butter Chicken", description: "Tender chicken in a rich tomato and butter sauce", price: 16.99, imageUrl: "/hero-burger.png", status: "APPROVED" },
+                    { id: "m4", name: "Garlic Naan", description: "Freshly baked bread with garlic and butter", price: 3.50, imageUrl: null, status: "APPROVED" }
                 ]
             }
         ];
         return mockRestaurants.find(r => r.id === id);
-    } catch (e) {
-        console.warn("DB failed", e);
-        return null;
     }
 }
 

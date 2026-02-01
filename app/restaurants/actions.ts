@@ -1,8 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
-import { OrderStatus } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
 export type OrderState = {
@@ -29,34 +28,64 @@ export async function placeOrder(
         const posReference = `ORD-${uuidv4().substring(0, 8).toUpperCase()}`;
 
         // 3. Get or Create a demo User (In real app, get from session)
-        let user = await prisma.user.findFirst({ where: { role: "CUSTOMER" } });
+        let { data: user } = await supabase
+            .from('User')
+            .select('id')
+            .eq('role', 'CUSTOMER')
+            .limit(1)
+            .single();
+
         if (!user) {
-            user = await prisma.user.create({
-                data: {
+            const { data: newUser, error: createError } = await supabase
+                .from('User')
+                .insert({
                     email: `customer-${Date.now()}@example.com`,
                     name: "Demo Customer",
                     role: "CUSTOMER"
-                }
-            });
+                })
+                .select()
+                .single();
+
+            if (createError) {
+                throw createError;
+            }
+            user = newUser;
         }
 
         // 4. Create Order
-        const order = await prisma.order.create({
-            data: {
-                userId: user.id,
+        const { data: order, error: orderError } = await supabase
+            .from('Order')
+            .insert({
+                userId: user?.id,
                 restaurantId: restaurantId,
                 total: total,
-                status: OrderStatus.PENDING,
+                status: "PENDING",
                 posReference: posReference,
-                items: {
-                    create: cartItems.map(item => ({
-                        menuItemId: item.id,
-                        quantity: item.quantity,
-                        price: item.price
-                    }))
-                }
-            }
-        });
+            })
+            .select()
+            .single();
+
+        if (orderError || !order) {
+            throw orderError || new Error("Failed to create order");
+        }
+
+        // 5. Create Order Items
+        const orderItemsData = cartItems.map(item => ({
+            orderId: order.id,
+            menuItemId: item.id,
+            quantity: item.quantity,
+            price: item.price
+        }));
+
+        const { error: itemsError } = await supabase
+            .from('OrderItem')
+            .insert(orderItemsData);
+
+        if (itemsError) {
+            console.error("Failed to create order items:", itemsError);
+            // In a real app, we might want to rollback the order here
+            throw itemsError;
+        }
 
         revalidatePath("/merchant/dashboard");
         revalidatePath("/admin/dashboard");
@@ -70,16 +99,6 @@ export async function placeOrder(
 
     } catch (e) {
         console.error("Failed to place order:", e);
-
-        // Graceful fallback for demo if DB is offline
-        if ((e as any).code === 'P1001' || (e as any).message?.includes("Can't reach database")) {
-            return {
-                message: "Order Simulated! (Database Offline).",
-                success: true,
-                posReference: `MOCK-${Math.random().toString(36).substring(7).toUpperCase()}`
-            };
-        }
-
         return { message: "Failed to place order. Please try again.", error: true };
     }
 }

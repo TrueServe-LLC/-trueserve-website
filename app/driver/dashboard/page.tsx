@@ -1,14 +1,24 @@
-
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
 
 async function getDriverData() {
     try {
         // Mocking a driver for demo - in real app use session
-        const driver = await prisma.driver.findFirst({
-            include: { user: true, orders: true }
-        });
+        const { data: driver, error } = await supabase
+            .from('Driver')
+            .select(`
+                *,
+                user:User(*),
+                orders:Order(*)
+            `)
+            .limit(1)
+            .single();
+
+        if (error) {
+            console.error("Supabase Error (getDriverData):", error);
+            return null;
+        }
         return driver;
     } catch (e) {
         return null;

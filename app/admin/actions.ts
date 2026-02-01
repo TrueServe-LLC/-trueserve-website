@@ -1,16 +1,21 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export async function approveMenuItem(id: string) {
     try {
-        await prisma.menuItem.update({
-            where: { id },
-            data: { status: "APPROVED" },
-        });
+        const { error } = await supabase
+            .from('MenuItem')
+            .update({ status: "APPROVED" })
+            .eq('id', id);
+
+        if (error) {
+            throw error;
+        }
+
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
         return { success: true };
@@ -22,10 +27,15 @@ export async function approveMenuItem(id: string) {
 
 export async function rejectMenuItem(id: string) {
     try {
-        await prisma.menuItem.update({
-            where: { id },
-            data: { status: "REJECTED" },
-        });
+        const { error } = await supabase
+            .from('MenuItem')
+            .update({ status: "REJECTED" })
+            .eq('id', id);
+
+        if (error) {
+            throw error;
+        }
+
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
         return { success: true };
@@ -37,10 +47,15 @@ export async function rejectMenuItem(id: string) {
 
 export async function flagMenuItem(id: string) {
     try {
-        await prisma.menuItem.update({
-            where: { id },
-            data: { status: "FLAGGED" },
-        });
+        const { error } = await supabase
+            .from('MenuItem')
+            .update({ status: "FLAGGED" })
+            .eq('id', id);
+
+        if (error) {
+            throw error;
+        }
+
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
         return { success: true };
@@ -52,10 +67,15 @@ export async function flagMenuItem(id: string) {
 
 export async function approveDriver(id: string) {
     try {
-        await prisma.driver.update({
-            where: { id },
-            data: { status: "OFFLINE" }, // Or whatever starting status
-        });
+        const { error } = await supabase
+            .from('Driver')
+            .update({ status: "OFFLINE" }) // Or whatever starting status
+            .eq('id', id);
+
+        if (error) {
+            throw error;
+        }
+
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e) {

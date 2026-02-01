@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -6,32 +6,41 @@ import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } 
 
 async function getPendingItems() {
     try {
-        return await prisma.menuItem.findMany({
-            where: {
-                OR: [
-                    { status: "PENDING" },
-                    { status: "FLAGGED" }
-                ]
-            },
-            include: {
-                restaurant: true
-            }
-        });
+        const { data, error } = await supabase
+            .from('MenuItem')
+            .select(`
+                *,
+                restaurant:Restaurant(*)
+            `)
+            .or('status.eq.PENDING,status.eq.FLAGGED');
+
+        if (error) {
+            console.error("Supabase Error (getPendingItems):", error);
+            return [];
+        }
+        return data || [];
     } catch (e) {
-        console.log("Admin Dashboard - Demo Mode (DB Offline)");
+        console.log("Admin Dashboard - Error fetching items:", e);
         return [];
     }
 }
 
 async function getPendingDrivers() {
     try {
-        return await prisma.driver.findMany({
-            include: {
-                user: true
-            }
-        });
+        const { data, error } = await supabase
+            .from('Driver')
+            .select(`
+                *,
+                user:User(*)
+            `);
+
+        if (error) {
+            console.error("Supabase Error (getPendingDrivers):", error);
+            return [];
+        }
+        return data || [];
     } catch (e) {
-        console.log("Admin Dashboard - Demo Mode (DB Offline)");
+        console.log("Admin Dashboard - Error fetching drivers:", e);
         return [];
     }
 }

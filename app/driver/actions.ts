@@ -1,7 +1,4 @@
-"use server";
-
-import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
+import { supabase } from "@/lib/supabase";
 
 export type DriverApplicationState = {
     message: string;
@@ -19,58 +16,61 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     }
 
     try {
-        // 1. Create the User (if they don't exist) or find them
-        // In a real app, this would be an auth flow. Here we just strictly create or fail if exists.
+        // 1. Check if user exists
+        let { data: existingUser, error: uError } = await supabase
+            .from('User')
+            .select('id')
+            .eq('email', email)
+            .single();
 
-        // Check if user exists
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
-        });
-
-        let user;
+        let userId = existingUser?.id;
 
         if (existingUser) {
             // If user exists, check if they are already a driver
-            const existingDriver = await prisma.driver.findUnique({
-                where: { userId: existingUser.id },
-            });
+            const { data: existingDriver } = await supabase
+                .from('Driver')
+                .select('id')
+                .eq('userId', existingUser.id)
+                .single();
 
             if (existingDriver) {
                 return { message: "You have already applied or are already a driver!", error: true };
             }
-
-            user = existingUser;
         } else {
             // Create new user
-            user = await prisma.user.create({
-                data: {
+            const { data: newUser, error: createError } = await supabase
+                .from('User')
+                .insert({
                     name,
                     email,
-                    role: Role.DRIVER,
-                }
-            });
+                    role: 'DRIVER',
+                })
+                .select()
+                .single();
+
+            if (createError) {
+                throw createError;
+            }
+            userId = newUser.id;
         }
 
         // 2. Create Driver Profile
-        await prisma.driver.create({
-            data: {
-                userId: user.id,
+        const { error: driverError } = await supabase
+            .from('Driver')
+            .insert({
+                userId: userId,
                 vehicleType,
                 status: "OFFLINE",
-            }
-        });
+            });
+
+        if (driverError) {
+            throw driverError;
+        }
 
         return { message: "Application submitted successfully! Welcome to the team.", success: true };
 
     } catch (e) {
         console.error("Failed to submit application:", e);
-        // Graceful fallback for demo purposes if DB is down
-        if ((e as any).code === 'P1001' || (e as any).message?.includes("Can't reach database")) {
-            return {
-                message: "Application simulated! (Database is offline, so we pretended to save it).",
-                success: true
-            };
-        }
         return { message: "Something went wrong. Please try again later.", error: true };
     }
 }

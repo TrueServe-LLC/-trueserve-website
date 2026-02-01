@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import AddItemForm from "./AddItemForm";
@@ -6,22 +6,35 @@ import { updateOrderStatus, refundOrder } from "../actions";
 
 async function getMerchantData() {
     try {
-        const restaurant = await prisma.restaurant.findFirst({
-            include: {
-                menuItems: true,
-                orders: {
-                    orderBy: { createdAt: 'desc' },
-                    include: {
-                        user: true,
-                        items: {
-                            include: {
-                                menuItem: true
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        const { data: restaurant, error } = await supabase
+            .from('Restaurant')
+            .select(`
+                *,
+                menuItems:MenuItem(*),
+                orders:Order(
+                    *,
+                    user:User(*),
+                    items:OrderItem(
+                        *,
+                        menuItem:MenuItem(*)
+                    )
+                )
+            `)
+            .limit(1)
+            .single();
+
+        if (error) {
+            console.error("Supabase Error (getMerchantData):", error);
+            return null;
+        }
+
+        if (restaurant && restaurant.orders) {
+            // Sort orders desc by createdAt (in-memory)
+            restaurant.orders.sort((a: any, b: any) =>
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+        }
+
         return restaurant;
     } catch (e) {
         console.warn("DB failed", e);
@@ -60,10 +73,10 @@ export default async function MerchantDashboard() {
         );
     }
 
-    const pendingOrders = restaurant.orders.filter(o => (o.status as any) === "PENDING" || (o.status as any) === "PREPARING" || (o.status as any) === "READY_FOR_PICKUP");
+    const pendingOrders = restaurant.orders.filter((o: any) => (o.status as any) === "PENDING" || (o.status as any) === "PREPARING" || (o.status as any) === "READY_FOR_PICKUP");
     const totalRevenue = restaurant.orders
-        .filter(o => o.status === "DELIVERED")
-        .reduce((sum, o) => sum + Number(o.total), 0);
+        .filter((o: any) => o.status === "DELIVERED")
+        .reduce((sum: number, o: any) => sum + Number(o.total), 0);
 
     return (
         <div className="min-h-screen">
@@ -156,7 +169,7 @@ export default async function MerchantDashboard() {
                     </div>
 
                     <div className="grid grid-cols-1 gap-6">
-                        {pendingOrders.map(order => (
+                        {pendingOrders.map((order: any) => (
                             <div key={order.id} className="card p-6 border-l-4 border-l-yellow-500 hover:shadow-[0_0_20px_rgba(234,179,8,0.05)] transition-shadow">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
@@ -241,7 +254,7 @@ export default async function MerchantDashboard() {
                 </div>
 
                 <div className="grid grid-1 gap-4">
-                    {restaurant.menuItems.map(item => (
+                    {restaurant.menuItems.map((item: any) => (
                         <div key={item.id} className="card p-4 flex justify-between items-center hover:bg-white/5 transition-colors">
                             <div className="flex gap-4 items-center">
                                 <div className="h-16 w-16 bg-slate-700 rounded-lg overflow-hidden shrink-0">

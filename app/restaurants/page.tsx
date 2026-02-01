@@ -1,11 +1,7 @@
-
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import Map from "@/components/Map";
 import LocationButton from "@/components/LocationButton";
-
-import { prisma } from "@/lib/prisma";
-
-
 
 interface Restaurant {
     id: string;
@@ -27,7 +23,7 @@ interface LocationMeta {
 async function getRestaurants(locationInput: string): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
     const term = locationInput.toLowerCase();
 
-    // Define fallbacks (mocks)
+    // Define fallbacks (mocks) for demo/offline
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'] },
         { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'] }
@@ -36,30 +32,19 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     // 1. Fetch Valid Service Locations
     let validLocations: any[] = [];
     try {
-        const dbLocations = await (prisma as any).serviceLocation.findMany({ where: { isActive: true } });
-
+        const { data: dbLocations } = await supabase.from('ServiceLocation').select('*').eq('isActive', true);
         if (dbLocations && dbLocations.length > 0) {
             validLocations = [...dbLocations];
-            // Ensure essential mocks are present if missing from DB (e.g. partial seed)
+            // Ensure essential mocks are present if missing(e.g. partial seed)
             for (const mock of fallbackMocks) {
                 const exists = validLocations.find(l => l.city === mock.city && l.state === mock.state);
                 if (!exists) validLocations.push(mock);
             }
         } else {
-            console.log("Database empty, auto-seeding default locations...");
-            try {
-                await (prisma as any).serviceLocation.createMany({
-                    data: fallbackMocks.map(m => ({ ...m, isActive: true })),
-                    skipDuplicates: true
-                });
-            } catch (seedErr) {
-                // Suppress verbose error, just note that auto-seed failed (common on un-migrated DBs)
-                console.log("Auto-seeding skipped (DB read-only or not migrated).");
-            }
+            // Fallback if empty DB
             validLocations = fallbackMocks;
         }
     } catch (e) {
-        // Suppress verbose error for cleaner logs
         console.log("Running in Offline/Demo Mode (Database not reachable).");
         validLocations = fallbackMocks;
     }
@@ -126,9 +111,7 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     };
 
     if (matchedLocation) {
-        // Approximate center based on city...for a real app, Store lat/lng in ServiceLocation table
-        // For now, hardcode known centers based on the matched city string
-        // Approximate center based on city...match safely
+        // Approximate center based on city
         const cityLower = matchedLocation.city.toLowerCase();
         if (cityLower === 'ramsey') locationMeta.center = [45.2611, -93.4566];
         else if (cityLower === 'charlotte') locationMeta.center = [35.2271, -80.8431];
@@ -142,14 +125,15 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         }
 
         // Case-insensitive query for restaurants
-        const where = {
-            city: { equals: matchedLocation.city, mode: 'insensitive' },
-            state: { equals: matchedLocation.state, mode: 'insensitive' }
-        };
+        const { data: restaurants, error } = await supabase
+            .from('Restaurant')
+            .select('*')
+            .ilike('city', matchedLocation.city)
+            .ilike('state', matchedLocation.state);
 
-        const restaurants = await (prisma as any).restaurant.findMany({ where });
-
-        if (restaurants.length === 0) throw new Error("No DB data or empty search");
+        if (error || !restaurants || restaurants.length === 0) {
+            throw new Error("No DB data or empty search");
+        }
 
         const mappedRestaurants = restaurants.map((r: any, index: number) => ({
             id: r.id,
@@ -165,7 +149,7 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
 
     } catch (error) {
         // Suppress verbose DB error for cleaner logs (Supabase often pauses free tier)
-        console.log("Supabase unavailable (or query failed), using Offline Mocks.");
+        console.log("Supabase query failed or empty, using mocks/fallbacks.");
 
         const allMocks = [
             // Charlotte Mock
