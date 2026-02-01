@@ -21,7 +21,8 @@ async function getMerchantData() {
                 )
             `)
             .limit(1)
-            .single();
+            .limit(1)
+            .maybeSingle();
 
         if (error) {
             console.error("Supabase Error (getMerchantData):", error);

@@ -13,10 +13,10 @@ async function getDriverData() {
                 orders:Order(*)
             `)
             .limit(1)
-            .single();
+            .maybeSingle();
 
         if (error) {
-            console.error("Supabase Error (getDriverData):", error);
+            console.error("Supabase Error (getDriverData):", error.message);
             return null;
         }
         return driver;
