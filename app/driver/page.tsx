@@ -131,6 +131,17 @@ export default function DriverPortal() {
                                         />
                                     </div>
                                     <div>
+                                        <label className="block text-sm text-slate-400 mb-2">Password</label>
+                                        <input
+                                            name="password"
+                                            type="password"
+                                            required
+                                            className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
+                                            placeholder="••••••••"
+                                            minLength={6}
+                                        />
+                                    </div>
+                                    <div>
                                         <label className="block text-sm text-slate-400 mb-2">Vehicle</label>
                                         <div className="relative">
                                             <select name="vehicleType" className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white appearance-none cursor-pointer">

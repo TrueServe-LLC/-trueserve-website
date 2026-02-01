@@ -94,15 +94,33 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
             throw new Error("No DB data or empty search");
         }
 
-        const mappedRestaurants = restaurants.map((r: any, index: number) => ({
-            id: r.id,
-            name: r.name,
-            rating: 4.8,
-            image: r.imageUrl || "/restaurant1.jpg",
-            tags: ["Italian", "Pizza", "Pasta"],
-            description: r.description,
-            coords: [r.lat || (40.7128 + (index * 0.01)), r.lng || (-74.0060 + (index * 0.01))] as [number, number]
-        }));
+        const mappedRestaurants = restaurants.map((r: any, index: number) => {
+            // Deterministic pseudo-random generation for demo data
+            const seed = r.name.length + index;
+            const mockRating = (4.0 + (seed % 10) / 10).toFixed(1);
+
+            // Infer tags from name or fallback to random
+            let tags = ["Local", "Great Service"];
+            const nameLower = r.name.toLowerCase();
+
+            if (nameLower.includes("pizza") || nameLower.includes("italian")) tags = ["Italian", "Pizza", "Comfort"];
+            else if (nameLower.includes("burger") || nameLower.includes("grill")) tags = ["American", "Burgers", "Grill"];
+            else if (nameLower.includes("asian") || nameLower.includes("thai") || nameLower.includes("sushi")) tags = ["Asian", "Healthy", "Spicy"];
+            else if (nameLower.includes("mexican") || nameLower.includes("taco")) tags = ["Mexican", "Tacos", "Zesty"];
+            else if (nameLower.includes("coffee") || nameLower.includes("cafe")) tags = ["Coffee", "Breakfast", "Bakery"];
+            else if (seed % 3 === 0) tags = ["Fast Food", "Quick Bite"];
+            else if (seed % 3 === 1) tags = ["Healthy", "Salads", "Organic"];
+
+            return {
+                id: r.id,
+                name: r.name,
+                rating: Number(mockRating),
+                image: r.imageUrl || "/restaurant1.jpg",
+                tags: tags,
+                description: r.description,
+                coords: [r.lat || (40.7128 + (index * 0.01)), r.lng || (-74.0060 + (index * 0.01))] as [number, number]
+            };
+        });
 
         return { restaurants: mappedRestaurants, locationMeta };
 
@@ -233,7 +251,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                                 name="location"
                                 defaultValue={location}
                                 placeholder="Change location..."
-                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full md:w-48 transition-all text-sm placeholder:text-slate-500"
+                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full md:w-64 transition-all text-sm placeholder:text-slate-500"
                                 autoComplete="off"
                             />
                         </form>
@@ -278,16 +296,18 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                 )}
 
                 <div className="flex flex-col gap-6 mb-8">
-                    <div>
-                        <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-2">Delivery to</p>
-                        <h1 className="text-4xl font-bold font-black tracking-tight flex items-center gap-2">
-                            {locationMeta.name}
-                            <span className="text-2xl text-slate-600 font-normal">({restaurants.length} spots)</span>
-                        </h1>
+                    <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                        <div>
+                            <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-2">Delivery to</p>
+                            <h1 className="text-4xl font-bold font-black tracking-tight flex items-center gap-2">
+                                {locationMeta.name}
+                                <span className="text-2xl text-slate-600 font-normal">({restaurants.length} spots)</span>
+                            </h1>
+                        </div>
                     </div>
 
                     {/* Google Maps Embed */}
-                    <div className="w-full">
+                    <div className="w-full h-[350px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative z-0">
                         <LeafletMap
                             center={mapCenter}
                             zoom={13}

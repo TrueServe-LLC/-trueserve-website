@@ -57,27 +57,11 @@ export async function placeOrder(
             user = data;
         }
 
-        // Fallback to Demo User if not logged in
+        // Fallback to Public Guest User if not logged in
         if (!user) {
-            console.log("[PlaceOrder] No logged in user. Creating Guest User...");
-            const { data: newUser, error: createError } = await supabase
-                .from('User')
-                .insert({
-                    id: uuidv4(),
-                    email: `guest-${Date.now()}@trueserve.com`,
-                    name: "Guest Customer",
-                    role: "CUSTOMER",
-                    updatedAt: new Date().toISOString(),
-                    createdAt: new Date().toISOString()
-                })
-                .select()
-                .single();
-
-            if (createError) {
-                console.error("[PlaceOrder] Guest User Creation Failed:", createError);
-                throw new Error("Failed to initialize guest session.");
-            }
-            user = newUser;
+            console.log("[PlaceOrder] No logged in user. Using Public Guest ID.");
+            // Hardcoded Public Guest User ID to avoid "Insert User" RLS issues
+            user = { id: '20a8a062-6f89-4582-8559-2a8131e0bb39' };
         }
 
         // 4. Create Order
