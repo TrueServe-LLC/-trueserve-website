@@ -84,6 +84,7 @@ export async function placeOrder(
         const { data: order, error: orderError } = await supabase
             .from('Order')
             .insert({
+                id: uuidv4(),
                 userId: user.id,
                 restaurantId: restaurantId,
                 total: total,
@@ -97,7 +98,7 @@ export async function placeOrder(
 
         if (orderError || !order) {
             console.error("[PlaceOrder] Order Creation Failed:", orderError);
-            throw new Error("Failed to create order record.");
+            throw new Error(`Failed to create order record: ${orderError?.message || "Unknown error"} - ${orderError?.details || ""}`);
         }
 
         // 5. Create Order Items
