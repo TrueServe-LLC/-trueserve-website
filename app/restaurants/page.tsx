@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import Map from "@/components/Map";
+import GoogleMapsMap from "@/components/GoogleMapsMap";
 import LocationButton from "@/components/LocationButton";
 import { cookies } from "next/headers";
 
@@ -22,6 +22,8 @@ interface LocationMeta {
 }
 
 async function getRestaurants(locationInput: string): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
+    if (!locationInput) return { restaurants: [], locationMeta: { name: "", center: [0, 0] } };
+
     const term = locationInput.toLowerCase();
 
     // Define fallbacks (mocks) for demo/offline
@@ -159,54 +161,112 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
 }
 
 export default async function RestaurantFinder({ searchParams }: { searchParams: Promise<{ location?: string }> }) {
-    const { location: locationParam } = await searchParams;
-    const location = locationParam || "Charlotte, NC";
-    const { restaurants, locationMeta } = await getRestaurants(location);
+    const { location } = await searchParams;
+
+    // View State: Landing vs Results
+    const showLanding = !location;
 
     // Auth & Active Orders Check
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
+    let restaurants: Restaurant[] = [];
+    let locationMeta: LocationMeta = { name: "Unknown", center: [35.2271, -80.8431] };
     let activeOrders: any[] = [];
 
-    if (userId) {
-        const { data } = await supabase
-            .from('Order')
-            .select('*, restaurant:Restaurant(name)')
-            .eq('userId', userId)
-            .in('status', ['PENDING', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY'])
-            .order('createdAt', { ascending: false });
+    if (!showLanding) {
+        const data = await getRestaurants(location!);
+        restaurants = data.restaurants;
+        locationMeta = data.locationMeta;
 
-        if (data) activeOrders = data;
+        if (userId) {
+            const { data } = await supabase
+                .from('Order')
+                .select('*, restaurant:Restaurant(name)')
+                .eq('userId', userId)
+                .in('status', ['PENDING', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY'])
+                .order('createdAt', { ascending: false });
+
+            if (data) activeOrders = data;
+        }
     }
 
     const mapCenter = locationMeta.center;
 
-    return (
-        <div className="min-h-screen">
-            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
-                <div className="container flex flex-col md:flex-row gap-4 justify-between items-center">
+    // --- LANDING VIEW ---
+    if (showLanding) {
+        return (
+            <div className="min-h-screen relative overflow-hidden bg-black text-white flex flex-col">
+                <nav className="absolute top-0 w-full z-50 p-6 flex justify-between items-center">
                     <Link href="/" className="flex items-center gap-2 group">
                         <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
                         <span className="text-2xl font-black tracking-tighter">
                             True<span className="text-gradient">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-                        <div className="flex p-1 bg-white/5 rounded-full border border-white/10 relative">
-                            <Link
-                                href="/restaurants?location=Charlotte, NC"
-                                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${location.toLowerCase().includes('charlotte') ? 'bg-primary text-black shadow-lg text-shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
-                            >
-                                Charlotte
-                            </Link>
-                            <Link
-                                href="/restaurants?location=Pineville, NC"
-                                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${location.toLowerCase().includes('pineville') ? 'bg-primary text-black shadow-lg text-shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
-                            >
-                                Pineville
-                            </Link>
+                    {!userId ? (
+                        <Link href="/login" className="btn btn-primary text-xs py-2 px-4">Login</Link>
+                    ) : (
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50">U</div>
+                    )}
+                </nav>
+
+                <main className="flex-1 flex flex-col items-center justify-center relative z-10 p-6 text-center">
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 filter blur-sm -z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent -z-10" />
+
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500">
+                        Cravings, meet <span className="text-primary">Speed.</span>
+                    </h1>
+                    <p className="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl">
+                        The fastest delivery in Charlotte, Pineville, and beyond. Zero hidden fees, precise tracking, and purely local.
+                    </p>
+
+                    <form action="/restaurants" className="w-full max-w-xl relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div className="relative flex items-center bg-black border border-white/10 rounded-full p-2 pr-2 shadow-2xl">
+                            <span className="pl-4 pr-2 text-2xl">📍</span>
+                            <input
+                                name="location"
+                                required
+                                placeholder="Enter delivery address (e.g. Pineville, NC)"
+                                className="flex-1 bg-transparent border-none focus:outline-none text-lg px-2 h-12 text-white placeholder-slate-500"
+                                autoComplete="off"
+                            />
+                            <button type="submit" className="btn btn-primary rounded-full px-8 py-3 text-lg font-bold hover:scale-105 transition-transform">
+                                Find Food
+                            </button>
                         </div>
+                        <div className="mt-4 flex gap-2 justify-center text-sm text-slate-500">
+                            <span>Examples:</span>
+                            <Link href="/restaurants?location=Charlotte" className="text-slate-400 hover:text-white underline">Charlotte</Link>
+                            <Link href="/restaurants?location=Pineville" className="text-slate-400 hover:text-white underline">Pineville</Link>
+                        </div>
+                    </form>
+                </main>
+            </div>
+        );
+    }
+
+    // --- RESULTS VIEW ---
+    return (
+        <div className="min-h-screen">
+            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
+                <div className="container flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <Link href="/" className="flex items-center gap-2 group">
+                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
+                    </Link>
+                    <div className="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
+                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full md:w-auto">
+                            <LocationButton />
+                            <input
+                                name="location"
+                                defaultValue={location}
+                                placeholder="Change location..."
+                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full md:w-48 transition-all text-sm placeholder:text-slate-500"
+                                autoComplete="off"
+                            />
+                        </form>
 
                         <div className="hidden md:block">
                             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
@@ -240,59 +300,37 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                             <h3 className="text-2xl font-bold mb-1">
                                 Your order from {activeOrders[0].restaurant?.name || 'Restaurant'} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}
                             </h3>
-                            <p className="text-slate-400 mb-4 text-sm">Estimated arrival: 25 mins</p>
-                            <Link href={`/orders/${activeOrders[0].id}`} className="btn bg-emerald-500 text-white hover:bg-emerald-600 border-none shadow-lg shadow-emerald-500/20">
+                            <Link href={`/orders/${activeOrders[0].id}`} className="btn bg-emerald-500 text-white hover:bg-emerald-600 border-none shadow-lg shadow-emerald-500/20 mt-2">
                                 Track Delivery
                             </Link>
                         </div>
                     </div>
                 )}
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div className="flex flex-col gap-6 mb-8">
                     <div>
-                        <h1 className="text-4xl font-bold font-black tracking-tight">{locationMeta.name}</h1>
+                        <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-2">Delivery to</p>
+                        <h1 className="text-4xl font-bold font-black tracking-tight flex items-center gap-2">
+                            {locationMeta.name}
+                            <span className="text-2xl text-slate-600 font-normal">({restaurants.length} spots)</span>
+                        </h1>
                     </div>
-                    <div className="flex gap-3">
-                        <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">
-                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                            <div className="text-[10px] leading-tight">
-                                <p className="font-bold text-primary uppercase tracking-tighter">Membership Active</p>
-                                <p className="text-slate-400 font-medium">$0 Delivery + $1.49 Service</p>
-                            </div>
-                        </div>
-                        <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl flex items-center gap-3">
-                            <div className="text-[10px] leading-tight">
-                                <p className="font-bold text-slate-400 uppercase tracking-tighter">Real-time Tracking</p>
-                                <p className="text-slate-500 font-medium">Live Map + Precise ETA</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Transparency Notice */}
-                <div className="mb-8 p-3 bg-accent/5 border border-accent/10 rounded-2xl flex items-center justify-between px-6">
-                    <div className="flex items-center gap-4">
-                        <span className="text-xl">🛡️</span>
-                        <p className="text-xs text-slate-400">
-                            <strong>Zero Surcharge Guarantee:</strong> No busy area fees, no small order fees. Ever.
-                        </p>
+                    {/* Google Maps Embed */}
+                    <div className="w-full">
+                        <GoogleMapsMap
+                            center={mapCenter}
+                            zoom={13}
+                            restaurants={restaurants.map(r => ({ id: r.id, name: r.name, coords: r.coords }))}
+                        />
                     </div>
-                    <Link href="/" className="text-[10px] font-bold text-accent uppercase underline tracking-widest hover:text-white transition-colors">See Pricing Details</Link>
-                </div>
-
-                <div className="mb-8">
-                    <Map
-                        center={mapCenter}
-                        zoom={13}
-                        restaurants={restaurants.map(r => ({ id: r.id, name: r.name, coords: r.coords }))}
-                    />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {restaurants.length === 0 ? (
                         <div className="col-span-4 text-center py-12 text-slate-400">
-                            <p className="text-xl">No restaurants found in {location}.</p>
-                            <p className="text-sm mt-2">Try a different location or check back later!</p>
+                            <p className="text-xl">No restaurants found in {location?.toString()}.</p>
+                            <p className="text-sm mt-2">Try "Charlotte" or "Pineville".</p>
                         </div>
                     ) : (
                         restaurants.map((rest) => (
