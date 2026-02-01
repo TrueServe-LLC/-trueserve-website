@@ -277,11 +277,11 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                                 Login
                             </Link>
                         ) : (
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50">
+                            <Link href="/user/settings" className="flex items-center gap-2 group">
+                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50 group-hover:bg-primary group-hover:text-black transition-colors">
                                     U
                                 </div>
-                            </div>
+                            </Link>
                         )}
                     </div>
                 </div>

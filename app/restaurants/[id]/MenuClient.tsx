@@ -43,6 +43,23 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
         });
     };
 
+    const [cardBrand, setCardBrand] = useState<string>("");
+
+    const detectCardType = (number: string) => {
+        const clean = number.replace(/\D/g, '');
+        if (/^4/.test(clean)) return "Visa";
+        if (/^5[1-5]/.test(clean)) return "Mastercard";
+        if (/^3[47]/.test(clean)) return "Amex";
+        if (/^6/.test(clean)) return "Discover";
+        return "";
+    };
+
+    const handleCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setPayment({ ...payment, cardNumber: val });
+        setCardBrand(detectCardType(val));
+    };
+
     const cartTotalItems = Object.values(cart).reduce((sum, q) => sum + q, 0);
     const totalPrice = Object.entries(cart).reduce((sum, [itemId, quantity]) => {
         const item = items.find(i => i.id === itemId);
@@ -52,6 +69,12 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
     const handlePlaceOrder = async () => {
         if (!payment.cardNumber || !payment.expiry || !payment.cvc) {
             alert("Please enter payment details.");
+            return;
+        }
+
+        // Simple client-side validation
+        if (payment.cardNumber.length < 13) {
+            alert("Invalid card number length.");
             return;
         }
 
@@ -170,13 +193,20 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                         <div className="mt-6 pt-6 border-t border-white/10 animate-fade-in">
                             <p className="text-xs font-bold uppercase text-slate-500 mb-3 tracking-widest">Quick Payment</p>
                             <div className="space-y-3">
-                                <input
-                                    type="text"
-                                    placeholder="Card Number"
-                                    className="w-full bg-slate-800 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-colors"
-                                    value={payment.cardNumber}
-                                    onChange={(e) => setPayment({ ...payment, cardNumber: e.target.value })}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Card Number"
+                                        className="w-full bg-slate-800 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-colors"
+                                        value={payment.cardNumber}
+                                        onChange={handleCardChange}
+                                    />
+                                    {cardBrand && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 bg-white text-black text-[10px] font-bold px-2 py-1 rounded">
+                                            {cardBrand}
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <input
                                         type="text"
