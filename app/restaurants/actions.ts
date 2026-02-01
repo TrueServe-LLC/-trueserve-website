@@ -3,6 +3,7 @@
 import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
+import * as fs from 'fs';
 
 export type OrderState = {
     message: string;
@@ -63,7 +64,7 @@ export async function placeOrder(
                 .from('User')
                 .insert({
                     id: uuidv4(),
-                    email: `guest-${Date.now()}@trueserve.com`, // Changed domain to look internal
+                    email: `guest-${Date.now()}@trueserve.com`,
                     name: "Guest Customer",
                     role: "CUSTOMER",
                     updatedAt: new Date().toISOString(),
@@ -98,6 +99,11 @@ export async function placeOrder(
 
         if (orderError || !order) {
             console.error("[PlaceOrder] Order Creation Failed:", orderError);
+            try {
+                fs.writeFileSync('debug_error.txt', JSON.stringify(orderError, null, 2));
+            } catch (fsErr) {
+                console.error("Failed to write debug file", fsErr);
+            }
             throw new Error(`Failed to create order record: ${orderError?.message || "Unknown error"} - ${orderError?.details || ""}`);
         }
 
