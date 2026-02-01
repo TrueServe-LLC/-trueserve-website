@@ -12,6 +12,10 @@ export type OrderState = {
     posReference?: string;
 };
 
+import { cookies } from "next/headers";
+
+// ...
+
 export async function placeOrder(
     restaurantId: string,
     cartItems: { id: string; price: number; quantity: number }[],
@@ -22,35 +26,40 @@ export async function placeOrder(
     }
 
     try {
+        const cookieStore = await cookies();
+        const userId = cookieStore.get("userId")?.value;
+
         // 1. Calculate Total
         const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
         // 2. Generate unique POS Reference (LogKey)
         const posReference = `ORD-${uuidv4().substring(0, 8).toUpperCase()}`;
 
-        // 3. Get or Create a demo User (In real app, get from session)
-        let { data: user } = await supabase
-            .from('User')
-            .select('id')
-            .eq('role', 'CUSTOMER')
-            .limit(1)
-            .single();
+        // 3. Get User
+        let user;
+        if (userId) {
+            const { data } = await supabase.from('User').select('id').eq('id', userId).maybeSingle();
+            user = data;
+        }
 
+        // Fallback to Demo User if not logged in
         if (!user) {
             const { data: newUser, error: createError } = await supabase
                 .from('User')
                 .insert({
+                    id: uuidv4(),
                     email: `customer-${Date.now()}@example.com`,
                     name: "Demo Customer",
-                    role: "CUSTOMER"
+                    role: "CUSTOMER",
+                    updatedAt: new Date().toISOString(),
+                    createdAt: new Date().toISOString()
                 })
                 .select()
                 .single();
 
-            if (createError) {
-                throw createError;
-            }
+            if (createError) throw createError;
             user = newUser;
+            // Optionally set cookie here for future? Maybe better not to auto-login guest checkout.
         }
 
         // 4. Create Order

@@ -173,11 +173,31 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     }
 }
 
+import { cookies } from "next/headers";
+
+// ... existing imports
+
 export default async function RestaurantFinder({ searchParams }: { searchParams: { location?: string } }) {
     const location = searchParams?.location || "Charlotte, NC";
     const { restaurants, locationMeta } = await getRestaurants(location);
 
-    // Use the metadata returned from our logic
+    // Auth & Active Orders Check
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+
+    let activeOrders: any[] = [];
+
+    if (userId) {
+        const { data } = await supabase
+            .from('Order')
+            .select('*, restaurant:Restaurant(name)')
+            .eq('userId', userId)
+            .in('status', ['PENDING', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY'])
+            .order('createdAt', { ascending: false });
+
+        if (data) activeOrders = data;
+    }
+
     const mapCenter = locationMeta.center;
 
     return (
@@ -206,16 +226,42 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
                         </div>
 
-                        <input
-                            type="text"
-                            placeholder="Search for food..."
-                            className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary w-full md:w-64"
-                        />
+                        {!userId ? (
+                            <Link href="/login" className="btn btn-primary text-xs py-2 px-4">
+                                Login
+                            </Link>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50">
+                                    U
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>
 
             <main className="container py-8 animate-fade-in">
+                {/* Active Tracking Banner */}
+                {activeOrders.length > 0 && (
+                    <div className="mb-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 text-9xl">🚚</div>
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h2 className="text-emerald-400 font-bold uppercase tracking-widest text-xs">Order in Progress</h2>
+                            </div>
+                            <h3 className="text-2xl font-bold mb-1">
+                                Your order from {activeOrders[0].restaurant?.name || 'Restaurant'} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}
+                            </h3>
+                            <p className="text-slate-400 mb-4 text-sm">Estimated arrival: 25 mins</p>
+                            <Link href={`/orders/${activeOrders[0].id}`} className="btn bg-emerald-500 text-white hover:bg-emerald-600 border-none shadow-lg shadow-emerald-500/20">
+                                Track Delivery
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h1 className="text-4xl font-bold font-black tracking-tight">{locationMeta.name}</h1>
