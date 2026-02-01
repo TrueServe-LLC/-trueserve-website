@@ -3,6 +3,7 @@
 import { supabase } from "@/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
+import * as fs from 'fs';
 
 export type DriverApplicationState = {
     message: string;
@@ -33,11 +34,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         });
 
         if (authError) {
-            // Need to handle "User already registered" gracefully if we want to support existing users applying to be drivers
             if (authError.message.includes("already registered")) {
-                // Return a specific error suggesting they login?
-                // Or try to login them in? We can't login without password (which we have). 
-                // But signUp usually logs in if 'auto confirm' is on? No, signUp returns user or session.
                 return { message: "User already registered. Please log in first.", error: true };
             }
             return { message: authError.message, error: true };
@@ -45,7 +42,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         const user = authData.user;
         if (!user) {
-            return { message: "Failed to create account. Please check your email for confirmation link.", success: true };
+            return { message: "Failed to create account. Please check your email/login.", success: true };
         }
 
         // 2. Ensure Public User Record Exists
@@ -69,7 +66,10 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
             if (createError) {
                 console.error("User Sync Error:", createError);
-                // Continue anyway
+                try { fs.writeFileSync('debug_driver_error.txt', JSON.stringify(createError, null, 2)); } catch (e) { }
+
+                // CRITICAL: Do NOT proceed if User creation failed
+                return { message: "Failed to create user profile (" + createError.message + ").", error: true };
             }
         }
 
