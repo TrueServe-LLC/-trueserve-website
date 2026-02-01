@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import Map from "@/components/Map";
 import LocationButton from "@/components/LocationButton";
+import { cookies } from "next/headers";
 
 interface Restaurant {
     id: string;
@@ -26,6 +27,7 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     // Define fallbacks (mocks) for demo/offline
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'] },
+        { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'] },
         { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'] }
     ];
 
@@ -35,13 +37,11 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         const { data: dbLocations } = await supabase.from('ServiceLocation').select('*').eq('isActive', true);
         if (dbLocations && dbLocations.length > 0) {
             validLocations = [...dbLocations];
-            // Ensure essential mocks are present if missing(e.g. partial seed)
             for (const mock of fallbackMocks) {
                 const exists = validLocations.find(l => l.city === mock.city && l.state === mock.state);
                 if (!exists) validLocations.push(mock);
             }
         } else {
-            // Fallback if empty DB
             validLocations = fallbackMocks;
         }
     } catch (e) {
@@ -49,7 +49,7 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         validLocations = fallbackMocks;
     }
 
-    // Map counties and states to cities (Mock logic until DB has robust geo-search)
+    // Map counties and states to cities
     const countyMap: Record<string, string> = {
         'mecklenburg': 'Charlotte',
         'anoka': 'Ramsey'
@@ -62,10 +62,8 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         'minnesota': 'Ramsey'
     };
 
-    // Check if term contains a known county or state
     let mappedCityFromCounty: string | undefined;
 
-    // Check counties
     for (const [county, city] of Object.entries(countyMap)) {
         if (term.includes(county)) {
             mappedCityFromCounty = city;
@@ -73,7 +71,6 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         }
     }
 
-    // Check states if no county match
     if (!mappedCityFromCounty) {
         for (const [state, city] of Object.entries(stateMap)) {
             if (term.includes(state)) {
@@ -83,13 +80,10 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         }
     }
 
-    console.log(`[Debug] Term: ${term}, MappedCity: ${mappedCityFromCounty}, ValidLocs: ${validLocations.length}`);
-
     const matchedLocation = validLocations.find(loc => {
         const cityMatch = term.includes(loc.city.toLowerCase());
         const zipMatch = loc.zipPrefixes.some((prefix: string) => term.includes(prefix));
 
-        // Robust check for mapped city
         let countyOrStateMatch = false;
         if (mappedCityFromCounty && loc.city) {
             countyOrStateMatch = mappedCityFromCounty.toLowerCase().trim() === loc.city.toLowerCase().trim();
@@ -98,22 +92,16 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         return cityMatch || zipMatch || countyOrStateMatch;
     });
 
-    if (matchedLocation) {
-        console.log(`[Debug] Match Found: ${matchedLocation.city}`);
-    } else {
-        console.log(`[Debug] No match found. Checking against:`, validLocations.map(l => l.city));
-    }
-
-    // Default metadata if no match found (or show empty state)
+    // Default metadata
     let locationMeta = {
         name: locationInput,
-        center: [35.2271, -80.8431] as [number, number] // Default fallback
+        center: [35.2271, -80.8431] as [number, number]
     };
 
     if (matchedLocation) {
-        // Approximate center based on city
         const cityLower = matchedLocation.city.toLowerCase();
         if (cityLower === 'ramsey') locationMeta.center = [45.2611, -93.4566];
+        else if (cityLower === 'pineville') locationMeta.center = [35.0833, -80.8872];
         else if (cityLower === 'charlotte') locationMeta.center = [35.2271, -80.8431];
 
         locationMeta.name = `${matchedLocation.city}, ${matchedLocation.state}`;
@@ -124,7 +112,6 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
             return { restaurants: [], locationMeta };
         }
 
-        // Case-insensitive query for restaurants
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
             .select('*')
@@ -148,37 +135,32 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         return { restaurants: mappedRestaurants, locationMeta };
 
     } catch (error) {
-        // Suppress verbose DB error for cleaner logs (Supabase often pauses free tier)
-        console.log("Supabase query failed or empty, using mocks/fallbacks.");
-
+        // Mock Data Fallback
         const allMocks = [
             // Charlotte Mock
             { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC" },
             { id: "2", name: "Queen City Burger (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Burgers", "American"], description: "Gourmet burgers", coords: [35.2280, -80.8440] as [number, number], city: "Charlotte", state: "NC" },
+            // Pineville Mock
+            { id: "4", name: "Pineville Tavern (Mock)", rating: 4.7, image: "/restaurant1.jpg", tags: ["American", "Steak", "Pub"], description: "Local favorite tavern.", coords: [35.0833, -80.8872] as [number, number], city: "Pineville", state: "NC" },
+            { id: "5", name: "Global Fusion (Mock)", rating: 4.6, image: "/restaurant2.jpg", tags: ["Fusion", "Asian"], description: "World flavors.", coords: [35.0850, -80.8900] as [number, number], city: "Pineville", state: "NC" },
             // Ramsey Mock
             { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN" },
         ];
 
         if (matchedLocation) {
-            // Case-insensitive filtering for mocks
             const targetCity = matchedLocation.city.toLowerCase().trim();
             return {
                 restaurants: allMocks.filter(r => r.city.toLowerCase() === targetCity),
                 locationMeta
             };
         }
-
-        // Return empty if no match found in mocks either
         return { restaurants: [], locationMeta };
     }
 }
 
-import { cookies } from "next/headers";
-
-// ... existing imports
-
-export default async function RestaurantFinder({ searchParams }: { searchParams: { location?: string } }) {
-    const location = searchParams?.location || "Charlotte, NC";
+export default async function RestaurantFinder({ searchParams }: { searchParams: Promise<{ location?: string }> }) {
+    const { location: locationParam } = await searchParams;
+    const location = locationParam || "Charlotte, NC";
     const { restaurants, locationMeta } = await getRestaurants(location);
 
     // Auth & Active Orders Check
@@ -211,16 +193,20 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                         </span>
                     </Link>
                     <div className="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full md:w-auto">
-                            <LocationButton />
-                            <input
-                                name="location"
-                                defaultValue={location}
-                                placeholder="City, County, State or Zip"
-                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full md:w-32 focus:md:w-48 transition-all text-sm placeholder:text-slate-500"
-                                autoComplete="off"
-                            />
-                        </form>
+                        <div className="flex p-1 bg-white/5 rounded-full border border-white/10 relative">
+                            <Link
+                                href="/restaurants?location=Charlotte, NC"
+                                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${location.toLowerCase().includes('charlotte') ? 'bg-primary text-black shadow-lg text-shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                            >
+                                Charlotte
+                            </Link>
+                            <Link
+                                href="/restaurants?location=Pineville, NC"
+                                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${location.toLowerCase().includes('pineville') ? 'bg-primary text-black shadow-lg text-shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                            >
+                                Pineville
+                            </Link>
+                        </div>
 
                         <div className="hidden md:block">
                             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
@@ -302,9 +288,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                     />
                 </div>
 
-
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {restaurants.length === 0 ? (
                         <div className="col-span-4 text-center py-12 text-slate-400">
                             <p className="text-xl">No restaurants found in {location}.</p>

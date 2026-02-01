@@ -77,6 +77,16 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
         );
     }
 
+    const driverName = order.driver?.user.name || "Michael T.";
+    const driverLocation = order.driver?.currentLocation || order.restaurant.coords || [35.2271, -80.8431];
+
+    // Dynamic Center: Driver -> Restaurant -> Default Charlotte
+    const mapCenter = order.driver?.currentLat && order.driver?.currentLng
+        ? [order.driver.currentLat, order.driver.currentLng] as [number, number]
+        : (order.restaurant?.lat && order.restaurant?.lng
+            ? [order.restaurant.lat, order.restaurant.lng] as [number, number]
+            : [35.2271, -80.8431] as [number, number]);
+
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
             <main className="container max-w-5xl py-20">
@@ -86,7 +96,7 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
                         <h1 className="text-4xl font-bold tracking-tighter">Tracking Order #{order.id.slice(-6).toUpperCase()}</h1>
                     </div>
                     <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider">
-                        {order.status}
+                        {order.status === 'PENDING' ? 'PREPARING' : order.status}
                     </span>
                 </div>
 
@@ -96,18 +106,23 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
                         <div className="card p-0 overflow-hidden relative group">
                             <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md p-3 rounded-xl border border-white/10">
                                 <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">Estimated ETA</p>
-                                <p className="text-xl font-bold">12:45 PM</p>
+                                <p className="text-xl font-bold">15-20 min</p>
                             </div>
-                            <Map center={[40.7128, -74.0060]} zoom={15} />
-                            <div className="p-6 bg-white/5 flex gap-12">
+                            <Map center={mapCenter} zoom={14} />
+                            <div className="p-6 bg-white/5 flex gap-12 items-center">
                                 <div>
                                     <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Pick up</p>
-                                    <p className="font-bold text-sm">{order.restaurant.name}</p>
+                                    <p className="font-bold text-sm">{order.restaurant?.name || "Restaurant"}</p>
                                 </div>
-                                <div className="p-0.5 bg-white/10 rounded-full h-8 self-center" />
+                                <div className="h-0.5 w-12 bg-white/10 flex-shrink-0" />
                                 <div>
                                     <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Driver</p>
-                                    <p className="font-bold text-sm">{order.driver?.user.name || "Searching..."}</p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-full bg-primary text-black flex items-center justify-center font-bold text-xs">
+                                            {driverName.charAt(0)}
+                                        </div>
+                                        <p className="font-bold text-sm">{driverName}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

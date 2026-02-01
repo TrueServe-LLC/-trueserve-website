@@ -94,45 +94,13 @@ export default async function RestaurantMenu({ params }: { params: Promise<{ id:
             </div>
 
             <main className="container py-12 animate-fade-in">
-                <div className="grid grid-3 gap-12 items-start">
-                    {/* Menu Client Side handling Cart & Order */}
-                    <div className="col-span-2">
-                        <MenuClient
-                            restaurantId={restaurant.id}
-                            items={restaurant.menuItems.map((item: any) => ({
-                                ...item,
-                                price: Number(item.price)
-                            }))}
-                        />
-                    </div>
-
-                    {/* Sidebar with Info & Map */}
-                    <div className="space-y-8 sticky top-24">
-                        <div className="card p-0 overflow-hidden">
-                            <div className="p-4 border-b border-white/10">
-                                <h3 className="font-bold">Restaurant Location</h3>
-                                <p className="text-xs text-slate-400">{restaurant.address}</p>
-                            </div>
-                            <div className="h-64">
-                                <Map center={[40.7128, -74.0060]} zoom={15} />
-                            </div>
-                        </div>
-
-                        <div className="card p-6 bg-slate-800/50">
-                            <h3 className="font-bold mb-4">Hours of Operation</h3>
-                            <div className="space-y-2 text-sm text-slate-400">
-                                <div className="flex justify-between">
-                                    <span>Mon - Fri</span>
-                                    <span>10:00 AM - 10:00 PM</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Sat - Sun</span>
-                                    <span>11:00 AM - 11:30 PM</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <MenuClient
+                    restaurant={restaurant}
+                    items={restaurant.menuItems.map((item: any) => ({
+                        ...item,
+                        price: Number(item.price)
+                    }))}
+                />
             </main>
         </div>
     );
