@@ -10,6 +10,7 @@ export default function Home() {
       <nav className="sticky top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/5 px-6 py-4">
         <div className="container flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 group">
+            <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
             <span className="text-2xl font-black tracking-tight text-white">
               True<span className="text-primary">Serve</span>
             </span>
