@@ -46,17 +46,25 @@ export default function MenuClient({ restaurantId, items }: MenuClientProps) {
         return sum + (item ? Number(item.price) * quantity : 0);
     }, 0);
 
+    const [payment, setPayment] = useState({ cardNumber: '', expiry: '', cvc: '' });
+
     const handlePlaceOrder = async () => {
+        if (!payment.cardNumber || !payment.expiry || !payment.cvc) {
+            alert("Please enter payment details.");
+            return;
+        }
+
         setIsSubmitting(true);
         const cartItems = Object.entries(cart).map(([id, quantity]) => {
             const item = items.find(i => i.id === id);
             return { id, quantity, price: item ? Number(item.price) : 0 };
         });
 
-        const response = await placeOrder(restaurantId, cartItems);
+        const response = await placeOrder(restaurantId, cartItems, payment);
         setResult(response);
         if (response.success) {
             setCart({});
+            setPayment({ cardNumber: '', expiry: '', cvc: '' });
         }
         setIsSubmitting(false);
     };
@@ -167,16 +175,47 @@ export default function MenuClient({ restaurantId, items }: MenuClientProps) {
                         </div>
                     </div>
 
+                    {cartTotalItems > 0 && (
+                        <div className="mt-6 pt-6 border-t border-white/10 animate-fade-in">
+                            <p className="text-xs font-bold uppercase text-slate-500 mb-3 tracking-widest">Payment Method</p>
+                            <div className="space-y-3">
+                                <input
+                                    type="text"
+                                    placeholder="Card Number"
+                                    className="w-full bg-slate-800 border border-white/10 rounded p-2 text-sm outline-none focus:border-primary transition-colors"
+                                    value={payment.cardNumber}
+                                    onChange={(e) => setPayment({ ...payment, cardNumber: e.target.value })}
+                                />
+                                <div className="grid grid-cols-2 gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="MM/YY"
+                                        className="w-full bg-slate-800 border border-white/10 rounded p-2 text-sm outline-none focus:border-primary transition-colors"
+                                        value={payment.expiry}
+                                        onChange={(e) => setPayment({ ...payment, expiry: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="CVC"
+                                        className="w-full bg-slate-800 border border-white/10 rounded p-2 text-sm outline-none focus:border-primary transition-colors"
+                                        value={payment.cvc}
+                                        onChange={(e) => setPayment({ ...payment, cvc: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <button
                         disabled={cartTotalItems === 0 || isSubmitting}
                         onClick={handlePlaceOrder}
                         className="w-full btn btn-primary mt-6 shadow-[0_0_20px_rgba(244,63,94,0.3)] disabled:opacity-50 disabled:shadow-none"
                     >
-                        {isSubmitting ? "Processing..." : "Confirm & Place Order"}
+                        {isSubmitting ? "Processing Payment..." : "Pay & Place Order"}
                     </button>
-                    <p className="text-center text-[10px] text-slate-500 mt-4 uppercase tracking-widest">
-                        SECURE PAY-ON-DELIVERY
-                    </p>
+                    <div className="flex items-center justify-center gap-2 mt-4 text-slate-500 opacity-50">
+                        <span className="text-[10px] uppercase tracking-widest">Secured by Stripe</span>
+                    </div>
                 </div>
             </div>
         </div>

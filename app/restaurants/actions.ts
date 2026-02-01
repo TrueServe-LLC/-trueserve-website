@@ -14,7 +14,8 @@ export type OrderState = {
 
 export async function placeOrder(
     restaurantId: string,
-    cartItems: { id: string; price: number; quantity: number }[]
+    cartItems: { id: string; price: number; quantity: number }[],
+    paymentDetails?: { cardNumber: string; expiry: string; cvc: string }
 ): Promise<OrderState> {
     if (cartItems.length === 0) {
         return { message: "Your cart is empty.", error: true };
