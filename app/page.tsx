@@ -77,7 +77,7 @@ export default function Home() {
         </section>
 
         {/* Mission Statement */}
-        <section className="py-16 bg-white/5 border-y border-white/5">
+        <section className="py-16">
           <div className="container text-center max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-white mb-6">Our Mission</h2>
             <p className="text-xl text-slate-300 leading-relaxed font-medium">
