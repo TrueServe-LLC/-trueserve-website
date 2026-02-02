@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen relative overflow-hidden font-sans text-slate-200">
+    <div className="min-h-screen relative overflow-hidden font-sans text-slate-200 bg-black">
       {/* Background Decor */}
       <div className="blob bg-secondary w-[500px] h-[500px] top-[-200px] right-[-100px] opacity-10" />
       <div className="blob bg-primary w-[300px] h-[300px] bottom-[10%] left-[-100px] opacity-10" />
@@ -85,6 +85,19 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Mission Statement */}
+        <section className="py-16 bg-white/5 border-y border-white/5">
+          <div className="container text-center max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-6">Our Mission</h2>
+            <p className="text-xl text-slate-300 leading-relaxed font-medium">
+              "TrueServe is a driver-first delivery marketplace that pays
+              couriers 25–40% more than competitors while lowering restaurant commissions and
+              simplifying customer pricing. Our model focuses on fair earnings, transparent
+              fees, and smarter logistics."
+            </p>
           </div>
         </section>
 

@@ -1,6 +1,19 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 export default function MerchantPortal() {
+    const [selectedPlan, setSelectedPlan] = useState<string>("");
+
+    const scrollToForm = (plan: string) => {
+        setSelectedPlan(plan);
+        const form = document.getElementById("inquiry-form");
+        if (form) {
+            form.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <div className="min-h-screen">
             <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
@@ -31,7 +44,7 @@ export default function MerchantPortal() {
 
                 <div className="grid md:grid-cols-2 gap-10 mb-24 max-w-5xl mx-auto text-left">
                     {/* Option A: Flex Plan */}
-                    <div className="card relative p-8 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 transition-all flex flex-col justify-between group">
+                    <div className={`card relative p-8 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 transition-all flex flex-col justify-between group ${selectedPlan === 'Flex Options' ? 'ring-2 ring-primary' : ''}`}>
                         <div className="absolute top-0 right-0 p-4">
                             <span className="text-[10px] bg-primary/20 text-primary px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-primary/20">Option A</span>
                         </div>
@@ -65,11 +78,16 @@ export default function MerchantPortal() {
                                 </li>
                             </ul>
                         </div>
-                        <button className="btn btn-primary w-full py-4 text-base font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">Get Started with Flex</button>
+                        <button
+                            onClick={() => scrollToForm("Flex Options")}
+                            className="btn btn-primary w-full py-4 text-base font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all"
+                        >
+                            Get Started with Flex
+                        </button>
                     </div>
 
                     {/* Option B: Pro Subscription */}
-                    <div className="card relative p-8 border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent hover:border-emerald-500/40 transition-all flex flex-col justify-between group scale-105 shadow-2xl shadow-emerald-500/5">
+                    <div className={`card relative p-8 border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent hover:border-emerald-500/40 transition-all flex flex-col justify-between group scale-105 shadow-2xl shadow-emerald-500/5 ${selectedPlan === 'Pro Subscription' ? 'ring-2 ring-emerald-500' : ''}`}>
                         <div className="absolute top-0 right-0 p-4 flex gap-2">
                             <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-emerald-500/20">Option B</span>
                         </div>
@@ -103,7 +121,12 @@ export default function MerchantPortal() {
                                 </li>
                             </ul>
                         </div>
-                        <button className="btn bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0a] w-full py-4 text-base font-extrabold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all">Grow with Pro</button>
+                        <button
+                            onClick={() => scrollToForm("Pro Subscription")}
+                            className="btn bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0a] w-full py-4 text-base font-extrabold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all"
+                        >
+                            Grow with Pro
+                        </button>
                     </div>
                 </div>
 
@@ -132,12 +155,13 @@ export default function MerchantPortal() {
                     </div>
                 </div>
 
-                <div className="max-w-md mx-auto card p-8">
-                    <h2 className="text-2xl font-bold mb-6">Partner Inquiry</h2>
+                <div id="inquiry-form" className="max-w-md mx-auto card p-8 scroll-mt-24">
+                    <h2 className="text-2xl font-bold mb-6">Partner Inquiry {selectedPlan && <span className="text-primary block text-sm mt-1">{selectedPlan} Selected</span>}</h2>
                     <form className="space-y-4">
                         <input type="text" placeholder="Restaurant Name" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3" />
                         <input type="text" placeholder="Contact Name" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3" />
                         <input type="email" placeholder="Email Address" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3" />
+                        <input type="hidden" name="plan" value={selectedPlan} />
                         <button className="btn btn-primary w-full">Submit Interest</button>
                     </form>
                 </div>
