@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   description: "Experience the true standard of food delivery.",
 };
 
+import MobileNav from "@/components/MobileNav";
+// ...
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,8 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.variable} bg-background text-foreground antialiased`}>
+      <body className={`${outfit.variable} bg-background text-foreground antialiased pb-24 md:pb-0`}>
         {children}
+        <MobileNav />
       </body>
     </html>
   );

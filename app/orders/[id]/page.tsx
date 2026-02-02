@@ -1,8 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Map from "@/components/Map";
 import ChatWindow from "@/components/ChatWindow";
+import OrderTrackingClient from "./OrderTrackingClient";
 
 async function getOrder(id: string) {
     try {
@@ -39,40 +39,40 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
 
     if (!order) {
         // Mocking for demo if DB entry missing
+        const mockOrder = {
+            id: id || "MOCK-123",
+            status: "PREPARING",
+            createdAt: new Date().toISOString(),
+            restaurant: {
+                name: "Bella Italia (Demo)",
+                lat: 40.7128,
+                lng: -74.0060,
+                coords: [40.7128, -74.0060]
+            },
+            driver: {
+                user: { name: "Alex (Demo)" },
+                currentLat: 40.7128 + 0.01,
+                currentLng: -74.0060 + 0.01
+            },
+            items: []
+        };
+
         return (
             <div className="min-h-screen bg-[#0a0a0a] text-white p-8">
-                <div className="container max-w-4xl mx-auto py-12">
-                    <h1 className="text-3xl font-bold mb-8">Tracking Order #{id.slice(-6).toUpperCase()}</h1>
+                <main className="container max-w-5xl py-20">
+                    <h1 className="text-3xl font-bold mb-8">Tracking Order #{id.slice(-6).toUpperCase()} (Demo)</h1>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-6">
-                            <div className="card border-primary/20 bg-primary/5">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
-                                    <p className="text-emerald-400 font-bold uppercase tracking-widest text-xs">Driver is on the way</p>
-                                </div>
-                                <h2 className="text-4xl font-bold mb-2">ETA: 8 Minutes</h2>
-                                <p className="text-slate-400">Your driver, <span className="text-white font-semibold">Alex</span>, is currently picking up your order from <span className="text-white font-semibold">Bella Italia</span>.</p>
-                            </div>
-                            <Map center={[40.7128, -74.0060]} zoom={15} />
+                        <div className="lg:col-span-2 space-y-8">
+                            <OrderTrackingClient order={mockOrder} />
                         </div>
                         <div className="space-y-6">
-                            <ChatWindow orderId={id} />
                             <div className="card bg-white/5 border-white/10 p-6">
                                 <h3 className="font-bold mb-4">Order Summary</h3>
-                                <div className="space-y-2 text-sm text-slate-400">
-                                    <div className="flex justify-between">
-                                        <span>1x Margherita Pizza</span>
-                                        <span>$14.99</span>
-                                    </div>
-                                    <div className="flex justify-between font-bold text-white pt-2 border-t border-white/5 mt-2">
-                                        <span>Total</span>
-                                        <span>$14.99</span>
-                                    </div>
-                                </div>
+                                <p className="text-slate-400 text-sm">Demo Mode Active.</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </main>
             </div>
         );
     }
@@ -102,58 +102,7 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Real-time Tracking Map */}
-                        <div className="card p-0 overflow-hidden relative group">
-                            <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md p-3 rounded-xl border border-white/10">
-                                <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">Estimated ETA</p>
-                                <p className="text-xl font-bold">15-20 min</p>
-                            </div>
-                            <Map center={mapCenter} zoom={14} />
-                            <div className="p-6 bg-white/5 flex gap-12 items-center">
-                                <div>
-                                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Pick up</p>
-                                    <p className="font-bold text-sm">{order.restaurant?.name || "Restaurant"}</p>
-                                </div>
-                                <div className="h-0.5 w-12 bg-white/10 flex-shrink-0" />
-                                <div>
-                                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Driver</p>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-full bg-primary text-black flex items-center justify-center font-bold text-xs">
-                                            {driverName.charAt(0)}
-                                        </div>
-                                        <p className="font-bold text-sm">{driverName}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Order Timeline */}
-                        <div className="card p-8">
-                            <h3 className="font-bold text-xl mb-8">Order Timeline</h3>
-                            <div className="space-y-8 relative before:absolute before:inset-0 before:left-2 before:w-0.5 before:bg-white/10">
-                                <div className="flex gap-6 relative">
-                                    <div className="w-4 h-4 rounded-full bg-emerald-400 shrink-0 border-4 border-black z-10" />
-                                    <div>
-                                        <p className="font-bold">Order Received</p>
-                                        <p className="text-sm text-slate-400">{new Date(order.createdAt).toLocaleTimeString()}</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-6 relative">
-                                    <div className="w-4 h-4 rounded-full bg-emerald-400 shrink-0 border-4 border-black z-10" />
-                                    <div>
-                                        <p className="font-bold">Preparing Food</p>
-                                        <p className="text-sm text-slate-400">Kitchen is busy working on your meal.</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-6 relative">
-                                    <div className="w-4 h-4 rounded-full bg-white/20 shrink-0 border-4 border-black z-10" />
-                                    <div className="opacity-50">
-                                        <p className="font-bold">Out for Delivery</p>
-                                        <p className="text-sm text-slate-400">Driver hasn't left the restaurant yet.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <OrderTrackingClient order={order} />
                     </div>
 
                     <div className="space-y-8">
