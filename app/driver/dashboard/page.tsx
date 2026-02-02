@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
+import { acceptOrder } from "../actions";
 
 async function getDriverData() {
     try {
@@ -27,6 +28,25 @@ async function getDriverData() {
 
 export default async function DriverDashboard() {
     const driver = await getDriverData();
+
+    // Fetch Available Orders
+    const { data: availableOrders } = await supabase
+        .from('Order')
+        .select(`*, restaurant:Restaurant(name, address)`)
+        .is('driverId', null)
+        .neq('status', 'DELIVERED')
+        .neq('status', 'COMPLETED')
+        .order('createdAt', { ascending: false })
+        .limit(5);
+
+    // Fetch My Active Orders
+    const { data: myOrders } = driver ? await supabase
+        .from('Order')
+        .select(`*, restaurant:Restaurant(name, address)`)
+        .eq('driverId', driver?.id)
+        .neq('status', 'DELIVERED')
+        .neq('status', 'COMPLETED')
+        : { data: [] };
 
     // Mock calculations if DB is empty/disconnected
     const stats = {
@@ -70,6 +90,66 @@ export default async function DriverDashboard() {
                     <div className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between">
                         <p className="text-slate-400 text-sm font-semibold uppercase">Tier Status</p>
                         <p className="text-4xl font-bold mt-2 text-primary">Gold</p>
+                    </div>
+                </div>
+
+                {/* NEW: Order Lists */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                    {/* Available Orders */}
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-bold flex items-center gap-2">
+                            🔔 Available Orders
+                        </h2>
+                        {availableOrders && availableOrders.length > 0 ? (
+                            availableOrders.map((order: any) => (
+                                <div key={order.id} className="card bg-white/5 border-white/10 p-5 flex justify-between items-center group hover:border-primary/50 transition-colors">
+                                    <div>
+                                        <p className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</p>
+                                        <p className="text-sm text-slate-400">{order.restaurant?.address || "Location Hidden"}</p>
+                                        <div className="flex gap-3 mt-2 text-xs font-mono uppercase">
+                                            <span className="bg-white/10 px-2 py-1 rounded text-slate-300">{(order.total * 0.2).toLocaleString('en-US', { style: 'currency', currency: 'USD' })} est. pay</span>
+                                            <span className="bg-white/10 px-2 py-1 rounded text-slate-300">~{Math.floor(Math.random() * 5) + 2} mi</span>
+                                        </div>
+                                    </div>
+                                    <form action={async () => {
+                                        "use server";
+                                        await acceptOrder(order.id);
+                                    }}>
+                                        <button className="btn btn-primary px-6 py-2 shadow-lg shadow-primary/20">Accept</button>
+                                    </form>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="p-8 text-center border dashed border-white/10 rounded-xl text-slate-500">
+                                No orders available right now.
+                            </div>
+                        )}
+                    </div>
+
+                    {/* My Active Deliveries */}
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-bold flex items-center gap-2">
+                            🚀 My Active Deliveries
+                        </h2>
+                        {myOrders && myOrders.length > 0 ? (
+                            myOrders.map((order: any) => (
+                                <div key={order.id} className="card bg-emerald-500/10 border-emerald-500/20 p-5">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="font-bold text-lg text-emerald-100">{order.restaurant?.name}</h3>
+                                        <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{order.status}</span>
+                                    </div>
+                                    <p className="text-sm text-emerald-200/60 mb-4">{order.restaurant?.address}</p>
+                                    <div className="flex gap-2">
+                                        <button className="flex-1 btn bg-emerald-500 text-black font-bold text-xs py-2">Navigate</button>
+                                        <button className="flex-1 btn bg-white/10 text-white font-bold text-xs py-2">Contact</button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="p-8 text-center border dashed border-white/10 rounded-xl text-slate-500">
+                                You have no active deliveries.
+                            </div>
+                        )}
                     </div>
                 </div>
 

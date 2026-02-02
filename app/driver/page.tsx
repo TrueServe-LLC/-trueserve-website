@@ -142,6 +142,38 @@ export default function DriverPortal() {
                                         />
                                     </div>
                                     <div>
+                                        <label className="block text-sm text-slate-400 mb-2">Phone Number</label>
+                                        <input
+                                            name="phone"
+                                            type="tel"
+                                            required
+                                            className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
+                                            placeholder="(555) 555-5555"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-slate-400 mb-2">Social Security Number</label>
+                                        <input
+                                            name="ssn"
+                                            type="password"
+                                            required
+                                            className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
+                                            placeholder="XXX-XX-XXXX"
+                                            autoComplete="off"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm text-slate-400 mb-2">Driver's License / ID Document</label>
+                                        <input
+                                            name="idDocument"
+                                            type="file"
+                                            required
+                                            accept="image/*,.pdf"
+                                            className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-black hover:file:bg-primary-hover"
+                                        />
+                                        <p className="text-xs text-slate-500 mt-2">Upload a clear photo or scan of your government ID.</p>
+                                    </div>
+                                    <div>
                                         <label className="block text-sm text-slate-400 mb-2">Vehicle</label>
                                         <div className="relative">
                                             <select name="vehicleType" className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white appearance-none cursor-pointer">
@@ -149,6 +181,7 @@ export default function DriverPortal() {
                                                 <option value="Car">Car</option>
                                                 <option value="SUV">SUV</option>
                                                 <option value="Truck">Truck</option>
+                                                <option value="Scooter">Scooter / Bike</option>
                                             </select>
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">▼</div>
                                         </div>

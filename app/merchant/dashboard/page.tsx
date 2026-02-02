@@ -249,6 +249,57 @@ export default async function MerchantDashboard() {
                     </div>
                 </section>
 
+                {/* Operations & Financials */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    {/* Store Hours */}
+                    <div className="card border-white/10 bg-white/5">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold flex items-center gap-2">🕒 Store Hours</h2>
+                            <span className="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full font-bold uppercase tracking-wide">Open Now</span>
+                        </div>
+                        <div className="space-y-3 text-sm">
+                            <div className="flex justify-between text-slate-400">
+                                <span>Monday - Friday</span>
+                                <span className="text-white font-mono">10:00 AM - 10:00 PM</span>
+                            </div>
+                            <div className="flex justify-between text-slate-400">
+                                <span>Saturday</span>
+                                <span className="text-white font-mono">11:00 AM - 11:00 PM</span>
+                            </div>
+                            <div className="flex justify-between text-slate-400">
+                                <span>Sunday</span>
+                                <span className="text-white font-mono">11:00 AM - 9:00 PM</span>
+                            </div>
+                        </div>
+                        <button className="w-full mt-6 btn btn-outline text-xs py-2 border-white/10 hover:bg-white/5">Edit Hours</button>
+                    </div>
+
+                    {/* Financial Performance */}
+                    <div className="card border-white/10 bg-white/5">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold flex items-center gap-2">💰 Financial Performance</h2>
+                            <select className="bg-black/50 border border-white/10 rounded text-xs px-2 py-1 text-slate-400 outline-none">
+                                <option>This Week</option>
+                                <option>This Month</option>
+                            </select>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                                <span className="text-slate-400 text-sm">Gross Sales</span>
+                                <span className="font-mono text-lg font-bold">${(totalRevenue * 1.1).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                                <span className="text-slate-400 text-sm">Platform Fees (10%)</span>
+                                <span className="font-mono text-red-400">-${(totalRevenue * 0.1).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-2">
+                                <span className="text-white font-bold">Net Payout</span>
+                                <span className="font-mono text-2xl font-bold text-emerald-400">${totalRevenue.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Your Menu</h2>
                     <AddItemForm />

@@ -16,10 +16,17 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const vehicleType = formData.get("vehicleType") as string;
+    const phone = formData.get("phone") as string;
+    const ssn = formData.get("ssn") as string;
+    const idDocument = formData.get("idDocument") as File;
 
-    if (!name || !email || !vehicleType || !password) {
-        return { message: "Please fill in all fields.", error: true };
+    if (!name || !email || !vehicleType || !password || !phone || !ssn || !idDocument) {
+        return { message: "Please fill in all fields, including documents.", error: true };
     }
+
+    // Mock Verification
+    console.log(`[DriverApp] Docs Received for ${email}: SSN(***-${ssn.slice(-4)}), File(${idDocument.name}, ${idDocument.size} bytes)`);
+
 
     try {
         const cookieStore = await cookies();
@@ -107,5 +114,40 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     } catch (e: any) {
         console.error("Failed to submit application:", e);
         return { message: e.message || "Something went wrong.", error: true };
+    }
+}
+
+import { revalidatePath } from "next/cache";
+
+export async function acceptOrder(orderId: string) {
+    try {
+        const cookieStore = await cookies();
+        const userId = cookieStore.get("userId")?.value;
+        if (!userId) throw new Error("Not logged in");
+
+        // Get Driver ID
+        const { data: driver } = await supabase
+            .from('Driver')
+            .select('id')
+            .eq('userId', userId)
+            .single();
+
+        if (!driver) throw new Error("Driver profile not found");
+
+        const { error } = await supabase
+            .from('Order')
+            .update({
+                driverId: driver.id
+            })
+            .eq('id', orderId)
+            .is('driverId', null); // Ensure not already taken
+
+        if (error) throw new Error("Failed to accept order (maybe taken?)");
+
+        revalidatePath('/driver/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        console.error("Accept Order Error:", e);
+        return { error: e.message };
     }
 }
