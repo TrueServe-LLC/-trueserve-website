@@ -21,9 +21,9 @@ export default function Home() {
             <Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link>
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
           </div>
-          <div className="flex gap-4">
-            <Link href="/login" className="btn btn-outline py-2 px-6 text-sm border-white/20 text-white hover:bg-white/10 hover:text-white">Log in</Link>
-            <Link href="/restaurants" className="btn btn-primary py-2 px-6 text-sm shadow-none hover:shadow-lg hover:shadow-primary/20">Get Started</Link>
+          <div className="flex gap-2 md:gap-4">
+            <Link href="/login" className="btn btn-outline py-2 px-3 md:px-6 text-xs md:text-sm border-white/20 text-white hover:bg-white/10 hover:text-white whitespace-nowrap">Log in</Link>
+            <Link href="/restaurants" className="btn btn-primary py-2 px-3 md:px-6 text-xs md:text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap">Get Started</Link>
           </div>
         </div>
       </nav>
@@ -64,7 +64,7 @@ export default function Home() {
             <p className="text-sm text-slate-500">Popular: <Link href="/restaurants?location=Charlotte" className="underline hover:text-primary">Charlotte</Link>, <Link href="/restaurants?location=Pineville" className="underline hover:text-primary">Pineville</Link></p>
           </div>
 
-          <div className="flex-1 relative">
+          <div className="flex-1 relative w-full">
             <div className="relative z-10 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <HeroCarousel />
             </div>
