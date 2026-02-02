@@ -44,8 +44,32 @@ export async function placeOrder(
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
 
-        // 1. Calculate Total
-        const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+        // 1. Validate Items & Prices (Security)
+        const itemIds = cartItems.map(i => i.id);
+        const { data: dbItems, error: itemsFetchError } = await supabase
+            .from('MenuItem')
+            .select('id, price, name')
+            .in('id', itemIds);
+
+        if (itemsFetchError || !dbItems || dbItems.length !== itemIds.length) {
+            console.error("Cart Validation Failed:", itemsFetchError);
+            return { message: "Some items in your cart are no longer available. Please clear your cart and try again.", error: true, success: false };
+        }
+
+        // recalculate total using DB prices
+        let total = 0;
+        const verifiedItems = cartItems.map(cartItem => {
+            const dbItem = dbItems.find(i => i.id === cartItem.id);
+            if (!dbItem) throw new Error(`Item ${cartItem.id} not found`); // Should be caught by length check above
+
+            const itemTotal = Number(dbItem.price) * cartItem.quantity;
+            total += itemTotal;
+
+            return {
+                ...cartItem,
+                price: dbItem.price // Use DB price
+            };
+        });
 
         // 2. Generate unique POS Reference (LogKey)
         const posReference = `ORD-${uuidv4().substring(0, 8).toUpperCase()}`;
@@ -92,7 +116,7 @@ export async function placeOrder(
         }
 
         // 5. Create Order Items
-        const orderItemsData = cartItems.map(item => ({
+        const orderItemsData = verifiedItems.map(item => ({
             id: uuidv4(),
             orderId: order.id,
             menuItemId: item.id,
@@ -109,7 +133,7 @@ export async function placeOrder(
         if (itemsError) {
             console.error("[PlaceOrder] Order Items Failed:", itemsError);
             // In a real app, delete the order here to rollback
-            throw new Error("Failed to add items to order.");
+            throw new Error(`Failed to add items to order: ${itemsError.message} - ${itemsError.details || ''}`);
         }
 
         revalidatePath("/merchant/dashboard");
