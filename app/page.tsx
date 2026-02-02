@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HeroCarousel from "@/components/HeroCarousel";
 
 export default function Home() {
   return (
@@ -65,25 +66,12 @@ export default function Home() {
 
           <div className="flex-1 relative">
             <div className="relative z-10 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <img
-                src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1000&auto=format&fit=crop"
-                alt="Delicious Pizza"
-                className="w-full h-auto object-cover rounded-[3rem] shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-700 border border-white/5"
-              />
+              <HeroCarousel />
             </div>
             {/* Floating Badge */}
             <div className="absolute top-10 -right-4 bg-slate-800/90 backdrop-blur-md p-4 rounded-2xl shadow-xl z-20 animate-bounce border border-white/10" style={{ animationDuration: '3s' }}>
               <span className="text-2xl">🔥</span>
               <span className="font-bold text-white ml-2">Hot & Fresh</span>
-            </div>
-            <div className="absolute -bottom-6 -left-6 bg-slate-800/90 backdrop-blur-md p-6 rounded-2xl shadow-xl z-20 border border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400 text-xl">⏱️</div>
-                <div>
-                  <p className="text-xs text-slate-400 font-bold uppercase">Avg Delivery</p>
-                  <p className="text-lg font-bold text-white">24 Mins</p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -103,7 +91,7 @@ export default function Home() {
 
         {/* Features Section */}
         <section className="py-24 relative">
-          <div className="container">
+          <div className="container mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
               <h2 className="text-4xl font-bold mb-4 text-white">More than just delivery.</h2>
               <p className="text-slate-400 text-lg">We built TrueServe to fix everything wrong with food apps. Fair pay, real food, and honest prices.</p>
