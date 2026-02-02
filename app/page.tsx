@@ -91,10 +91,10 @@ export default function Home() {
 
         {/* Features Section */}
         <section className="py-24 relative">
-          <div className="container mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-16">
-              <h2 className="text-4xl font-bold mb-4 text-white">More than just delivery.</h2>
-              <p className="text-slate-400 text-lg">We built TrueServe to fix everything wrong with food apps. Fair pay, real food, and honest prices.</p>
+          <div className="container mx-auto px-6">
+            <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">More than just delivery.</h2>
+              <p className="text-slate-400 text-lg md:text-xl leading-relaxed">We built TrueServe to fix everything wrong with food apps. Fair pay, real food, and honest prices.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
