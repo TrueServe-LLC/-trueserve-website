@@ -121,9 +121,8 @@ export async function placeOrder(
             orderId: order.id,
             menuItemId: item.id,
             quantity: item.quantity,
-            price: item.price,
-            updatedAt: new Date().toISOString(),
-            createdAt: new Date().toISOString()
+            price: item.price
+            // relying on database defaults for timestamps
         }));
 
         const { error: itemsError } = await supabase
