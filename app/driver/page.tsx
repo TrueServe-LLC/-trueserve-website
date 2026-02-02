@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { submitDriverApplication } from "./actions";
+import { submitDriverApplication, loginAsDemoDriver } from "./actions";
 
 const initialState = {
     message: "",
@@ -151,17 +151,6 @@ export default function DriverPortal() {
                                             placeholder="(555) 555-5555"
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-sm text-slate-400 mb-2">Social Security Number</label>
-                                        <input
-                                            name="ssn"
-                                            type="password"
-                                            required
-                                            className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
-                                            placeholder="XXX-XX-XXXX"
-                                            autoComplete="off"
-                                        />
-                                    </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm text-slate-400 mb-2">Driver's License / ID Document</label>
                                         <input
@@ -197,6 +186,15 @@ export default function DriverPortal() {
                                 </button>
                             </form>
                         )}
+
+                        <div className="mt-8 pt-8 border-t border-white/5 text-center">
+                            <p className="text-slate-400 text-sm mb-4">Just testing things out?</p>
+                            <form action={loginAsDemoDriver}>
+                                <button className="btn bg-white/5 border-white/10 hover:bg-white/10 text-white w-full py-3 font-bold uppercase text-xs tracking-widest">
+                                    Launch Demo Mode
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
 

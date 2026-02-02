@@ -17,15 +17,15 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const password = formData.get("password") as string;
     const vehicleType = formData.get("vehicleType") as string;
     const phone = formData.get("phone") as string;
-    const ssn = formData.get("ssn") as string;
+    // SSN delayed until approval
     const idDocument = formData.get("idDocument") as File;
 
-    if (!name || !email || !vehicleType || !password || !phone || !ssn || !idDocument) {
+    if (!name || !email || !vehicleType || !password || !phone || !idDocument) {
         return { message: "Please fill in all fields, including documents.", error: true };
     }
 
     // Mock Verification
-    console.log(`[DriverApp] Docs Received for ${email}: SSN(***-${ssn.slice(-4)}), File(${idDocument.name}, ${idDocument.size} bytes)`);
+    console.log(`[DriverApp] Docs Received for ${email}: File(${idDocument.name}, ${idDocument.size} bytes)`);
 
 
     try {
@@ -118,6 +118,49 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 }
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+export async function loginAsDemoDriver() {
+    const cookieStore = await cookies();
+
+    // Check if demo user exists
+    const { data: demoUser } = await supabase
+        .from('User')
+        .select('id')
+        .eq('email', 'demo_driver@trueserve.com')
+        .maybeSingle();
+
+    let userId = demoUser?.id;
+
+    if (!userId) {
+        // Create Demo User
+        userId = uuidv4();
+        await supabase.from('User').insert({
+            id: userId,
+            email: 'demo_driver@trueserve.com',
+            name: 'Demo Driver',
+            role: 'DRIVER',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        });
+
+        // Create Driver Profile
+        await supabase.from('Driver').insert({
+            id: uuidv4(),
+            userId: userId,
+            vehicleType: 'Car',
+            status: 'OFFLINE',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        });
+    }
+
+    // Set Cookie
+    cookieStore.set("userId", userId, { secure: true, httpOnly: true });
+
+    // Redirect
+    redirect('/driver/dashboard');
+}
 
 export async function acceptOrder(orderId: string) {
     try {
