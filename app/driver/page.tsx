@@ -15,7 +15,7 @@ export default function DriverPortal() {
     const [state, formAction, isPending] = useActionState(submitDriverApplication, initialState);
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-black">
             <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
                 <div className="container flex justify-between items-center">
                     <Link href="/" className="flex items-center gap-2 group">
