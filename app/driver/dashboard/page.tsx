@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
 import { acceptOrder } from "../actions";
+import DriverMap from "@/components/DriverMap";
 
 async function getDriverData() {
     try {
@@ -58,7 +59,7 @@ export default async function DriverDashboard() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
-            <nav className="p-6 border-b border-white/5 flex justify-between items-center">
+            <header className="p-6 border-b border-white/5 flex justify-between items-center">
                 <Link href="/" className="text-2xl font-bold tracking-tighter">
                     True<span className="text-gradient">Serve</span> Driver
                 </Link>
@@ -71,7 +72,7 @@ export default async function DriverDashboard() {
                         Withdraw
                     </button>
                 </div>
-            </nav>
+            </header>
 
             <main className="container py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
@@ -200,23 +201,7 @@ export default async function DriverDashboard() {
 
                         <section>
                             <h2 className="text-xl font-bold mb-4">Earnings Forecast Heatmap</h2>
-                            <div className="card h-[200px] bg-slate-900 border-white/10 relative overflow-hidden flex items-center justify-center group">
-                                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1000')] opacity-20 grayscale group-hover:grayscale-0 transition-all duration-700 scale-110"></div>
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
-
-                                {/* Mock Heat Circles */}
-                                <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-red-500/30 blur-3xl animate-pulse"></div>
-                                <div className="absolute bottom-1/3 right-1/4 w-40 h-40 bg-orange-500/20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-
-                                <div className="relative text-center p-6">
-                                    <div className="flex items-center gap-2 justify-center mb-2">
-                                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                                        <span className="text-xs font-bold uppercase tracking-widest text-red-400">High Demand: Lower East Side</span>
-                                    </div>
-                                    <p className="text-sm text-slate-400 max-w-xs mx-auto mb-6">Heatmap projects 1.5x boosts in this zone for the next 45 minutes.</p>
-                                    <button className="btn btn-primary text-xs py-2 px-6">Explore Zone</button>
-                                </div>
-                            </div>
+                            <DriverMap />
                         </section>
                     </div>
 
@@ -233,6 +218,27 @@ export default async function DriverDashboard() {
                                     <p className="text-slate-400 text-sm flex justify-between">Guarantee: <span className="text-emerald-400 font-bold">$20/hr active</span></p>
                                 </div>
                                 <button className="w-full btn bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20">Go Offline</button>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4">Safety & Tools</h2>
+                            <div className="card bg-white/5 border-white/10 p-6 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-bold flex items-center gap-2">📍 Share Location</p>
+                                        <p className="text-xs text-slate-400 mt-1">Send live trip status to contacts.</p>
+                                    </div>
+                                    <button className="btn btn-sm btn-outline border-white/20 hover:bg-white/10">Share</button>
+                                </div>
+                                <div className="h-px bg-white/5"></div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-bold text-red-400 flex items-center gap-2">🛡️ Emergency</p>
+                                        <p className="text-xs text-slate-400 mt-1">Connect with 911 immediately.</p>
+                                    </div>
+                                    <button className="btn btn-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20 font-bold">SOS</button>
+                                </div>
                             </div>
                         </section>
 

@@ -69,7 +69,7 @@ export default function Home() {
               <HeroCarousel />
             </div>
             {/* Floating Badge */}
-            <div className="absolute top-10 -right-4 bg-slate-800/90 backdrop-blur-md p-4 rounded-2xl shadow-xl z-20 animate-bounce border border-white/10" style={{ animationDuration: '3s' }}>
+            <div className="relative mt-6 mx-auto md:absolute md:top-10 md:-right-4 md:mt-0 md:mx-0 w-max bg-slate-800/90 backdrop-blur-md p-4 rounded-2xl shadow-xl z-20 animate-bounce border border-white/10" style={{ animationDuration: '3s' }}>
               <span className="text-2xl">🔥</span>
               <span className="font-bold text-white ml-2">Hot & Fresh</span>
             </div>
@@ -114,7 +114,7 @@ export default function Home() {
         </section>
 
         {/* Call to Action */}
-        <section className="container py-24">
+        <section className="container py-24 mb-24 md:mb-0">
           <div className="bg-gradient-to-br from-slate-900 to-black rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden border border-white/10">
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000')] bg-cover opacity-10 mix-blend-overlay"></div>
             <div className="relative z-10">

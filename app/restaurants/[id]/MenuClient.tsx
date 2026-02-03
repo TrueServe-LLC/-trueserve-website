@@ -106,7 +106,7 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                 <h2 className="text-2xl font-bold mb-8">Menu</h2>
                 <div className="grid grid-cols-1 gap-6">
                     {items.map((item) => (
-                        <div key={item.id} className="card p-0 overflow-hidden flex flex-row h-28 hover:bg-white/5 transition-all group relative border border-white/5">
+                        <div key={item.id} className="card p-0 overflow-hidden flex flex-row min-h-28 h-auto hover:bg-white/5 transition-all group relative border border-white/5">
                             <div className="w-32 bg-slate-800 shrink-0 relative">
                                 {item.imageUrl ? (
                                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
@@ -145,7 +145,7 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
             </div>
 
             {/* Sidebar / Checkout */}
-            <div className="space-y-6 sticky top-24">
+            <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
                     <h3 className="font-bold mb-6 text-xl flex items-center gap-2">
                         <span>🛒</span> Your Cart
@@ -246,7 +246,7 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                             {/* Fallback to simple map if component fails, but using Map component here */}
                             <Map center={[restaurant?.lat || 35.2271, restaurant?.lng || -80.8431]} zoom={14} />
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-10">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-20">
                             <h3 className="font-bold text-white">{restaurant?.address || "Address"}</h3>
                             <p className="text-xs text-emerald-400">Open Now • Closes 10 PM</p>
                         </div>
