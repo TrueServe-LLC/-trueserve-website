@@ -76,22 +76,22 @@ export default async function DriverDashboard() {
 
             <main className="container py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                    <div className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between">
-                        <p className="text-slate-400 text-sm font-semibold uppercase">Total Earnings</p>
+                    <Link href="/driver/dashboard/earnings" className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
+                        <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-primary transition-colors">Total Earnings ↗</p>
                         <p className="text-4xl font-bold mt-2">${stats.totalEarnings.toFixed(2)}</p>
-                    </div>
+                    </Link>
                     <div className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between">
                         <p className="text-slate-400 text-sm font-semibold uppercase">Completed Trips</p>
                         <p className="text-4xl font-bold mt-2">{stats.trips}</p>
                     </div>
-                    <div className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between">
-                        <p className="text-slate-400 text-sm font-semibold uppercase">Driver Rating</p>
+                    <Link href="/driver/dashboard/ratings" className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
+                        <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-yellow-500 transition-colors">Driver Rating ↗</p>
                         <p className="text-4xl font-bold mt-2 text-yellow-500">★ {stats.rating}</p>
-                    </div>
-                    <div className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between">
-                        <p className="text-slate-400 text-sm font-semibold uppercase">Tier Status</p>
+                    </Link>
+                    <Link href="/driver/dashboard/account" className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
+                        <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-primary transition-colors">Tier Status ↗</p>
                         <p className="text-4xl font-bold mt-2 text-primary">Gold</p>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* NEW: Order Lists */}
@@ -250,7 +250,7 @@ export default async function DriverDashboard() {
                                     <p className="text-xs font-bold uppercase text-slate-500 tracking-widest">Available</p>
                                     <p className="text-3xl font-bold text-white">${stats.balance.toFixed(2)}</p>
                                 </div>
-                                <button className="w-full btn btn-primary py-3">Cash Out (T+0)</button>
+                                <Link href="/driver/dashboard/earnings" className="w-full btn btn-primary py-3 text-center block">Cash Out (T+0)</Link>
                                 <div className="mt-4 flex justify-between items-center text-[10px] text-slate-500 font-mono">
                                     <span>Fixed Processing Fee</span>
                                     <span>$0.50</span>
