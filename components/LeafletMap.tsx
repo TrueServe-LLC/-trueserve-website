@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -51,6 +51,13 @@ function MapUpdater({ center, restaurants }: { center: [number, number], restaur
     return null;
 }
 
+// Mock Hotzones (Customer Facing)
+const POPULAR_ZONES = [
+    { id: 'z1', name: "Uptown Dining", coords: [35.2271, -80.8431] as [number, number], color: '#eab308', radius: 1200 },
+    { id: 'z2', name: "South End Eats", coords: [35.2136, -80.8596] as [number, number], color: '#f97316', radius: 1000 },
+    { id: 'z3', name: "Plaza Midwood", coords: [35.2208, -80.8143] as [number, number], color: '#ef4444', radius: 800 },
+];
+
 export default function LeafletMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     return (
         <div className="h-[400px] w-full rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0">
@@ -67,6 +74,17 @@ export default function LeafletMap({ center, zoom = 13, restaurants = [] }: MapP
                 />
 
                 <MapUpdater center={center} restaurants={restaurants} />
+
+                {POPULAR_ZONES.map(zone => (
+                    <Circle key={zone.id} center={zone.coords} radius={zone.radius} pathOptions={{ color: zone.color, fillColor: zone.color, fillOpacity: 0.15 }}>
+                        <Popup>
+                            <div className="p-1 text-center">
+                                <h3 className="font-bold text-slate-900">{zone.name}</h3>
+                                <p className="text-xs text-red-500 font-bold uppercase mt-1">Popular Area</p>
+                            </div>
+                        </Popup>
+                    </Circle>
+                ))}
 
                 {/* User Location Marker */}
                 <Marker position={center} icon={icon}>
