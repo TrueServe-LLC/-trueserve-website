@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { addMenuItem } from "../actions";
+import { addMenuItem, MerchantActionState } from "../actions";
 
-const initialState = {
+const initialState: MerchantActionState = {
     message: "",
     success: false,
     error: false,

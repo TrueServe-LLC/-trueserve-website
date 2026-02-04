@@ -7,13 +7,13 @@ import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 
-export type MerchantInquiryState = {
+export type MerchantActionState = {
     message: string;
     success?: boolean;
     error?: boolean;
 };
 
-export async function addMenuItem(prevState: any, formData: FormData) {
+export async function addMenuItem(prevState: MerchantActionState, formData: FormData): Promise<MerchantActionState> {
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
     if (!userId) return { error: true, message: "Unauthorized" };
@@ -97,7 +97,7 @@ export async function refundOrder(orderId: string) {
     }
 }
 
-export async function submitMerchantInquiry(prevState: any, formData: FormData): Promise<MerchantInquiryState> {
+export async function submitMerchantInquiry(prevState: any, formData: FormData): Promise<MerchantActionState> {
     const restaurantName = formData.get("restaurantName") as string;
     const contactName = formData.get("contactName") as string;
     const email = formData.get("email") as string;
