@@ -54,13 +54,24 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         }
 
         // 2. Ensure Public User Record Exists
-        const { data: existingUser } = await supabase
+        // First, check by email to avoid unique constraint violations
+        const { data: userByEmail } = await supabase
             .from('User')
             .select('id')
-            .eq('id', user.id)
+            .eq('email', email)
             .maybeSingle();
 
-        if (!existingUser) {
+        if (userByEmail) {
+            // User exists! We should use THIS id instead of the Auth ID if they differ,
+            // OR we accept that we can't link them easily if IDs mismatch.
+            // For this app, simply ensuring we don't try to INSERT is the fix.
+            if (userByEmail.id !== user.id) {
+                console.warn(`[DriverApp] User conflict: Email ${email} exists with ID ${userByEmail.id}, but Auth ID is ${user.id}. Using existing record.`);
+                // Note: In a real app, you might want to link the Auth ID or merge. 
+                // Here we proceed with the EXISTING public ID to allow them to be a driver.
+            }
+        } else {
+            // If NOT found by email, inserting is safe (assuming ID is unique)
             const { error: createError } = await supabase
                 .from('User')
                 .insert({
@@ -74,18 +85,19 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
             if (createError) {
                 console.error("User Sync Error:", createError);
-                try { fs.writeFileSync('debug_driver_error.txt', JSON.stringify(createError, null, 2)); } catch (e) { }
-
                 // CRITICAL: Do NOT proceed if User creation failed
                 return { message: "Failed to create user profile (" + createError.message + ").", error: true };
             }
         }
 
+        // Use the correct userId for the Driver profile (prefer existing one if found)
+        const targetUserId = userByEmail ? userByEmail.id : user.id;
+
         // 3. Create Driver Profile
         const { data: existingDriver } = await supabase
             .from('Driver')
             .select('id')
-            .eq('userId', user.id)
+            .eq('userId', targetUserId)
             .maybeSingle();
 
         if (existingDriver) {
@@ -96,7 +108,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             .from('Driver')
             .insert({
                 id: uuidv4(),
-                userId: user.id,
+                userId: targetUserId,
                 vehicleType,
                 status: "OFFLINE",
                 createdAt: new Date().toISOString(),
