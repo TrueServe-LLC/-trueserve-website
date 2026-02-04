@@ -15,141 +15,68 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// List of base names to generate realistic restaurants
+const baseNames = [
+    "The Garrison", "The Flame", "Waldhorn Restaurant", "Metro Diner", "El Veracruz", "Alley 51",
+    "Mama Ricotta's", "Midwood Smokehouse", "Haberdish", "Kindred", "Beef 'N Bottle", "Lang Van",
+    "Copper", "O-Ku", "Futo Buta", "Seoul Food Meat Co.", "Let's Meat", "Hawkers", "Optimist Hall",
+    "Midnight Diner", "Amélie's French Bakery", "Suffolk Punch", "Legion Brewing", "Wooden Robot",
+    "Sycamore Brewing", "Olde Mecklenburg Brewery", "Protagonist", "Salud Cerveceria", "Divine Barrel",
+    "Heist Brewery", "Birdsong Brewing", "NoDa Brewing", "Triple C", "YAMA", "Ru San's",
+    "Cowfish", "Bad Daddy's Burger Bar", "Viva Chicken", "Sabor Latin Street Grill", "Yafo Kitchen",
+    "Cava", "Chopt", "Flower Child", "North Italia", "Stagioni", "Barrington's", "Good Food",
+    "300 East", "Fern", "Living Kitchen", "Bean Vegan Cuisine", "Sanctuary Bistro", "Oh My Soul",
+    "Romeo's Vegan Burgers", "Pure Pizza", "Inizio Pizza", "Antico Italian", "Portofino's",
+    "Mama's Pizza", "Fuel Pizza", "Brixx", "Mellow Mushroom", "Hawthorne's", "Luisa's",
+    "Intermezzo", "Cajun Queen", "Dressler's", "Dogwood", "Fin & Fino", "Peppervine",
+    "The Crunkleton", "Customshop", "Halcyon", "Mimosa Grill", "Sea Level", "The King's Kitchen",
+    "Rooster's", "Noble Smoke", "The Waterman", "Hello, Sailor", "Bojangles", "Cook Out",
+    "Zaxby's", "Biscuitville", "Tudors Biscuit World", "Showmars", "Smithfield's", "S&S Cafeteria"
+];
+
+const cuisines = ["American", "Italian", "Mexican", "Asian Fusion", "BBQ", "Burgers", "Vegan", "Pizza", "Seafood", "Steakhouse"];
+
 async function seedRealRestaurants() {
-    console.log('Starting Real Restaurant Seed...')
+    console.log('Starting Real Restaurant Seed (Target: 83)...')
     const now = new Date().toISOString();
 
     // 0. Cleanup
     console.log('Cleaning up old data...')
-    await supabase.from('OrderItem').delete().neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+    await supabase.from('OrderItem').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await supabase.from('Order').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await supabase.from('MenuItem').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await supabase.from('Restaurant').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('ServiceLocation').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    // Note: Not deleting ServiceLocation or User to avoid breaking existing valid users/locations if possible, 
+    // but for a clean seed usually we want fresh state. 
+    // If we delete Users we break the link to auth.users which we can't delete via Client.
+    // So we'll just add new ones.
 
-    // 0.1 Seed Service Locations
+    // 0.1 Seed Service Locations (Ensure they exist)
     console.log('Seeding Service Locations...');
-    await supabase.from('ServiceLocation').insert([
-        {
-            city: 'Charlotte',
-            state: 'NC',
-            zipPrefixes: ['282', '280', '281'],
-            isActive: true,
-            updatedAt: now,
-            createdAt: now
-        },
-        {
-            city: 'Pineville',
-            state: 'NC',
-            zipPrefixes: ['28134'],
-            isActive: true,
-            updatedAt: now,
-            createdAt: now
-        }
-    ]);
+    await supabase.from('ServiceLocation').upsert([
+        { id: uuidv4(), city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], isActive: true, updatedAt: now, createdAt: now }
+    ], { onConflict: 'city' }); // Assuming city is unique or just adding duplicates isn't fatal for now
 
-    const restaurants = [
-        {
-            name: "The Garrison",
-            address: "314 Main St",
-            city: "Pineville",
-            state: "NC",
-            lat: 35.0833,
-            lng: -80.8926,
-            description: "A cocktail bar & restaurant located in the heart of historic Pineville.",
-            imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&q=80&w=1000",
-            menu: [
-                { name: "Garrison Burger", price: 16.00, description: "Double patty, sharp cheddar, bacon jam.", imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=500" },
-                { name: "Fish & Chips", price: 18.00, description: "Beer battered cod, house tartar sauce.", imageUrl: "https://images.unsplash.com/photo-1579202673506-ca3ce28943ef?auto=format&fit=crop&q=80&w=500" },
-                { name: "Truffle Fries", price: 9.00, description: "Parmesan, truffle oil, parsley.", imageUrl: "https://images.unsplash.com/photo-1573080496982-b9418e224d1c?auto=format&fit=crop&q=80&w=500" }
-            ]
-        },
-        {
-            name: "The Flame",
-            address: "8200 Providence Rd Ste 100",
-            city: "Charlotte",
-            state: "NC",
-            lat: 35.0970,
-            lng: -80.7810,
-            description: "Premier dining destination offering steaks and seafood.",
-            imageUrl: "https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80&w=1000",
-            menu: [
-                { name: "Ribeye Steak", price: 34.00, description: "12oz USDA Prime, garlic butter.", imageUrl: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&q=80&w=500" },
-                { name: "Seared Salmon", price: 26.00, description: "Lemon beurre blanc, asparagus.", imageUrl: "https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&q=80&w=500" },
-                { name: "Lobster Bisque", price: 12.00, description: "Rich creamy soup with lobster chunks.", imageUrl: "https://images.unsplash.com/photo-1547592166-23acbe32263b?auto=format&fit=crop&q=80&w=500" }
-            ]
-        },
-        {
-            name: "Waldhorn Restaurant",
-            address: "12101 Lancaster Hwy",
-            city: "Pineville",
-            state: "NC",
-            lat: 35.0710,
-            lng: -80.8870,
-            description: "Authentic German cuisine and beer garden.",
-            imageUrl: "https://images.unsplash.com/photo-1574672280200-e840d21e8e54?auto=format&fit=crop&q=80&w=1000",
-            menu: [
-                { name: "Wiener Schnitzel", price: 22.00, description: "Breaded veal cutlet, lemon, potato salad.", imageUrl: "https://images.unsplash.com/photo-1599921841143-819065a5a2ec?auto=format&fit=crop&q=80&w=500" },
-                { name: "Bratwurst Platter", price: 18.00, description: "Grilled sausages, sauerkraut, mashed potatoes.", imageUrl: "https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?auto=format&fit=crop&q=80&w=500" },
-                { name: "Pretzel & Cheese", price: 10.00, description: "Giant bavarian pretzel with beer cheese.", imageUrl: "https://images.unsplash.com/photo-1573166675921-076ea6b621ce?auto=format&fit=crop&q=80&w=500" }
-            ]
-        },
-        {
-            name: "Metro Diner",
-            address: "8334 Pineville-Matthews Rd #110",
-            city: "Charlotte",
-            state: "NC",
-            lat: 35.0930,
-            lng: -80.8650,
-            description: "Comfort food with flair. Breakfast all day.",
-            imageUrl: "https://images.unsplash.com/photo-1551024601-562963525c54?auto=format&fit=crop&q=80&w=1000",
-            menu: [
-                { name: "Fried Chicken & Waffle", price: 17.00, description: "Half chicken, strawberry butter.", imageUrl: "https://images.unsplash.com/photo-1626082927389-d584393e5005?auto=format&fit=crop&q=80&w=500" },
-                { name: "Meatloaf Plate", price: 15.00, description: "Mash, gravy, green beans.", imageUrl: "https://images.unsplash.com/photo-1551326844-360292689435?auto=format&fit=crop&q=80&w=500" },
-                { name: "Charleston Shrimp & Grits", price: 18.00, description: "Andouille sausage, creamy grits.", imageUrl: "https://images.unsplash.com/photo-1535400255456-984241443b29?auto=format&fit=crop&q=80&w=500" }
-            ]
-        },
-        {
-            name: "El Veracruz Mexican Restaurant",
-            address: "315 S Polk St",
-            city: "Pineville",
-            state: "NC",
-            lat: 35.0860,
-            lng: -80.8900,
-            description: "Traditional Mexican dishes and margaritas.",
-            imageUrl: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=1000",
-            menu: [
-                { name: "Carne Asada", price: 19.00, description: "Grilled steak, rice, beans, tortillas.", imageUrl: "https://images.unsplash.com/photo-1574868461014-d46ca0d922e9?auto=format&fit=crop&q=80&w=500" },
-                { name: "Street Tacos", price: 12.00, description: "Three tacos (steak, pastor, or chicken).", imageUrl: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=500" },
-                { name: "Churros", price: 6.00, description: "Cinnamon sugar, caramel dipping sauce.", imageUrl: "https://images.unsplash.com/photo-1624371414361-e670edf4898d?auto=format&fit=crop&q=80&w=500" }
-            ]
-        },
-        {
-            name: "Alley 51",
-            address: "314 Main St",
-            city: "Pineville",
-            state: "NC",
-            lat: 35.0833,
-            lng: -80.8926,
-            description: "Local favorite spot for quick bites and drinks.",
-            imageUrl: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&q=80&w=1000",
-            menu: [
-                { name: "Pulled Pork Sandwich", price: 11.00, description: "BBQ sauce, slaw, brioche bun.", imageUrl: "https://images.unsplash.com/photo-1619537903549-0981d6bca911?auto=format&fit=crop&q=80&w=500" },
-                { name: "Chili Cheese Fries", price: 8.00, description: "House chili, cheddar melt.", imageUrl: "https://images.unsplash.com/photo-1582239696734-7832822a945b?auto=format&fit=crop&q=80&w=500" },
-                { name: "Wings (10)", price: 14.00, description: "Buffalo, BBQ, or Lemon Pepper.", imageUrl: "https://images.unsplash.com/photo-1527477396000-64ca9c00173f?auto=format&fit=crop&q=80&w=500" }
-            ]
-        }
-    ];
+    let createdCount = 0;
 
-    for (const r of restaurants) {
-        console.log(`Creating ${r.name}...`);
+    for (let i = 0; i < 83; i++) {
+        const name = i < baseNames.length ? baseNames[i] : `TrueServe Kitchen #${i - baseNames.length + 1}`;
+        const cuisine = cuisines[i % cuisines.length];
+        const lat = 35.2271 + (Math.random() - 0.5) * 0.2; // Random spread around Charlotte
+        const lng = -80.8431 + (Math.random() - 0.5) * 0.2;
 
-        // Create unique merchant for this restaurant
+        console.log(`Creating [${i + 1}/83]: ${name}...`);
+
+        // Create Merchant User
         const merchantId = uuidv4();
+        // Use a fake email that's unique
+        const email = `owner_${i}_${Date.now()}@trueserve.test`;
+
         await supabase.from('User').insert({
             id: merchantId,
-            email: `merchant_${uuidv4().substring(0, 8)}@test.com`,
-            name: `${r.name} Owner`,
+            email: email,
+            name: `${name} Manager`,
             role: 'MERCHANT',
             updatedAt: now,
             createdAt: now
@@ -160,43 +87,48 @@ async function seedRealRestaurants() {
         // Insert Restaurant
         const { error: rError } = await supabase.from('Restaurant').insert({
             id: rId,
-            name: r.name,
-            address: r.address,
-            city: r.city,
-            state: r.state,
-            lat: r.lat,
-            lng: r.lng,
-            description: r.description,
-            imageUrl: r.imageUrl,
+            name: name,
+            address: `${Math.floor(Math.random() * 9000) + 100} Main St`, // Mock address
+            city: i % 5 === 0 ? "Pineville" : "Charlotte",
+            state: "NC",
+            lat: lat,
+            lng: lng,
+            description: `Authentic ${cuisine} experience in the heart of the city.`,
+            imageUrl: `https://source.unsplash.com/800x600/?restaurant,food,${cuisine.toLowerCase()}`, // Unsplash random
             ownerId: merchantId,
             updatedAt: now,
             createdAt: now
         });
 
         if (rError) {
-            console.error(`Failed to create ${r.name}:`, rError);
+            console.error(`Failed to create ${name}:`, rError);
             continue;
         }
 
-        // Insert Menu Items
-        if (r.menu) {
-            const menuItems = r.menu.map(m => ({
+        // Insert Menu Items (3-5 random items)
+        const numItems = Math.floor(Math.random() * 3) + 3;
+        const menuItems = [];
+        for (let j = 0; j < numItems; j++) {
+            menuItems.push({
                 id: uuidv4(),
                 restaurantId: rId,
-                name: m.name,
-                description: m.description,
-                price: m.price,
+                name: `${cuisine} Special ${j + 1}`,
+                description: "Freshly prepared with local ingredients.",
+                price: Math.floor(Math.random() * 20) + 10,
                 status: 'APPROVED',
-                imageUrl: m.imageUrl,
+                imageUrl: `https://source.unsplash.com/400x300/?food,${cuisine.toLowerCase()}`,
                 updatedAt: now,
                 createdAt: now
-            }));
-            const { error: mError } = await supabase.from('MenuItem').insert(menuItems);
-            if (mError) console.error(`Failed to add menu for ${r.name}:`, mError);
+            });
         }
+
+        const { error: mError } = await supabase.from('MenuItem').insert(menuItems);
+        if (mError) console.error(`Failed to add menu for ${name}:`, mError);
+
+        createdCount++;
     }
 
-    console.log("Real restaurants seeded successfully!");
+    console.log(`Seeding Complete. Successfully created ${createdCount} restaurants.`);
 }
 
 seedRealRestaurants();

@@ -27,7 +27,7 @@ export default function DriverEarnings() {
     ];
 
     return (
-        <div className="max-w-4xl mx-auto animate-fade-in-up space-y-8">
+        <div className="max-w-4xl mx-auto animate-fade-in space-y-8">
             <header className="flex flex-col md:flex-row justify-between items-end gap-4">
                 <div>
                     <h1 className="text-3xl font-bold">Earnings</h1>

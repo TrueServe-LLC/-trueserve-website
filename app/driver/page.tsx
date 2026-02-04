@@ -56,7 +56,7 @@ export default function DriverPortal() {
                 <div className="space-y-12 text-left">
 
                     {/* Pay Formula Card */}
-                    <div className="rounded-3xl border border-primary/20 bg-slate-900 p-8 shadow-2xl relative overflow-hidden">
+                    <div className="rounded-3xl border border-primary/20 bg-black/60 backdrop-blur-xl p-8 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
                         <div className="text-center mb-8 relative z-10">
                             <h2 className="text-2xl font-bold italic text-white">"Know exactly what you earn."</h2>
@@ -206,7 +206,7 @@ export default function DriverPortal() {
                             { title: "Instant Pay", desc: "Cash out your earnings immediately.", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "text-blue-400" },
                             { title: "Heatmap", desc: "Find high-demand zones instantly.", icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 7m0 13V7", color: "text-yellow-400" }
                         ].map((item, i) => (
-                            <div key={i} className="p-6 rounded-2xl bg-slate-900 border border-white/10 hover:border-primary/50 transition-all flex flex-col items-center text-center gap-4 group shadow-lg">
+                            <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all flex flex-col items-center text-center gap-4 group shadow-lg">
                                 <div className={`p-4 rounded-full bg-white/5 ${item.color} group-hover:scale-110 transition-transform ring-1 ring-white/10 group-hover:ring-${item.color.split('-')[1]}/50`}>
                                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon}></path></svg>
                                 </div>

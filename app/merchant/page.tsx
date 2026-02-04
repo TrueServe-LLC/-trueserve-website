@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState, useState } from "react";
+import { submitMerchantInquiry } from "./actions";
+
+const initialState = {
+    message: "",
+    success: false,
+    error: false,
+};
 
 export default function MerchantPortal() {
+    const [state, formAction, isPending] = useActionState(submitMerchantInquiry, initialState);
     const [selectedPlan, setSelectedPlan] = useState<string>("");
 
     const scrollToForm = (plan: string) => {
@@ -155,15 +163,46 @@ export default function MerchantPortal() {
                     </div>
                 </div>
 
-                <div id="inquiry-form" className="max-w-md mx-auto card p-8 scroll-mt-24">
+                <div id="inquiry-form" className="max-w-md mx-auto card p-8 scroll-mt-24 text-left">
                     <h2 className="text-2xl font-bold mb-6">Partner Inquiry {selectedPlan && <span className="text-primary block text-sm mt-1">{selectedPlan} Selected</span>}</h2>
-                    <form className="space-y-4">
-                        <input type="text" placeholder="Restaurant Name" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3" />
-                        <input type="text" placeholder="Contact Name" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3" />
-                        <input type="email" placeholder="Email Address" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3" />
-                        <input type="hidden" name="plan" value={selectedPlan} />
-                        <button className="btn btn-primary w-full">Submit Interest</button>
-                    </form>
+
+                    {state.success ? (
+                        <div className="text-center py-8">
+                            <div className="text-5xl mb-4">🎉</div>
+                            <h3 className="text-2xl font-bold text-white mb-2">Welcome Aboard!</h3>
+                            <p className="text-slate-400 mb-6">{state.message}</p>
+                            <Link href="/merchant/dashboard" className="btn btn-primary w-full">
+                                Go to Dashboard
+                            </Link>
+                        </div>
+                    ) : (
+                        <form action={formAction} className="space-y-4">
+                            {state.error && (
+                                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm font-bold">
+                                    {state.message}
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Restaurant Name</label>
+                                <input name="restaurantName" type="text" required placeholder="e.g. Joe's Pizza" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Contact Name</label>
+                                <input name="contactName" type="text" required placeholder="e.g. Joe Smith" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Business Email</label>
+                                <input name="email" type="email" required placeholder="joe@example.com" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
+                            </div>
+
+                            <input type="hidden" name="plan" value={selectedPlan} />
+
+                            <button disabled={isPending} className="btn btn-primary w-full shadow-lg shadow-primary/20">
+                                {isPending ? "Submitting..." : "Start Your Application"}
+                            </button>
+                            <p className="text-xs text-center text-slate-500 mt-2">By clicking, you agree to our Partner Terms.</p>
+                        </form>
+                    )}
                 </div>
             </main>
         </div>

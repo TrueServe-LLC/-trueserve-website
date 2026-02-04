@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
 import * as fs from 'fs';
+import { sendEmail } from "@/lib/email";
 
 export type DriverApplicationState = {
     message: string;
@@ -108,6 +109,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         // Auto-login cookie for the app
         cookieStore.set("userId", user.id, { secure: true, httpOnly: true });
+
+        // Send Confirmation Email
+        await sendEmail(
+            email,
+            "Application Received - TrueServe Driver",
+            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will review your details shortly. You can expect to hear from us within 24-48 hours with the next steps.\n\nBest,\nThe TrueServe Team`
+        );
 
         return { message: "Application submitted successfully! Welcome to the team.", success: true };
 
