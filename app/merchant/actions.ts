@@ -162,6 +162,6 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
     } catch (e: any) {
         console.error("Merchant Signup Error:", e);
-        return { message: "An error occurred. Please try again.", error: true };
+        return { message: "An error occurred: " + (e.message || "Unknown error"), error: true };
     }
 }
