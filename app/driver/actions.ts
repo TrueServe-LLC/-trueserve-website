@@ -152,7 +152,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         await sendEmail(
             email,
             "Application Received - TrueServe Driver",
-            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will review your details shortly. You can expect to hear from us within 24-48 hours with the next steps.\n\nBest,\nThe TrueServe Team`
+            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nYou can now access your driver portal to view your status, preferences, and earnings potential:\n\nhttp://localhost:3000/driver/dashboard\n\nOur team will review your details shortly. You can expect to hear from us within 24-48 hours with the next steps.\n\nBest,\nThe TrueServe Team`
         );
 
         // Send Notification to Admin
@@ -170,58 +170,17 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             <p>Please review explicitly in Supabase dashboard.</p>`
         );
 
-        return { message: "Application submitted successfully! Welcome to the team.", success: true };
-
+        // Auto-login successful; redirect to dashboard
     } catch (e: any) {
         console.error("Failed to submit application:", e);
         return { message: e.message || "Something went wrong.", error: true };
     }
+
+    redirect('/driver/dashboard');
 }
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
-export async function loginAsDemoDriver() {
-    const cookieStore = await cookies();
-
-    // Check if demo user exists
-    const { data: demoUser } = await supabase
-        .from('User')
-        .select('id')
-        .eq('email', 'demo_driver@trueserve.com')
-        .maybeSingle();
-
-    let userId = demoUser?.id;
-
-    if (!userId) {
-        // Create Demo User
-        userId = uuidv4();
-        await supabase.from('User').insert({
-            id: userId,
-            email: 'demo_driver@trueserve.com',
-            name: 'Demo Driver',
-            role: 'DRIVER',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        });
-
-        // Create Driver Profile
-        await supabase.from('Driver').insert({
-            id: uuidv4(),
-            userId: userId,
-            vehicleType: 'Car',
-            status: 'OFFLINE',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        });
-    }
-
-    // Set Cookie
-    cookieStore.set("userId", userId, { secure: true, httpOnly: true });
-
-    // Redirect
-    redirect('/driver/dashboard');
-}
 
 export async function acceptOrder(orderId: string) {
     try {

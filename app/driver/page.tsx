@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { submitDriverApplication, loginAsDemoDriver } from "./actions";
+import { submitDriverApplication } from "./actions";
 
 const initialState = {
     message: "",
@@ -189,12 +189,10 @@ export default function DriverPortal() {
                         )}
 
                         <div className="mt-8 pt-8 border-t border-white/10 text-center">
-                            <p className="text-slate-400 text-sm mb-4 font-medium">Just testing things out?</p>
-                            <form action={loginAsDemoDriver}>
-                                <button className="btn bg-white/5 border border-white/10 hover:bg-white/10 text-white w-full py-4 font-bold uppercase text-xs tracking-widest rounded-xl transition-all hover:border-white/30">
-                                    Launch Demo Mode
-                                </button>
-                            </form>
+                            <p className="text-slate-400 text-sm mb-4 font-medium">Already have an account?</p>
+                            <Link href="/login?role=driver" className="btn bg-white/5 border border-white/10 hover:bg-white/10 text-white w-full py-4 font-bold uppercase text-xs tracking-widest rounded-xl transition-all hover:border-white/30 block">
+                                Log In
+                            </Link>
                         </div>
                     </div>
 
