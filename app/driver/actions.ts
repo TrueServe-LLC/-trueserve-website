@@ -94,6 +94,31 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         const targetUserId = userByEmail ? userByEmail.id : user.id;
 
         // 3. Create Driver Profile
+        // Attempt to upload document
+        let documentUrl = "";
+        try {
+            // Create a unique file name
+            const fileExt = idDocument.name.split('.').pop();
+            const fileName = `${targetUserId}_${Date.now()}.${fileExt}`;
+
+            // Note: 'driver-documents' bucket must exist in Supabase Storage.
+            // If it doesn't, this will error, but we'll catch it and proceed (saving the app is priority).
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('driver-documents')
+                .upload(fileName, idDocument);
+
+            if (!uploadError && uploadData) {
+                const { data: publicUrlData } = supabase.storage
+                    .from('driver-documents')
+                    .getPublicUrl(fileName);
+                documentUrl = publicUrlData.publicUrl;
+            } else {
+                console.warn("[DriverApp] Document upload failed:", uploadError?.message);
+            }
+        } catch (uploadErr) {
+            console.warn("[DriverApp] Document upload exception:", uploadErr);
+        }
+
         const { data: existingDriver } = await supabase
             .from('Driver')
             .select('id')
@@ -109,10 +134,11 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             .insert({
                 id: uuidv4(),
                 userId: targetUserId,
-                vehicleType,
-                status: "OFFLINE",
+                vehicleType: vehicleType,
+                status: "PENDING_APPROVAL", // Changed from OFFLINE
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
+                // Assuming schema doesn't have documentUrl yet. If it did: documentUrl: documentUrl
             });
 
         if (driverError) {
@@ -122,11 +148,26 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         // Auto-login cookie for the app
         cookieStore.set("userId", user.id, { secure: true, httpOnly: true });
 
-        // Send Confirmation Email
+        // Send Confirmation Email to Driver
         await sendEmail(
             email,
             "Application Received - TrueServe Driver",
             `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will review your details shortly. You can expect to hear from us within 24-48 hours with the next steps.\n\nBest,\nThe TrueServe Team`
+        );
+
+        // Send Notification to Admin
+        await sendEmail(
+            "admin@trueserve.com",
+            `New Driver Application: ${name}`,
+            `<h1>New Driver Application</h1>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Vehicle:</strong> ${vehicleType}</p>
+            <p><strong>Status:</strong> PENDING_APPROVAL</p>
+            <hr />
+            <p><strong>ID Document:</strong> <a href="${documentUrl || '#'}">${documentUrl ? 'View Document' : 'Upload Failed / Not Available'}</a></p>
+            <p>Please review explicitly in Supabase dashboard.</p>`
         );
 
         return { message: "Application submitted successfully! Welcome to the team.", success: true };
