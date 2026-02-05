@@ -15,13 +15,12 @@ export type DriverApplicationState = {
 export async function submitDriverApplication(prevState: any, formData: FormData): Promise<DriverApplicationState> {
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
     const vehicleType = formData.get("vehicleType") as string;
     const phone = formData.get("phone") as string;
     // SSN delayed until approval
     const idDocument = formData.get("idDocument") as File;
 
-    if (!name || !email || !vehicleType || !password || !phone || !idDocument) {
+    if (!name || !email || !vehicleType || !phone || !idDocument) {
         return { message: "Please fill in all fields, including documents.", error: true };
     }
 
@@ -32,50 +31,24 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     try {
         const cookieStore = await cookies();
 
-        // 1. Create Auth User
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: { name, role: 'DRIVER' }
-            }
-        });
 
-        if (authError) {
-            if (authError.message.includes("already registered")) {
-                return { message: "User already registered. Please log in first.", error: true };
-            }
-            return { message: authError.message, error: true };
-        }
 
-        const user = authData.user;
-        if (!user) {
-            return { message: "Failed to create account. Please check your email/login.", success: true };
-        }
-
-        // 2. Ensure Public User Record Exists
-        // First, check by email to avoid unique constraint violations
+        // 1. Ensure Placeholder User Record Exists
         const { data: userByEmail } = await supabase
             .from('User')
             .select('id')
             .eq('email', email)
             .maybeSingle();
 
-        if (userByEmail) {
-            // User exists! We should use THIS id instead of the Auth ID if they differ,
-            // OR we accept that we can't link them easily if IDs mismatch.
-            // For this app, simply ensuring we don't try to INSERT is the fix.
-            if (userByEmail.id !== user.id) {
-                console.warn(`[DriverApp] User conflict: Email ${email} exists with ID ${userByEmail.id}, but Auth ID is ${user.id}. Using existing record.`);
-                // Note: In a real app, you might want to link the Auth ID or merge. 
-                // Here we proceed with the EXISTING public ID to allow them to be a driver.
-            }
-        } else {
-            // If NOT found by email, inserting is safe (assuming ID is unique)
+        let targetUserId = userByEmail?.id;
+
+        if (!targetUserId) {
+            targetUserId = uuidv4();
+            // Create Placeholder User
             const { error: createError } = await supabase
                 .from('User')
                 .insert({
-                    id: user.id,
+                    id: targetUserId,
                     name,
                     email,
                     role: 'DRIVER',
@@ -85,13 +58,9 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
             if (createError) {
                 console.error("User Sync Error:", createError);
-                // CRITICAL: Do NOT proceed if User creation failed
                 return { message: "Failed to create user profile (" + createError.message + ").", error: true };
             }
         }
-
-        // Use the correct userId for the Driver profile (prefer existing one if found)
-        const targetUserId = userByEmail ? userByEmail.id : user.id;
 
         // 3. Create Driver Profile
         // Attempt to upload document
@@ -145,14 +114,11 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             throw driverError;
         }
 
-        // Auto-login cookie for the app
-        cookieStore.set("userId", user.id, { secure: true, httpOnly: true });
-
         // Send Confirmation Email to Driver
         await sendEmail(
             email,
             "Application Received - TrueServe Driver",
-            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nYou can now access your driver portal to view your status, preferences, and earnings potential:\n\nhttp://localhost:3000/driver/dashboard\n\nOur team will review your details shortly. You can expect to hear from us within 24-48 hours with the next steps.\n\nBest,\nThe TrueServe Team`
+            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will review your application shortly. Once approved, you will receive an email to create your account and password.\n\nBest,\nThe TrueServe Team`
         );
 
         // Send Notification to Admin
@@ -170,13 +136,12 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             <p>Please review explicitly in Supabase dashboard.</p>`
         );
 
-        // Auto-login successful; redirect to dashboard
+        return { message: "Application submitted! We'll email you when approved.", success: true };
+
     } catch (e: any) {
         console.error("Failed to submit application:", e);
         return { message: e.message || "Something went wrong.", error: true };
     }
-
-    redirect('/driver/dashboard');
 }
 
 import { revalidatePath } from "next/cache";

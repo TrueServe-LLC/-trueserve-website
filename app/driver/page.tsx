@@ -131,17 +131,7 @@ export default function DriverPortal() {
                                             placeholder="john@example.com"
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-300 mb-2">Password</label>
-                                        <input
-                                            name="password"
-                                            type="password"
-                                            required
-                                            className="w-full bg-black border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-white placeholder:text-slate-600 font-medium"
-                                            placeholder="••••••••"
-                                            minLength={6}
-                                        />
-                                    </div>
+                                    {/* Password field removed - specificed in user request to be created later */}
                                     <div>
                                         <label className="block text-sm font-bold text-slate-300 mb-2">Phone Number</label>
                                         <input
