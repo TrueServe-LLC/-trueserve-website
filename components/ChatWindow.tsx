@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { translateText } from "@/app/actions/translate";
 
 interface Message {
     id: string;
@@ -30,17 +31,28 @@ export default function ChatWindow({ orderId }: { orderId: string }) {
         setInput("");
     };
 
-    const handleTranslate = (id: string, text: string) => {
+    const handleTranslate = async (id: string, text: string) => {
         setTranslating(id);
-        // Simulate AI Delay
-        setTimeout(() => {
-            setMessages(prev => prev.map(m =>
-                m.id === id
-                    ? { ...m, content: "Hello, I am on my way with your food.", originalContent: text, isTranslated: true }
-                    : m
-            ));
+        try {
+            // Call Server Action
+            const result = await translateText(text, 'en'); // Target English by default
+
+            if (result.translatedText) {
+                setMessages(prev => prev.map(m =>
+                    m.id === id
+                        ? { ...m, content: result.translatedText, originalContent: text, isTranslated: true }
+                        : m
+                ));
+            } else {
+                console.error("Translation returned error:", result.error);
+                // Fallback or alert user silently
+                // In a real app, maybe show a toast. Here we just log.
+            }
+        } catch (e) {
+            console.error("Translation Failed", e);
+        } finally {
             setTranslating(null);
-        }, 800);
+        }
     };
 
     return (
