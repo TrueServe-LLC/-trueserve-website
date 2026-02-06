@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HeroCarousel from "@/components/HeroCarousel";
+import LandingSearch from "@/components/LandingSearch";
 
 export default function Home() {
   return (
@@ -47,18 +48,11 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                <form action="/restaurants" className="relative flex items-center bg-black/50 rounded-full p-2 pr-2 shadow-xl border border-white/10 min-w-[320px] backdrop-blur-md">
-                  <span className="pl-4 pr-2 text-xl">📍</span>
-                  <input
-                    name="location"
-                    placeholder="Enter your address..."
-                    className="flex-1 bg-transparent border-none focus:outline-none text-white placeholder-slate-500 h-10"
-                    required
-                  />
-                  <button type="submit" className="w-10 h-10 bg-primary text-black rounded-full flex items-center justify-center hover:bg-primary-hover transition-colors font-bold">
-                    ➜
-                  </button>
-                </form>
+                <LandingSearch locations={[
+                  { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
+                  { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
+                  { city: 'Ramsey', state: 'MN', lat: 45.2611, lng: -93.4566 }
+                ]} />
               </div>
             </div>
             <p className="text-sm text-slate-500">Popular: <Link href="/restaurants?location=Charlotte" className="underline hover:text-primary">Charlotte</Link>, <Link href="/restaurants?location=Pineville" className="underline hover:text-primary">Pineville</Link></p>

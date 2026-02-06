@@ -31,10 +31,11 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     const term = locationInput.toLowerCase();
 
     // Define fallbacks (mocks) for demo/offline
+    // Define fallbacks (mocks) for demo/offline
     const fallbackMocks = [
-        { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'] },
-        { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'] },
-        { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'] }
+        { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
+        { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], lat: 35.0833, lng: -80.8872 },
+        { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'], lat: 45.2611, lng: -93.4566 }
     ];
 
     // 1. Fetch Valid Service Locations
@@ -159,6 +160,8 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     }
 }
 
+import LandingSearch from "@/components/LandingSearch";
+
 export default async function RestaurantFinder({ searchParams }: { searchParams: Promise<{ location?: string }> }) {
     const { location } = await searchParams;
 
@@ -221,27 +224,23 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                         The fastest delivery in Charlotte, Pineville, and beyond. Zero hidden fees, precise tracking, and purely local.
                     </p>
 
-                    <form action="/restaurants" className="w-full max-w-xl relative group">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                        <div className="relative flex items-center bg-black border border-white/10 rounded-full p-2 pr-2 shadow-2xl">
-                            <span className="pl-4 pr-2 text-2xl">📍</span>
-                            <input
-                                name="location"
-                                required
-                                placeholder="Enter delivery address (e.g. Pineville, NC)"
-                                className="flex-1 bg-transparent border-none focus:outline-none text-lg px-2 h-12 text-white placeholder-slate-500"
-                                autoComplete="off"
-                            />
-                            <button type="submit" className="btn btn-primary rounded-full px-8 py-3 text-lg font-bold hover:scale-105 transition-transform">
-                                Find Food
-                            </button>
-                        </div>
-                        <div className="mt-4 flex gap-2 justify-center text-sm text-slate-500">
-                            <span>Examples:</span>
-                            <Link href="/restaurants?location=Charlotte" className="text-slate-400 hover:text-white underline">Charlotte</Link>
-                            <Link href="/restaurants?location=Pineville" className="text-slate-400 hover:text-white underline">Pineville</Link>
-                        </div>
-                    </form>
+                    <LandingSearch locations={
+                        // We fetch these quickly here for the landing page props
+                        // In a real app, optimize this data fetching
+                        await (async () => {
+                            const fallbackMocks = [
+                                { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
+                                { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
+                                { city: 'Ramsey', state: 'MN', lat: 45.2611, lng: -93.4566 }
+                            ];
+                            try {
+                                const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
+                                return dbLocs && dbLocs.length > 0 ? dbLocs : fallbackMocks;
+                            } catch {
+                                return fallbackMocks;
+                            }
+                        })()
+                    } />
                 </main>
             </div>
         );
