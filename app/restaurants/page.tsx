@@ -84,11 +84,22 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
             return { restaurants: [], locationMeta };
         }
 
+        const cityFilter = matchedLocation.city;
+        const stateFilter = matchedLocation.state;
+
+        // Perform efficient DB lookup
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
             .select('*')
-            .ilike('city', matchedLocation.city)
-            .ilike('state', matchedLocation.state);
+            // Using 'or' for flexible city/state matching if needed, 
+            // but since we matched a specific ServiceLocation, we should be precise.
+            .match({ city: cityFilter, state: stateFilter });
+        // .match is exact, but if data is messy, .ilike is safer:
+        // .ilike('city', cityFilter).ilike('state', stateFilter) -> This is AND logc, which is correct.
+
+        // To make it robust against casing in DB:
+        // .ilike('city', cityFilter)
+        // .ilike('state', stateFilter)
 
         if (error || !restaurants || restaurants.length === 0) {
             throw new Error("No DB data or empty search");

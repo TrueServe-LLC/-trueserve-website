@@ -20,7 +20,11 @@ async function getMerchantData() {
                     )
                 )
             `)
-            .limit(1)
+            // Sort orders at database level (requires correct foreign key setup/syntax, 
+            // but Supabase select supports ordering on relations or we filter after. 
+            // Since complex relation sorting in one query can be tricky, 
+            // a better scalable approach relies on separate queries or simple ordering if supported.
+            // For now, we simple-limit to prevent crash, then fetch recent orders in a clean query check below.
             .limit(1)
             .maybeSingle();
 
@@ -29,11 +33,23 @@ async function getMerchantData() {
             return null;
         }
 
-        if (restaurant && restaurant.orders) {
-            // Sort orders desc by createdAt (in-memory)
-            restaurant.orders.sort((a: any, b: any) =>
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
+        // Optimization: Fetch orders separately to allow powerful sorting/pagination without massive JOIN overhead
+        if (restaurant) {
+            const { data: recentOrders } = await supabase
+                .from('Order')
+                .select(`
+                    *,
+                    user:User(*),
+                    items:OrderItem(
+                        *,
+                        menuItem:MenuItem(*)
+                    )
+                `)
+                .eq('restaurantId', restaurant.id)
+                .order('createdAt', { ascending: false })
+                .limit(50); // Hard limit to prevent overload
+
+            restaurant.orders = recentOrders || [];
         }
 
         return restaurant;
