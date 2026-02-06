@@ -32,8 +32,9 @@ export default function MerchantPortal() {
                             True<span className="text-gradient">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 items-center">
                         <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+                        <Link href="/login" className="btn btn-sm btn-outline border-white/20 hover:bg-white/10">Partner Login</Link>
                     </div>
                 </div>
             </nav>
@@ -44,10 +45,11 @@ export default function MerchantPortal() {
                     Reach thousands of new customers with our premium delivery network. Use our tools to manage orders, track sales, and optimize your menu.
                 </p>
 
-                <div className="flex justify-center gap-4 mb-20">
-                    <Link href="/merchant/dashboard" className="btn btn-primary">
-                        Go to Dashboard
-                    </Link>
+                <div className="flex justify-center gap-4 mb-20 animate-bounce">
+                    <button onClick={() => scrollToForm("Flex Options")} className="text-primary hover:text-white transition-colors flex flex-col items-center gap-2">
+                        <span className="text-sm font-bold uppercase tracking-widest">View Plans</span>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                    </button>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-10 mb-24 max-w-5xl mx-auto text-left">
