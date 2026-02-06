@@ -194,6 +194,10 @@ export default function MerchantPortal() {
                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Business Email</label>
                                 <input name="email" type="email" required placeholder="joe@example.com" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
                             </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Create Password</label>
+                                <input name="password" type="password" required minLength={8} placeholder="At least 8 characters" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
+                            </div>
 
                             <input type="hidden" name="plan" value={selectedPlan} />
 

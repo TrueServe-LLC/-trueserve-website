@@ -9,6 +9,7 @@ export type AuthState = {
     message: string;
     success?: boolean;
     error?: boolean;
+    role?: string;
 };
 
 export async function loginWithPassword(formData: FormData): Promise<AuthState> {
@@ -31,17 +32,23 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
             return { message: error.message, error: true };
         }
 
+        let role = 'CUSTOMER';
+
         if (data.user) {
             // Sync with public User table (Check if exists, if not, might need to create or it's a legacy user)
-            // ideally auth trigger handles this, but we'll check manually
-            const { data: publicUser } = await supabase.from('User').select('id').eq('email', email).maybeSingle();
+            const { data: publicUser } = await supabase.from('User').select('id, role').eq('id', data.user.id).maybeSingle();
 
-            // Set App Cookie for compatibility
-            // existing app uses 'userId' cookie. Supabase uses its own. We'll set ours to be safe.
-            cookieStore.set("userId", publicUser?.id || data.user.id, { secure: true, httpOnly: true });
+            if (publicUser) {
+                role = publicUser.role;
+                // Set App Cookie for compatibility
+                cookieStore.set("userId", publicUser.id, { secure: true, httpOnly: true });
+            } else {
+                // Fallback if public user missing but Auth exists (shouldn't happen often)
+                cookieStore.set("userId", data.user.id, { secure: true, httpOnly: true });
+            }
         }
 
-        return { message: "Login successful!", success: true };
+        return { message: "Login successful!", success: true, role };
 
     } catch (e: any) {
         return { message: e.message || "Login failed", error: true };

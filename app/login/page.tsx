@@ -21,8 +21,16 @@ export default function LoginPage() {
 
         let res;
         if (mode === 'login') {
-            res = await loginWithPassword(data);
-            if (res.success) router.push("/restaurants");
+            const res = await loginWithPassword(data);
+            if (res.success) {
+                // Role-based Redirect
+                if (res.role === 'MERCHANT') router.push("/merchant/dashboard");
+                else if (res.role === 'DRIVER') router.push("/driver/dashboard"); // They usually have a deferred flow but if they log in, send them there.
+                else if (res.role === 'ADMIN') router.push("/admin/dashboard");
+                else router.push("/restaurants");
+            } else {
+                setMessage({ text: res.message, type: 'error' });
+            }
         } else if (mode === 'signup') {
             res = await signupWithPassword(data);
             if (res.success) {

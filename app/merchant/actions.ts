@@ -101,29 +101,42 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     const restaurantName = formData.get("restaurantName") as string;
     const contactName = formData.get("contactName") as string;
     const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
     const plan = formData.get("plan") as string;
 
-    if (!restaurantName || !contactName || !email) {
+    if (!restaurantName || !contactName || !email || !password) {
         return { message: "Please fill in all required fields.", error: true };
     }
 
     try {
-        // 1. Create a User for the Merchant
-        // In a real app, we might just send an email to sales, but here we'll auto-provision a pending account
-        // so they can "start adding menus" as requested.
+        // 1. Create a Supabase Auth User (IAM)
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    displayName: contactName,
+                    role: 'MERCHANT'
+                }
+            }
+        });
 
-        let userId = uuidv4();
+        if (authError) {
+            console.error("Auth Signup Error:", authError);
+            return { message: "Signup Failed: " + authError.message, error: true };
+        }
 
-        // Check if user exists
-        const { data: existingUser } = await supabase.from('User').select('id').eq('email', email).maybeSingle();
+        if (!authData.user) {
+            return { message: "Something went wrong. Please try again.", error: true };
+        }
 
-        if (existingUser) {
-            userId = existingUser.id;
-            // If they already exist, we might just want to notify them or reset, but let's assume new for now
-            // or just proceed to add a new restaurant to their profile if we supported multi-tenancy beautifully.
-            // For simplicity, we'll warn.
-            // return { message: "Account with this email already exists. Please login.", error: true };
-        } else {
+        const userId = authData.user.id;
+
+        // 2. Create Public User Record (if not created by trigger, which we assume it isn't)
+        // Check first to avoid duplicates if trigger exists
+        const { data: existingUser } = await supabase.from('User').select('id').eq('id', userId).maybeSingle();
+
+        if (!existingUser) {
             const { error: userError } = await supabase.from('User').insert({
                 id: userId,
                 email,
@@ -135,7 +148,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             if (userError) throw userError;
         }
 
-        // 2. Create the Restaurant Shell
+        // 3. Create the Restaurant Shell
         const restaurantId = uuidv4();
         const { error: restError } = await supabase.from('Restaurant').insert({
             id: restaurantId,
@@ -147,18 +160,19 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         if (restError) throw restError;
 
-        // 3. Send Confirmation Email
+        // 4. Send Confirmation Email
         await sendEmail(
             email,
             "Welcome to TrueServe Partner Network",
             `Hi ${contactName},\n\nThank you for choosing TrueServe! We've received your request to join as a ${plan || 'Partner'} merchant.\n\nYour restaurant "${restaurantName}" has been registered in our system.\n\nYou can now log in to your dashboard to complete your profile and start uploading your menu: [Link to Dashboard]\n\nOur onboarding team will review your menu within 24 hours.\n\nBest,\nThe TrueServe Team`
         );
 
-        // 4. Set Cookie to auto-login (simulated) so they can go straight to dashboard
+        // 5. Auto-Login Cookie
         const cookieStore = await cookies();
         cookieStore.set("userId", userId, { secure: true, httpOnly: true });
 
-        return { message: "Account created! Redirecting to setup...", success: true };
+        // revalidatePath('/merchant/dashboard'); // Ensure dashboard is fresh
+        return { message: "Account created! Redirecting...", success: true };
 
     } catch (e: any) {
         console.error("Merchant Signup Error:", e);
