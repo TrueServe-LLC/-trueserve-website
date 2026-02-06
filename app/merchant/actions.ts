@@ -102,9 +102,13 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     const contactName = formData.get("contactName") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const address = formData.get("address") as string;
+    const city = formData.get("city") as string;
+    const state = formData.get("state") as string;
+    const zip = formData.get("zip") as string;
     const plan = formData.get("plan") as string;
 
-    if (!restaurantName || !contactName || !email || !password) {
+    if (!restaurantName || !contactName || !email || !password || !address || !city || !state) {
         return { message: "Please fill in all required fields.", error: true };
     }
 
@@ -132,8 +136,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         const userId = authData.user.id;
 
-        // 2. Create Public User Record (if not created by trigger, which we assume it isn't)
-        // Check first to avoid duplicates if trigger exists
+        // 2. Create Public User Record
         const { data: existingUser } = await supabase.from('User').select('id').eq('id', userId).maybeSingle();
 
         if (!existingUser) {
@@ -148,12 +151,28 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             if (userError) throw userError;
         }
 
-        // 3. Create the Restaurant Shell
+        // Helper: Simple Geocode Lookup for Pilot Cities
+        let lat = 35.2271;
+        let lng = -80.8431;
+
+        const cityLower = city.trim().toLowerCase();
+        if (cityLower.includes('charlotte')) { lat = 35.2271; lng = -80.8431; }
+        else if (cityLower.includes('pineville')) { lat = 35.0833; lng = -80.8872; }
+        else if (cityLower.includes('rock hill')) { lat = 34.9249; lng = -81.0251; }
+        else if (cityLower.includes('ramsey')) { lat = 45.2611; lng = -93.4566; }
+
+        // 3. Create the Restaurant Shell WITH Location Data
         const restaurantId = uuidv4();
         const { error: restError } = await supabase.from('Restaurant').insert({
             id: restaurantId,
             ownerId: userId,
             name: restaurantName,
+            address: `${address}, ${zip}`,
+            city: city,
+            state: state,
+            lat: lat,
+            lng: lng,
+            imageUrl: '/restaurant1.jpg',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });

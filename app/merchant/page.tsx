@@ -201,6 +201,22 @@ export default function MerchantPortal() {
                                 <input name="password" type="password" required minLength={8} placeholder="At least 8 characters" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
                             </div>
 
+                            <div className="pt-4 border-t border-white/5">
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Business Address</label>
+                                <div className="space-y-3">
+                                    <input name="address" type="text" required placeholder="Street Address" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <input name="city" type="text" required placeholder="City (e.g. Charlotte)" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
+                                        <select name="state" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
+                                            <option value="NC">North Carolina (NC)</option>
+                                            <option value="SC">South Carolina (SC)</option>
+                                            <option value="MN">Minnesota (MN)</option>
+                                        </select>
+                                    </div>
+                                    <input name="zip" type="text" required placeholder="Zip Code" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" />
+                                </div>
+                            </div>
+
                             <input type="hidden" name="plan" value={selectedPlan} />
 
                             <button disabled={isPending} className="btn btn-primary w-full shadow-lg shadow-primary/20">

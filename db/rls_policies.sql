@@ -13,7 +13,7 @@ RETURNS BOOLEAN AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM "User" 
-    WHERE id = auth.uid() 
+    WHERE id = auth.uid()::text 
     AND role = 'ADMIN'
   );
 END;
@@ -26,15 +26,14 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Allow users to read their own data
 CREATE POLICY "Users can read own data" ON "User"
   FOR SELECT
-  USING (auth.uid() = id);
+  USING (auth.uid()::text = id);
 
 -- Allow Admins to read all users
 CREATE POLICY "Admins can read all data" ON "User"
   FOR ALL
   USING (is_admin());
 
--- Allow specific read access for relationships (Simple approach: Auth users can read basic info)
--- Note: In a strict system, we'd limit this. For Pilot, allowing read on Users for Auth users is acceptable to ensure relationships (User -> Order) load.
+-- Allow specific read access for relationships
 CREATE POLICY "Authenticated users can read basic user info" ON "User"
   FOR SELECT
   USING (auth.role() = 'authenticated'); 
@@ -42,7 +41,7 @@ CREATE POLICY "Authenticated users can read basic user info" ON "User"
 -- Update: Only self or admin
 CREATE POLICY "Users can update own data" ON "User"
   FOR UPDATE
-  USING (auth.uid() = id);
+  USING (auth.uid()::text = id);
 
 -- ===========================
 -- 2. Restaurant Policies
@@ -56,7 +55,7 @@ CREATE POLICY "Restaurants are public" ON "Restaurant"
 -- Insert/Update/Delete: Owner or Admin
 CREATE POLICY "Owners can manage restaurants" ON "Restaurant"
   FOR ALL
-  USING (ownerId = auth.uid() OR is_admin());
+  USING ("ownerId" = auth.uid()::text OR is_admin());
 
 -- ===========================
 -- 3. MenuItem Policies
@@ -74,7 +73,7 @@ CREATE POLICY "Owners can manage menu items" ON "MenuItem"
     EXISTS (
       SELECT 1 FROM "Restaurant"
       WHERE "Restaurant".id = "MenuItem"."restaurantId"
-      AND "Restaurant".ownerId = auth.uid()
+      AND "Restaurant"."ownerId" = auth.uid()::text
     ) 
     OR is_admin()
   );
@@ -91,7 +90,7 @@ CREATE POLICY "Driver profiles are viewable" ON "Driver"
 -- Manage: Self
 CREATE POLICY "Drivers can manage own profile" ON "Driver"
   FOR ALL
-  USING (userId = auth.uid() OR is_admin());
+  USING ("userId" = auth.uid()::text OR is_admin());
 
 -- ===========================
 -- 5. Order Policies
@@ -100,7 +99,7 @@ CREATE POLICY "Drivers can manage own profile" ON "Driver"
 -- Customer can see own orders
 CREATE POLICY "Customers can see own orders" ON "Order"
   FOR SELECT
-  USING (userId = auth.uid());
+  USING ("userId" = auth.uid()::text);
 
 -- Merchant can see orders for their restaurant
 CREATE POLICY "Merchants can see restaurant orders" ON "Order"
@@ -109,20 +108,18 @@ CREATE POLICY "Merchants can see restaurant orders" ON "Order"
     EXISTS (
       SELECT 1 FROM "Restaurant"
       WHERE "Restaurant".id = "Order"."restaurantId"
-      AND "Restaurant".ownerId = auth.uid()
+      AND "Restaurant"."ownerId" = auth.uid()::text
     )
   );
 
--- Drivers can see orders assigned to them OR available orders (Pending)? 
--- Drivers need to see orders they are eligible for if we implement a 'marketplace'.
--- For now, let's allow Drivers to see orders assigned to them.
+-- Drivers can see orders assigned to them
 CREATE POLICY "Drivers can see assigned orders" ON "Order"
   FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM "Driver"
       WHERE "Driver".id = "Order"."driverId"
-      AND "Driver".userId = auth.uid()
+      AND "Driver"."userId" = auth.uid()::text
     )
   );
 
@@ -134,7 +131,7 @@ CREATE POLICY "Admins see all orders" ON "Order"
 -- CREATE: Authenticated users can create orders (Customers)
 CREATE POLICY "Customers can create orders" ON "Order"
   FOR INSERT
-  WITH CHECK (auth.uid() = userId);
+  WITH CHECK (auth.uid()::text = "userId");
 
 -- ===========================
 -- 6. OrderItem Policies
@@ -148,18 +145,16 @@ CREATE POLICY "Order Items visibility via Order" ON "OrderItem"
       SELECT 1 FROM "Order"
       WHERE "Order".id = "OrderItem"."orderId"
       AND (
-        -- Re-implement Order Logic here or rely on cascading?
-        -- RLS policies don't cascade automatically, you must define criteria.
-        "Order".userId = auth.uid() -- Customer
+        "Order"."userId" = auth.uid()::text -- Customer
         OR EXISTS ( -- Merchant
             SELECT 1 FROM "Restaurant"
             WHERE "Restaurant".id = "Order"."restaurantId"
-            AND "Restaurant".ownerId = auth.uid()
+            AND "Restaurant"."ownerId" = auth.uid()::text
         )
         OR EXISTS ( -- Driver
             SELECT 1 FROM "Driver" 
             WHERE "Driver".id = "Order"."driverId"
-            AND "Driver".userId = auth.uid()
+            AND "Driver"."userId" = auth.uid()::text
         )
         OR is_admin()
       )
