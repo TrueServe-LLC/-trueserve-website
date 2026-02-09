@@ -23,9 +23,10 @@ export default function Home() {
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
           </div>
           <div className="flex gap-2 md:gap-4">
-            <Link href="/login" className="btn btn-outline py-2 px-3 md:px-6 text-xs md:text-sm border-white/20 text-white hover:bg-white/10 hover:text-white whitespace-nowrap">Log in</Link>
-            <Link href="/restaurants" className="btn btn-primary py-2 px-3 md:px-6 text-xs md:text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap">Get Started</Link>
+            <Link href="/login" className="btn btn-outline !py-2 !px-3 md:!px-6 !text-xs md:!text-sm border-white/20 text-white hover:bg-white/10 hover:text-white whitespace-nowrap">Log in</Link>
+            <Link href="/restaurants" className="btn btn-primary !py-2 !px-3 md:!px-6 !text-xs md:!text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap">Get Started</Link>
           </div>
+
         </div>
       </nav>
 
