@@ -32,9 +32,9 @@ export default function MerchantPortal() {
                             True<span className="text-gradient">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4 items-center">
-                        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-                        <Link href="/login" className="btn btn-sm btn-outline border-white/20 hover:bg-white/10">Partner Login</Link>
+                    <div className="flex gap-2 md:gap-4 items-center">
+                        <Link href="/" className="text-xs md:text-base hover:text-primary transition-colors">Home</Link>
+                        <Link href="/login" className="btn btn-outline !py-2 !px-3 !text-xs md:!text-sm border-white/20 hover:bg-white/10 whitespace-nowrap">Partner Login</Link>
                     </div>
                 </div>
             </nav>

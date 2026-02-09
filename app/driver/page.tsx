@@ -24,7 +24,7 @@ export default function DriverPortal() {
                             True<span className="text-primary">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4 text-sm font-bold text-slate-300">
+                    <div className="flex gap-3 md:gap-4 text-xs md:text-sm font-bold text-slate-300">
                         <Link href="/" className="hover:text-white transition-colors">Home</Link>
                         <Link href="/merchant" className="hover:text-white transition-colors">For Merchants</Link>
                     </div>

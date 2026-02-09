@@ -119,9 +119,13 @@ export default function Home() {
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000')] bg-cover opacity-10 mix-blend-overlay"></div>
             <div className="relative z-10">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-8">Ready to taste the difference?</h2>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/restaurants" className="btn btn-primary text-lg text-black px-8 py-4 shadow-lg shadow-primary/20">Order Now</Link>
-                <Link href="/driver" className="btn bg-white/10 text-white hover:bg-white/20 border border-white/10 text-lg px-8 py-4 backdrop-blur-md">Drive for Us</Link>
+              <div className="flex flex-col gap-6 sm:flex-row justify-center items-center">
+                <Link href="/restaurants" className="btn btn-primary w-full sm:w-auto text-base md:text-lg text-black px-8 py-3 md:py-4 shadow-lg shadow-primary/20">Order Now</Link>
+
+                <div className="w-full h-px bg-white/10 sm:hidden"></div>
+
+                <h2 className="text-4xl font-bold text-white mb-2 sm:hidden">Ready to drive?</h2>
+                <Link href="/driver" className="btn bg-white/10 w-full sm:w-auto text-white hover:bg-white/20 border border-white/10 text-base md:text-lg px-8 py-3 md:py-4 backdrop-blur-md">Drive for Us</Link>
               </div>
             </div>
           </div>
