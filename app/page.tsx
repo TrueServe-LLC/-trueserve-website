@@ -57,6 +57,11 @@ export default function Home() {
               </div>
             </div>
             <p className="text-sm text-slate-500">Popular: <Link href="/restaurants?location=Charlotte" className="underline hover:text-primary">Charlotte</Link>, <Link href="/restaurants?location=Pineville" className="underline hover:text-primary">Pineville</Link></p>
+            <div className="mt-6 md:hidden">
+              <Link href="/driver" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-primary transition-colors border border-white/10 px-4 py-2 rounded-full bg-white/5">
+                🚗 Want to drive? <span className="text-primary underline decoration-primary/50 underline-offset-2">Join Field Team</span>
+              </Link>
+            </div>
           </div>
 
           <div className="flex-1 relative w-full">
