@@ -16,6 +16,24 @@ export default function DriverDashboardLayout({ children }: { children: React.Re
                     </div>
                 </div>
             </nav>
+
+            {/* Mobile Header */}
+            <div className="md:hidden sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/10 px-4 py-3 flex justify-between items-center">
+                <Link href="/driver/dashboard" className="flex items-center gap-2">
+                    <span className="text-lg font-black tracking-tight text-white">
+                        True<span className="text-primary">Serve</span>
+                    </span>
+                </Link>
+                <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] uppercase font-bold text-emerald-400">Online</span>
+                        <span className="text-xs font-bold text-white">$85.00</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-xs">
+                        JD
+                    </div>
+                </div>
+            </div>
             <main className="container py-8">{children}</main>
             <DriverMobileNav />
         </div>

@@ -59,7 +59,7 @@ export default async function DriverDashboard() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
-            <header className="p-6 border-b border-white/5 flex justify-between items-center">
+            <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center">
                 <Link href="/" className="text-2xl font-bold tracking-tighter">
                     True<span className="text-gradient">Serve</span> Driver
                 </Link>
@@ -74,21 +74,21 @@ export default async function DriverDashboard() {
                 </div>
             </header>
 
-            <main className="container py-12">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                    <Link href="/driver/dashboard/earnings" className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
+            <main className="container py-4 md:py-12">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+                    <Link href="/driver/dashboard/earnings" className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
                         <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-primary transition-colors">Total Earnings ↗</p>
                         <p className="text-4xl font-bold mt-2">${stats.totalEarnings.toFixed(2)}</p>
                     </Link>
-                    <div className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between">
+                    <div className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between">
                         <p className="text-slate-400 text-sm font-semibold uppercase">Completed Trips</p>
                         <p className="text-4xl font-bold mt-2">{stats.trips}</p>
                     </div>
-                    <Link href="/driver/dashboard/ratings" className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
+                    <Link href="/driver/dashboard/ratings" className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
                         <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-yellow-500 transition-colors">Driver Rating ↗</p>
                         <p className="text-4xl font-bold mt-2 text-yellow-500">★ {stats.rating}</p>
                     </Link>
-                    <Link href="/driver/dashboard/account" className="card bg-white/5 border-white/10 p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
+                    <Link href="/driver/dashboard/account" className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
                         <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-primary transition-colors">Tier Status ↗</p>
                         <p className="text-4xl font-bold mt-2 text-primary">Gold</p>
                     </Link>
