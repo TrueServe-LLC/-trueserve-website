@@ -114,17 +114,28 @@ export default function Home() {
 
         {/* Call to Action */}
         <section className="container py-24 mb-24 md:mb-0">
-          <div className="bg-gradient-to-br from-slate-900 to-black rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden border border-white/10">
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000')] bg-cover opacity-10 mix-blend-overlay"></div>
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-6xl font-bold text-white mb-8">Ready to taste the difference?</h2>
-              <div className="flex flex-col gap-6 sm:flex-row justify-center items-center">
-                <Link href="/restaurants" className="btn btn-primary w-full sm:w-auto text-base md:text-lg text-black px-8 py-3 md:py-4 shadow-lg shadow-primary/20">Order Now</Link>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Customer CTA */}
+            <div className="bg-gradient-to-br from-slate-900 to-black rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-primary/50 transition-colors">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay group-hover:opacity-30 transition-opacity"></div>
+              <div className="relative z-10">
+                <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to taste the difference?</h2>
+                <p className="text-slate-400 mb-8 max-w-md mx-auto">Get your favorite local food delivered fast with transparent pricing.</p>
+                <Link href="/restaurants" className="btn btn-primary w-full sm:w-auto text-base md:text-lg text-black px-8 py-3 shadow-lg shadow-primary/20">
+                  Order Food
+                </Link>
+              </div>
+            </div>
 
-                <div className="w-full h-px bg-white/10 sm:hidden"></div>
-
-                <h2 className="text-4xl font-bold text-white mb-2 sm:hidden">Ready to drive?</h2>
-                <Link href="/driver" className="btn bg-white/10 w-full sm:w-auto text-white hover:bg-white/20 border border-white/10 text-base md:text-lg px-8 py-3 md:py-4 backdrop-blur-md">Drive for Us</Link>
+            {/* Driver CTA */}
+            <div className="bg-gradient-to-br from-slate-900 to-black rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-emerald-500/50 transition-colors">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay group-hover:opacity-30 transition-opacity"></div>
+              <div className="relative z-10">
+                <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Drive with specific purpose.</h2>
+                <p className="text-slate-400 mb-8 max-w-md mx-auto">Earn 25-40% more than other platforms with fair, distance-based pay.</p>
+                <Link href="/driver" className="btn bg-white/10 w-full sm:w-auto text-white hover:bg-white/20 border border-white/10 text-base md:text-lg px-8 py-3 backdrop-blur-md">
+                  Become a Driver
+                </Link>
               </div>
             </div>
           </div>
