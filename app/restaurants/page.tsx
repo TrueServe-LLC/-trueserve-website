@@ -56,14 +56,26 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         validLocations = fallbackMocks;
     }
 
-    const matchedLocation = validLocations.find(loc => {
+    let matchedLocation = validLocations.find(loc => {
         const termClean = term.trim().toLowerCase();
-        const cityMatch = loc.city.toLowerCase().includes(termClean);
-        const stateMatch = loc.state.toLowerCase() === termClean || loc.state.toLowerCase().includes(termClean); // Allow "NC" or "North Carolina" if validLocations had full names, but currently 'state' is likely 'NC'
+        const cityLower = loc.city.toLowerCase();
+
+        // Match if city contains term (e.g. "Char") or term contains city (e.g. "Charlotte, NC")
+        const cityMatch = cityLower.includes(termClean) || termClean.includes(cityLower);
+        const stateMatch = loc.state.toLowerCase() === termClean || loc.state.toLowerCase().includes(termClean);
         const zipMatch = loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix));
 
         return cityMatch || stateMatch || zipMatch;
     });
+
+    if (!matchedLocation && term.includes(',')) {
+        const potentialCity = term.split(',')[0].trim().toLowerCase();
+        matchedLocation = validLocations.find(loc => loc.city.toLowerCase() === potentialCity);
+    }
+
+    if (!matchedLocation) {
+        return { restaurants: [], locationMeta: { name: locationInput, center: [35.2271, -80.8431] } };
+    }
 
     // Default metadata
     let locationMeta = {
