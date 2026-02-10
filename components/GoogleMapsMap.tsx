@@ -156,7 +156,7 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
                     position={{ lat: center[0], lng: center[1] }}
                     title="Search Location"
                     icon={{
-                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                        url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
                     }}
                 />
 

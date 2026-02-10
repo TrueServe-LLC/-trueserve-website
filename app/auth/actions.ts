@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
@@ -16,6 +16,7 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const cookieStore = await cookies();
+    const supabase = await createClient();
 
     if (!email || !password) {
         return { message: "Email and Password are required", error: true };
@@ -61,6 +62,7 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
     const role = (formData.get("role") as string) || 'CUSTOMER';
     const name = (formData.get("name") as string) || email.split('@')[0];
     const cookieStore = await cookies();
+    const supabase = await createClient();
 
     if (!email || !password) {
         return { message: "Email and Password are required", error: true };
@@ -110,6 +112,8 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
 
 export async function resetPassword(formData: FormData): Promise<AuthState> {
     const email = formData.get("email") as string;
+    const supabase = await createClient();
+
     if (!email) return { message: "Email is required", error: true };
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -125,6 +129,7 @@ export async function resetPassword(formData: FormData): Promise<AuthState> {
 
 export async function logout() {
     const cookieStore = await cookies();
+    const supabase = await createClient();
     await supabase.auth.signOut();
     cookieStore.delete("userId");
     redirect("/login");

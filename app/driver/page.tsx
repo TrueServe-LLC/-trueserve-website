@@ -47,7 +47,7 @@ export default function DriverPortal() {
                         The Future of <br />
                         <span className="text-primary">TrueServe</span> Delivery
                     </h1>
-                    <p className="text-xl text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed font-medium">
+                    <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
                         Join the most transparent platform in the industry.
                         Get guaranteed floors, distance-based kicks, and <span className="text-white font-bold underline decoration-primary decoration-2 underline-offset-4">100% of your tips.</span>
                     </p>
@@ -56,7 +56,7 @@ export default function DriverPortal() {
                 <div className="space-y-12 text-left">
 
                     {/* Pay Formula Card */}
-                    <div className="rounded-3xl border border-primary/20 bg-black/60 backdrop-blur-xl p-8 shadow-2xl relative overflow-hidden">
+                    <div className="rounded-3xl border border-white/20 bg-black/60 backdrop-blur-xl p-8 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
                         <div className="text-center mb-8 relative z-10">
                             <h2 className="text-2xl font-bold italic text-white">"Know exactly what you earn."</h2>
