@@ -42,6 +42,11 @@ async function getMerchantData() {
                 .select(`
                     *,
                     user:User(*),
+                    driver:Driver(
+                        currentLat,
+                        currentLng,
+                        user:User(name)
+                    ),
                     items:OrderItem(
                         *,
                         menuItem:MenuItem(*)
@@ -240,6 +245,18 @@ export default async function MerchantDashboard() {
                                             </form>
                                         )}
                                         <button className="btn btn-outline text-sm py-2 text-red-400 border-red-500/20 hover:bg-red-500/10">Reject</button>
+
+                                        {/* Track Driver Button */}
+                                        {order.driver && order.driver.currentLat && (
+                                            <a
+                                                href={`https://www.google.com/maps/search/?api=1&query=${order.driver.currentLat},${order.driver.currentLng}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="btn btn-outline text-sm py-2 text-blue-400 border-blue-500/20 hover:bg-blue-500/10 flex items-center gap-2"
+                                            >
+                                                <span>📍</span> Track Driver
+                                            </a>
+                                        )}
                                     </div>
 
                                     {!(order as any).isRefunded && (

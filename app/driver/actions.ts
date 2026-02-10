@@ -1,6 +1,7 @@
 "use server";
 
 import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
 import * as fs from 'fs';
@@ -31,10 +32,9 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     try {
         const cookieStore = await cookies();
 
-
-
         // 1. Ensure Placeholder User Record Exists
-        const { data: userByEmail } = await supabase
+        // Use ADMIN client to bypass RLS for User table operations
+        const { data: userByEmail } = await supabaseAdmin
             .from('User')
             .select('id')
             .eq('email', email)
@@ -45,7 +45,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         if (!targetUserId) {
             targetUserId = uuidv4();
             // Create Placeholder User
-            const { error: createError } = await supabase
+            const { error: createError } = await supabaseAdmin
                 .from('User')
                 .insert({
                     id: targetUserId,
@@ -72,12 +72,12 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
             // Note: 'driver-documents' bucket must exist in Supabase Storage.
             // If it doesn't, this will error, but we'll catch it and proceed (saving the app is priority).
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
                 .from('driver-documents')
                 .upload(fileName, idDocument);
 
             if (!uploadError && uploadData) {
-                const { data: publicUrlData } = supabase.storage
+                const { data: publicUrlData } = supabaseAdmin.storage
                     .from('driver-documents')
                     .getPublicUrl(fileName);
                 documentUrl = publicUrlData.publicUrl;
@@ -88,7 +88,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             console.warn("[DriverApp] Document upload exception:", uploadErr);
         }
 
-        const { data: existingDriver } = await supabase
+        const { data: existingDriver } = await supabaseAdmin
             .from('Driver')
             .select('id')
             .eq('userId', targetUserId)
@@ -98,7 +98,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             return { message: "You have already applied!", error: true };
         }
 
-        const { error: driverError } = await supabase
+        const { error: driverError } = await supabaseAdmin
             .from('Driver')
             .insert({
                 id: uuidv4(),
