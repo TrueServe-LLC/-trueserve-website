@@ -1,14 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import "leaflet/dist/leaflet.css";
-import dynamic from "next/dynamic";
+import { useMemo, useState } from "react";
+import Map, { Source, Layer, Marker, Popup, NavigationControl } from 'react-map-gl/mapbox';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), { ssr: false });
-const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), { ssr: false });
-const Circle = dynamic(() => import("react-leaflet").then((mod) => mod.Circle), { ssr: false });
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 // Mock Hotzones
 const HOTZONES = [
@@ -18,55 +14,109 @@ const HOTZONES = [
 ];
 
 export default function DriverMap() {
-    const [leaflet, setLeaflet] = useState<any>(null);
-    const center: [number, number] = [35.2271, -80.8431]; // Charlotte
+    const [popupInfo, setPopupInfo] = useState<any>(null);
 
-    useEffect(() => {
-        import("leaflet").then((L) => {
-            setLeaflet(L);
-            // @ts-ignore
-            delete L.Icon.Default.prototype._getIconUrl;
-            L.Icon.Default.mergeOptions({
-                iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-                iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-                shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-            });
-        });
+    // Create GeoJSON for Hotzones
+    const hotzoneData = useMemo(() => {
+        return {
+            type: 'FeatureCollection',
+            features: HOTZONES.map(zone => ({
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [zone.coords[1], zone.coords[0]] // GeoJSON uses [lng, lat]
+                },
+                properties: {
+                    id: zone.id,
+                    name: zone.name,
+                    color: zone.color,
+                    radius: zone.radius,
+                    avgPay: zone.avgPay
+                }
+            }))
+        };
     }, []);
 
-    if (!leaflet) return <div className="h-[400px] w-full bg-slate-800 animate-pulse rounded-xl" />;
+    if (!MAPBOX_TOKEN) {
+        return <div className="h-[400px] w-full bg-slate-800 flex items-center justify-center text-slate-500">Mapbox Token Missing</div>;
+    }
 
     return (
         <div className="h-[400px] w-full rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0">
             {/* @ts-ignore */}
-            <MapContainer center={center} zoom={13} scrollWheelZoom={false} className="h-full w-full">
-                {/* @ts-ignore */}
-                <TileLayer
-                    attribution='&copy; OpenStreetMap'
-                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                />
+            <Map
+                initialViewState={{
+                    latitude: 35.2271,
+                    longitude: -80.8431,
+                    zoom: 12
+                }}
+                style={{ width: '100%', height: '100%' }}
+                mapStyle="mapbox://styles/mapbox/dark-v11"
+                mapboxAccessToken={MAPBOX_TOKEN}
+            >
+                <NavigationControl position="top-right" />
 
+                {/* Render Circles using GeoJSON Layer (Approximate visualization using circle-radius) */}
+                {/* Note: Mapbox GL JS 'circle' layer radius is in pixels by default unless usage 'pitch-alignment' map. 
+                    For true geographic meters, Fill layer with detailed polygon is better, but Circle layer with zoom-dependent radius works for visual "heat".
+                */}
+                <Source id="hotzones" type="geojson" data={hotzoneData as any}>
+                    <Layer
+                        id="hotzone-layer"
+                        type="circle"
+                        paint={{
+                            'circle-radius': [
+                                'interpolate',
+                                ['linear'],
+                                ['zoom'],
+                                10, ['/', ['get', 'radius'], 50], // simple scaling for demo
+                                15, ['/', ['get', 'radius'], 10]
+                            ],
+                            'circle-color': ['get', 'color'],
+                            'circle-opacity': 0.4,
+                            'circle-stroke-width': 2,
+                            'circle-stroke-color': ['get', 'color']
+                        }}
+                    />
+                </Source>
+
+                {/* Markers for Labels */}
                 {HOTZONES.map(zone => (
-                    <div key={zone.id}>
-                        {/* @ts-ignore */}
-                        <Circle center={zone.coords} radius={zone.radius} pathOptions={{ color: zone.color, fillColor: zone.color, fillOpacity: 0.2 }} />
-                        {/* @ts-ignore */}
-                        <Marker position={zone.coords}>
-                            {/* @ts-ignore */}
-                            <Popup>
-                                <div className="p-1 text-center">
-                                    <h3 className="font-bold text-slate-900">{zone.name}</h3>
-                                    <p className="text-emerald-600 font-bold text-lg">${zone.avgPay} <span className="text-xs text-slate-500 font-normal">/ order</span></p>
-                                    <p className="text-xs text-red-500 font-bold uppercase mt-1">Very Busy</p>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    </div>
+                    <Marker
+                        key={zone.id}
+                        latitude={zone.coords[0]}
+                        longitude={zone.coords[1]}
+                        anchor="center"
+                        onClick={e => {
+                            e.originalEvent.stopPropagation();
+                            setPopupInfo(zone);
+                        }}
+                    >
+                        <div className="flex flex-col items-center cursor-pointer group">
+                            <span className="text-xl drop-shadow-md group-hover:scale-125 transition-transform">🔥</span>
+                        </div>
+                    </Marker>
                 ))}
-            </MapContainer>
+
+                {popupInfo && (
+                    <Popup
+                        anchor="top"
+                        longitude={popupInfo.coords[1]}
+                        latitude={popupInfo.coords[0]}
+                        onClose={() => setPopupInfo(null)}
+                        className="text-black"
+                    >
+                        <div className="p-1 text-center">
+                            <h3 className="font-bold text-slate-900">{popupInfo.name}</h3>
+                            <p className="text-emerald-600 font-bold text-lg">${popupInfo.avgPay} <span className="text-xs text-slate-500 font-normal">/ order</span></p>
+                            <p className="text-xs text-red-500 font-bold uppercase mt-1">Very Busy</p>
+                        </div>
+                    </Popup>
+                )}
+            </Map>
 
             {/* Legend Overlay */}
-            <div className="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md p-3 rounded-lg border border-white/10 z-[500]">
+            <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md p-3 rounded-lg border border-white/10 z-[10]">
                 <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">Live Demand</h4>
                 <div className="space-y-2">
                     {HOTZONES.map(zone => (

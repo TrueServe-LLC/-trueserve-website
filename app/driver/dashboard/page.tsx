@@ -59,9 +59,11 @@ export default async function DriverDashboard() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
-            <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center">
-                <Link href="/" className="text-2xl font-bold tracking-tighter">
-                    True<span className="text-gradient">Serve</span> Driver
+
+            <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center sticky top-0 bg-black/50 backdrop-blur-md z-50">
+                <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-white/10 text-emerald-400">⚡</div>
+                    <span className="text-xl font-black tracking-tight">True<span className="text-emerald-400">Serve</span> Driver</span>
                 </Link>
                 <div className="flex gap-4 items-center">
                     <div className="text-right">

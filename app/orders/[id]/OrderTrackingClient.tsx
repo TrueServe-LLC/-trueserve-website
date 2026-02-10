@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 
-const LeafletMap = dynamic(() => import("@/components/LeafletMap"), {
+
+const MapboxMap = dynamic(() => import("@/components/MapboxMap"), {
     ssr: false,
     loading: () => <div className="h-[400px] w-full bg-slate-800 animate-pulse rounded-xl" />
 });
@@ -94,11 +95,12 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
     const currentStep = getProgressStep(currentOrder.status);
 
+
     return (
         <div className="space-y-8">
             {/* Map Section */}
             <div className="card p-0 overflow-hidden relative group border border-white/10 shadow-2xl rounded-2xl">
-                <div className="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-lg">
+                <div className="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-lg pointer-events-none">
                     <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">Estimated Arrival</p>
                     <div className="flex items-baseline gap-2">
                         <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
@@ -111,18 +113,25 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 </div>
 
                 <div className="h-[400px] w-full relative z-0">
-                    <LeafletMap
+                    <MapboxMap
                         center={driverPos}
                         zoom={14}
-                        restaurants={[{
-                            id: "driver",
-                            name: "Driver",
-                            coords: driverPos,
-                        }, {
-                            id: "restaurant",
-                            name: order.restaurant.name,
-                            coords: [order.restaurant.lat, order.restaurant.lng]
-                        }]}
+                        restaurants={[
+                            {
+                                id: "driver",
+                                name: "Driver",
+                                coords: driverPos,
+                                image: "https://cdn-icons-png.flaticon.com/512/3097/3097180.png", // Use a car icon or similar
+                                tags: ["Driver"]
+                            },
+                            {
+                                id: "restaurant",
+                                name: order.restaurant.name,
+                                coords: [order.restaurant.lat, order.restaurant.lng],
+                                image: order.restaurant.imageUrl,
+                                tags: ["Restaurant"]
+                            }
+                        ]}
                     />
                 </div>
 
@@ -161,57 +170,99 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 </div>
             </div>
 
-            {/* Timeline Section */}
-            <div className="card p-8 border border-white/10 bg-slate-900/50 backdrop-blur-sm">
-                <h3 className="font-bold text-xl mb-8 flex items-center gap-2">
-                    <span>📍</span> Order Status
-                </h3>
-                <div className="space-y-8 relative before:absolute before:inset-0 before:left-[19px] before:w-0.5 before:bg-white/10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Timeline Section */}
+                <div className="md:col-span-2 card p-8 border border-white/10 bg-slate-900/50 backdrop-blur-sm">
+                    <h3 className="font-bold text-xl mb-8 flex items-center gap-2">
+                        <span>📍</span> Order Status
+                    </h3>
+                    <div className="space-y-8 relative before:absolute before:inset-0 before:left-[19px] before:w-0.5 before:bg-white/10">
 
-                    {/* Step 1 */}
-                    <div className="flex gap-6 relative">
-                        <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 1 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
-                            ✓
+                        {/* Step 1 */}
+                        <div className="flex gap-6 relative">
+                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 1 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
+                                ✓
+                            </div>
+                            <div className={currentStep >= 1 ? 'opacity-100' : 'opacity-40'}>
+                                <p className="font-bold text-lg">Order Received</p>
+                                <p className="text-sm text-slate-400">{new Date(currentOrder.createdAt).toLocaleTimeString()} - We've sent your order to the kitchen.</p>
+                            </div>
                         </div>
-                        <div className={currentStep >= 1 ? 'opacity-100' : 'opacity-40'}>
-                            <p className="font-bold text-lg">Order Received</p>
-                            <p className="text-sm text-slate-400">{new Date(currentOrder.createdAt).toLocaleTimeString()} - We've sent your order to the kitchen.</p>
+
+                        {/* Step 2 */}
+                        <div className="flex gap-6 relative">
+                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 2 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
+                                🔥
+                            </div>
+                            <div className={currentStep >= 2 ? 'opacity-100' : 'opacity-40'}>
+                                <p className="font-bold text-lg">Preparing Food</p>
+                                <p className="text-sm text-slate-400">The kitchen is cooking up your meal.</p>
+                            </div>
+                        </div>
+
+                        {/* Step 4 (Skip 3 usually) */}
+                        <div className="flex gap-6 relative">
+                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 4 ? 'bg-primary text-black' : 'bg-slate-800 text-slate-500'}`}>
+                                🛵
+                            </div>
+                            <div className={currentStep >= 4 ? 'opacity-100' : 'opacity-40'}>
+                                <p className="font-bold text-lg">Out for Delivery</p>
+                                <p className="text-sm text-slate-400">Driver located and heading your way.</p>
+                            </div>
+                        </div>
+
+                        {/* Step 5 */}
+                        <div className="flex gap-6 relative">
+                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 5 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
+                                🏠
+                            </div>
+                            <div className={currentStep >= 5 ? 'opacity-100' : 'opacity-40'}>
+                                <p className="font-bold text-lg">Delivered</p>
+                                <p className="text-sm text-slate-400">Enjoy your meal!</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {/* Order Summary Section */}
+                <div className="card p-6 border border-white/10 bg-slate-900/50 backdrop-blur-sm h-fit sticky top-24">
+                    <h3 className="font-bold text-xl mb-4 border-b border-white/10 pb-4">Receipt</h3>
+                    <div className="space-y-4 mb-6">
+                        {order.items?.map((item: any, i: number) => (
+                            <div key={item.id || i} className="flex justify-between items-start text-sm">
+                                <div className="flex gap-2">
+                                    <span className="font-bold text-emerald-400">{item.quantity}x</span>
+                                    <span className="text-slate-300">{item.menuItem?.name || item.name || "Item"}</span>
+                                </div>
+                                <span className="text-slate-400 mono">${Number(item.price).toFixed(2)}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="space-y-2 pt-4 border-t border-white/10 text-xs text-slate-400">
+                        <div className="flex justify-between">
+                            <span>Subtotal</span>
+                            <span>${(Number(order.total) || 0).toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Delivery Fee</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Service Fee</span>
+                            <span>$0.00</span>
                         </div>
                     </div>
 
-                    {/* Step 2 */}
-                    <div className="flex gap-6 relative">
-                        <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 2 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
-                            🔥
-                        </div>
-                        <div className={currentStep >= 2 ? 'opacity-100' : 'opacity-40'}>
-                            <p className="font-bold text-lg">Preparing Food</p>
-                            <p className="text-sm text-slate-400">The kitchen is cooking up your meal.</p>
-                        </div>
+                    <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center font-bold text-xl text-white">
+                        <span>Total</span>
+                        <span>${(Number(order.total) || 0).toFixed(2)}</span>
                     </div>
 
-                    {/* Step 4 (Skip 3 usually) */}
-                    <div className="flex gap-6 relative">
-                        <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 4 ? 'bg-primary text-black' : 'bg-slate-800 text-slate-500'}`}>
-                            🛵
-                        </div>
-                        <div className={currentStep >= 4 ? 'opacity-100' : 'opacity-40'}>
-                            <p className="font-bold text-lg">Out for Delivery</p>
-                            <p className="text-sm text-slate-400">Driver located and heading your way.</p>
-                        </div>
-                    </div>
-
-                    {/* Step 5 */}
-                    <div className="flex gap-6 relative">
-                        <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 5 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
-                            🏠
-                        </div>
-                        <div className={currentStep >= 5 ? 'opacity-100' : 'opacity-40'}>
-                            <p className="font-bold text-lg">Delivered</p>
-                            <p className="text-sm text-slate-400">Enjoy your meal!</p>
-                        </div>
-                    </div>
-
+                    <button className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-xs">
+                        Download PDF Receipt
+                    </button>
                 </div>
             </div>
         </div>
