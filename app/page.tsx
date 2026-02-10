@@ -13,9 +13,7 @@ export default function Home() {
         <div className="container flex justify-between items-center">
 
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-white/10 group-hover:border-primary transition-all shadow-lg backdrop-blur-sm">
-              ⚡
-            </div>
+            <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg backdrop-blur-sm" />
             <span className="text-2xl font-black tracking-tight text-white">
               True<span className="text-primary">Serve</span>
             </span>
