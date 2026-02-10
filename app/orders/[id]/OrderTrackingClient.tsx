@@ -20,6 +20,7 @@ interface OrderTrackingClientProps {
 export default function OrderTrackingClient({ order }: OrderTrackingClientProps) {
 
     const [currentOrder, setCurrentOrder] = useState(order);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     // Initial positions
     const restaurantPos: [number, number] = [order.restaurant.lat || 35.2271, order.restaurant.lng || -80.8431];
@@ -348,13 +349,25 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     >
                         Download PDF Receipt
                     </button>
+                </div>
+            </div>
 
-                    {/* Chat Window */}
-                    <div className="mt-8 pt-8 border-t border-white/10">
+            {/* Floating Chat Widget */}
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+                {isChatOpen && (
+                    <div className="w-80 shadow-2xl animate-fade-in-up">
                         <ChatWindow orderId={currentOrder.id} />
                     </div>
-                </div>
+                )}
+
+                <button
+                    onClick={() => setIsChatOpen(!isChatOpen)}
+                    className="btn btn-circle btn-primary h-14 w-14 shadow-lg shadow-primary/20 flex items-center justify-center text-xl hover:scale-110 transition-transform"
+                >
+                    {isChatOpen ? '✕' : '💬'}
+                </button>
             </div>
         </div>
     );
 }
+
