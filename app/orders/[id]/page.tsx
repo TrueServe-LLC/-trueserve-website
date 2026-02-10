@@ -4,9 +4,18 @@ import { notFound } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
 import OrderTrackingClient from "./OrderTrackingClient";
 
+
+import { createClient } from '@supabase/supabase-js';
+
 async function getOrder(id: string) {
+    // USE ADMIN CLIENT to bypass RLS for Order Tracking
+    const adminSupabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
     try {
-        const { data: order, error } = await supabase
+        const { data: order, error } = await adminSupabase
             .from('Order')
             .select(`
                 *,
