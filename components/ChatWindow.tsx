@@ -22,14 +22,41 @@ export default function ChatWindow({ orderId }: { orderId: string }) {
 
     const sendMessage = () => {
         if (!input.trim()) return;
-        setMessages([...messages, {
+        const newMsg: Message = {
             id: Date.now().toString(),
             content: input,
             sender: "USER",
             timestamp: new Date()
-        }]);
+        };
+        setMessages([...messages, newMsg]);
         setInput("");
     };
+
+    // Simulate Driver Reply
+    useEffect(() => {
+        const lastMsg = messages[messages.length - 1];
+        if (lastMsg && lastMsg.sender === "USER") {
+            const timer = setTimeout(() => {
+                const replies = [
+                    "On my way!",
+                    "Thanks for the update.",
+                    "See you soon!",
+                    "Traffic is a bit heavy, but moving.",
+                    "Almost there!"
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+
+                const replyMsg: Message = {
+                    id: Date.now().toString(),
+                    content: randomReply,
+                    sender: "DRIVER",
+                    timestamp: new Date()
+                };
+                setMessages(prev => [...prev, replyMsg]);
+            }, 3000 + Math.random() * 2000); // 3-5s delay
+            return () => clearTimeout(timer);
+        }
+    }, [messages]);
 
     const handleTranslate = async (id: string, text: string) => {
         setTranslating(id);

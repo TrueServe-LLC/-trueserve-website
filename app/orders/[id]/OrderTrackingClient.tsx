@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable';
+import ChatWindow from "@/components/ChatWindow";
 
 
 const MapboxMap = dynamic(() => import("@/components/MapboxMap"), {
@@ -127,6 +130,51 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
     const currentStep = getProgressStep(currentOrder.status);
 
+
+    const handleDownloadReceipt = () => {
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFontSize(20);
+        doc.text("Order Receipt", 14, 22);
+
+        doc.setFontSize(10);
+        doc.text(`Order ID: ${currentOrder.id}`, 14, 32);
+        doc.text(`Date: ${new Date(currentOrder.createdAt).toLocaleDateString()}`, 14, 38);
+        doc.text(`Restaurant: ${currentOrder.restaurant.name}`, 14, 44);
+
+        // Items Table
+        const tableColumn = ["Item", "Qty", "Price", "Total"];
+        const tableRows: any[] = [];
+
+        currentOrder.items?.forEach((item: any) => {
+            const unitPrice = Number(item.price);
+            const total = unitPrice * item.quantity;
+            const itemData = [
+                item.menuItem?.name || item.name || "Item",
+                item.quantity,
+                `$${unitPrice.toFixed(2)}`,
+                `$${total.toFixed(2)}`
+            ];
+            tableRows.push(itemData);
+        });
+
+        // @ts-ignore
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 50,
+        });
+
+        // Totals
+        // @ts-ignore
+        const finalY = (doc as any).lastAutoTable.finalY + 10;
+
+        doc.text(`Subtotal: $${(Number(currentOrder.total) || 0).toFixed(2)}`, 14, finalY);
+        doc.text(`Total Paid: $${(Number(currentOrder.total) || 0).toFixed(2)}`, 14, finalY + 6);
+
+        doc.save(`receipt_${currentOrder.id}.pdf`);
+    };
 
     return (
         <div className="space-y-8">
@@ -294,9 +342,17 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         <span>${(Number(order.total) || 0).toFixed(2)}</span>
                     </div>
 
-                    <button className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-xs">
+                    <button
+                        onClick={handleDownloadReceipt}
+                        className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-xs"
+                    >
                         Download PDF Receipt
                     </button>
+
+                    {/* Chat Window */}
+                    <div className="mt-8 pt-8 border-t border-white/10">
+                        <ChatWindow orderId={currentOrder.id} />
+                    </div>
                 </div>
             </div>
         </div>
