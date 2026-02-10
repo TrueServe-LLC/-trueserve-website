@@ -17,7 +17,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 // List of base names to generate realistic restaurants
 const baseNames = [
-    "The Garrison", "The Flame", "Waldhorn Restaurant", "Metro Diner", "El Veracruz", "Alley 51",
+    "The Garrison", "The Flame", "Metro Diner", "El Veracruz", "Alley 51",
     "Mama Ricotta's", "Midwood Smokehouse", "Haberdish", "Kindred", "Beef 'N Bottle", "Lang Van",
     "Copper", "O-Ku", "Futo Buta", "Seoul Food Meat Co.", "Let's Meat", "Hawkers", "Optimist Hall",
     "Midnight Diner", "Amélie's French Bakery", "Suffolk Punch", "Legion Brewing", "Wooden Robot",
@@ -35,6 +35,57 @@ const baseNames = [
 ];
 
 const cuisines = ["American", "Italian", "Mexican", "Asian Fusion", "BBQ", "Burgers", "Vegan", "Pizza", "Seafood", "Steakhouse"];
+
+const specificRestaurants = [
+    {
+        name: "Costa Del Sol",
+        address: "10215 Park Rd",
+        city: "Charlotte",
+        state: "NC",
+        lat: 35.097,
+        lng: -80.859,
+        cuisine: "Mexican",
+        image: "https://images.squarespace-cdn.com/content/v1/65b858c7baf8b0029d04970b/1770229040424-64H9DWZX259ZRF8VQ9Y1/image-asset.jpeg",
+        items: [
+            { name: "Pollo Guisado", description: "Tender stewed chicken with potatoes and carrots, served with rice.", price: 14, image: "https://images.squarespace-cdn.com/content/v1/65b858c7baf8b0029d04970b/1770059966868-HOU04YLM0N8DSH7PK7KM/image-asset.jpeg" },
+            { name: "Alitas Touchdown", description: "Crispy chicken wings with your choice of house sauce.", price: 12, image: "https://source.unsplash.com/400x300/?chicken,wings" },
+            { name: "MVP Burger", description: "Juicy beef patty topped with cheese, lettuce, tomato, and secret sauce.", price: 15, image: "https://source.unsplash.com/400x300/?burger" },
+            { name: "Piña Colada", description: "Fresh pineapple drive, coconut cream, and rum.", price: 10, image: "https://images.squarespace-cdn.com/content/v1/65b858c7baf8b0029d04970b/1770048845071-LYORNLFIETICWTF34WO5/image-asset.jpeg" }
+        ]
+    },
+    {
+        name: "Waldhorn Restaurant",
+        address: "12101 Lancaster Hwy",
+        city: "Pineville",
+        state: "NC",
+        lat: 35.076,
+        lng: -80.887,
+        cuisine: "German",
+        image: "https://images.unsplash.com/photo-1599458252573-56ae36120de1?q=80&w=2940&auto=format&fit=crop", // Representative German exterior
+        items: [
+            { name: "Jägerschnitzel", description: "Breaded pork schnitzel topped with homemade mushroom gravy.", price: 24, image: "https://source.unsplash.com/400x300/?schnitzel" },
+            { name: "Riesen Bretzel", description: "Giant Bavarian pretzel served with beer cheese and mustard.", price: 12, image: "https://source.unsplash.com/400x300/?pretzel" },
+            { name: "Bratwurst Platter", description: "Two grilled bratwursts served with sauerkraut and potato salad.", price: 18, image: "https://source.unsplash.com/400x300/?bratwurst" },
+            { name: "Apfelstrudel", description: "Warm apple strudel served with vanilla sauce.", price: 9, image: "https://source.unsplash.com/400x300/?strudel" }
+        ]
+    },
+    {
+        name: "Hoppin'",
+        address: "110 Southern St",
+        city: "Rock Hill",
+        state: "SC",
+        lat: 34.928,
+        lng: -81.026,
+        cuisine: "American",
+        image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=2874&auto=format&fit=crop", // Modern Taproom Vibe
+        items: [
+            { name: "Double Smash Burger", description: "Two patties, American cheese, pickles, and house sauce (from Fresh Press).", price: 16, image: "https://source.unsplash.com/400x300/?smashburger" },
+            { name: "Turkey & Havarti Panini", description: "Roasted turkey, havarti cheese, and pesto mayo on ciabatta.", price: 14, image: "https://source.unsplash.com/400x300/?panini" },
+            { name: "The Cuban", description: "Slow-roasted pork, ham, swiss, pickles, and mustard.", price: 15, image: "https://source.unsplash.com/400x300/?cuban,sandwich" },
+            { name: "Loaded Reuben Fries", description: "Crispy fries topped with corned beef, swiss, sauerkraut, and dressing.", price: 13, image: "https://source.unsplash.com/400x300/?fries,cheese" }
+        ]
+    }
+];
 
 async function seedRealRestaurants() {
     console.log('Starting Real Restaurant Seed (Target: 83)...')
@@ -61,7 +112,62 @@ async function seedRealRestaurants() {
 
     let createdCount = 0;
 
-    for (let i = 0; i < 83; i++) {
+    // 1. Seed Specific Restaurants first
+    for (const spec of specificRestaurants) {
+        console.log(`Creating Specific: ${spec.name}...`);
+
+        const merchantId = uuidv4();
+        const email = `owner_${spec.name.replace(/\s/g, '').toLowerCase()}_${Date.now()}@trueserve.test`;
+
+        await supabase.from('User').insert({
+            id: merchantId,
+            email: email,
+            name: `${spec.name} Manager`,
+            role: 'MERCHANT',
+            updatedAt: now,
+            createdAt: now
+        });
+
+        const rId = uuidv4();
+        const { error: rError } = await supabase.from('Restaurant').insert({
+            id: rId,
+            name: spec.name,
+            address: spec.address,
+            city: spec.city,
+            state: spec.state,
+            lat: spec.lat,
+            lng: spec.lng,
+            description: `Authentic ${spec.cuisine} experience.`,
+            imageUrl: spec.image,
+            ownerId: merchantId,
+            updatedAt: now,
+            createdAt: now
+        });
+
+        if (rError) {
+            console.error(`Failed to create ${spec.name}:`, rError);
+            continue;
+        }
+
+        // Add Menu Items
+        const menuItems = spec.items.map(item => ({
+            id: uuidv4(),
+            restaurantId: rId,
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            status: 'APPROVED',
+            imageUrl: item.image,
+            updatedAt: now,
+            createdAt: now
+        }));
+
+        await supabase.from('MenuItem').insert(menuItems);
+        createdCount++;
+    }
+
+    // 2. Fill the rest with random data (Target 80 more)
+    for (let i = 0; i < 80; i++) {
         const name = i < baseNames.length ? baseNames[i] : `TrueServe Kitchen #${i - baseNames.length + 1}`;
         const cuisine = cuisines[i % cuisines.length];
 
@@ -87,7 +193,7 @@ async function seedRealRestaurants() {
         lat = lat + (Math.random() - 0.5) * 0.1;
         lng = lng + (Math.random() - 0.5) * 0.1;
 
-        console.log(`Creating [${i + 1}/83]: ${name}...`);
+        console.log(`Creating [${i + 1}/80]: ${name}...`);
 
         // Create Merchant User
         const merchantId = uuidv4();
