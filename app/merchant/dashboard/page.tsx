@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import AddItemForm from "./AddItemForm";
 import { updateOrderStatus, refundOrder } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 async function getMerchantData() {
     try {
         const { data: restaurant, error } = await supabase

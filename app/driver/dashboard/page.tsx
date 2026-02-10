@@ -141,7 +141,14 @@ export default async function DriverDashboard() {
                                     </div>
                                     <p className="text-sm text-emerald-200/60 mb-4">{order.restaurant?.address}</p>
                                     <div className="flex gap-2">
-                                        <button className="flex-1 btn bg-emerald-500 text-black font-bold text-xs py-2">Navigate</button>
+                                        <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.restaurant?.address || "")}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 btn bg-emerald-500 text-black font-bold text-xs py-2 flex items-center justify-center"
+                                        >
+                                            Navigate
+                                        </a>
                                         <button className="flex-1 btn bg-white/10 text-white font-bold text-xs py-2">Contact</button>
                                     </div>
                                 </div>
