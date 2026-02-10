@@ -1,9 +1,20 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import * as fs from 'fs';
+import { cookies } from "next/headers";
+
+function logToFile(msg: string) {
+    try {
+        const timestamp = new Date().toISOString();
+        fs.appendFileSync('order_debug.log', `[${timestamp}] ${msg}\n`);
+    } catch (e) {
+        // ignore logging errors
+    }
+}
 
 export type OrderState = {
     message: string;
@@ -13,147 +24,137 @@ export type OrderState = {
     posReference?: string;
 };
 
-import { cookies } from "next/headers";
-
-// ...
-
 export async function placeOrder(
     restaurantId: string,
     cartItems: { id: string; price: number; quantity: number }[],
     paymentDetails?: { cardNumber: string; expiry: string; cvc: string }
 ): Promise<OrderState> {
-    console.log(`[PlaceOrder] Received order for restaurant ${restaurantId}`, { count: cartItems.length, payment: paymentDetails ? "Present" : "Missing" });
+    logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
 
-    if (cartItems.length === 0) {
-        return { message: "Your cart is empty.", error: true, success: false };
+    // 1. Initialize Admin Client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !serviceKey) {
+        logToFile("ERROR: Missing Environment Variables");
+        return { message: "Server Error: Configuration Missing", error: true };
     }
 
-    if (!paymentDetails || !paymentDetails.cardNumber) {
-        return { message: "Payment details are required.", error: true, success: false };
-    }
+    const supabase = createSupabaseClient(supabaseUrl, serviceKey, {
+        auth: { persistSession: false }
+    });
 
-    // SIMULATED PAYMENT PROCESSING
-    await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5s delay
+    if (cartItems.length === 0) return { message: "Cart is empty.", error: true };
+    if (!paymentDetails?.cardNumber) return { message: "Payment details missing.", error: true };
 
-    // Mock Decline Logic
+    // ... Payment Logic ...
+    await new Promise(resolve => setTimeout(resolve, 1000));
     if (paymentDetails.cardNumber.endsWith("0000")) {
-        return { message: "Payment Declined: Card reported lost or stolen (Mock).", error: true, success: false };
+        return { message: "Payment Declined (Mock).", error: true };
     }
 
     try {
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
+        logToFile(`User ID from Cookie: ${userId}`);
 
-        // 1. Validate Items & Prices (Security)
+        // 2. Validate Items
         const itemIds = cartItems.map(i => i.id);
-        const { data: dbItems, error: itemsFetchError } = await supabase
+        const { data: dbItems, error: itemsError } = await supabase
             .from('MenuItem')
             .select('id, price, name')
             .in('id', itemIds);
 
-        if (itemsFetchError || !dbItems || dbItems.length !== itemIds.length) {
-            console.error("Cart Validation Failed:", itemsFetchError);
-            return { message: "Some items in your cart are no longer available. Please clear your cart and try again.", error: true, success: false };
+        if (itemsError || !dbItems) {
+            logToFile(`Item Lookup Failed: ${itemsError?.message}`);
+            return { message: "Failed to validate items.", error: true };
         }
 
-        // recalculate total using DB prices
         let total = 0;
-        const verifiedItems = cartItems.map(cartItem => {
-            const dbItem = dbItems.find(i => i.id === cartItem.id);
-            if (!dbItem) throw new Error(`Item ${cartItem.id} not found`); // Should be caught by length check above
-
-            const itemTotal = Number(dbItem.price) * cartItem.quantity;
-            total += itemTotal;
-
-            return {
-                ...cartItem,
-                price: dbItem.price // Use DB price
-            };
+        const verifiedItems = cartItems.map(item => {
+            const dbItem = dbItems.find(d => d.id === item.id);
+            if (!dbItem) throw new Error(`Item ${item.id} not found`);
+            total += Number(dbItem.price) * item.quantity;
+            return { ...item, price: dbItem.price };
         });
 
-        // 2. Generate unique POS Reference (LogKey)
-        const posReference = `ORD-${uuidv4().substring(0, 8).toUpperCase()}`;
+        // 3. User Resolution
+        let finalUserId = userId;
 
-        // 3. Get User
-        let user;
+        // Verify User Exists in Public Table
         if (userId) {
-            const { data } = await supabase.from('User').select('id').eq('id', userId).maybeSingle();
-            user = data;
-        }
-
-        // Fallback to Public Guest User if not logged in
-        if (!user) {
-            console.log("[PlaceOrder] No logged in user. Using Public Guest ID.");
-            // Hardcoded Public Guest User ID to avoid "Insert User" RLS issues
-            user = { id: '20a8a062-6f89-4582-8559-2a8131e0bb39' };
-        }
-
-        // 4. Create Order
-        console.log(`[PlaceOrder] Creating order for user ${user.id}...`);
-        const { data: order, error: orderError } = await supabase
-            .from('Order')
-            .insert({
-                id: uuidv4(),
-                userId: user.id,
-                restaurantId: restaurantId,
-                total: total,
-                status: "PENDING",
-                posReference: posReference,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            })
-            .select()
-            .single();
-
-        if (orderError || !order) {
-            console.error("[PlaceOrder] Order Creation Failed:", orderError);
-            try {
-                fs.writeFileSync('debug_error.txt', JSON.stringify(orderError, null, 2));
-            } catch (fsErr) {
-                console.error("Failed to write debug file", fsErr);
+            const { data: userExists } = await supabase.from('User').select('id').eq('id', userId).maybeSingle();
+            if (!userExists) {
+                logToFile(`User ${userId} not found in DB. Falling back to Guest.`);
+                finalUserId = undefined; // Trigger fallback
             }
-            throw new Error(`Failed to create order record: ${orderError?.message || "Unknown error"} - ${orderError?.details || ""}`);
         }
 
-        // 5. Create Order Items
-        const orderItemsData = verifiedItems.map(item => ({
+        if (!finalUserId) {
+            // Use Guest
+            finalUserId = '20a8a062-6f89-4582-8559-2a8131e0bb39';
+            // Verify Guest Exists
+            const { data: guestUser } = await supabase.from('User').select('id').eq('id', finalUserId).maybeSingle();
+            if (!guestUser) {
+                // Auto-create guest if missing (Safety Net)
+                logToFile("Creating missing Guest User...");
+                await supabase.from('User').insert({
+                    id: finalUserId,
+                    email: 'guest@trueserve.test',
+                    name: 'Guest User',
+                    role: 'CUSTOMER',
+                    updatedAt: new Date().toISOString(),
+                    createdAt: new Date().toISOString()
+                });
+            }
+        }
+
+        logToFile(`Final User ID for Order: ${finalUserId}`);
+        const posRef = `ORD-${uuidv4().substring(0, 8).toUpperCase()}`;
+        const newOrderId = uuidv4();
+
+        // 4. Insert Order
+        const { error: insertError } = await supabase.from('Order').insert({
+            id: newOrderId,
+            userId: finalUserId,
+            restaurantId: restaurantId,
+            total,
+            status: 'PENDING',
+            posReference: posRef,
+            updatedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString()
+        });
+
+        if (insertError) {
+            logToFile(`Order Insert Error: ${insertError.message} / ${insertError.details}`);
+            throw new Error(insertError.message);
+        }
+
+        // 5. Insert Items
+        const orderItems = verifiedItems.map(i => ({
             id: uuidv4(),
-            orderId: order.id,
-            menuItemId: item.id,
-            quantity: item.quantity,
-            price: item.price
-            // relying on database defaults for timestamps
+            orderId: newOrderId,
+            menuItemId: i.id,
+            quantity: i.quantity,
+            price: i.price
         }));
 
-        const { error: itemsError } = await supabase
-            .from('OrderItem')
-            .insert(orderItemsData);
-
-        if (itemsError) {
-            console.error("[PlaceOrder] Order Items Failed:", itemsError);
-            // In a real app, delete the order here to rollback
-            throw new Error(`Failed to add items to order: ${itemsError.message} - ${itemsError.details || ''}`);
+        const { error: itemsInsertError } = await supabase.from('OrderItem').insert(orderItems);
+        if (itemsInsertError) {
+            logToFile(`Items Insert Error: ${itemsInsertError.message}`);
+            // In production, delete order here
+            throw new Error("Failed to save order items.");
         }
 
-        revalidatePath("/merchant/dashboard");
-        revalidatePath("/admin/dashboard");
+        logToFile(`SUCCESS: Order ${newOrderId} created.`);
+
         revalidatePath("/driver/dashboard");
+        revalidatePath("/merchant/dashboard");
 
-        console.log(`[PlaceOrder] Success! Order ID: ${order.id}`);
-
-        return {
-            message: "Order placed successfully!",
-            success: true,
-            orderId: order.id,
-            posReference: posReference
-        };
+        return { success: true, message: "Order placed!", orderId: newOrderId, posReference: posRef };
 
     } catch (e: any) {
-        console.error("[PlaceOrder] Exception:", e);
-        return {
-            message: e.message || "Failed to place order. Please try again.",
-            error: true,
-            success: false
-        };
+        logToFile(`EXCEPTION: ${e.message}`);
+        return { message: e.message || "Order failed.", error: true };
     }
 }
