@@ -35,7 +35,7 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
         { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], lat: 35.0833, lng: -80.8872 },
-        { city: 'Ramsey', state: 'MN', zipPrefixes: ['553', '550'], lat: 45.2611, lng: -93.4566 }
+        { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 }
     ];
 
     // 1. Fetch Valid Service Locations
@@ -74,8 +74,9 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     if (matchedLocation) {
         const cityLower = matchedLocation.city.toLowerCase();
         if (cityLower === 'ramsey') locationMeta.center = [45.2611, -93.4566];
-        else if (cityLower === 'pineville') locationMeta.center = [35.0833, -80.8872];
         else if (cityLower === 'charlotte') locationMeta.center = [35.2271, -80.8431];
+        else if (cityLower === 'pineville') locationMeta.center = [35.0833, -80.8872];
+        else if (cityLower === 'rock hill') locationMeta.center = [34.9249, -81.0251];
 
         locationMeta.name = `${matchedLocation.city}, ${matchedLocation.state}`;
     }
@@ -142,9 +143,6 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
             // Charlotte Mock
             { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC" },
             { id: "2", name: "Queen City Burger (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Burgers", "American"], description: "Gourmet burgers", coords: [35.2280, -80.8440] as [number, number], city: "Charlotte", state: "NC" },
-            // Pineville Mock
-            { id: "4", name: "Pineville Tavern (Mock)", rating: 4.7, image: "/restaurant1.jpg", tags: ["American", "Steak", "Pub"], description: "Local favorite tavern.", coords: [35.0833, -80.8872] as [number, number], city: "Pineville", state: "NC" },
-            { id: "5", name: "Global Fusion (Mock)", rating: 4.6, image: "/restaurant2.jpg", tags: ["Fusion", "Asian"], description: "World flavors.", coords: [35.0850, -80.8900] as [number, number], city: "Pineville", state: "NC" },
             // Ramsey Mock
             { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN" },
         ];
@@ -231,7 +229,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                             const fallbackMocks = [
                                 { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
                                 { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
-                                { city: 'Ramsey', state: 'MN', lat: 45.2611, lng: -93.4566 }
+                                { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 }
                             ];
                             try {
                                 const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
@@ -330,7 +328,7 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                     {restaurants.length === 0 ? (
                         <div className="col-span-4 text-center py-12 text-slate-400">
                             <p className="text-xl">No restaurants found in {location?.toString()}.</p>
-                            <p className="text-sm mt-2">Try "Charlotte" or "Pineville".</p>
+                            <p className="text-sm mt-2">Try "Charlotte", "Pineville", or "Rock Hill".</p>
                         </div>
                     ) : (
                         restaurants.map((rest) => (

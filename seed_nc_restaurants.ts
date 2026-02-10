@@ -6,14 +6,14 @@ import { v4 as uuidv4 } from 'uuid'
 dotenv.config()
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseUrl || !supabaseServiceKey) {
     console.error('Missing Supabase environment variables')
     process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 // List of base names to generate realistic restaurants
 const baseNames = [
@@ -55,16 +55,37 @@ async function seedRealRestaurants() {
     console.log('Seeding Service Locations...');
     await supabase.from('ServiceLocation').upsert([
         { id: uuidv4(), city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], isActive: true, updatedAt: now, createdAt: now },
-        { id: uuidv4(), city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], isActive: true, updatedAt: now, createdAt: now }
-    ], { onConflict: 'city' }); // Assuming city is unique or just adding duplicates isn't fatal for now
+        { id: uuidv4(), city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], isActive: true, updatedAt: now, createdAt: now }
+    ], { onConflict: 'city' });
 
     let createdCount = 0;
 
     for (let i = 0; i < 83; i++) {
         const name = i < baseNames.length ? baseNames[i] : `TrueServe Kitchen #${i - baseNames.length + 1}`;
         const cuisine = cuisines[i % cuisines.length];
-        const lat = 35.2271 + (Math.random() - 0.5) * 0.2; // Random spread around Charlotte
-        const lng = -80.8431 + (Math.random() - 0.5) * 0.2;
+
+        // Distribute across locations (33% each roughly)
+        let city = "Charlotte";
+        let state = "NC";
+        let lat = 35.2271;
+        let lng = -80.8431;
+
+        if (i % 3 === 1) {
+            city = "Pineville";
+            state = "NC";
+            lat = 35.0833;
+            lng = -80.8872;
+        } else if (i % 3 === 2) {
+            city = "Rock Hill";
+            state = "SC";
+            lat = 34.9249;
+            lng = -81.0251;
+        }
+
+        // Add random jitter safely
+        lat = lat + (Math.random() - 0.5) * 0.1;
+        lng = lng + (Math.random() - 0.5) * 0.1;
 
         console.log(`Creating [${i + 1}/83]: ${name}...`);
 
@@ -89,8 +110,8 @@ async function seedRealRestaurants() {
             id: rId,
             name: name,
             address: `${Math.floor(Math.random() * 9000) + 100} Main St`, // Mock address
-            city: i % 5 === 0 ? "Pineville" : "Charlotte",
-            state: "NC",
+            city: city,
+            state: state,
             lat: lat,
             lng: lng,
             description: `Authentic ${cuisine} experience in the heart of the city.`,

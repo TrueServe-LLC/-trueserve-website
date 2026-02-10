@@ -25,6 +25,8 @@ interface MapProps {
 
 export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     const [popupInfo, setPopupInfo] = useState<RestaurantLocation | null>(null);
+    const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+    const mapRef = useRef<any>(null); // MapRef type can be complex to import, using any for safety or look up types if strictly needed.
 
     // Initial View Store
     const initialViewState = useMemo(() => ({
@@ -32,6 +34,24 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
         longitude: center[1],
         zoom: zoom
     }), [center, zoom]);
+
+    // Calculate distance if available (Haversine formula for simple km/miles)
+    const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+        const R = 3959; // Radius of the earth in miles
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const d = R * c; // Distance in miles
+        return d.toFixed(1);
+    };
+
+    const deg2rad = (deg: number) => {
+        return deg * (Math.PI / 180);
+    };
 
     // Markers
     const markers = useMemo(() => restaurants.map((rest) => (
@@ -41,16 +61,38 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
             longitude={rest.coords[1]}
             anchor="bottom"
             onClick={(e) => {
-                // If we let the click propagate to the map, it will immediately close the popup
                 e.originalEvent.stopPropagation();
                 setPopupInfo(rest);
+
+                if (mapRef.current) {
+                    if (userLocation) {
+                        // Fit bounds to show both user and restaurant
+                        const minLng = Math.min(userLocation[1], rest.coords[1]);
+                        const maxLng = Math.max(userLocation[1], rest.coords[1]);
+                        const minLat = Math.min(userLocation[0], rest.coords[0]);
+                        const maxLat = Math.max(userLocation[0], rest.coords[0]);
+
+                        // Add some padding
+                        mapRef.current.fitBounds(
+                            [[minLng, minLat], [maxLng, maxLat]],
+                            { padding: 100, duration: 1000 }
+                        );
+                    } else {
+                        // Just fly to the restaurant
+                        mapRef.current.flyTo({
+                            center: [rest.coords[1], rest.coords[0]],
+                            zoom: 15,
+                            duration: 1000
+                        });
+                    }
+                }
             }}
         >
             <div className="cursor-pointer text-2xl drop-shadow-md hover:scale-125 transition-transform" role="img" aria-label="marker">
                 📍
             </div>
         </Marker>
-    )), [restaurants]);
+    )), [restaurants, userLocation]);
 
     if (!MAPBOX_TOKEN) {
         return (
@@ -67,12 +109,18 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
 
     return (
         <Map
+            ref={mapRef}
             initialViewState={initialViewState}
             style={{ width: '100%', height: '100%', borderRadius: '1rem' }}
             mapStyle="mapbox://styles/mapbox/dark-v11"
             mapboxAccessToken={MAPBOX_TOKEN}
         >
-            <GeolocateControl position="top-left" />
+            <GeolocateControl
+                position="top-left"
+                onGeolocate={(e) => {
+                    setUserLocation([e.coords.latitude, e.coords.longitude]);
+                }}
+            />
             <FullscreenControl position="top-left" />
             <NavigationControl position="top-left" />
             <ScaleControl />
@@ -99,6 +147,13 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
                                     <span className="text-yellow-500">★</span> {popupInfo.rating}
                                 </div>
                             )}
+
+                            {userLocation && (
+                                <div className="text-xs text-emerald-600 font-bold mb-2 flex items-center gap-1">
+                                    <span>🚶</span> {getDistance(userLocation[0], userLocation[1], popupInfo.coords[0], popupInfo.coords[1])} miles away
+                                </div>
+                            )}
+
                             <Link href={`/restaurants/${popupInfo.id}`} className="block w-full text-center bg-primary text-black text-xs font-bold py-1.5 rounded mt-2 hover:opacity-90">
                                 View Menu
                             </Link>
