@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { placeOrder } from "../actions";
-import Map from "@/components/Map"; // Ensure this import is valid
+
+import MapboxMap from "@/components/MapboxMap";
 
 interface MenuItem {
     id: string;
@@ -243,10 +244,21 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                 <div className="card p-0 overflow-hidden border-white/10">
                     <div className="h-48 relative">
                         <div className="absolute inset-0 z-0">
-                            {/* Fallback to simple map if component fails, but using Map component here */}
-                            <Map center={[restaurant?.lat || 35.2271, restaurant?.lng || -80.8431]} zoom={14} />
+
+                            {/* Mapbox Map Implementation */}
+                            <MapboxMap
+                                center={[restaurant?.lat || 35.2271, restaurant?.lng || -80.8431]}
+                                zoom={14}
+                                restaurants={restaurant ? [{
+                                    id: restaurant.id,
+                                    name: restaurant.name,
+                                    coords: [restaurant.lat || 35.2271, restaurant.lng || -80.8431],
+                                    image: restaurant.imageUrl,
+                                    rating: restaurant.rating
+                                }] : []}
+                            />
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-20">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-20 pointer-events-none">
                             <h3 className="font-bold text-white">{restaurant?.address || "Address"}</h3>
                             <p className="text-xs text-emerald-400">Open Now • Closes 10 PM</p>
                         </div>

@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Map from "@/components/Map";
+
 import MenuClient from "./MenuClient";
 
 async function getRestaurant(id: string) {

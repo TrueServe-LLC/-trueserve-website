@@ -15,6 +15,7 @@ interface RestaurantLocation {
     image?: string;
     rating?: number;
     tags?: string[];
+    rotation?: number; // Added for vehicle bearing
 }
 
 interface MapProps {
@@ -26,7 +27,7 @@ interface MapProps {
 export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     const [popupInfo, setPopupInfo] = useState<RestaurantLocation | null>(null);
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-    const mapRef = useRef<any>(null); // MapRef type can be complex to import, using any for safety or look up types if strictly needed.
+    const mapRef = useRef<any>(null);
 
     // Initial View Store
     const initialViewState = useMemo(() => ({
@@ -34,6 +35,10 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
         longitude: center[1],
         zoom: zoom
     }), [center, zoom]);
+
+    const deg2rad = (deg: number) => {
+        return deg * (Math.PI / 180);
+    };
 
     // Calculate distance if available (Haversine formula for simple km/miles)
     const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -49,17 +54,13 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
         return d.toFixed(1);
     };
 
-    const deg2rad = (deg: number) => {
-        return deg * (Math.PI / 180);
-    };
-
     // Markers
     const markers = useMemo(() => restaurants.map((rest) => (
         <Marker
             key={rest.id}
             latitude={rest.coords[0]}
             longitude={rest.coords[1]}
-            anchor="bottom"
+            anchor="center" // Center anchor is better for rotating vehicles
             onClick={(e) => {
                 e.originalEvent.stopPropagation();
                 setPopupInfo(rest);
@@ -88,8 +89,17 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
                 }
             }}
         >
-            <div className="cursor-pointer text-2xl drop-shadow-md hover:scale-125 transition-transform" role="img" aria-label="marker">
-                📍
+            <div
+                className="cursor-pointer transition-transform duration-500 ease-linear" // Smooth rotation
+                style={{ transform: `rotate(${rest.rotation || 0}deg)` }}
+                role="img"
+                aria-label="marker"
+            >
+                {rest.tags?.includes("Driver") ? (
+                    <div className="text-3xl drop-shadow-md filter drop-shadow-lg">🚗</div>
+                ) : (
+                    <div className="text-3xl drop-shadow-md hover:scale-125 transition-transform">📍</div>
+                )}
             </div>
         </Marker>
     )), [restaurants, userLocation]);
@@ -154,9 +164,12 @@ export default function MapboxMap({ center, zoom = 13, restaurants = [] }: MapPr
                                 </div>
                             )}
 
-                            <Link href={`/restaurants/${popupInfo.id}`} className="block w-full text-center bg-primary text-black text-xs font-bold py-1.5 rounded mt-2 hover:opacity-90">
-                                View Menu
-                            </Link>
+                            {/* Only show menu link if it's not a driver or purely informational marker */}
+                            {!popupInfo.tags?.includes("Driver") && (
+                                <Link href={`/restaurants/${popupInfo.id}`} className="block w-full text-center bg-primary text-black text-xs font-bold py-1.5 rounded mt-2 hover:opacity-90">
+                                    View Menu
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </Popup>

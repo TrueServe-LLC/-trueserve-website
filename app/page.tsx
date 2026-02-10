@@ -53,9 +53,16 @@ export default function Home() {
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
                 <LandingSearch locations={[
-                  { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
-                  { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
-                  { city: 'Ramsey', state: 'MN', lat: 45.2611, lng: -93.4566 }
+                  // Charlotte (Uptown/South End)
+                  { city: 'Charlotte', state: 'NC', address: '400 S Tryon St', lat: 35.2255, lng: -80.8465 },
+                  { city: 'Charlotte', state: 'NC', address: '2000 South Blvd', lat: 35.2098, lng: -80.8601 },
+                  { city: 'Charlotte', state: 'NC', address: '1100 Metropolitan Ave', lat: 35.2154, lng: -80.8360 },
+                  // Pineville
+                  { city: 'Pineville', state: 'NC', address: '11025 Carolina Place Pkwy', lat: 35.0783, lng: -80.8837 },
+                  { city: 'Pineville', state: 'NC', address: '315 Main St', lat: 35.0848, lng: -80.8920 },
+                  // Rock Hill
+                  { city: 'Rock Hill', state: 'SC', address: '157 E Main St', lat: 34.9249, lng: -81.0251 },
+                  { city: 'Rock Hill', state: 'SC', address: '2301 Dave Lyle Blvd', lat: 34.9450, lng: -80.9990 }
                 ]} />
               </div>
             </div>

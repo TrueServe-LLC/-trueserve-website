@@ -15,19 +15,35 @@ interface OrderTrackingClientProps {
 }
 
 export default function OrderTrackingClient({ order }: OrderTrackingClientProps) {
-    const [currentOrder, setCurrentOrder] = useState(order);
-    const [driverPos, setDriverPos] = useState<[number, number]>(
-        order.driver?.currentLat
-            ? [order.driver.currentLat, order.driver.currentLng]
-            : [order.restaurant.lat || 35.2271, order.restaurant.lng || -80.8431]
-    );
 
-    // Mock Customer Location (relative to restaurant for demo)
-    // In real app, we'd geocode the delivery address
+    const [currentOrder, setCurrentOrder] = useState(order);
+
+    // Initial positions
+    const restaurantPos: [number, number] = [order.restaurant.lat || 35.2271, order.restaurant.lng || -80.8431];
+    const initialDriverPos: [number, number] = order.driver?.currentLocation || restaurantPos;
+
+    // Mock Customer Location (nearby for demo)
     const [customerPos] = useState<[number, number]>([
-        (order.restaurant.lat || 35.2271) + 0.02,
-        (order.restaurant.lng || -80.8431) + 0.02
+        restaurantPos[0] + 0.015,
+        restaurantPos[1] + 0.015
     ]);
+
+    const [driverPos, setDriverPos] = useState<[number, number]>(initialDriverPos);
+    const [driverBearing, setDriverBearing] = useState(0);
+
+    // Helper to calculate bearing between two points
+    function calculateBearing(startLat: number, startLng: number, destLat: number, destLng: number) {
+        const startLatRad = (startLat * Math.PI) / 180;
+        const startLngRad = (startLng * Math.PI) / 180;
+        const destLatRad = (destLat * Math.PI) / 180;
+        const destLngRad = (destLng * Math.PI) / 180;
+
+        const y = Math.sin(destLngRad - startLngRad) * Math.cos(destLatRad);
+        const x = Math.cos(startLatRad) * Math.sin(destLatRad) -
+            Math.sin(startLatRad) * Math.cos(destLatRad) * Math.cos(destLngRad - startLngRad);
+        const brng = (Math.atan2(y, x) * 180) / Math.PI;
+        return (brng + 360) % 360;
+    }
 
     useEffect(() => {
         // Subscribe to Order updates (Realtime)
@@ -38,32 +54,48 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
             })
             .subscribe();
 
-        // Simulate Driver Movement Loop
+        // Simulation Loop
         const interval = setInterval(() => {
-            if (currentOrder.status === 'OUT_FOR_DELIVERY') {
-                // Move driver 1% closer to customer every tick
-                setDriverPos(prev => {
-                    const [lat, lng] = prev;
-                    const [destLat, destLng] = customerPos;
+            setDriverPos(prev => {
+                const [lat, lng] = prev;
+                let target: [number, number] = restaurantPos;
 
-                    const dLat = destLat - lat;
-                    const dLng = destLng - lng;
+                if (currentOrder.status === 'OUT_FOR_DELIVERY') {
+                    target = customerPos;
+                } else {
+                    // Stay at restaurant if preparing
+                    // For demo visual, we can just snap to restaurant if not delivering
+                    if (Math.abs(lat - restaurantPos[0]) < 0.0001) return restaurantPos;
+                    target = restaurantPos;
+                }
 
-                    if (Math.abs(dLat) < 0.0001 && Math.abs(dLng) < 0.0001) return prev; // Arrived
+                const [destLat, destLng] = target;
+                const dLat = destLat - lat;
+                const dLng = destLng - lng;
+                const dist = Math.sqrt(dLat * dLat + dLng * dLng);
 
-                    return [lat + dLat * 0.05, lng + dLng * 0.05];
-                });
-            } else if (currentOrder.status === 'PREPARING') {
-                // Driver stays at restaurant
-                setDriverPos([order.restaurant.lat || 35.2271, order.restaurant.lng || -80.8431]);
-            }
-        }, 1000);
+                if (dist < 0.0001) {
+                    return prev; // Arrived
+                }
+
+                // Update Bearing
+                const bearing = calculateBearing(lat, lng, destLat, destLng);
+                setDriverBearing(bearing);
+
+                // Move speed (adjust for demo pacing)
+                // 0.02 step size is roughly "fast" demo speed
+                // Using a smaller fraction of the distance for smooth approach
+                const step = 0.02;
+
+                return [lat + dLat * step, lng + dLng * step];
+            });
+        }, 100); // 10fps update for smoothness
 
         return () => {
             supabase.removeChannel(channel);
             clearInterval(interval);
         };
-    }, [order.id, currentOrder.status, customerPos, order.restaurant.lat, order.restaurant.lng]);
+    }, [order.id, currentOrder.status, customerPos]);
 
     // Calculate progress for timeline
     const getProgressStep = (status: string) => {
@@ -116,13 +148,15 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     <MapboxMap
                         center={driverPos}
                         zoom={14}
+
                         restaurants={[
                             {
                                 id: "driver",
                                 name: "Driver",
                                 coords: driverPos,
-                                image: "https://cdn-icons-png.flaticon.com/512/3097/3097180.png", // Use a car icon or similar
-                                tags: ["Driver"]
+                                image: "https://cdn-icons-png.flaticon.com/512/3097/3097180.png",
+                                tags: ["Driver"],
+                                rotation: driverBearing
                             },
                             {
                                 id: "restaurant",

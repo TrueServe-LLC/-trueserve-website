@@ -7,6 +7,7 @@ import Link from "next/link";
 export interface SearchLocation {
     city: string;
     state: string;
+    address?: string; // Specific street address
     lat?: number;
     lng?: number;
 }
@@ -97,7 +98,7 @@ export default function LandingSearch({ locations }: { locations: SearchLocation
                 {/* Autocomplete Datalist */}
                 <datalist id="supportedSources">
                     {locations.map((loc, idx) => (
-                        <option key={idx} value={`${loc.city}, ${loc.state}`} />
+                        <option key={idx} value={loc.address ? `${loc.address}, ${loc.city}, ${loc.state}` : `${loc.city}, ${loc.state}`} />
                     ))}
                 </datalist>
 
@@ -107,16 +108,16 @@ export default function LandingSearch({ locations }: { locations: SearchLocation
             </div>
 
             {/* Quick Links / Suggestions */}
-            <div className="mt-4 flex gap-2 justify-center text-sm text-slate-500">
-                <span>Popular:</span>
-                {locations.slice(0, 3).map((loc, i) => (
+            <div className="mt-4 flex gap-2 justify-center text-sm text-slate-500 overflow-x-auto">
+                <span className="shrink-0">Popular:</span>
+                {locations.slice(0, 4).map((loc, i) => (
                     <button
                         key={i}
                         type="button"
-                        onClick={() => setInputValue(`${loc.city}, ${loc.state}`)}
-                        className="text-slate-400 hover:text-white underline"
+                        onClick={() => setInputValue(loc.address ? `${loc.address}, ${loc.city}, ${loc.state}` : `${loc.city}, ${loc.state}`)}
+                        className="text-slate-400 hover:text-white underline whitespace-nowrap"
                     >
-                        {loc.city}
+                        {loc.address ? loc.address.split(',')[0] : loc.city}
                     </button>
                 ))}
             </div>
