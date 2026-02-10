@@ -167,6 +167,8 @@ async function seedRealRestaurants() {
     }
 
     // 2. Fill the rest with random data (Target 80 more)
+    // REMOVED at user request to only show the 3 specific restaurants.
+    /* 
     for (let i = 0; i < 80; i++) {
         const name = i < baseNames.length ? baseNames[i] : `TrueServe Kitchen #${i - baseNames.length + 1}`;
         const cuisine = cuisines[i % cuisines.length];
@@ -254,6 +256,7 @@ async function seedRealRestaurants() {
 
         createdCount++;
     }
+    */
 
     console.log(`Seeding Complete. Successfully created ${createdCount} restaurants.`);
 }
