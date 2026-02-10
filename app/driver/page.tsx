@@ -76,20 +76,22 @@ export default function DriverPortal() {
                             </div>
                         </div>
 
-                        <ul className="space-y-4 text-sm text-slate-300 border-t border-white/10 pt-6 relative z-10">
-                            <li className="flex justify-between items-center">
-                                <span>Distance</span>
-                                <span className="text-white font-mono font-bold">$0.70/mi base (+ $0.35 after 2mi)</span>
-                            </li>
-                            <li className="flex justify-between items-center">
-                                <span>Wait Time</span>
-                                <span className="text-white font-mono font-bold">$0.25/min (after 10m wait)</span>
-                            </li>
-                            <li className="flex justify-between items-center">
-                                <span>Batched Orders</span>
-                                <span className="text-white font-mono font-bold">+$2.00 per extra drop</span>
-                            </li>
-                        </ul>
+                        <div className="border-t border-white/10 pt-6 relative z-10 flex flex-col items-center">
+                            <ul className="space-y-4 text-base text-slate-300 w-full max-w-lg mx-auto">
+                                <li className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <span className="font-medium">Distance Pay</span>
+                                    <span className="text-white font-mono font-bold text-end">$0.70/mi base <br /><span className="text-xs text-slate-400 font-normal">(+ $0.35 after 2mi)</span></span>
+                                </li>
+                                <li className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <span className="font-medium">Wait Time</span>
+                                    <span className="text-white font-mono font-bold text-end">$0.25/min <br /><span className="text-xs text-slate-400 font-normal">(after 10m wait)</span></span>
+                                </li>
+                                <li className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <span className="font-medium">Batched Orders</span>
+                                    <span className="text-white font-mono font-bold text-end">+$2.00 <br /><span className="text-xs text-slate-400 font-normal">per extra drop</span></span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
 
