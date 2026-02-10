@@ -4,7 +4,7 @@ import LocationButton from "@/components/LocationButton";
 import { cookies } from "next/headers";
 import dynamic from "next/dynamic";
 
-const LeafletMap = dynamic(() => import("@/components/LeafletMap"), {
+const MapboxMap = dynamic(() => import("@/components/MapboxMap"), {
     loading: () => <div className="h-[400px] w-full bg-slate-800 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Map...</div>
 });
 
@@ -316,12 +316,12 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
                         </div>
                     </div>
 
-                    {/* Google Maps Embed */}
+                    {/* Mapbox Embed */}
                     <div className="w-full h-[350px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative z-0">
-                        <LeafletMap
+                        <MapboxMap
                             center={mapCenter}
                             zoom={13}
-                            restaurants={restaurants.map(r => ({ id: r.id, name: r.name, coords: r.coords }))}
+                            restaurants={restaurants.map(r => ({ id: r.id, name: r.name, coords: r.coords, image: r.image, rating: r.rating, tags: r.tags }))}
                         />
                     </div>
                 </div>

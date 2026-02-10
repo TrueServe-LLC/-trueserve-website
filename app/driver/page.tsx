@@ -47,10 +47,7 @@ export default function DriverPortal() {
                         The Future of <br />
                         <span className="text-primary">TrueServe</span> Delivery
                     </h1>
-                    <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
-                        Join the most transparent platform in the industry.
-                        Get guaranteed floors, distance-based kicks, and <span className="text-white font-bold underline decoration-primary decoration-2 underline-offset-4">100% of your tips.</span>
-                    </p>
+
                 </div>
 
                 <div className="space-y-12 text-left">
