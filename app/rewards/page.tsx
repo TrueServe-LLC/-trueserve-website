@@ -42,8 +42,8 @@ export default function RewardsPage() {
                     </p>
                 </div>
 
-                {/* Points Balance Card - Fixed Overlap & Responsiveness */}
-                <div className="mb-16 relative group">
+                {/* Points Balance Card */}
+                <div className="mb-24 relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
                     <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-10">
                         <div className="text-center md:text-left">
@@ -60,6 +60,55 @@ export default function RewardsPage() {
                             <button className="flex-1 btn btn-outline border-white/10 hover:bg-white/5 py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-widest">History</button>
                             <button className="flex-1 btn btn-primary py-4 px-10 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20">Earn More</button>
                         </div>
+                    </div>
+                </div>
+
+                {/* MEMBERSHIP SELECTION - NEW SECTION */}
+                <div className="mb-32">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black tracking-tighter mb-4 uppercase">Upgrade Your Standard</h2>
+                        <p className="text-slate-500 max-w-xl mx-auto font-medium">Earn points faster and unlock exclusive benefits with TrueServe+ Membership.</p>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <PricingCard
+                            tier="Basic"
+                            price="Free"
+                            subtitle="The standard access"
+                            features={[
+                                "Access to platform",
+                                "Standard delivery times",
+                                "Basic rewards points",
+                                "Community news & updates"
+                            ]}
+                            buttonText="Current Plan"
+                        />
+                        <PricingCard
+                            tier="Plus"
+                            price="$9.99"
+                            subtitle="The community favorite"
+                            isPopular={true}
+                            features={[
+                                "Reduced service fees",
+                                "Priority driver dispatch",
+                                "Order protection guarantee",
+                                "5% Member-only discount",
+                                "Annual birthday credit"
+                            ]}
+                            buttonLink="/login?plus=true"
+                        />
+                        <PricingCard
+                            tier="Premium"
+                            price="$19.99"
+                            subtitle="The ultimate standard"
+                            features={[
+                                "Zero delivery fees on all orders",
+                                "Exclusive early access menu items",
+                                "24/7 Concierge support",
+                                "AI Voice VIP ordering line",
+                                "Double loyalty rewards points",
+                                "Advanced 7-day scheduling"
+                            ]}
+                        />
                     </div>
                 </div>
 
@@ -139,6 +188,40 @@ export default function RewardsPage() {
             </main>
         </div>
     );
+}
+
+function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
+    return (
+        <div className={`relative p-8 rounded-[2.5rem] border ${isPopular ? 'bg-white/10 border-primary shadow-2xl lg:scale-[1.05] z-10' : 'bg-white/5 border-white/10'} flex flex-col items-center text-center transition-all hover:scale-[1.02]`}>
+            {isPopular && (
+                <div className="absolute -top-4 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-4 py-1.5 rounded-full">
+                    Most Loved
+                </div>
+            )}
+            <h3 className="text-2xl font-black mb-1">{tier}</h3>
+            <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-6">{subtitle}</p>
+
+            <div className="flex items-end gap-1 mb-8 text-white">
+                <span className="text-5xl font-black tracking-tighter">{price}</span>
+                {price !== 'Free' && <span className="text-xs text-slate-500 font-bold mb-1">/ mo</span>}
+            </div>
+
+            <ul className="space-y-4 mb-10 w-full">
+                {features.map((f: string) => (
+                    <li key={f} className="text-sm text-slate-400 font-medium flex items-center justify-center gap-2">
+                        <span className="text-primary/50">•</span> {f}
+                    </li>
+                ))}
+            </ul>
+
+            <Link
+                href={buttonLink}
+                className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${isPopular ? 'bg-primary text-black shadow-xl shadow-primary/20' : 'bg-white/10 hover:bg-white/20'}`}
+            >
+                {buttonText}
+            </Link>
+        </div>
+    )
 }
 
 function RewardCard({ title, points, icon, desc, accent }: { title: string, points: number, icon: string, desc: string, accent: string }) {

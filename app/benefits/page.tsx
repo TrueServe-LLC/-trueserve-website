@@ -111,17 +111,23 @@ export default function BenefitsPage() {
                         </div>
                     </div>
 
-                    {/* 2. Convenience & Experience */}
-                    <div className="flex flex-col md:flex-row gap-16 items-start">
-                        <div className="w-full md:w-1/2 order-2 md:order-1 bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-8 md:p-12 rounded-[3rem] text-center md:text-right shrink-0">
-                            <div className="text-5xl md:text-7xl mb-8">⚡</div>
-                            <p className="text-slate-400 leading-relaxed italic text-lg md:text-xl">"I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."</p>
-                            <p className="mt-6 text-sm font-bold">— James L., Premium Member</p>
+                    {/* 2. Convenience & Experience - Fixed Overlap */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+                        <div className="lg:col-span-5 order-2 lg:order-1 self-stretch">
+                            <div className="h-full bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-8 md:p-12 rounded-[3.5rem] flex flex-col justify-center text-center lg:text-right relative overflow-hidden backdrop-blur-sm">
+                                <div className="text-6xl mb-8 opacity-20 lg:opacity-100 italic font-black absolute top-6 right-8 lg:static">⚡</div>
+                                <p className="text-slate-300 leading-relaxed italic text-xl md:text-2xl relative z-10">
+                                    "I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."
+                                </p>
+                                <p className="mt-8 text-sm font-black uppercase tracking-widest text-blue-400">— James L., Premium Member</p>
+                            </div>
                         </div>
-                        <div className="w-full md:w-1/2 order-1 md:order-2">
-                            <span className="text-blue-400 font-black uppercase tracking-widest text-[10px]">Convenience & Experience</span>
-                            <h2 className="text-4xl md:text-5xl font-black mt-4 mb-8 leading-tight">Elevate your order <br /> from start to finish.</h2>
-                            <div className="space-y-10">
+                        <div className="lg:col-span-7 order-1 lg:order-2">
+                            <span className="text-blue-400 font-black uppercase tracking-widest text-[10px] bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/20">Convenience & Experience</span>
+                            <h2 className="text-5xl md:text-7xl font-black mt-8 mb-12 leading-[0.9] tracking-tight text-white">
+                                Elevate your order <br /> from start to finish.
+                            </h2>
+                            <div className="space-y-12">
                                 <FeatureDetail
                                     icon="⚡"
                                     title="Priority Dispatch & Support"
@@ -141,69 +147,57 @@ export default function BenefitsPage() {
                         </div>
                     </div>
 
-                    {/* 3. Tech & Transparency */}
-                    <div className="w-full bg-white/5 border border-white/10 rounded-[4rem] p-8 md:p-20 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -z-10" />
-                        <div className="flex flex-col lg:flex-row gap-16 relative z-10">
-                            <div className="flex-1">
-                                <h2 className="text-4xl md:text-5xl font-black mb-8">Technology with <br /><span className="text-gradient">Transparency.</span></h2>
-                                <p className="text-slate-400 mb-10 max-w-lg text-lg leading-relaxed">We believe in a fair marketplace. Our tech isn't meant to hide fees—it's meant to reveal them.</p>
-                                <div className="space-y-8">
-                                    <div className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">✓</div>
-                                        <div>
-                                            <p className="font-bold text-lg">Earnings Dashboard</p>
-                                            <p className="text-sm text-slate-500">See exactly how much the restaurant and driver earned on your order.</p>
+                    {/* 3. Tech & Transparency - Fixed Overlap */}
+                    <div className="w-full bg-slate-900/50 border border-white/10 rounded-[4rem] p-8 md:p-20 relative overflow-hidden backdrop-blur-md">
+                        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10" />
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+                            <div className="lg:col-span-5">
+                                <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-primary/30">
+                                    Advanced Tech
+                                </div>
+                                <h2 className="text-5xl md:text-6xl font-black mb-8 leading-none tracking-tighter text-white">
+                                    Technology with <br /><span className="text-gradient italic">Transparency.</span>
+                                </h2>
+                                <p className="text-slate-400 mb-12 max-w-lg text-lg leading-relaxed font-medium">
+                                    We believe in a fair marketplace. Our tech isn't meant to hide fees—it's meant to reveal them.
+                                </p>
+                                <div className="space-y-10">
+                                    {[
+                                        { t: "Earnings Dashboard", d: "See exactly how much the restaurant and driver earned." },
+                                        { t: "AI Voice VIP Line", d: "Hands-free, priority AI voice ordering for all members." },
+                                        { t: "Advanced Scheduling", d: "Lock-in time windows up to 7 days in advance." }
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex gap-6 items-start">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-sm font-black shrink-0 border border-primary/20">i</div>
+                                            <div>
+                                                <p className="font-black text-xl text-white mb-1 uppercase tracking-tight">{item.t}</p>
+                                                <p className="text-sm text-slate-500 font-medium leading-relaxed">{item.d}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">✓</div>
-                                        <div>
-                                            <p className="font-bold text-lg">AI Voice VIP Line</p>
-                                            <p className="text-sm text-slate-500">Premium members get hands-free, priority AI voice ordering.</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">✓</div>
-                                        <div>
-                                            <p className="font-bold text-lg">Advanced Scheduling</p>
-                                            <p className="text-sm text-slate-500">Schedule deliveries up to 7 days out with locked-in time windows.</p>
-                                        </div>
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
-                                    <div>
-                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">📢</div>
-                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">Impact</p>
-                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">A portion of your fees goes directly to local food programs.</p>
-                                    </div>
-                                </div>
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
-                                    <div>
-                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">🎂</div>
-                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">Birthday</p>
-                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">Automatic $10 credit on your anniversary and birthday.</p>
-                                    </div>
-                                </div>
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
-                                    <div>
-                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">💳</div>
-                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">Wallet</p>
-                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">Unified rewards wallet works across all partner restaurants.</p>
-                                    </div>
-                                </div>
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
-                                    <div>
-                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">🛡️</div>
-                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">No Fees</p>
-                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">Radical transparency on every breakdown shown at checkout.</p>
-                                    </div>
+
+                            <div className="lg:col-span-7 self-center">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full">
+                                    {[
+                                        { i: "📢", l: "Impact", d: "Direct contributions to local food programs." },
+                                        { i: "🎂", l: "Birthday", d: "$10 credit on your special day." },
+                                        { i: "💳", l: "Wallet", d: "Unified rewards across all partners." },
+                                        { i: "🛡️", l: "No Fees", d: "Zero hidden charges. Pure transparency." }
+                                    ].map((card, i) => (
+                                        <div key={i} className="p-10 bg-black/60 rounded-[2.5rem] border border-white/5 flex flex-col items-center text-center group hover:bg-black/80 transition-all hover:border-primary/30">
+                                            <div className="text-4xl mb-6 group-hover:scale-125 transition-transform duration-500">{card.i}</div>
+                                            <p className="text-[10px] font-black uppercase mb-3 tracking-[0.25em] text-primary">{card.l}</p>
+                                            <p className="text-xs text-slate-500 font-bold leading-relaxed">{card.d}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 {/* Strategic Recommendation Call to Action */}
