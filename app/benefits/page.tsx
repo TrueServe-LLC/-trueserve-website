@@ -111,23 +111,21 @@ export default function BenefitsPage() {
                         </div>
                     </div>
 
-                    {/* 2. Convenience & Experience - Polish Box Sizing */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
-                        <div className="lg:col-span-5 order-2 lg:order-1 flex">
-                            <div className="w-full bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-10 md:p-14 rounded-[3.5rem] flex flex-col justify-center text-center lg:text-right relative overflow-hidden backdrop-blur-sm">
-                                <div className="text-6xl mb-8 opacity-20 lg:opacity-100 italic font-black absolute top-6 right-8 lg:static">⚡</div>
-                                <p className="text-slate-300 leading-relaxed italic text-xl md:text-2xl relative z-10 break-words">
+                    {/* 2. Convenience & Experience - CLEAN LAYOUT, NO BOXES */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                        <div className="order-2 lg:order-1">
+                            <div className="bg-primary/5 border border-primary/10 p-10 md:p-14 rounded-[3.5rem] relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 blur-3xl -z-10" />
+                                <p className="text-slate-300 leading-relaxed italic text-xl md:text-2xl relative z-10">
                                     "I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."
                                 </p>
-                                <p className="mt-8 text-sm font-black uppercase tracking-widest text-blue-400">— James L., Premium Member</p>
+                                <p className="mt-8 text-sm font-black uppercase tracking-widest text-primary">— James L., Premium Member</p>
                             </div>
                         </div>
-                        <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col justify-center">
-                            <div className="mb-6">
-                                <span className="text-blue-400 font-black uppercase tracking-widest text-[10px] bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/20">Convenience & Experience</span>
-                            </div>
-                            <h2 className="text-5xl md:text-7xl font-black mb-12 leading-[0.9] tracking-tight text-white break-words">
-                                Elevate your order <br className="hidden md:block" /> from start to finish.
+                        <div className="order-1 lg:order-2">
+                            <span className="text-primary font-black uppercase tracking-widest text-[10px] bg-primary/10 px-3 py-1 rounded-full border border-primary/20">Convenience & Experience</span>
+                            <h2 className="text-4xl md:text-6xl font-black mt-8 mb-10 leading-[1.1] tracking-tight text-white">
+                                Elevate your order <br /> from start to finish.
                             </h2>
                             <div className="space-y-10">
                                 <FeatureDetail
@@ -149,29 +147,27 @@ export default function BenefitsPage() {
                         </div>
                     </div>
 
-                    {/* 3. Tech & Transparency - Fixed Overlap */}
-                    <div className="w-full bg-slate-900/50 border border-white/10 rounded-[4rem] p-8 md:p-20 relative overflow-hidden backdrop-blur-md">
-                        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10" />
-
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
-                            <div className="lg:col-span-5">
+                    {/* 3. Tech & Transparency - CLEAN LAYOUT, NO BOXES */}
+                    <div className="pt-20">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+                            <div>
                                 <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-primary/30">
                                     Advanced Tech
                                 </div>
-                                <h2 className="text-5xl md:text-6xl font-black mb-8 leading-none tracking-tighter text-white">
+                                <h2 className="text-4xl md:text-6xl font-black mb-8 leading-[1.1] tracking-tight text-white">
                                     Technology with <br /><span className="text-gradient italic">Transparency.</span>
                                 </h2>
-                                <p className="text-slate-400 mb-12 max-w-lg text-lg leading-relaxed font-medium">
+                                <p className="text-slate-400 mb-12 max-w-lg text-lg leading-relaxed">
                                     We believe in a fair marketplace. Our tech isn't meant to hide fees—it's meant to reveal them.
                                 </p>
                                 <div className="space-y-10">
                                     {[
-                                        { t: "Earnings Dashboard", d: "See exactly how much the restaurant and driver earned." },
-                                        { t: "AI Voice VIP Line", d: "Hands-free, priority AI voice ordering for all members." },
-                                        { t: "Advanced Scheduling", d: "Lock-in time windows up to 7 days in advance." }
+                                        { i: "📊", t: "Earnings Dashboard", d: "See exactly how much the restaurant and driver earned." },
+                                        { i: "🎙️", t: "AI Voice VIP Line", d: "Hands-free, priority AI voice ordering for all members." },
+                                        { i: "📅", t: "Advanced Scheduling", d: "Lock-in time windows up to 7 days in advance." }
                                     ].map((item, i) => (
                                         <div key={i} className="flex gap-6 items-start">
-                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-sm font-black shrink-0 border border-primary/20">i</div>
+                                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xl shrink-0 border border-white/10">{item.i}</div>
                                             <div>
                                                 <p className="font-black text-xl text-white mb-1 uppercase tracking-tight">{item.t}</p>
                                                 <p className="text-sm text-slate-500 font-medium leading-relaxed">{item.d}</p>
@@ -181,24 +177,23 @@ export default function BenefitsPage() {
                                 </div>
                             </div>
 
-                            <div className="lg:col-span-7 self-center">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 h-full">
-                                    {[
-                                        { i: "📢", l: "Impact", d: "Direct contributions to local food programs." },
-                                        { i: "🎂", l: "Birthday", d: "$10 credit on your special day." },
-                                        { i: "💳", l: "Wallet", d: "Unified rewards across all partners." },
-                                        { i: "🛡️", l: "No Fees", d: "Zero hidden charges. Pure transparency." }
-                                    ].map((card, i) => (
-                                        <div key={i} className="p-8 lg:p-10 bg-black/60 rounded-[2.5rem] border border-white/5 flex flex-col items-center text-center group hover:bg-black/80 transition-all hover:border-primary/30 shrink-0">
-                                            <div className="text-4xl mb-6 group-hover:scale-125 transition-transform duration-500">{card.i}</div>
-                                            <p className="text-[10px] font-black uppercase mb-3 tracking-[0.25em] text-primary whitespace-nowrap">{card.l}</p>
-                                            <p className="text-xs text-slate-500 font-bold leading-relaxed max-w-[150px]">{card.d}</p>
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {[
+                                    { i: "📢", l: "Impact", d: "Direct contributions to local food programs." },
+                                    { i: "🎂", l: "Birthday", d: "$10 credit on your special day." },
+                                    { i: "💳", l: "Wallet", d: "Unified rewards across all partners." },
+                                    { i: "🛡️", l: "No Fees", d: "Zero hidden charges. Pure transparency." }
+                                ].map((card, i) => (
+                                    <div key={i} className="p-10 bg-white/5 rounded-[2.5rem] border border-white/10 flex flex-col items-center text-center group hover:bg-white/10 transition-all">
+                                        <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">{card.i}</div>
+                                        <p className="text-[10px] font-black uppercase mb-3 tracking-[0.25em] text-primary">{card.l}</p>
+                                        <p className="text-xs text-slate-500 font-bold leading-relaxed">{card.d}</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
+
 
                 </div>
 
