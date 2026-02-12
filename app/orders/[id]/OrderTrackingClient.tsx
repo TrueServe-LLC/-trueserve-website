@@ -25,9 +25,16 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     const [currentOrder, setCurrentOrder] = useState(order);
     const [isChatOpen, setIsChatOpen] = useState(false);
 
-    // Initial positions
-    const restaurantPos: [number, number] = [order.restaurant.lat || 35.2271, order.restaurant.lng || -80.8431];
-    const initialDriverPos: [number, number] = order.driver?.currentLocation || restaurantPos;
+    // Initial positions (Ensure numbers)
+    const restaurantLat = Number(order.restaurant.lat) || 35.2271;
+    const restaurantLng = Number(order.restaurant.lng) || -80.8431;
+    const restaurantPos: [number, number] = [restaurantLat, restaurantLng];
+
+    // Driver position
+    const driverLoc = order.driver?.currentLocation;
+    const driverLat = (driverLoc && driverLoc[0]) ? Number(driverLoc[0]) : restaurantLat;
+    const driverLng = (driverLoc && driverLoc[1]) ? Number(driverLoc[1]) : restaurantLng;
+    const initialDriverPos: [number, number] = [driverLat, driverLng];
 
     // Mock Customer Location (nearby for demo)
     const [customerPos] = useState<[number, number]>([
@@ -185,45 +192,13 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 </div>
 
                 <div className="h-[400px] w-full relative z-0">
-                    {/* If OUT_FOR_DELIVERY (Step 4), show Route. Otherwise show standard map. */}
-                    {currentStep === 4 ? (
-                        <MapWithDirections
-                            routeOrigin={{ lat: restaurantPos[0], lng: restaurantPos[1] }}
-                            origin={{ lat: driverPos[0], lng: driverPos[1] }}
-                            destination={{ lat: customerPos[0], lng: customerPos[1] }}
-                            driverRotation={driverBearing}
-                        />
-                    ) : (
-                        <GoogleMapsMap
-                            center={driverPos}
-                            zoom={14}
-                            restaurants={[
-                                {
-                                    id: "driver",
-                                    name: "Driver",
-                                    coords: driverPos,
-                                    image: "https://cdn-icons-png.flaticon.com/512/3097/3097180.png",
-                                    tags: ["Driver"],
-                                    rotation: driverBearing
-                                },
-                                {
-                                    id: "restaurant",
-                                    name: order.restaurant.name,
-                                    coords: [order.restaurant.lat, order.restaurant.lng],
-                                    image: order.restaurant.imageUrl,
-                                    tags: ["Restaurant"]
-                                },
-                                // Show Customer pin if not routing
-                                {
-                                    id: "customer",
-                                    name: "You",
-                                    coords: customerPos,
-                                    image: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                                    tags: ["Delivery Location"]
-                                }
-                            ]}
-                        />
-                    )}
+                    <MapWithDirections
+                        routeOrigin={{ lat: restaurantPos[0], lng: restaurantPos[1] }}
+                        origin={{ lat: driverPos[0], lng: driverPos[1] }}
+                        destination={{ lat: customerPos[0], lng: customerPos[1] }}
+                        driverRotation={driverBearing}
+                        showDriver={true}
+                    />
                 </div>
 
                 <div className="p-6 bg-slate-900/50 flex gap-6 md:gap-12 items-center backdrop-blur-md border-t border-white/5">

@@ -32,6 +32,7 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
     });
 
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     // Use routeOrigin (Restaurant) for the path if provided, otherwise stick to origin (Driver)
     // This allows the path to be stable (Restaurant -> Customer) while the car moves
@@ -39,25 +40,64 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
 
     // Fetch Directions Imperatively - Only if startPoint or destination changes
     useEffect(() => {
-        if (!isLoaded || !startPoint || !destination) return;
+        if (!isLoaded || !startPoint || !destination) {
+            console.log("MapWithDirections: Waiting for map/coords...", { isLoaded, startPoint, destination });
+            return;
+        }
 
+        console.log("MapWithDirections: Fetching route...", { startPoint, destination });
+        setError(null); // Reset error
         const directionsService = new window.google.maps.DirectionsService();
         directionsService.route({
             origin: startPoint,
             destination: destination,
-            travelMode: window.google.maps.TravelMode.DRIVING
+            travelMode: window.google.maps.TravelMode.DRIVING,
+            provideRouteAlternatives: false
         }, (result, status) => {
+            console.log("MapWithDirections: Result", status, result);
             if (status === window.google.maps.DirectionsStatus.OK && result) {
                 setDirections(result);
             } else {
                 console.error(`Directions request failed due to ${status}`);
+                setError(`Route Error: ${status}`);
             }
         });
 
-    }, [isLoaded, startPoint, destination]); // Dependencies updated to use startPoint
+    }, [isLoaded, startPoint, destination]);
+
+
+    const mapRef = React.useRef<google.maps.Map | null>(null);
+    const onLoad = useCallback((map: google.maps.Map) => {
+        mapRef.current = map;
+    }, []);
+
+    // Fit bounds when directions load
+    useEffect(() => {
+        if (directions && mapRef.current) {
+            const bounds = new window.google.maps.LatLngBounds();
+            // Also fit the route bounds if available
+            if (directions.routes[0]?.bounds) {
+                mapRef.current.fitBounds(directions.routes[0].bounds);
+            } else {
+                if (startPoint && typeof startPoint === 'object' && 'lat' in startPoint) bounds.extend(startPoint);
+                if (destination && typeof destination === 'object' && 'lat' in destination) bounds.extend(destination);
+                if (!bounds.isEmpty()) mapRef.current.fitBounds(bounds);
+            }
+        }
+    }, [directions, startPoint, destination]);
 
 
     if (!isLoaded) return <div className="h-[400px] w-full bg-slate-900 animate-pulse rounded-2xl flex items-center justify-center text-slate-500">Loading Map...</div>;
+
+    if (error) {
+        return (
+            <div className="h-[400px] w-full bg-slate-100 rounded-2xl flex flex-col items-center justify-center text-red-500 p-4 border border-red-300">
+                <p className="font-bold mb-2">Map Error</p>
+                <p className="text-sm">{error}</p>
+                <p className="text-xs text-slate-500 mt-4 max-w-xs text-center">Check console for details or ensure API key has Directions API enabled.</p>
+            </div>
+        );
+    }
 
     // Standard Light Mode (Matches reference image)
     const defaultLightStyle: google.maps.MapTypeStyle[] = [];
@@ -70,6 +110,7 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
             mapContainerStyle={containerStyle}
             center={mapCenter}
             zoom={14} // Zoomed in slightly more for better view
+            onLoad={onLoad}
             options={{
                 styles: defaultLightStyle,
                 disableDefaultUI: false,
@@ -78,6 +119,14 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
                 mapTypeControl: false,
             }}
         >
+            {/* Debug Overlay */}
+            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs p-2 rounded z-20 pointer-events-none">
+                <p>Status: {directions ? "Route Loaded" : "Fetching..."}</p>
+                {/* @ts-ignore */}
+                <p>Start: {startPoint?.lat?.toFixed(4) || "?"}</p>
+                {/* @ts-ignore */}
+                <p>End: {destination?.lat?.toFixed(4) || "?"}</p>
+            </div>
             {/* 1. The Route Line - Google Blue */}
             {directions && (
                 <DirectionsRenderer
