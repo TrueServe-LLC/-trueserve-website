@@ -12,6 +12,7 @@ import ChatWindow from "@/components/ChatWindow";
 
 // Google Maps Import
 import GoogleMapsMap from "@/components/GoogleMapsMap";
+import MapWithDirections from "@/components/MapWithDirections";
 
 
 
@@ -184,28 +185,44 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 </div>
 
                 <div className="h-[400px] w-full relative z-0">
-                    <GoogleMapsMap
-                        center={driverPos}
-                        zoom={14}
-
-                        restaurants={[
-                            {
-                                id: "driver",
-                                name: "Driver",
-                                coords: driverPos,
-                                image: "https://cdn-icons-png.flaticon.com/512/3097/3097180.png",
-                                tags: ["Driver"],
-                                rotation: driverBearing
-                            },
-                            {
-                                id: "restaurant",
-                                name: order.restaurant.name,
-                                coords: [order.restaurant.lat, order.restaurant.lng],
-                                image: order.restaurant.imageUrl,
-                                tags: ["Restaurant"]
-                            }
-                        ]}
-                    />
+                    {/* If OUT_FOR_DELIVERY (Step 4), show Route. Otherwise show standard map. */}
+                    {currentStep === 4 ? (
+                        <MapWithDirections
+                            origin={{ lat: driverPos[0], lng: driverPos[1] }}
+                            destination={{ lat: customerPos[0], lng: customerPos[1] }}
+                            driverRotation={driverBearing}
+                        />
+                    ) : (
+                        <GoogleMapsMap
+                            center={driverPos}
+                            zoom={14}
+                            restaurants={[
+                                {
+                                    id: "driver",
+                                    name: "Driver",
+                                    coords: driverPos,
+                                    image: "https://cdn-icons-png.flaticon.com/512/3097/3097180.png",
+                                    tags: ["Driver"],
+                                    rotation: driverBearing
+                                },
+                                {
+                                    id: "restaurant",
+                                    name: order.restaurant.name,
+                                    coords: [order.restaurant.lat, order.restaurant.lng],
+                                    image: order.restaurant.imageUrl,
+                                    tags: ["Restaurant"]
+                                },
+                                // Show Customer pin if not routing
+                                {
+                                    id: "customer",
+                                    name: "You",
+                                    coords: customerPos,
+                                    image: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                                    tags: ["Delivery Location"]
+                                }
+                            ]}
+                        />
+                    )}
                 </div>
 
                 <div className="p-6 bg-slate-900/50 flex gap-6 md:gap-12 items-center backdrop-blur-md border-t border-white/5">
