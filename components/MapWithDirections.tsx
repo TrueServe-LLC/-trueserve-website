@@ -20,7 +20,7 @@ interface MapWithDirectionsProps {
     destination?: string | google.maps.LatLngLiteral;
 }
 
-const libraries: ("places" | "drawing" | "geometry" | "localContext" | "visualization")[] = ["places"];
+const libraries: ("places" | "drawing" | "geometry" | "visualization")[] = ["places"];
 
 export default function MapWithDirections({ origin, destination }: MapWithDirectionsProps) {
     const { isLoaded } = useJsApiLoader({
