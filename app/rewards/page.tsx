@@ -3,105 +3,136 @@ import Link from 'next/link';
 
 export default function RewardsPage() {
     return (
-        <div className="min-h-screen pb-20">
+        <div className="min-h-screen bg-black text-white selection:bg-primary/30 pb-24">
+            {/* Background Decor */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+            </div>
+
             {/* Navigation */}
-            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
-                <div className="container flex justify-between items-center">
+            <nav className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/5 px-6 py-4 bg-black/50">
+                <div className="container mx-auto flex justify-between items-center">
                     <Link href="/" className="flex items-center gap-2 group">
                         <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
                         <span className="text-2xl font-black tracking-tighter">
                             True<span className="text-gradient">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4 items-center">
-                        <Link href="/restaurants" className="hover:text-primary transition-colors">Restaurants</Link>
-                        <div className="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold border border-primary/20">
-                            2,450 pts
+                    <div className="hidden sm:flex items-center gap-6">
+                        <Link href="/restaurants" className="text-sm font-bold text-slate-400 hover:text-white transition-colors">Restaurants</Link>
+                        <div className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black border border-primary/20 shadow-lg shadow-primary/5">
+                            2,450 PTS
                         </div>
                     </div>
                 </div>
             </nav>
 
-            <main className="container py-12 animate-fade-in">
+            <main className="container mx-auto py-12 px-6 animate-fade-in">
                 {/* Hero Section */}
-                <div className="text-center mb-16 relative">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10 animate-pulse" />
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 text-white">
-                        Rewards <span className="text-gradient">Store</span>
+                <div className="text-center mb-20 relative">
+                    <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-primary/30">
+                        Loyalty Program
+                    </div>
+                    <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 leading-[0.85] text-white">
+                        Rewards <br /><span className="text-gradient italic">Center.</span>
                     </h1>
-                    <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-                        Redeem your hard-earned points for exclusive perks, free meals, and charitable donations.
+                    <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                        Earn as you eat. Redeem points for premium perks, free meals, or charitable impact.
                     </p>
                 </div>
 
-                {/* Points Balance Card */}
-                <div className="mb-12 card bg-gradient-to-r from-secondary/10 to-primary/10 border-white/10 p-8 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="text-center md:text-left">
-                        <p className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-2">Current Balance</p>
-                        <div className="text-6xl font-black text-white tabular-nums tracking-tighter">
-                            2,450 <span className="text-2xl text-primary align-top">+150 pending</span>
+                {/* Points Balance Card - Fixed Overlap & Responsiveness */}
+                <div className="mb-16 relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+                    <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-10">
+                        <div className="text-center md:text-left">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-4">Total Balance</p>
+                            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-4">
+                                <span className="text-7xl md:text-8xl font-black text-white tabular-nums tracking-tighter">2,450</span>
+                                <div className="flex flex-col items-center sm:items-start">
+                                    <span className="text-primary font-black text-sm uppercase tracking-widest">+150 PENDING</span>
+                                    <span className="text-slate-500 text-[10px] uppercase font-bold">Gold Multiplier Active</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex gap-4">
-                        <button className="btn btn-outline border-white/10 hover:bg-white/5">History</button>
-                        <button className="btn btn-primary px-8">Earn More</button>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                            <button className="flex-1 btn btn-outline border-white/10 hover:bg-white/5 py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-widest">History</button>
+                            <button className="flex-1 btn btn-primary py-4 px-10 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20">Earn More</button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Rewards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                <h2 className="text-2xl font-black mb-8 px-2 uppercase tracking-tight">Available Redemptions</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
                     <RewardCard
                         title="$5 Off Order"
                         points={500}
-                        image="💵"
-                        color="bg-green-500/10 border-green-500/20 text-green-400"
+                        icon="💵"
+                        desc="Instant discount applied at checkout."
+                        accent="emerald"
                     />
                     <RewardCard
                         title="Free Delivery"
                         points={750}
-                        image="🛵"
-                        color="bg-blue-500/10 border-blue-500/20 text-blue-400"
+                        icon="🛵"
+                        desc="Skip the delivery fee on any order."
+                        accent="blue"
                     />
                     <RewardCard
                         title="Free Appetizer"
                         points={1200}
-                        image="🍟"
-                        color="bg-orange-500/10 border-orange-500/20 text-orange-400"
+                        icon="🍟"
+                        desc="Valid at participating local partners."
+                        accent="orange"
                     />
                     <RewardCard
                         title="$10 Off Order"
                         points={1000}
-                        image="💰"
-                        color="bg-purple-500/10 border-purple-500/20 text-purple-400"
+                        icon="💰"
+                        desc="Double value discount for savvy savers."
+                        accent="purple"
                     />
                     <RewardCard
                         title="Priority Support"
                         points={2000}
-                        image="⭐"
-                        color="bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
+                        icon="⭐"
+                        desc="VIP lane for all your inquiries."
+                        accent="yellow"
                     />
                     <RewardCard
                         title="Donate Meal"
                         points={2500}
-                        image="❤️"
-                        color="bg-red-500/10 border-red-500/20 text-red-400"
+                        icon="❤️"
+                        desc="Feed a neighbor through local food banks."
+                        accent="red"
                     />
                 </div>
 
                 {/* Status Tier */}
-                <div className="card bg-white/5 border-white/10 p-8">
-                    <div className="flex justify-between items-end mb-4">
+                <div className="relative overflow-hidden bg-white/5 border border-white/10 rounded-[3rem] p-10 md:p-16">
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-yellow-500/10 rounded-full blur-[100px] -z-10" />
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-10">
                         <div>
-                            <h3 className="text-2xl font-bold text-white mb-1">Gold Tier</h3>
-                            <p className="text-slate-400 text-sm">Earn 1.5x points on every order.</p>
+                            <span className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-yellow-500/30">Current Tier</span>
+                            <h3 className="text-4xl md:text-5xl font-black text-white mt-4 mb-2">Gold Member</h3>
+                            <p className="text-slate-400 font-medium">Enjoy 1.5x points on every order and exclusive chef drops.</p>
                         </div>
-                        <div className="text-right">
-                            <p className="text-sm text-slate-400">Next Tier: Platinum</p>
-                            <p className="text-xs text-slate-500">550 points to go</p>
+                        <div className="text-left md:text-right min-w-[150px]">
+                            <p className="text-sm font-bold text-white mb-1">Platinum Tier</p>
+                            <p className="text-xs text-slate-500 font-medium">550 pts until next level</p>
                         </div>
                     </div>
-                    <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-yellow-600 to-yellow-300 w-[75%] rounded-full shadow-[0_0_20px_rgba(253,224,71,0.5)]" />
+                    <div className="relative">
+                        <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
+                            <div className="h-full bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-200 w-[75%] rounded-full shadow-[0_0_30px_rgba(253,224,71,0.4)]" />
+                        </div>
+                        <div className="flex justify-between mt-4 px-1">
+                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Silver</span>
+                            <span className="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Gold</span>
+                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Platinum</span>
+                        </div>
                     </div>
                 </div>
 
@@ -110,17 +141,34 @@ export default function RewardsPage() {
     );
 }
 
-function RewardCard({ title, points, image, color }: { title: string, points: number, image: string, color: string }) {
+function RewardCard({ title, points, icon, desc, accent }: { title: string, points: number, icon: string, desc: string, accent: string }) {
+    const accents: any = {
+        emerald: "from-emerald-500/20 text-emerald-400 border-emerald-500/20",
+        blue: "from-blue-500/20 text-blue-400 border-blue-500/20",
+        orange: "from-orange-500/20 text-orange-400 border-orange-500/20",
+        purple: "from-purple-500/20 text-purple-400 border-purple-500/20",
+        yellow: "from-yellow-500/20 text-yellow-500 border-yellow-500/20",
+        red: "from-red-500/20 text-red-400 border-red-500/20",
+    }
+
     return (
-        <div className={`card group hover:scale-[1.02] transition-all cursor-pointer border ${color.replace('text-', 'border-').split(' ')[1] || 'border-white/10'} bg-white/5 p-6 flex flex-col items-center text-center`}>
-            <div className={`w-16 h-16 rounded-2xl ${color} flex items-center justify-center text-3xl mb-4 group-hover:rotate-12 transition-transform`}>
-                {image}
+        <div className="group bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex flex-col h-full hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative overflow-hidden">
+            <div className={`absolute -bottom-6 -right-6 text-8xl opacity-[0.03] group-hover:opacity-10 transition-all duration-500 transform group-hover:-rotate-12`}>
+                {icon}
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
-            <p className="text-primary font-bold">{points} pts</p>
-            <button className="mt-4 w-full py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-bold uppercase tracking-wider transition-colors">
-                Redeem
-            </button>
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${accents[accent]} border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform`}>
+                {icon}
+            </div>
+            <div className="flex-1">
+                <h3 className="text-xl font-black text-white mb-2 leading-tight">{title}</h3>
+                <p className="text-slate-400 text-sm font-medium leading-relaxed mb-6">{desc}</p>
+            </div>
+            <div className="flex items-center justify-between gap-4 mt-auto pt-6 border-t border-white/5">
+                <span className="text-primary font-black text-lg tracking-tight">{points.toLocaleString()} <span className="text-[10px] uppercase tracking-widest">PTS</span></span>
+                <button className="px-5 py-2 rounded-xl bg-white/10 hover:bg-primary hover:text-black text-[10px] font-black uppercase tracking-widest transition-all">
+                    Redeem
+                </button>
+            </div>
         </div>
     )
 }

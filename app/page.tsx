@@ -48,14 +48,21 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+              <div className="relative group w-full max-w-xl">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-[2rem] sm:rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
                 <LandingSearch />
               </div>
             </div>
-            <div className="mt-6 md:hidden">
-              <Link href="/driver" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-primary transition-colors border border-white/10 px-4 py-2 rounded-full bg-white/5">
-                🚗 Want to drive? <span className="text-primary underline decoration-primary/50 underline-offset-2">Join Field Team</span>
+
+            {/* Mobile-Only Dual Path Selection */}
+            <div className="grid grid-cols-2 gap-4 mt-8 md:hidden">
+              <Link href="/restaurants" className="flex flex-col items-center gap-3 p-6 bg-white/5 border border-white/10 rounded-3xl active:scale-95 transition-all">
+                <div className="text-3xl">🍔</div>
+                <span className="text-xs font-black uppercase tracking-widest text-primary">Order Food</span>
+              </Link>
+              <Link href="/driver" className="flex flex-col items-center gap-3 p-6 bg-white/5 border border-white/10 rounded-3xl active:scale-95 transition-all">
+                <div className="text-3xl">🛵</div>
+                <span className="text-xs font-black uppercase tracking-widest text-emerald-400">Join Fleet</span>
               </Link>
             </div>
           </div>

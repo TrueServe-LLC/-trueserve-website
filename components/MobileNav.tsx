@@ -31,12 +31,21 @@ export default function MobileNav() {
                 </Link>
 
                 <Link
+                    href="/driver"
+                    className={`flex flex-col items-center gap-1 transition-colors ${isActive('/driver') ? 'text-primary' : 'hover:text-white'}`}
+                >
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary border border-primary/20 -mt-6 shadow-lg shadow-primary/20">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <span className="mt-1">Drive</span>
+                </Link>
+
+                <Link
                     href="/orders"
                     className={`flex flex-col items-center gap-1 transition-colors ${isActive('/orders') ? 'text-primary' : 'hover:text-white'}`}
                 >
                     <div className="relative">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        {/* <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-slate-900"></span> */}
                     </div>
                     Orders
                 </Link>
