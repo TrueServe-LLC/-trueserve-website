@@ -112,16 +112,16 @@ export default function BenefitsPage() {
                     </div>
 
                     {/* 2. Convenience & Experience */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                        <div className="order-2 md:order-1 bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-12 rounded-[3rem] text-right">
-                            <div className="text-7xl mb-8">⚡</div>
-                            <p className="text-slate-400 leading-relaxed italic">"I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."</p>
-                            <p className="mt-4 text-xs font-bold">— James L., Premium Member</p>
+                    <div className="flex flex-col md:flex-row gap-16 items-start">
+                        <div className="w-full md:w-1/2 order-2 md:order-1 bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-8 md:p-12 rounded-[3rem] text-center md:text-right shrink-0">
+                            <div className="text-5xl md:text-7xl mb-8">⚡</div>
+                            <p className="text-slate-400 leading-relaxed italic text-lg md:text-xl">"I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."</p>
+                            <p className="mt-6 text-sm font-bold">— James L., Premium Member</p>
                         </div>
-                        <div className="order-1 md:order-2">
+                        <div className="w-full md:w-1/2 order-1 md:order-2">
                             <span className="text-blue-400 font-black uppercase tracking-widest text-[10px]">Convenience & Experience</span>
-                            <h2 className="text-4xl font-bold mt-4 mb-8 leading-tight">Elevate your order <br /> from start to finish.</h2>
-                            <div className="space-y-8">
+                            <h2 className="text-4xl md:text-5xl font-black mt-4 mb-8 leading-tight">Elevate your order <br /> from start to finish.</h2>
+                            <div className="space-y-10">
                                 <FeatureDetail
                                     icon="⚡"
                                     title="Priority Dispatch & Support"
@@ -142,56 +142,64 @@ export default function BenefitsPage() {
                     </div>
 
                     {/* 3. Tech & Transparency */}
-                    <div className="bg-white/5 border border-white/10 rounded-[4rem] p-12 md:p-20 relative overflow-hidden">
+                    <div className="w-full bg-white/5 border border-white/10 rounded-[4rem] p-8 md:p-20 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -z-10" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            <div>
-                                <h2 className="text-4xl font-black mb-8">Technology with <br /><span className="text-gradient">Transparency.</span></h2>
-                                <p className="text-slate-400 mb-8 max-w-sm">We believe in a fair marketplace. Our tech isn't meant to hide fees—it's meant to reveal them.</p>
-                                <div className="space-y-6">
+                        <div className="flex flex-col lg:flex-row gap-16 relative z-10">
+                            <div className="flex-1">
+                                <h2 className="text-4xl md:text-5xl font-black mb-8">Technology with <br /><span className="text-gradient">Transparency.</span></h2>
+                                <p className="text-slate-400 mb-10 max-w-lg text-lg leading-relaxed">We believe in a fair marketplace. Our tech isn't meant to hide fees—it's meant to reveal them.</p>
+                                <div className="space-y-8">
                                     <div className="flex gap-4">
-                                        <span className="text-primary text-xl">✓</span>
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">✓</div>
                                         <div>
-                                            <p className="font-bold">Earnings Dashboard</p>
+                                            <p className="font-bold text-lg">Earnings Dashboard</p>
                                             <p className="text-sm text-slate-500">See exactly how much the restaurant and driver earned on your order.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4">
-                                        <span className="text-primary text-xl">✓</span>
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">✓</div>
                                         <div>
-                                            <p className="font-bold">AI Voice VIP Line</p>
+                                            <p className="font-bold text-lg">AI Voice VIP Line</p>
                                             <p className="text-sm text-slate-500">Premium members get hands-free, priority AI voice ordering.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4">
-                                        <span className="text-primary text-xl">✓</span>
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">✓</div>
                                         <div>
-                                            <p className="font-bold">Advanced Scheduling</p>
+                                            <p className="font-bold text-lg">Advanced Scheduling</p>
                                             <p className="text-sm text-slate-500">Schedule deliveries up to 7 days out with locked-in time windows.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
-                                    <div className="text-3xl mb-4">📢</div>
-                                    <p className="text-xs font-bold uppercase mb-2">Impact</p>
-                                    <p className="text-xs text-slate-500 font-medium">A portion of your fees goes directly to local food programs.</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
+                                    <div>
+                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">📢</div>
+                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">Impact</p>
+                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">A portion of your fees goes directly to local food programs.</p>
+                                    </div>
                                 </div>
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
-                                    <div className="text-3xl mb-4">🎂</div>
-                                    <p className="text-xs font-bold uppercase mb-2">Birthday</p>
-                                    <p className="text-xs text-slate-500 font-medium">Automatic $10 credit on your anniversary and birthday.</p>
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
+                                    <div>
+                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">🎂</div>
+                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">Birthday</p>
+                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">Automatic $10 credit on your anniversary and birthday.</p>
+                                    </div>
                                 </div>
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
-                                    <div className="text-3xl mb-4">💳</div>
-                                    <p className="text-xs font-bold uppercase mb-2">Wallet</p>
-                                    <p className="text-xs text-slate-500 font-medium">Unified rewards wallet works across all partner restaurants.</p>
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
+                                    <div>
+                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">💳</div>
+                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">Wallet</p>
+                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">Unified rewards wallet works across all partner restaurants.</p>
+                                    </div>
                                 </div>
-                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
-                                    <div className="text-3xl mb-4">🛡️</div>
-                                    <p className="text-xs font-bold uppercase mb-2">No Fees</p>
-                                    <p className="text-xs text-slate-500 font-medium">Radical transparency on every breakdown shown at checkout.</p>
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5 flex flex-col justify-between group hover:bg-black/60 transition-colors">
+                                    <div>
+                                        <div className="text-3xl mb-4 group-hover:scale-110 transition-transform origin-left">🛡️</div>
+                                        <p className="text-xs font-bold uppercase mb-2 tracking-widest text-slate-400">No Fees</p>
+                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">Radical transparency on every breakdown shown at checkout.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
