@@ -1,4 +1,5 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import AddItemForm from "./AddItemForm";
@@ -6,7 +7,8 @@ import { updateOrderStatus, refundOrder } from "../actions";
 
 export const dynamic = "force-dynamic";
 
-async function getMerchantData() {
+async function getMerchantData(userId: string) {
+    const supabase = await createClient();
     try {
         const { data: restaurant, error } = await supabase
             .from('Restaurant')
@@ -22,12 +24,7 @@ async function getMerchantData() {
                     )
                 )
             `)
-            // Sort orders at database level (requires correct foreign key setup/syntax, 
-            // but Supabase select supports ordering on relations or we filter after. 
-            // Since complex relation sorting in one query can be tricky, 
-            // a better scalable approach relies on separate queries or simple ordering if supported.
-            // For now, we simple-limit to prevent crash, then fetch recent orders in a clean query check below.
-            .limit(1)
+            .eq('ownerId', userId) // Critical: Filter by logged-in user
             .maybeSingle();
 
         if (error) {
@@ -67,7 +64,15 @@ async function getMerchantData() {
 }
 
 export default async function MerchantDashboard() {
-    const restaurant = await getMerchantData();
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+
+    if (!userId) {
+        // In a real app, verify session. For now, rely on cookie or redirect
+        redirect("/login?role=merchant");
+    }
+
+    const restaurant = await getMerchantData(userId);
 
     // Fallback UI if no restaurant found (or DB down)
     if (!restaurant) {

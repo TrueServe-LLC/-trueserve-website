@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
+
 import { supabase } from "@/lib/supabase";
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
 import ChatWindow from "@/components/ChatWindow";
 
 
-const MapboxMap = dynamic(() => import("@/components/MapboxMap"), {
-    ssr: false,
-    loading: () => <div className="h-[400px] w-full bg-slate-800 animate-pulse rounded-xl" />
-});
+// Google Maps Import
+import GoogleMapsMap from "@/components/GoogleMapsMap";
+
+
 
 interface OrderTrackingClientProps {
     order: any;
@@ -194,7 +194,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 </div>
 
                 <div className="h-[400px] w-full relative z-0">
-                    <MapboxMap
+                    <GoogleMapsMap
                         center={driverPos}
                         zoom={14}
 

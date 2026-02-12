@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { placeOrder } from "../actions";
 
-import MapboxMap from "@/components/MapboxMap";
+import GoogleMapsMap from "@/components/GoogleMapsMap";
 
 interface MenuItem {
     id: string;
@@ -245,16 +245,15 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                     <div className="h-48 relative">
                         <div className="absolute inset-0 z-0">
 
-                            {/* Mapbox Map Implementation */}
-                            <MapboxMap
+                            {/* Google Maps Map Implementation */}
+                            <GoogleMapsMap
                                 center={[restaurant?.lat || 35.2271, restaurant?.lng || -80.8431]}
                                 zoom={14}
                                 restaurants={restaurant ? [{
                                     id: restaurant.id,
                                     name: restaurant.name,
                                     coords: [restaurant.lat || 35.2271, restaurant.lng || -80.8431],
-                                    image: restaurant.imageUrl,
-                                    rating: restaurant.rating
+                                    image: restaurant.imageUrl
                                 }] : []}
                             />
                         </div>

@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, OverlayView } from '@react-google-maps/api';
 
 const containerStyle = {
     width: '100%',
-    height: '400px',
+    height: '100%',
     borderRadius: '1rem'
 };
 
@@ -13,6 +13,9 @@ interface RestaurantLocation {
     id: string;
     name: string;
     coords: [number, number]; // [lat, lng]
+    image?: string;
+    rotation?: number;
+    tags?: string[];
 }
 
 interface MapProps {
@@ -55,12 +58,12 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     }, [map, center, restaurants, zoom]);
 
     if (!isLoaded) {
-        return <div className="h-[400px] w-full bg-slate-800 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Google Maps...</div>;
+        return <div className="h-full w-full bg-slate-800 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Google Maps...</div>;
     }
 
     if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
         return (
-            <div className="h-[400px] w-full bg-slate-800 rounded-xl flex items-center justify-center text-red-500 p-4 border border-red-500/20 text-center font-bold">
+            <div className="h-full w-full bg-slate-800 rounded-xl flex items-center justify-center text-red-500 p-4 border border-red-500/20 text-center font-bold">
                 Error: Missing Google Maps API Key
                 <br />
                 <span className="text-sm font-normal text-slate-400">Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env file</span>
@@ -69,7 +72,7 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     }
 
     return (
-        <div className="h-[400px] w-full rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0">
+        <div className="h-full w-full rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0">
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={{ lat: center[0], lng: center[1] }}
@@ -161,13 +164,37 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
                 />
 
                 {/* Restaurant Markers */}
-                {restaurants.map(rest => (
-                    <Marker
-                        key={rest.id}
-                        position={{ lat: rest.coords[0], lng: rest.coords[1] }}
-                        title={rest.name}
-                    />
-                ))}
+                {restaurants.map(rest => {
+                    // Use OverlayView for rotated markers (Driver)
+                    if (rest.rotation !== undefined) {
+                        return (
+                            <OverlayView
+                                key={rest.id}
+                                position={{ lat: rest.coords[0], lng: rest.coords[1] }}
+                                mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                            >
+                                <div style={{ transform: `translate(-50%, -50%) rotate(${rest.rotation}deg)` }} className="text-3xl filter drop-shadow-lg">
+                                    🚗
+                                </div>
+                            </OverlayView>
+                        );
+                    }
+
+                    // Standard Marker for others
+                    return (
+                        <Marker
+                            key={rest.id}
+                            position={{ lat: rest.coords[0], lng: rest.coords[1] }}
+                            title={rest.name}
+                            icon={rest.image ? {
+                                url: rest.image,
+                                scaledSize: new window.google.maps.Size(40, 40),
+                                origin: new window.google.maps.Point(0, 0),
+                                anchor: new window.google.maps.Point(20, 20)
+                            } : undefined}
+                        />
+                    );
+                })}
             </GoogleMap>
         </div>
     );

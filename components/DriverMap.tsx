@@ -1,10 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Map, { Source, Layer, Marker, Popup, NavigationControl } from 'react-map-gl/mapbox';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React, { useState, useMemo } from "react";
+import { GoogleMap, useJsApiLoader, Marker, Circle, InfoWindow } from '@react-google-maps/api';
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 // Mock Hotzones
 const HOTZONES = [
@@ -13,107 +12,164 @@ const HOTZONES = [
     { id: 'h3', name: "Plaza Midwood", coords: [35.2208, -80.8143] as [number, number], color: '#eab308', avgPay: 22, radius: 800 },
 ];
 
+const containerStyle = {
+    width: '100%',
+    height: '100%',
+    borderRadius: '1rem'
+};
+
+const center = {
+    lat: 35.2271,
+    lng: -80.8431
+};
+
 export default function DriverMap() {
-    const [popupInfo, setPopupInfo] = useState<any>(null);
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY || ""
+    });
 
-    // Create GeoJSON for Hotzones
-    const hotzoneData = useMemo(() => {
-        return {
-            type: 'FeatureCollection',
-            features: HOTZONES.map(zone => ({
-                type: 'Feature',
-                geometry: {
-                    type: 'Point',
-                    coordinates: [zone.coords[1], zone.coords[0]] // GeoJSON uses [lng, lat]
-                },
-                properties: {
-                    id: zone.id,
-                    name: zone.name,
-                    color: zone.color,
-                    radius: zone.radius,
-                    avgPay: zone.avgPay
-                }
-            }))
-        };
-    }, []);
+    const [selectedZone, setSelectedZone] = useState<any>(null);
 
-    if (!MAPBOX_TOKEN) {
-        return <div className="h-[400px] w-full bg-slate-800 flex items-center justify-center text-slate-500">Mapbox Token Missing</div>;
+    // Map Options
+    const options = useMemo(() => ({
+        disableDefaultUI: false,
+        zoomControl: true,
+        styles: [
+            { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+            {
+                featureType: "administrative.locality",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+            },
+            {
+                featureType: "poi",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+            },
+            {
+                featureType: "poi.park",
+                elementType: "geometry",
+                stylers: [{ color: "#263c3f" }],
+            },
+            {
+                featureType: "poi.park",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#6b9a76" }],
+            },
+            {
+                featureType: "road",
+                elementType: "geometry",
+                stylers: [{ color: "#38414e" }],
+            },
+            {
+                featureType: "road",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#212a37" }],
+            },
+            {
+                featureType: "road",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#9ca5b3" }],
+            },
+            {
+                featureType: "road.highway",
+                elementType: "geometry",
+                stylers: [{ color: "#746855" }],
+            },
+            {
+                featureType: "road.highway",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#1f2835" }],
+            },
+            {
+                featureType: "road.highway",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#f3d19c" }],
+            },
+            {
+                featureType: "water",
+                elementType: "geometry",
+                stylers: [{ color: "#17263c" }],
+            },
+            {
+                featureType: "water",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#515c6d" }],
+            },
+            {
+                featureType: "water",
+                elementType: "labels.text.stroke",
+                stylers: [{ color: "#17263c" }],
+            },
+        ]
+    }), []);
+
+    if (!GOOGLE_MAPS_API_KEY) {
+        return <div className="h-[400px] w-full bg-slate-800 flex items-center justify-center text-slate-500 rounded-xl border border-white/10">Google Maps API Key Missing</div>;
+    }
+
+    if (!isLoaded) {
+        return <div className="h-[400px] w-full bg-slate-800 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Map...</div>;
     }
 
     return (
         <div className="h-[400px] w-full rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0">
-            {/* @ts-ignore */}
-            <Map
-                initialViewState={{
-                    latitude: 35.2271,
-                    longitude: -80.8431,
-                    zoom: 12
-                }}
-                style={{ width: '100%', height: '100%' }}
-                mapStyle="mapbox://styles/mapbox/dark-v11"
-                mapboxAccessToken={MAPBOX_TOKEN}
+            <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={12}
+                options={options}
             >
-                <NavigationControl position="top-right" />
-
-                {/* Render Circles using GeoJSON Layer (Approximate visualization using circle-radius) */}
-                {/* Note: Mapbox GL JS 'circle' layer radius is in pixels by default unless usage 'pitch-alignment' map. 
-                    For true geographic meters, Fill layer with detailed polygon is better, but Circle layer with zoom-dependent radius works for visual "heat".
-                */}
-                <Source id="hotzones" type="geojson" data={hotzoneData as any}>
-                    <Layer
-                        id="hotzone-layer"
-                        type="circle"
-                        paint={{
-                            'circle-radius': [
-                                'interpolate',
-                                ['linear'],
-                                ['zoom'],
-                                10, ['/', ['get', 'radius'], 50], // simple scaling for demo
-                                15, ['/', ['get', 'radius'], 10]
-                            ],
-                            'circle-color': ['get', 'color'],
-                            'circle-opacity': 0.4,
-                            'circle-stroke-width': 2,
-                            'circle-stroke-color': ['get', 'color']
-                        }}
-                    />
-                </Source>
-
-                {/* Markers for Labels */}
+                {/* Hotzones Circles */}
                 {HOTZONES.map(zone => (
-                    <Marker
-                        key={zone.id}
-                        latitude={zone.coords[0]}
-                        longitude={zone.coords[1]}
-                        anchor="center"
-                        onClick={e => {
-                            e.originalEvent.stopPropagation();
-                            setPopupInfo(zone);
-                        }}
-                    >
-                        <div className="flex flex-col items-center cursor-pointer group">
-                            <span className="text-xl drop-shadow-md group-hover:scale-125 transition-transform">🔥</span>
-                        </div>
-                    </Marker>
+                    <React.Fragment key={zone.id}>
+                        <Circle
+                            center={{ lat: zone.coords[0], lng: zone.coords[1] }}
+                            radius={zone.radius}
+                            options={{
+                                fillColor: zone.color,
+                                fillOpacity: 0.3,
+                                strokeColor: zone.color,
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                clickable: true
+                            }}
+                            onClick={() => setSelectedZone(zone)}
+                        />
+                        {/* Center Marker for Label/Click */}
+                        <Marker
+                            position={{ lat: zone.coords[0], lng: zone.coords[1] }}
+                            label={{
+                                text: "🔥",
+                                fontSize: "20px",
+                                className: "map-label-emoji"
+                            }}
+                            icon={{
+                                path: window.google.maps.SymbolPath.CIRCLE,
+                                scale: 0, // hidden marker, just label
+                            }}
+                            onClick={() => setSelectedZone(zone)}
+                        />
+                    </React.Fragment>
                 ))}
 
-                {popupInfo && (
-                    <Popup
-                        anchor="top"
-                        longitude={popupInfo.coords[1]}
-                        latitude={popupInfo.coords[0]}
-                        onClose={() => setPopupInfo(null)}
-                        className="text-black"
+                {/* Info Window */}
+                {selectedZone && (
+                    <InfoWindow
+                        position={{ lat: selectedZone.coords[0], lng: selectedZone.coords[1] }}
+                        onCloseClick={() => setSelectedZone(null)}
                     >
-                        <div className="p-1 text-center">
-                            <h3 className="font-bold text-slate-900">{popupInfo.name}</h3>
-                            <p className="text-emerald-600 font-bold text-lg">${popupInfo.avgPay} <span className="text-xs text-slate-500 font-normal">/ order</span></p>
+                        <div className="p-1 text-center text-black min-w-[150px]">
+                            <h3 className="font-bold text-slate-900">{selectedZone.name}</h3>
+                            <p className="text-emerald-600 font-bold text-lg">${selectedZone.avgPay} <span className="text-xs text-slate-500 font-normal">/ order</span></p>
                             <p className="text-xs text-red-500 font-bold uppercase mt-1">Very Busy</p>
                         </div>
-                    </Popup>
+                    </InfoWindow>
                 )}
-            </Map>
+            </GoogleMap>
 
             {/* Legend Overlay */}
             <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md p-3 rounded-lg border border-white/10 z-[10]">

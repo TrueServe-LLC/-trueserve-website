@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
 import * as fs from 'fs';
+import * as path from 'path';
 import { sendEmail } from "@/lib/email";
 
 export type DriverApplicationState = {
@@ -114,11 +115,29 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             throw driverError;
         }
 
+        // Read Onboarding Document
+        let attachments = [];
+        try {
+            const docPath = path.join(process.cwd(), 'public', 'assets', 'Driver_Onboarding_Process_Complete.docx');
+            if (fs.existsSync(docPath)) {
+                const docContent = fs.readFileSync(docPath);
+                attachments.push({
+                    filename: 'Driver_Onboarding_Process_Complete.docx',
+                    content: docContent
+                });
+            } else {
+                console.warn("Onboarding document not found at:", docPath);
+            }
+        } catch (e) {
+            console.error("Failed to read onboarding document:", e);
+        }
+
         // Send Confirmation Email to Driver
         await sendEmail(
             email,
             "Application Received - TrueServe Driver",
-            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will review your application shortly. Once approved, you will receive an email to create your account and password.\n\nBest,\nThe TrueServe Team`
+            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will review your application shortly.\n\n**Please find the attached Onboarding Process document for your review.**\n\nOnce approved, you will receive an email to create your account and password.\n\nBest,\nThe TrueServe Team`,
+            attachments
         );
 
         // Send Notification to Admin
