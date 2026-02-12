@@ -36,12 +36,29 @@ const containerStyle = {
     borderRadius: '1rem'
 };
 
-const center = {
+const defaultCenter = {
     lat: 35.2271,
     lng: -80.8431
 };
 
 export default function DriverMap() {
+    const [mapCenter, setMapCenter] = useState(defaultCenter);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setMapCenter({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    });
+                },
+                () => {
+                    console.log("Geolocation permission denied or error. Using default center.");
+                }
+            );
+        }
+    }, []);
     const { isLoaded } = useJsApiLoader({
         id: GOOGLE_MAPS_SCRIPT_ID,
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -134,7 +151,7 @@ export default function DriverMap() {
         <div className="h-[400px] w-full rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0">
             <GoogleMap
                 mapContainerStyle={containerStyle}
-                center={center}
+                center={mapCenter}
                 zoom={11}
                 options={options}
             >

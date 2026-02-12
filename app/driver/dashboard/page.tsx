@@ -1,12 +1,17 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
 import { acceptOrder } from "../actions";
 import DriverMap from "@/components/DriverMap";
 
 async function getDriverData() {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) return null;
+
     try {
-        // Mocking a driver for demo - in real app use session
         const { data: driver, error } = await supabase
             .from('Driver')
             .select(`
@@ -14,7 +19,7 @@ async function getDriverData() {
                 user:User(*),
                 orders:Order(*)
             `)
-            .limit(1)
+            .eq('userId', user.id)
             .maybeSingle();
 
         if (error) {
@@ -29,6 +34,12 @@ async function getDriverData() {
 
 export default async function DriverDashboard() {
     const driver = await getDriverData();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        redirect('/login');
+    }
 
     // Fetch Available Orders
     const { data: availableOrders } = await supabase
@@ -51,10 +62,10 @@ export default async function DriverDashboard() {
 
     // Mock calculations if DB is empty/disconnected
     const stats = {
-        totalEarnings: driver ? Number((driver as any).totalEarnings) : 452.30,
-        balance: driver ? Number((driver as any).balance) : 85.00,
-        trips: driver?.orders.length || 12,
-        rating: driver ? Number((driver as any).rating) : 4.9,
+        totalEarnings: driver ? Number((driver as any).totalEarnings || 0) : 0,
+        balance: driver ? Number((driver as any).balance || 0) : 0,
+        trips: driver?.orders?.length || 0,
+        rating: driver ? Number((driver as any).rating || 0) : 0,
     };
 
     return (

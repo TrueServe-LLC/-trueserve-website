@@ -13,6 +13,7 @@ import ChatWindow from "@/components/ChatWindow";
 // Google Maps Import
 import GoogleMapsMap from "@/components/GoogleMapsMap";
 import MapWithDirections from "@/components/MapWithDirections";
+import ReviewModal from "@/components/ReviewModal";
 
 
 
@@ -24,6 +25,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
     const [currentOrder, setCurrentOrder] = useState(order);
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isReviewOpen, setIsReviewOpen] = useState(false);
 
     // Initial positions (Ensure numbers)
     const restaurantLat = Number(order.restaurant.lat) || 35.2271;
@@ -64,7 +66,11 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         const channel = supabase
             .channel(`order-${order.id}`)
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Order', filter: `id=eq.${order.id}` }, (payload) => {
-                setCurrentOrder((prev: any) => ({ ...prev, ...payload.new }));
+                const newOrder = payload.new;
+                setCurrentOrder((prev: any) => ({ ...prev, ...newOrder }));
+                if (newOrder.status === 'DELIVERED') {
+                    setTimeout(() => setIsReviewOpen(true), 2000);
+                }
             })
             .subscribe();
 
@@ -333,6 +339,15 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     >
                         Download PDF Receipt
                     </button>
+
+                    {currentOrder.status === 'DELIVERED' && currentOrder.driverId && (
+                        <button
+                            onClick={() => setIsReviewOpen(true)}
+                            className="w-full btn btn-primary mt-2 text-xs shadow-lg shadow-primary/20"
+                        >
+                            Rate Driver
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -351,6 +366,16 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     {isChatOpen ? '✕' : '💬'}
                 </button>
             </div>
+
+            {currentOrder.driverId && (
+                <ReviewModal
+                    isOpen={isReviewOpen}
+                    onClose={() => setIsReviewOpen(false)}
+                    orderId={currentOrder.id}
+                    driverId={currentOrder.driverId}
+                    customerId={currentOrder.userId}
+                />
+            )}
         </div>
     );
 }
