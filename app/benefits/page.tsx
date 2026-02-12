@@ -20,26 +20,24 @@ export default function BenefitsPage() {
             </nav>
 
             <main className="container max-w-7xl py-20 px-6 mx-auto">
-                {/* Hero Section */}
-                <div className="text-center mb-32 relative">
+                <div className="text-center mb-40 relative px-4">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] -z-10 animate-pulse" />
-                    <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-primary/30">
+                    <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 border border-primary/30">
                         Membership 2.0
                     </div>
-                    <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-8 leading-[0.9]">
+                    <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.85] text-white">
                         Built for <br />
                         <span className="text-gradient italic">Community.</span>
                     </h1>
-                    <p className="text-slate-400 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed font-medium">
-                        TrueServe isn't just "cheaper than DoorDash." It's a standard built for local restaurants and the customers who love them.
+                    <p className="text-slate-400 text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed font-medium">
+                        A new standard in delivery, built specifically for local restaurants and the community that supports them.
                     </p>
                 </div>
 
-                {/* Tiered Membership Model */}
-                <div className="mb-40">
-                    <h2 className="text-center text-3xl font-bold mb-16">Choose Your Standard</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Basic */}
+                {/* Tiered Membership Model - More Spacing */}
+                <div className="mb-48 relative z-10">
+                    <h2 className="text-center text-4xl md:text-5xl font-black mb-20 tracking-tight uppercase">Choose Your Standard</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 max-w-6xl mx-auto px-4">
                         <PricingCard
                             tier="Basic"
                             price="Free"
@@ -52,7 +50,6 @@ export default function BenefitsPage() {
                             ]}
                             buttonText="Get Started"
                         />
-                        {/* Plus */}
                         <PricingCard
                             tier="Plus"
                             price="$9.99"
@@ -67,7 +64,6 @@ export default function BenefitsPage() {
                             ]}
                             buttonLink="/login?plus=true"
                         />
-                        {/* Premium */}
                         <PricingCard
                             tier="Premium"
                             price="$19.99"
@@ -246,31 +242,41 @@ export default function BenefitsPage() {
 
 function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
     return (
-        <div className={`relative p-8 rounded-[2.5rem] border ${isPopular ? 'bg-white/10 border-primary shadow-2xl scale-[1.05] z-10' : 'bg-white/5 border-white/10'} flex flex-col items-center text-center transition-all hover:scale-[1.02]`}>
+        <div className={`relative p-10 md:p-12 rounded-[3rem] border flex flex-col items-center text-center transition-all ${isPopular
+                ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
+                : 'bg-white/5 border-white/10'
+            }`}>
             {isPopular && (
-                <div className="absolute -top-4 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-4 py-1.5 rounded-full">
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-6 py-2 rounded-full shadow-xl">
                     Most Loved
                 </div>
             )}
-            <h3 className="text-2xl font-black mb-1">{tier}</h3>
-            <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-6">{subtitle}</p>
 
-            <div className="flex items-end gap-1 mb-8">
-                <span className="text-5xl font-black tracking-tighter">{price}</span>
-                {price !== 'Free' && <span className="text-xs text-slate-500 font-bold mb-1">/ mo</span>}
+            <div className="mb-8">
+                <h3 className="text-3xl font-black mb-2 text-white">{tier}</h3>
+                <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{subtitle}</p>
             </div>
 
-            <ul className="space-y-4 mb-10 w-full">
+            <div className="flex items-end gap-1 mb-10 text-white">
+                <span className="text-6xl font-black tracking-tighter">{price}</span>
+                {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
+            </div>
+
+            <ul className="space-y-5 mb-12 w-full flex-1">
                 {features.map((f: string) => (
-                    <li key={f} className="text-sm text-slate-400 font-medium flex items-center justify-center gap-2">
-                        <span className="text-primary/50">•</span> {f}
+                    <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
+                        <span className="leading-tight">{f}</span>
                     </li>
                 ))}
             </ul>
 
             <Link
                 href={buttonLink}
-                className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${isPopular ? 'bg-primary text-black shadow-xl shadow-primary/20' : 'bg-white/10 hover:bg-white/20'}`}
+                className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all text-center ${isPopular
+                        ? 'bg-primary text-black hover:bg-white hover:scale-[1.02] shadow-2xl shadow-primary/20'
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                    }`}
             >
                 {buttonText}
             </Link>

@@ -63,13 +63,13 @@ export default function RewardsPage() {
                     </div>
                 </div>
 
-                {/* MEMBERSHIP SELECTION - NEW SECTION */}
-                <div className="mb-32">
+                {/* MEMBERSHIP SELECTION - Refined Spacing */}
+                <div className="mb-32 relative z-10">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-black tracking-tighter mb-4 uppercase">Upgrade Your Standard</h2>
+                        <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 uppercase">Upgrade Your Standard</h2>
                         <p className="text-slate-500 max-w-xl mx-auto font-medium">Earn points faster and unlock exclusive benefits with TrueServe+ Membership.</p>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12 max-w-6xl mx-auto">
                         <PricingCard
                             tier="Basic"
                             price="Free"
@@ -192,31 +192,41 @@ export default function RewardsPage() {
 
 function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
     return (
-        <div className={`relative p-8 rounded-[2.5rem] border ${isPopular ? 'bg-white/10 border-primary shadow-2xl lg:scale-[1.05] z-10' : 'bg-white/5 border-white/10'} flex flex-col items-center text-center transition-all hover:scale-[1.02]`}>
+        <div className={`relative p-10 md:p-12 rounded-[3rem] border flex flex-col items-center text-center transition-all ${isPopular
+                ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
+                : 'bg-white/5 border-white/10'
+            }`}>
             {isPopular && (
-                <div className="absolute -top-4 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-4 py-1.5 rounded-full">
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-6 py-2 rounded-full shadow-xl">
                     Most Loved
                 </div>
             )}
-            <h3 className="text-2xl font-black mb-1">{tier}</h3>
-            <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-6">{subtitle}</p>
 
-            <div className="flex items-end gap-1 mb-8 text-white">
-                <span className="text-5xl font-black tracking-tighter">{price}</span>
-                {price !== 'Free' && <span className="text-xs text-slate-500 font-bold mb-1">/ mo</span>}
+            <div className="mb-8">
+                <h3 className="text-3xl font-black mb-2 text-white">{tier}</h3>
+                <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{subtitle}</p>
             </div>
 
-            <ul className="space-y-4 mb-10 w-full">
+            <div className="flex items-end gap-1 mb-10 text-white">
+                <span className="text-6xl font-black tracking-tighter">{price}</span>
+                {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
+            </div>
+
+            <ul className="space-y-5 mb-12 w-full flex-1">
                 {features.map((f: string) => (
-                    <li key={f} className="text-sm text-slate-400 font-medium flex items-center justify-center gap-2">
-                        <span className="text-primary/50">•</span> {f}
+                    <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
+                        <span className="leading-tight">{f}</span>
                     </li>
                 ))}
             </ul>
 
             <Link
                 href={buttonLink}
-                className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${isPopular ? 'bg-primary text-black shadow-xl shadow-primary/20' : 'bg-white/10 hover:bg-white/20'}`}
+                className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all text-center ${isPopular
+                        ? 'bg-primary text-black hover:bg-white hover:scale-[1.02] shadow-2xl shadow-primary/20'
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                    }`}
             >
                 {buttonText}
             </Link>
