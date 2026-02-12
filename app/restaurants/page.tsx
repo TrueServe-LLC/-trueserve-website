@@ -403,8 +403,13 @@ export default async function RestaurantFinder({
                                     </div>
 
                                     {/* Favorite / Promo badge could go here */}
-                                    <div className="absolute top-3 left-3 bg-primary text-black text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-md">
-                                        Free Delivery
+                                    <div className="absolute top-3 left-3 flex gap-2">
+                                        <div className="bg-primary text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                                            Free Delivery
+                                        </div>
+                                        <div className="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-emerald-400/50 backdrop-blur-md">
+                                            5% Member Savings
+                                        </div>
                                     </div>
                                 </div>
 
@@ -423,12 +428,39 @@ export default async function RestaurantFinder({
                                     <div className="flex items-center gap-2 text-xs text-slate-500">
                                         <span>$0 Delivery Fee</span>
                                         <span>•</span>
-                                        <span className="text-emerald-400 font-medium">Zero Surcharge</span>
+                                        <span className="text-emerald-400 font-medium">Order Protection</span>
                                     </div>
                                 </div>
                             </Link>
                         ))
                     )}
+                </div>
+
+                {/* Strategy Mission Statement Section */}
+                <div className="mt-24 p-12 bg-white/5 border border-white/10 rounded-[3rem] text-center max-w-4xl mx-auto relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10" />
+                    <h2 className="text-3xl font-black mb-4">Built for Local.</h2>
+                    <p className="text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
+                        TrueServe isn't just another app. We’re a standard built to help local restaurants thrive while providing the most reliable delivery experience for you. Joining Plus supports driver bonuses, restaurant growth, and community grants.
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
+                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                            <div className="text-xl mb-1">🛡️</div>
+                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Protection</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                            <div className="text-xl mb-1">⚡</div>
+                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Priority</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                            <div className="text-xl mb-1">🏷️</div>
+                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">5% Discount</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                            <div className="text-xl mb-1">🎂</div>
+                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Birthday Credit</p>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

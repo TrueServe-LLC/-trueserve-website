@@ -19,93 +19,276 @@ export default function BenefitsPage() {
                 </div>
             </nav>
 
-            <main className="container max-w-6xl py-20 px-6">
+            <main className="container max-w-7xl py-20 px-6 mx-auto">
                 {/* Hero Section */}
-                <div className="text-center mb-24 relative">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
-                    <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-primary/30">
-                        Exclusive Membership
+                <div className="text-center mb-32 relative">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] -z-10 animate-pulse" />
+                    <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-primary/30">
+                        Membership 2.0
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-tight">
-                        Unlock the <br />
-                        <span className="text-gradient">True Standard.</span>
+                    <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-8 leading-[0.9]">
+                        Built for <br />
+                        <span className="text-gradient italic">Community.</span>
                     </h1>
                     <p className="text-slate-400 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed font-medium">
-                        Elevate your delivery experience with TrueServe+. Save more on every order, get priority support, and support your local drivers better.
+                        TrueServe isn't just "cheaper than DoorDash." It's a standard built for local restaurants and the customers who love them.
                     </p>
                 </div>
 
-                {/* Benefits Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-                    <BenefitCard
-                        icon="🛵"
-                        title="$0 Delivery Fees"
-                        description="Say goodbye to delivery costs. Members enjoy unlimited $0 delivery fees on every single order from any local partner."
-                    />
-                    <BenefitCard
-                        icon="💎"
-                        title="Exclusive Member Perks"
-                        description="Access secret menu items, special discounts, and limited-time offers available only to TrueServe+ members."
-                    />
-                    <BenefitCard
-                        icon="⚡"
-                        title="Priority Dispatch"
-                        description="Your orders go to the front of the line. Experience even faster delivery with our priority driver matching system."
-                    />
-                    <BenefitCard
-                        icon="❤️"
-                        title="Better Driver Pay"
-                        description="A portion of your membership goes directly into a driver support fund, ensuring our couriers earn more than anywhere else."
-                    />
-                    <BenefitCard
-                        icon="🎁"
-                        title="Monthly Rewards"
-                        description="Get bonus rewards points every month just for being a member. Redeem them for free meals in our Rewards Store."
-                    />
-                    <BenefitCard
-                        icon="📞"
-                        title="24/7 VIP Support"
-                        description="Get a dedicated support line for your orders. Our VIP team is always ready to handle any request instantly."
-                    />
-                </div>
-
-                {/* Pricing Section */}
-                <div className="relative group max-w-2xl mx-auto">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-primary rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                    <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-12 text-center">
-                        <h2 className="text-3xl font-bold mb-2">Ready to go Plus?</h2>
-                        <p className="text-slate-400 mb-8">Join thousands of locals saving over $40/month on delivery.</p>
-
-                        <div className="flex items-center justify-center gap-2 mb-8">
-                            <span className="text-5xl font-black text-white">$9.99</span>
-                            <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">/ Month</span>
-                        </div>
-
-                        <button className="w-full btn btn-primary py-4 text-xl shadow-2xl shadow-primary/20 hover:scale-[1.02] transition-transform">
-                            Join TrueServe+ Now
-                        </button>
-                        <p className="mt-4 text-[10px] text-slate-500 uppercase tracking-widest font-bold">Cancel anytime • No commitments</p>
+                {/* Tiered Membership Model */}
+                <div className="mb-40">
+                    <h2 className="text-center text-3xl font-bold mb-16">Choose Your Standard</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Basic */}
+                        <PricingCard
+                            tier="Basic"
+                            price="Free"
+                            subtitle="The standard access"
+                            features={[
+                                "Access to platform",
+                                "Standard delivery times",
+                                "Basic rewards points",
+                                "Community news & updates"
+                            ]}
+                            buttonText="Get Started"
+                        />
+                        {/* Plus */}
+                        <PricingCard
+                            tier="Plus"
+                            price="$9.99"
+                            subtitle="The community favorite"
+                            isPopular={true}
+                            features={[
+                                "Reduced service fees",
+                                "Priority driver dispatch",
+                                "Order protection guarantee",
+                                "5% Member-only discount",
+                                "Annual birthday credit"
+                            ]}
+                            buttonLink="/login?plus=true"
+                        />
+                        {/* Premium */}
+                        <PricingCard
+                            tier="Premium"
+                            price="$19.99"
+                            subtitle="The ultimate standard"
+                            features={[
+                                "Zero delivery fees on all orders",
+                                "Exclusive early access menu items",
+                                "24/7 Concierge support",
+                                "AI Voice VIP ordering line",
+                                "Double loyalty rewards points",
+                                "Advanced 7-day scheduling"
+                            ]}
+                        />
                     </div>
                 </div>
 
+                {/* Detailed Features Sections */}
+                <div className="space-y-40 mb-40">
+                    {/* 1. Restaurant-First Value */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                        <div>
+                            <span className="text-emerald-400 font-black uppercase tracking-widest text-[10px]">Restaurant-First Value</span>
+                            <h2 className="text-4xl font-bold mt-4 mb-8 leading-tight">Your loyalty helps <br /> restaurants thrive.</h2>
+                            <div className="space-y-8">
+                                <FeatureDetail
+                                    icon="🏷️"
+                                    title="Member-Only Discounts"
+                                    text="Get 5–10% off at participating local spots. Restaurants fund this exposure directly because they love your loyalty."
+                                />
+                                <FeatureDetail
+                                    icon="⭐"
+                                    title="TrueServe Local Favorites"
+                                    text="Early access to limited menu items, member-only tasting menus, and special weekly chef drops."
+                                />
+                            </div>
+                        </div>
+                        <div className="bg-gradient-to-br from-emerald-500/10 to-transparent border border-white/5 p-12 rounded-[3rem] relative overflow-hidden group">
+                            <div className="text-7xl mb-8 group-hover:scale-110 transition-transform duration-500">🍔</div>
+                            <p className="text-slate-400 leading-relaxed italic">"TrueServe focuses on bringing traffic to my kitchen, not just taking a cut of my sales. That's why I offer 10% off to Plus members."</p>
+                            <p className="mt-4 text-xs font-bold">— Maria S., Owner of Local Bistro</p>
+                        </div>
+                    </div>
+
+                    {/* 2. Convenience & Experience */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                        <div className="order-2 md:order-1 bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-12 rounded-[3rem] text-right">
+                            <div className="text-7xl mb-8">⚡</div>
+                            <p className="text-slate-400 leading-relaxed italic">"I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."</p>
+                            <p className="mt-4 text-xs font-bold">— James L., Premium Member</p>
+                        </div>
+                        <div className="order-1 md:order-2">
+                            <span className="text-blue-400 font-black uppercase tracking-widest text-[10px]">Convenience & Experience</span>
+                            <h2 className="text-4xl font-bold mt-4 mb-8 leading-tight">Elevate your order <br /> from start to finish.</h2>
+                            <div className="space-y-8">
+                                <FeatureDetail
+                                    icon="⚡"
+                                    title="Priority Dispatch & Support"
+                                    text="Faster driver assignment and peak-hour prioritization. Plus a dedicated, instant-reply support lane."
+                                />
+                                <FeatureDetail
+                                    icon="🛡️"
+                                    title="Order Protection Guarantee"
+                                    text="Late or missing items? Members get instant credit. We trust you, so there's no friction or long dispute process."
+                                />
+                                <FeatureDetail
+                                    icon="📱"
+                                    title="Reorder Concierge"
+                                    text="One-click reorders of your go-to meals and scheduled recurring deliveries for your weekly routine."
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 3. Tech & Transparency */}
+                    <div className="bg-white/5 border border-white/10 rounded-[4rem] p-12 md:p-20 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -z-10" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div>
+                                <h2 className="text-4xl font-black mb-8">Technology with <br /><span className="text-gradient">Transparency.</span></h2>
+                                <p className="text-slate-400 mb-8 max-w-sm">We believe in a fair marketplace. Our tech isn't meant to hide fees—it's meant to reveal them.</p>
+                                <div className="space-y-6">
+                                    <div className="flex gap-4">
+                                        <span className="text-primary text-xl">✓</span>
+                                        <div>
+                                            <p className="font-bold">Earnings Dashboard</p>
+                                            <p className="text-sm text-slate-500">See exactly how much the restaurant and driver earned on your order.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <span className="text-primary text-xl">✓</span>
+                                        <div>
+                                            <p className="font-bold">AI Voice VIP Line</p>
+                                            <p className="text-sm text-slate-500">Premium members get hands-free, priority AI voice ordering.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <span className="text-primary text-xl">✓</span>
+                                        <div>
+                                            <p className="font-bold">Advanced Scheduling</p>
+                                            <p className="text-sm text-slate-500">Schedule deliveries up to 7 days out with locked-in time windows.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
+                                    <div className="text-3xl mb-4">📢</div>
+                                    <p className="text-xs font-bold uppercase mb-2">Impact</p>
+                                    <p className="text-xs text-slate-500 font-medium">A portion of your fees goes directly to local food programs.</p>
+                                </div>
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
+                                    <div className="text-3xl mb-4">🎂</div>
+                                    <p className="text-xs font-bold uppercase mb-2">Birthday</p>
+                                    <p className="text-xs text-slate-500 font-medium">Automatic $10 credit on your anniversary and birthday.</p>
+                                </div>
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
+                                    <div className="text-3xl mb-4">💳</div>
+                                    <p className="text-xs font-bold uppercase mb-2">Wallet</p>
+                                    <p className="text-xs text-slate-500 font-medium">Unified rewards wallet works across all partner restaurants.</p>
+                                </div>
+                                <div className="p-8 bg-black/40 rounded-3xl border border-white/5">
+                                    <div className="text-3xl mb-4">🛡️</div>
+                                    <p className="text-xs font-bold uppercase mb-2">No Fees</p>
+                                    <p className="text-xs text-slate-500 font-medium">Radical transparency on every breakdown shown at checkout.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Strategic Recommendation Call to Action */}
+                <div className="text-center mb-40">
+                    <h2 className="text-5xl font-black mb-6">Start Your Standard.</h2>
+                    <p className="text-slate-400 mb-12">Launch features include Priority Dispatch, Order Protection, and 5% Restaurant Savings.</p>
+                    <Link href="/login" className="btn btn-primary px-12 py-5 text-xl shadow-2xl shadow-primary/30 rounded-2xl">
+                        Join Plus Today — $9.99/mo
+                    </Link>
+                </div>
+
             </main>
+
+            {/* Footer */}
+            <footer className="border-t border-white/10 py-20 px-6 bg-slate-900/20 backdrop-blur-md">
+                <div className="container max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div>
+                        <Link href="/" className="text-2xl font-black tracking-tighter mb-4 block">
+                            True<span className="text-gradient">Serve</span>
+                        </Link>
+                        <p className="text-sm text-slate-500 leading-relaxed font-medium">
+                            Redefining the relationship between <br />
+                            restaurants, drivers, and the community.
+                        </p>
+                    </div>
+                    <div className="col-span-2 grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div>
+                            <p className="font-bold text-xs uppercase tracking-[0.2em] mb-4 opacity-50">Local</p>
+                            <ul className="space-y-2 text-sm text-slate-400">
+                                <li>About Us</li>
+                                <li>Impact Fund</li>
+                                <li>Partners</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p className="font-bold text-xs uppercase tracking-[0.2em] mb-4 opacity-50">Legal</p>
+                            <ul className="space-y-2 text-sm text-slate-400">
+                                <li>Privacy</li>
+                                <li>Transparency Report</li>
+                                <li>Terms</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }
 
-function BenefitCard({ icon, title, description }: { icon: string, title: string, description: string }) {
+function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
     return (
-        <div className="card bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all group overflow-hidden relative">
-            <div className="absolute -bottom-10 -right-10 text-9xl opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:-rotate-12">
+        <div className={`relative p-8 rounded-[2.5rem] border ${isPopular ? 'bg-white/10 border-primary shadow-2xl scale-[1.05] z-10' : 'bg-white/5 border-white/10'} flex flex-col items-center text-center transition-all hover:scale-[1.02]`}>
+            {isPopular && (
+                <div className="absolute -top-4 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-4 py-1.5 rounded-full">
+                    Most Loved
+                </div>
+            )}
+            <h3 className="text-2xl font-black mb-1">{tier}</h3>
+            <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-6">{subtitle}</p>
+
+            <div className="flex items-end gap-1 mb-8">
+                <span className="text-5xl font-black tracking-tighter">{price}</span>
+                {price !== 'Free' && <span className="text-xs text-slate-500 font-bold mb-1">/ mo</span>}
+            </div>
+
+            <ul className="space-y-4 mb-10 w-full">
+                {features.map((f: string) => (
+                    <li key={f} className="text-sm text-slate-400 font-medium flex items-center justify-center gap-2">
+                        <span className="text-primary/50">•</span> {f}
+                    </li>
+                ))}
+            </ul>
+
+            <Link
+                href={buttonLink}
+                className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${isPopular ? 'bg-primary text-black shadow-xl shadow-primary/20' : 'bg-white/10 hover:bg-white/20'}`}
+            >
+                {buttonText}
+            </Link>
+        </div>
+    )
+}
+
+function FeatureDetail({ icon, title, text }: { icon: string, title: string, text: string }) {
+    return (
+        <div className="flex gap-6 items-start">
+            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl border border-white/5 shrink-0 group-hover:scale-110 transition-transform">
                 {icon}
             </div>
-            <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-primary/20">
-                {icon}
+            <div>
+                <h3 className="text-xl font-bold mb-2">{title}</h3>
+                <p className="text-slate-400 leading-relaxed text-sm font-medium">{text}</p>
             </div>
-            <h3 className="text-xl font-bold mb-3 text-white">{title}</h3>
-            <p className="text-slate-400 leading-relaxed text-sm font-medium">
-                {description}
-            </p>
         </div>
     )
 }
