@@ -18,57 +18,95 @@ interface LandingSearchProps {
 
 export default function LandingSearch({ locations = [] }: LandingSearchProps) {
     const router = useRouter();
-    const [searchResult, setSearchResult] = useState<google.maps.places.PlaceResult | null>(null);
     const [inputValue, setInputValue] = useState("");
+    const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    // Load Google Maps Script independently for this component if not already loaded by a parent
-    // Note: If a parent component already loads the script (like in the main layout), this might be redundant but safe.
+    // Services
+    const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
+    const placesService = useRef<google.maps.places.PlacesService | null>(null);
+    const sessionToken = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
+
     const { isLoaded } = useJsApiLoader({
         id: GOOGLE_MAPS_SCRIPT_ID,
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
         libraries: GOOGLE_MAPS_LIBRARIES
     });
 
-
-    const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
-        setSearchResult(null); // Clear previous
-    };
-
-    const onPlaceChanged = () => {
-        // This function would be called when the user selects a place
-        // However, we need access to the autocomplete instance here, which is tricky with the wrapper.
-        // A common pattern is to use a ref to store the autocomplete instance from onLoad.
-    };
-
-    // Better pattern for Autocomplete instance handling
-    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-
-    const handleLoad = (autocomplete: google.maps.places.Autocomplete) => {
-        autocompleteRef.current = autocomplete;
-    };
-
-    const handlePlaceChanged = () => {
-        if (autocompleteRef.current) {
-            const place = autocompleteRef.current.getPlace();
-            setSearchResult(place);
-            if (place.formatted_address) {
-                setInputValue(place.formatted_address);
-            }
+    // Initialize services
+    const initServices = () => {
+        if (!autocompleteService.current && window.google) {
+            autocompleteService.current = new window.google.maps.places.AutocompleteService();
+            sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
+            // Create a dummy element for PlacesService, as it requires an HTML element (or map)
+            const dummyElement = document.createElement('div');
+            placesService.current = new window.google.maps.places.PlacesService(dummyElement);
         }
     };
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setInputValue(val);
+
+        if (!val) {
+            setPredictions([]);
+            setIsDropdownOpen(false);
+            return;
+        }
+
+        initServices();
+
+        if (autocompleteService.current) {
+            autocompleteService.current.getPlacePredictions({
+                input: val,
+                sessionToken: sessionToken.current || undefined,
+                types: ['address', 'establishment'] // broadly match
+            }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    setPredictions(results);
+                    setIsDropdownOpen(true);
+                } else {
+                    setPredictions([]);
+                    setIsDropdownOpen(false);
+                }
+            });
+        }
+    };
+
+    const handleSelectPrediction = (prediction: google.maps.places.AutocompletePrediction) => {
+        setInputValue(prediction.description);
+        setIsDropdownOpen(false);
+
+        initServices();
+
+        if (placesService.current) {
+            // Need to get details to get Lat/Lng
+            placesService.current.getDetails({
+                placeId: prediction.place_id,
+                fields: ['geometry', 'formatted_address'],
+                sessionToken: sessionToken.current || undefined
+            }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && place && place.geometry && place.geometry.location) {
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+                    const address = place.formatted_address || prediction.description;
+
+                    // Reset session token after successful selection
+                    sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
+
+                    router.push(`/restaurants?lat=${lat}&lng=${lng}&address=${encodeURIComponent(address)}`);
+                } else {
+                    // Fallback to text search if details fail
+                    router.push(`/restaurants?search=${encodeURIComponent(prediction.description)}`);
+                }
+            });
+        }
+    };
+
+    const handleManualSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        // If we have a selected place with geometry, we can pass lat/lng
-        if (searchResult && searchResult.geometry && searchResult.geometry.location) {
-            const lat = searchResult.geometry.location.lat();
-            const lng = searchResult.geometry.location.lng();
-            const address = searchResult.formatted_address || inputValue;
-            router.push(`/restaurants?lat=${lat}&lng=${lng}&address=${encodeURIComponent(address)}`);
-        } else {
-            // Fallback: Just search by text query
-            router.push(`/restaurants?search=${encodeURIComponent(inputValue)}`);
-        }
+        // If they just hit enter without selecting
+        router.push(`/restaurants?search=${encodeURIComponent(inputValue)}`);
     };
 
     if (!isLoaded) {
@@ -76,30 +114,52 @@ export default function LandingSearch({ locations = [] }: LandingSearchProps) {
     }
 
     return (
-        <form onSubmit={handleSearch} className="w-full max-w-xl relative group z-20">
+        <div className="w-full max-w-xl relative group z-50">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-            <div className="relative flex items-center bg-black border border-white/10 rounded-full p-2 pr-2 shadow-2xl">
 
+            <form onSubmit={handleManualSearch} className="relative flex items-center bg-black border border-white/10 rounded-full p-2 pr-2 shadow-2xl z-20">
                 <span className="pl-4 pr-3 text-2xl">📍</span>
 
-                <Autocomplete
-                    onLoad={handleLoad}
-                    onPlaceChanged={handlePlaceChanged}
-                    className="flex-1"
-                >
-                    <input
-                        type="text"
-                        placeholder="Enter delivery address..."
-                        className="w-full bg-transparent border-none focus:outline-none text-lg px-2 h-12 text-white placeholder-slate-500"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                    />
-                </Autocomplete>
+                <input
+                    type="text"
+                    placeholder="Enter delivery address..."
+                    className="flex-1 bg-transparent border-none focus:outline-none text-lg px-2 h-12 text-white placeholder-slate-500"
+                    value={inputValue}
+                    onChange={handleInput}
+                    onFocus={() => {
+                        if (predictions.length > 0) setIsDropdownOpen(true);
+                    }}
+                    onBlur={() => {
+                        // Delay closing to allow click
+                        setTimeout(() => setIsDropdownOpen(false), 200);
+                    }}
+                />
 
                 <button type="submit" className="btn btn-primary rounded-full px-8 py-3 text-lg font-bold hover:scale-105 transition-transform">
                     Find Food
                 </button>
-            </div>
-        </form>
+            </form>
+
+            {/* Custom Dropdown */}
+            {isDropdownOpen && predictions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-10 animate-fade-in-up">
+                    <ul className="max-h-60 overflow-y-auto">
+                        {predictions.map((p) => (
+                            <li
+                                key={p.place_id}
+                                className="px-4 py-3 hover:bg-white/10 cursor-pointer text-left border-b border-white/5 last:border-none transition-colors"
+                                onMouseDown={() => handleSelectPrediction(p)} // Use onMouseDown to fire before input blur
+                            >
+                                <div className="font-bold text-white text-sm">{p.structured_formatting.main_text}</div>
+                                <div className="text-xs text-slate-400">{p.structured_formatting.secondary_text}</div>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="bg-black/50 px-2 py-1 flex justify-end">
+                        <img src="https://developers.google.com/maps/documentation/images/powered_by_google_on_non_white.png" alt="Powered by Google" className="h-4 opacity-70" />
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }

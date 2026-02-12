@@ -21,12 +21,24 @@ interface LocationMeta {
     center: [number, number];
 }
 
-async function getRestaurants(locationInput: string): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
-    if (!locationInput) return { restaurants: [], locationMeta: { name: "", center: [0, 0] } };
+// Enhanced getRestaurants to handle coordinates and string search
+async function getRestaurants(
+    query: {
+        term?: string;
+        lat?: number;
+        lng?: number;
+        address?: string
+    }
+): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
+    const { term, lat, lng, address } = query;
 
-    const term = locationInput.toLowerCase();
+    // Default Fallback ID
+    const DEFAULT_CENTER: [number, number] = [35.2271, -80.8431]; // Charlotte Uptown
 
-    // Define fallbacks (mocks) for demo/offline
+    // 1. If we have precise coordinates, use them to find the closest service city
+    let matchedLocation: any = null;
+    let searchCity = "";
+
     // Define fallbacks (mocks) for demo/offline
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
@@ -34,103 +46,96 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
         { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 }
     ];
 
-    // 1. Fetch Valid Service Locations
-    let validLocations: any[] = [];
+    let validLocations: any[] = fallbackMocks;
+
+    // Try fetching from DB
     try {
         const { data: dbLocations } = await supabase.from('ServiceLocation').select('*').eq('isActive', true);
         if (dbLocations && dbLocations.length > 0) {
             validLocations = [...dbLocations];
+            // Merge mocks if not present (for demo continuity)
             for (const mock of fallbackMocks) {
                 const exists = validLocations.find(l => l.city === mock.city && l.state === mock.state);
                 if (!exists) validLocations.push(mock);
             }
-        } else {
-            validLocations = fallbackMocks;
         }
     } catch (e) {
         console.log("Running in Offline/Demo Mode (Database not reachable).");
-        validLocations = fallbackMocks;
     }
 
-    let matchedLocation = validLocations.find(loc => {
+    // Logic to determine "matchedLocation" based on inputs
+    if (address) {
+        // Try to extract city from address string if possible
+        const lowerAddr = address.toLowerCase();
+        matchedLocation = validLocations.find(loc => lowerAddr.includes(loc.city.toLowerCase()));
+    }
+
+    if (!matchedLocation && term) {
         const termClean = term.trim().toLowerCase();
-        const cityLower = loc.city.toLowerCase();
+        matchedLocation = validLocations.find(loc => {
+            const cityLower = loc.city.toLowerCase();
+            return cityLower.includes(termClean) || termClean.includes(cityLower) ||
+                (loc.state.toLowerCase() === termClean) ||
+                loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix));
+        });
+    }
 
-        // Match if city contains term (e.g. "Char") or term contains city (e.g. "Charlotte, NC")
-        const cityMatch = cityLower.includes(termClean) || termClean.includes(cityLower);
-        const stateMatch = loc.state.toLowerCase() === termClean || loc.state.toLowerCase().includes(termClean);
-        const zipMatch = loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix));
-
-        return cityMatch || stateMatch || zipMatch;
-    });
-
-    if (!matchedLocation && term.includes(',')) {
-        const potentialCity = term.split(',')[0].trim().toLowerCase();
-        matchedLocation = validLocations.find(loc => loc.city.toLowerCase() === potentialCity);
+    // If still no match but we have coords, find closest (simple euclidean for now)
+    if (!matchedLocation && lat && lng) {
+        let minDist = 10000;
+        validLocations.forEach(loc => {
+            const d = Math.sqrt(Math.pow(loc.lat - lat, 2) + Math.pow(loc.lng - lng, 2));
+            if (d < minDist) {
+                minDist = d;
+                matchedLocation = loc;
+            }
+        });
+        // If distance is too far (approx > 0.5 degrees ~ 30 miles), maybe don't match?
+        // For constraints of this app, we'll be generous.
     }
 
     if (!matchedLocation) {
-        return { restaurants: [], locationMeta: { name: locationInput, center: [35.2271, -80.8431] } };
+        // Default to Charlotte if nothing matches but we need to show something (or return empty)
+        // Returning empty allows the UI to show "No restaurants found"
+        return {
+            restaurants: [],
+            locationMeta: {
+                name: address || term || "Unknown Location",
+                center: (lat && lng) ? [lat, lng] : DEFAULT_CENTER
+            }
+        };
     }
 
-    // Default metadata
-    let locationMeta = {
-        name: locationInput,
-        center: [35.2271, -80.8431] as [number, number]
+    const locationMeta = {
+        name: address || `${matchedLocation.city}, ${matchedLocation.state}`,
+        center: (lat && lng) ? [lat, lng] as [number, number] : [matchedLocation.lat, matchedLocation.lng] as [number, number]
     };
 
-    if (matchedLocation) {
-        const cityLower = matchedLocation.city.toLowerCase();
-        if (cityLower === 'ramsey') locationMeta.center = [45.2611, -93.4566];
-        else if (cityLower === 'charlotte') locationMeta.center = [35.2271, -80.8431];
-        else if (cityLower === 'pineville') locationMeta.center = [35.0833, -80.8872];
-        else if (cityLower === 'rock hill') locationMeta.center = [34.9249, -81.0251];
-
-        locationMeta.name = `${matchedLocation.city}, ${matchedLocation.state}`;
-    }
-
     try {
-        if (!matchedLocation) {
-            return { restaurants: [], locationMeta };
-        }
-
         const cityFilter = matchedLocation.city;
         const stateFilter = matchedLocation.state;
 
-        // Perform efficient DB lookup
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
             .select('*')
-            // Using 'or' for flexible city/state matching if needed, 
-            // but since we matched a specific ServiceLocation, we should be precise.
             .match({ city: cityFilter, state: stateFilter });
-        // .match is exact, but if data is messy, .ilike is safer:
-        // .ilike('city', cityFilter).ilike('state', stateFilter) -> This is AND logc, which is correct.
-
-        // To make it robust against casing in DB:
-        // .ilike('city', cityFilter)
-        // .ilike('state', stateFilter)
 
         if (error || !restaurants || restaurants.length === 0) {
-            throw new Error("No DB data or empty search");
+            throw new Error("No DB data");
         }
 
         const mappedRestaurants = restaurants.map((r: any, index: number) => {
-            // Deterministic pseudo-random generation for demo data
             const seed = r.name.length + index;
             const mockRating = (4.0 + (seed % 10) / 10).toFixed(1);
 
-            // Infer tags from name or fallback to random
+            // Infer tags logic (same as before)
             let tags = ["Local", "Great Service"];
             const nameLower = r.name.toLowerCase();
-
             if (nameLower.includes("pizza") || nameLower.includes("italian")) tags = ["Italian", "Pizza", "Comfort"];
             else if (nameLower.includes("burger") || nameLower.includes("grill")) tags = ["American", "Burgers", "Grill"];
             else if (nameLower.includes("asian") || nameLower.includes("thai") || nameLower.includes("sushi")) tags = ["Asian", "Healthy", "Spicy"];
             else if (nameLower.includes("mexican") || nameLower.includes("taco")) tags = ["Mexican", "Tacos", "Zesty"];
             else if (nameLower.includes("coffee") || nameLower.includes("cafe")) tags = ["Coffee", "Breakfast", "Bakery"];
-            else if (seed % 3 === 0) tags = ["Fast Food", "Quick Bite"];
-            else if (seed % 3 === 1) tags = ["Healthy", "Salads", "Organic"];
 
             return {
                 id: r.id,
@@ -139,7 +144,9 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
                 image: r.imageUrl || "/restaurant1.jpg",
                 tags: tags,
                 description: r.description,
-                coords: [r.lat || (40.7128 + (index * 0.01)), r.lng || (-74.0060 + (index * 0.01))] as [number, number]
+                coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
+                city: r.city,
+                state: r.state
             };
         });
 
@@ -148,31 +155,38 @@ async function getRestaurants(locationInput: string): Promise<{ restaurants: Res
     } catch (error) {
         // Mock Data Fallback
         const allMocks = [
-            // Charlotte Mock
             { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC" },
             { id: "2", name: "Queen City Burger (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Burgers", "American"], description: "Gourmet burgers", coords: [35.2280, -80.8440] as [number, number], city: "Charlotte", state: "NC" },
-            // Ramsey Mock
             { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN" },
+            // Rock Hill Mock
+            { id: "4", name: "Old Town Kitchen (Mock)", rating: 4.6, image: "/restaurant3.jpg", tags: ["Southern", "Comfort"], description: "Rock Hill favorites", coords: [34.9249, -81.0251] as [number, number], city: "Rock Hill", state: "SC" },
+            // Pineville Mock
+            { id: "5", name: "Pineville Pizzeria (Mock)", rating: 4.7, image: "/restaurant2.jpg", tags: ["Pizza", "Italian"], description: "Best slice in town", coords: [35.0833, -80.8872] as [number, number], city: "Pineville", state: "NC" }
         ];
 
-        if (matchedLocation) {
-            const targetCity = matchedLocation.city.toLowerCase().trim();
-            return {
-                restaurants: allMocks.filter(r => r.city.toLowerCase() === targetCity),
-                locationMeta
-            };
-        }
-        return { restaurants: [], locationMeta };
+        return {
+            restaurants: allMocks.filter(r => r.city.toLowerCase() === matchedLocation.city.toLowerCase()),
+            locationMeta
+        };
     }
 }
 
 import LandingSearch from "@/components/LandingSearch";
 
-export default async function RestaurantFinder({ searchParams }: { searchParams: Promise<{ location?: string }> }) {
-    const { location } = await searchParams;
+export default async function RestaurantFinder({
+    searchParams
+}: {
+    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string }>
+}) {
+    const params = await searchParams;
+    const location = params.location || params.search;
+    const address = params.address;
+    const lat = params.lat ? parseFloat(params.lat) : undefined;
+    const lng = params.lng ? parseFloat(params.lng) : undefined;
 
-    // View State: Landing vs Results
-    const showLanding = !location;
+    // View State: Landing if no inputs provided
+    // If ANY input is provided (location, search, or coords), we show results
+    const showLanding = !location && !address && (!lat || !lng);
 
     // Auth & Active Orders Check
     const cookieStore = await cookies();
@@ -183,7 +197,12 @@ export default async function RestaurantFinder({ searchParams }: { searchParams:
     let activeOrders: any[] = [];
 
     if (!showLanding) {
-        const data = await getRestaurants(location!);
+        const data = await getRestaurants({
+            term: location,
+            address,
+            lat,
+            lng
+        });
         restaurants = data.restaurants;
         locationMeta = data.locationMeta;
 
