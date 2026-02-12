@@ -17,8 +17,8 @@ const center = {
 };
 
 interface MapWithDirectionsProps {
-    origin?: google.maps.LatLngLiteral;
-    destination?: google.maps.LatLngLiteral;
+    origin?: string | google.maps.LatLngLiteral;
+    destination?: string | google.maps.LatLngLiteral;
     driverRotation?: number;
     showDriver?: boolean;
 }
@@ -57,10 +57,12 @@ export default function MapWithDirections({ origin, destination, driverRotation 
     // Standard Light Mode (Matches reference image)
     const defaultLightStyle: google.maps.MapTypeStyle[] = [];
 
+    const mapCenter = (typeof origin === 'object' && origin !== null && 'lat' in origin) ? origin : center;
+
     return (
         <GoogleMap
             mapContainerStyle={containerStyle}
-            center={origin || center}
+            center={mapCenter}
             zoom={13}
             options={{
                 styles: defaultLightStyle,
@@ -85,8 +87,8 @@ export default function MapWithDirections({ origin, destination, driverRotation 
                 />
             )}
 
-            {/* 2. Driver Marker (Rotated Car) */}
-            {origin && showDriver && (
+            {/* 2. Driver Marker (Rotated Car) - Only define if origin is coordinates */}
+            {origin && typeof origin === 'object' && showDriver && (
                 <OverlayView
                     position={origin}
                     mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
@@ -130,8 +132,8 @@ export default function MapWithDirections({ origin, destination, driverRotation 
                 );
             })()}
 
-            {/* 3. Destination Marker (Customer) - Red Pin */}
-            {destination && (
+            {/* 3. Destination Marker (Customer) - Red Pin - Only define if destination is coordinates */}
+            {destination && typeof destination === 'object' && (
                 <Marker
                     position={destination}
                     title="Delivery Location"
