@@ -64,7 +64,7 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
         return <div className="h-full w-full bg-slate-800 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Google Maps...</div>;
     }
 
-    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+    if (!GOOGLE_MAPS_API_KEY) {
         return (
             <div className="h-full w-full bg-slate-800 rounded-xl flex items-center justify-center text-red-500 p-4 border border-red-500/20 text-center font-bold">
                 Error: Missing Google Maps API Key
