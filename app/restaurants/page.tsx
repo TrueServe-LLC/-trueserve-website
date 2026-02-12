@@ -3,6 +3,7 @@ import Link from "next/link";
 import LocationButton from "@/components/LocationButton";
 import GoogleMapsMap from "@/components/GoogleMapsMap";
 import { cookies } from "next/headers";
+import { calculateDistance } from "@/lib/utils";
 
 interface Restaurant {
     id: string;
@@ -14,7 +15,11 @@ interface Restaurant {
     coords: [number, number];
     city?: string;
     state?: string;
+    distance?: string;
 }
+
+// ... (in getRestaurants function)
+
 
 interface LocationMeta {
     name: string;

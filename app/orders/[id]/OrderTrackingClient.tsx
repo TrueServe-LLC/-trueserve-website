@@ -1,5 +1,7 @@
 "use client";
 
+import { calculateDistance } from "@/lib/utils";
+
 import { useState, useEffect } from "react";
 
 import { supabase } from "@/lib/supabase";
@@ -111,23 +113,11 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         return 1;
     };
 
-    // Helper: Haversine Distance
-    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-        const R = 6371e3; // metres
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lon2 - lon1) * Math.PI / 180;
+    const distanceMiles = calculateDistance(driverPos[0], driverPos[1], customerPos[0], customerPos[1]);
+    const restaurantDistance = calculateDistance(restaurantPos[0], restaurantPos[1], customerPos[0], customerPos[1]);
 
-        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return (R * c) * 0.000621371; // Meters to Miles
-    };
 
-    const distanceMiles = calculateDistance(driverPos[0], driverPos[1], customerPos[0], customerPos[1]).toFixed(1);
 
     const currentStep = getProgressStep(currentOrder.status);
 
@@ -226,6 +216,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         <div>
                             <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Restaurant</p>
                             <p className="font-bold text-sm">{order.restaurant?.name || "Restaurant"}</p>
+                            <p className="text-xs text-slate-400">{restaurantDistance} miles away</p>
                         </div>
                     </div>
 
