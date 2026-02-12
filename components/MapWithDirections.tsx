@@ -19,11 +19,12 @@ const center = {
 interface MapWithDirectionsProps {
     origin?: string | google.maps.LatLngLiteral;
     destination?: string | google.maps.LatLngLiteral;
+    routeOrigin?: string | google.maps.LatLngLiteral; // For calculating the blue line (stable)
     driverRotation?: number;
     showDriver?: boolean;
 }
 
-export default function MapWithDirections({ origin, destination, driverRotation = 0, showDriver = true }: MapWithDirectionsProps) {
+export default function MapWithDirections({ origin, destination, routeOrigin, driverRotation = 0, showDriver = true }: MapWithDirectionsProps) {
     const { isLoaded } = useJsApiLoader({
         id: GOOGLE_MAPS_SCRIPT_ID,
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -32,13 +33,17 @@ export default function MapWithDirections({ origin, destination, driverRotation 
 
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
-    // Fetch Directions Imperatively
+    // Use routeOrigin (Restaurant) for the path if provided, otherwise stick to origin (Driver)
+    // This allows the path to be stable (Restaurant -> Customer) while the car moves
+    const startPoint = routeOrigin || origin;
+
+    // Fetch Directions Imperatively - Only if startPoint or destination changes
     useEffect(() => {
-        if (!isLoaded || !origin || !destination) return;
+        if (!isLoaded || !startPoint || !destination) return;
 
         const directionsService = new window.google.maps.DirectionsService();
         directionsService.route({
-            origin: origin,
+            origin: startPoint,
             destination: destination,
             travelMode: window.google.maps.TravelMode.DRIVING
         }, (result, status) => {
@@ -49,7 +54,7 @@ export default function MapWithDirections({ origin, destination, driverRotation 
             }
         });
 
-    }, [isLoaded, origin, destination]);
+    }, [isLoaded, startPoint, destination]); // Dependencies updated to use startPoint
 
 
     if (!isLoaded) return <div className="h-[400px] w-full bg-slate-900 animate-pulse rounded-2xl flex items-center justify-center text-slate-500">Loading Map...</div>;
@@ -57,13 +62,14 @@ export default function MapWithDirections({ origin, destination, driverRotation 
     // Standard Light Mode (Matches reference image)
     const defaultLightStyle: google.maps.MapTypeStyle[] = [];
 
+    // Center map on Driver (origin) if available, else startPoint
     const mapCenter = (typeof origin === 'object' && origin !== null && 'lat' in origin) ? origin : center;
 
     return (
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={mapCenter}
-            zoom={13}
+            zoom={14} // Zoomed in slightly more for better view
             options={{
                 styles: defaultLightStyle,
                 disableDefaultUI: false,
@@ -87,6 +93,18 @@ export default function MapWithDirections({ origin, destination, driverRotation 
                 />
             )}
 
+            {/* 0. Restaurant/Start Marker - Only if routeOrigin is coordinates */}
+            {routeOrigin && typeof routeOrigin === 'object' && (
+                <Marker
+                    position={routeOrigin}
+                    title="Restaurant"
+                    label={{
+                        text: "🏪",
+                        fontSize: "20px"
+                    }}
+                />
+            )}
+
             {/* 2. Driver Marker (Rotated Car) - Only define if origin is coordinates */}
             {origin && typeof origin === 'object' && showDriver && (
                 <OverlayView
@@ -96,8 +114,9 @@ export default function MapWithDirections({ origin, destination, driverRotation 
                     <div
                         style={{
                             transform: `translate(-50%, -50%) rotate(${driverRotation}deg)`,
-                            fontSize: '2rem',
-                            filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))'
+                            fontSize: '2.5rem', // Slightly larger
+                            filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))',
+                            transition: 'transform 0.1s linear' // Smooth rotation
                         }}
                     >
                         🚗

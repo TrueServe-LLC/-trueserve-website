@@ -188,6 +188,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     {/* If OUT_FOR_DELIVERY (Step 4), show Route. Otherwise show standard map. */}
                     {currentStep === 4 ? (
                         <MapWithDirections
+                            routeOrigin={{ lat: restaurantPos[0], lng: restaurantPos[1] }}
                             origin={{ lat: driverPos[0], lng: driverPos[1] }}
                             destination={{ lat: customerPos[0], lng: customerPos[1] }}
                             driverRotation={driverBearing}
