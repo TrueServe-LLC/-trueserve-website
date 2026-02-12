@@ -24,10 +24,13 @@ interface MapProps {
     restaurants?: RestaurantLocation[];
 }
 
+import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
+
 function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
+        id: GOOGLE_MAPS_SCRIPT_ID,
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        libraries: GOOGLE_MAPS_LIBRARIES
     });
 
     const [map, setMap] = useState<google.maps.Map | null>(null);

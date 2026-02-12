@@ -3,8 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
-
-const libraries: ("places")[] = ["places"];
+import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
 interface ServiceLocation {
     city: string;
@@ -25,10 +24,11 @@ export default function LandingSearch({ locations = [] }: LandingSearchProps) {
     // Load Google Maps Script independently for this component if not already loaded by a parent
     // Note: If a parent component already loads the script (like in the main layout), this might be redundant but safe.
     const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-        libraries
+        id: GOOGLE_MAPS_SCRIPT_ID,
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        libraries: GOOGLE_MAPS_LIBRARIES
     });
+
 
     const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
         setSearchResult(null); // Clear previous

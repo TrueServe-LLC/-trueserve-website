@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
 const containerStyle = {
     width: '100%',
@@ -20,13 +21,11 @@ interface MapWithDirectionsProps {
     destination?: string | google.maps.LatLngLiteral;
 }
 
-const libraries: ("places" | "drawing" | "geometry" | "visualization")[] = ["places"];
-
 export default function MapWithDirections({ origin, destination }: MapWithDirectionsProps) {
     const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script-directions',
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-        libraries
+        id: GOOGLE_MAPS_SCRIPT_ID,
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        libraries: GOOGLE_MAPS_LIBRARIES
     });
 
     const [response, setResponse] = useState<google.maps.DirectionsResult | null>(null);

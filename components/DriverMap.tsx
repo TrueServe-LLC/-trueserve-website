@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { GoogleMap, useJsApiLoader, Marker, Circle, InfoWindow } from '@react-google-maps/api';
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
 // Mock Hotzones
 const HOTZONES = [
@@ -25,8 +25,9 @@ const center = {
 
 export default function DriverMap() {
     const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: GOOGLE_MAPS_API_KEY || ""
+        id: GOOGLE_MAPS_SCRIPT_ID,
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        libraries: GOOGLE_MAPS_LIBRARIES
     });
 
     const [selectedZone, setSelectedZone] = useState<any>(null);
