@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import * as fs from 'fs';
 import { cookies } from "next/headers";
+import { stripe } from "@/lib/stripe";
 
 function logToFile(msg: string) {
     try {
@@ -27,7 +28,7 @@ export type OrderState = {
 export async function placeOrder(
     restaurantId: string,
     cartItems: { id: string; price: number; quantity: number }[],
-    paymentDetails?: { cardNumber: string; expiry: string; cvc: string }
+    stripePaymentIntentId: string
 ): Promise<OrderState> {
     logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
 
@@ -45,12 +46,16 @@ export async function placeOrder(
     });
 
     if (cartItems.length === 0) return { message: "Cart is empty.", error: true };
-    if (!paymentDetails?.cardNumber) return { message: "Payment details missing.", error: true };
+    if (!stripePaymentIntentId) return { message: "Stripe payment reference missing.", error: true };
 
-    // ... Payment Logic ...
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    if (paymentDetails.cardNumber.endsWith("0000")) {
-        return { message: "Payment Declined (Mock).", error: true };
+    // 2. Verify Payment with Stripe
+    try {
+        const intent = await stripe.paymentIntents.retrieve(stripePaymentIntentId);
+        if (intent.status !== 'succeeded') {
+            return { message: `Payment not completed. Status: ${intent.status}`, error: true };
+        }
+    } catch (e: any) {
+        return { message: "Failed to verify Stripe payment.", error: true };
     }
 
     try {
@@ -156,5 +161,51 @@ export async function placeOrder(
     } catch (e: any) {
         logToFile(`EXCEPTION: ${e.message}`);
         return { message: e.message || "Order failed.", error: true };
+    }
+}
+
+export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[]) {
+    try {
+        // 1. Get real prices from DB
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+        const supabase = createSupabaseClient(supabaseUrl, serviceKey);
+
+        const { data: items } = await supabase
+            .from('MenuItem')
+            .select('id, price')
+            .in('id', cartItems.map(i => i.id));
+
+        if (!items) throw new Error("Could not find menu items");
+
+        const amount = cartItems.reduce((sum, cartItem) => {
+            const dbItem = items.find(i => i.id === cartItem.id);
+            return sum + (dbItem ? Number(dbItem.price) * cartItem.quantity : 0);
+        }, 0);
+
+        // Stripe amounts are in cents
+        const amountInCents = Math.round(amount * 100);
+
+        if (amountInCents < 50) throw new Error("Amount must be at least 50 cents");
+
+        // 2. Create Intent
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amountInCents,
+            currency: 'usd',
+            automatic_payment_methods: { enabled: true },
+            metadata: {
+                restaurantId,
+                itemCount: cartItems.length.toString()
+            }
+        });
+
+        return {
+            clientSecret: paymentIntent.client_secret,
+            id: paymentIntent.id
+        };
+
+    } catch (e: any) {
+        console.error("PaymentIntent Error:", e);
+        return { error: e.message };
     }
 }

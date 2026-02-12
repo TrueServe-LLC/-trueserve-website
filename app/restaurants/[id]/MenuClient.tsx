@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { placeOrder } from "../actions";
+import Link from "next/link";
+import { placeOrder, createPaymentIntent } from "../actions";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import CheckoutForm from "@/components/CheckoutForm";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 import GoogleMapsMap from "@/components/GoogleMapsMap";
 
@@ -23,42 +29,39 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
     const router = useRouter();
     const [cart, setCart] = useState<{ [key: string]: number }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [payment, setPayment] = useState({ cardNumber: '', expiry: '', cvc: '' });
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+    const handleCartChange = async (newCart: { [key: string]: number }) => {
+        setCart(newCart);
+
+        const hasItems = Object.values(newCart).some(q => q > 0);
+        if (hasItems) {
+            const cartItems = Object.entries(newCart).map(([id, quantity]) => ({ id, quantity }));
+            const res = await createPaymentIntent(restaurant.id, cartItems);
+            if (res.clientSecret) {
+                setClientSecret(res.clientSecret);
+            }
+        } else {
+            setClientSecret(null);
+        }
+    };
 
     const addToCart = (itemId: string) => {
-        setCart(prev => ({
-            ...prev,
-            [itemId]: (prev[itemId] || 0) + 1
-        }));
+        const newCart = {
+            ...cart,
+            [itemId]: (cart[itemId] || 0) + 1
+        };
+        handleCartChange(newCart);
     };
 
     const removeFromCart = (itemId: string) => {
-        setCart(prev => {
-            const newCart = { ...prev };
-            if (newCart[itemId] > 1) {
-                newCart[itemId]--;
-            } else {
-                delete newCart[itemId];
-            }
-            return newCart;
-        });
-    };
-
-    const [cardBrand, setCardBrand] = useState<string>("");
-
-    const detectCardType = (number: string) => {
-        const clean = number.replace(/\D/g, '');
-        if (/^4/.test(clean)) return "Visa";
-        if (/^5[1-5]/.test(clean)) return "Mastercard";
-        if (/^3[47]/.test(clean)) return "Amex";
-        if (/^6/.test(clean)) return "Discover";
-        return "";
-    };
-
-    const handleCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        setPayment({ ...payment, cardNumber: val });
-        setCardBrand(detectCardType(val));
+        const newCart = { ...cart };
+        if (newCart[itemId] > 1) {
+            newCart[itemId]--;
+        } else {
+            delete newCart[itemId];
+        }
+        handleCartChange(newCart);
     };
 
     const cartTotalItems = Object.values(cart).reduce((sum, q) => sum + q, 0);
@@ -67,33 +70,21 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
         return sum + (item ? Number(item.price) * quantity : 0);
     }, 0);
 
-    const handlePlaceOrder = async () => {
-        if (!payment.cardNumber || !payment.expiry || !payment.cvc) {
-            alert("Please enter payment details.");
-            return;
-        }
-
-        // Simple client-side validation
-        if (payment.cardNumber.length < 13) {
-            alert("Invalid card number length.");
-            return;
-        }
-
+    const handlePaymentSuccess = async (paymentIntentId: string) => {
         setIsSubmitting(true);
         const cartItems = Object.entries(cart).map(([id, quantity]) => {
             const item = items.find(i => i.id === id);
             return { id, quantity, price: item ? Number(item.price) : 0 };
         });
 
-        const response = await placeOrder(restaurant.id, cartItems, payment);
+        const response = await placeOrder(restaurant.id, cartItems, paymentIntentId);
 
         if (response.success && response.orderId) {
             setCart({});
-            setPayment({ cardNumber: '', expiry: '', cvc: '' });
-            // Redirect to tracking page
+            setClientSecret(null);
             router.push(`/orders/${response.orderId}`);
         } else {
-            alert(response.message || "Failed to place order");
+            alert(response.message || "Failed to finalize order");
             setIsSubmitting(false);
         }
     };
@@ -148,6 +139,18 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
             {/* Sidebar / Checkout */}
             <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
+                    {/* TrueServe+ Promo */}
+                    <Link href="/benefits" className="block mb-6 p-4 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group">
+                        <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xl">💎</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-primary">TrueServe+ Benefit</span>
+                        </div>
+                        <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                            You could be saving <span className="text-white font-bold">$5.99</span> on this delivery.
+                            <span className="text-primary ml-1 group-hover:underline underline-offset-2 font-bold">See Benefits &rarr;</span>
+                        </p>
+                    </Link>
+
                     <h3 className="font-bold mb-6 text-xl flex items-center gap-2">
                         <span>🛒</span> Your Cart
                     </h3>
@@ -190,54 +193,23 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                         </div>
                     </div>
 
-                    {cartTotalItems > 0 && (
+                    {cartTotalItems > 0 && clientSecret && (
                         <div className="mt-6 pt-6 border-t border-white/10 animate-fade-in">
-                            <p className="text-xs font-bold uppercase text-slate-500 mb-3 tracking-widest">Quick Payment</p>
-                            <div className="space-y-3">
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        placeholder="Card Number"
-                                        className="w-full bg-slate-800 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-colors"
-                                        value={payment.cardNumber}
-                                        onChange={handleCardChange}
-                                    />
-                                    {cardBrand && (
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 bg-white text-black text-[10px] font-bold px-2 py-1 rounded">
-                                            {cardBrand}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <input
-                                        type="text"
-                                        placeholder="MM/YY"
-                                        className="w-full bg-slate-800 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-colors"
-                                        value={payment.expiry}
-                                        onChange={(e) => setPayment({ ...payment, expiry: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="CVC"
-                                        className="w-full bg-slate-800 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-colors"
-                                        value={payment.cvc}
-                                        onChange={(e) => setPayment({ ...payment, cvc: e.target.value })}
-                                    />
-                                </div>
-                            </div>
+                            <p className="text-xs font-bold uppercase text-slate-500 mb-3 tracking-widest">Secure Payment</p>
+                            <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
+                                <CheckoutForm
+                                    totalAmount={totalPrice}
+                                    onSuccess={handlePaymentSuccess}
+                                />
+                            </Elements>
                         </div>
                     )}
 
-                    <button
-                        disabled={cartTotalItems === 0 || isSubmitting}
-                        onClick={handlePlaceOrder}
-                        className="w-full btn btn-primary mt-6 py-4 text-lg shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50 disabled:shadow-none"
-                    >
-                        {isSubmitting ? "Processing..." : "Place Order"}
-                    </button>
-                    <div className="flex items-center justify-center gap-2 mt-4 text-slate-500 opacity-50">
-                        <span className="text-[10px] uppercase tracking-widest">Secured by Stripe</span>
-                    </div>
+                    {!clientSecret && cartTotalItems > 0 && (
+                        <div className="mt-6 flex justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Info & Map Sidebar (Now integrated) */}
@@ -276,6 +248,26 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Sticky Cart Bar */}
+            {cartTotalItems > 0 && (
+                <div className="md:hidden fixed bottom-6 left-6 right-6 z-[60] animate-in fade-in slide-in-from-bottom-8 duration-500">
+                    <button
+                        onClick={() => {
+                            document.querySelector('.card.p-6.bg-slate-900\\/50')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="w-full bg-primary text-black h-16 rounded-2xl flex items-center justify-between px-6 shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-8 h-8 bg-black/10 rounded-lg flex items-center justify-center font-black">
+                                {cartTotalItems}
+                            </div>
+                            <span className="font-bold tracking-tight uppercase text-sm">View Cart</span>
+                        </div>
+                        <span className="font-black text-lg">${totalPrice.toFixed(2)}</span>
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

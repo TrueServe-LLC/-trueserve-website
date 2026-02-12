@@ -120,7 +120,7 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
                         <div className="card p-6 border-primary/20 bg-primary/5">
                             <h3 className="font-bold mb-4">TrueServe+ Benefits</h3>
                             <p className="text-sm text-slate-400 mb-6">Enjoy $0 delivery fees and exclusive perks on every order.</p>
-                            <button className="w-full btn btn-primary">Join Membership</button>
+                            <Link href="/benefits" className="w-full btn btn-primary">Join Membership</Link>
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import AddItemForm from "./AddItemForm";
-import { updateOrderStatus, refundOrder } from "../actions";
+import { updateOrderStatus, refundOrder, createStripeAccount } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -145,6 +145,39 @@ export default async function MerchantDashboard() {
                         </p>
                     </div>
                 </div>
+
+                {/* Stripe Connect Banner (If not connected) */}
+                {!restaurant.stripeAccountId && (
+                    <div className="mb-12 p-8 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center text-3xl shadow-lg">💳</div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-white mb-2">Connect Stripe to get paid.</h2>
+                                <p className="text-slate-400 max-w-md">To start receiving payouts for your orders, you need to connect your Stripe account.</p>
+                            </div>
+                        </div>
+                        <form action={createStripeAccount}>
+                            <button className="btn bg-blue-600 hover:bg-blue-700 text-white border-none px-8 py-3 shadow-lg shadow-blue-500/20">
+                                Connect Stripe account
+                            </button>
+                        </form>
+                    </div>
+                )}
+
+                {restaurant.stripeAccountId && !restaurant.stripeOnboardingComplete && (
+                    <div className="mb-12 p-6 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <span className="animate-pulse w-3 h-3 bg-yellow-500 rounded-full"></span>
+                            <div>
+                                <p className="font-bold text-yellow-500">Stripe Onboarding Incomplete</p>
+                                <p className="text-xs text-slate-400">Finish setting up your account to ensure your payouts aren't delayed.</p>
+                            </div>
+                        </div>
+                        <form action={createStripeAccount}>
+                            <button className="text-sm font-bold text-yellow-500 hover:underline">Complete Setup &rarr;</button>
+                        </form>
+                    </div>
+                )}
 
                 {/* Prep-time Prediction & Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">

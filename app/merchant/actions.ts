@@ -4,8 +4,10 @@
 import { supabase } from "@/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { sendEmail } from "@/lib/email";
 import { revalidatePath } from "next/cache";
+import { stripe } from "@/lib/stripe";
 
 export type MerchantActionState = {
     message: string;
@@ -196,5 +198,69 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     } catch (e: any) {
         console.error("Merchant Signup Error:", e);
         return { message: "An error occurred: " + (e.message || "Unknown error"), error: true };
+    }
+}
+
+export async function createStripeAccount() {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+    if (!userId) {
+        redirect("/login?role=merchant");
+    }
+
+    try {
+        // 1. Get Restaurant
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('*')
+            .eq('ownerId', userId)
+            .single();
+
+        if (!restaurant) throw new Error("Restaurant not found");
+
+        let stripeAccountId = restaurant.stripeAccountId;
+
+        // 2. Create Stripe Account if missing
+        if (!stripeAccountId) {
+            const userRes = await supabase.from('User').select('email').eq('id', userId).single();
+            const account = await stripe.accounts.create({
+                type: 'express',
+                country: 'US',
+                email: userRes.data?.email || undefined,
+                capabilities: {
+                    card_payments: { requested: true },
+                    transfers: { requested: true },
+                },
+                metadata: {
+                    restaurantId: restaurant.id,
+                    ownerId: userId
+                }
+            });
+
+            stripeAccountId = account.id;
+
+            // Save to DB
+            const { error: updateError } = await supabase
+                .from('Restaurant')
+                .update({ stripeAccountId })
+                .eq('id', restaurant.id);
+
+            if (updateError) throw updateError;
+        }
+
+        // 3. Create Account Link
+        const accountLink = await stripe.accountLinks.create({
+            account: stripeAccountId,
+            refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/dashboard?stripe=refresh`,
+            return_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/onboarding-success`,
+            type: 'account_onboarding',
+        });
+
+        redirect(accountLink.url);
+
+    } catch (e: any) {
+        console.error("Stripe Connect Error:", e);
+        // Throw or handle error without returning an object to satisfy form action types
+        throw new Error(e.message);
     }
 }

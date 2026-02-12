@@ -344,6 +344,21 @@ export default async function RestaurantFinder({
                                 <span className="text-2xl text-slate-600 font-normal">({restaurants.length} spots)</span>
                             </h1>
                         </div>
+
+                        {/* TrueServe+ Promo Banner */}
+                        <Link href="/benefits" className="flex-1 md:max-w-md w-full bg-gradient-to-r from-primary/20 to-secondary/10 border border-primary/30 p-4 rounded-2xl flex items-center justify-between group hover:border-primary/60 transition-all">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-xl shadow-inner">💎</div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Membership</p>
+                                    <h4 className="font-bold text-sm text-white">TrueServe+ Benefits</h4>
+                                    <p className="text-[10px] text-slate-400">Save $40+ every month with $0 delivery fees.</p>
+                                </div>
+                            </div>
+                            <div className="bg-primary text-black p-2 rounded-lg group-hover:translate-x-1 transition-transform">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                        </Link>
                     </div>
 
                     {/* Google Maps Embed */}
