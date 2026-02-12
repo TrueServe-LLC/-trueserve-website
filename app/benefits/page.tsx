@@ -111,23 +111,25 @@ export default function BenefitsPage() {
                         </div>
                     </div>
 
-                    {/* 2. Convenience & Experience - Fixed Overlap */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-                        <div className="lg:col-span-5 order-2 lg:order-1 self-stretch">
-                            <div className="h-full bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-8 md:p-12 rounded-[3.5rem] flex flex-col justify-center text-center lg:text-right relative overflow-hidden backdrop-blur-sm">
+                    {/* 2. Convenience & Experience - Polish Box Sizing */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
+                        <div className="lg:col-span-5 order-2 lg:order-1 flex">
+                            <div className="w-full bg-gradient-to-br from-blue-500/10 to-transparent border border-white/5 p-10 md:p-14 rounded-[3.5rem] flex flex-col justify-center text-center lg:text-right relative overflow-hidden backdrop-blur-sm">
                                 <div className="text-6xl mb-8 opacity-20 lg:opacity-100 italic font-black absolute top-6 right-8 lg:static">⚡</div>
-                                <p className="text-slate-300 leading-relaxed italic text-xl md:text-2xl relative z-10">
+                                <p className="text-slate-300 leading-relaxed italic text-xl md:text-2xl relative z-10 break-words">
                                     "I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."
                                 </p>
                                 <p className="mt-8 text-sm font-black uppercase tracking-widest text-blue-400">— James L., Premium Member</p>
                             </div>
                         </div>
-                        <div className="lg:col-span-7 order-1 lg:order-2">
-                            <span className="text-blue-400 font-black uppercase tracking-widest text-[10px] bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/20">Convenience & Experience</span>
-                            <h2 className="text-5xl md:text-7xl font-black mt-8 mb-12 leading-[0.9] tracking-tight text-white">
-                                Elevate your order <br /> from start to finish.
+                        <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col justify-center">
+                            <div className="mb-6">
+                                <span className="text-blue-400 font-black uppercase tracking-widest text-[10px] bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/20">Convenience & Experience</span>
+                            </div>
+                            <h2 className="text-5xl md:text-7xl font-black mb-12 leading-[0.9] tracking-tight text-white break-words">
+                                Elevate your order <br className="hidden md:block" /> from start to finish.
                             </h2>
-                            <div className="space-y-12">
+                            <div className="space-y-10">
                                 <FeatureDetail
                                     icon="⚡"
                                     title="Priority Dispatch & Support"
@@ -180,17 +182,17 @@ export default function BenefitsPage() {
                             </div>
 
                             <div className="lg:col-span-7 self-center">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 h-full">
                                     {[
                                         { i: "📢", l: "Impact", d: "Direct contributions to local food programs." },
                                         { i: "🎂", l: "Birthday", d: "$10 credit on your special day." },
                                         { i: "💳", l: "Wallet", d: "Unified rewards across all partners." },
                                         { i: "🛡️", l: "No Fees", d: "Zero hidden charges. Pure transparency." }
                                     ].map((card, i) => (
-                                        <div key={i} className="p-10 bg-black/60 rounded-[2.5rem] border border-white/5 flex flex-col items-center text-center group hover:bg-black/80 transition-all hover:border-primary/30">
+                                        <div key={i} className="p-8 lg:p-10 bg-black/60 rounded-[2.5rem] border border-white/5 flex flex-col items-center text-center group hover:bg-black/80 transition-all hover:border-primary/30 shrink-0">
                                             <div className="text-4xl mb-6 group-hover:scale-125 transition-transform duration-500">{card.i}</div>
-                                            <p className="text-[10px] font-black uppercase mb-3 tracking-[0.25em] text-primary">{card.l}</p>
-                                            <p className="text-xs text-slate-500 font-bold leading-relaxed">{card.d}</p>
+                                            <p className="text-[10px] font-black uppercase mb-3 tracking-[0.25em] text-primary whitespace-nowrap">{card.l}</p>
+                                            <p className="text-xs text-slate-500 font-bold leading-relaxed max-w-[150px]">{card.d}</p>
                                         </div>
                                     ))}
                                 </div>

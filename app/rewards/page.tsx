@@ -42,23 +42,23 @@ export default function RewardsPage() {
                     </p>
                 </div>
 
-                {/* Points Balance Card */}
+                {/* Points Balance Card - Polish Box Sizing */}
                 <div className="mb-24 relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
-                    <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-10">
-                        <div className="text-center md:text-left">
+                    <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-10">
+                        <div className="text-center md:text-left flex-1">
                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-4">Total Balance</p>
-                            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-4">
-                                <span className="text-7xl md:text-8xl font-black text-white tabular-nums tracking-tighter">2,450</span>
+                            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-4 md:gap-6">
+                                <span className="text-7xl md:text-8xl lg:text-9xl font-black text-white tabular-nums tracking-tighter">2,450</span>
                                 <div className="flex flex-col items-center sm:items-start">
-                                    <span className="text-primary font-black text-sm uppercase tracking-widest">+150 PENDING</span>
-                                    <span className="text-slate-500 text-[10px] uppercase font-bold">Gold Multiplier Active</span>
+                                    <span className="text-primary font-black text-sm uppercase tracking-widest whitespace-nowrap">+150 PENDING</span>
+                                    <span className="text-slate-500 text-[10px] uppercase font-bold whitespace-nowrap">Gold Multiplier Active</span>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                            <button className="flex-1 btn btn-outline border-white/10 hover:bg-white/5 py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-widest">History</button>
-                            <button className="flex-1 btn btn-primary py-4 px-10 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20">Earn More</button>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto shrink-0">
+                            <button className="flex-1 btn btn-outline border-white/10 hover:bg-white/5 py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-widest min-w-[140px]">History</button>
+                            <button className="flex-1 btn btn-primary py-4 px-10 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 min-w-[140px]">Earn More</button>
                         </div>
                     </div>
                 </div>
@@ -235,20 +235,20 @@ function RewardCard({ title, points, icon, desc, accent }: { title: string, poin
     }
 
     return (
-        <div className="group bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex flex-col h-full hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative overflow-hidden">
-            <div className={`absolute -bottom-6 -right-6 text-8xl opacity-[0.03] group-hover:opacity-10 transition-all duration-500 transform group-hover:-rotate-12`}>
+        <div className="group bg-white/5 border border-white/10 p-10 rounded-[2.5rem] flex flex-col h-full hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative overflow-hidden">
+            <div className={`absolute -bottom-6 -right-6 text-8xl opacity-[0.03] group-hover:opacity-10 transition-all duration-500 transform group-hover:-rotate-12 pointer-events-none`}>
                 {icon}
             </div>
             <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${accents[accent]} border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform`}>
                 {icon}
             </div>
             <div className="flex-1">
-                <h3 className="text-xl font-black text-white mb-2 leading-tight">{title}</h3>
-                <p className="text-slate-400 text-sm font-medium leading-relaxed mb-6">{desc}</p>
+                <h3 className="text-xl font-black text-white mb-2 leading-tight break-words">{title}</h3>
+                <p className="text-slate-400 text-sm font-medium leading-relaxed mb-6 break-words max-w-[240px]">{desc}</p>
             </div>
             <div className="flex items-center justify-between gap-4 mt-auto pt-6 border-t border-white/5">
-                <span className="text-primary font-black text-lg tracking-tight">{points.toLocaleString()} <span className="text-[10px] uppercase tracking-widest">PTS</span></span>
-                <button className="px-5 py-2 rounded-xl bg-white/10 hover:bg-primary hover:text-black text-[10px] font-black uppercase tracking-widest transition-all">
+                <span className="text-primary font-black text-lg tracking-tight whitespace-nowrap">{points.toLocaleString()} <span className="text-[10px] uppercase tracking-widest">PTS</span></span>
+                <button className="px-5 py-2 rounded-xl bg-white/10 hover:bg-primary hover:text-black text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap">
                     Redeem
                 </button>
             </div>
