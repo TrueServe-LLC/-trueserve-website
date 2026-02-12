@@ -7,6 +7,8 @@ import { cookies } from "next/headers";
 import * as fs from 'fs';
 import * as path from 'path';
 import { sendEmail } from "@/lib/email";
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export type DriverApplicationState = {
     message: string;
@@ -19,7 +21,6 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const email = formData.get("email") as string;
     const vehicleType = formData.get("vehicleType") as string;
     const phone = formData.get("phone") as string;
-    // SSN delayed until approval
     const idDocument = formData.get("idDocument") as File;
 
     if (!name || !email || !vehicleType || !phone || !idDocument) {
@@ -29,10 +30,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     // Mock Verification
     console.log(`[DriverApp] Docs Received for ${email}: File(${idDocument.name}, ${idDocument.size} bytes)`);
 
-
     try {
-        const cookieStore = await cookies();
-
         // 1. Ensure Placeholder User Record Exists
         // Use ADMIN client to bypass RLS for User table operations
         const { data: userByEmail } = await supabaseAdmin
@@ -72,7 +70,6 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             const fileName = `${targetUserId}_${Date.now()}.${fileExt}`;
 
             // Note: 'driver-documents' bucket must exist in Supabase Storage.
-            // If it doesn't, this will error, but we'll catch it and proceed (saving the app is priority).
             const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
                 .from('driver-documents')
                 .upload(fileName, idDocument);
@@ -108,7 +105,6 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 status: "PENDING_APPROVAL", // Changed from OFFLINE
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
-                // Assuming schema doesn't have documentUrl yet. If it did: documentUrl: documentUrl
             });
 
         if (driverError) {
@@ -163,20 +159,20 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     }
 }
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-
 export async function acceptOrder(orderId: string) {
     try {
-        const cookieStore = await cookies();
-        const userId = cookieStore.get("userId")?.value;
-        if (!userId) throw new Error("Not logged in");
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            throw new Error("Not logged in");
+        }
 
         // Get Driver ID
         const { data: driver } = await supabase
             .from('Driver')
             .select('id')
-            .eq('userId', userId)
+            .eq('userId', user.id)
             .single();
 
         if (!driver) throw new Error("Driver profile not found");
@@ -184,12 +180,13 @@ export async function acceptOrder(orderId: string) {
         const { error } = await supabase
             .from('Order')
             .update({
-                driverId: driver.id
+                driverId: driver.id,
+                status: 'OUT_FOR_DELIVERY' // Move to next stage immediately for demo flow
             })
             .eq('id', orderId)
             .is('driverId', null); // Ensure not already taken
 
-        if (error) throw new Error("Failed to accept order (maybe taken?)");
+        if (error) throw new Error("Failed to accept order");
 
         revalidatePath('/driver/dashboard');
         return { success: true };

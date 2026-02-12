@@ -4,6 +4,7 @@ import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
 import { acceptOrder } from "../actions";
 import DriverMap from "@/components/DriverMap";
+import { calculateDistance } from "@/lib/utils";
 
 async function getDriverData() {
     const supabase = await createClient();
@@ -41,15 +42,36 @@ export default async function DriverDashboard() {
         redirect('/login');
     }
 
-    // Fetch Available Orders
-    const { data: availableOrders } = await supabase
+    // Fetch Available Orders (Fetch more to sort in-memory)
+    const { data: rawOrders } = await supabase
         .from('Order')
-        .select(`*, restaurant:Restaurant(name, address)`)
+        .select(`*, restaurant:Restaurant(name, address, lat, lng)`)
         .is('driverId', null)
         .neq('status', 'DELIVERED')
         .neq('status', 'COMPLETED')
         .order('createdAt', { ascending: false })
-        .limit(5);
+        .limit(20);
+
+    // Smart Dispatch: Sort by Proximity to Driver
+    let availableOrders = rawOrders || [];
+
+    if (driver && driver.currentLat && driver.currentLng) {
+        availableOrders = availableOrders.map((order: any) => {
+            const dist = Number(calculateDistance(
+                driver.currentLat,
+                driver.currentLng,
+                order.restaurant?.lat || 35.2271,
+                order.restaurant?.lng || -80.8431
+            ));
+            return { ...order, distance: dist };
+        }).sort((a: any, b: any) => a.distance - b.distance);
+    } else {
+        // Fallback for new drivers without location history
+        availableOrders = availableOrders.map((o: any) => ({ ...o, distance: 2.5 }));
+    }
+
+    // Take top 5 after sorting
+    availableOrders = availableOrders.slice(0, 5);
 
     // Fetch My Active Orders
     const { data: myOrders } = driver ? await supabase
@@ -112,17 +134,24 @@ export default async function DriverDashboard() {
                     {/* Available Orders */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold flex items-center gap-2">
-                            🔔 Available Orders
+                            🔔 Recommended for You
                         </h2>
                         {availableOrders && availableOrders.length > 0 ? (
-                            availableOrders.map((order: any) => (
-                                <div key={order.id} className="card bg-white/5 border-white/10 p-5 flex justify-between items-center group hover:border-primary/50 transition-colors">
+                            availableOrders.map((order: any, index: number) => (
+                                <div key={order.id} className={`card p-5 flex justify-between items-center group transition-all relative overflow-hidden ${index === 0 ? 'bg-gradient-to-r from-emerald-900/40 to-black border-emerald-500/50 shadow-emerald-900/20 shadow-lg' : 'bg-white/5 border-white/10 hover:border-primary/50'}`}>
+
+                                    {index === 0 && (
+                                        <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[10px] uppercase font-bold px-2 py-1 rounded-bl">Best Match</div>
+                                    )}
+
                                     <div>
                                         <p className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</p>
                                         <p className="text-sm text-slate-400">{order.restaurant?.address || "Location Hidden"}</p>
                                         <div className="flex gap-3 mt-2 text-xs font-mono uppercase">
                                             <span className="bg-white/10 px-2 py-1 rounded text-slate-300">{(order.total * 0.2).toLocaleString('en-US', { style: 'currency', currency: 'USD' })} est. pay</span>
-                                            <span className="bg-white/10 px-2 py-1 rounded text-slate-300">~{Math.floor(Math.random() * 5) + 2} mi</span>
+                                            <span className={`px-2 py-1 rounded ${order.distance < 3 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-slate-300'}`}>
+                                                {order.distance} mi away
+                                            </span>
                                         </div>
                                     </div>
                                     <form action={async () => {
@@ -135,7 +164,7 @@ export default async function DriverDashboard() {
                             ))
                         ) : (
                             <div className="p-8 text-center border dashed border-white/10 rounded-xl text-slate-500">
-                                No orders available right now.
+                                No orders available nearby.
                             </div>
                         )}
                     </div>
