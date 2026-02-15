@@ -349,12 +349,12 @@ export default async function RestaurantFinder({
                 )}
 
                 <div className="flex flex-col gap-6 mb-8">
-                    <div className="flex flex-col md:flex-row justify-between items-end gap-4">
-                        <div>
-                            <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-2">Delivery to</p>
-                            <h1 className="text-2xl md:text-4xl font-black tracking-tight flex items-baseline gap-2">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 pt-4">
+                        <div className="text-center md:text-left">
+                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em] mb-1">Delivery to</p>
+                            <h1 className="text-xl md:text-3xl font-black tracking-tight text-white">
                                 {locationMeta.name}
-                                <span className="text-sm md:text-2xl text-slate-600 font-normal">({restaurants.length} spots)</span>
+                                <span className="text-xs md:text-lg text-slate-500 font-bold ml-3">({restaurants.length} spots)</span>
                             </h1>
                         </div>
 
@@ -415,12 +415,12 @@ export default async function RestaurantFinder({
                                         <span>★</span> {rest.rating}
                                     </div>
 
-                                    {/* Favorite / Promo badge could go here */}
-                                    <div className="absolute top-3 left-3 flex gap-2">
-                                        <div className="bg-primary text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                                    {/* Favorite / Promo badge - Vertical on Mobile, Row only if wide */}
+                                    <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+                                        <div className="bg-primary text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
                                             Free Delivery
                                         </div>
-                                        <div className="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-emerald-400/50 backdrop-blur-md">
+                                        <div className="bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg border border-emerald-400/20 backdrop-blur-md">
                                             5% Member Savings
                                         </div>
                                     </div>
@@ -438,10 +438,10 @@ export default async function RestaurantFinder({
                                     <p className="text-sm text-slate-400 line-clamp-1 mb-2">
                                         {rest.tags.join(" • ")}
                                     </p>
-                                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
                                         <span>$0 Delivery Fee</span>
                                         <span>•</span>
-                                        <span className="text-emerald-400 font-medium">Order Protection</span>
+                                        <span className="text-emerald-500">Fast Delivery</span>
                                     </div>
                                 </div>
                             </Link>
@@ -458,8 +458,8 @@ export default async function RestaurantFinder({
                     </p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
                         <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                            <div className="text-xl mb-1">🛡️</div>
-                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Protection</p>
+                            <div className="text-xl mb-1">📊</div>
+                            <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Transparency</p>
                         </div>
                         <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
                             <div className="text-xl mb-1">⚡</div>

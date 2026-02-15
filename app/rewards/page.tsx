@@ -91,9 +91,8 @@ export default function RewardsPage() {
                             features={[
                                 "Reduced service fees",
                                 "Priority driver dispatch",
-                                "Order protection guarantee",
+                                "Annual birthday credit",
                                 "5% Member-only discount",
-                                "Annual birthday credit"
                             ]}
                             buttonLink="/login?plus=true"
                         />

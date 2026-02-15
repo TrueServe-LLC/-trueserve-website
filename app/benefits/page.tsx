@@ -57,9 +57,9 @@ export default function BenefitsPage() {
                             subtitle="The community favorite"
                             isPopular={true}
                             features={[
-                                "Reduced service fees",
+                                "Standard delivery times",
                                 "Priority driver dispatch",
-                                "Order protection guarantee",
+                                "Exclusive early access",
                                 "5% Member-only discount",
                                 "Annual birthday credit"
                             ]}
@@ -131,9 +131,9 @@ export default function BenefitsPage() {
                                     text="Faster driver assignment and peak-hour prioritization. Plus a dedicated, instant-reply support lane."
                                 />
                                 <FeatureDetail
-                                    icon="🛡️"
-                                    title="Order Protection Guarantee"
-                                    text="Late or missing items? Members get instant credit. We trust you, so there's no friction or long dispute process."
+                                    icon="📊"
+                                    title="Transparent Pricing"
+                                    text="No hidden service fees. See exactly what the restaurant and driver earn on every single checkout. We believe in fair markets."
                                 />
                                 <FeatureDetail
                                     icon="📱"
