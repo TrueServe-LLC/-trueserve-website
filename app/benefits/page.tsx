@@ -73,7 +73,6 @@ export default function BenefitsPage() {
                                 "Zero delivery fees on all orders",
                                 "Exclusive early access menu items",
                                 "24/7 Concierge support",
-                                "AI Voice VIP ordering line",
                                 "Double loyalty rewards points",
                                 "Advanced 7-day scheduling"
                             ]}
@@ -161,7 +160,7 @@ export default function BenefitsPage() {
                                 <div className="space-y-10">
                                     {[
                                         { i: "📊", t: "Earnings Dashboard", d: "See exactly how much the restaurant and driver earned." },
-                                        { i: "🎙️", t: "AI Voice VIP Line", d: "Hands-free, priority AI voice ordering for all members." },
+                                        { i: "🎯", t: "Priority Support", d: "Instant access to our dedicated support team." },
                                         { i: "📅", t: "Advanced Scheduling", d: "Lock-in time windows up to 7 days in advance." }
                                     ].map((item, i) => (
                                         <div key={i} className="flex gap-6 items-start">

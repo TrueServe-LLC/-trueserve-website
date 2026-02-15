@@ -105,7 +105,6 @@ export default function RewardsPage() {
                                 "Zero delivery fees on all orders",
                                 "Exclusive early access menu items",
                                 "24/7 Concierge support",
-                                "AI Voice VIP ordering line",
                                 "Double loyalty rewards points",
                                 "Advanced 7-day scheduling"
                             ]}
@@ -149,7 +148,7 @@ export default function RewardsPage() {
                         title="Priority Support"
                         points={2000}
                         icon="⭐"
-                        desc="VIP lane for all your inquiries."
+                        desc="Priority lane for all your inquiries."
                         accent="yellow"
                     />
                     <RewardCard

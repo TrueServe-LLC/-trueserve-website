@@ -280,38 +280,50 @@ export default async function RestaurantFinder({
     return (
         <div className="min-h-screen">
             <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
-                <div className="container flex flex-col md:flex-row gap-4 justify-between items-center">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
+                <div className="container flex justify-between items-center gap-4">
+                    <Link href="/" className="flex items-center gap-2 group shrink-0">
+                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
+                        <span className="text-lg md:text-2xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
                     </Link>
-                    <div className="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full md:w-auto">
+
+                    {/* Desktop Search */}
+                    <div className="hidden md:flex flex-1 max-w-xl">
+                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full">
                             <LocationButton />
                             <input
                                 name="location"
                                 defaultValue={location}
                                 placeholder="Change location..."
-                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full md:w-64 transition-all text-sm placeholder:text-slate-500"
+                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500"
                                 autoComplete="off"
                             />
                         </form>
-
-                        <div className="hidden md:block">
-                            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-                        </div>
-
-                        {!userId ? (
-                            <Link href="/login" className="btn btn-primary text-xs py-2 px-4">
-                                Login
-                            </Link>
-                        ) : (
-                            <Link href="/user/settings" className="flex items-center gap-2 group">
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50 group-hover:bg-primary group-hover:text-black transition-colors">
-                                    U
-                                </div>
-                            </Link>
-                        )}
                     </div>
+
+                    <div className="flex items-center gap-4 md:gap-6">
+                        <div className="hidden lg:block">
+                            <Link href="/" className="text-sm font-bold text-slate-400 hover:text-white transition-colors">Home</Link>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!userId ? (
+                                <Link href="/login" className="btn btn-primary text-[10px] md:text-xs py-1.5 px-4 md:px-6 rounded-full font-black uppercase tracking-widest">Login</Link>
+                            ) : (
+                                <Link href="/user/settings" className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50 hover:bg-primary hover:text-black transition-colors">U</Link>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <div className="container mt-4 md:hidden">
+                    <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full">
+                        <LocationButton />
+                        <input
+                            name="location"
+                            defaultValue={location}
+                            placeholder="Change location..."
+                            className="input input-sm join-item bg-transparent border-none focus:outline-none w-full text-xs placeholder:text-slate-500"
+                            autoComplete="off"
+                        />
+                    </form>
                 </div>
             </nav>
 
@@ -339,14 +351,14 @@ export default async function RestaurantFinder({
                     <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                         <div>
                             <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-2">Delivery to</p>
-                            <h1 className="text-4xl font-bold font-black tracking-tight flex items-center gap-2">
+                            <h1 className="text-2xl md:text-4xl font-black tracking-tight flex items-baseline gap-2">
                                 {locationMeta.name}
-                                <span className="text-2xl text-slate-600 font-normal">({restaurants.length} spots)</span>
+                                <span className="text-sm md:text-2xl text-slate-600 font-normal">({restaurants.length} spots)</span>
                             </h1>
                         </div>
 
-                        {/* TrueServe+ Promo Banner */}
-                        <Link href="/benefits" className="flex-1 md:max-w-md w-full bg-gradient-to-r from-primary/20 to-secondary/10 border border-primary/30 p-4 rounded-2xl flex items-center justify-between group hover:border-primary/60 transition-all">
+                        {/* TrueServe+ Promo Banner - Compact on Mobile */}
+                        <Link href="/benefits" className="flex-1 md:max-w-md w-full bg-gradient-to-r from-primary/20 to-secondary/10 border border-primary/30 p-3 md:p-4 rounded-2xl flex items-center justify-between group hover:border-primary/60 transition-all">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-xl shadow-inner">💎</div>
                                 <div>
