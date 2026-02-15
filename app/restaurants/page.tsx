@@ -123,7 +123,8 @@ async function getRestaurants(
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
             .select('*')
-            .match({ city: cityFilter, state: stateFilter });
+            .match({ city: cityFilter, state: stateFilter })
+            .neq('name', 'Test Restaurant');
 
         if (error || !restaurants || restaurants.length === 0) {
             throw new Error("No DB data");
