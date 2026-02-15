@@ -95,40 +95,42 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             {/* Menu Section */}
             <div className="md:col-span-2">
-                <h2 className="text-2xl font-bold mb-8">Menu</h2>
-                <div className="grid grid-cols-1 gap-6">
+                <h2 className="text-xl md:text-3xl font-black mb-6 md:mb-8 tracking-tight">Menu Highlights</h2>
+                <div className="grid grid-cols-1 gap-4 md:gap-6">
                     {items.map((item) => (
-                        <div key={item.id} className="card p-0 overflow-hidden flex flex-row min-h-28 h-auto hover:bg-white/5 transition-all group relative border border-white/5">
-                            <div className="w-32 bg-slate-800 shrink-0 relative">
-                                {item.imageUrl ? (
-                                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs text-center p-2">No Image</div>
-                                )}
-                            </div>
-                            <div className="p-4 flex flex-col justify-between flex-grow">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-1">{item.name}</h3>
-                                        <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed">{item.description}</p>
-                                    </div>
-                                    <span className="font-bold text-lg">${Number(item.price).toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-end items-center mt-2">
-                                    {cart[item.id] > 0 ? (
-                                        <div className="flex items-center gap-3 bg-slate-800 rounded-full px-2 py-1 border border-white/10">
-                                            <button onClick={() => removeFromCart(item.id)} className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">-</button>
-                                            <span className="font-bold w-4 text-center text-sm">{cart[item.id]}</span>
-                                            <button onClick={() => addToCart(item.id)} className="w-6 h-6 rounded-full bg-primary text-black flex items-center justify-center hover:bg-primary-hover transition-colors font-bold">+</button>
-                                        </div>
+                        <div key={item.id} className="group relative bg-white/5 rounded-2xl border border-white/5 overflow-hidden border-b-2 border-b-white/5 active:border-b-0 active:translate-y-0.5 transition-all">
+                            <div className="flex flex-row">
+                                <div className="w-24 sm:w-32 md:w-40 bg-slate-800 shrink-0 relative overflow-hidden">
+                                    {item.imageUrl ? (
+                                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
-                                        <button
-                                            onClick={() => addToCart(item.id)}
-                                            className="btn btn-sm btn-primary rounded-full px-4 py-1.5 text-xs shadow-lg transform hover:scale-105 transition-all"
-                                        >
-                                            Add
-                                        </button>
+                                        <div className="w-full h-full flex items-center justify-center text-slate-500 text-[10px] uppercase font-bold text-center p-4">No Image</div>
                                     )}
+                                </div>
+                                <div className="p-4 flex flex-col justify-between flex-grow">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="flex-grow">
+                                            <h3 className="font-black text-base md:text-xl text-white group-hover:text-primary transition-colors leading-tight mb-1">{item.name}</h3>
+                                            <p className="text-xs md:text-sm text-slate-500 line-clamp-2 leading-relaxed font-medium">{item.description}</p>
+                                        </div>
+                                        <span className="font-black text-base md:text-lg text-white shrink-0">${Number(item.price).toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-end items-center mt-3">
+                                        {cart[item.id] > 0 ? (
+                                            <div className="flex items-center gap-4 bg-black/40 rounded-full px-2 py-1 border border-white/10 shadow-inner">
+                                                <button onClick={() => removeFromCart(item.id)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors text-white font-black text-lg">-</button>
+                                                <span className="font-black w-4 text-center text-sm text-primary">{cart[item.id]}</span>
+                                                <button onClick={() => addToCart(item.id)} className="w-8 h-8 rounded-full bg-primary text-black flex items-center justify-center hover:scale-110 transition-all font-black text-lg shadow-lg shadow-primary/20">+</button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => addToCart(item.id)}
+                                                className="btn btn-sm md:btn-md bg-white text-black rounded-full px-6 md:px-8 py-2 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl"
+                                            >
+                                                Add to Order
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>

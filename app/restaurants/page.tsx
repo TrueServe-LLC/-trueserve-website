@@ -280,7 +280,7 @@ export default async function RestaurantFinder({
     // --- RESULTS VIEW ---
     return (
         <div className="min-h-screen">
-            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
+            <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-4 md:px-6 py-3 md:py-4">
                 <div className="container flex justify-between items-center gap-4">
                     <Link href="/" className="flex items-center gap-2 group shrink-0">
                         <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
@@ -288,94 +288,97 @@ export default async function RestaurantFinder({
                     </Link>
 
                     {/* Desktop Search */}
-                    <div className="hidden md:flex flex-1 max-w-xl">
-                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full">
+                    <div className="hidden md:flex flex-1 max-w-xl mx-8">
+                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden">
                             <LocationButton />
                             <input
                                 name="location"
                                 defaultValue={location}
                                 placeholder="Change location..."
-                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500"
+                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500 py-6"
                                 autoComplete="off"
                             />
                         </form>
                     </div>
 
-                    <div className="flex items-center gap-4 md:gap-6">
+                    <div className="flex items-center gap-3 md:gap-6">
                         <div className="hidden lg:block">
-                            <Link href="/" className="text-sm font-bold text-slate-400 hover:text-white transition-colors">Home</Link>
+                            <Link href="/" className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Home</Link>
                         </div>
                         <div className="flex items-center gap-3">
                             {!userId ? (
                                 <Link href="/login" className="btn btn-primary text-[10px] md:text-xs py-1.5 px-4 md:px-6 rounded-full font-black uppercase tracking-widest">Login</Link>
                             ) : (
-                                <Link href="/user/settings" className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50 hover:bg-primary hover:text-black transition-colors">U</Link>
+                                <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                </Link>
                             )}
                         </div>
                     </div>
                 </div>
-                <div className="container mt-4 md:hidden">
-                    <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary transition-colors w-full">
+                {/* Mobile Search */}
+                <div className="container mt-3 md:hidden px-2">
+                    <form className="join border border-white/10 rounded-2xl bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden">
                         <LocationButton />
                         <input
                             name="location"
                             defaultValue={location}
                             placeholder="Change location..."
-                            className="input input-sm join-item bg-transparent border-none focus:outline-none w-full text-xs placeholder:text-slate-500"
+                            className="input input-md join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500"
                             autoComplete="off"
                         />
                     </form>
                 </div>
             </nav>
 
-            <main className="container py-8 animate-fade-in">
+            <main className="container py-6 md:py-8 px-4 animate-fade-in pb-32">
                 {/* Active Tracking Banner */}
                 {activeOrders.length > 0 && (
-                    <div className="mb-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 text-9xl">🚚</div>
+                    <div className="mb-6 md:mb-8 p-5 md:p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-5 text-7xl md:text-9xl group-hover:scale-110 transition-transform">🚚</div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <h2 className="text-emerald-400 font-bold uppercase tracking-widest text-xs">Order in Progress</h2>
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h2 className="text-emerald-400 font-black uppercase tracking-[0.2em] text-[10px]">Active Order</h2>
                             </div>
-                            <h3 className="text-2xl font-bold mb-1">
-                                Your order from {activeOrders[0].restaurant?.name || 'Restaurant'} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}
+                            <h3 className="text-xl md:text-2xl font-black mb-1 text-white">
+                                {activeOrders[0].restaurant?.name || 'Restaurant'} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}
                             </h3>
-                            <Link href={`/orders/${activeOrders[0].id}`} className="btn bg-emerald-500 text-white hover:bg-emerald-600 border-none shadow-lg shadow-emerald-500/20 mt-2">
-                                Track Delivery
+                            <Link href={`/orders/${activeOrders[0].id}`} className="btn btn-sm md:btn-md bg-emerald-500 text-black font-black uppercase tracking-widest border-none shadow-lg shadow-emerald-500/20 mt-3 rounded-xl px-6">
+                                Track Live
                             </Link>
                         </div>
                     </div>
                 )}
 
-                <div className="flex flex-col gap-6 mb-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 pt-4">
-                        <div className="text-center md:text-left">
-                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em] mb-1">Delivery to</p>
-                            <h1 className="text-xl md:text-3xl font-black tracking-tight text-white">
+                <div className="flex flex-col gap-4 md:gap-6 mb-8">
+                    <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 py-2">
+                        <div>
+                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.3em] mb-1">Delivering to</p>
+                            <h1 className="text-2xl md:text-4xl font-black tracking-tighter text-white flex items-baseline gap-3">
                                 {locationMeta.name}
-                                <span className="text-xs md:text-lg text-slate-500 font-bold ml-3">({restaurants.length} spots)</span>
+                                <span className="text-sm text-slate-500 font-bold">({restaurants.length} spots)</span>
                             </h1>
                         </div>
 
-                        {/* TrueServe+ Promo Banner - Compact on Mobile */}
-                        <Link href="/benefits" className="flex-1 md:max-w-md w-full bg-gradient-to-r from-primary/20 to-secondary/10 border border-primary/30 p-3 md:p-4 rounded-2xl flex items-center justify-between group hover:border-primary/60 transition-all">
+                        {/* TrueServe+ Promo Banner */}
+                        <Link href="/benefits" className="flex-1 lg:max-w-md w-full bg-gradient-to-r from-primary/10 to-secondary/5 border border-white/5 p-3 md:p-4 rounded-2xl flex items-center justify-between group hover:border-primary/30 transition-all backdrop-blur-sm">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-xl shadow-inner">💎</div>
+                                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-xl shadow-inner border border-primary/20">💎</div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Membership</p>
-                                    <h4 className="font-bold text-sm text-white">TrueServe+ Benefits</h4>
-                                    <p className="text-[10px] text-slate-400">Save $40+ every month with $0 delivery fees.</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Member Benefits</p>
+                                    <h4 className="font-bold text-xs md:text-sm text-white">Join TrueServe+</h4>
+                                    <p className="text-[10px] text-slate-500">Free delivery & 5% member savings.</p>
                                 </div>
                             </div>
-                            <div className="bg-primary text-black p-2 rounded-lg group-hover:translate-x-1 transition-transform">
+                            <div className="bg-primary/10 text-primary p-2 rounded-lg group-hover:bg-primary group-hover:text-black transition-all">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path></svg>
                             </div>
                         </Link>
                     </div>
 
-                    {/* Google Maps Embed */}
-                    <div className="w-full h-[350px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative z-0">
+                    {/* Google Maps Embed - Responsive Height */}
+                    <div className="w-full h-[250px] md:h-[400px] rounded-3xl overflow-hidden border border-white/5 shadow-2xl relative z-0">
                         <GoogleMapsMap
                             center={mapCenter}
                             zoom={13}
@@ -384,64 +387,61 @@ export default async function RestaurantFinder({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
                     {restaurants.length === 0 ? (
-                        <div className="col-span-4 text-center py-12 text-slate-400">
-                            <p className="text-xl">No restaurants found in {location?.toString()}.</p>
-                            <p className="text-sm mt-2">Try "Charlotte", "Pineville", or "Rock Hill".</p>
+                        <div className="col-span-full text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                            <div className="text-4xl mb-4">🔍</div>
+                            <p className="text-xl font-bold text-white">No spots found in {location?.toString()}.</p>
+                            <p className="text-sm text-slate-500 mt-2">Try searching "Charlotte" or "Pineville".</p>
+                            <button onClick={() => window.location.href = '/restaurants'} className="btn btn-primary btn-sm mt-6 rounded-full px-8 uppercase font-black tracking-widest text-[10px]">Show All Cities</button>
                         </div>
                     ) : (
                         restaurants.map((rest) => (
                             <Link
                                 href={`/restaurants/${rest.id}`}
                                 key={rest.id}
-                                className="card group p-0 overflow-hidden border-0 bg-transparent hover:bg-white/5 transition-all duration-300 block relative"
+                                className="group flex flex-col bg-white/5 rounded-3xl border border-white/5 overflow-hidden hover:bg-white/[0.08] hover:border-white/10 transition-all duration-300 active:scale-[0.98]"
                             >
-                                <div className="h-48 w-full relative overflow-hidden rounded-2xl">
-                                    {rest.image ? (
-                                        <img
-                                            src={rest.image}
-                                            alt={rest.name}
-                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-500">
-                                            No Image
-                                        </div>
-                                    )}
+                                <div className="h-44 md:h-48 w-full relative overflow-hidden">
+                                    <img
+                                        src={rest.image || "/restaurant1.jpg"}
+                                        alt={rest.name}
+                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000 ease-out"
+                                    />
 
-                                    {/* Rating badge */}
-                                    <div className="absolute bottom-3 right-3 bg-white/10 backdrop-blur-md border border-white/20 px-2 py-1 rounded-full text-xs font-bold text-white flex items-center gap-1 shadow-lg">
-                                        <span>★</span> {rest.rating}
+                                    {/* Glass Overlay Badges */}
+                                    <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                                        <div className="bg-black/40 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10 shadow-xl">
+                                            $0 Delivery
+                                        </div>
                                     </div>
 
-                                    {/* Favorite / Promo badge - Vertical on Mobile, Row only if wide */}
-                                    <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
-                                        <div className="bg-primary text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                                            Free Delivery
-                                        </div>
-                                        <div className="bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg border border-emerald-400/20 backdrop-blur-md">
-                                            5% Member Savings
-                                        </div>
+                                    <div className="absolute bottom-3 right-3 bg-white text-black px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-2xl">
+                                        <span className="text-primary font-bold">★</span> {rest.rating}
                                     </div>
                                 </div>
 
-                                <div className="pt-3 px-1">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors leading-tight">
+                                <div className="p-4 md:p-5">
+                                    <div className="flex justify-between items-start mb-1.5">
+                                        <h3 className="text-lg font-black text-white group-hover:text-primary transition-colors leading-tight tracking-tight">
                                             {rest.name}
                                         </h3>
-                                        <span className="text-xs font-medium text-slate-400 bg-slate-800/50 px-2 py-1 rounded-full">
-                                            15-25 min
+                                        <span className="text-[10px] font-black uppercase bg-white/5 text-slate-400 px-2 py-1 rounded-lg border border-white/5 tracking-tighter">
+                                            20-30m
                                         </span>
                                     </div>
-                                    <p className="text-sm text-slate-400 line-clamp-1 mb-2">
+                                    <p className="text-xs text-slate-500 font-medium mb-4 line-clamp-1">
                                         {rest.tags.join(" • ")}
                                     </p>
-                                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
-                                        <span>$0 Delivery Fee</span>
-                                        <span>•</span>
-                                        <span className="text-emerald-500">Fast Delivery</span>
+                                    <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-0.5">Fees</span>
+                                            <span className="text-xs font-bold text-emerald-400">$0.00</span>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-0.5">Rating</span>
+                                            <span className="text-xs font-bold text-white uppercase tracking-tighter">Excellent</span>
+                                        </div>
                                     </div>
                                 </div>
                             </Link>
@@ -449,30 +449,27 @@ export default async function RestaurantFinder({
                     )}
                 </div>
 
-                {/* Strategy Mission Statement Section */}
-                <div className="mt-24 p-12 bg-white/5 border border-white/10 rounded-[3rem] text-center max-w-4xl mx-auto relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10" />
-                    <h2 className="text-3xl font-black mb-4">Built for Local.</h2>
-                    <p className="text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
-                        TrueServe isn't just another app. We’re a standard built to help local restaurants thrive while providing the most reliable delivery experience for you. Joining Plus supports driver bonuses, restaurant growth, and community grants.
+                {/* Strategy Mission Statement Section - Hidden or Compact on Mobile */}
+                <div className="mt-20 p-8 md:p-16 bg-white/5 border border-white/10 rounded-[2.5rem] md:rounded-[4rem] text-center max-w-4xl mx-auto relative overflow-hidden">
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
+                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -z-10" />
+
+                    <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tighter text-white">Built for the Community.</h2>
+                    <p className="text-sm md:text-lg text-slate-400 leading-relaxed mb-10 max-w-2xl mx-auto font-medium">
+                        TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve. Experience the difference of a fair marketplace.
                     </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
-                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                            <div className="text-xl mb-1">📊</div>
-                            <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Transparency</p>
-                        </div>
-                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                            <div className="text-xl mb-1">⚡</div>
-                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Priority</p>
-                        </div>
-                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                            <div className="text-xl mb-1">🏷️</div>
-                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">5% Discount</p>
-                        </div>
-                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                            <div className="text-xl mb-1">🎂</div>
-                            <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Birthday Credit</p>
-                        </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
+                        {[
+                            { icon: '📊', label: 'Fair Split' },
+                            { icon: '⚡', label: 'Priority' },
+                            { icon: '🏷️', label: '5% Saved' },
+                            { icon: '🎂', label: 'Gifts' }
+                        ].map((item, i) => (
+                            <div key={i} className="p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-primary/30 transition-colors">
+                                <div className="text-2xl mb-2">{item.icon}</div>
+                                <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest">{item.label}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </main>

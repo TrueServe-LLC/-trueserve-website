@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { sendEmail } from "@/lib/email";
 import { revalidatePath } from "next/cache";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 export type MerchantActionState = {
     message: string;
@@ -247,7 +247,7 @@ export async function createStripeAccount() {
         // 2. Create Stripe Account if missing
         if (!stripeAccountId) {
             const userRes = await supabase.from('User').select('email').eq('id', userId).single();
-            const account = await stripe.accounts.create({
+            const account = await getStripe().accounts.create({
                 type: 'express',
                 country: 'US',
                 email: userRes.data?.email || undefined,
@@ -273,7 +273,7 @@ export async function createStripeAccount() {
         }
 
         // 3. Create Account Link
-        const accountLink = await stripe.accountLinks.create({
+        const accountLink = await getStripe().accountLinks.create({
             account: stripeAccountId,
             refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/dashboard?stripe=refresh`,
             return_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/onboarding-success`,

@@ -1,13 +1,11 @@
 
 import Stripe from 'stripe';
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const key = process.env.STRIPE_SECRET_KEY || 'sk_test_missing';
 
-if (!stripeSecretKey) {
-    console.warn('WARNING: STRIPE_SECRET_KEY is missing from environment variables. Stripe calls will fail.');
-}
-
-// The stripe SDK version ^20.3.0 requires the '2026-01-28.clover' API version types.
-export const stripe = new Stripe(stripeSecretKey || '', {
+export const stripe = new Stripe(key, {
     apiVersion: '2026-01-28.clover',
 });
+
+export const getStripe = () => stripe;
+

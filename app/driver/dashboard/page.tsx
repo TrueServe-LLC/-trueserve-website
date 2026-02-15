@@ -93,6 +93,24 @@ export default async function DriverDashboard() {
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
 
+            {/* Mobile Header */}
+            <header className="md:hidden flex p-4 border-b border-white/5 justify-between items-center sticky top-0 bg-black/80 backdrop-blur-2xl z-50">
+                <div className="flex items-center gap-3">
+                    <img src="/logo.png" alt="TS Driver" className="w-8 h-8 rounded-full border border-white/10" />
+                    <div>
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></span>
+                            Online
+                        </p>
+                        <p className="text-sm font-black text-white leading-tight">Driver Board</p>
+                    </div>
+                </div>
+                <div className="flex flex-col items-end">
+                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Available</p>
+                    <p className="text-base font-black text-emerald-400">${stats.balance.toFixed(2)}</p>
+                </div>
+            </header>
+
             <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center sticky top-0 bg-black/50 backdrop-blur-md z-50">
                 <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="/logo.png" alt="TrueServe Driver" className="w-8 h-8 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
@@ -109,23 +127,27 @@ export default async function DriverDashboard() {
                 </div>
             </header>
 
-            <main className="container py-4 md:py-12">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-                    <Link href="/driver/dashboard/earnings" className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
-                        <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-primary transition-colors">Total Earnings ↗</p>
-                        <p className="text-4xl font-bold mt-2">${stats.totalEarnings.toFixed(2)}</p>
+            <main className="container py-4 md:py-12 px-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
+                    <Link href="/driver/dashboard/earnings" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">💰</div>
+                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Total Pay</p>
+                        <p className="text-2xl md:text-4xl font-black text-white">${stats.totalEarnings.toFixed(2)}</p>
                     </Link>
-                    <div className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between">
-                        <p className="text-slate-400 text-sm font-semibold uppercase">Completed Trips</p>
-                        <p className="text-4xl font-bold mt-2">{stats.trips}</p>
+                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl">🛵</div>
+                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Trips Done</p>
+                        <p className="text-2xl md:text-4xl font-black text-white">{stats.trips}</p>
                     </div>
-                    <Link href="/driver/dashboard/ratings" className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
-                        <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-yellow-500 transition-colors">Driver Rating ↗</p>
-                        <p className="text-4xl font-bold mt-2 text-yellow-500">★ {stats.rating}</p>
+                    <Link href="/driver/dashboard/ratings" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">⭐</div>
+                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Rating</p>
+                        <p className="text-2xl md:text-4xl font-black text-yellow-400">★ {stats.rating}</p>
                     </Link>
-                    <Link href="/driver/dashboard/account" className="card bg-white/5 border-white/10 p-4 md:p-6 flex flex-col justify-between hover:bg-white/10 transition-colors group cursor-pointer text-left">
-                        <p className="text-slate-400 text-sm font-semibold uppercase group-hover:text-primary transition-colors">Tier Status ↗</p>
-                        <p className="text-4xl font-bold mt-2 text-primary">Gold</p>
+                    <Link href="/driver/dashboard/account" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">🏆</div>
+                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Level</p>
+                        <p className="text-2xl md:text-4xl font-black text-primary">Gold</p>
                     </Link>
                 </div>
 

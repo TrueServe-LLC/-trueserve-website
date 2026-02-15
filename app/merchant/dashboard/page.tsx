@@ -109,39 +109,56 @@ export default async function MerchantDashboard() {
 
     return (
         <div className="min-h-screen">
-            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
+            <header className="md:hidden flex p-4 border-b border-white/5 justify-between items-center sticky top-0 bg-black/80 backdrop-blur-2xl z-50">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">M</div>
+                    <div>
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#ff992a]"></span>
+                            Terminal Open
+                        </p>
+                        <p className="text-sm font-black text-white leading-tight truncate max-w-[120px]">{restaurant.name}</p>
+                    </div>
+                </div>
+                <Link href="/" className="btn btn-xs btn-ghost text-[9px] font-black uppercase tracking-widest text-slate-500">Log Out</Link>
+            </header>
+
+            <nav className="hidden md:flex sticky top-0 z-50 backdrop-blur-lg bg-black/40 border-b border-white/10 px-6 py-4">
                 <div className="container flex justify-between items-center">
-                    <Link href="/" className="text-2xl font-bold tracking-tighter">
-                        True<span className="text-gradient">Serve</span> Merchant
+                    <Link href="/" className="text-2xl font-black tracking-tighter">
+                        True<span className="text-primary">Serve</span> <span className="text-slate-500">Merchant</span>
                     </Link>
-                    <div className="flex gap-4">
-                        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <div className="flex gap-4 items-center">
+                        <span className="px-4 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest shadow-inner">
                             {restaurant.name}
                         </span>
-                        <Link href="/merchant" className="hover:text-primary transition-colors">Log Out</Link>
+                        <Link href="/merchant" className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Log Out</Link>
                     </div>
                 </div>
             </nav>
 
-            <main className="container py-12 animate-fade-in">
-                <div className="grid grid-3 gap-8 mb-12">
-                    <div className="card">
-                        <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">Active Orders</h3>
-                        <p className="text-4xl font-bold">{pendingOrders.length}</p>
+            <main className="container py-6 md:py-12 px-4 animate-fade-in pb-32">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 mb-8 md:mb-12">
+                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">📋</div>
+                        <h3 className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Incoming</h3>
+                        <p className="text-3xl md:text-5xl font-black text-white">{pendingOrders.length}</p>
                     </div>
-                    <div className="card">
-                        <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">Menu Items</h3>
-                        <p className="text-4xl font-bold">{restaurant.menuItems.length}</p>
+                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">🍔</div>
+                        <h3 className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Items</h3>
+                        <p className="text-3xl md:text-5xl font-black text-white">{restaurant.menuItems.length}</p>
                     </div>
-                    <div className="card relative overflow-hidden">
-                        <div className="flex justify-between items-start">
-                            <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">Total Revenue</h3>
-                            <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">T+0 Payout</span>
+                    <div className="group relative col-span-2 md:col-span-1 overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">💰</div>
+                        <div className="flex justify-between items-start mb-1">
+                            <h3 className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">Net Revenue</h3>
+                            <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-black uppercase tracking-widest">Instant</span>
                         </div>
-                        <p className="text-4xl font-bold text-emerald-400">${totalRevenue.toFixed(2)}</p>
-                        <p className="text-[10px] text-slate-500 mt-2 flex items-center gap-1">
+                        <p className="text-3xl md:text-5xl font-black text-emerald-400">${totalRevenue.toFixed(2)}</p>
+                        <p className="text-[9px] text-slate-500 mt-2 flex items-center gap-1 font-bold">
                             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                            Funds available for instant withdrawal
+                            Funds available for withdrawal
                         </p>
                     </div>
                 </div>

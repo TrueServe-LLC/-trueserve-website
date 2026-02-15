@@ -1,20 +1,22 @@
 import Link from "next/link";
 import HeroCarousel from "@/components/HeroCarousel";
 import LandingSearch from "@/components/LandingSearch";
+import { cookies } from "next/headers";
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("userId")?.value;
   return (
     <div className="min-h-screen relative overflow-hidden font-sans text-slate-200 bg-black">
       {/* Background Decor */}
       <div className="blob bg-secondary w-[500px] h-[500px] top-[-200px] right-[-100px] opacity-10" />
       <div className="blob bg-primary w-[300px] h-[300px] bottom-[10%] left-[-100px] opacity-10" />
 
-      <nav className="sticky top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/5 px-6 py-4">
+      <nav className="sticky top-0 z-50 bg-black/60 backdrop-blur-2xl border-b border-white/5 px-4 md:px-6 py-3 md:py-4">
         <div className="container flex justify-between items-center">
-
           <Link href="/" className="flex items-center gap-2 group">
-            <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg backdrop-blur-sm" />
-            <span className="text-2xl font-black tracking-tight text-white">
+            <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg backdrop-blur-sm" />
+            <span className="text-xl md:text-2xl font-black tracking-tight text-white">
               True<span className="text-primary">Serve</span>
             </span>
           </Link>
@@ -23,42 +25,45 @@ export default function Home() {
             <Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link>
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
           </div>
-          <div className="flex gap-2 md:gap-4">
-            <Link href="/login" className="btn btn-outline !py-2 !px-3 md:!px-6 !text-xs md:!text-sm border-white/20 text-white hover:bg-white/10 hover:text-white whitespace-nowrap">Log in</Link>
-            <Link href="/restaurants" className="btn btn-primary !py-2 !px-3 md:!px-6 !text-xs md:!text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap">Get Started</Link>
+          <div className="flex gap-2">
+            {!userId && (
+              <Link href="/login" className="btn btn-outline !py-1.5 md:!py-2 !px-3 md:!px-6 !text-[10px] md:!text-sm border-white/20 text-white hover:bg-white/10 hover:text-white whitespace-nowrap">Log in</Link>
+            )}
+            <Link href="/restaurants" className="btn btn-primary !py-1.5 md:!py-2 !px-3 md:!px-6 !text-[10px] md:!text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap uppercase tracking-widest font-black">
+              {userId ? 'Browse' : 'Get Started'}
+            </Link>
           </div>
-
         </div>
       </nav>
 
       <main>
         {/* Hero Section */}
-        <section className="container py-12 md:py-32 flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          <div className="flex-1 text-center md:text-left space-y-6 md:space-y-8 animate-fade-in w-full">
-            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-[10px] md:text-sm font-bold tracking-wide uppercase mb-2 md:border border-primary/20">
-              🚀 The Future of Delivery
+        <section className="container py-8 md:py-32 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div className="flex-1 text-center md:text-left space-y-6 md:space-y-8 animate-fade-in w-full px-2">
+            <div className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-full text-[10px] md:text-sm font-black tracking-widest uppercase mb-2 border border-primary/20">
+              🚀 Premium Delivery Service
             </div>
-            <h1 className="text-4xl md:text-7xl font-extrabold text-white leading-[1.1]">
+            <h1 className="text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter">
               Craving meet <br className="hidden md:block" />
               <span className="text-gradient">Lightning Speed.</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-400 max-w-lg mx-auto md:mx-0 leading-relaxed">
-              Experience the freshest food delivery in Charlotte & Pineville.
+            <p className="text-base md:text-xl text-slate-400 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
+              The freshest food delivery in Charlotte & Pineville.
               Zero hidden fees, transparent driver pay, and purely local flavor.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start w-full">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start w-full transition-all">
               <div className="relative group w-full max-w-xl mx-auto md:mx-0">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl md:rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
                 <LandingSearch />
               </div>
             </div>
 
             {/* Mobile-Only Dual Path Selection */}
-            <div className="grid grid-cols-2 gap-3 mt-6 md:hidden">
+            <div className="grid grid-cols-2 gap-3 mt-4 md:hidden">
               <Link href="/restaurants" className="flex flex-col items-center gap-2 p-4 bg-white/5 border border-white/10 rounded-2xl active:scale-95 transition-all">
                 <div className="text-2xl">🍔</div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Order Food</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Browse Food</span>
               </Link>
               <Link href="/driver" className="flex flex-col items-center gap-2 p-4 bg-white/5 border border-white/10 rounded-2xl active:scale-95 transition-all">
                 <div className="text-2xl">🛵</div>
@@ -67,12 +72,12 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex-1 relative w-full mt-8 md:mt-0">
+          <div className="flex-1 relative w-full mt-4 md:mt-0 px-2 lg:px-0">
             <div className="relative z-10 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <HeroCarousel />
             </div>
             {/* Floating Badge */}
-            <div className="relative md:absolute md:top-10 md:-right-4 mt-6 md:mt-0 mx-auto w-max bg-slate-800/90 backdrop-blur-md p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl z-20 animate-bounce border border-white/10 flex items-center" style={{ animationDuration: '3s' }}>
+            <div className="hidden md:flex absolute md:top-10 md:-right-4 mt-6 md:mt-0 mx-auto w-max bg-slate-800/90 backdrop-blur-md p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl z-20 animate-bounce border border-white/10 items-center" style={{ animationDuration: '3s' }}>
               <span className="text-xl md:text-2xl">🔥</span>
               <span className="font-bold text-white ml-2 text-sm md:text-base">Hot & Fresh</span>
             </div>

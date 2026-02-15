@@ -21,8 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.variable} bg-background text-foreground antialiased pb-24 md:pb-0`}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${outfit.variable} bg-background text-foreground antialiased pb-24 md:pb-0`}
+        suppressHydrationWarning
+      >
         {children}
         <MobileNav />
       </body>

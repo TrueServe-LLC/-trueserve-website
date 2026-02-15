@@ -4,13 +4,21 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 // Mock dependencies
 jest.mock('uuid', () => ({ v4: () => 'mock-uuid' }));
 jest.mock('@supabase/supabase-js');
-jest.mock('@/lib/stripe', () => ({
-    stripe: {
+jest.mock('@/lib/stripe', () => {
+    const mockStripe = {
         paymentIntents: {
-            retrieve: jest.fn()
+            retrieve: jest.fn(),
+            create: jest.fn(),
+        },
+        webhooks: {
+            constructEvent: jest.fn()
         }
-    }
-}));
+    };
+    return {
+        stripe: mockStripe,
+        getStripe: () => mockStripe
+    };
+});
 import { stripe } from '@/lib/stripe';
 jest.mock('next/cache', () => ({ revalidatePath: jest.fn() }));
 jest.mock('next/headers', () => ({ cookies: jest.fn(() => ({ get: () => ({ value: 'test-user' }) })) }));

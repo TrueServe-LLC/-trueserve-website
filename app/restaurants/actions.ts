@@ -4,18 +4,11 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import * as fs from 'fs';
-import { cookies } from "next/headers";
-import { stripe } from "@/lib/stripe";
 
-function logToFile(msg: string) {
-    try {
-        const timestamp = new Date().toISOString();
-        fs.appendFileSync('order_debug.log', `[${timestamp}] ${msg}\n`);
-    } catch (e) {
-        // ignore logging errors
-    }
-}
+import { cookies } from "next/headers";
+import { getStripe } from "@/lib/stripe";
+
+// function logToFile(msg: string) { }
 
 export type OrderState = {
     message: string;
@@ -32,14 +25,14 @@ export async function placeOrder(
     customerLat?: number,
     customerLng?: number
 ): Promise<OrderState> {
-    logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
+    // logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
 
     // 1. Initialize Admin Client
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !serviceKey) {
-        logToFile("ERROR: Missing Environment Variables");
+        // logToFile("ERROR: Missing Environment Variables");
         return { message: "Server Error: Configuration Missing", error: true };
     }
 
@@ -60,20 +53,20 @@ export async function placeOrder(
             .maybeSingle();
 
         if (existingOrder) {
-            logToFile(`Duplicate detected for PaymentIntent: ${stripePaymentIntentId}. Returning existing order ID.`);
+            // logToFile(`Duplicate detected for PaymentIntent: ${stripePaymentIntentId}. Returning existing order ID.`);
             return { success: true, message: "Order already placed.", orderId: existingOrder.id };
         }
 
-        const intent = await stripe.paymentIntents.retrieve(stripePaymentIntentId);
-        logToFile(`[PlaceOrder] Stripe Intent Status: ${intent.status}`);
+        const intent = await getStripe().paymentIntents.retrieve(stripePaymentIntentId);
+        // logToFile(`[PlaceOrder] Stripe Intent Status: ${intent.status}`);
 
         // Allow both 'succeeded' and 'processing' (common in test environments)
         if (intent.status !== 'succeeded' && intent.status !== 'processing') {
-            logToFile(`[PlaceOrder] ABORT: Payment status is ${intent.status}`);
+            // logToFile(`[PlaceOrder] ABORT: Payment status is ${intent.status}`);
             return { message: `Payment not completed. Status: ${intent.status}`, error: true };
         }
     } catch (e: any) {
-        logToFile(`[PlaceOrder] Stripe Retrieval Error: ${e.message}`);
+        // logToFile(`[PlaceOrder] Stripe Retrieval Error: ${e.message}`);
         return { message: "Failed to verify Stripe payment.", error: true };
     }
 
@@ -110,23 +103,23 @@ export async function placeOrder(
             }
         }
     } catch (e) {
-        logToFile("Restaurant validation skipped due to lookup error.");
+        // logToFile("Restaurant validation skipped due to lookup error.");
     }
 
     try {
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
-        logToFile(`User ID from Cookie: ${userId}`);
+        // logToFile(`User ID from Cookie: ${userId}`);
 
         // 2. Validate Items & Inventory (Scenario 1.5)
         const itemIds = cartItems.map(i => i.id);
         const { data: dbItems, error: itemsError } = await supabase
             .from('MenuItem')
-            .select('id, price, name')
+            .select('id, price, name, inventory, isAvailable')
             .in('id', itemIds);
 
         if (itemsError || !dbItems) {
-            logToFile(`Item Lookup Failed: ${itemsError?.message}`);
+            // logToFile(`Item Lookup Failed: ${itemsError?.message}`);
             return { message: "Failed to validate items.", error: true };
         }
 
@@ -134,6 +127,14 @@ export async function placeOrder(
         const verifiedItems = cartItems.map(item => {
             const dbItem = dbItems.find(d => d.id === item.id);
             if (!dbItem) throw new Error(`Item ${item.id} not found`);
+
+            // SCENARIO 1.5: Inventory Conflict
+            if (dbItem.isAvailable === false) {
+                throw new Error(`${dbItem.name} is currently unavailable.`);
+            }
+            if (dbItem.inventory < item.quantity) {
+                throw new Error(`Insufficient stock for ${dbItem.name}.`);
+            }
 
             total += Number(dbItem.price) * item.quantity;
             return { ...item, price: dbItem.price };
@@ -146,7 +147,7 @@ export async function placeOrder(
         if (userId) {
             const { data: userExists } = await supabase.from('User').select('id').eq('id', userId).maybeSingle();
             if (!userExists) {
-                logToFile(`User ${userId} not found in DB. Falling back to Guest.`);
+                // logToFile(`User ${userId} not found in DB. Falling back to Guest.`);
                 finalUserId = undefined; // Trigger fallback
             }
         }
@@ -158,7 +159,7 @@ export async function placeOrder(
             const { data: guestUser } = await supabase.from('User').select('id').eq('id', finalUserId).maybeSingle();
             if (!guestUser) {
                 // Auto-create guest if missing (Safety Net)
-                logToFile("Creating missing Guest User...");
+                // logToFile("Creating missing Guest User...");
                 await supabase.from('User').insert({
                     id: finalUserId,
                     email: 'guest@trueserve.test',
@@ -170,7 +171,7 @@ export async function placeOrder(
             }
         }
 
-        logToFile(`Final User ID for Order: ${finalUserId}`);
+        // logToFile(`Final User ID for Order: ${finalUserId}`);
         const posRef = `ORD-${uuidv4().substring(0, 8).toUpperCase()}`;
         const newOrderId = uuidv4();
 
@@ -188,7 +189,7 @@ export async function placeOrder(
         });
 
         if (insertError) {
-            logToFile(`Order Insert Error: ${insertError.message} / ${insertError.details}`);
+            // logToFile(`Order Insert Error: ${insertError.message} / ${insertError.details}`);
             throw new Error(insertError.message);
         }
 
@@ -203,12 +204,12 @@ export async function placeOrder(
 
         const { error: itemsInsertError } = await supabase.from('OrderItem').insert(orderItems);
         if (itemsInsertError) {
-            logToFile(`Items Insert Error: ${itemsInsertError.message}`);
+            // logToFile(`Items Insert Error: ${itemsInsertError.message}`);
             // In production, delete order here
             throw new Error("Failed to save order items.");
         }
 
-        logToFile(`SUCCESS: Order ${newOrderId} created.`);
+        // logToFile(`SUCCESS: Order ${newOrderId} created.`);
 
         revalidatePath("/driver/dashboard");
         revalidatePath("/merchant/dashboard");
@@ -216,13 +217,13 @@ export async function placeOrder(
         return { success: true, message: "Order placed!", orderId: newOrderId, posReference: posRef };
 
     } catch (e: any) {
-        logToFile(`EXCEPTION: ${e.message}`);
+        // logToFile(`EXCEPTION: ${e.message}`);
         return { message: e.message || "Order failed.", error: true };
     }
 }
 
 export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[]) {
-    logToFile(`[CreatePaymentIntent] START for Restaurant: ${restaurantId}`);
+    // logToFile(`[CreatePaymentIntent] START for Restaurant: ${restaurantId}`);
     try {
         // 1. Get real prices from DB
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -247,7 +248,7 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
         if (amountInCents < 50) throw new Error("Amount must be at least 50 cents");
 
         // 2. Create Intent
-        const paymentIntent = await stripe.paymentIntents.create({
+        const paymentIntent = await getStripe().paymentIntents.create({
             amount: amountInCents,
             currency: 'usd',
             automatic_payment_methods: { enabled: true },
@@ -257,7 +258,7 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
             }
         });
 
-        logToFile(`[CreatePaymentIntent] Created: ${paymentIntent.id}`);
+        // logToFile(`[CreatePaymentIntent] Created: ${paymentIntent.id}`);
 
         return {
             clientSecret: paymentIntent.client_secret,
@@ -265,7 +266,7 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
         };
 
     } catch (e: any) {
-        logToFile(`[CreatePaymentIntent] ERROR: ${e.message}`);
+        // logToFile(`[CreatePaymentIntent] ERROR: ${e.message}`);
         console.error("PaymentIntent Error:", e);
         return { error: e.message };
     }
@@ -359,7 +360,7 @@ export async function cancelOrderAssignment(orderId: string, driverId: string) {
 }
 // SCENARIO 1.11: Partial Item Cancellation
 export async function cancelOrderItems(orderId: string, orderItemIds: string[]) {
-    logToFile(`[CancelItems] START for Order: ${orderId}. Items: ${orderItemIds.join(', ')}`);
+    // logToFile(`[CancelItems] START for Order: ${orderId}. Items: ${orderItemIds.join(', ')}`);
     try {
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -373,7 +374,7 @@ export async function cancelOrderItems(orderId: string, orderItemIds: string[]) 
             .single();
 
         if (orderError || !order) {
-            logToFile(`[CancelItems] Order not found: ${orderId}`);
+            // logToFile(`[CancelItems] Order not found: ${orderId}`);
             return { error: "Order not found" };
         }
 
@@ -420,7 +421,7 @@ export async function cancelOrderItems(orderId: string, orderItemIds: string[]) 
 
         // 6. Log Refund (Scenario 1.11)
         if (order.stripePaymentIntentId) {
-            logToFile(`[Refund] Partial refund for Order ${orderId}. Amount: $${refundAmount.toFixed(2)} refunded to PI ${order.stripePaymentIntentId}`);
+            // logToFile(`[Refund] Partial refund for Order ${orderId}. Amount: $${refundAmount.toFixed(2)} refunded to PI ${order.stripePaymentIntentId}`);
         }
 
         revalidatePath(`/orders/${orderId}`);
@@ -433,7 +434,7 @@ export async function cancelOrderItems(orderId: string, orderItemIds: string[]) 
             message: `Cancelled ${itemsToCancel.length} items. New total: $${newTotal.toFixed(2)}`
         };
     } catch (e: any) {
-        logToFile(`[CancelItems] EXCEPTION: ${e.message}`);
+        // logToFile(`[CancelItems] EXCEPTION: ${e.message}`);
         return { error: e.message };
     }
 }

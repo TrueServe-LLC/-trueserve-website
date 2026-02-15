@@ -184,20 +184,20 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     return (
         <div className="space-y-8">
             {/* Map Section */}
-            <div className="card p-0 overflow-hidden relative group border border-white/10 shadow-2xl rounded-2xl">
-                <div className="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-lg pointer-events-none">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">Estimated Arrival</p>
+            <div className="card p-0 overflow-hidden relative group border border-white/5 shadow-2xl rounded-3xl">
+                <div className="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur-md p-3 md:p-4 rounded-2xl border border-white/10 shadow-lg pointer-events-none">
+                    <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Estimated Arrival</p>
                     <div className="flex items-baseline gap-2">
-                        <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                        <p className="text-xl md:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
                             {currentStep >= 5 ? "Arrived" : "15-20 min"}
                         </p>
                         {currentStep < 5 && (
-                            <span className="text-sm text-emerald-400 font-medium">({distanceMiles} mi away)</span>
+                            <span className="text-[10px] md:text-sm text-emerald-400 font-bold">({distanceMiles} mi away)</span>
                         )}
                     </div>
                 </div>
 
-                <div className="h-[400px] w-full relative z-0">
+                <div className="h-[250px] md:h-[400px] w-full relative z-0">
                     <MapWithDirections
                         routeOrigin={{ lat: restaurantPos[0], lng: restaurantPos[1] }}
                         origin={{ lat: driverPos[0], lng: driverPos[1] }}
@@ -207,36 +207,36 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     />
                 </div>
 
-                <div className="p-6 bg-slate-900/50 flex gap-6 md:gap-12 items-center backdrop-blur-md border-t border-white/5">
+                <div className="p-4 md:p-6 bg-slate-900/80 flex flex-col sm:flex-row gap-4 sm:gap-6 md:gap-12 items-stretch sm:items-center backdrop-blur-2xl border-t border-white/5">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-white/10">
+                        <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center border border-white/10 flex-shrink-0">
                             🏪
                         </div>
                         <div>
-                            <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Restaurant</p>
-                            <p className="font-bold text-sm">{order.restaurant?.name || "Restaurant"}</p>
-                            <p className="text-xs text-slate-400">{restaurantDistance} miles away</p>
+                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-[0.2em] mb-0.5">Restaurant</p>
+                            <p className="font-bold text-xs md:text-sm text-white truncate max-w-[120px] md:max-w-none">{order.restaurant?.name || "Restaurant"}</p>
+                            <p className="text-[10px] text-slate-400">{restaurantDistance} miles away</p>
                         </div>
                     </div>
 
                     {/* Progress Bar Line */}
-                    <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden relative">
+                    <div className="hidden sm:block flex-1 h-1 bg-white/5 rounded-full overflow-hidden relative">
                         <div
-                            className="absolute top-0 left-0 h-full bg-primary transition-all duration-1000 ease-linear"
+                            className="absolute top-0 left-0 h-full bg-primary transition-all duration-1000 ease-linear shadow-[0_0_8px_rgba(255,153,42,0.5)]"
                             style={{ width: `${(currentStep / 5) * 100}%` }}
                         />
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary text-black flex items-center justify-center font-bold text-sm shadow-lg shadow-primary/20">
+                        <div className="w-10 h-10 rounded-xl bg-primary text-black flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20 flex-shrink-0">
                             {/* Driver Initials */}
                             {currentOrder.driver?.user?.name?.charAt(0) || "D"}
                         </div>
                         <div>
-                            <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Driver</p>
-                            <p className="font-bold text-sm">{currentOrder.driver?.user?.name || "Finding driver..."}</p>
+                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-[0.2em] mb-0.5">Driver</p>
+                            <p className="font-bold text-xs md:text-sm text-white truncate max-w-[120px] md:max-w-none">{currentOrder.driver?.user?.name || "Assigning..."}</p>
                             {currentOrder.driver?.vehicleType && (
-                                <p className="text-xs text-slate-400 capitalize">{currentOrder.driver.vehicleType} • <span className="text-emerald-400">{distanceMiles} mi</span></p>
+                                <p className="text-[10px] text-slate-400 capitalize">{currentOrder.driver.vehicleType} • <span className="text-emerald-400 font-bold">{distanceMiles} mi</span></p>
                             )}
                         </div>
                     </div>
