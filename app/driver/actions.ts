@@ -177,21 +177,80 @@ export async function acceptOrder(orderId: string) {
 
         if (!driver) throw new Error("Driver profile not found");
 
+        // We assign the driverId but keep status as READY_FOR_PICKUP until they actually pick it up
         const { error } = await supabase
             .from('Order')
             .update({
                 driverId: driver.id,
-                status: 'OUT_FOR_DELIVERY' // Move to next stage immediately for demo flow
+                updatedAt: new Date().toISOString()
             })
             .eq('id', orderId)
+            .eq('status', 'READY_FOR_PICKUP')
             .is('driverId', null); // Ensure not already taken
 
-        if (error) throw new Error("Failed to accept order");
+        if (error) throw new Error("Failed to accept order. It may have been taken or isn't ready.");
 
         revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
         return { success: true };
     } catch (e: any) {
         console.error("Accept Order Error:", e);
+        return { error: e.message };
+    }
+}
+
+export async function pickupOrder(orderId: string) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
+
+        const { data: order } = await supabase
+            .from('Order')
+            .select('status, driverId')
+            .eq('id', orderId)
+            .single();
+
+        if (!order || order.status !== 'READY_FOR_PICKUP') {
+            throw new Error("Order not ready for pickup.");
+        }
+
+        const { error } = await supabase
+            .from('Order')
+            .update({
+                status: 'PICKED_UP',
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (error) throw error;
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function completeDelivery(orderId: string) {
+    try {
+        const supabase = await createClient();
+        const { error } = await supabase
+            .from('Order')
+            .update({
+                status: 'DELIVERED',
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId)
+            .eq('status', 'PICKED_UP');
+
+        if (error) throw error;
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
+        return { success: true };
+    } catch (e: any) {
         return { error: e.message };
     }
 }

@@ -61,19 +61,43 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
     }
 }
 
-export async function updateOrderStatus(orderId: string, status: string) {
+export async function updateOrderStatus(orderId: string, nextStatus: string) {
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
     if (!userId) return { error: "Unauthorized" };
 
+    // Valid OrderStatus values verified from DB: PENDING, PREPARING, READY_FOR_PICKUP, PICKED_UP, DELIVERED, CANCELLED
     try {
+        // 1. Get current status to validate transition (Scenario 1.9)
+        const { data: order } = await supabase
+            .from('Order')
+            .select('status')
+            .eq('id', orderId)
+            .single();
+
+        if (!order) return { error: "Order not found" };
+
+        const transitions: Record<string, string[]> = {
+            'PENDING': ['PREPARING', 'CANCELLED'],
+            'PREPARING': ['READY_FOR_PICKUP', 'CANCELLED'],
+            'READY_FOR_PICKUP': ['PICKED_UP', 'CANCELLED'],
+            'PICKED_UP': ['DELIVERED', 'CANCELLED'],
+            'DELIVERED': [],
+            'CANCELLED': []
+        };
+
+        if (!transitions[order.status]?.includes(nextStatus)) {
+            return { error: `Invalid transition from ${order.status} to ${nextStatus}` };
+        }
+
         const { error } = await supabase
             .from('Order')
-            .update({ status })
+            .update({ status: nextStatus, updatedAt: new Date().toISOString() })
             .eq('id', orderId);
 
         if (error) throw error;
         revalidatePath('/merchant/dashboard');
+        revalidatePath(`/orders/${orderId}`);
         return { success: true };
     } catch (e: any) {
         return { error: e.message };

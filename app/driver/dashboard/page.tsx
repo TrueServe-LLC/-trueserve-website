@@ -264,7 +264,7 @@ export default async function DriverDashboard() {
                                 </div>
                                 <div className="space-y-3 mb-6">
                                     <p className="text-slate-400 text-sm flex justify-between">Zone: <span className="text-white font-semibold">Manhattan</span></p>
-                                    <p className="text-slate-400 text-sm flex justify-between">Guarantee: <span className="text-emerald-400 font-bold">$20/hr active</span></p>
+                                    <p className="text-slate-400 text-sm flex justify-between">Guarantee: <span className="text-emerald-400 font-bold">estimated</span></p>
                                 </div>
                                 <button className="w-full btn bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20">Go Offline</button>
                             </div>

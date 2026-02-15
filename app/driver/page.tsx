@@ -69,7 +69,7 @@ export default function DriverPortal() {
                             </div>
                             <div className="p-4 bg-black/50 rounded-xl border border-white/10">
                                 <p className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Floor Guarantee</p>
-                                <p className="text-xl font-bold text-emerald-400">$20.00 <span className="text-sm font-normal text-slate-400">/hr active</span></p>
+                                <p className="text-xl font-bold text-emerald-400">estimated</p>
                             </div>
                         </div>
 

@@ -59,7 +59,7 @@ async function assignDriver() {
         .from('Order')
         .update({
             driverId: driver.id,
-            status: 'OUT_FOR_DELIVERY'
+            status: 'PICKED_UP'
         })
         .eq('id', order.id);
 

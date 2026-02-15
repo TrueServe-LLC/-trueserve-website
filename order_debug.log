@@ -1,0 +1,150 @@
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Item Lookup Failed: undefined
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Item Lookup Failed: undefined
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Item Lookup Failed: undefined
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Final User ID for Order: test-user
+[2026-02-13T00:00:00.000Z] SUCCESS: Order mock-uuid created.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Item Lookup Failed: undefined
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Final User ID for Order: test-user
+[2026-02-13T00:00:00.000Z] SUCCESS: Order mock-uuid created.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Item Lookup Failed: undefined
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] Item Lookup Failed: undefined
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] User test-user not found in DB. Falling back to Guest.
+[2026-02-13T00:00:00.000Z] Creating missing Guest User...
+[2026-02-13T00:00:00.000Z] Final User ID for Order: 20a8a062-6f89-4582-8559-2a8131e0bb39
+[2026-02-13T00:00:00.000Z] SUCCESS: Order mock-uuid created.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] User ID from Cookie: test-user
+[2026-02-13T00:00:00.000Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-13T00:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T00:00:00.000Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T20:02:54.666Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T20:03:17.230Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T12:00:00.000Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T20:03:48.673Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:03:48.687Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:03:48.692Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:03:48.696Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:03:48.700Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:16.839Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:16.844Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:16.845Z] User ID from Cookie: test-user
+[2026-02-13T20:04:16.846Z] User test-user not found in DB. Falling back to Guest.
+[2026-02-13T20:04:16.846Z] Creating missing Guest User...
+[2026-02-13T20:04:16.848Z] Final User ID for Order: 20a8a062-6f89-4582-8559-2a8131e0bb39
+[2026-02-13T20:04:16.848Z] SUCCESS: Order mock-uuid created.
+[2026-02-13T20:04:16.852Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:16.855Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:16.856Z] User ID from Cookie: test-user
+[2026-02-13T20:04:16.857Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-13T20:04:16.859Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:16.860Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-13T20:04:57.989Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:57.994Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:57.995Z] User ID from Cookie: test-user
+[2026-02-13T20:04:57.996Z] User test-user not found in DB. Falling back to Guest.
+[2026-02-13T20:04:57.997Z] Creating missing Guest User...
+[2026-02-13T20:04:57.998Z] Final User ID for Order: 20a8a062-6f89-4582-8559-2a8131e0bb39
+[2026-02-13T20:04:57.998Z] SUCCESS: Order mock-uuid created.
+[2026-02-13T20:04:58.002Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:58.005Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:58.006Z] User ID from Cookie: test-user
+[2026-02-13T20:04:58.006Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-13T20:04:58.009Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-13T20:04:58.010Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-15T15:34:10.206Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:34:10.211Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:34:10.212Z] User ID from Cookie: test-user
+[2026-02-15T15:34:10.213Z] User test-user not found in DB. Falling back to Guest.
+[2026-02-15T15:34:10.214Z] Creating missing Guest User...
+[2026-02-15T15:34:10.215Z] Final User ID for Order: 20a8a062-6f89-4582-8559-2a8131e0bb39
+[2026-02-15T15:34:10.216Z] SUCCESS: Order mock-uuid created.
+[2026-02-15T15:34:10.219Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:34:10.222Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:34:10.223Z] User ID from Cookie: test-user
+[2026-02-15T15:34:10.224Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-15T15:34:10.227Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:34:10.228Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-15T15:36:51.995Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:36:52.007Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:36:52.009Z] User ID from Cookie: test-user
+[2026-02-15T15:36:52.010Z] User test-user not found in DB. Falling back to Guest.
+[2026-02-15T15:36:52.012Z] Creating missing Guest User...
+[2026-02-15T15:36:52.013Z] Final User ID for Order: 20a8a062-6f89-4582-8559-2a8131e0bb39
+[2026-02-15T15:36:52.015Z] SUCCESS: Order mock-uuid created.
+[2026-02-15T15:36:52.023Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:36:52.029Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:36:52.031Z] User ID from Cookie: test-user
+[2026-02-15T15:36:52.032Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-15T15:36:52.037Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:36:52.038Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-15T15:36:52.058Z] [CancelItems] START for Order: order-min-basket. Items: item-b
+[2026-02-15T15:36:52.060Z] [CancelItems] EXCEPTION: supabase.from(...).delete is not a function
+[2026-02-15T15:36:52.087Z] [CancelItems] START for Order: order-pickup. Items: item-a
+[2026-02-15T15:36:52.089Z] [CancelItems] EXCEPTION: supabase.from(...).delete is not a function
+[2026-02-15T15:37:30.762Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:37:30.772Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:37:30.773Z] User ID from Cookie: test-user
+[2026-02-15T15:37:30.775Z] User test-user not found in DB. Falling back to Guest.
+[2026-02-15T15:37:30.776Z] Creating missing Guest User...
+[2026-02-15T15:37:30.777Z] Final User ID for Order: 20a8a062-6f89-4582-8559-2a8131e0bb39
+[2026-02-15T15:37:30.778Z] SUCCESS: Order mock-uuid created.
+[2026-02-15T15:37:30.783Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:37:30.788Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:37:30.789Z] User ID from Cookie: test-user
+[2026-02-15T15:37:30.791Z] EXCEPTION: Insufficient stock for Sold Out Burger. Only 0 left.
+[2026-02-15T15:37:30.795Z] [PlaceOrder] START for Restaurant: rest-123
+[2026-02-15T15:37:30.796Z] Duplicate detected for PaymentIntent: intent-123. Returning existing order ID.
+[2026-02-15T15:37:30.810Z] [CancelItems] START for Order: order-min-basket. Items: item-b
+[2026-02-15T15:37:30.811Z] [Refund] Partial refund for Order order-min-basket. Amount: $8.00 refunded to PI pi_mock
+[2026-02-15T15:37:30.816Z] [CancelItems] START for Order: order-pickup. Items: item-a

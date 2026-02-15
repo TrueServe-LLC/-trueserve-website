@@ -80,10 +80,10 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 const [lat, lng] = prev;
                 let target: [number, number] = restaurantPos;
 
-                if (currentOrder.status === 'OUT_FOR_DELIVERY') {
+                if (currentOrder.status === 'PICKED_UP') {
                     target = customerPos;
                 } else {
-                    // Stay at restaurant if preparing
+                    // Stay at restaurant if preparing or ready
                     // For demo visual, we can just snap to restaurant if not delivering
                     if (Math.abs(lat - restaurantPos[0]) < 0.0001) return restaurantPos;
                     target = restaurantPos;
@@ -122,7 +122,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         if (status === 'PENDING') return 1;
         if (status === 'PREPARING') return 2;
         if (status === 'READY_FOR_PICKUP') return 3;
-        if (status === 'OUT_FOR_DELIVERY') return 4;
+        if (status === 'PICKED_UP') return 4;
         if (status === 'DELIVERED') return 5;
         return 1;
     };
@@ -273,14 +273,14 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                             </div>
                         </div>
 
-                        {/* Step 4 (Skip 3 usually) */}
+                        {/* Step 4 */}
                         <div className="flex gap-6 relative">
                             <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 4 ? 'bg-primary text-black' : 'bg-slate-800 text-slate-500'}`}>
                                 🛵
                             </div>
                             <div className={currentStep >= 4 ? 'opacity-100' : 'opacity-40'}>
                                 <p className="font-bold text-lg">Out for Delivery</p>
-                                <p className="text-sm text-slate-400">Driver located and heading your way.</p>
+                                <p className="text-sm text-slate-400">{currentStep === 4 ? "Driver heading your way!" : "Driver picked up your order."}</p>
                             </div>
                         </div>
 

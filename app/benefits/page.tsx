@@ -34,8 +34,8 @@ export default function BenefitsPage() {
                     </p>
                 </div>
 
-                {/* Tiered Membership Model - More Spacing */}
-                <div className="mb-48 relative z-10">
+                {/* Tiered Membership Model - Fixed Clickability */}
+                <div className="mb-48 relative z-20">
                     <h2 className="text-center text-4xl md:text-5xl font-black mb-20 tracking-tight uppercase">Choose Your Standard</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 max-w-6xl mx-auto px-4">
                         <PricingCard
@@ -49,6 +49,7 @@ export default function BenefitsPage() {
                                 "Community news & updates"
                             ]}
                             buttonText="Get Started"
+                            buttonLink="/login"
                         />
                         <PricingCard
                             tier="Plus"
@@ -76,6 +77,7 @@ export default function BenefitsPage() {
                                 "Double loyalty rewards points",
                                 "Advanced 7-day scheduling"
                             ]}
+                            buttonLink="/login?premium=true"
                         />
                     </div>
                 </div>
@@ -110,9 +112,9 @@ export default function BenefitsPage() {
                     {/* 2. Convenience & Experience - CLEAN LAYOUT, NO BOXES */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div className="order-2 lg:order-1">
-                            <div className="bg-primary/5 border border-primary/10 p-10 md:p-14 rounded-[3.5rem] relative overflow-hidden">
+                            <div className="bg-primary/5 border border-primary/10 p-10 md:p-14 rounded-[3.5rem] relative overflow-hidden text-center">
                                 <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 blur-3xl -z-10" />
-                                <p className="text-slate-300 leading-relaxed italic text-xl md:text-2xl relative z-10">
+                                <p className="text-slate-300 mx-auto leading-relaxed italic text-xl md:text-2xl relative z-10">
                                     "I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."
                                 </p>
                                 <p className="mt-8 text-sm font-black uppercase tracking-widest text-primary">— James L., Premium Member</p>
@@ -242,15 +244,10 @@ export default function BenefitsPage() {
 
 function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
     return (
-        <div className={`relative p-10 md:p-12 rounded-[3rem] border flex flex-col items-center text-center transition-all ${isPopular
-                ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
-                : 'bg-white/5 border-white/10'
+        <div className={`relative p-10 md:p-12 rounded-[3rem] border flex flex-col items-center text-center transition-all h-full ${isPopular
+            ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
+            : 'bg-white/5 border-white/10 z-0'
             }`}>
-            {isPopular && (
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-6 py-2 rounded-full shadow-xl">
-                    Most Loved
-                </div>
-            )}
 
             <div className="mb-8">
                 <h3 className="text-3xl font-black mb-2 text-white">{tier}</h3>
@@ -273,9 +270,9 @@ function PricingCard({ tier, price, subtitle, isPopular = false, features, butto
 
             <Link
                 href={buttonLink}
-                className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all text-center ${isPopular
-                        ? 'bg-primary text-black hover:bg-white hover:scale-[1.02] shadow-2xl shadow-primary/20'
-                        : 'bg-white/10 text-white hover:bg-white/20'
+                className={`block w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all text-center relative z-20 ${isPopular
+                    ? 'bg-primary text-black hover:bg-white hover:scale-[1.02] shadow-2xl shadow-primary/20'
+                    : 'bg-white/10 text-white hover:bg-white/20 hover:border-white/40 border border-transparent'
                     }`}
             >
                 {buttonText}

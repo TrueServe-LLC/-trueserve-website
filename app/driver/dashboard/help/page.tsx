@@ -36,7 +36,7 @@ export default function DriverHelp() {
                     <input type="radio" name="my-accordion-2" />
                     <div className="collapse-title font-medium">How is pay calculated?</div>
                     <div className="collapse-content text-sm text-slate-400">
-                        <p>Pay is based on base fare + mileage + wait time + 100% of tips. TrueServe guarantees $20/hr active time floor.</p>
+                        <p>Pay is based on base fare + mileage + wait time + 100% of tips. TrueServe provides an estimated pay projection.</p>
                     </div>
                 </div>
                 <div className="collapse collapse-arrow bg-black/20 border border-white/5 rounded-box">

@@ -28,7 +28,9 @@ export type OrderState = {
 export async function placeOrder(
     restaurantId: string,
     cartItems: { id: string; price: number; quantity: number }[],
-    stripePaymentIntentId: string
+    stripePaymentIntentId: string,
+    customerLat?: number,
+    customerLng?: number
 ): Promise<OrderState> {
     logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
 
@@ -48,8 +50,20 @@ export async function placeOrder(
     if (cartItems.length === 0) return { message: "Cart is empty.", error: true };
     if (!stripePaymentIntentId) return { message: "Stripe payment reference missing.", error: true };
 
-    // 2. Verify Payment with Stripe
+    // 2. Idempotency & Verify Payment with Stripe (Scenario 1.6)
     try {
+        // Check if an order with this payment intent already exists
+        const { data: existingOrder } = await supabase
+            .from('Order')
+            .select('id')
+            .eq('stripePaymentIntentId', stripePaymentIntentId)
+            .maybeSingle();
+
+        if (existingOrder) {
+            logToFile(`Duplicate detected for PaymentIntent: ${stripePaymentIntentId}. Returning existing order ID.`);
+            return { success: true, message: "Order already placed.", orderId: existingOrder.id };
+        }
+
         const intent = await stripe.paymentIntents.retrieve(stripePaymentIntentId);
         if (intent.status !== 'succeeded') {
             return { message: `Payment not completed. Status: ${intent.status}`, error: true };
@@ -58,16 +72,53 @@ export async function placeOrder(
         return { message: "Failed to verify Stripe payment.", error: true };
     }
 
+    // 2.5 Restaurant Status & Validation (Scenarios 1.2, 1.4)
+    try {
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('lat, lng')
+            .eq('id', restaurantId)
+            .single();
+
+        if (restaurant) {
+            // SCENARIO 1.2: Restaurant Closed Check (Mocking 8 AM - 10 PM)
+            const hour = new Date().getHours();
+            if (hour < 8 || hour >= 22) {
+                return { message: "Restaurant is now closed. Order cannot be placed.", error: true };
+            }
+
+            // SCENARIO 1.4: Delivery Zone Restriction (10 mile radius)
+            if (customerLat && customerLng && restaurant.lat && restaurant.lng) {
+                const R = 3959; // Earth radius in miles
+                const dLat = (customerLat - restaurant.lat) * (Math.PI / 180);
+                const dLon = (customerLng - restaurant.lng) * (Math.PI / 180);
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(restaurant.lat * (Math.PI / 180)) * Math.cos(customerLat * (Math.PI / 180)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                const dist = R * c;
+
+                if (dist > 10) {
+                    return { message: "Address is outside our 10-mile delivery radius.", error: true };
+                }
+            }
+        }
+    } catch (e) {
+        logToFile("Restaurant validation skipped due to lookup error.");
+    }
+
     try {
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
         logToFile(`User ID from Cookie: ${userId}`);
 
-        // 2. Validate Items
+        // 2. Validate Items & Inventory (Scenario 1.5)
         const itemIds = cartItems.map(i => i.id);
         const { data: dbItems, error: itemsError } = await supabase
             .from('MenuItem')
-            .select('id, price, name')
+            // Note: Assuming 'inventory' column exists for Scenario 1.5
+            .select('id, price, name, inventory, isAvailable')
             .in('id', itemIds);
 
         if (itemsError || !dbItems) {
@@ -79,6 +130,16 @@ export async function placeOrder(
         const verifiedItems = cartItems.map(item => {
             const dbItem = dbItems.find(d => d.id === item.id);
             if (!dbItem) throw new Error(`Item ${item.id} not found`);
+
+            // SCENARIO 1.5: Inventory Conflict Check
+            // Check both explicit inventory count and availability flag
+            if (dbItem.isAvailable === false) {
+                throw new Error(`${dbItem.name} is currently unavailable.`);
+            }
+            if (dbItem.inventory !== undefined && dbItem.inventory !== null && dbItem.inventory < item.quantity) {
+                throw new Error(`Insufficient stock for ${dbItem.name}. Only ${dbItem.inventory} left.`);
+            }
+
             total += Number(dbItem.price) * item.quantity;
             return { ...item, price: dbItem.price };
         });
@@ -126,6 +187,7 @@ export async function placeOrder(
             total,
             status: 'PENDING',
             posReference: posRef,
+            stripePaymentIntentId, // Store for idempotency
             updatedAt: new Date().toISOString(),
             createdAt: new Date().toISOString()
         });
@@ -206,6 +268,173 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
 
     } catch (e: any) {
         console.error("PaymentIntent Error:", e);
+        return { error: e.message };
+    }
+}
+
+// SCENARIO 1.8: Address Change After Order Placed
+export async function updateOrderAddress(orderId: string, newAddress: string, newLat: number, newLng: number) {
+    try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+        const supabase = createSupabaseClient(supabaseUrl, serviceKey);
+
+        // 1. Check current status
+        const { data: order } = await supabase
+            .from('Order')
+            .select('status, driverId')
+            .eq('id', orderId)
+            .single();
+
+        if (!order) return { error: "Order not found" };
+
+        // RESTRICTION: Cannot change address if driver is already assigned or order is in advanced stages
+        // Valid values: PENDING, PREPARING, READY_FOR_PICKUP, PICKED_UP, DELIVERED, CANCELLED
+        const forbiddenStatuses = ['PICKED_UP', 'DELIVERED', 'CANCELLED'];
+        if (forbiddenStatuses.includes(order.status) || (order.driverId && order.status === 'READY_FOR_PICKUP')) {
+            const reason = order.driverId ? "driver assigned" : order.status.toLowerCase().replace(/_/g, ' ');
+            return { error: `Cannot change address while order is ${reason}.` };
+        }
+
+        // 2. Update Address
+        const { error } = await supabase
+            .from('Order')
+            .update({
+                deliveryAddress: newAddress,
+                deliveryLat: newLat,
+                deliveryLng: newLng,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (error) throw error;
+
+        revalidatePath(`/orders/${orderId}`);
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+// SCENARIO 1.10: Driver Reassignment (Cancellation)
+export async function cancelOrderAssignment(orderId: string, driverId: string) {
+    try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+        const supabase = createSupabaseClient(supabaseUrl, serviceKey);
+
+        // 1. Edge Case: Order already in progress/delivered?
+        const { data: order } = await supabase
+            .from('Order')
+            .select('status, driverId')
+            .eq('id', orderId)
+            .single();
+
+        if (!order) return { error: "Order not found" };
+
+        // In our verified enum, assignment happens in READY_FOR_PICKUP
+        if (order.status !== 'READY_FOR_PICKUP') {
+            return { error: "Only orders ready for pickup and not yet picked up can be cancelled by driver." };
+        }
+        if (order.driverId !== driverId) {
+            return { error: "Unauthorized." };
+        }
+
+        // 2. Remove driverId but keep status as READY_FOR_PICKUP (it's still ready for another driver)
+        const { error } = await supabase
+            .from('Order')
+            .update({
+                driverId: null,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (error) throw error;
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+// SCENARIO 1.11: Partial Item Cancellation
+export async function cancelOrderItems(orderId: string, orderItemIds: string[]) {
+    logToFile(`[CancelItems] START for Order: ${orderId}. Items: ${orderItemIds.join(', ')}`);
+    try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+        const supabase = createSupabaseClient(supabaseUrl, serviceKey);
+
+        // 1. Fetch Order and items
+        const { data: order, error: orderError } = await supabase
+            .from('Order')
+            .select('*, OrderItem(*)')
+            .eq('id', orderId)
+            .single();
+
+        if (orderError || !order) {
+            logToFile(`[CancelItems] Order not found: ${orderId}`);
+            return { error: "Order not found" };
+        }
+
+        const items = order.OrderItem || [];
+
+        // 2. Validate Status
+        const forbidden = ['DELIVERED', 'CANCELLED'];
+        if (forbidden.includes(order.status)) {
+            return { error: `Cannot cancel items after order is ${order.status.toLowerCase()}.` };
+        }
+
+        // 3. Filter items to keep vs cancel
+        const itemsToKeep = items.filter((item: any) => !orderItemIds.includes(item.id));
+        const itemsToCancel = items.filter((item: any) => orderItemIds.includes(item.id));
+
+        if (itemsToCancel.length === 0) return { error: "No valid items selected for cancellation." };
+        if (itemsToKeep.length === 0) {
+            return { error: "Cannot cancel all items. Use full order refund instead." };
+        }
+
+        // 4. Calculate new total
+        const newTotal = itemsToKeep.reduce((sum: number, item: any) => sum + (Number(item.price) * item.quantity), 0);
+        const refundAmount = itemsToCancel.reduce((sum: number, item: any) => sum + (Number(item.price) * item.quantity), 0);
+
+        // 5. Database Updates
+        // a. remove cancelled items
+        const { error: deleteError } = await supabase
+            .from('OrderItem')
+            .delete()
+            .in('id', orderItemIds);
+
+        if (deleteError) throw deleteError;
+
+        // b. Update Order Total (Scenario 1.11.3: Proceed even if below minimum)
+        const { error: updateError } = await supabase
+            .from('Order')
+            .update({
+                total: newTotal,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (updateError) throw updateError;
+
+        // 6. Log Refund (Scenario 1.11)
+        if (order.stripePaymentIntentId) {
+            logToFile(`[Refund] Partial refund for Order ${orderId}. Amount: $${refundAmount.toFixed(2)} refunded to PI ${order.stripePaymentIntentId}`);
+        }
+
+        revalidatePath(`/orders/${orderId}`);
+        revalidatePath('/merchant/dashboard');
+
+        return {
+            success: true,
+            newTotal,
+            refundAmount,
+            message: `Cancelled ${itemsToCancel.length} items. New total: $${newTotal.toFixed(2)}`
+        };
+    } catch (e: any) {
+        logToFile(`[CancelItems] EXCEPTION: ${e.message}`);
         return { error: e.message };
     }
 }

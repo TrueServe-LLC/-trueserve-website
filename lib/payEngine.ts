@@ -32,17 +32,20 @@ export function calculateDriverPay(
     if (distanceMiles > 2) {
         distancePay += (distanceMiles - 2) * LONG_DISTANCE_BONUS;
     }
+    // Round distance pay to avoid float precision issues in multiplier
+    distancePay = Math.round(distancePay * 100) / 100;
 
     // Time pay: $0.25/min after 10 min wait
-    const timePay = Math.max(0, waitMinutes - 10) * TIME_RATE;
+    const timePay = Math.round(Math.max(0, waitMinutes - 10) * TIME_RATE * 100) / 100;
 
     // Batch bonus
     const batchBonus = isBatched ? BATCH_FEE : 0;
 
-    // Apply multiplier to subtotal (usually applied to base + distance)
-    const subtotal = (basePay + distancePay + timePay + batchBonus) * peakMultiplier;
+    // Apply multiplier only to (base + distance) as per logic scenario 1.6
+    const multiplierSubtotal = (basePay + distancePay) * peakMultiplier;
 
-    // Floor guarantee: $20/hr active (not fully calculated here without total active time, but we use the formula result)
+    // Final sum includes time pay and batch bonuses (added after multiplier)
+    const totalPay = multiplierSubtotal + timePay + batchBonus;
 
     return {
         basePay,
@@ -50,6 +53,6 @@ export function calculateDriverPay(
         timePay: Math.round(timePay * 100) / 100,
         batchBonus,
         peakMultiplier,
-        totalPay: Math.round(subtotal * 100) / 100
+        totalPay: Math.round((totalPay + Number.EPSILON) * 100) / 100
     };
 }

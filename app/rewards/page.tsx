@@ -63,8 +63,8 @@ export default function RewardsPage() {
                     </div>
                 </div>
 
-                {/* MEMBERSHIP SELECTION - Refined Spacing */}
-                <div className="mb-32 relative z-10">
+                {/* MEMBERSHIP SELECTION - Fixed Clickability with higher Z-Index */}
+                <div className="mb-32 relative z-20">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 uppercase">Upgrade Your Standard</h2>
                         <p className="text-slate-500 max-w-xl mx-auto font-medium">Earn points faster and unlock exclusive benefits with TrueServe+ Membership.</p>
@@ -81,6 +81,7 @@ export default function RewardsPage() {
                                 "Community news & updates"
                             ]}
                             buttonText="Current Plan"
+                            buttonLink="/login"
                         />
                         <PricingCard
                             tier="Plus"
@@ -108,6 +109,7 @@ export default function RewardsPage() {
                                 "Double loyalty rewards points",
                                 "Advanced 7-day scheduling"
                             ]}
+                            buttonLink="/login?premium=true"
                         />
                     </div>
                 </div>
@@ -192,15 +194,10 @@ export default function RewardsPage() {
 
 function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
     return (
-        <div className={`relative p-10 md:p-12 rounded-[3rem] border flex flex-col items-center text-center transition-all ${isPopular
-                ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
-                : 'bg-white/5 border-white/10'
+        <div className={`relative p-10 md:p-12 rounded-[3rem] border flex flex-col items-center text-center transition-all h-full ${isPopular
+            ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
+            : 'bg-white/5 border-white/10 z-0'
             }`}>
-            {isPopular && (
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-black font-black uppercase text-[10px] tracking-widest px-6 py-2 rounded-full shadow-xl">
-                    Most Loved
-                </div>
-            )}
 
             <div className="mb-8">
                 <h3 className="text-3xl font-black mb-2 text-white">{tier}</h3>
@@ -223,9 +220,9 @@ function PricingCard({ tier, price, subtitle, isPopular = false, features, butto
 
             <Link
                 href={buttonLink}
-                className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all text-center ${isPopular
-                        ? 'bg-primary text-black hover:bg-white hover:scale-[1.02] shadow-2xl shadow-primary/20'
-                        : 'bg-white/10 text-white hover:bg-white/20'
+                className={`block w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all text-center relative z-20 ${isPopular
+                    ? 'bg-primary text-black hover:bg-white hover:scale-[1.02] shadow-2xl shadow-primary/20'
+                    : 'bg-white/10 text-white hover:bg-white/20 hover:border-white/40 border border-transparent'
                     }`}
             >
                 {buttonText}
