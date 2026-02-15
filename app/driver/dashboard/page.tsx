@@ -37,11 +37,6 @@ export default async function DriverDashboard() {
     const driver = await getDriverData();
     const supabase = await createClient();
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        redirect('/login');
-    }
-
     // Fetch Available Orders (Fetch more to sort in-memory)
     const { data: rawOrders } = await supabase
         .from('Order')
@@ -90,25 +85,7 @@ export default async function DriverDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white">
-
-            {/* Mobile Header */}
-            <header className="md:hidden flex p-4 border-b border-white/5 justify-between items-center sticky top-0 bg-black/80 backdrop-blur-2xl z-50">
-                <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="TS Driver" className="w-8 h-8 rounded-full border border-white/10" />
-                    <div>
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></span>
-                            Online
-                        </p>
-                        <p className="text-sm font-black text-white leading-tight">Driver Board</p>
-                    </div>
-                </div>
-                <div className="flex flex-col items-end">
-                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Available</p>
-                    <p className="text-base font-black text-emerald-400">${stats.balance.toFixed(2)}</p>
-                </div>
-            </header>
+        <div className="bg-[#0a0a0a] text-white">
 
             <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center sticky top-0 bg-black/50 backdrop-blur-md z-50">
                 <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">

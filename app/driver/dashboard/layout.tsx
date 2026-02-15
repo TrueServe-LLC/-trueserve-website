@@ -1,7 +1,29 @@
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import DriverMobileNav from "@/components/DriverMobileNav";
 
-export default function DriverDashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DriverDashboardLayout({ children }: { children: React.ReactNode }) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect('/login?role=driver&next=/driver/dashboard');
+    }
+
+    // Shield: Ensure only registered drivers can access these subpages
+    const { data: driver } = await supabase
+        .from('Driver')
+        .select('*, user:User(*)')
+        .eq('userId', user.id)
+        .maybeSingle();
+
+    if (!driver) {
+        redirect('/driver');
+    }
+
+    const driverInitials = (driver as any).user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || 'DR';
+    const balance = Number((driver as any).balance || 0);
+
     return (
         <div className="min-h-screen bg-black text-slate-200 pb-24 md:pb-0">
             <nav className="hidden md:block sticky top-0 z-50 bg-slate-900/50 backdrop-blur-md border-b border-white/10">
@@ -18,24 +40,27 @@ export default function DriverDashboardLayout({ children }: { children: React.Re
             </nav>
 
             {/* Mobile Header */}
-            <div className="md:hidden sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/10 px-4 py-3 flex justify-between items-center">
+            <div className="md:hidden sticky top-0 z-40 bg-black/80 backdrop-blur-2xl border-b border-white/10 px-4 py-3 flex justify-between items-center">
                 <Link href="/driver/dashboard" className="flex items-center gap-2">
-                    <span className="text-lg font-black tracking-tight text-white">
-                        True<span className="text-primary">Serve</span>
+                    <img src="/logo.png" alt="TS" className="w-8 h-8 rounded-full border border-white/10" />
+                    <span className="text-lg font-black tracking-tight text-white uppercase tracking-widest text-[10px]">
+                        Driver <span className="text-emerald-500">Board</span>
                     </span>
                 </Link>
                 <div className="flex items-center gap-3">
                     <div className="flex flex-col items-end">
-                        <span className="text-[10px] uppercase font-bold text-emerald-400">Online</span>
-                        <span className="text-xs font-bold text-white">$85.00</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></span>
+                            <span className="text-[9px] uppercase font-black text-emerald-500">Online</span>
+                        </div>
+                        <span className="text-sm font-black text-white">${balance.toFixed(2)}</span>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-xs">
-                        JD
-                    </div>
+                    <Link href="/driver/dashboard/account" className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-[10px] font-black text-primary">
+                        {driverInitials}
+                    </Link>
                 </div>
             </div>
             <main className="container py-8">{children}</main>
-            <DriverMobileNav />
         </div>
     );
 }
