@@ -33,57 +33,57 @@ export default function Home() {
 
       <main>
         {/* Hero Section */}
-        <section className="container py-20 md:py-32 flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1 text-center md:text-left space-y-8 animate-fade-in">
-            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-bold tracking-wide uppercase mb-4 border border-primary/20">
+        <section className="container py-12 md:py-32 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div className="flex-1 text-center md:text-left space-y-6 md:space-y-8 animate-fade-in w-full">
+            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-[10px] md:text-sm font-bold tracking-wide uppercase mb-2 md:border border-primary/20">
               🚀 The Future of Delivery
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.1]">
-              Craving meet <br />
+            <h1 className="text-4xl md:text-7xl font-extrabold text-white leading-[1.1]">
+              Craving meet <br className="hidden md:block" />
               <span className="text-gradient">Lightning Speed.</span>
             </h1>
-            <p className="text-xl text-slate-400 max-w-lg mx-auto md:mx-0 leading-relaxed">
+            <p className="text-lg md:text-xl text-slate-400 max-w-lg mx-auto md:mx-0 leading-relaxed">
               Experience the freshest food delivery in Charlotte & Pineville.
               Zero hidden fees, transparent driver pay, and purely local flavor.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <div className="relative group w-full max-w-xl">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-[2rem] sm:rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start w-full">
+              <div className="relative group w-full max-w-xl mx-auto md:mx-0">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
                 <LandingSearch />
               </div>
             </div>
 
             {/* Mobile-Only Dual Path Selection */}
-            <div className="grid grid-cols-2 gap-4 mt-8 md:hidden">
-              <Link href="/restaurants" className="flex flex-col items-center gap-3 p-6 bg-white/5 border border-white/10 rounded-3xl active:scale-95 transition-all">
-                <div className="text-3xl">🍔</div>
-                <span className="text-xs font-black uppercase tracking-widest text-primary">Order Food</span>
+            <div className="grid grid-cols-2 gap-3 mt-6 md:hidden">
+              <Link href="/restaurants" className="flex flex-col items-center gap-2 p-4 bg-white/5 border border-white/10 rounded-2xl active:scale-95 transition-all">
+                <div className="text-2xl">🍔</div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Order Food</span>
               </Link>
-              <Link href="/driver" className="flex flex-col items-center gap-3 p-6 bg-white/5 border border-white/10 rounded-3xl active:scale-95 transition-all">
-                <div className="text-3xl">🛵</div>
-                <span className="text-xs font-black uppercase tracking-widest text-emerald-400">Join Fleet</span>
+              <Link href="/driver" className="flex flex-col items-center gap-2 p-4 bg-white/5 border border-white/10 rounded-2xl active:scale-95 transition-all">
+                <div className="text-2xl">🛵</div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Join Fleet</span>
               </Link>
             </div>
           </div>
 
-          <div className="flex-1 relative w-full">
+          <div className="flex-1 relative w-full mt-8 md:mt-0">
             <div className="relative z-10 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <HeroCarousel />
             </div>
             {/* Floating Badge */}
-            <div className="relative mt-6 mx-auto md:absolute md:top-10 md:-right-4 md:mt-0 md:mx-0 w-max bg-slate-800/90 backdrop-blur-md p-4 rounded-2xl shadow-xl z-20 animate-bounce border border-white/10" style={{ animationDuration: '3s' }}>
-              <span className="text-2xl">🔥</span>
-              <span className="font-bold text-white ml-2">Hot & Fresh</span>
+            <div className="relative md:absolute md:top-10 md:-right-4 mt-6 md:mt-0 mx-auto w-max bg-slate-800/90 backdrop-blur-md p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl z-20 animate-bounce border border-white/10 flex items-center" style={{ animationDuration: '3s' }}>
+              <span className="text-xl md:text-2xl">🔥</span>
+              <span className="font-bold text-white ml-2 text-sm md:text-base">Hot & Fresh</span>
             </div>
           </div>
         </section>
 
         {/* Mission Statement */}
-        <section className="py-16">
-          <div className="container text-center max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-6">Our Mission</h2>
-            <p className="text-xl text-slate-300 leading-relaxed font-medium">
+        <section className="py-12 md:py-16">
+          <div className="container text-center max-w-4xl mx-auto px-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6">Our Mission</h2>
+            <p className="text-lg md:text-xl text-slate-300 leading-relaxed font-medium italic">
               "TrueServe is a driver-first delivery marketplace that pays
               couriers 25–40% more than competitors while lowering restaurant commissions and
               simplifying customer pricing. Our model focuses on fair earnings, transparent
@@ -93,51 +93,50 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 relative">
+        <section className="py-16 md:py-24 relative">
           <div className="container mx-auto px-6">
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="card hover:bg-white/5 transition-colors">
-                <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl shadow-sm mb-6 border border-white/10">💰</div>
-                <h3 className="text-xl font-bold mb-3 text-white">Transparent Pricing</h3>
-                <p className="text-slate-400 leading-relaxed">Know exactly where your money goes. We show the driver split on every single order.</p>
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+              <div className="card p-8 hover:bg-white/5 transition-colors border border-white/10 bg-white/5">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-white/5 rounded-2xl flex items-center justify-center text-2xl md:text-3xl shadow-sm mb-6 border border-white/10">💰</div>
+                <h3 className="text-lg md:text-xl font-bold mb-3 text-white">Transparent Pricing</h3>
+                <p className="text-sm md:text-base text-slate-400 leading-relaxed">Know exactly where your money goes. We show the driver split on every single order.</p>
               </div>
-              <div className="card hover:bg-white/5 transition-colors">
-                <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl shadow-sm mb-6 border border-white/10">🧭</div>
-                <h3 className="text-xl font-bold mb-3 text-white">Live GPS Tracking</h3>
-                <p className="text-slate-400 leading-relaxed">Watch your courier move in real-time. No more "arriving soon" guessing games.</p>
+              <div className="card p-8 hover:bg-white/5 transition-colors border border-white/10 bg-white/5">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-white/5 rounded-2xl flex items-center justify-center text-2xl md:text-3xl shadow-sm mb-6 border border-white/10">🧭</div>
+                <h3 className="text-lg md:text-xl font-bold mb-3 text-white">Live GPS Tracking</h3>
+                <p className="text-sm md:text-base text-slate-400 leading-relaxed">Watch your courier move in real-time. No more "arriving soon" guessing games.</p>
               </div>
-              <div className="card hover:bg-white/5 transition-colors">
-                <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl shadow-sm mb-6 border border-white/10">🌱</div>
-                <h3 className="text-xl font-bold mb-3 text-white">Local First</h3>
-                <p className="text-slate-400 leading-relaxed">We partner exclusively with local gems, not just big chains. Support your neighborhood.</p>
+              <div className="card p-8 hover:bg-white/5 transition-colors border border-white/10 bg-white/5">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-white/5 rounded-2xl flex items-center justify-center text-2xl md:text-3xl shadow-sm mb-6 border border-white/10">🌱</div>
+                <h3 className="text-lg md:text-xl font-bold mb-3 text-white">Local First</h3>
+                <p className="text-sm md:text-base text-slate-400 leading-relaxed">We partner exclusively with local gems, not just big chains. Support your neighborhood.</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Call to Action */}
-        <section className="container py-24 mb-24 md:mb-0">
-          <div className="grid md:grid-cols-2 gap-8">
+        {/* Call to Action - Hidden on Mobile since we have Top Path Selection */}
+        <section className="container py-24 hidden md:block">
+          <div className="grid grid-cols-2 gap-8">
             {/* Customer CTA */}
-            <div className="bg-gradient-to-br from-slate-900 to-black rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-primary/50 transition-colors">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay group-hover:opacity-30 transition-opacity"></div>
+            <div className="bg-slate-900/50 rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-primary/50 transition-all shadow-2xl">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay group-hover:opacity-20 transition-opacity"></div>
               <div className="relative z-10">
                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to taste the difference?</h2>
                 <p className="text-slate-400 mb-8 max-w-md mx-auto">Get your favorite local food delivered fast with transparent pricing.</p>
-                <Link href="/restaurants" className="btn btn-primary w-full sm:w-auto text-base md:text-lg text-black px-8 py-3 shadow-lg shadow-primary/20">
+                <Link href="/restaurants" className="btn btn-primary px-8 py-3 text-lg text-black font-bold shadow-lg shadow-primary/20">
                   Order Food
                 </Link>
               </div>
             </div>
 
             {/* Driver CTA */}
-            <div className="bg-gradient-to-br from-slate-900 to-black rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-emerald-500/50 transition-colors">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay group-hover:opacity-30 transition-opacity"></div>
+            <div className="bg-slate-900/50 rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-emerald-500/50 transition-all shadow-2xl">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay group-hover:opacity-20 transition-opacity"></div>
               <div className="relative z-10">
                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Drive with specific purpose.</h2>
                 <p className="text-slate-400 mb-8 max-w-md mx-auto">Earn 25-40% more than other platforms with fair, distance-based pay.</p>
-                <Link href="/driver" className="btn bg-white/10 w-full sm:w-auto text-white hover:bg-white/20 border border-white/10 text-base md:text-lg px-8 py-3 backdrop-blur-md">
+                <Link href="/driver" className="btn bg-white/10 text-white hover:bg-white/20 border border-white/10 px-8 py-3 text-lg font-bold backdrop-blur-md transition-all">
                   Become a Driver
                 </Link>
               </div>
