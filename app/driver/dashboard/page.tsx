@@ -82,14 +82,11 @@ export default async function DriverDashboard() {
         .neq('status', 'COMPLETED')
         : { data: [] };
 
-    // Mock calculations if DB is empty or user is just viewing as a non-driver
-    const isPlaceholder = !driver;
     const stats = {
-        totalEarnings: driver ? Number((driver as any).totalEarnings || 0) : (isPlaceholder ? 1420.50 : 0),
-        balance: driver ? Number((driver as any).balance || 0) : (isPlaceholder ? 84.20 : 0),
-        trips: driver?.orders?.length || (isPlaceholder ? 42 : 0),
-        rating: driver ? Number((driver as any).rating || 0) : (isPlaceholder ? 4.9 : 0),
-        isDemo: isPlaceholder
+        totalEarnings: driver ? Number((driver as any).totalEarnings || 0) : 0,
+        balance: driver ? Number((driver as any).balance || 0) : 0,
+        trips: driver?.orders?.length || 0,
+        rating: driver ? Number((driver as any).rating || 0) : 0,
     };
 
     return (
@@ -100,15 +97,10 @@ export default async function DriverDashboard() {
                 <div className="flex items-center gap-3">
                     <img src="/logo.png" alt="TS Driver" className="w-8 h-8 rounded-full border border-white/10" />
                     <div>
-                        <div className="flex items-center gap-2">
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></span>
-                                Online
-                            </p>
-                            {stats.isDemo && (
-                                <span className="text-[8px] bg-white/10 text-slate-400 px-1.5 py-0.5 rounded border border-white/5 font-black uppercase tracking-widest">Demo</span>
-                            )}
-                        </div>
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></span>
+                            Online
+                        </p>
                         <p className="text-sm font-black text-white leading-tight">Driver Board</p>
                     </div>
                 </div>
