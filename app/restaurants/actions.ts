@@ -117,8 +117,7 @@ export async function placeOrder(
         const itemIds = cartItems.map(i => i.id);
         const { data: dbItems, error: itemsError } = await supabase
             .from('MenuItem')
-            // Note: Assuming 'inventory' column exists for Scenario 1.5
-            .select('id, price, name, inventory, isAvailable')
+            .select('id, price, name')
             .in('id', itemIds);
 
         if (itemsError || !dbItems) {
@@ -130,15 +129,6 @@ export async function placeOrder(
         const verifiedItems = cartItems.map(item => {
             const dbItem = dbItems.find(d => d.id === item.id);
             if (!dbItem) throw new Error(`Item ${item.id} not found`);
-
-            // SCENARIO 1.5: Inventory Conflict Check
-            // Check both explicit inventory count and availability flag
-            if (dbItem.isAvailable === false) {
-                throw new Error(`${dbItem.name} is currently unavailable.`);
-            }
-            if (dbItem.inventory !== undefined && dbItem.inventory !== null && dbItem.inventory < item.quantity) {
-                throw new Error(`Insufficient stock for ${dbItem.name}. Only ${dbItem.inventory} left.`);
-            }
 
             total += Number(dbItem.price) * item.quantity;
             return { ...item, price: dbItem.price };
