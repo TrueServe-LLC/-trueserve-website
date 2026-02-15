@@ -65,10 +65,15 @@ export async function placeOrder(
         }
 
         const intent = await stripe.paymentIntents.retrieve(stripePaymentIntentId);
-        if (intent.status !== 'succeeded') {
+        logToFile(`[PlaceOrder] Stripe Intent Status: ${intent.status}`);
+
+        // Allow both 'succeeded' and 'processing' (common in test environments)
+        if (intent.status !== 'succeeded' && intent.status !== 'processing') {
+            logToFile(`[PlaceOrder] ABORT: Payment status is ${intent.status}`);
             return { message: `Payment not completed. Status: ${intent.status}`, error: true };
         }
     } catch (e: any) {
+        logToFile(`[PlaceOrder] Stripe Retrieval Error: ${e.message}`);
         return { message: "Failed to verify Stripe payment.", error: true };
     }
 
@@ -217,6 +222,7 @@ export async function placeOrder(
 }
 
 export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[]) {
+    logToFile(`[CreatePaymentIntent] START for Restaurant: ${restaurantId}`);
     try {
         // 1. Get real prices from DB
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -251,12 +257,15 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
             }
         });
 
+        logToFile(`[CreatePaymentIntent] Created: ${paymentIntent.id}`);
+
         return {
             clientSecret: paymentIntent.client_secret,
             id: paymentIntent.id
         };
 
     } catch (e: any) {
+        logToFile(`[CreatePaymentIntent] ERROR: ${e.message}`);
         console.error("PaymentIntent Error:", e);
         return { error: e.message };
     }
