@@ -41,9 +41,11 @@ export default function MerchantPortal() {
 
             <main className="container py-20 text-center animate-fade-in">
                 <h1 className="text-5xl font-bold mb-6">Grow Your Business with TrueServe</h1>
-                <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-12 text-center">
-                    Reach thousands of new customers with our premium delivery network. Use our tools to manage orders, track sales, and optimize your menu.
-                </p>
+                <div className="flex flex-col items-center justify-center">
+                    <p className="text-xl text-slate-400 max-w-2xl mb-12 text-center leading-relaxed">
+                        Reach thousands of new customers with our premium delivery network. Use our tools to manage orders, track sales, and optimize your menu.
+                    </p>
+                </div>
 
                 <div className="flex justify-center gap-4 mb-20 animate-bounce">
                     <button onClick={() => scrollToForm("Flex Options")} className="text-primary hover:text-white transition-colors flex flex-col items-center gap-2">
