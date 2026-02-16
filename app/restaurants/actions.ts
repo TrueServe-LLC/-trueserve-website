@@ -240,21 +240,39 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
             return sum + (dbItem ? Number(dbItem.price) * cartItem.quantity : 0);
         }, 0);
 
-        // Stripe amounts are in cents
-        const amountInCents = Math.round(amount * 100);
+        // 2. Fetch Restaurant Info for Connect (Scenario: Connected Accounts)
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('name, stripeAccountId')
+            .eq('id', restaurantId)
+            .single();
 
+        const amountInCents = Math.round(amount * 100);
         if (amountInCents < 50) throw new Error("Amount must be at least 50 cents");
 
-        // 2. Create Intent
-        const paymentIntent = await getStripe().paymentIntents.create({
+        // 3. Prepare Intent Options
+        const stripeOptions: any = {
             amount: amountInCents,
             currency: 'usd',
             automatic_payment_methods: { enabled: true },
+            description: `Order from ${restaurant?.name || 'Restaurant'}`,
             metadata: {
                 restaurantId,
+                restaurantName: restaurant?.name || 'Unknown',
                 itemCount: cartItems.length.toString()
             }
-        });
+        };
+
+        // If restaurant has a Stripe account, do a Destination Charge
+        if (restaurant?.stripeAccountId) {
+            stripeOptions.transfer_data = {
+                destination: restaurant.stripeAccountId,
+            };
+            // Platform Fee (e.g., 10%)
+            stripeOptions.application_fee_amount = Math.round(amountInCents * 0.10);
+        }
+
+        const paymentIntent = await getStripe().paymentIntents.create(stripeOptions);
 
         // logToFile(`[CreatePaymentIntent] Created: ${paymentIntent.id}`);
 

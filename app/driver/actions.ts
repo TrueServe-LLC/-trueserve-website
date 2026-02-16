@@ -316,11 +316,10 @@ export async function createDriverStripeAccount() {
         let stripeAccountId = (driver as any).stripeAccountId;
 
         // Base URL handling for Vercel/Local
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL
-            ? process.env.NEXT_PUBLIC_APP_URL
-            : process.env.NEXT_PUBLIC_VERCEL_URL
-                ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-                : "http://localhost:3000";
+        // PRIORITY: If we are on Vercel, use VERCEL_URL. Otherwise use APP_URL or localhost.
+        const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+            ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+            : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
         // 2. Create Stripe Account if missing
         if (!stripeAccountId) {
@@ -341,19 +340,20 @@ export async function createDriverStripeAccount() {
 
             stripeAccountId = account.id;
 
-            // Save to DB
-            const { error: updateError } = await supabase
+            // Save to DB (Using Admin client to ensure persistence regardless of RLS)
+            const { error: updateError } = await supabaseAdmin
                 .from('Driver')
                 .update({ stripeAccountId })
                 .eq('id', driver.id);
 
             if (updateError) {
                 console.error("[Stripe] DB Update Error:", updateError.message);
+                throw new Error(`Failed to save Stripe ID: ${updateError.message}`);
             }
         }
 
         // 3. Create Account Link
-        console.log(`[Stripe] Creating Link for ${stripeAccountId}`);
+        console.log(`[Stripe] Creating Link for ${stripeAccountId} with baseUrl ${baseUrl}`);
         const accountLink = await getStripe().accountLinks.create({
             account: stripeAccountId,
             refresh_url: `${baseUrl}/driver/dashboard/account?stripe=refresh`,
@@ -364,8 +364,11 @@ export async function createDriverStripeAccount() {
         url = accountLink.url;
 
     } catch (e: any) {
+        // IMPORTANT: Don't catch Next.js redirects!
+        if (e.message?.includes('NEXT_REDIRECT') || e.digest?.includes('NEXT_REDIRECT')) {
+            throw e;
+        }
         console.error("Driver Stripe Connect Error Details:", e);
-        // We throw a more descriptive error for the server log
         throw new Error(`Stripe Connection Failed: ${e.message}`);
     }
 
