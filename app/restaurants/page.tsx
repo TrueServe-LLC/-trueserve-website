@@ -289,13 +289,13 @@ export default async function RestaurantFinder({
 
                     {/* Desktop Search */}
                     <div className="hidden md:flex flex-1 max-w-xl mx-8">
-                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden">
+                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden items-center">
                             <LocationButton />
                             <input
                                 name="location"
                                 defaultValue={location}
                                 placeholder="Change location..."
-                                className="input input-sm join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500 py-6"
+                                className="input join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500 h-11"
                                 autoComplete="off"
                             />
                         </form>
@@ -318,13 +318,13 @@ export default async function RestaurantFinder({
                 </div>
                 {/* Mobile Search */}
                 <div className="container mt-3 md:hidden px-2">
-                    <form className="join border border-white/10 rounded-2xl bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden">
+                    <form className="join border border-white/10 rounded-2xl bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden items-center">
                         <LocationButton />
                         <input
                             name="location"
                             defaultValue={location}
                             placeholder="Change location..."
-                            className="input input-md join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500"
+                            className="input join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500 h-10"
                             autoComplete="off"
                         />
                     </form>
