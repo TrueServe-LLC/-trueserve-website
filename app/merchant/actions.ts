@@ -199,6 +199,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             lat: lat,
             lng: lng,
             imageUrl: '/restaurant1.jpg',
+            avgPrepTime: null, // Explicitly empty for new signups
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });

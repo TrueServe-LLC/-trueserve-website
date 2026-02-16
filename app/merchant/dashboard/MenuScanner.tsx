@@ -9,22 +9,45 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
     const [showResults, setShowResults] = useState(false);
     const [results, setResults] = useState<any[]>([]);
     const [message, setMessage] = useState("");
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+                setSelectedFile(file);
+                setMessage("");
+            } else {
+                alert("Please upload an image or PDF file.");
+            }
+        }
+    };
 
     const handleScan = async () => {
-        setScanning(true);
-        setMessage("TrueServe AI is parsing your menu...");
-
-        // Mock base64 for demo
-        const result = await scanMenuAction(restaurantId, "base64_demo_data");
-
-        if (result.success && result.items) {
-            setResults(result.items);
-            setShowResults(true);
-            setMessage("");
-        } else {
-            setMessage("Failed to scan menu: " + result.error);
+        if (!selectedFile) {
+            alert("Please select a file first.");
+            return;
         }
-        setScanning(false);
+
+        setScanning(true);
+        setMessage("TrueServe AI is parsing your " + (selectedFile.type === 'application/pdf' ? 'PDF' : 'menu') + "...");
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        reader.onload = async () => {
+            const base64 = reader.result as string;
+            const result = await scanMenuAction(restaurantId, base64);
+
+            if (result.success && result.items) {
+                setResults(result.items);
+                setShowResults(true);
+                setMessage("");
+            } else {
+                setMessage("Failed to scan menu: " + result.error);
+            }
+            setScanning(false);
+        };
     };
 
     const handleImport = async () => {
@@ -35,6 +58,8 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
             setTimeout(() => {
                 setShowResults(false);
                 setMessage("");
+                setResults([]);
+                setSelectedFile(null);
             }, 2000);
         } else {
             setMessage("Import failed: " + res.error);
@@ -80,8 +105,22 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                                 ))
                             ) : (
                                 <div className="py-12 text-center">
-                                    <div className="text-4xl mb-4 animate-bounce">📸</div>
-                                    <p className="text-slate-400">Upload a photo of your physical menu to begin.</p>
+                                    <div className="mb-6">
+                                        <label className="cursor-pointer block">
+                                            <div className="mx-auto h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center mb-4 transition-transform hover:scale-110 active:scale-95 border-2 border-dashed border-primary/30">
+                                                <span className="text-4xl">{selectedFile ? (selectedFile.type === 'application/pdf' ? '📄' : '🖼️') : '📸'}</span>
+                                            </div>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*,application/pdf"
+                                                onChange={handleFileChange}
+                                            />
+                                            <p className="text-white font-bold">{selectedFile ? selectedFile.name : "Select Image or PDF"}</p>
+                                            <p className="text-xs text-slate-500 mt-2">Max size: 10MB</p>
+                                        </label>
+                                    </div>
+                                    <p className="text-slate-400 text-sm max-w-xs mx-auto">Upload a photo or document of your physical menu to begin.</p>
                                 </div>
                             )}
                         </div>
@@ -97,14 +136,14 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                                 {results.length === 0 ? (
                                     <button
                                         onClick={handleScan}
-                                        disabled={scanning}
+                                        disabled={scanning || !selectedFile}
                                         className="btn btn-primary flex-1 py-4 font-black uppercase text-xs tracking-widest disabled:opacity-50"
                                     >
-                                        {scanning ? "Processing Image..." : "Start Scan"}
+                                        {scanning ? "Processing File..." : "Start Scan"}
                                     </button>
                                 ) : (
                                     <>
-                                        <button onClick={() => setResults([])} className="btn btn-ghost flex-1">Reset</button>
+                                        <button onClick={() => { setResults([]); setSelectedFile(null); }} className="btn btn-ghost flex-1">Reset</button>
                                         <button
                                             onClick={handleImport}
                                             disabled={scanning}

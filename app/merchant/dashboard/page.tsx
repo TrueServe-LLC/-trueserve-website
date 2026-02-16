@@ -142,23 +142,23 @@ export default async function MerchantDashboard() {
 
             <main className="container py-6 md:py-12 px-4 animate-fade-in pb-32">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 mb-8 md:mb-12">
-                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">📋</div>
-                        <h3 className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Incoming</h3>
-                        <p className="text-3xl md:text-5xl font-black text-white">{pendingOrders.length}</p>
+                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all min-h-[140px] md:min-h-[180px] flex flex-col justify-end">
+                        <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">📋</div>
+                        <h3 className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mb-1">Incoming</h3>
+                        <p className="text-4xl md:text-6xl font-black text-white">{pendingOrders.length}</p>
                     </div>
-                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">🍔</div>
-                        <h3 className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Items</h3>
-                        <p className="text-3xl md:text-5xl font-black text-white">{restaurant.menuItems.length}</p>
+                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all min-h-[140px] md:min-h-[180px] flex flex-col justify-end">
+                        <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">🍔</div>
+                        <h3 className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mb-1">Items</h3>
+                        <p className="text-4xl md:text-6xl font-black text-white">{restaurant.menuItems.length}</p>
                     </div>
-                    <div className="group relative col-span-2 md:col-span-1 overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">💰</div>
+                    <div className="group relative col-span-2 md:col-span-1 overflow-hidden bg-white/5 border border-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all min-h-[140px] md:min-h-[180px] flex flex-col justify-end">
+                        <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">💰</div>
                         <div className="flex justify-between items-start mb-1">
-                            <h3 className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">Net Revenue</h3>
-                            <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-black uppercase tracking-widest">Instant</span>
+                            <h3 className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">Net Revenue</h3>
+                            <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-black uppercase tracking-widest translate-y-[-2px]">Instant</span>
                         </div>
-                        <p className="text-3xl md:text-5xl font-black text-emerald-400">${totalRevenue.toFixed(2)}</p>
+                        <p className="text-4xl md:text-6xl font-black text-emerald-400">${totalRevenue.toFixed(2)}</p>
                         <p className="text-[9px] text-slate-500 mt-2 flex items-center gap-1 font-bold">
                             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                             Funds available for withdrawal
