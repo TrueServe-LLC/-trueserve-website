@@ -302,6 +302,7 @@ export async function createDriverStripeAccount() {
         redirect("/login?role=driver");
     }
 
+    let url = "";
     try {
         // 1. Get Driver
         const { data: driver } = await supabase
@@ -310,22 +311,31 @@ export async function createDriverStripeAccount() {
             .eq('userId', user.id)
             .single();
 
-        if (!driver) throw new Error("Driver profile not found");
+        if (!driver) throw new Error("Driver profile not found. Please ensure your application is approved.");
 
         let stripeAccountId = (driver as any).stripeAccountId;
 
+        // Base URL handling for Vercel/Local
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+            ? process.env.NEXT_PUBLIC_APP_URL
+            : process.env.NEXT_PUBLIC_VERCEL_URL
+                ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+                : "http://localhost:3000";
+
         // 2. Create Stripe Account if missing
         if (!stripeAccountId) {
+            console.log(`[Stripe] Creating Express account for ${user.email}`);
             const account = await getStripe().accounts.create({
                 type: 'express',
                 country: 'US',
-                email: user.email,
+                email: user.email || undefined,
                 capabilities: {
                     transfers: { requested: true },
                 },
                 metadata: {
                     driverId: driver.id,
-                    userId: user.id
+                    userId: user.id,
+                    role: 'driver'
                 }
             });
 
@@ -338,25 +348,28 @@ export async function createDriverStripeAccount() {
                 .eq('id', driver.id);
 
             if (updateError) {
-                // If column doesn't exist, we still redirect but warn in console
-                console.error("Column stripeAccountId likely missing in Driver table. Run migration.");
+                console.error("[Stripe] DB Update Error:", updateError.message);
             }
         }
 
         // 3. Create Account Link
+        console.log(`[Stripe] Creating Link for ${stripeAccountId}`);
         const accountLink = await getStripe().accountLinks.create({
             account: stripeAccountId,
-            refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/driver/dashboard/account?stripe=refresh`,
-            return_url: `${process.env.NEXT_PUBLIC_APP_URL}/driver/dashboard/account?stripe=success`,
+            refresh_url: `${baseUrl}/driver/dashboard/account?stripe=refresh`,
+            return_url: `${baseUrl}/driver/dashboard/account?stripe=success`,
             type: 'account_onboarding',
         });
 
-        redirect(accountLink.url);
+        url = accountLink.url;
 
     } catch (e: any) {
-        console.error("Driver Stripe Connect Error:", e);
-        throw new Error(e.message);
+        console.error("Driver Stripe Connect Error Details:", e);
+        // We throw a more descriptive error for the server log
+        throw new Error(`Stripe Connection Failed: ${e.message}`);
     }
+
+    if (url) redirect(url);
 }
 
 export async function createDriverPayout() {

@@ -232,6 +232,7 @@ export async function createStripeAccount() {
         redirect("/login?role=merchant");
     }
 
+    let url = "";
     try {
         // 1. Get Restaurant
         const { data: restaurant } = await supabase
@@ -243,6 +244,13 @@ export async function createStripeAccount() {
         if (!restaurant) throw new Error("Restaurant not found");
 
         let stripeAccountId = restaurant.stripeAccountId;
+
+        // Base URL handling for Vercel/Local
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+            ? process.env.NEXT_PUBLIC_APP_URL
+            : process.env.NEXT_PUBLIC_VERCEL_URL
+                ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+                : "http://localhost:3000";
 
         // 2. Create Stripe Account if missing
         if (!stripeAccountId) {
@@ -257,7 +265,8 @@ export async function createStripeAccount() {
                 },
                 metadata: {
                     restaurantId: restaurant.id,
-                    ownerId: userId
+                    ownerId: userId,
+                    role: 'merchant'
                 }
             });
 
@@ -275,16 +284,17 @@ export async function createStripeAccount() {
         // 3. Create Account Link
         const accountLink = await getStripe().accountLinks.create({
             account: stripeAccountId,
-            refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/dashboard?stripe=refresh`,
-            return_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/onboarding-success`,
+            refresh_url: `${baseUrl}/merchant/dashboard?stripe=refresh`,
+            return_url: `${baseUrl}/merchant/onboarding-success`,
             type: 'account_onboarding',
         });
 
-        redirect(accountLink.url);
+        url = accountLink.url;
 
     } catch (e: any) {
-        console.error("Stripe Connect Error:", e);
-        // Throw or handle error without returning an object to satisfy form action types
-        throw new Error(e.message);
+        console.error("Merchant Stripe Connect Error:", e);
+        throw new Error(`Stripe Generation Failed: ${e.message}`);
     }
+
+    if (url) redirect(url);
 }
