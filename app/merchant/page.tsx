@@ -47,16 +47,11 @@ export default function MerchantPortal() {
                     </p>
                 </div>
 
-                <div className="flex justify-center gap-4 mb-20 animate-bounce">
-                    <button onClick={() => scrollToForm("Flex Options")} className="text-primary hover:text-white transition-colors flex flex-col items-center gap-2">
-                        <span className="text-sm font-bold uppercase tracking-widest">View Plans</span>
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                    </button>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-10 mb-24 max-w-5xl mx-auto text-left">
+
+                <div className="flex flex-col lg:flex-row items-stretch justify-center gap-8 lg:gap-12 mb-24 max-w-7xl mx-auto text-left px-4">
                     {/* Option A: Flex Plan */}
-                    <div className={`card relative p-8 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 transition-all flex flex-col justify-between group ${selectedPlan === 'Flex Options' ? 'ring-2 ring-primary' : ''}`}>
+                    <div className={`card relative p-8 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 transition-all flex flex-col justify-between group flex-1 ${selectedPlan === 'Flex Options' ? 'ring-2 ring-primary' : ''}`}>
                         <div className="absolute top-0 right-0 p-4">
                             <span className="text-[10px] bg-primary/20 text-primary px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-primary/20">Option A</span>
                         </div>
@@ -98,8 +93,28 @@ export default function MerchantPortal() {
                         </button>
                     </div>
 
+                    {/* Desktop Center Divider / Action */}
+                    <div className="hidden lg:flex flex-col items-center justify-center gap-6 shrink-0 px-2 group">
+                        <div className="h-full w-px bg-gradient-to-b from-white/0 via-primary/30 to-white/0 relative">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
+                                <button
+                                    onClick={() => scrollToForm("Flex Options")}
+                                    className="flex flex-col items-center gap-3 group/btn animate-bounce"
+                                >
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary group-hover/btn:text-white transition-colors whitespace-nowrap">View Plans</span>
+                                    <div className="w-12 h-12 rounded-full border border-primary/30 flex items-center justify-center bg-black/40 backdrop-blur-md group-hover/btn:border-primary transition-all shadow-[0_0_20px_rgba(68,140,137,0.1)]">
+                                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-600 rotate-90 whitespace-nowrap hidden lg:block">TrueServe Partner</span>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Option B: Pro Subscription */}
-                    <div className={`card relative p-8 border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent hover:border-emerald-500/40 transition-all flex flex-col justify-between group scale-105 shadow-2xl shadow-emerald-500/5 ${selectedPlan === 'Pro Subscription' ? 'ring-2 ring-emerald-500' : ''}`}>
+                    <div className={`card relative p-8 border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent hover:border-emerald-500/40 transition-all flex flex-col justify-between group flex-1 scale-105 shadow-2xl shadow-emerald-500/5 ${selectedPlan === 'Pro Subscription' ? 'ring-2 ring-emerald-500' : ''}`}>
                         <div className="absolute top-0 right-0 p-4 flex gap-2">
                             <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-emerald-500/20">Option B</span>
                         </div>
