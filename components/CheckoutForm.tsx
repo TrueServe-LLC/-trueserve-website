@@ -22,10 +22,12 @@ export default function CheckoutForm({ onSuccess, totalAmount }: CheckoutFormPro
 
         setIsLoading(true);
 
+        console.log("[Stripe] Confirming payment with elements...");
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
             redirect: "if_required",
         });
+        console.log("[Stripe] Payment confirmation result", { status: paymentIntent?.status, error: error?.message });
 
         if (error) {
             if (error.type === "card_error" || error.type === "validation_error") {

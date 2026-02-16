@@ -38,8 +38,10 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
         if (hasItems) {
             const cartItems = Object.entries(newCart).map(([id, quantity]) => ({ id, quantity }));
             const res = await createPaymentIntent(restaurant.id, cartItems);
+            console.log("[Stripe] createPaymentIntent response received", { hasSecret: !!res.clientSecret });
             if (res.clientSecret) {
                 setClientSecret(res.clientSecret);
+                console.log("[Stripe] Client secret set in state");
             }
         } else {
             setClientSecret(null);

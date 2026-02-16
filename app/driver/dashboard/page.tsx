@@ -5,6 +5,9 @@ import { calculateDriverPay } from "@/lib/payEngine";
 import { acceptOrder } from "../actions";
 import DriverMap from "@/components/DriverMap";
 import { calculateDistance, getNavigationUrl } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
+
+export const dynamic = 'force-dynamic';
 
 async function getDriverData() {
     const supabase = await createClient();
@@ -156,7 +159,7 @@ export default async function DriverDashboard() {
                                         "use server";
                                         await acceptOrder(order.id);
                                     }}>
-                                        <button className="btn btn-primary px-6 py-2 shadow-lg shadow-primary/20">Accept</button>
+                                        <button type="submit" className="btn btn-primary px-6 py-2 shadow-lg shadow-primary/20">Accept</button>
                                     </form>
                                 </div>
                             ))

@@ -298,3 +298,39 @@ export async function createStripeAccount() {
 
     if (url) redirect(url);
 }
+
+export async function generateApiKey() {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+    if (!userId) return { error: "Unauthorized" };
+
+    try {
+        // Generate a secure random key
+        const newKey = `ts_${uuidv4().replace(/-/g, '')}`;
+
+        // Get Restaurant
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('id')
+            .eq('ownerId', userId)
+            .single();
+
+        if (!restaurant) throw new Error("Restaurant not found");
+
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({
+                apiKey: newKey,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', restaurant.id);
+
+        if (error) throw error;
+
+        revalidatePath('/merchant/dashboard');
+        return { success: true, apiKey: newKey };
+    } catch (e: any) {
+        console.error("API Key Gen Error:", e);
+        return { error: e.message };
+    }
+}

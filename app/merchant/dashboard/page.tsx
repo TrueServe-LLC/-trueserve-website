@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import AddItemForm from "./AddItemForm";
+import MenuScanner from "./MenuScanner";
+import POSIntegration from "./POSIntegration";
 import { updateOrderStatus, refundOrder, createStripeAccount } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +16,7 @@ async function getMerchantData(userId: string) {
             .from('Restaurant')
             .select(`
                 *,
+                apiKey,
                 menuItems:MenuItem(*),
                 orders:Order(
                     *,
@@ -173,7 +176,10 @@ export default async function MerchantDashboard() {
                                 <p className="text-slate-400 max-w-md">To start receiving payouts for your orders, you need to connect your Stripe account.</p>
                             </div>
                         </div>
-                        <form action={createStripeAccount}>
+                        <form action={async () => {
+                            "use server";
+                            await createStripeAccount();
+                        }}>
                             <button className="btn bg-blue-600 hover:bg-blue-700 text-white border-none px-8 py-3 shadow-lg shadow-blue-500/20">
                                 Connect Stripe account
                             </button>
@@ -390,9 +396,16 @@ export default async function MerchantDashboard() {
                     </div>
                 </div>
 
+                <div className="mb-12">
+                    <POSIntegration currentApiKey={restaurant.apiKey} />
+                </div>
+
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Your Menu</h2>
-                    <AddItemForm />
+                    <div className="flex gap-3">
+                        <MenuScanner restaurantId={restaurant.id} />
+                        <AddItemForm />
+                    </div>
                 </div>
 
                 <div className="grid grid-1 gap-4">

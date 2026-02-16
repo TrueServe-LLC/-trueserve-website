@@ -273,6 +273,7 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
         }
 
         const paymentIntent = await getStripe().paymentIntents.create(stripeOptions);
+        console.log("[createPaymentIntent] Success", { id: paymentIntent.id, amount: amountInCents });
 
         // logToFile(`[CreatePaymentIntent] Created: ${paymentIntent.id}`);
 

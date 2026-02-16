@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createDriverStripeAccount } from "../../actions";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DriverAccount() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -58,7 +60,10 @@ export default async function DriverAccount() {
                                     : "Connect your Stripe account to receive instant payouts for your deliveries."}
                             </p>
                         </div>
-                        <form action={createDriverStripeAccount}>
+                        <form action={async () => {
+                            "use server";
+                            await createDriverStripeAccount();
+                        }}>
                             <button className={`btn ${(driver as any).stripeAccountId ? 'btn-outline border-white/10 text-slate-400 pointer-events-none' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 border-none px-6 py-2.5'}`}>
                                 {(driver as any).stripeAccountId ? 'Account Linked ✓' : 'Connect Stripe'}
                             </button>

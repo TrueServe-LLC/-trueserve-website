@@ -14,11 +14,14 @@ const stripe = new Stripe(key || '', {
 
 async function check() {
     try {
+        const account = await stripe.accounts.retrieve();
+        console.log(`Connected Account: ${account.id}, Email: ${account.email}, Name: ${account.settings?.dashboard?.display_name}`);
         const intents = await stripe.paymentIntents.list({ limit: 5 });
         console.log('Successfully connected to Stripe.');
         console.log('Recent Payment Intents count:', intents.data.length);
-        intents.data.forEach(intent => {
-            console.log(`- ID: ${intent.id}, Status: ${intent.status}, Amount: ${intent.amount / 100} ${intent.currency.toUpperCase()}`);
+        intents.data.forEach(pi => {
+            const date = new Date(pi.created * 1000).toLocaleString();
+            console.log(`- ID: ${pi.id}, Status: ${pi.status}, Amount: ${pi.amount / 100} ${pi.currency.toUpperCase()}, Created: ${date}`);
         });
     } catch (e: any) {
         console.error('Stripe Connection Failed:', e.message);
