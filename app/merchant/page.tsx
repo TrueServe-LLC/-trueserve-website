@@ -41,10 +41,21 @@ export default function MerchantPortal() {
 
             <main className="container py-20 text-center animate-fade-in">
                 <h1 className="text-5xl font-bold mb-6">Grow Your Business with TrueServe</h1>
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center mb-16">
                     <p className="text-xl text-slate-400 max-w-2xl mb-12 text-center leading-relaxed">
                         Reach thousands of new customers with our premium delivery network. Use our tools to manage orders, track sales, and optimize your menu.
                     </p>
+                    <button
+                        onClick={() => scrollToForm("Flex Options")}
+                        className="flex flex-col items-center gap-3 group animate-bounce"
+                    >
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary group-hover:text-white transition-colors">View Plans</span>
+                        <div className="w-12 h-12 rounded-full border border-primary/30 flex items-center justify-center bg-black/40 backdrop-blur-md group-hover:border-primary transition-all shadow-[0_0_20px_rgba(68,140,137,0.1)]">
+                            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                        </div>
+                    </button>
                 </div>
 
 
@@ -91,26 +102,6 @@ export default function MerchantPortal() {
                         >
                             Get Started with Flex
                         </button>
-                    </div>
-
-                    {/* Desktop Center Divider / Action */}
-                    <div className="hidden lg:flex flex-col items-center justify-center gap-6 shrink-0 px-2 group">
-                        <div className="h-full w-px bg-gradient-to-b from-white/0 via-primary/30 to-white/0 relative">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
-                                <button
-                                    onClick={() => scrollToForm("Flex Options")}
-                                    className="flex flex-col items-center gap-3 group/btn animate-bounce"
-                                >
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary group-hover/btn:text-white transition-colors whitespace-nowrap">View Plans</span>
-                                    <div className="w-12 h-12 rounded-full border border-primary/30 flex items-center justify-center bg-black/40 backdrop-blur-md group-hover/btn:border-primary transition-all shadow-[0_0_20px_rgba(68,140,137,0.1)]">
-                                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                                        </svg>
-                                    </div>
-                                </button>
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-600 rotate-90 whitespace-nowrap hidden lg:block">TrueServe Partner</span>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Option B: Pro Subscription */}
