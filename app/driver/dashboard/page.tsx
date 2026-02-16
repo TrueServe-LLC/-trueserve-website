@@ -4,7 +4,7 @@ import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
 import { acceptOrder } from "../actions";
 import DriverMap from "@/components/DriverMap";
-import { calculateDistance } from "@/lib/utils";
+import { calculateDistance, getNavigationUrl } from "@/lib/utils";
 
 async function getDriverData() {
     const supabase = await createClient();
@@ -182,7 +182,7 @@ export default async function DriverDashboard() {
                                     <p className="text-sm text-emerald-200/60 mb-4">{order.restaurant?.address}</p>
                                     <div className="flex gap-2">
                                         <a
-                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.restaurant?.address || "")}`}
+                                            href={getNavigationUrl(order.restaurant?.address || "", (driver as any)?.navigationApp || 'google')}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="flex-1 btn bg-emerald-500 text-black font-bold text-xs py-2 flex items-center justify-center"

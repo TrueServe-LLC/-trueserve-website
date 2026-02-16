@@ -11,3 +11,11 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
     const d = R * c; // Distance in miles
     return d.toFixed(1);
 }
+
+export function getNavigationUrl(address: string, app: 'google' | 'waze' = 'google'): string {
+    const encodedAddress = encodeURIComponent(address);
+    if (app === 'waze') {
+        return `https://waze.com/ul?q=${encodedAddress}&navigate=yes`;
+    }
+    return `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+}

@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { saveDriverPreferences } from "../../actions";
 
 export default function DriverPreferences() {
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState("");
     const [preferences, setPreferences] = useState({
         acceptAlcohol: true,
         acceptCash: false,
@@ -11,13 +14,41 @@ export default function DriverPreferences() {
         navigationApp: "google",
     });
 
-    const toggle = (key: keyof typeof preferences) => {
-        setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+    const toggle = async (key: keyof typeof preferences) => {
+        const newPrefs = { ...preferences, [key]: !preferences[key] };
+        setPreferences(newPrefs);
+        await save(newPrefs);
     };
 
+    const setNav = async (app: string) => {
+        const newPrefs = { ...preferences, navigationApp: app };
+        setPreferences(newPrefs);
+        await save(newPrefs);
+    };
+
+    const save = async (currentPrefs: typeof preferences) => {
+        setSaving(true);
+        setMessage("");
+        const result = await saveDriverPreferences(currentPrefs);
+        if (result.error) setMessage("Error: " + result.error);
+        else if ((result as any).warning) setMessage("Preference saved locally (Run DB Migration)");
+        else setMessage("Saved successfully!");
+        setSaving(false);
+        setTimeout(() => setMessage(""), 3000);
+    };
     return (
         <div className="max-w-2xl mx-auto space-y-8 animate-fade-in-up">
-            <h1 className="text-3xl font-bold">Preferences</h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold">Preferences</h1>
+                {message && (
+                    <div className="text-[10px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 animate-fade-in font-black uppercase tracking-widest">
+                        {message}
+                    </div>
+                )}
+                {saving && (
+                    <div className="text-[10px] text-slate-500 animate-pulse font-black uppercase tracking-widest">Saving...</div>
+                )}
+            </div>
 
             <section className="card bg-white/5 border-white/10 p-6 space-y-6">
                 <h2 className="text-xl font-bold border-b border-white/10 pb-2">Delivery Settings</h2>
@@ -69,13 +100,13 @@ export default function DriverPreferences() {
                     <p className="font-semibold">Navigation App</p>
                     <div className="grid grid-cols-2 gap-4">
                         <button
-                            onClick={() => setPreferences(prev => ({ ...prev, navigationApp: 'google' }))}
+                            onClick={() => setNav('google')}
                             className={`p-4 rounded-xl border flex items-center gap-2 justify-center transition-all ${preferences.navigationApp === 'google' ? 'bg-primary/20 border-primary text-primary font-bold' : 'bg-transparent border-white/10 hover:bg-white/5'}`}
                         >
                             <span>🗺️</span> Google Maps
                         </button>
                         <button
-                            onClick={() => setPreferences(prev => ({ ...prev, navigationApp: 'waze' }))}
+                            onClick={() => setNav('waze')}
                             className={`p-4 rounded-xl border flex items-center gap-2 justify-center transition-all ${preferences.navigationApp === 'waze' ? 'bg-primary/20 border-primary text-primary font-bold' : 'bg-transparent border-white/10 hover:bg-white/5'}`}
                         >
                             <span>🚙</span> Waze

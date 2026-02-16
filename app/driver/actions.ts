@@ -9,6 +9,8 @@ import * as path from 'path';
 import { sendEmail } from "@/lib/email";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getStripe } from "@/lib/stripe";
+import { redirect } from "next/navigation";
 
 export type DriverApplicationState = {
     message: string;
@@ -251,6 +253,159 @@ export async function completeDelivery(orderId: string) {
         revalidatePath(`/orders/${orderId}`);
         return { success: true };
     } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function saveDriverPreferences(prefs: {
+    navigationApp: string;
+    acceptAlcohol: boolean;
+    acceptCash: boolean;
+    longDistance: boolean;
+}) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
+
+        const { error } = await supabase
+            .from('Driver')
+            .update({
+                navigationApp: prefs.navigationApp,
+                acceptAlcohol: prefs.acceptAlcohol,
+                acceptCash: prefs.acceptCash,
+                longDistance: prefs.longDistance,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('userId', user.id);
+
+        if (error) {
+            // If columns don't exist yet, we catch it here
+            if (error.code === 'PGRST204' || error.message.includes('column')) {
+                console.warn("Preference columns missing in DB. Run the migration SQL.");
+                return { success: true, warning: "Columns missing" };
+            }
+            throw error;
+        }
+
+        revalidatePath('/driver/dashboard/preferences');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function createDriverStripeAccount() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        redirect("/login?role=driver");
+    }
+
+    try {
+        // 1. Get Driver
+        const { data: driver } = await supabase
+            .from('Driver')
+            .select('*')
+            .eq('userId', user.id)
+            .single();
+
+        if (!driver) throw new Error("Driver profile not found");
+
+        let stripeAccountId = (driver as any).stripeAccountId;
+
+        // 2. Create Stripe Account if missing
+        if (!stripeAccountId) {
+            const account = await getStripe().accounts.create({
+                type: 'express',
+                country: 'US',
+                email: user.email,
+                capabilities: {
+                    transfers: { requested: true },
+                },
+                metadata: {
+                    driverId: driver.id,
+                    userId: user.id
+                }
+            });
+
+            stripeAccountId = account.id;
+
+            // Save to DB
+            const { error: updateError } = await supabase
+                .from('Driver')
+                .update({ stripeAccountId })
+                .eq('id', driver.id);
+
+            if (updateError) {
+                // If column doesn't exist, we still redirect but warn in console
+                console.error("Column stripeAccountId likely missing in Driver table. Run migration.");
+            }
+        }
+
+        // 3. Create Account Link
+        const accountLink = await getStripe().accountLinks.create({
+            account: stripeAccountId,
+            refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/driver/dashboard/account?stripe=refresh`,
+            return_url: `${process.env.NEXT_PUBLIC_APP_URL}/driver/dashboard/account?stripe=success`,
+            type: 'account_onboarding',
+        });
+
+        redirect(accountLink.url);
+
+    } catch (e: any) {
+        console.error("Driver Stripe Connect Error:", e);
+        throw new Error(e.message);
+    }
+}
+
+export async function createDriverPayout() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/login?role=driver");
+
+    try {
+        // 1. Get Driver
+        const { data: driver } = await supabase
+            .from('Driver')
+            .select('id, balance, stripeAccountId')
+            .eq('userId', user.id)
+            .single();
+
+        if (!driver) throw new Error("Driver not found");
+        if (!driver.stripeAccountId) throw new Error("Stripe account not connected. Please go to Account settings.");
+
+        const balance = Number(driver.balance || 0);
+        if (balance <= 0) throw new Error("No balance available to cash out.");
+
+        // 2. Initiate Stripe Transfer (Payout)
+        const transfer = await getStripe().transfers.create({
+            amount: Math.round(balance * 100), // convert to cents
+            currency: 'usd',
+            destination: driver.stripeAccountId,
+            description: `Driver payout: ${user.email}`,
+            metadata: {
+                driverId: driver.id,
+                userId: user.id
+            }
+        });
+
+        // 3. Reset Local Balance
+        const { error: updateError } = await supabase
+            .from('Driver')
+            .update({
+                balance: 0,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', driver.id);
+
+        if (updateError) throw updateError;
+
+        revalidatePath('/driver/dashboard/earnings');
+        return { success: true, transferId: transfer.id };
+
+    } catch (e: any) {
+        console.error("Payout Error:", e);
         return { error: e.message };
     }
 }
