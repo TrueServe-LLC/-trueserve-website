@@ -60,7 +60,6 @@ export default function LandingSearch({ locations = [] }: LandingSearchProps) {
             autocompleteService.current.getPlacePredictions({
                 input: val,
                 sessionToken: sessionToken.current || undefined,
-                types: ['address', 'establishment'] // broadly match
             }, (results, status) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                     setPredictions(results);
