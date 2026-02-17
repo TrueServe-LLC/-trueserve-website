@@ -9,18 +9,39 @@ export async function GET(request: Request) {
 
     if (code) {
         const supabase = await createClient()
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
-        if (!error) {
-            const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-            if (isLocalEnv) {
-                // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                return NextResponse.redirect(`${origin}${next}`)
-            } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${next}`)
-            } else {
-                return NextResponse.redirect(`${origin}${next}`)
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+
+        if (!error && data?.user) {
+            // SYNC: Ensure the user exists in our public User table
+            const { data: existingUser } = await supabase
+                .from('User')
+                .select('id')
+                .eq('id', data.user.id)
+                .maybeSingle();
+
+            if (!existingUser) {
+                // First time logging in with Google - create the profile
+                await supabase.from('User').insert({
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: data.user.user_metadata.full_name || data.user.user_metadata.name || data.user.email?.split('@')[0],
+                    role: 'CUSTOMER',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
             }
+
+            const forwardedHost = request.headers.get('x-forwarded-host')
+            const isLocalEnv = process.env.NODE_ENV === 'development'
+
+            // Success - continue to 'next' path
+            const redirectUrl = isLocalEnv
+                ? `${origin}${next}`
+                : forwardedHost
+                    ? `https://${forwardedHost}${next}`
+                    : `${origin}${next}`;
+
+            return NextResponse.redirect(redirectUrl)
         }
     }
 

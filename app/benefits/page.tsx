@@ -110,13 +110,10 @@ export default function BenefitsPage() {
 
                     {/* 2. Convenience & Experience - CLEAN LAYOUT, NO BOXES */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                        <div className="order-2 lg:order-1">
-                            <div className="bg-primary/5 border border-primary/10 p-10 md:p-14 rounded-[3.5rem] relative overflow-hidden text-center">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 blur-3xl -z-10" />
-                                <p className="text-slate-300 mx-auto leading-relaxed italic text-xl md:text-2xl relative z-10">
-                                    "I don't have time to chase refunds. With TrueServe Premium, if it's not right, they fix it instantly. No questions asked."
-                                </p>
-                                <p className="mt-8 text-sm font-black uppercase tracking-widest text-primary">— James L., Premium Member</p>
+                        <div className="hidden lg:block">
+                            <div className="w-full aspect-square bg-gradient-to-tr from-primary/20 via-primary/5 to-transparent rounded-[4rem] border border-white/5 flex items-center justify-center p-20 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(68,140,137,0.2),transparent_70%)]" />
+                                <div className="text-[120px] filter drop-shadow-[0_0_30px_rgba(68,140,137,0.3)] animate-float">📱</div>
                             </div>
                         </div>
                         <div className="order-1 lg:order-2">
