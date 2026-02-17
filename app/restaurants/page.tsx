@@ -113,7 +113,7 @@ async function getRestaurants(
     }
 
     const locationMeta = {
-        name: address || `${matchedLocation.city}, ${matchedLocation.state}`,
+        name: address || (term && term.length > 10 ? term : `${matchedLocation.city}, ${matchedLocation.state}`),
         center: (lat && lng) ? [lat, lng] as [number, number] : [matchedLocation.lat, matchedLocation.lng] as [number, number]
     };
 
@@ -204,6 +204,20 @@ export default async function RestaurantFinder({
     let locationMeta: LocationMeta = { name: "Unknown", center: [35.2271, -80.8431] };
     let activeOrders: any[] = [];
 
+    const serviceLocations = await (async () => {
+        const fallbackMocks = [
+            { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
+            { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
+            { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 }
+        ];
+        try {
+            const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
+            return dbLocs && dbLocs.length > 0 ? dbLocs : fallbackMocks;
+        } catch {
+            return fallbackMocks;
+        }
+    })();
+
     if (!showLanding) {
         const data = await getRestaurants({
             term: location,
@@ -291,17 +305,11 @@ export default async function RestaurantFinder({
 
                     {/* Desktop Search */}
                     <div className="hidden md:flex flex-1 max-w-xl mx-8">
-                        <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden items-center">
-                            <LocationButton />
-                            <input
-                                key={`desktop-search-${location}`}
-                                name="location"
-                                defaultValue={location}
-                                placeholder="Search for food or address..."
-                                className="input join-item bg-transparent border-none focus:outline-none w-full text-sm text-white placeholder:text-slate-500 h-11"
-                                autoComplete="off"
-                            />
-                        </form>
+                        <LandingSearch
+                            locations={serviceLocations}
+                            initialValue={location}
+                            isCompact={true}
+                        />
                     </div>
 
                     <div className="flex items-center gap-3 md:gap-6">
@@ -321,17 +329,11 @@ export default async function RestaurantFinder({
                 </div>
                 {/* Mobile Search */}
                 <div className="container mt-3 md:hidden px-2">
-                    <form className="join border border-white/10 rounded-2xl bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden items-center">
-                        <LocationButton />
-                        <input
-                            key={`mobile-search-${location}`}
-                            name="location"
-                            defaultValue={location}
-                            placeholder="Enter delivery address..."
-                            className="input join-item bg-transparent border-none focus:outline-none w-full text-sm text-white placeholder:text-slate-500 h-10"
-                            autoComplete="off"
-                        />
-                    </form>
+                    <LandingSearch
+                        locations={serviceLocations}
+                        initialValue={location}
+                        isCompact={true}
+                    />
                 </div>
             </nav>
 
@@ -457,12 +459,12 @@ export default async function RestaurantFinder({
                 </div>
 
                 {/* Strategy Mission Statement Section - Hidden or Compact on Mobile */}
-                <div className="mt-20 p-8 md:p-16 bg-white/5 border border-white/10 rounded-[2.5rem] md:rounded-[4rem] text-center max-w-4xl mx-auto relative overflow-hidden">
+                <div className="mt-20 p-8 md:p-16 bg-white/5 border border-white/10 rounded-[2.5rem] md:rounded-[4rem] flex flex-col items-center text-center max-w-4xl mx-auto relative overflow-hidden">
                     <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
                     <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -z-10" />
 
-                    <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tighter text-white">Built for the Community.</h2>
-                    <p className="text-sm md:text-lg text-slate-400 leading-relaxed mb-10 max-w-2xl mx-auto font-medium">
+                    <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tighter text-white text-center">Built for the Community.</h2>
+                    <p className="text-sm md:text-lg text-slate-400 leading-relaxed mb-10 max-w-2xl text-center font-medium">
                         TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve. Experience the difference of a fair marketplace.
                     </p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
