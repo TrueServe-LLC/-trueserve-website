@@ -16,6 +16,7 @@ interface Restaurant {
     city?: string;
     state?: string;
     distance?: string;
+    address?: string;
 }
 
 // ... (in getRestaurants function)
@@ -152,7 +153,8 @@ async function getRestaurants(
                 description: r.description,
                 coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
                 city: r.city,
-                state: r.state
+                state: r.state,
+                address: r.address || `${r.city}, ${r.state}`
             };
         });
 
@@ -161,13 +163,13 @@ async function getRestaurants(
     } catch (error) {
         // Mock Data Fallback
         const allMocks = [
-            { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC" },
-            { id: "2", name: "Queen City Burger (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Burgers", "American"], description: "Gourmet burgers", coords: [35.2280, -80.8440] as [number, number], city: "Charlotte", state: "NC" },
-            { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN" },
+            { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC", address: "123 BBQ Lane, Charlotte, NC" },
+            { id: "2", name: "Queen City Burger (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Burgers", "American"], description: "Gourmet burgers", coords: [35.2280, -80.8440] as [number, number], city: "Charlotte", state: "NC", address: "456 Burger Ave, Charlotte, NC" },
+            { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN", address: "789 Diner Rd, Ramsey, MN" },
             // Rock Hill Mock
-            { id: "4", name: "Old Town Kitchen (Mock)", rating: 4.6, image: "/restaurant3.jpg", tags: ["Southern", "Comfort"], description: "Rock Hill favorites", coords: [34.9249, -81.0251] as [number, number], city: "Rock Hill", state: "SC" },
+            { id: "4", name: "Old Town Kitchen (Mock)", rating: 4.6, image: "/restaurant3.jpg", tags: ["Southern", "Comfort"], description: "Rock Hill favorites", coords: [34.9249, -81.0251] as [number, number], city: "Rock Hill", state: "SC", address: "101 Southern Way, Rock Hill, SC" },
             // Pineville Mock
-            { id: "5", name: "Pineville Pizzeria (Mock)", rating: 4.7, image: "/restaurant2.jpg", tags: ["Pizza", "Italian"], description: "Best slice in town", coords: [35.0833, -80.8872] as [number, number], city: "Pineville", state: "NC" }
+            { id: "5", name: "Pineville Pizzeria (Mock)", rating: 4.7, image: "/restaurant2.jpg", tags: ["Pizza", "Italian"], description: "Best slice in town", coords: [35.0833, -80.8872] as [number, number], city: "Pineville", state: "NC", address: "202 Pizza Cir, Pineville, NC" }
         ];
 
         return {
@@ -292,9 +294,10 @@ export default async function RestaurantFinder({
                         <form className="join border border-white/10 rounded-full bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden items-center">
                             <LocationButton />
                             <input
+                                key={`desktop-search-${location}`}
                                 name="location"
                                 defaultValue={location}
-                                placeholder="Change location..."
+                                placeholder="Search for food or address..."
                                 className="input join-item bg-transparent border-none focus:outline-none w-full text-sm text-white placeholder:text-slate-500 h-11"
                                 autoComplete="off"
                             />
@@ -321,9 +324,10 @@ export default async function RestaurantFinder({
                     <form className="join border border-white/10 rounded-2xl bg-white/5 focus-within:border-primary/50 transition-all w-full overflow-hidden items-center">
                         <LocationButton />
                         <input
+                            key={`mobile-search-${location}`}
                             name="location"
                             defaultValue={location}
-                            placeholder="Change location..."
+                            placeholder="Enter delivery address..."
                             className="input join-item bg-transparent border-none focus:outline-none w-full text-sm text-white placeholder:text-slate-500 h-10"
                             autoComplete="off"
                         />
@@ -430,7 +434,10 @@ export default async function RestaurantFinder({
                                             20-30m
                                         </span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-medium mb-4 line-clamp-1">
+                                    <p className="text-[10px] text-slate-400 font-bold mb-1 line-clamp-1">
+                                        {rest.address}
+                                    </p>
+                                    <p className="text-[10px] text-slate-500 font-medium mb-4 line-clamp-1">
                                         {rest.tags.join(" • ")}
                                     </p>
                                     <div className="flex items-center justify-between pt-3 border-t border-white/5">
