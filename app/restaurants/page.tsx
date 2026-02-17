@@ -185,7 +185,7 @@ export default async function RestaurantFinder({
     searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string }>
 }) {
     const params = await searchParams;
-    const location = params.location || params.search;
+    const location = params.location || params.search || params.address;
     const address = params.address;
     const lat = params.lat ? parseFloat(params.lat) : undefined;
     const lng = params.lng ? parseFloat(params.lng) : undefined;
@@ -295,7 +295,7 @@ export default async function RestaurantFinder({
                                 name="location"
                                 defaultValue={location}
                                 placeholder="Change location..."
-                                className="input join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500 h-11"
+                                className="input join-item bg-transparent border-none focus:outline-none w-full text-sm text-white placeholder:text-slate-500 h-11"
                                 autoComplete="off"
                             />
                         </form>
@@ -324,7 +324,7 @@ export default async function RestaurantFinder({
                             name="location"
                             defaultValue={location}
                             placeholder="Change location..."
-                            className="input join-item bg-transparent border-none focus:outline-none w-full text-sm placeholder:text-slate-500 h-10"
+                            className="input join-item bg-transparent border-none focus:outline-none w-full text-sm text-white placeholder:text-slate-500 h-10"
                             autoComplete="off"
                         />
                     </form>
