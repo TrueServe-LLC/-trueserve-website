@@ -458,29 +458,30 @@ export default async function RestaurantFinder({
                     )}
                 </div>
 
-                {/* Strategy Mission Statement Section - Hidden or Compact on Mobile */}
-                <div className="mt-20 p-8 md:p-16 bg-white/5 border border-white/10 rounded-[2.5rem] md:rounded-[4rem] flex flex-col items-center text-center max-w-4xl mx-auto relative overflow-hidden">
-                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
-                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -z-10" />
+                <section className="w-full flex justify-center mt-20">
+                    <div className="p-8 md:p-16 bg-white/5 border border-white/10 rounded-[2.5rem] md:rounded-[4rem] flex flex-col items-center text-center max-w-5xl w-full relative overflow-hidden">
+                        <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
+                        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -z-10" />
 
-                    <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tighter text-white text-center">Built for the Community.</h2>
-                    <p className="text-sm md:text-lg text-slate-400 leading-relaxed mb-10 max-w-2xl text-center font-medium">
-                        TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve. Experience the difference of a fair marketplace.
-                    </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
-                        {[
-                            { icon: '📊', label: 'Fair Split' },
-                            { icon: '⚡', label: 'Priority' },
-                            { icon: '🏷️', label: '5% Saved' },
-                            { icon: '🎂', label: 'Gifts' }
-                        ].map((item, i) => (
-                            <div key={i} className="p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-primary/30 transition-colors">
-                                <div className="text-2xl mb-2">{item.icon}</div>
-                                <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest">{item.label}</p>
-                            </div>
-                        ))}
+                        <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tighter text-white text-center">Built for the Community.</h2>
+                        <p className="text-sm md:text-lg text-slate-400 leading-relaxed mb-10 max-w-2xl text-center font-medium mx-auto">
+                            TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve. Experience the difference of a fair marketplace.
+                        </p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2 w-full max-w-3xl mx-auto">
+                            {[
+                                { icon: '📊', label: 'Fair Split' },
+                                { icon: '⚡', label: 'Priority' },
+                                { icon: '🏷️', label: '5% Saved' },
+                                { icon: '🎂', label: 'Gifts' }
+                            ].map((item, i) => (
+                                <div key={i} className="p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-primary/30 transition-colors flex flex-col items-center">
+                                    <div className="text-2xl mb-2">{item.icon}</div>
+                                    <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest">{item.label}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                </section>
             </main>
         </div>
     );
