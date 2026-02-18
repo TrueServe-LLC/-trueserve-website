@@ -163,15 +163,13 @@ async function getRestaurants(
 
     } catch (error) {
         // Mock Data Fallback
-        const allMocks = [
-            { id: "1", name: "Carolina BBQ Pit (Mock)", rating: 4.8, image: "/restaurant1.jpg", tags: ["BBQ", "Ribs", "Smoked"], description: "Best BBQ in Charlotte", coords: [35.2271, -80.8431] as [number, number], city: "Charlotte", state: "NC", address: "123 BBQ Lane, Charlotte, NC" },
-            { id: "2", name: "Queen City Burger (Mock)", rating: 4.5, image: "/restaurant2.jpg", tags: ["Burgers", "American"], description: "Gourmet burgers", coords: [35.2280, -80.8440] as [number, number], city: "Charlotte", state: "NC", address: "456 Burger Ave, Charlotte, NC" },
-            { id: "3", name: "North Star Diner (Mock)", rating: 4.9, image: "/restaurant3.jpg", tags: ["Diner", "Breakfast"], description: "Hearty MN breakfast", coords: [45.2611, -93.4566] as [number, number], city: "Ramsey", state: "MN", address: "789 Diner Rd, Ramsey, MN" },
-            // Rock Hill Mock
-            { id: "4", name: "Old Town Kitchen (Mock)", rating: 4.6, image: "/restaurant3.jpg", tags: ["Southern", "Comfort"], description: "Rock Hill favorites", coords: [34.9249, -81.0251] as [number, number], city: "Rock Hill", state: "SC", address: "101 Southern Way, Rock Hill, SC" },
-            // Pineville Mock
-            { id: "5", name: "Pineville Pizzeria (Mock)", rating: 4.7, image: "/restaurant2.jpg", tags: ["Pizza", "Italian"], description: "Best slice in town", coords: [35.0833, -80.8872] as [number, number], city: "Pineville", state: "NC", address: "202 Pizza Cir, Pineville, NC" }
-        ];
+        // Mock Data Fallback
+        const { MOCK_RESTAURANTS } = await import('@/lib/mocks');
+        const allMocks = MOCK_RESTAURANTS.map(r => ({
+            ...r,
+            rating: Number(r.rating),
+            coords: [r.lat, r.lng] as [number, number]
+        }));
 
         return {
             restaurants: allMocks.filter(r => r.city.toLowerCase() === matchedLocation.city.toLowerCase()),

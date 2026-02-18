@@ -17,8 +17,16 @@ async function getRestaurant(id: string) {
             .single();
 
         if (error || !restaurant) {
-            // Fallback checking (preserving existing mock pattern logic if DB fails)
-            // But for "Switch" request, better to just return null or handle error.
+            // Fallback checking for mocks
+            const { getMockRestaurant } = await import('@/lib/mocks');
+            const mock = getMockRestaurant(id);
+            if (mock) {
+                return {
+                    ...mock,
+                    imageUrl: mock.image,
+                    menuItems: mock.menuItems.map((item: any) => ({ ...item, imageUrl: item.image }))
+                };
+            }
             if (error) console.error("Supabase Error (getRestaurant):", error);
             return null;
         }
@@ -31,22 +39,21 @@ async function getRestaurant(id: string) {
         return restaurant;
     } catch (e) {
         console.warn("DB failed", e);
-        // Fallback to mock if not found in DB
-        const mockRestaurants = [
-            {
-                id: "1", name: "Bella Italia", address: "123 Pasta Avenue, NY", rating: 4.8, imageUrl: "/restaurant1.jpg", menuItems: [
-                    { id: "m1", name: "Margherita Pizza", description: "Fresh basil, mozzarella, and tomato sauce", price: 14.99, imageUrl: "/hero-pizza.png", status: "APPROVED" },
-                    { id: "m2", name: "Spaghetti Carbonara", description: "Creamy sauce with guanciale and pecorino", price: 18.50, imageUrl: null, status: "APPROVED" }
-                ]
-            },
-            {
-                id: "2", name: "Spice Route", address: "45 Curry Lane, NY", rating: 4.5, imageUrl: "/restaurant2.jpg", menuItems: [
-                    { id: "m3", name: "Butter Chicken", description: "Tender chicken in a rich tomato and butter sauce", price: 16.99, imageUrl: "/hero-burger.png", status: "APPROVED" },
-                    { id: "m4", name: "Garlic Naan", description: "Freshly baked bread with garlic and butter", price: 3.50, imageUrl: null, status: "APPROVED" }
-                ]
-            }
-        ];
-        return mockRestaurants.find(r => r.id === id);
+        console.warn("DB failed or not found, checking mocks", e);
+        const { getMockRestaurant } = await import('@/lib/mocks');
+        const mock = getMockRestaurant(id);
+
+        if (mock) {
+            return {
+                ...mock,
+                imageUrl: mock.image, // Map for compatibility
+                menuItems: mock.menuItems.map(item => ({
+                    ...item,
+                    imageUrl: item.image // Map for compatibility
+                }))
+            };
+        }
+        return null;
     }
 }
 
