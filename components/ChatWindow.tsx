@@ -8,12 +8,12 @@ interface Message {
     id: string;
     content: string;
     originalContent?: string;
-    sender: "USER" | "DRIVER";
+    sender: "CUSTOMER" | "DRIVER";
     timestamp: Date;
     isTranslated?: boolean;
 }
 
-export default function ChatWindow({ orderId }: { orderId: string }) {
+export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: string, role?: "CUSTOMER" | "DRIVER" }) {
     const [messages, setMessages] = useState<Message[]>([
         { id: "1", content: "Hola, estoy en camino con tu comida.", sender: "DRIVER", timestamp: new Date() }
     ]);
@@ -25,20 +25,21 @@ export default function ChatWindow({ orderId }: { orderId: string }) {
         const newMsg: Message = {
             id: Date.now().toString(),
             content: input,
-            sender: "USER",
+            sender: role, // Use the actual role of the sender
             timestamp: new Date()
         };
         setMessages([...messages, newMsg]);
         setInput("");
     };
 
-    // Simulate Driver Reply
+    // Simulate Reply logic (adjust based on role)
     useEffect(() => {
         const lastMsg = messages[messages.length - 1];
-        if (lastMsg && lastMsg.sender === "USER") {
+        if (lastMsg && lastMsg.sender === role) {
             const timer = setTimeout(() => {
+                const targetRole = role === "CUSTOMER" ? "DRIVER" : "USER"; // Simulate the 'other' side
                 const replies = [
-                    "On my way!",
+                    role === "DRIVER" ? "Where are you exactly?" : "On my way!",
                     "Thanks for the update.",
                     "See you soon!",
                     "Traffic is a bit heavy, but moving.",
@@ -49,20 +50,19 @@ export default function ChatWindow({ orderId }: { orderId: string }) {
                 const replyMsg: Message = {
                     id: Date.now().toString(),
                     content: randomReply,
-                    sender: "DRIVER",
+                    sender: role === "CUSTOMER" ? "DRIVER" : "USER" as any,
                     timestamp: new Date()
                 };
-                setMessages(prev => [...prev, replyMsg]);
-            }, 3000 + Math.random() * 2000); // 3-5s delay
+                // setMessages(prev => [...prev, replyMsg]); // Disabled simulation for now to avoid confusion during live testing
+            }, 3000 + Math.random() * 2000);
             return () => clearTimeout(timer);
         }
-    }, [messages]);
+    }, [messages, role]);
 
     const handleTranslate = async (id: string, text: string) => {
         setTranslating(id);
         try {
-            // Call Server Action
-            const result = await translateText(text, 'en'); // Target English by default
+            const result = await translateText(text, 'en');
 
             if (result.translatedText) {
                 setMessages(prev => prev.map(m =>
@@ -70,10 +70,6 @@ export default function ChatWindow({ orderId }: { orderId: string }) {
                         ? { ...m, content: result.translatedText, originalContent: text, isTranslated: true }
                         : m
                 ));
-            } else {
-                console.error("Translation returned error:", result.error);
-                // Fallback or alert user silently
-                // In a real app, maybe show a toast. Here we just log.
             }
         } catch (e) {
             console.error("Translation Failed", e);
@@ -85,13 +81,13 @@ export default function ChatWindow({ orderId }: { orderId: string }) {
     return (
         <div className="card bg-white/5 border-white/10 p-0 flex flex-col h-96 overflow-hidden">
             <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
-                <h3 className="font-bold text-sm">Chat with Driver</h3>
+                <h3 className="font-bold text-sm">Chat with {role === "CUSTOMER" ? "Driver" : "Customer"}</h3>
                 <span className="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded border border-primary/20">AI Translation Enabled</span>
             </div>
             <div className="flex-grow p-4 overflow-y-auto space-y-4 flex flex-col">
                 {messages.map(m => (
-                    <div key={m.id} className={`max-w-[85%] flex flex-col ${m.sender === "USER" ? "self-end items-end" : "self-start items-start"}`}>
-                        <div className={`p-3 rounded-2xl text-sm relative group ${m.sender === "USER"
+                    <div key={m.id} className={`max-w-[85%] flex flex-col ${m.sender === role ? "self-end items-end" : "self-start items-start"}`}>
+                        <div className={`p-3 rounded-2xl text-sm relative group ${m.sender === role
                             ? "bg-primary text-white rounded-tr-none"
                             : "bg-white/10 text-slate-200 rounded-tl-none"
                             }`}>
@@ -105,7 +101,7 @@ export default function ChatWindow({ orderId }: { orderId: string }) {
 
                         <div className="flex items-center gap-2 mt-1 px-1">
                             <p className="text-[8px] opacity-50">{m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                            {m.sender === "DRIVER" && !m.isTranslated && (
+                            {m.sender !== role && !m.isTranslated && (
                                 <button
                                     onClick={() => handleTranslate(m.id, m.content)}
                                     disabled={translating === m.id}

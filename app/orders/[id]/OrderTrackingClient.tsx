@@ -228,7 +228,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         />
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-1">
                         <div className="w-10 h-10 rounded-xl bg-primary text-black flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20 flex-shrink-0">
                             {/* Driver Initials */}
                             {currentOrder.driver?.user?.name?.charAt(0) || "D"}
@@ -241,6 +241,16 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                             )}
                         </div>
                     </div>
+
+                    {currentOrder.driver?.user?.phone && (
+                        <a
+                            href={`tel:${currentOrder.driver.user.phone}`}
+                            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:bg-emerald-500/10 hover:border-emerald-500/50 transition-all"
+                            title="Call Driver"
+                        >
+                            📞
+                        </a>
+                    )}
                 </div>
             </div>
 
@@ -356,7 +366,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
             <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
                 {isChatOpen && (
                     <div className="w-80 shadow-2xl animate-fade-in-up">
-                        <ChatWindow orderId={currentOrder.id} />
+                        <ChatWindow orderId={currentOrder.id} role="CUSTOMER" />
                     </div>
                 )}
 

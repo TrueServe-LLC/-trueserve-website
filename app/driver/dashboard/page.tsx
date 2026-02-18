@@ -7,6 +7,7 @@ import DriverMap from "@/components/DriverMap";
 import { calculateDistance, getNavigationUrl } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import DriverRealtime from "@/components/DriverRealtime";
+import DriverChatButton from "@/components/DriverChatButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +42,7 @@ export default async function DriverDashboard() {
     const driver = await getDriverData();
     const supabase = await createClient();
 
-    // Fetch Available Orders (Fetch more to sort in-memory)
+    // Fetch Available Orders
     const { data: rawOrders } = await supabase
         .from('Order')
         .select(`*, restaurant:Restaurant(name, address, lat, lng)`)
@@ -51,7 +52,6 @@ export default async function DriverDashboard() {
         .order('createdAt', { ascending: false })
         .limit(20);
 
-    // Smart Dispatch: Sort by Proximity to Driver
     let availableOrders = rawOrders || [];
 
     if (driver && driver.currentLat && driver.currentLng) {
@@ -65,17 +65,19 @@ export default async function DriverDashboard() {
             return { ...order, distance: dist };
         }).sort((a: any, b: any) => a.distance - b.distance);
     } else {
-        // Fallback for new drivers without location history
         availableOrders = availableOrders.map((o: any) => ({ ...o, distance: 2.5 }));
     }
 
-    // Take top 5 after sorting
     availableOrders = availableOrders.slice(0, 5);
 
-    // Fetch My Active Orders
+    // Fetch My Active Orders (with customer info)
     const { data: myOrders } = driver ? await supabase
         .from('Order')
-        .select(`*, restaurant:Restaurant(name, address)`)
+        .select(`
+            *,
+            restaurant:Restaurant(name, address, lat, lng),
+            user:User(id, name, phone)
+        `)
         .eq('driverId', driver?.id)
         .neq('status', 'DELIVERED')
         .neq('status', 'COMPLETED')
@@ -93,7 +95,7 @@ export default async function DriverDashboard() {
             {driver && <DriverRealtime driverId={driver.id} />}
             <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center sticky top-0 bg-black/50 backdrop-blur-md z-50">
                 <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                    <img src="/logo.png" alt="TrueServe Driver" className="w-8 h-8 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
+                    <img src="/logo.png" alt="TrueServe Driver" className="w-8 h-8 rounded-full border border-white/10 transition-all shadow-lg" />
                     <span className="text-xl font-black tracking-tight">True<span className="text-emerald-400">Serve</span> Driver</span>
                 </Link>
                 <div className="flex gap-4 items-center">
@@ -131,9 +133,7 @@ export default async function DriverDashboard() {
                     </Link>
                 </div>
 
-                {/* NEW: Order Lists */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                    {/* Available Orders */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold flex items-center gap-2">
                             🔔 Recommended for You
@@ -141,11 +141,9 @@ export default async function DriverDashboard() {
                         {availableOrders && availableOrders.length > 0 ? (
                             availableOrders.map((order: any, index: number) => (
                                 <div key={order.id} className={`card p-5 flex justify-between items-center group transition-all relative overflow-hidden ${index === 0 ? 'bg-gradient-to-r from-emerald-900/40 to-black border-emerald-500/50 shadow-emerald-900/20 shadow-lg' : 'bg-white/5 border-white/10 hover:border-primary/50'}`}>
-
                                     {index === 0 && (
                                         <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[10px] uppercase font-bold px-2 py-1 rounded-bl">Best Match</div>
                                     )}
-
                                     <div>
                                         <p className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</p>
                                         <p className="text-sm text-slate-400">{order.restaurant?.address || "Location Hidden"}</p>
@@ -171,7 +169,6 @@ export default async function DriverDashboard() {
                         )}
                     </div>
 
-                    {/* My Active Deliveries */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold flex items-center gap-2">
                             🚀 My Active Deliveries
@@ -179,7 +176,8 @@ export default async function DriverDashboard() {
                         {myOrders && myOrders.length > 0 ? (
                             myOrders.map((order: any) => {
                                 const isPickedUp = order.status === 'PICKED_UP';
-                                const destinationName = isPickedUp ? "Customer" : order.restaurant?.name;
+                                const customerName = order.user?.name || "Customer";
+                                const destinationName = isPickedUp ? customerName : order.restaurant?.name;
                                 const destinationAddress = isPickedUp ? (order.deliveryAddress || "Customer Address") : order.restaurant?.address;
                                 const destLat = isPickedUp ? order.deliveryLat : order.restaurant?.lat;
                                 const destLng = isPickedUp ? order.deliveryLng : order.restaurant?.lng;
@@ -200,9 +198,20 @@ export default async function DriverDashboard() {
                                                     rel="noopener noreferrer"
                                                     className="flex-1 btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
                                                 >
-                                                    Navigate
+                                                    {isPickedUp ? "Navigate to Hub" : "Navigate to Store"}
                                                 </a>
-                                                <button className="flex-1 btn bg-white/10 text-white font-bold text-[10px] py-3 uppercase tracking-wider">Contact</button>
+
+                                                {isPickedUp && order.user?.phone && (
+                                                    <a
+                                                        href={`tel:${order.user.phone}`}
+                                                        className="btn bg-white/10 text-white px-4 flex items-center justify-center border border-white/10 hover:bg-emerald-500/20 transition-all text-lg"
+                                                        title="Call Customer"
+                                                    >
+                                                        📞
+                                                    </a>
+                                                )}
+
+                                                <DriverChatButton orderId={order.id} />
                                             </div>
 
                                             {order.status === 'READY_FOR_PICKUP' && (
