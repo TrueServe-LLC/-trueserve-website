@@ -23,13 +23,19 @@ export async function placeOrder(
     cartItems: { id: string; price: number; quantity: number }[],
     stripePaymentIntentId: string,
     customerLat?: number,
-    customerLng?: number
+    customerLng?: number,
+    customerAddress?: string
 ): Promise<OrderState> {
+
+    // ... (inside the insert call) ...
     // 0. Safety Net: Check if ordering is enabled globally
     const { isOrderingEnabled } = await import('@/lib/system');
     if (!(await isOrderingEnabled())) {
         return { message: "We are currently not accepting orders. Please try again later.", error: true };
     }
+
+
+
 
     // logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
 
@@ -80,15 +86,22 @@ export async function placeOrder(
     try {
         const { data: restaurant } = await supabase
             .from('Restaurant')
-            .select('lat, lng')
+            .select('lat, lng, openTime, closeTime')
             .eq('id', restaurantId)
             .single();
 
         if (restaurant) {
-            // SCENARIO 1.2: Restaurant Closed Check (Mocking 8 AM - 10 PM)
-            const hour = new Date().getHours();
-            if (hour < 8 || hour >= 22) {
-                return { message: "Restaurant is now closed. Order cannot be placed.", error: true };
+            // SCENARIO 1.2: Restaurant Closed Check (Real Logic)
+            const now = new Date();
+            // Get local time string in HH:MM:SS format
+            const currentTime = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            const openTime = restaurant.openTime || '08:00:00';
+            const closeTime = restaurant.closeTime || '22:00:00';
+
+            // Simple string comparison for HH:MM:SS works perfectly for 24h time
+            if (currentTime < openTime || currentTime > closeTime) {
+                return { message: `Restaurant is currently closed. Hours: ${openTime} - ${closeTime}`, error: true };
             }
 
             // SCENARIO 1.4: Delivery Zone Restriction (10 mile radius)
@@ -121,7 +134,7 @@ export async function placeOrder(
         const itemIds = cartItems.map(i => i.id);
         const { data: dbItems, error: itemsError } = await supabase
             .from('MenuItem')
-            .select('id, price, name, status')
+            .select('id, price, name, status, inventory')
             .in('id', itemIds);
 
         if (itemsError || !dbItems) {
@@ -138,7 +151,10 @@ export async function placeOrder(
             if (dbItem.status !== 'APPROVED') {
                 throw new Error(`${dbItem.name} is currently unavailable.`);
             }
-            // Note: Inventory column is currently missing in DB, skipping check.
+            // Inventory Check
+            if ((dbItem.inventory || 0) < item.quantity) {
+                throw new Error(`Insufficient inventory for ${dbItem.name}. Only ${dbItem.inventory} left.`);
+            }
 
             total += Number(dbItem.price) * item.quantity;
             return { ...item, price: dbItem.price };
@@ -188,6 +204,9 @@ export async function placeOrder(
             status: 'PENDING',
             posReference: posRef,
             stripePaymentIntentId, // Store for idempotency
+            deliveryLat: customerLat,
+            deliveryLng: customerLng,
+            deliveryAddress: customerAddress,
             updatedAt: new Date().toISOString(),
             createdAt: new Date().toISOString()
         });
@@ -212,6 +231,14 @@ export async function placeOrder(
             // In production, delete order here
             throw new Error("Failed to save order items.");
         }
+
+        // 6. Update Inventory (Decrement)
+        await Promise.all(verifiedItems.map(async (item) => {
+            const { error } = await supabase.rpc('decrement_inventory', { row_id: item.id, quantity: item.quantity });
+            if (error) {
+                console.error(`Inventory decrement failed for ${item.id}:`, error.message);
+            }
+        }));
 
         // logToFile(`SUCCESS: Order ${newOrderId} created.`);
 

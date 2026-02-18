@@ -38,11 +38,12 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     const driverLng = (driverLoc && driverLoc[1]) ? Number(driverLoc[1]) : restaurantLng;
     const initialDriverPos: [number, number] = [driverLat, driverLng];
 
-    // Mock Customer Location (nearby for demo)
-    const [customerPos] = useState<[number, number]>([
-        restaurantPos[0] + 0.015,
-        restaurantPos[1] + 0.015
-    ]);
+    // Customer Location
+    const [customerPos] = useState<[number, number]>(
+        (order.deliveryLat && order.deliveryLng)
+            ? [Number(order.deliveryLat), Number(order.deliveryLng)]
+            : [restaurantPos[0] + 0.015, restaurantPos[1] + 0.015]
+    );
 
     const [driverPos, setDriverPos] = useState<[number, number]>(initialDriverPos);
     const [driverBearing, setDriverBearing] = useState(0);

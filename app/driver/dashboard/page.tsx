@@ -177,50 +177,59 @@ export default async function DriverDashboard() {
                             🚀 My Active Deliveries
                         </h2>
                         {myOrders && myOrders.length > 0 ? (
-                            myOrders.map((order: any) => (
-                                <div key={order.id} className="card bg-emerald-500/10 border-emerald-500/20 p-5">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-lg text-emerald-100">{order.restaurant?.name}</h3>
-                                        <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{order.status}</span>
-                                    </div>
-                                    <p className="text-sm text-emerald-200/60 mb-4">{order.restaurant?.address}</p>
-                                    <div className="flex flex-col gap-2 mt-4">
-                                        <div className="flex gap-2">
-                                            <a
-                                                href={getNavigationUrl(order.restaurant?.address || "", (driver as any)?.navigationApp || 'google')}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex-1 btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
-                                            >
-                                                Navigate
-                                            </a>
-                                            <button className="flex-1 btn bg-white/10 text-white font-bold text-[10px] py-3 uppercase tracking-wider">Contact</button>
+                            myOrders.map((order: any) => {
+                                const isPickedUp = order.status === 'PICKED_UP';
+                                const destinationName = isPickedUp ? "Customer" : order.restaurant?.name;
+                                const destinationAddress = isPickedUp ? (order.deliveryAddress || "Customer Address") : order.restaurant?.address;
+                                const destLat = isPickedUp ? order.deliveryLat : order.restaurant?.lat;
+                                const destLng = isPickedUp ? order.deliveryLng : order.restaurant?.lng;
+                                const statusLabel = isPickedUp ? "Delivering" : "Pickup";
+
+                                return (
+                                    <div key={order.id} className="card bg-emerald-500/10 border-emerald-500/20 p-5">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-lg text-emerald-100">{destinationName}</h3>
+                                            <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{statusLabel}</span>
                                         </div>
+                                        <p className="text-sm text-emerald-200/60 mb-4">{destinationAddress}</p>
+                                        <div className="flex flex-col gap-2 mt-4">
+                                            <div className="flex gap-2">
+                                                <a
+                                                    href={getNavigationUrl(destinationAddress || "", (driver as any)?.navigationApp || 'google', destLat, destLng)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex-1 btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
+                                                >
+                                                    Navigate
+                                                </a>
+                                                <button className="flex-1 btn bg-white/10 text-white font-bold text-[10px] py-3 uppercase tracking-wider">Contact</button>
+                                            </div>
 
-                                        {order.status === 'READY_FOR_PICKUP' && (
-                                            <form action={async () => {
-                                                "use server";
-                                                await pickupOrder(order.id);
-                                            }}>
-                                                <button type="submit" className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
-                                                    Confirm Pickup
-                                                </button>
-                                            </form>
-                                        )}
+                                            {order.status === 'READY_FOR_PICKUP' && (
+                                                <form action={async () => {
+                                                    "use server";
+                                                    await pickupOrder(order.id);
+                                                }}>
+                                                    <button type="submit" className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
+                                                        Confirm Pickup
+                                                    </button>
+                                                </form>
+                                            )}
 
-                                        {order.status === 'PICKED_UP' && (
-                                            <form action={async () => {
-                                                "use server";
-                                                await completeDelivery(order.id);
-                                            }}>
-                                                <button type="submit" className="w-full btn bg-emerald-500 text-black py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-colors">
-                                                    Complete Delivery
-                                                </button>
-                                            </form>
-                                        )}
+                                            {order.status === 'PICKED_UP' && (
+                                                <form action={async () => {
+                                                    "use server";
+                                                    await completeDelivery(order.id);
+                                                }}>
+                                                    <button type="submit" className="w-full btn bg-emerald-500 text-black py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-colors">
+                                                        Complete Delivery
+                                                    </button>
+                                                </form>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <div className="p-8 text-center border dashed border-white/10 rounded-xl text-slate-500">
                                 You have no active deliveries.

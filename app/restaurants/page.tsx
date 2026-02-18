@@ -125,6 +125,7 @@ async function getRestaurants(
             .from('Restaurant')
             .select('*')
             .match({ city: cityFilter, state: stateFilter })
+            .eq('visibility', 'VISIBLE')
             .neq('name', 'Test Restaurant');
 
         if (error || !restaurants || restaurants.length === 0) {

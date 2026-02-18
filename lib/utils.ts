@@ -12,8 +12,14 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
     return d.toFixed(1);
 }
 
-export function getNavigationUrl(address: string, app: 'google' | 'waze' = 'google'): string {
+export function getNavigationUrl(address: string, app: 'google' | 'waze' = 'google', lat?: number, lng?: number): string {
     const encodedAddress = encodeURIComponent(address);
+    if (lat && lng) {
+        if (app === 'waze') {
+            return `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+        }
+        return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+    }
     if (app === 'waze') {
         return `https://waze.com/ul?q=${encodedAddress}&navigate=yes`;
     }

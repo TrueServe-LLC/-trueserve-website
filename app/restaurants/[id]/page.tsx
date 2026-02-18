@@ -13,6 +13,7 @@ async function getRestaurant(id: string) {
                 menuItems:MenuItem(*)
             `)
             .eq('id', id)
+            .eq('visibility', 'VISIBLE')
             .single();
 
         if (error || !restaurant) {

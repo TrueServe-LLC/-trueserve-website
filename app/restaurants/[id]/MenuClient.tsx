@@ -7,10 +7,10 @@ import { placeOrder, createPaymentIntent } from "../actions";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "@/components/CheckoutForm";
+import GoogleMapsMap from "@/components/GoogleMapsMap";
+import AddressInput from "@/components/AddressInput";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
-import GoogleMapsMap from "@/components/GoogleMapsMap";
 
 interface MenuItem {
     id: string;
@@ -31,6 +31,9 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
     const [cart, setCart] = useState<{ [key: string]: number }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [deliveryAddress, setDeliveryAddress] = useState<string | null>(null);
+    const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
+    const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
 
     const handleCartChange = async (newCart: { [key: string]: number }) => {
         setCart(newCart);
@@ -80,7 +83,13 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
             return { id, quantity, price: item ? Number(item.price) : 0 };
         });
 
-        const response = await placeOrder(restaurant.id, cartItems, paymentIntentId);
+        if (!deliveryAddress || !deliveryLat || !deliveryLng) {
+            alert("Please select a delivery address.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        const response = await placeOrder(restaurant.id, cartItems, paymentIntentId, deliveryLat, deliveryLng, deliveryAddress);
 
         if (response.success && response.orderId) {
             setCart({});
@@ -156,6 +165,22 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
                         </p>
                     </Link>
 
+                    <div className="mb-6">
+                        <h3 className="font-bold mb-3 text-sm flex items-center gap-2">
+                            <span>📍</span> Delivery Address
+                        </h3>
+                        <AddressInput
+                            onAddressSelect={(addr, lat, lng) => {
+                                setDeliveryAddress(addr);
+                                setDeliveryLat(lat);
+                                setDeliveryLng(lng);
+                            }}
+                        />
+                        {!deliveryAddress && cartTotalItems > 0 && (
+                            <p className="text-xs text-orange-400 mt-2 font-medium">Please enter an address to checkout.</p>
+                        )}
+                    </div>
+
                     <h3 className="font-bold mb-6 text-xl flex items-center gap-2">
                         <span>🛒</span> Your Cart
                     </h3>
@@ -205,7 +230,7 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
                                 <CheckoutForm
                                     totalAmount={totalPrice}
                                     onSuccess={handlePaymentSuccess}
-                                    disabled={!orderingEnabled}
+                                    disabled={!orderingEnabled || !deliveryAddress}
                                 />
                             </Elements>
                         </div>
