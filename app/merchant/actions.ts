@@ -8,6 +8,8 @@ import { redirect } from "next/navigation";
 import { sendEmail } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 import { getStripe } from "@/lib/stripe";
+import { sendSMS } from "@/lib/sms";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export type MerchantActionState = {
     message: string;
@@ -96,6 +98,35 @@ export async function updateOrderStatus(orderId: string, nextStatus: string) {
             .eq('id', orderId);
 
         if (error) throw error;
+
+        // --- NEW: Trigger SMS Alert to Driver if ready ---
+        if (nextStatus === 'READY_FOR_PICKUP') {
+            try {
+                // Fetch driver phone and restaurant info for the SMS
+                const { data: fullOrder } = await supabaseAdmin
+                    .from('Order')
+                    .select('*, restaurant:Restaurant(name), driver:Driver(userId)')
+                    .eq('id', orderId)
+                    .single();
+
+                if (fullOrder?.driver && !Array.isArray(fullOrder.driver)) {
+                    const driverObj = fullOrder.driver as unknown as { userId: string };
+                    if (driverObj.userId) {
+                        const { data: authData } = await supabaseAdmin.auth.admin.getUserById(driverObj.userId);
+                        const phone = authData?.user?.phone || authData?.user?.user_metadata?.phone;
+
+                        if (phone) {
+                            const message = `TrueServe: ${fullOrder.restaurant.name} order is READY! Please head to the counter for pickup.`;
+                            await sendSMS(phone, message);
+                        }
+                    }
+                }
+            } catch (smsErr) {
+                console.error("[SMS Notification Error]:", smsErr);
+            }
+        }
+
+
         revalidatePath('/merchant/dashboard');
         revalidatePath(`/orders/${orderId}`);
         return { success: true };

@@ -28,17 +28,17 @@ async function checkColumns() {
         if (orders && orders[0]) console.log('Sample Order:', JSON.stringify(orders[0], null, 2));
     }
 
-    console.log('\n--- Driver ---');
-    const { data: drivers, error: dError } = await supabase
-        .from('Driver')
+    console.log('\n--- User ---');
+    const { data: users, error: uError } = await supabase
+        .from('User')
         .select('*')
         .limit(1);
 
-    if (dError) {
-        console.error('Error fetching Driver:', dError);
+    if (uError) {
+        console.error('Error fetching User:', uError);
     } else {
-        console.log('Driver data keys:', drivers && drivers[0] ? Object.keys(drivers[0]) : 'No data');
-        if (drivers && drivers[0]) console.log('Sample Driver:', JSON.stringify(drivers[0], null, 2));
+        console.log('User data keys:', users && users[0] ? Object.keys(users[0]) : 'No data');
+        if (users && users[0]) console.log('Sample User:', JSON.stringify(users[0], null, 2));
     }
 }
 

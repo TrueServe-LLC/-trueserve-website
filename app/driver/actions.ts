@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getStripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
+import { sendSMS } from "@/lib/sms";
 
 export type DriverApplicationState = {
     message: string;
@@ -52,6 +53,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                     id: targetUserId,
                     name,
                     email,
+                    phone,
                     role: 'DRIVER',
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
@@ -138,6 +140,12 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             attachments
         );
 
+        // --- NEW: Send Confirmation SMS to Driver ---
+        await sendSMS(
+            phone,
+            `TrueServe: Hi ${name.split(' ')[0]}, thanks for applying! We've received your documents and will text you once approved.`
+        );
+
         // Send Notification to Admin
         await sendEmail(
             "admin@trueserve.com",
@@ -191,6 +199,16 @@ export async function acceptOrder(orderId: string) {
             .is('driverId', null); // Ensure not already taken
 
         if (error) throw new Error("Failed to accept order. It may have been taken or isn't ready.");
+
+        // --- NEW: Trigger SMS Confirmation to Driver ---
+        try {
+            const { data: userData } = await supabaseAdmin.from('User').select('phone').eq('id', user.id).single();
+            if (userData?.phone) {
+                await sendSMS(userData.phone, "TrueServe: Order confirmed! Navigate to the restaurant to pick up the delivery.");
+            }
+        } catch (smsErr) {
+            console.error("[SMS Confirmation Error]:", smsErr);
+        }
 
         revalidatePath('/driver/dashboard');
         revalidatePath(`/orders/${orderId}`);

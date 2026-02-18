@@ -2,10 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
-import { acceptOrder } from "../actions";
+import { acceptOrder, pickupOrder, completeDelivery } from "../actions";
 import DriverMap from "@/components/DriverMap";
 import { calculateDistance, getNavigationUrl } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import DriverRealtime from "@/components/DriverRealtime";
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +90,7 @@ export default async function DriverDashboard() {
 
     return (
         <div className="bg-[#0a0a0a] text-white">
-
+            {driver && <DriverRealtime driverId={driver.id} />}
             <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center sticky top-0 bg-black/50 backdrop-blur-md z-50">
                 <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="/logo.png" alt="TrueServe Driver" className="w-8 h-8 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
@@ -183,16 +184,40 @@ export default async function DriverDashboard() {
                                         <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{order.status}</span>
                                     </div>
                                     <p className="text-sm text-emerald-200/60 mb-4">{order.restaurant?.address}</p>
-                                    <div className="flex gap-2">
-                                        <a
-                                            href={getNavigationUrl(order.restaurant?.address || "", (driver as any)?.navigationApp || 'google')}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex-1 btn bg-emerald-500 text-black font-bold text-xs py-2 flex items-center justify-center"
-                                        >
-                                            Navigate
-                                        </a>
-                                        <button className="flex-1 btn bg-white/10 text-white font-bold text-xs py-2">Contact</button>
+                                    <div className="flex flex-col gap-2 mt-4">
+                                        <div className="flex gap-2">
+                                            <a
+                                                href={getNavigationUrl(order.restaurant?.address || "", (driver as any)?.navigationApp || 'google')}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex-1 btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
+                                            >
+                                                Navigate
+                                            </a>
+                                            <button className="flex-1 btn bg-white/10 text-white font-bold text-[10px] py-3 uppercase tracking-wider">Contact</button>
+                                        </div>
+
+                                        {order.status === 'READY_FOR_PICKUP' && (
+                                            <form action={async () => {
+                                                "use server";
+                                                await pickupOrder(order.id);
+                                            }}>
+                                                <button type="submit" className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
+                                                    Confirm Pickup
+                                                </button>
+                                            </form>
+                                        )}
+
+                                        {order.status === 'PICKED_UP' && (
+                                            <form action={async () => {
+                                                "use server";
+                                                await completeDelivery(order.id);
+                                            }}>
+                                                <button type="submit" className="w-full btn bg-emerald-500 text-black py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-colors">
+                                                    Complete Delivery
+                                                </button>
+                                            </form>
+                                        )}
                                     </div>
                                 </div>
                             ))
