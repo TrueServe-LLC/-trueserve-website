@@ -96,3 +96,17 @@ export async function logout() {
     (await cookies()).delete("admin_session");
     redirect("/");
 }
+
+export async function toggleOrderingStatus(enabled: boolean) {
+    try {
+        const { error } = await supabase
+            .from('SystemSettings')
+            .upsert({ key: 'ordering_enabled', value: enabled });
+
+        if (error) throw error;
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}

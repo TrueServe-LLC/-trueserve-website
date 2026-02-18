@@ -25,6 +25,12 @@ export async function placeOrder(
     customerLat?: number,
     customerLng?: number
 ): Promise<OrderState> {
+    // 0. Safety Net: Check if ordering is enabled globally
+    const { isOrderingEnabled } = await import('@/lib/system');
+    if (!(await isOrderingEnabled())) {
+        return { message: "We are currently not accepting orders. Please try again later.", error: true };
+    }
+
     // logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
 
     // 1. Initialize Admin Client
@@ -221,6 +227,12 @@ export async function placeOrder(
 }
 
 export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[]) {
+    // 0. Safety Net: Check if ordering is enabled globally
+    const { isOrderingEnabled } = await import('@/lib/system');
+    if (!(await isOrderingEnabled())) {
+        return { error: "Ordering is currently paused." };
+    }
+
     // logToFile(`[CreatePaymentIntent] START for Restaurant: ${restaurantId}`);
     try {
         // 1. Get real prices from DB

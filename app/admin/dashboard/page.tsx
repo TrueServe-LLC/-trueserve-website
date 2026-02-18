@@ -79,8 +79,25 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <div className="flex justify-between items-center mb-12">
                     <h1 className="text-4xl font-bold">Admin Control Center</h1>
 
-                    {/* Stripe Connect Section */}
                     <div className="flex items-center gap-4">
+                        {/* System Status Toggle */}
+                        <div className="px-4 py-2 border border-white/10 rounded-full flex items-center gap-3 bg-white/5">
+                            <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Ordering System</span>
+                            {await (async () => {
+                                const { isOrderingEnabled } = await import('@/lib/system');
+                                const enabled = await isOrderingEnabled();
+                                const { toggleOrderingStatus } = await import('../actions');
+                                return (
+                                    <form action={async () => { "use server"; await toggleOrderingStatus(!enabled); }}>
+                                        <button className={`w-12 h-6 rounded-full p-1 transition-colors relative ${enabled ? 'bg-emerald-500' : 'bg-red-500'}`}>
+                                            <div className={`w-4 h-4 rounded-full bg-white shadow-md transition-transform ${enabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
+                                    </form>
+                                );
+                            })()}
+                        </div>
+
+                        {/* Stripe Connect Section */}
                         {isStripeConnected ? (
                             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 font-bold text-sm">
                                 <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />

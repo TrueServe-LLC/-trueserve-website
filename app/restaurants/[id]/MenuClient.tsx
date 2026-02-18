@@ -23,9 +23,10 @@ interface MenuItem {
 interface MenuClientProps {
     restaurant: any; // We'll pass the whole restaurant object
     items: MenuItem[];
+    orderingEnabled: boolean;
 }
 
-export default function MenuClient({ restaurant, items }: MenuClientProps) {
+export default function MenuClient({ restaurant, items, orderingEnabled }: MenuClientProps) {
     const router = useRouter();
     const [cart, setCart] = useState<{ [key: string]: number }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -204,14 +205,22 @@ export default function MenuClient({ restaurant, items }: MenuClientProps) {
                                 <CheckoutForm
                                     totalAmount={totalPrice}
                                     onSuccess={handlePaymentSuccess}
+                                    disabled={!orderingEnabled}
                                 />
                             </Elements>
                         </div>
                     )}
 
-                    {!clientSecret && cartTotalItems > 0 && (
+                    {!clientSecret && cartTotalItems > 0 && orderingEnabled && (
                         <div className="mt-6 flex justify-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                    )}
+
+                    {!orderingEnabled && (
+                        <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+                            <p className="text-red-400 font-bold text-sm uppercase tracking-widest mb-1">Ordering Paused</p>
+                            <p className="text-xs text-slate-400">We are currently not accepting new orders. Please check back later.</p>
                         </div>
                     )}
                 </div>

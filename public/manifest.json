@@ -1,0 +1,21 @@
+{
+    "name": "TrueServe Delivery",
+    "short_name": "TrueServe",
+    "start_url": "/driver/dashboard",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#448C89",
+    "description": "Premium food delivery platform.",
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

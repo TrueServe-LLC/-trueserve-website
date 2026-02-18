@@ -51,7 +51,14 @@ async function getRestaurant(id: string) {
 
 export default async function RestaurantMenu({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const restaurant = await getRestaurant(id);
+
+    // Parallel fetch: get restaurant and system status
+    const [restaurant, { isOrderingEnabled }] = await Promise.all([
+        getRestaurant(id),
+        import('@/lib/system')
+    ]);
+
+    const orderingEnabled = await isOrderingEnabled();
 
     if (!restaurant) {
         notFound();
@@ -100,6 +107,7 @@ export default async function RestaurantMenu({ params }: { params: Promise<{ id:
                         ...item,
                         price: Number(item.price)
                     }))}
+                    orderingEnabled={orderingEnabled}
                 />
             </main>
         </div>

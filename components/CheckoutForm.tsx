@@ -7,9 +7,10 @@ import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js"
 interface CheckoutFormProps {
     onSuccess: (paymentIntentId: string) => void;
     totalAmount: number;
+    disabled?: boolean;
 }
 
-export default function CheckoutForm({ onSuccess, totalAmount }: CheckoutFormProps) {
+export default function CheckoutForm({ onSuccess, totalAmount, disabled }: CheckoutFormProps) {
     const stripe = useStripe();
     const elements = useElements();
     const [message, setMessage] = useState<string | null>(null);
@@ -46,7 +47,7 @@ export default function CheckoutForm({ onSuccess, totalAmount }: CheckoutFormPro
             <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
 
             <button
-                disabled={isLoading || !stripe || !elements}
+                disabled={isLoading || !stripe || !elements || disabled}
                 id="submit"
                 className="w-full btn btn-primary py-4 text-lg shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50"
             >

@@ -10,6 +10,10 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "TrueServe | Premium Food Delivery",
   description: "Experience the true standard of food delivery.",
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 import MobileNav from "@/components/MobileNav";
