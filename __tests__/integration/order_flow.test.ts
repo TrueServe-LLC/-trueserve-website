@@ -239,12 +239,15 @@ describe("Order Flow Integration Test", () => {
         }
 
         // 3. Login to get Token
-        const { data: session } = await supabase.auth.signInWithPassword({
+        const { data: session, error: loginError } = await supabase.auth.signInWithPassword({
             email,
             password: "TestPassword123!"
         });
 
-        if (!session.session) throw new Error("Failed to login created user");
+        if (loginError || !session.session) {
+            console.error("Login Details:", { email, error: loginError?.message });
+            throw new Error(`Failed to login created user: ${loginError?.message || 'No session'}`);
+        }
 
         return { id: user.user.id, token: session.session.access_token };
     }
