@@ -165,24 +165,25 @@ export default function MenuClient({
             <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-8 p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group overflow-hidden">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="text-lg">💎</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-primary">TrueServe+ Benefit</span>
+                    <Link href="/benefits" className="block mb-8 p-5 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative overflow-hidden">
+                        <div className="flex items-center gap-3 mb-3">
+                            <span className="text-xl">💎</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">TrueServe+ Benefit</span>
                         </div>
                         <p className="text-xs text-slate-300 font-medium leading-relaxed">
                             Zero delivery fees on this order.
-                            <span className="text-primary ml-1 group-hover:underline underline-offset-2 font-bold whitespace-nowrap">Explore Benefits &rarr;</span>
+                            <br />
+                            <span className="text-primary group-hover:underline underline-offset-4 font-bold inline-block mt-1">Explore Benefits &rarr;</span>
                         </p>
                     </Link>
 
-                    <div className="mb-6">
-                        <div className="flex justify-between items-end mb-3">
-                            <h3 className="font-bold text-xs uppercase tracking-[0.2em] text-slate-500">
+                    <div className="mb-8 group">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500">
                                 Delivery Destination
                             </h3>
                             {!deliveryAddress && (
-                                <span className="text-[10px] font-black text-primary animate-pulse uppercase tracking-tighter">Selection Required</span>
+                                <span className="text-[9px] font-black text-primary animate-pulse uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">Required</span>
                             )}
                         </div>
                         <AddressInput
@@ -194,18 +195,15 @@ export default function MenuClient({
                             }}
                         />
                         {deliveryAddress && (
-                            <div className="mt-3 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
-                                <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Delivering To:</p>
-                                <p className="text-xs text-white font-medium leading-normal">{deliveryAddress}</p>
+                            <div className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
+                                <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1.5 opacity-70">Confirming Address:</p>
+                                <p className="text-xs text-white font-bold leading-normal">{deliveryAddress}</p>
                             </div>
-                        )}
-                        {!deliveryAddress && cartTotalItems > 0 && (
-                            <p className="text-xs text-orange-400 mt-2 font-medium">Please enter an address to checkout.</p>
                         )}
                     </div>
 
-                    <h3 className="font-bold mb-6 text-xl flex items-center gap-2">
-                        <span>🛒</span> Your Cart
+                    <h3 className="font-black mb-6 text-xl flex items-center gap-3 text-white border-b border-white/5 pb-4">
+                        <span className="text-2xl">🛒</span> Your Cart
                     </h3>
 
                     {cartTotalItems === 0 ? (
