@@ -337,11 +337,15 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                             <span>Service Fee</span>
                             <span>$0.00</span>
                         </div>
+                        <div className="flex justify-between text-emerald-400 font-medium">
+                            <span>Driver Tip</span>
+                            <span>${(Number(order.tip) || 0).toFixed(2)}</span>
+                        </div>
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center font-bold text-xl text-white">
                         <span>Total</span>
-                        <span>${(Number(order.total) || 0).toFixed(2)}</span>
+                        <span>${((Number(order.total) || 0) + (Number(order.tip) || 0)).toFixed(2)}</span>
                     </div>
 
                     <button

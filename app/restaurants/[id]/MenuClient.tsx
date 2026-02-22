@@ -29,19 +29,20 @@ interface MenuClientProps {
 export default function MenuClient({ restaurant, items, orderingEnabled }: MenuClientProps) {
     const router = useRouter();
     const [cart, setCart] = useState<{ [key: string]: number }>({});
+    const [tip, setTip] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [deliveryAddress, setDeliveryAddress] = useState<string | null>(null);
     const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
     const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
 
-    const handleCartChange = async (newCart: { [key: string]: number }) => {
+    const handleCartChange = async (newCart: { [key: string]: number }, currentTip: number = tip) => {
         setCart(newCart);
 
         const hasItems = Object.values(newCart).some(q => q > 0);
         if (hasItems) {
             const cartItems = Object.entries(newCart).map(([id, quantity]) => ({ id, quantity }));
-            const res = await createPaymentIntent(restaurant.id, cartItems);
+            const res = await createPaymentIntent(restaurant.id, cartItems, currentTip);
             console.log("[Stripe] createPaymentIntent response received", { hasSecret: !!res.clientSecret });
             if (res.clientSecret) {
                 setClientSecret(res.clientSecret);
@@ -89,7 +90,7 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
             return;
         }
 
-        const response = await placeOrder(restaurant.id, cartItems, paymentIntentId, deliveryLat, deliveryLng, deliveryAddress);
+        const response = await placeOrder(restaurant.id, cartItems, paymentIntentId, deliveryLat, deliveryLng, deliveryAddress, tip);
 
         if (response.success && response.orderId) {
             setCart({});
@@ -217,9 +218,46 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
                             <span className="text-slate-400">Delivery Fee</span>
                             <span className="font-bold text-emerald-400">FREE</span>
                         </div>
+
+                        {/* TIP SELECTION */}
+                        <div className="pt-4 border-t border-white/5 space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-slate-400">Driver Tip</span>
+                                <span className="font-bold text-white">${tip.toFixed(2)}</span>
+                            </div>
+                            <div className="grid grid-cols-4 gap-2">
+                                {[3, 5, 7].map((amount) => (
+                                    <button
+                                        key={amount}
+                                        onClick={() => {
+                                            setTip(amount);
+                                            handleCartChange(cart, amount);
+                                        }}
+                                        className={`py-2 rounded-lg text-xs font-bold transition-all ${tip === amount ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+                                    >
+                                        ${amount}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() => {
+                                        const custom = prompt("Enter custom tip amount:");
+                                        if (custom && !isNaN(Number(custom))) {
+                                            const val = Math.max(0, Number(custom));
+                                            setTip(val);
+                                            handleCartChange(cart, val);
+                                        }
+                                    }}
+                                    className={`py-2 rounded-lg text-[10px] uppercase font-bold transition-all ${![3, 5, 7, 0].includes(tip) ? 'bg-primary text-black' : 'bg-white/5 text-slate-400'}`}
+                                >
+                                    Custom
+                                </button>
+                            </div>
+                            <p className="text-[10px] text-slate-500 italic">100% of tips go to your driver.</p>
+                        </div>
+
                         <div className="flex justify-between text-xl font-bold pt-4 text-white border-t border-white/10 mt-2">
                             <span>Total</span>
-                            <span>${totalPrice.toFixed(2)}</span>
+                            <span>${(totalPrice + tip).toFixed(2)}</span>
                         </div>
                     </div>
 
@@ -228,7 +266,7 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
                             <p className="text-xs font-bold uppercase text-slate-500 mb-3 tracking-widest">Secure Payment</p>
                             <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
                                 <CheckoutForm
-                                    totalAmount={totalPrice}
+                                    totalAmount={totalPrice + tip}
                                     onSuccess={handlePaymentSuccess}
                                     disabled={!orderingEnabled || !deliveryAddress}
                                 />

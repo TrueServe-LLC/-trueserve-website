@@ -256,6 +256,17 @@ export async function pickupOrder(orderId: string) {
 export async function completeDelivery(orderId: string) {
     try {
         const supabase = await createClient();
+
+        // 1. Fetch order details for payout calculation
+        const { data: order } = await supabase
+            .from('Order')
+            .select('totalPay, tip, driverId')
+            .eq('id', orderId)
+            .single();
+
+        if (!order) throw new Error("Order not found");
+
+        // 2. Update order status
         const { error } = await supabase
             .from('Order')
             .update({
@@ -267,8 +278,28 @@ export async function completeDelivery(orderId: string) {
 
         if (error) throw error;
 
+        // 3. Update Driver Balance (Fare + Tip)
+        if (order.driverId) {
+            const fare = Number(order.totalPay) || 0;
+            const tip = Number(order.tip) || 0;
+            const earnings = fare + tip;
+
+            if (earnings > 0) {
+                const { error: rpcError } = await supabase.rpc('increment_driver_balance', {
+                    driver_id: order.driverId,
+                    amount: earnings
+                });
+                if (rpcError) {
+                    console.error("[Balance Update Error]:", rpcError);
+                    // We don't throw here to avoid user-facing errors after delivery is already recorded,
+                    // but in production we should have a retry mechanism or log this heavily.
+                }
+            }
+        }
+
         revalidatePath('/driver/dashboard');
         revalidatePath(`/orders/${orderId}`);
+        revalidatePath('/driver/dashboard/earnings');
         return { success: true };
     } catch (e: any) {
         return { error: e.message };

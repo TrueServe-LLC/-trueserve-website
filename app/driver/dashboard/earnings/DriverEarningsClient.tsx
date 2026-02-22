@@ -29,7 +29,7 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
             return orderDate.toDateString() === d.toDateString();
         });
 
-        const amount = dayOrders.reduce((sum, o) => sum + (Number(o.totalPay) || 0), 0);
+        const amount = dayOrders.reduce((sum, o) => sum + (Number(o.totalPay) || 0) + (Number(o.tip) || 0), 0);
         return {
             day: dayName,
             amount,
@@ -179,8 +179,11 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
                             </div>
                             <div className="text-right">
                                 <p className="font-black text-emerald-400 text-lg">
-                                    +${Number(tx.totalPay || 0).toFixed(2)}
+                                    +${(Number(tx.totalPay || 0) + Number(tx.tip || 0)).toFixed(2)}
                                 </p>
+                                {Number(tx.tip) > 0 && (
+                                    <p className="text-[9px] text-primary font-black uppercase tracking-widest">+${Number(tx.tip).toFixed(2)} Tip</p>
+                                )}
                                 <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest mt-0.5">Completed Fare</p>
                             </div>
                         </div>

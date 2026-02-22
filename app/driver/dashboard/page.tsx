@@ -187,7 +187,12 @@ export default async function DriverDashboard() {
                                     <div key={order.id} className="card bg-emerald-500/10 border-emerald-500/20 p-5">
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="font-bold text-lg text-emerald-100">{destinationName}</h3>
-                                            <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{statusLabel}</span>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{statusLabel}</span>
+                                                {Number(order.tip) > 0 && (
+                                                    <span className="text-[10px] font-black text-primary animate-pulse">+$ {Number(order.tip).toFixed(2)} Tip</span>
+                                                )}
+                                            </div>
                                         </div>
                                         <p className="text-sm text-emerald-200/60 mb-4">{destinationAddress}</p>
                                         <div className="flex flex-col gap-2 mt-4">

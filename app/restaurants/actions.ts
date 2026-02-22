@@ -24,7 +24,8 @@ export async function placeOrder(
     stripePaymentIntentId: string,
     customerLat?: number,
     customerLng?: number,
-    customerAddress?: string
+    customerAddress?: string,
+    tip: number = 0
 ): Promise<OrderState> {
 
     // ... (inside the insert call) ...
@@ -201,6 +202,7 @@ export async function placeOrder(
             userId: finalUserId,
             restaurantId: restaurantId,
             total,
+            tip,
             status: 'PENDING',
             posReference: posRef,
             stripePaymentIntentId, // Store for idempotency
@@ -253,7 +255,7 @@ export async function placeOrder(
     }
 }
 
-export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[]) {
+export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[], tip: number = 0) {
     // 0. Safety Net: Check if ordering is enabled globally
     const { isOrderingEnabled } = await import('@/lib/system');
     if (!(await isOrderingEnabled())) {
@@ -277,7 +279,7 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
         const amount = cartItems.reduce((sum, cartItem) => {
             const dbItem = items.find(i => i.id === cartItem.id);
             return sum + (dbItem ? Number(dbItem.price) * cartItem.quantity : 0);
-        }, 0);
+        }, 0) + tip;
 
         // 2. Fetch Restaurant Info for Connect (Scenario: Connected Accounts)
         const { data: restaurant } = await supabase
@@ -298,7 +300,8 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
             metadata: {
                 restaurantId,
                 restaurantName: restaurant?.name || 'Unknown',
-                itemCount: cartItems.length.toString()
+                itemCount: cartItems.length.toString(),
+                tipAmount: tip.toString()
             }
         };
 
