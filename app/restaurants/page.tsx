@@ -403,7 +403,7 @@ export default async function RestaurantFinder({
                     ) : (
                         restaurants.map((rest) => (
                             <Link
-                                href={`/restaurants/${rest.id}`}
+                                href={`/restaurants/${rest.id}?lat=${lat || ''}&lng=${lng || ''}&address=${encodeURIComponent(address || '')}`}
                                 key={rest.id}
                                 className="group flex flex-col bg-white/5 rounded-3xl border border-white/5 overflow-hidden hover:bg-white/[0.08] hover:border-white/10 transition-all duration-300 active:scale-[0.98]"
                             >

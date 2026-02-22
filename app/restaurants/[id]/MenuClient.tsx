@@ -24,17 +24,27 @@ interface MenuClientProps {
     restaurant: any; // We'll pass the whole restaurant object
     items: MenuItem[];
     orderingEnabled: boolean;
+    initialAddress?: string;
+    initialLat?: number;
+    initialLng?: number;
 }
 
-export default function MenuClient({ restaurant, items, orderingEnabled }: MenuClientProps) {
+export default function MenuClient({
+    restaurant,
+    items,
+    orderingEnabled,
+    initialAddress = undefined,
+    initialLat = undefined,
+    initialLng = undefined
+}: MenuClientProps) {
     const router = useRouter();
     const [cart, setCart] = useState<{ [key: string]: number }>({});
     const [tip, setTip] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
-    const [deliveryAddress, setDeliveryAddress] = useState<string | null>(null);
-    const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
-    const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
+    const [deliveryAddress, setDeliveryAddress] = useState<string | null>(initialAddress || null);
+    const [deliveryLat, setDeliveryLat] = useState<number | null>(initialLat || null);
+    const [deliveryLng, setDeliveryLng] = useState<number | null>(initialLng || null);
 
     const handleCartChange = async (newCart: { [key: string]: number }, currentTip: number = tip) => {
         setCart(newCart);
@@ -176,6 +186,7 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
                             )}
                         </div>
                         <AddressInput
+                            initialAddress={deliveryAddress || ""}
                             onAddressSelect={(addr, lat, lng) => {
                                 setDeliveryAddress(addr);
                                 setDeliveryLat(lat);

@@ -57,8 +57,15 @@ async function getRestaurant(id: string) {
     }
 }
 
-export default async function RestaurantMenu({ params }: { params: Promise<{ id: string }> }) {
+export default async function RestaurantMenu({
+    params,
+    searchParams
+}: {
+    params: Promise<{ id: string }>,
+    searchParams: Promise<{ address?: string; lat?: string; lng?: string }>
+}) {
     const { id } = await params;
+    const { address, lat, lng } = await searchParams;
 
     // Parallel fetch: get restaurant and system status
     const [restaurant, { isOrderingEnabled }] = await Promise.all([
@@ -116,6 +123,9 @@ export default async function RestaurantMenu({ params }: { params: Promise<{ id:
                         price: Number(item.price)
                     }))}
                     orderingEnabled={orderingEnabled}
+                    initialAddress={address}
+                    initialLat={lat ? parseFloat(lat) : undefined}
+                    initialLng={lng ? parseFloat(lng) : undefined}
                 />
             </main>
         </div>
