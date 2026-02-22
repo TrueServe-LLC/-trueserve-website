@@ -155,30 +155,33 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
             <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-6 p-4 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-xl">💎</span>
+                    <Link href="/benefits" className="block mb-8 p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group overflow-hidden">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="text-lg">💎</span>
                             <span className="text-[10px] font-black uppercase tracking-widest text-primary">TrueServe+ Benefit</span>
                         </div>
                         <p className="text-xs text-slate-300 font-medium leading-relaxed">
-                            You could be saving <span className="text-white font-bold">$5.99</span> on this delivery.
-                            <span className="text-primary ml-1 group-hover:underline underline-offset-2 font-bold">See Benefits &rarr;</span>
+                            Zero delivery fees on this order.
+                            <span className="text-primary ml-1 group-hover:underline underline-offset-2 font-bold whitespace-nowrap">Explore Benefits &rarr;</span>
                         </p>
                     </Link>
 
                     <div className="mb-6">
-                        <h3 className="font-bold mb-3 text-xs uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                            Delivery Address
-                        </h3>
-                        <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner focus-within:border-primary/30 transition-all">
-                            <AddressInput
-                                onAddressSelect={(addr, lat, lng) => {
-                                    setDeliveryAddress(addr);
-                                    setDeliveryLat(lat);
-                                    setDeliveryLng(lng);
-                                }}
-                            />
+                        <div className="flex justify-between items-end mb-3">
+                            <h3 className="font-bold text-xs uppercase tracking-[0.2em] text-slate-500">
+                                Delivery Destination
+                            </h3>
+                            {!deliveryAddress && (
+                                <span className="text-[10px] font-black text-primary animate-pulse uppercase tracking-tighter">Selection Required</span>
+                            )}
                         </div>
+                        <AddressInput
+                            onAddressSelect={(addr, lat, lng) => {
+                                setDeliveryAddress(addr);
+                                setDeliveryLat(lat);
+                                setDeliveryLng(lng);
+                            }}
+                        />
                         {deliveryAddress && (
                             <div className="mt-3 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
                                 <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Delivering To:</p>
