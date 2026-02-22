@@ -148,6 +148,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         doc.text(`Order ID: ${currentOrder.id}`, 14, 32);
         doc.text(`Date: ${new Date(currentOrder.createdAt).toLocaleDateString()}`, 14, 38);
         doc.text(`Restaurant: ${currentOrder.restaurant.name}`, 14, 44);
+        doc.text(`Deliver To: ${currentOrder.deliveryAddress || "N/A"}`, 14, 50);
 
         // Items Table
         const tableColumn = ["Item", "Qty", "Price", "Total"];
@@ -226,6 +227,17 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                             className="absolute top-0 left-0 h-full bg-primary transition-all duration-1000 ease-linear shadow-[0_0_8px_rgba(255,153,42,0.5)]"
                             style={{ width: `${(currentStep / 5) * 100}%` }}
                         />
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center border border-orange-500/20 flex-shrink-0">
+                            📍
+                        </div>
+                        <div>
+                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-[0.2em] mb-0.5">Destination</p>
+                            <p className="font-bold text-xs md:text-sm text-white truncate max-w-[120px] md:max-w-none">{order.deliveryAddress || "Home"}</p>
+                            <p className="text-[10px] text-slate-400">Hub</p>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-3 flex-1">

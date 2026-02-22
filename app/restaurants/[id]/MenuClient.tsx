@@ -177,6 +177,12 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
                                 setDeliveryLng(lng);
                             }}
                         />
+                        {deliveryAddress && (
+                            <div className="mt-3 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
+                                <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Delivering To:</p>
+                                <p className="text-xs text-white font-medium leading-normal">{deliveryAddress}</p>
+                            </div>
+                        )}
                         {!deliveryAddress && cartTotalItems > 0 && (
                             <p className="text-xs text-orange-400 mt-2 font-medium">Please enter an address to checkout.</p>
                         )}
