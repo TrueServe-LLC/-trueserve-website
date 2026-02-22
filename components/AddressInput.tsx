@@ -90,8 +90,8 @@ export default function AddressInput({ onAddressSelect, initialAddress = "" }: A
 
     return (
         <div className="relative w-full z-40">
-            <div className="relative flex items-center bg-black/50 border border-white/10 rounded-xl focus-within:border-primary/50 transition-colors">
-                <span className="pl-3 text-slate-400">📍</span>
+            <div className="relative flex items-center bg-transparent focus-within:bg-white/5 transition-colors">
+                <span className="pl-3 text-primary animate-pulse">📍</span>
                 <input
                     type="text"
                     placeholder="Enter delivery address..."

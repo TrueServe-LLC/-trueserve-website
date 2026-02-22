@@ -167,16 +167,18 @@ export default function MenuClient({ restaurant, items, orderingEnabled }: MenuC
                     </Link>
 
                     <div className="mb-6">
-                        <h3 className="font-bold mb-3 text-sm flex items-center gap-2">
-                            <span>📍</span> Delivery Address
+                        <h3 className="font-bold mb-3 text-xs uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
+                            Delivery Address
                         </h3>
-                        <AddressInput
-                            onAddressSelect={(addr, lat, lng) => {
-                                setDeliveryAddress(addr);
-                                setDeliveryLat(lat);
-                                setDeliveryLng(lng);
-                            }}
-                        />
+                        <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner focus-within:border-primary/30 transition-all">
+                            <AddressInput
+                                onAddressSelect={(addr, lat, lng) => {
+                                    setDeliveryAddress(addr);
+                                    setDeliveryLat(lat);
+                                    setDeliveryLng(lng);
+                                }}
+                            />
+                        </div>
                         {deliveryAddress && (
                             <div className="mt-3 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
                                 <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Delivering To:</p>
