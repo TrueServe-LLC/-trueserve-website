@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export type AuthState = {
     message: string;
@@ -69,13 +70,12 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
     }
 
     try {
-        // 1. Sign Up in Supabase Auth
-        const { data, error } = await supabase.auth.signUp({
+        // 1. Sign Up in Supabase Auth - Use Admin API to bypass "Sign up disabled" settings
+        const { data, error } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
-            options: {
-                data: { name, role }
-            }
+            email_confirm: true,
+            user_metadata: { name, role }
         });
 
         if (error) {

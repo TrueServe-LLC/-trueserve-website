@@ -170,15 +170,14 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     }
 
     try {
-        // 1. Create a Supabase Auth User (IAM)
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        // 1. Create a Supabase Auth User (IAM) - Use Admin API to bypass "Sign up disabled" settings
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
-            options: {
-                data: {
-                    displayName: contactName,
-                    role: 'MERCHANT'
-                }
+            email_confirm: true,
+            user_metadata: {
+                displayName: contactName,
+                role: 'MERCHANT'
             }
         });
 
