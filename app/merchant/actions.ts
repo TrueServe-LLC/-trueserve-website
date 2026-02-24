@@ -192,11 +192,11 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         const userId = authData.user.id;
 
-        // 2. Create Public User Record
-        const { data: existingUser } = await supabase.from('User').select('id').eq('id', userId).maybeSingle();
+        // 2. Create Public User Record - Use ADMIN to bypass RLS
+        const { data: existingUser } = await supabaseAdmin.from('User').select('id').eq('id', userId).maybeSingle();
 
         if (!existingUser) {
-            const { error: userError } = await supabase.from('User').insert({
+            const { error: userError } = await supabaseAdmin.from('User').insert({
                 id: userId,
                 email,
                 name: contactName,
@@ -217,9 +217,9 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         else if (cityLower.includes('rock hill')) { lat = 34.9249; lng = -81.0251; }
         else if (cityLower.includes('ramsey')) { lat = 45.2611; lng = -93.4566; }
 
-        // 3. Create the Restaurant Shell WITH Location Data
+        // 3. Create the Restaurant Shell WITH Location Data - Use ADMIN to bypass RLS
         const restaurantId = uuidv4();
-        const { error: restError } = await supabase.from('Restaurant').insert({
+        const { error: restError } = await supabaseAdmin.from('Restaurant').insert({
             id: restaurantId,
             ownerId: userId,
             name: restaurantName,

@@ -83,9 +83,9 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
         }
 
         if (data.user) {
-            // 2. Create Public User Record
+            // 2. Create Public User Record - Use ADMIN to bypass RLS
             // We use the SAME ID as the Auth User for consistency
-            const { error: dbError } = await supabase.from('User').insert({
+            const { error: dbError } = await supabaseAdmin.from('User').insert({
                 id: data.user.id,
                 email: email,
                 name: name,
