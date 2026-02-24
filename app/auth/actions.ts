@@ -70,6 +70,17 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
     }
 
     try {
+        // 0. Check if User record already exists in Public table
+        const { data: existingPublicUser } = await supabaseAdmin
+            .from('User')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (existingPublicUser) {
+            return { message: "This email is already registered. Please log in instead.", error: true };
+        }
+
         // 1. Sign Up in Supabase Auth - Use Admin API to bypass "Sign up disabled" settings
         const { data, error } = await supabaseAdmin.auth.admin.createUser({
             email,
@@ -79,6 +90,9 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
         });
 
         if (error) {
+            if (error.message.includes("already exists")) {
+                return { message: "An account with this email already exists. Please log in.", error: true };
+            }
             return { message: error.message, error: true };
         }
 

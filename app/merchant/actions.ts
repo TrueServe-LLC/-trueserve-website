@@ -170,6 +170,17 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     }
 
     try {
+        // 0. Check if User record already exists in Public table
+        const { data: existingPublicUser } = await supabaseAdmin
+            .from('User')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (existingPublicUser) {
+            return { message: "This email is already registered. Please log in instead.", error: true };
+        }
+
         // 1. Create a Supabase Auth User (IAM) - Use Admin API to bypass "Sign up disabled" settings
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
@@ -183,6 +194,9 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         if (authError) {
             console.error("Auth Signup Error:", authError);
+            if (authError.message.includes("already exists")) {
+                return { message: "An account with this email already exists. Please log in.", error: true };
+            }
             return { message: "Signup Failed: " + authError.message, error: true };
         }
 
