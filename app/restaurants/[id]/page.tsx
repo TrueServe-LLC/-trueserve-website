@@ -1,6 +1,10 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { getFavorites } from "@/app/user/favorite-actions";
+import FavoriteButton from "@/components/FavoriteButton";
+import NotificationBell from "@/components/NotificationBell";
 
 import MenuClient from "./MenuClient";
 
@@ -75,6 +79,15 @@ export default async function RestaurantMenu({
 
     const orderingEnabled = await isOrderingEnabled();
 
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+    let initialIsFavorited = false;
+
+    if (userId) {
+        const favs = await getFavorites();
+        initialIsFavorited = favs.includes(id);
+    }
+
     if (!restaurant) {
         notFound();
     }
@@ -89,7 +102,16 @@ export default async function RestaurantMenu({
                     <Link href="/" className="text-2xl font-bold tracking-tighter">
                         True<span className="text-gradient">Serve</span>
                     </Link>
-                    <div className="w-24"></div> {/* Spacer for symmetry */}
+                    <div className="flex items-center gap-4">
+                        {userId && <NotificationBell userId={userId} />}
+                        {userId ? (
+                            <Link href="/user/settings" className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            </Link>
+                        ) : (
+                            <Link href="/login" className="text-xs font-bold text-slate-400 hover:text-white transition-colors">Login</Link>
+                        )}
+                    </div>
                 </div>
             </nav>
 
@@ -105,7 +127,16 @@ export default async function RestaurantMenu({
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
                 <div className="absolute bottom-0 left-0 w-full p-8">
                     <div className="container">
-                        <h1 className="text-5xl font-bold mb-2">{restaurant.name}</h1>
+                        <div className="flex items-center gap-6">
+                            <h1 className="text-4xl md:text-5xl font-bold mb-2">{restaurant.name}</h1>
+                            {userId && (
+                                <FavoriteButton
+                                    restaurantId={id}
+                                    initialIsFavorited={initialIsFavorited}
+                                    className="scale-110 mb-2"
+                                />
+                            )}
+                        </div>
                         <div className="flex items-center gap-4 text-sm text-slate-300">
                             <span>{restaurant.address}</span>
                             {/* @ts-ignore */}

@@ -12,6 +12,7 @@ import { revalidatePath } from "next/cache";
 import { getStripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 import { sendSMS } from "@/lib/sms";
+import { createNotification } from "@/lib/notifications";
 
 export type DriverApplicationState = {
     message: string;
@@ -245,6 +246,26 @@ export async function pickupOrder(orderId: string) {
 
         if (error) throw error;
 
+        // --- NEW: Notify Customer ---
+        try {
+            const { data: orderData } = await supabaseAdmin
+                .from('Order')
+                .select('userId, restaurant:Restaurant(name)')
+                .eq('id', orderId)
+                .single();
+
+            if (orderData) {
+                await createNotification({
+                    userId: orderData.userId,
+                    orderId: orderId,
+                    title: "Driver Picked Up! 🚗",
+                    message: `A driver has picked up your order from ${(orderData.restaurant as any)?.name || "the restaurant"} and is on the way!`
+                });
+            }
+        } catch (notifErr) {
+            console.error("[Customer Notification Error]:", notifErr);
+        }
+
         revalidatePath('/driver/dashboard');
         revalidatePath(`/orders/${orderId}`);
         return { success: true };
@@ -277,6 +298,26 @@ export async function completeDelivery(orderId: string) {
             .eq('status', 'PICKED_UP');
 
         if (error) throw error;
+
+        // --- NEW: Notify Customer ---
+        try {
+            const { data: orderData } = await supabaseAdmin
+                .from('Order')
+                .select('userId, restaurant:Restaurant(name)')
+                .eq('id', orderId)
+                .single();
+
+            if (orderData) {
+                await createNotification({
+                    userId: orderData.userId,
+                    orderId: orderId,
+                    title: "Order Delivered! 🎉",
+                    message: `Your order from ${(orderData.restaurant as any)?.name || "the restaurant"} has been delivered. Enjoy your meal!`
+                });
+            }
+        } catch (notifErr) {
+            console.error("[Customer Notification Error]:", notifErr);
+        }
 
         // 3. Update Driver Balance (Fare + Tip)
         if (order.driverId) {

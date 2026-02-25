@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import NotificationBell from "@/components/NotificationBell";
 
 export default async function UserSettings() {
     const cookieStore = await cookies();
@@ -25,6 +26,14 @@ export default async function UserSettings() {
         .eq('userId', userId)
         .order('createdAt', { ascending: false });
 
+    // Fetch Saved Stores
+    const { data: savedStoresData } = await supabase
+        .from('Favorite')
+        .select('restaurant:Restaurant(*)')
+        .eq('userId', userId);
+
+    const savedStores = savedStoresData?.map(s => s.restaurant) || [];
+
     // Mock stored cards
     const paymentMethods = [
         { id: 1, type: "Visa", last4: "4242", expiry: "12/28" },
@@ -41,8 +50,9 @@ export default async function UserSettings() {
                             True<span className="text-primary">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4">
-                        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+                    <div className="flex items-center gap-6">
+                        <Link href="/" className="text-slate-400 hover:text-white transition-colors">Home</Link>
+                        {userId && <NotificationBell userId={userId} />}
                         <button className="text-primary font-bold border-b-2 border-primary">Account</button>
                     </div>
                 </div>
@@ -125,6 +135,30 @@ export default async function UserSettings() {
                                     <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
                                         <p className="text-slate-400 mb-4">No past orders found.</p>
                                         <Link href="/restaurants" className="btn btn-primary">Order Food</Link>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold text-white mb-6">Saved Stores</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {savedStores.length > 0 ? (
+                                    savedStores.map((store: any) => (
+                                        <Link key={store.id} href={`/restaurants/${store.id}`} className="card bg-white/5 border border-white/10 overflow-hidden hover:bg-white/10 transition-all group">
+                                            <div className="h-32 relative">
+                                                <img src={store.imageUrl || "/restaurant1.jpg"} alt={store.name} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#080c14] to-transparent" />
+                                                <div className="absolute bottom-3 left-4">
+                                                    <h4 className="font-bold text-white">{store.name}</h4>
+                                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">{store.city}, {store.state}</p>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <div className="col-span-full text-center py-12 bg-white/5 rounded-2xl border border-white/10">
+                                        <p className="text-slate-400">No stores saved yet.</p>
                                     </div>
                                 )}
                             </div>

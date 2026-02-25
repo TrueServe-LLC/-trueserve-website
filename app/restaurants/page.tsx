@@ -2,6 +2,9 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import LocationButton from "@/components/LocationButton";
 import GoogleMapsMap from "@/components/GoogleMapsMap";
+import FavoriteButton from "@/components/FavoriteButton";
+import NotificationBell from "@/components/NotificationBell";
+import { getFavorites } from "@/app/user/favorite-actions";
 import { cookies } from "next/headers";
 import { calculateDistance } from "@/lib/utils";
 
@@ -33,10 +36,11 @@ async function getRestaurants(
         term?: string;
         lat?: number;
         lng?: number;
-        address?: string
+        address?: string;
+        category?: string;
     }
 ): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
-    const { term, lat, lng, address } = query;
+    const { term, lat, lng, address, category } = query;
 
     // Default Fallback ID
     const DEFAULT_CENTER: [number, number] = [35.2271, -80.8431]; // Charlotte Uptown
@@ -136,14 +140,18 @@ async function getRestaurants(
             const seed = r.name.length + index;
             const mockRating = (4.0 + (seed % 10) / 10).toFixed(1);
 
-            // Infer tags logic (same as before)
+            // Infer tags logic (expanded to match UI categories)
             let tags = ["Local", "Great Service"];
             const nameLower = r.name.toLowerCase();
             if (nameLower.includes("pizza") || nameLower.includes("italian")) tags = ["Italian", "Pizza", "Comfort"];
-            else if (nameLower.includes("burger") || nameLower.includes("grill")) tags = ["American", "Burgers", "Grill"];
-            else if (nameLower.includes("asian") || nameLower.includes("thai") || nameLower.includes("sushi")) tags = ["Asian", "Healthy", "Spicy"];
-            else if (nameLower.includes("mexican") || nameLower.includes("taco")) tags = ["Mexican", "Tacos", "Zesty"];
-            else if (nameLower.includes("coffee") || nameLower.includes("cafe")) tags = ["Coffee", "Breakfast", "Bakery"];
+            else if (nameLower.includes("burger") || nameLower.includes("grill") || nameLower.includes("shake")) tags = ["American", "Burgers", "Grill"];
+            else if (nameLower.includes("asian") || nameLower.includes("thai") || nameLower.includes("sushi") || nameLower.includes("ramen") || nameLower.includes("chinese")) tags = ["Asian", "Healthy", "Spicy"];
+            else if (nameLower.includes("mexican") || nameLower.includes("taco") || nameLower.includes("burrito") || nameLower.includes("cantina")) tags = ["Mexican", "Tacos", "Zesty"];
+            else if (nameLower.includes("coffee") || nameLower.includes("cafe") || nameLower.includes("starbucks") || nameLower.includes("espresso")) tags = ["Coffee", "Breakfast", "Bakery"];
+            else if (nameLower.includes("dessert") || nameLower.includes("cake") || nameLower.includes("ice cream") || nameLower.includes("sweet") || nameLower.includes("bakery")) tags = ["Dessert", "Sweet", "Bakery"];
+            else if (nameLower.includes("steak") || nameLower.includes("chophouse")) tags = ["Steak", "Grill", "Premium"];
+            else if (nameLower.includes("bbq") || nameLower.includes("barbecue") || nameLower.includes("smokehouse")) tags = ["BBQ", "Smoked", "American"];
+            else if (nameLower.includes("salad") || nameLower.includes("bowl") || nameLower.includes("healthy") || nameLower.includes("vegan")) tags = ["Healthy", "Fresh", "Vegan"];
 
             return {
                 id: r.id,
@@ -159,10 +167,17 @@ async function getRestaurants(
             };
         });
 
-        return { restaurants: mappedRestaurants, locationMeta };
+        let finalRestaurants = mappedRestaurants;
+        if (category) {
+            const catLower = category.toLowerCase();
+            finalRestaurants = mappedRestaurants.filter((r: any) =>
+                r.tags.some((t: string) => t.toLowerCase() === catLower)
+            );
+        }
+
+        return { restaurants: finalRestaurants, locationMeta };
 
     } catch (error) {
-        // Mock Data Fallback
         // Mock Data Fallback
         const { MOCK_RESTAURANTS } = await import('@/lib/mocks');
         const allMocks = MOCK_RESTAURANTS.map(r => ({
@@ -171,8 +186,17 @@ async function getRestaurants(
             coords: [r.lat, r.lng] as [number, number]
         }));
 
+        let filteredMocks = allMocks.filter(r => r.city.toLowerCase() === matchedLocation.city.toLowerCase());
+
+        if (category) {
+            const catLower = category.toLowerCase();
+            filteredMocks = filteredMocks.filter(r =>
+                r.tags.some(t => t.toLowerCase() === catLower)
+            );
+        }
+
         return {
-            restaurants: allMocks.filter(r => r.city.toLowerCase() === matchedLocation.city.toLowerCase()),
+            restaurants: filteredMocks,
             locationMeta
         };
     }
@@ -183,13 +207,14 @@ import LandingSearch from "@/components/LandingSearch";
 export default async function RestaurantFinder({
     searchParams
 }: {
-    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string }>
+    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string }>
 }) {
     const params = await searchParams;
     const location = params.location || params.search || params.address;
     const address = params.address || location;
     const lat = params.lat ? parseFloat(params.lat) : undefined;
     const lng = params.lng ? parseFloat(params.lng) : undefined;
+    const category = params.category;
 
     // View State: Landing if no inputs provided
     // If ANY input is provided (location, search, or coords), we show results
@@ -202,6 +227,33 @@ export default async function RestaurantFinder({
     let restaurants: Restaurant[] = [];
     let locationMeta: LocationMeta = { name: "Unknown", center: [35.2271, -80.8431] };
     let activeOrders: any[] = [];
+    let pastRestaurants: any[] = [];
+    let favorites: string[] = [];
+
+    if (userId) {
+        favorites = await getFavorites();
+
+        // Fetch Order Again data
+        const { data: pastOrders } = await supabase
+            .from('Order')
+            .select('restaurantId, restaurant:Restaurant(id, name, imageUrl, rating)')
+            .eq('userId', userId)
+            .eq('status', 'DELIVERED')
+            .order('createdAt', { ascending: false })
+            .limit(20);
+
+        if (pastOrders) {
+            const seen = new Set();
+            pastRestaurants = pastOrders
+                .map((o: any) => o.restaurant)
+                .filter((r: any) => {
+                    if (!r || seen.has(r.id)) return false;
+                    seen.add(r.id);
+                    return true;
+                })
+                .slice(0, 5);
+        }
+    }
 
     const serviceLocations = await (async () => {
         const fallbackMocks = [
@@ -222,7 +274,8 @@ export default async function RestaurantFinder({
             term: location,
             address,
             lat,
-            lng
+            lng,
+            category
         });
         restaurants = data.restaurants;
         locationMeta = data.locationMeta;
@@ -315,14 +368,17 @@ export default async function RestaurantFinder({
                         <div className="hidden lg:block">
                             <Link href="/" className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Home</Link>
                         </div>
-                        <div className="flex items-center gap-3">
-                            {!userId ? (
-                                <Link href="/login" className="btn btn-primary text-[10px] md:text-xs py-1.5 px-4 md:px-6 rounded-full font-black uppercase tracking-widest">Login</Link>
-                            ) : (
-                                <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                </Link>
-                            )}
+                        <div className="flex items-center gap-2 md:gap-4">
+                            {userId && <NotificationBell userId={userId} />}
+                            <div className="flex items-center gap-3">
+                                {!userId ? (
+                                    <Link href="/login" className="btn btn-primary text-[10px] md:text-xs py-1.5 px-4 md:px-6 rounded-full font-black uppercase tracking-widest">Login</Link>
+                                ) : (
+                                    <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    </Link>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -352,6 +408,47 @@ export default async function RestaurantFinder({
                             <Link href={`/orders/${activeOrders[0].id}`} className="btn btn-sm md:btn-md bg-emerald-500 text-black font-black uppercase tracking-widest border-none shadow-lg shadow-emerald-500/20 mt-3 rounded-xl px-6">
                                 Track Live
                             </Link>
+                        </div>
+                    </div>
+                )}
+
+                {/* Order Again Carousel */}
+                {userId && pastRestaurants.length > 0 && (
+                    <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <div className="flex items-center justify-between mb-4 px-1">
+                            <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.25em] text-slate-500">Order Again</h2>
+                            <Link href="/orders" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest flex items-center gap-1">
+                                Past Orders <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
+                            </Link>
+                        </div>
+                        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4">
+                            {pastRestaurants.map((res: any) => (
+                                <Link
+                                    key={res.id}
+                                    href={`/restaurants/${res.id}`}
+                                    className="flex flex-col gap-2 min-w-[140px] md:min-w-[180px] group"
+                                >
+                                    <div className="aspect-[4/3] w-full rounded-2xl overflow-hidden relative border border-white/5 shadow-lg group-hover:shadow-primary/5 group-hover:border-primary/20 transition-all duration-300">
+                                        <img
+                                            src={res.imageUrl || "/restaurant1.jpg"}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                                            alt={res.name}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                                        <div className="absolute inset-0 p-3 flex flex-col justify-end">
+                                            <div className="flex justify-between items-end gap-2">
+                                                <div className="min-w-0">
+                                                    <h3 className="text-white text-[11px] md:text-xs font-black truncate drop-shadow-md">{res.name}</h3>
+                                                </div>
+                                                <div className="shrink-0 bg-primary/20 backdrop-blur-md border border-primary/20 px-1.5 py-0.5 rounded-lg text-primary text-[9px] font-black shadow-lg">
+                                                    ★ {res.rating || '4.5'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 )}
@@ -392,6 +489,55 @@ export default async function RestaurantFinder({
                     </div>
                 </div>
 
+                {/* Food Categories / Tags Selection */}
+                <div className="flex items-center gap-3 overflow-x-auto pb-6 -mx-1 px-1 no-scrollbar scroll-smooth">
+                    <Link
+                        href={`/restaurants?${new URLSearchParams({
+                            ...(params.address ? { address: params.address } : {}),
+                            ...(params.lat ? { lat: params.lat } : {}),
+                            ...(params.lng ? { lng: params.lng } : {}),
+                            ...(params.location ? { location: params.location } : {}),
+                            ...(params.search ? { search: params.search } : {})
+                        }).toString()}`}
+                        className={`px-5 md:px-7 py-3 rounded-2xl whitespace-nowrap text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2
+                            ${!category
+                                ? "bg-primary text-black border-primary shadow-xl shadow-primary/20 scale-105"
+                                : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-white"}`}
+                    >
+                        ✨ SHOW ALL
+                    </Link>
+                    {[
+                        { name: "Pizza", icon: "🍕" },
+                        { name: "Burgers", icon: "🍔" },
+                        { name: "Asian", icon: "🥢" },
+                        { name: "Mexican", icon: "🌮" },
+                        { name: "Italian", icon: "🍝" },
+                        { name: "Coffee", icon: "☕" },
+                        { name: "Dessert", icon: "🍦" },
+                        { name: "Healthy", icon: "🥗" },
+                        { name: "Steak", icon: "🥩" },
+                        { name: "BBQ", icon: "🍖" }
+                    ].map((cat) => (
+                        <Link
+                            key={cat.name}
+                            href={`/restaurants?${new URLSearchParams({
+                                ...(params.address ? { address: params.address } : {}),
+                                ...(params.lat ? { lat: params.lat } : {}),
+                                ...(params.lng ? { lng: params.lng } : {}),
+                                ...(params.location ? { location: params.location } : {}),
+                                ...(params.search ? { search: params.search } : {}),
+                                category: cat.name
+                            }).toString()}`}
+                            className={`px-5 md:px-7 py-3 rounded-2xl whitespace-nowrap text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2
+                                ${category === cat.name
+                                    ? "bg-primary text-black border-primary shadow-xl shadow-primary/20 scale-105"
+                                    : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-white"}`}
+                        >
+                            <span>{cat.icon}</span> {cat.name}
+                        </Link>
+                    ))}
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
                     {restaurants.length === 0 ? (
                         <div className="col-span-full text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
@@ -419,6 +565,15 @@ export default async function RestaurantFinder({
                                         <div className="bg-black/40 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10 shadow-xl">
                                             $0 Delivery
                                         </div>
+                                    </div>
+
+                                    <div className="absolute top-3 right-3 flex flex-col gap-1.5">
+                                        {userId && (
+                                            <FavoriteButton
+                                                restaurantId={rest.id}
+                                                initialIsFavorited={favorites.includes(rest.id)}
+                                            />
+                                        )}
                                     </div>
 
                                     <div className="absolute bottom-3 right-3 bg-white text-black px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-2xl">

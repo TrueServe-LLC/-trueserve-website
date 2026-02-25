@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 import { getStripe } from "@/lib/stripe";
 import { sendSMS } from "@/lib/sms";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { createNotification } from "@/lib/notifications";
 
 export type MerchantActionState = {
     message: string;
@@ -98,6 +99,41 @@ export async function updateOrderStatus(orderId: string, nextStatus: string) {
             .eq('id', orderId);
 
         if (error) throw error;
+
+        // --- NEW: Notify Customer ---
+        try {
+            const { data: orderData } = await supabaseAdmin
+                .from('Order')
+                .select('userId, restaurant:Restaurant(name)')
+                .eq('id', orderId)
+                .single();
+
+            if (orderData) {
+                const restaurantName = (orderData.restaurant as any)?.name || "Restaurant";
+                let title = "Order Update";
+                let message = `Your order from ${restaurantName} is now ${nextStatus.toLowerCase().replace('_', ' ')}.`;
+
+                if (nextStatus === 'PREPARING') {
+                    title = "Kitchen is cooking! 👨‍🍳";
+                    message = `${restaurantName} has started preparing your order.`;
+                } else if (nextStatus === 'READY_FOR_PICKUP') {
+                    title = "Order Ready! 🍕";
+                    message = `Your order is ready. A driver will pick it up shortly.`;
+                } else if (nextStatus === 'CANCELLED') {
+                    title = "Order Cancelled";
+                    message = `We're sorry, your order from ${restaurantName} was cancelled.`;
+                }
+
+                await createNotification({
+                    userId: orderData.userId,
+                    orderId: orderId,
+                    title,
+                    message
+                });
+            }
+        } catch (notifErr) {
+            console.error("[Customer Notification Error]:", notifErr);
+        }
 
         // --- NEW: Trigger SMS Alert to Driver if ready ---
         if (nextStatus === 'READY_FOR_PICKUP') {
