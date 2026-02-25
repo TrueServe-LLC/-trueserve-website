@@ -74,11 +74,11 @@ export default function MerchantPortal() {
                             <div className="inline-block px-6 py-2 bg-white/5 backdrop-blur-md text-primary rounded-full text-[10px] font-black uppercase tracking-[0.4em] border border-white/10 shadow-2xl">
                                 Partnership Standards v2.1
                             </div>
-                            <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] text-white">
+                            <h1 className="text-4xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">
                                 The New <br />
                                 <span className="text-gradient italic">Gold Standard.</span>
                             </h1>
-                            <p className="text-slate-400 text-lg md:text-3xl max-w-3xl mx-auto leading-relaxed font-bold italic opacity-80">
+                            <p className="text-slate-400 text-base md:text-xl max-w-2xl mx-auto leading-relaxed font-bold italic opacity-80">
                                 Reclaiming the local kitchen. Zero hidden fees. <br className="hidden md:block" /> Fairness by design.
                             </p>
 
@@ -117,17 +117,17 @@ export default function MerchantPortal() {
 
                                 <div className="relative z-10">
                                     <div className="text-center mb-16">
-                                        <h2 className="text-4xl md:text-6xl font-black mb-4 text-white tracking-tighter uppercase italic">Onboarding</h2>
-                                        <p className="text-slate-500 text-xs font-black uppercase tracking-[0.4em]">
+                                        <h2 className="text-3xl md:text-5xl font-black mb-4 text-white tracking-tighter uppercase italic">Onboarding</h2>
+                                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">
                                             {selectedPlan ? selectedPlan : "Standard Protocol"}
                                         </p>
                                     </div>
 
                                     {state.success ? (
                                         <div className="text-center py-12 animate-fade-in">
-                                            <div className="w-32 h-32 bg-primary/20 rounded-full flex items-center justify-center text-7xl mx-auto mb-10 border border-primary/30 shadow-[0_0_60px_rgba(68,140,137,0.3)]">🛡️</div>
-                                            <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Approved & Pending.</h3>
-                                            <p className="text-slate-400 mb-12 text-lg font-bold leading-relaxed">{state.message}</p>
+                                            <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center text-5xl mx-auto mb-10 border border-primary/30 shadow-[0_0_60px_rgba(68,140,137,0.3)]">🛡️</div>
+                                            <h3 className="text-3xl font-black text-white mb-6 tracking-tighter">Approved & Pending.</h3>
+                                            <p className="text-slate-400 mb-12 text-base font-bold leading-relaxed">{state.message}</p>
                                             <Link href="/merchant/dashboard" className="btn btn-primary w-full py-6 rounded-3xl font-black uppercase tracking-widest shadow-2xl">
                                                 Go to Portal
                                             </Link>
@@ -186,7 +186,7 @@ export default function MerchantPortal() {
                     <div className="container mx-auto px-6 max-w-7xl">
                         <div className="text-center mb-24">
                             <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-4 block">The Process</span>
-                            <h2 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic">The Road to Listing.</h2>
+                            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase italic">The Road to Listing.</h2>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -221,8 +221,8 @@ export default function MerchantPortal() {
                 <section className="py-32 md:py-48 relative">
                     <div className="container mx-auto px-6 max-w-7xl">
                         <div className="max-w-3xl mx-auto text-center mb-32">
-                            <h2 className="text-5xl md:text-8xl font-black mb-8 tracking-tighter uppercase leading-[0.85]">TrueScale <br /> <span className="text-gradient font-normal italic lowercase">protocols.</span></h2>
-                            <p className="text-slate-400 text-xl font-bold italic">Logistics engineered for the local margin.</p>
+                            <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter uppercase italic leading-tight">TrueScale <br /> <span className="text-gradient">protocols.</span></h2>
+                            <p className="text-slate-400 text-lg font-bold italic">Logistics engineered for the local margin.</p>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 max-w-6xl mx-auto">
@@ -232,8 +232,8 @@ export default function MerchantPortal() {
                                     <div className="px-4 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-xl">Standard</div>
                                 </div>
 
-                                <h3 className="text-4xl font-black text-white mb-2 uppercase tracking-tighter italic">Flex Scale</h3>
-                                <p className="text-slate-500 font-bold mb-12 uppercase tracking-widest text-[10px]">On-demand partnership</p>
+                                <h3 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">Flex Scale</h3>
+                                <p className="text-slate-500 font-bold mb-12 uppercase tracking-widest text-[9px]">On-demand partnership</p>
 
                                 <div className="flex items-baseline gap-2 mb-16">
                                     <span className="text-8xl font-black text-white tracking-tighter">15%</span>
@@ -261,8 +261,8 @@ export default function MerchantPortal() {
                             <div className={`pricing-card group relative p-12 md:p-20 bg-slate-900 border border-emerald-500/20 rounded-[4rem] hover:border-emerald-500/50 transition-all duration-700 shadow-2xl scale-105 ${selectedPlan === 'Pro Subscription' ? 'ring-2 ring-emerald-500 shadow-emerald-500/10' : ''}`}>
                                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-2.5 rounded-full text-black font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl whitespace-nowrap">Recommended protocol</div>
 
-                                <h3 className="text-4xl font-black text-white mb-2 uppercase tracking-tighter italic">Pro Scale</h3>
-                                <p className="text-emerald-500 font-black mb-12 uppercase tracking-widest text-[10px]">Elite Subscription</p>
+                                <h3 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">Pro Scale</h3>
+                                <p className="text-emerald-500 font-black mb-12 uppercase tracking-widest text-[9px]">Elite Subscription</p>
 
                                 <div className="flex items-baseline gap-2 mb-16">
                                     <span className="text-8xl font-black text-white tracking-tighter">$199</span>
@@ -298,7 +298,7 @@ export default function MerchantPortal() {
 
                             <div className="relative z-10 text-center">
                                 <div className="text-7xl mb-12 group-hover:scale-110 transition-all duration-700">💎</div>
-                                <blockquote className="text-3xl md:text-5xl font-black text-white mb-16 leading-[1.1] tracking-tighter italic">
+                                <blockquote className="text-2xl md:text-4xl font-black text-white mb-16 leading-[1.2] tracking-tighter italic px-4">
                                     "The Pro protocol saved us $2,400 in commissions in thirty days. Logistics finally works for the kitchen."
                                 </blockquote>
                                 <div className="space-y-2">
