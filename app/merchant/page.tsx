@@ -118,29 +118,6 @@ export default function MerchantPortal() {
                     </div>
                 </section>
 
-                {/* Value Props - Why Partner */}
-                <section className="py-24 bg-white/[0.02]">
-                    <div className="container mx-auto px-6 max-w-7xl">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">Why partner with TrueServe?</h2>
-                            <p className="text-slate-400 font-medium italic">Engineered for the modern merchant ecosystem.</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                            {[
-                                { title: "Reach more customers", desc: "Instantly connect with hungry diners in your immediate neighborhood and beyond.", icon: "🎯" },
-                                { title: "Deliver with ease", desc: "Our high-velocity dispatch engine ensures your food stays hot and delivery stays fast.", icon: "⚡" },
-                                { title: "Keep your margin", desc: "TrueScale protocols mean no hidden fees and a split that respects your bottom line.", icon: "💰" }
-                            ].map((prop, i) => (
-                                <div key={i} className="space-y-4">
-                                    <div className="text-4xl mb-6">{prop.icon}</div>
-                                    <h3 className="text-xl font-bold text-white">{prop.title}</h3>
-                                    <p className="text-slate-400 text-sm leading-relaxed font-medium">{prop.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
                 {/* Scaling Options - Primary Value Focus */}
                 <section className="py-24 relative border-t border-white/5">
                     <div className="container mx-auto px-6 max-w-7xl">
@@ -149,15 +126,12 @@ export default function MerchantPortal() {
                             <p className="text-slate-400 text-base font-bold italic">Select the logistics engine that fits your capacity.</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto items-stretch">
                             {/* Flex Scale */}
-                            <div className={`group relative p-10 bg-[#0f0f0f] border border-white/10 rounded-[2rem] hover:border-primary/40 transition-all duration-500 ${selectedPlan === 'Flex Options' ? 'ring-2 ring-primary bg-black' : ''}`}>
-                                <div className="flex justify-between items-start mb-8">
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-white tracking-tight">Flex Scale</h3>
-                                        <p className="text-slate-500 font-bold uppercase tracking-widest text-[9px] mt-1">On-demand growth</p>
-                                    </div>
-                                    <div className="px-3 py-1 bg-white/5 text-slate-300 border border-white/10 rounded-full text-[8px] font-black uppercase tracking-widest">Entry Level</div>
+                            <div className={`flex flex-col group relative p-10 bg-[#0f0f0f] border border-white/10 rounded-[2rem] hover:border-primary/40 transition-all duration-500 ${selectedPlan === 'Flex Options' ? 'ring-2 ring-primary bg-black' : ''}`}>
+                                <div className="mb-8">
+                                    <h3 className="text-2xl font-bold text-white tracking-tight">Flex Scale</h3>
+                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-[9px] mt-1">On-demand growth</p>
                                 </div>
 
                                 <div className="flex items-baseline gap-2 mb-10">
@@ -165,7 +139,7 @@ export default function MerchantPortal() {
                                     <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Split</span>
                                 </div>
 
-                                <ul className="space-y-4 mb-10">
+                                <ul className="space-y-4 mb-10 flex-grow">
                                     {["Zero upfront setup", "Full engine access", "Standard local badge", "Cancel anytime"].map((feat, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-400 text-sm font-medium">
                                             <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] text-primary">✔</div>
@@ -183,13 +157,10 @@ export default function MerchantPortal() {
                             </div>
 
                             {/* Pro Scale */}
-                            <div className={`group relative p-10 bg-[#0f0f0f] border border-emerald-500/20 rounded-[2rem] hover:border-emerald-500/50 transition-all duration-500 shadow-2xl ${selectedPlan === 'Pro Subscription' ? 'ring-2 ring-emerald-500 bg-black' : ''}`}>
-                                <div className="flex justify-between items-start mb-8">
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-white tracking-tight">Pro Scale</h3>
-                                        <p className="text-emerald-500 font-black uppercase tracking-widest text-[9px] mt-1">High-Volume Optimized</p>
-                                    </div>
-                                    <div className="px-3 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-[8px] font-black uppercase tracking-widest">Best Value</div>
+                            <div className={`flex flex-col group relative p-10 bg-[#0f0f0f] border border-white/10 rounded-[2rem] hover:border-emerald-500/40 transition-all duration-500 ${selectedPlan === 'Pro Subscription' ? 'ring-2 ring-emerald-500 bg-black' : ''}`}>
+                                <div className="mb-8">
+                                    <h3 className="text-2xl font-bold text-white tracking-tight">Pro Scale</h3>
+                                    <p className="text-emerald-500 font-black uppercase tracking-widest text-[9px] mt-1">High-Volume Optimized</p>
                                 </div>
 
                                 <div className="flex items-baseline gap-2 mb-10">
@@ -197,7 +168,7 @@ export default function MerchantPortal() {
                                     <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Monthly</span>
                                 </div>
 
-                                <ul className="space-y-4 mb-10">
+                                <ul className="space-y-4 mb-10 flex-grow">
                                     {["0% Split logic", "VIP Merchant Status", "Custom dispatch logic", "Performance Analytics"].map((feat, i) => (
                                         <li key={i} className="flex items-center gap-3 text-emerald-100/70 text-sm font-medium">
                                             <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] text-emerald-500">✔</div>
@@ -208,11 +179,34 @@ export default function MerchantPortal() {
 
                                 <button
                                     onClick={() => scrollToForm("Pro Subscription")}
-                                    className="w-full py-4 rounded-xl bg-emerald-500 text-black font-bold uppercase tracking-widest text-[10px] hover:bg-white transition-all shadow-lg shadow-emerald-500/20"
+                                    className="w-full py-4 rounded-xl bg-emerald-500 text-black font-bold uppercase tracking-widest text-[10px] hover:bg-white transition-all shadow-lg shadow-emerald-500/10"
                                 >
                                     Choose Pro
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Value Props - Why Partner */}
+                <section className="py-24 bg-white/[0.01]">
+                    <div className="container mx-auto px-6 max-w-7xl">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">Why partner with TrueServe?</h2>
+                            <p className="text-slate-400 font-medium italic">Engineered for the modern merchant ecosystem.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                            {[
+                                { title: "Reach more customers", desc: "Instantly connect with hungry diners in your immediate neighborhood and beyond.", icon: "🎯" },
+                                { title: "Deliver with ease", desc: "Our high-velocity dispatch engine ensures your food stays hot and delivery stays fast.", icon: "⚡" },
+                                { title: "Keep your margin", desc: "TrueScale protocols mean no hidden fees and a split that respects your bottom line.", icon: "💰" }
+                            ].map((prop, i) => (
+                                <div key={i} className="space-y-4">
+                                    <div className="text-4xl mb-6">{prop.icon}</div>
+                                    <h3 className="text-xl font-bold text-white">{prop.title}</h3>
+                                    <p className="text-slate-400 text-sm leading-relaxed font-medium">{prop.desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
