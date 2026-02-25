@@ -53,20 +53,20 @@ export default async function Home() {
               Zero hidden fees, transparent driver pay, and purely local flavor.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start w-full transition-all items-center">
-              {!userId ? (
-                <div className="flex gap-4 w-full max-w-md">
-                  <Link href="/login" className="flex-1 btn btn-primary py-4 px-8 text-lg font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:scale-105 transition-all text-center">
+            <div className="flex flex-col gap-8 justify-center md:justify-start w-full transition-all">
+              <div className="relative group w-full max-w-2xl mx-auto md:mx-0">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl md:rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                <LandingSearch />
+              </div>
+
+              {!userId && (
+                <div className="flex gap-4 w-full max-w-md justify-center md:justify-start">
+                  <Link href="/login" className="flex-1 btn btn-primary !py-3 !px-6 text-sm font-black uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-center">
                     Get Started
                   </Link>
-                  <Link href="/login" className="flex-1 btn bg-white/5 border border-white/10 hover:bg-white/10 text-white py-4 px-8 text-lg font-black uppercase tracking-widest rounded-2xl transition-all text-center">
+                  <Link href="/login" className="flex-1 btn bg-white/5 border border-white/10 hover:bg-white/10 text-white !py-3 !px-6 text-sm font-black uppercase tracking-widest rounded-xl transition-all text-center">
                     Sign In
                   </Link>
-                </div>
-              ) : (
-                <div className="relative group w-full max-w-xl mx-auto md:mx-0">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl md:rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                  <LandingSearch />
                 </div>
               )}
             </div>

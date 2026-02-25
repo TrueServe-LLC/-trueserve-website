@@ -173,45 +173,45 @@ export default function DriverPortal() {
             {/* Value Props */}
             <section className="py-24 bg-white/5 relative">
                 <div className="container max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-16 space-y-4">
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">Why deliver with TrueServe?</h2>
-                        <p className="text-slate-400 font-medium max-w-2xl mx-auto">We built a platform that respects your effort and pays fairly for every mile.</p>
+                    <div className="text-center mb-24 flex flex-col items-center">
+                        <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-white mb-6 uppercase italic">Why deliver with <span className="text-gradient">TrueServe?</span></h2>
+                        <p className="text-slate-400 text-lg md:text-xl font-bold max-w-3xl mx-auto leading-relaxed italic">"We built a platform that respects your effort and pays fairly for every mile."</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                         {[
                             {
                                 title: "Earnings that add up",
                                 desc: "High base pay and distance-driven rates mean you keep more of every delivery fee.",
                                 icon: "💰",
-                                img: "https://images.unsplash.com/photo-1614028674026-a65e31bfd27c?auto=format&fit=crop&q=80&w=800"
+                                img: "https://images.unsplash.com/photo-1554224155-1696413565d3?q=80&w=1000&auto=format&fit=crop"
                             },
                             {
                                 title: "Your own schedule",
                                 desc: "Be your own boss. Schedule yourself ahead of time or start delivering whenever you want.",
                                 icon: "⏰",
-                                img: "https://images.unsplash.com/photo-1633526543814-9718c8922b7a?auto=format&fit=crop&q=80&w=800"
+                                img: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?q=80&w=1000&auto=format&fit=crop"
                             },
                             {
                                 title: "Freedom to move",
                                 desc: "Delivery by car, bike, or scooter. You choice how you want to explore your city.",
                                 icon: "🚲",
-                                img: "https://images.unsplash.com/photo-1605333396915-47ed6b6dfb00?auto=format&fit=crop&q=80&w=800"
+                                img: "https://images.unsplash.com/photo-1534073828943-f801091bb18c?q=80&w=1000&auto=format&fit=crop"
                             }
                         ].map((item, i) => (
-                            <div key={i} className="group bg-slate-900 border border-white/5 rounded-[2.5rem] overflow-visible hover:border-primary/30 transition-all flex flex-col shadow-2xl">
-                                <div className="h-64 overflow-hidden relative rounded-t-[2.5rem] bg-indigo-950/20">
-                                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
-                                    <div className="absolute top-4 left-4 bg-white/20 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/20 text-2xl shadow-xl z-20">
+                            <div key={i} className="group relative bg-slate-900/50 border border-white/5 rounded-[3rem] overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl">
+                                <div className="h-72 overflow-hidden relative">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10" />
+                                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100" />
+                                    <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-2xl px-4 py-2 rounded-2xl border border-white/20 text-3xl shadow-2xl z-20">
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-10 pt-8 space-y-4">
-                                    <h3 className="text-2xl font-black leading-relaxed py-1">
-                                        <span className="text-white">{item.title.split(' ').slice(0, -1).join(' ')}</span> <span className="text-gradient">{item.title.split(' ').slice(-1)}</span>
+                                <div className="p-10 pt-4 space-y-4 relative z-20">
+                                    <h3 className="text-2xl font-black leading-tight py-1">
+                                        <span className="text-white uppercase italic tracking-tighter">{item.title}</span>
                                     </h3>
-                                    <p className="text-slate-400 text-base font-medium leading-relaxed">{item.desc}</p>
+                                    <p className="text-slate-400 text-sm font-bold leading-relaxed">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
