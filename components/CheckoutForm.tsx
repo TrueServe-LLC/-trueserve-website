@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState } from "react";
-import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useState, useEffect } from "react";
+import { PaymentElement, useStripe, useElements, PaymentRequestButtonElement } from "@stripe/react-stripe-js";
 
 interface CheckoutFormProps {
     onSuccess: (paymentIntentId: string) => void;
@@ -15,6 +15,49 @@ export default function CheckoutForm({ onSuccess, totalAmount, disabled }: Check
     const elements = useElements();
     const [message, setMessage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [paymentRequest, setPaymentRequest] = useState<any>(null);
+
+    useEffect(() => {
+        if (!stripe || !elements) return;
+
+        const pr = stripe.paymentRequest({
+            country: 'US',
+            currency: 'usd',
+            total: {
+                label: 'TrueServe Order',
+                amount: Math.round(totalAmount * 100),
+            },
+            requestPayerName: true,
+            requestPayerEmail: true,
+        });
+
+        // Check the availability of the Payment Request API first.
+        pr.canMakePayment().then(result => {
+            if (result) {
+                setPaymentRequest(pr);
+            }
+        });
+
+        pr.on('paymentmethod', async (ev) => {
+            // Get the client secret from the elements
+            const clientSecret = (elements as any)._commonOptions.clientSecret;
+
+            const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+                clientSecret,
+                { payment_method: ev.paymentMethod.id },
+                { handleActions: false }
+            );
+
+            if (confirmError) {
+                ev.complete('fail');
+            } else {
+                ev.complete('success');
+                if (paymentIntent.status === "succeeded") {
+                    onSuccess(paymentIntent.id);
+                }
+            }
+        });
+    }, [stripe, elements, totalAmount, onSuccess]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,6 +87,17 @@ export default function CheckoutForm({ onSuccess, totalAmount, disabled }: Check
 
     return (
         <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
+            {paymentRequest && (
+                <div className="mb-6">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Express Checkout</p>
+                    <PaymentRequestButtonElement options={{ paymentRequest }} />
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10"></span></div>
+                        <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-slate-900 px-3 text-slate-500 font-bold tracking-widest">Or pay with card</span></div>
+                    </div>
+                </div>
+            )}
+
             <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
 
             <button

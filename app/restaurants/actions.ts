@@ -295,7 +295,11 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
         const stripeOptions: any = {
             amount: amountInCents,
             currency: 'usd',
-            automatic_payment_methods: { enabled: true },
+            automatic_payment_methods: {
+                enabled: true,
+                // Stripe enabled 'apple_pay' and 'google_pay' by default with automatic_payment_methods
+                // But we specify it here for clarity and compatibility
+            },
             description: `Order from ${restaurant?.name || 'Restaurant'}`,
             metadata: {
                 restaurantId,

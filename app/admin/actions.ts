@@ -1,9 +1,11 @@
 "use server";
 
 import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { sendEmail } from "@/lib/email";
 
 export async function approveMenuItem(id: string) {
     try {
@@ -67,20 +69,57 @@ export async function flagMenuItem(id: string) {
 
 export async function approveDriver(id: string) {
     try {
-        const { error } = await supabase
+        // 1. Get Driver Info
+        const { data: driver, error: fetchError } = await supabaseAdmin
             .from('Driver')
-            .update({ status: "OFFLINE" }) // Or whatever starting status
-            .eq('id', id);
+            .select('*, user:User(*)')
+            .eq('id', id)
+            .single();
 
-        if (error) {
-            throw error;
+        if (fetchError || !driver) throw new Error("Driver not found");
+
+        const email = driver.user.email;
+        const name = driver.user.name;
+        const tempPassword = `TrueServe!${Math.random().toString(36).slice(-8)}`;
+
+        // 2. Create Auth User if not exists
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+            email,
+            password: tempPassword,
+            email_confirm: true,
+            user_metadata: {
+                displayName: name,
+                role: 'DRIVER'
+            }
+        });
+
+        // If user already exists, just proceed to status update (maybe they signed up as customer)
+        if (authError && !authError.message.includes("already exists")) {
+            console.error("Auth Creation Error:", authError);
+            throw authError;
         }
 
+        // 3. Update Driver Status
+        const { error: statusError } = await supabaseAdmin
+            .from('Driver')
+            .update({ status: "OFFLINE", updatedAt: new Date().toISOString() })
+            .eq('id', id);
+
+        if (statusError) throw statusError;
+
+        // 4. Send Approval Email
+        await sendEmail(
+            email,
+            "Your TrueServe Driver Application - APPROVED",
+            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in to the driver portal and start accepting orders.\n\n**Email:** ${email}\n**Temporary Password:** ${tempPassword}\n\n[Link to Driver Portal]\n\nPlease change your password after your first login.\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
+        );
+
         revalidatePath("/admin/dashboard");
+        revalidatePath("/driver/dashboard");
         return { success: true };
-    } catch (e) {
+    } catch (e: any) {
         console.error("Failed to approve driver:", e);
-        return { success: false, error: "Failed to approve driver." };
+        return { success: false, error: e.message || "Failed to approve driver." };
     }
 }
 

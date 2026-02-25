@@ -154,7 +154,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Menu Approval Section */}
-                    <section className="col-span-2">
+                    <section>
                         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                             📋 Menu Approvals
                             <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">{pendingItems.length}</span>
@@ -184,16 +184,48 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                                 Reject
                                             </button>
                                         </form>
-                                        <form action={async () => { "use server"; await flagMenuItem(item.id); }}>
-                                            <button className="btn btn-outline text-xs py-2 px-4 border-orange-500/50 text-orange-400 hover:bg-orange-500/10">
-                                                Flag as Invalid
-                                            </button>
-                                        </form>
                                     </div>
                                 </div>
                             ))}
                             {pendingItems.length === 0 && (
                                 <p className="text-slate-500 italic">No menu items pending approval.</p>
+                            )}
+                        </div>
+                    </section>
+
+                    {/* Driver Approval Section */}
+                    <section>
+                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                            🚗 Driver Applications
+                            <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">{drivers.filter(d => d.status === 'PENDING_APPROVAL').length}</span>
+                        </h2>
+                        <div className="space-y-4">
+                            {drivers.filter(d => d.status === 'PENDING_APPROVAL').map((driver) => (
+                                <div key={driver.id} className="card p-6 border-slate-700/50">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 className="font-bold text-lg">{driver.user.name}</h3>
+                                            <p className="text-sm text-slate-400">{driver.user.email}</p>
+                                            <p className="text-xs text-slate-500 mt-1 uppercase tracking-widest font-bold">{driver.vehicleType}</p>
+                                        </div>
+                                        <span className="text-xs px-2 py-1 rounded font-bold uppercase bg-yellow-500/20 text-yellow-400">
+                                            Pending
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <form action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }}>
+                                            <button className="btn btn-primary text-xs py-2 px-4 shadow-none">
+                                                Approve Driver
+                                            </button>
+                                        </form>
+                                        <button className="btn btn-outline text-xs py-2 px-4 border-white/10 text-slate-400 hover:bg-white/5">
+                                            View Logs
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {drivers.filter(d => d.status === 'PENDING_APPROVAL').length === 0 && (
+                                <p className="text-slate-500 italic">No drivers pending approval.</p>
                             )}
                         </div>
                     </section>
