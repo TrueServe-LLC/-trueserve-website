@@ -88,37 +88,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Browse by Category - Visible on All Sizes */}
-        <section className="py-12 bg-white/[0.02] border-y border-white/5">
-          <div className="container px-6">
-            <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-500 mb-8 text-center md:text-left">Browse by Category</h3>
-            <div className="flex items-center gap-6 md:gap-10 overflow-x-auto pb-6 no-scrollbar custom-scrollbar">
-              {[
-                { name: "Pizza", icon: "🍕", color: "bg-orange-500/10 text-orange-400" },
-                { name: "Burgers", icon: "🍔", color: "bg-yellow-500/10 text-yellow-400" },
-                { name: "Asian", icon: "🥢", color: "bg-red-500/10 text-red-400" },
-                { name: "Mexican", icon: "🌮", color: "bg-emerald-500/10 text-emerald-400" },
-                { name: "Italian", icon: "🍝", color: "bg-blue-500/10 text-blue-400" },
-                { name: "Coffee", icon: "☕", color: "bg-amber-800/10 text-amber-700" },
-                { name: "Dessert", icon: "🍦", color: "bg-pink-500/10 text-pink-400" },
-                { name: "Healthy", icon: "🥗", color: "bg-green-500/10 text-green-400" }
-              ].map((cat) => (
-                <Link
-                  key={cat.name}
-                  href={`/restaurants?category=${cat.name}`}
-                  className="flex flex-col items-center gap-4 min-w-[120px] group transition-all"
-                >
-                  <div className={`w-20 h-20 rounded-[2.5rem] flex items-center justify-center text-4xl transition-all duration-500 group-hover:rounded-2xl group-hover:scale-110 group-hover:rotate-6 shadow-2xl border border-white/5 ${cat.color}`}>
-                    {cat.icon}
-                  </div>
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-primary transition-colors">
-                    {cat.name}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Mission Statement */}
         <section className="py-12 md:py-16">
