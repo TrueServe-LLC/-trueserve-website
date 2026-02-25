@@ -113,19 +113,21 @@ export default function MerchantPortal() {
                 <section className="py-24 relative border-t border-white/5">
                     <div className="container mx-auto px-6 max-w-7xl">
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
                             {/* Flex Scale Banner */}
-                            <div className={`relative overflow-hidden flex flex-col xl:flex-row gap-6 p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#050505] ring-2 ring-primary' : 'bg-[#0f0f0f] border border-white/10'} rounded-[2.5rem] hover:border-primary/40`} onClick={() => scrollToForm("Flex Options")}>
-                                <div className="z-10 flex-1 flex flex-col justify-center">
+                            <div className={`flex flex-col xl:flex-row gap-6 p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#050505] ring-2 ring-primary' : 'bg-[#0f0f0f] border border-white/10'} rounded-3xl hover:border-primary/40`} onClick={() => scrollToForm("Flex Options")}>
+                                <div className="flex-1 flex flex-col justify-center">
                                     <h3 className="text-3xl font-black text-white tracking-tight mb-2">Flex Scale</h3>
                                     <div className="flex items-baseline gap-2 mb-2">
-                                        <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">15%</span>
+                                        <span className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-normal">15%</span>
                                         <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Split</span>
                                     </div>
                                     <p className="text-slate-400 text-sm font-medium mb-6">On-demand growth.</p>
-                                    <button className="bg-primary/10 border border-primary/20 hover:bg-primary text-primary hover:text-black px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all w-max shadow-lg mt-auto">Choose Flex</button>
+                                    <div>
+                                        <button className="inline-flex items-center justify-center bg-primary/10 border border-primary/20 hover:bg-primary text-primary hover:text-black px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all shadow-lg whitespace-nowrap">Choose Flex</button>
+                                    </div>
                                 </div>
-                                <div className="z-10 flex-1 flex flex-col justify-center border-t xl:border-t-0 xl:border-l border-white/10 pt-6 xl:pt-0 xl:pl-6">
+                                <div className="flex-1 flex flex-col justify-center border-t xl:border-t-0 xl:border-l border-white/10 pt-6 xl:pt-0 xl:pl-8">
                                     <ul className="space-y-4">
                                         {["Zero upfront setup", "Full engine access", "Standard local badge", "Cancel anytime"].map((feat, i) => (
                                             <li key={i} className="flex justify-between items-center text-slate-300 text-sm font-medium">
@@ -138,17 +140,19 @@ export default function MerchantPortal() {
                             </div>
 
                             {/* Pro Scale Banner */}
-                            <div className={`relative overflow-hidden flex flex-col xl:flex-row gap-6 p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#050505] ring-2 ring-emerald-500' : 'bg-[#0f0f0f] border border-white/10'} rounded-[2.5rem] hover:border-emerald-500/40`} onClick={() => scrollToForm("Pro Subscription")}>
-                                <div className="z-10 flex-1 flex flex-col justify-center">
+                            <div className={`flex flex-col xl:flex-row gap-6 p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#050505] ring-2 ring-emerald-500' : 'bg-[#0f0f0f] border border-white/10'} rounded-3xl hover:border-emerald-500/40`} onClick={() => scrollToForm("Pro Subscription")}>
+                                <div className="flex-1 flex flex-col justify-center">
                                     <h3 className="text-3xl font-black text-white tracking-tight mb-2">Pro Scale</h3>
                                     <div className="flex items-baseline gap-2 mb-2">
-                                        <span className="text-4xl md:text-5xl font-black text-emerald-400 tracking-tighter">$199</span>
+                                        <span className="text-4xl md:text-5xl font-black text-emerald-400 tracking-tighter leading-normal">$199</span>
                                         <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Monthly</span>
                                     </div>
                                     <p className="text-slate-400 text-sm font-medium mb-6">High-volume optimized.</p>
-                                    <button className="bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-black px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all w-max shadow-lg mt-auto">Choose Pro</button>
+                                    <div>
+                                        <button className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-black px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all shadow-lg whitespace-nowrap">Choose Pro</button>
+                                    </div>
                                 </div>
-                                <div className="z-10 flex-1 flex flex-col justify-center border-t xl:border-t-0 xl:border-l border-white/10 pt-6 xl:pt-0 xl:pl-6">
+                                <div className="flex-1 flex flex-col justify-center border-t xl:border-t-0 xl:border-l border-white/10 pt-6 xl:pt-0 xl:pl-8">
                                     <ul className="space-y-4">
                                         {["0% Split logic", "VIP Merchant Status", "Custom dispatch logic", "Performance Analytics"].map((feat, i) => (
                                             <li key={i} className="flex justify-between items-center text-slate-300 text-sm font-medium">

@@ -173,9 +173,9 @@ export default function DriverPortal() {
             {/* Value Props */}
             <section className="py-24 bg-white/5 relative">
                 <div className="container max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-24 flex flex-col items-center">
-                        <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-white mb-6 uppercase italic">Why deliver with <span className="text-gradient">TrueServe?</span></h2>
-                        <p className="text-slate-400 text-lg md:text-xl font-bold max-w-3xl mx-auto leading-relaxed italic">"We built a platform that respects your effort and pays fairly for every mile."</p>
+                    <div className="text-center mb-16 px-4">
+                        <h2 className="text-2xl md:text-4xl font-bold text-white tracking-tight mb-4">Why deliver with <span className="text-gradient">TrueServe?</span></h2>
+                        <p className="text-slate-400 font-medium italic">We built a platform that respects your effort and pays fairly for every mile.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -184,19 +184,19 @@ export default function DriverPortal() {
                                 title: "Earnings that add up",
                                 desc: "High base pay and distance-driven rates mean you keep more of every delivery fee.",
                                 icon: "💰",
-                                img: "https://images.unsplash.com/photo-1554224155-1696413565d3?q=80&w=1000&auto=format&fit=crop"
+                                img: "/money.png"
                             },
                             {
                                 title: "Your own schedule",
                                 desc: "Be your own boss. Schedule yourself ahead of time or start delivering whenever you want.",
                                 icon: "⏰",
-                                img: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?q=80&w=1000&auto=format&fit=crop"
+                                img: "/calendar.png"
                             },
                             {
                                 title: "Freedom to move",
                                 desc: "Delivery by car, bike, or scooter. You choice how you want to explore your city.",
                                 icon: "🚲",
-                                img: "https://images.unsplash.com/photo-1534073828943-f801091bb18c?q=80&w=1000&auto=format&fit=crop"
+                                img: "/scooter.png"
                             }
                         ].map((item, i) => (
                             <div key={i} className="group relative bg-slate-900/50 border border-white/5 rounded-[3rem] overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl">
@@ -207,11 +207,11 @@ export default function DriverPortal() {
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-10 pt-4 space-y-4 relative z-20">
-                                    <h3 className="text-2xl font-black leading-tight py-1">
-                                        <span className="text-white uppercase italic tracking-tighter">{item.title}</span>
+                                <div className="p-8 pt-6 space-y-3 relative z-20">
+                                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                                        {item.title}
                                     </h3>
-                                    <p className="text-slate-400 text-sm font-bold leading-relaxed">{item.desc}</p>
+                                    <p className="text-slate-400 text-sm font-medium leading-relaxed">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -254,36 +254,37 @@ export default function DriverPortal() {
                         <div className="flex-1 w-full">
                             <div className="relative group">
                                 <div className="absolute -inset-2 bg-gradient-to-r from-primary to-emerald-500 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                                <div className="relative bg-slate-900 border border-white/10 rounded-[2.5rem] p-10 md:p-14 shadow-2xl overflow-visible flex flex-col min-h-max">
-                                    <div className="absolute top-0 right-0 p-12 text-9xl opacity-5 pointer-events-none rotate-12 select-none">🏁</div>
-                                    <h3 className="text-4xl font-black text-white mb-12 border-b border-white/10 pb-10 tracking-tighter leading-relaxed pt-20 px-4 py-2">Sample Driver Payout</h3>
+                                <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl overflow-hidden flex flex-col h-full justify-between">
+                                    <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none rotate-12 select-none grayscale">🏁</div>
+                                    <h3 className="text-2xl font-bold text-white mb-8 border-b border-white/10 pb-6 tracking-tight relative z-10 mt-2">Sample Driver Payout</h3>
 
-                                    <div className="space-y-8 flex-grow pb-10">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Base Pick-up</span>
-                                            <span className="text-white font-black">$3.00</span>
+                                    <div className="space-y-6 flex-grow relative z-10 pb-4">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-slate-400 font-medium tracking-wide">Base Pick-up</span>
+                                            <span className="text-white font-bold">$3.00</span>
                                         </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Distance (4.2 miles)</span>
-                                            <span className="text-white font-black">$3.71</span>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-slate-400 font-medium tracking-wide">Distance (4.2 miles)</span>
+                                            <span className="text-white font-bold">$3.71</span>
                                         </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Wait Time (12 mins)</span>
-                                            <span className="text-white font-black">$0.50</span>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-slate-400 font-medium tracking-wide">Wait Time (12 mins)</span>
+                                            <span className="text-white font-bold">$0.50</span>
                                         </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Customer Tip</span>
-                                            <span className="text-emerald-400 font-black">$6.00</span>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-slate-400 font-medium tracking-wide">Customer Tip</span>
+                                            <span className="text-emerald-400 font-bold">$6.00</span>
                                         </div>
-                                        <div className="pt-10 border-t border-white/10 flex justify-between items-end mt-auto pb-4">
-                                            <div className="pr-4">
-                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Earned</p>
-                                                <p className="text-5xl font-black text-white tracking-tighter leading-none">$13.21</p>
-                                            </div>
-                                            <div className="text-right pl-4">
-                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Driving Time</p>
-                                                <p className="text-xl font-bold text-slate-300 leading-none">18 mins</p>
-                                            </div>
+                                    </div>
+
+                                    <div className="pt-8 border-t border-white/10 flex justify-between items-end mt-4 relative z-10">
+                                        <div>
+                                            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total Earned</p>
+                                            <p className="text-4xl font-black text-white tracking-tight leading-none">$13.21</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Driving Time</p>
+                                            <p className="text-lg font-bold text-slate-300 leading-none">18 mins</p>
                                         </div>
                                     </div>
                                 </div>
