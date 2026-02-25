@@ -3,13 +3,25 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginWithPassword, signupWithPassword, resetPassword } from "../auth/actions";
 import { createClient } from "@/lib/supabase/client";
+import { useEffect } from "react";
 
 export default function LoginPage() {
     const router = useRouter();
-    const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
+    const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('signup');
     const [formData, setFormData] = useState({ email: '', password: '', name: '', address: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
+    const supabase = createClient();
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                router.push("/restaurants");
+            }
+        };
+        checkUser();
+    }, [router, supabase]);
 
     const handleSubmit = async () => {
         setIsLoading(true);

@@ -7,6 +7,7 @@ import NotificationBell from "@/components/NotificationBell";
 import { getFavorites } from "@/app/user/favorite-actions";
 import { cookies } from "next/headers";
 import { calculateDistance } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 interface Restaurant {
     id: string;
@@ -285,6 +286,10 @@ export default async function RestaurantFinder({
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
+    if (!userId) {
+        redirect("/login");
+    }
+
     let userSavedAddress = "";
     if (userId && !address && !location) {
         const { data: userData } = await supabase.from('User').select('address').eq('id', userId).maybeSingle();
@@ -384,11 +389,16 @@ export default async function RestaurantFinder({
                             True<span className="text-gradient">Serve</span>
                         </span>
                     </Link>
-                    {!userId ? (
-                        <Link href="/login" className="btn btn-primary text-xs py-2 px-4">Login</Link>
-                    ) : (
-                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/50">U</div>
-                    )}
+                    <div className="flex items-center gap-4">
+                        {userId && <NotificationBell userId={userId} />}
+                        {!userId ? (
+                            <Link href="/login" className="btn btn-primary text-xs py-2 px-4 rounded-full font-black uppercase tracking-widest">Login</Link>
+                        ) : (
+                            <Link href="/user/settings" className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            </Link>
+                        )}
+                    </div>
                 </nav>
 
                 <main className="flex-1 flex flex-col items-center justify-center relative z-10 p-6 text-center">
