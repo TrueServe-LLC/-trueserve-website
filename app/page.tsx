@@ -9,9 +9,9 @@ export default async function Home() {
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
 
-  if (!userId) {
-    redirect("/login");
-  }
+  // if (!userId) {
+  //   redirect("/login");
+  // }
   return (
     <div className="min-h-screen relative overflow-hidden font-sans text-slate-200 bg-black">
       {/* Background Decor */}

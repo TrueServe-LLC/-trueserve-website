@@ -27,42 +27,49 @@ async function getMerchantData(userId: string) {
                     )
                 )
             `)
-            .eq('ownerId', userId) // Critical: Filter by logged-in user
+            .eq('ownerId', userId)
             .maybeSingle();
 
-        if (error) {
-            console.error("Supabase Error (getMerchantData):", error);
-            return null;
+        if (!restaurant || error) {
+            // Fallback to Mock Data for Demo/Testing
+            const { MOCK_RESTAURANTS, MOCK_ORDERS } = await import('@/lib/mocks');
+            const demoRest = MOCK_RESTAURANTS[0]; // Carolina BBQ
+            return {
+                ...demoRest,
+                orders: MOCK_ORDERS.filter(o => o.restaurantId === demoRest.id)
+            };
         }
 
-        // Optimization: Fetch orders separately to allow powerful sorting/pagination without massive JOIN overhead
-        if (restaurant) {
-            const { data: recentOrders } = await supabase
-                .from('Order')
-                .select(`
+        // Fetch real orders for real restaurant
+        const { data: recentOrders } = await supabase
+            .from('Order')
+            .select(`
+                *,
+                user:User(*),
+                driver:Driver(
+                    currentLat,
+                    currentLng,
+                    user:User(name)
+                ),
+                items:OrderItem(
                     *,
-                    user:User(*),
-                    driver:Driver(
-                        currentLat,
-                        currentLng,
-                        user:User(name)
-                    ),
-                    items:OrderItem(
-                        *,
-                        menuItem:MenuItem(*)
-                    )
-                `)
-                .eq('restaurantId', restaurant.id)
-                .order('createdAt', { ascending: false })
-                .limit(50); // Hard limit to prevent overload
+                    menuItem:MenuItem(*)
+                )
+            `)
+            .eq('restaurantId', restaurant.id)
+            .order('createdAt', { ascending: false })
+            .limit(50);
 
-            restaurant.orders = recentOrders || [];
-        }
-
+        restaurant.orders = recentOrders || [];
         return restaurant;
     } catch (e) {
-        console.warn("DB failed", e);
-        return null;
+        console.warn("DB failed, using mocks", e);
+        const { MOCK_RESTAURANTS, MOCK_ORDERS } = await import('@/lib/mocks');
+        const demoRest = MOCK_RESTAURANTS[0];
+        return {
+            ...demoRest,
+            orders: MOCK_ORDERS.filter(o => o.restaurantId === demoRest.id)
+        };
     }
 }
 

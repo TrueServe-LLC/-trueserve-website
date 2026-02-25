@@ -148,6 +148,7 @@ export default async function RestaurantMenu({
 
             <main className="container py-12 animate-fade-in">
                 <MenuClient
+                    userId={userId}
                     restaurant={restaurant}
                     items={restaurant.menuItems.map((item: any) => ({
                         ...item,

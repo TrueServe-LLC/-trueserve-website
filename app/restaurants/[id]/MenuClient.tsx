@@ -23,6 +23,7 @@ interface MenuItem {
 }
 
 interface MenuClientProps {
+    userId?: string;
     restaurant: any; // We'll pass the whole restaurant object
     items: MenuItem[];
     orderingEnabled: boolean;
@@ -32,6 +33,7 @@ interface MenuClientProps {
 }
 
 export default function MenuClient({
+    userId,
     restaurant,
     items,
     orderingEnabled,
@@ -283,22 +285,51 @@ export default function MenuClient({
                         </div>
                     </div>
 
-                    {cartTotalItems > 0 && clientSecret && (
+                    {cartTotalItems > 0 && (
                         <div className="mt-6 pt-6 border-t border-white/10 animate-fade-in">
-                            <p className="text-xs font-bold uppercase text-slate-500 mb-3 tracking-widest">Secure Payment</p>
-                            <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
-                                <CheckoutForm
-                                    totalAmount={totalPrice + tip}
-                                    onSuccess={handlePaymentSuccess}
-                                    disabled={!orderingEnabled || !deliveryAddress}
-                                />
-                            </Elements>
-                        </div>
-                    )}
-
-                    {!clientSecret && cartTotalItems > 0 && orderingEnabled && (
-                        <div className="mt-6 flex justify-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                            {!userId ? (
+                                <div className="bg-primary/10 border border-primary/20 rounded-3xl p-6 text-center shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-4 opacity-5 text-4xl group-hover:scale-110 transition-transform">🔐</div>
+                                    <p className="font-black text-white mb-2 text-lg tracking-tight">One Last Step</p>
+                                    <p className="text-xs text-slate-400 mb-6 font-medium">Create an account to track your order and save local favorites.</p>
+                                    <Link
+                                        href={`/login?redirect=/restaurants/${restaurant.id}`}
+                                        className="btn btn-primary w-full text-black font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl shadow-lg shadow-primary/20"
+                                    >
+                                        Sign In to Order
+                                    </Link>
+                                    <div className="mt-6 flex items-center justify-center gap-4 border-t border-white/5 pt-6">
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-xl mb-1">⚡</span>
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Fast Pay</span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-xl mb-1">🛰️</span>
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Live Track</span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-xl mb-1">🎁</span>
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Rewards</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : clientSecret ? (
+                                <>
+                                    <p className="text-[10px] font-black uppercase text-slate-500 mb-4 tracking-widest">Secure Payment Gateway</p>
+                                    <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
+                                        <CheckoutForm
+                                            totalAmount={totalPrice + tip}
+                                            onSuccess={handlePaymentSuccess}
+                                            disabled={!orderingEnabled || !deliveryAddress}
+                                        />
+                                    </Elements>
+                                </>
+                            ) : orderingEnabled && (
+                                <div className="mt-6 flex flex-col items-center gap-3">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Securing Session...</p>
+                                </div>
+                            )}
                         </div>
                     )}
 

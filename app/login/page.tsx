@@ -3,10 +3,22 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginWithPassword, signupWithPassword, resetPassword } from "../auth/actions";
 import { createClient } from "@/lib/supabase/client";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+            <LoginWithParams />
+        </Suspense>
+    );
+}
+
+function LoginWithParams() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get("redirect") || "/restaurants";
+
     const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('signup');
     const [formData, setFormData] = useState({ email: '', password: '', name: '', address: '' });
     const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +29,7 @@ export default function LoginPage() {
         const checkUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                router.push("/restaurants");
+                router.push(redirectUrl);
             }
         };
         checkUser();
@@ -37,18 +49,20 @@ export default function LoginPage() {
         if (mode === 'login') {
             const res = await loginWithPassword(data);
             if (res.success) {
-                // Role-based Redirect
+                // Role-based Redirect (Override if it's a customer with a specific redirect URL)
                 if (res.role === 'MERCHANT') router.push("/merchant/dashboard");
-                else if (res.role === 'DRIVER') router.push("/driver/dashboard"); // They usually have a deferred flow but if they log in, send them there.
+                else if (res.role === 'DRIVER') router.push("/driver/dashboard");
                 else if (res.role === 'ADMIN') router.push("/admin/dashboard");
-                else router.push("/restaurants");
+                else router.push(redirectUrl);
             } else {
                 setMessage({ text: res.message, type: 'error' });
             }
         } else if (mode === 'signup') {
             res = await signupWithPassword(data);
             if (res.success) {
-                // Optional: Auto login or just show message
+                // After signup success, user is automatically logged in via cookie in server action
+                // Redirect them to the requested page or default
+                router.push(redirectUrl);
             }
         } else if (mode === 'reset') {
             res = await resetPassword(data);

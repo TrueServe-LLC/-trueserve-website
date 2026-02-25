@@ -310,9 +310,9 @@ export default async function RestaurantFinder({
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
-    if (!userId) {
-        redirect("/login");
-    }
+    // if (!userId) {
+    //     redirect("/login");
+    // }
 
     let userSavedAddress = "";
     if (userId && !address && !location) {
