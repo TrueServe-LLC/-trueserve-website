@@ -2,6 +2,7 @@ import Link from "next/link";
 import HeroCarousel from "@/components/HeroCarousel";
 import LandingSearch from "@/components/LandingSearch";
 import NotificationBell from "@/components/NotificationBell";
+import LogoutButton from "@/components/LogoutButton";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -9,9 +10,9 @@ export default async function Home() {
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
 
-  // if (!userId) {
-  //   redirect("/login");
-  // }
+  if (!userId) {
+    redirect("/login");
+  }
   return (
     <div className="min-h-screen relative overflow-hidden font-sans text-slate-200 bg-black">
       {/* Background Decor */}
@@ -32,7 +33,12 @@ export default async function Home() {
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
-            {userId && <NotificationBell userId={userId} />}
+            {userId && (
+              <>
+                <NotificationBell userId={userId} />
+                <LogoutButton />
+              </>
+            )}
             <div className="flex gap-2">
               {!userId && (
                 <Link href="/login" className="btn btn-outline !py-1.5 md:!py-2 !px-3 md:!px-6 !text-[10px] md:!text-sm border-white/20 text-white hover:bg-white/10 hover:text-white whitespace-nowrap">Log in</Link>

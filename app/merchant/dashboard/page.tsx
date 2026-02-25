@@ -6,6 +6,7 @@ import AddItemForm from "./AddItemForm";
 import MenuScanner from "./MenuScanner";
 import POSIntegration from "./POSIntegration";
 import { updateOrderStatus, refundOrder, createStripeAccount } from "../actions";
+import LogoutButton from "@/components/LogoutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -130,7 +131,7 @@ export default async function MerchantDashboard() {
                         <p className="text-sm font-black text-white leading-tight truncate max-w-[120px]">{restaurant.name}</p>
                     </div>
                 </div>
-                <Link href="/" className="btn btn-xs btn-ghost text-[9px] font-black uppercase tracking-widest text-slate-500">Log Out</Link>
+                <LogoutButton />
             </header>
 
             <nav className="hidden md:flex sticky top-0 z-50 backdrop-blur-lg bg-black/40 border-b border-white/10 px-6 py-4">
@@ -142,7 +143,7 @@ export default async function MerchantDashboard() {
                         <span className="px-4 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest shadow-inner">
                             {restaurant.name}
                         </span>
-                        <Link href="/merchant" className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Log Out</Link>
+                        <LogoutButton />
                     </div>
                 </div>
             </nav>

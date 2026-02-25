@@ -4,6 +4,7 @@ import LocationButton from "@/components/LocationButton";
 import GoogleMapsMap from "@/components/GoogleMapsMap";
 import FavoriteButton from "@/components/FavoriteButton";
 import NotificationBell from "@/components/NotificationBell";
+import LogoutButton from "@/components/LogoutButton";
 import { getFavorites } from "@/app/user/favorite-actions";
 import { cookies } from "next/headers";
 import { calculateDistance } from "@/lib/utils";
@@ -310,9 +311,9 @@ export default async function RestaurantFinder({
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
-    // if (!userId) {
-    //     redirect("/login");
-    // }
+    if (!userId) {
+        redirect("/login");
+    }
 
     let userSavedAddress = "";
     if (userId && !address && !location) {
@@ -414,13 +415,14 @@ export default async function RestaurantFinder({
                         </span>
                     </Link>
                     <div className="flex items-center gap-4">
-                        {userId && <NotificationBell userId={userId} />}
-                        {!userId ? (
+                        {userId && (
+                            <>
+                                <NotificationBell userId={userId} />
+                                <LogoutButton />
+                            </>
+                        )}
+                        {!userId && (
                             <Link href="/login" className="btn btn-primary text-xs py-2 px-4 rounded-full font-black uppercase tracking-widest">Login</Link>
-                        ) : (
-                            <Link href="/user/settings" className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            </Link>
                         )}
                     </div>
                 </nav>

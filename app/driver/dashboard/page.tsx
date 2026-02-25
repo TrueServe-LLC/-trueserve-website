@@ -40,6 +40,9 @@ async function getDriverData() {
 
 export default async function DriverDashboard() {
     const driver = await getDriverData();
+    if (!driver) {
+        redirect("/login?role=driver");
+    }
     const supabase = await createClient();
 
     // Fetch Available Orders

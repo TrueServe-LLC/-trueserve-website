@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import NotificationBell from "@/components/NotificationBell";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function UserSettings() {
     const cookieStore = await cookies();
@@ -52,8 +53,12 @@ export default async function UserSettings() {
                     </Link>
                     <div className="flex items-center gap-6">
                         <Link href="/" className="text-slate-400 hover:text-white transition-colors">Home</Link>
-                        {userId && <NotificationBell userId={userId} />}
-                        <button className="text-primary font-bold border-b-2 border-primary">Account</button>
+                        {userId && (
+                            <>
+                                <NotificationBell userId={userId} />
+                                <LogoutButton />
+                            </>
+                        )}
                     </div>
                 </div>
             </nav>
