@@ -62,6 +62,7 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
     const password = formData.get("password") as string;
     const role = (formData.get("role") as string) || 'CUSTOMER';
     const name = (formData.get("name") as string) || email.split('@')[0];
+    const address = formData.get("address") as string;
     const cookieStore = await cookies();
     const supabase = await createClient();
 
@@ -104,6 +105,7 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
                 email: email,
                 name: name,
                 role: role,
+                address: address || null,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });

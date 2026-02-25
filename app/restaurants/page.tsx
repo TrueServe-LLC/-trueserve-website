@@ -22,6 +22,9 @@ interface Restaurant {
     deliveryFee?: string;
     prepTime?: string;
     priceLevel?: string;
+    deal?: { type: string; description: string };
+    openTime?: string;
+    closeTime?: string;
 }
 
 // ... (in getRestaurants function)
@@ -166,6 +169,11 @@ async function getRestaurants(
             if (context.includes("bbq") || context.includes("barbecue") || context.includes("smokehouse") || context.includes("brisket")) tags.push("BBQ", "American");
             if (context.includes("salad") || context.includes("bowl") || context.includes("healthy") || context.includes("vegan") || context.includes("fresh")) tags.push("Healthy", "Fresh");
 
+            // Dynamic 'Late Night' tag
+            const closeTime = r.closeTime || '22:00:00';
+            const closeHour = parseInt(closeTime.split(':')[0]);
+            if (closeHour >= 22 || closeHour < 4) tags.push("Late Night");
+
             // Deduplicate and fallback
             const finalTags = Array.from(new Set(tags));
             if (finalTags.length === 1) finalTags.push("Great Service");
@@ -184,7 +192,10 @@ async function getRestaurants(
                 address: r.address || `${r.city}, ${r.state}`,
                 deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
                 prepTime: `${15 + (seed % 20)}-${25 + (seed % 20)} min`,
-                priceLevel: "$".repeat((seed % 3) + 1)
+                priceLevel: "$".repeat((seed % 3) + 1),
+                openTime: r.openTime,
+                closeTime: r.closeTime,
+                deal: seed % 5 === 0 ? { type: 'PROMO', description: seed % 2 === 0 ? 'Spend $20, Save $5' : 'Buy 1 Get 1 Free' } : undefined
             };
         });
 
@@ -248,8 +259,26 @@ export default async function RestaurantFinder({
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
-    let restaurants: Restaurant[] = [];
-    let locationMeta: LocationMeta = { name: "Unknown", center: [35.2271, -80.8431] };
+    let userSavedAddress = "";
+    if (userId && !address && !location) {
+        const { data: userData } = await supabase.from('User').select('address').eq('id', userId).maybeSingle();
+        if (userData?.address) {
+            userSavedAddress = userData.address;
+        }
+    }
+
+    const effectiveAddress = address || location || userSavedAddress;
+
+    const { restaurants: fetchedRest, locationMeta: meta } = await getRestaurants({
+        term: effectiveAddress, // Use effectiveAddress as the primary search term
+        address: effectiveAddress, // Also pass as address for more specific matching if needed
+        lat,
+        lng,
+        category
+    });
+
+    let restaurants: Restaurant[] = fetchedRest;
+    let locationMeta: LocationMeta = meta;
     let activeOrders: any[] = [];
     let pastRestaurants: any[] = [];
     let favorites: string[] = [];
@@ -556,6 +585,7 @@ export default async function RestaurantFinder({
                             { name: "Coffee", icon: "☕", color: "bg-amber-800/10 text-amber-700" },
                             { name: "Dessert", icon: "🍦", color: "bg-pink-500/10 text-pink-400" },
                             { name: "Healthy", icon: "🥗", color: "bg-green-500/10 text-green-400" },
+                            { name: "Late Night", icon: "🌙", color: "bg-indigo-500/10 text-indigo-400" },
                             { name: "Steak", icon: "🥩", color: "bg-slate-500/10 text-slate-400" },
                             { name: "BBQ", icon: "🍖", color: "bg-red-800/10 text-red-700" }
                         ].map((cat) => (
@@ -599,6 +629,31 @@ export default async function RestaurantFinder({
                 {/* Featured Collections Style Carousels (DoorDash Style) */}
                 {restaurants.length > 0 && !category && (
                     <div className="space-y-24 mb-24">
+                        {/* Deals Carousel */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <div className="flex items-center justify-between mb-8 px-1">
+                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                                    Offers for You <span className="text-sm bg-primary/20 text-primary px-3 py-1 rounded-full border border-primary/20">Find Deals</span>
+                                </h2>
+                            </div>
+                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 font-black">
+                                {restaurants.filter(r => r.deal).slice(0, 8).map((rest) => (
+                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[300px] md:min-w-[350px] group">
+                                        <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-4 relative border border-white/5">
+                                            <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                            <div className="absolute bottom-4 left-4 right-4">
+                                                <div className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black shadow-2xl inline-block mb-2">
+                                                    {rest.deal?.description}
+                                                </div>
+                                                <h3 className="text-white text-lg font-black">{rest.name}</h3>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* Fastest Carousel */}
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <div className="flex items-center justify-between mb-8 px-1">
@@ -656,6 +711,11 @@ export default async function RestaurantFinder({
                                         <div className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-white/10 shadow-xl">
                                             {rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}
                                         </div>
+                                        {rest.deal && (
+                                            <div className="bg-primary backdrop-blur-md text-black text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-primary/20 shadow-xl">
+                                                Deal
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="absolute top-3 right-3 flex flex-col gap-1.5">

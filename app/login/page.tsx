@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 export default function LoginPage() {
     const router = useRouter();
     const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
-    const [formData, setFormData] = useState({ email: '', password: '', name: '' });
+    const [formData, setFormData] = useState({ email: '', password: '', name: '', address: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
 
@@ -19,6 +19,7 @@ export default function LoginPage() {
         data.append("email", formData.email);
         data.append("password", formData.password);
         data.append("name", formData.name);
+        data.append("address", formData.address);
 
         let res;
         if (mode === 'login') {
@@ -70,16 +71,28 @@ export default function LoginPage() {
 
                 <div className="space-y-4">
                     {mode === 'signup' && (
-                        <div>
-                            <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">Full Name</label>
-                            <input
-                                type="text"
-                                className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
-                                placeholder="John Doe"
-                                value={formData.name}
-                                onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            />
-                        </div>
+                        <>
+                            <div>
+                                <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">Full Name</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
+                                    placeholder="John Doe"
+                                    value={formData.name}
+                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">Delivery Address</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
+                                    placeholder="123 Main St, Charlotte, NC"
+                                    value={formData.address}
+                                    onChange={e => setFormData({ ...formData, address: e.target.value })}
+                                />
+                            </div>
+                        </>
                     )}
 
                     <div>
