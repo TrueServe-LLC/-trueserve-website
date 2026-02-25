@@ -199,8 +199,8 @@ export default function DriverPortal() {
                                 img: "/scooter.png"
                             }
                         ].map((item, i) => (
-                            <div key={i} className="group relative bg-slate-900/50 border border-white/5 rounded-[3rem] overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl">
-                                <div className="h-72 overflow-hidden relative">
+                            <div key={i} className="group relative bg-slate-900/50 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl">
+                                <div className="h-72 relative">
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10" />
                                     <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100" />
                                     <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-2xl px-4 py-2 rounded-2xl border border-white/20 text-3xl shadow-2xl z-20">
@@ -220,7 +220,7 @@ export default function DriverPortal() {
             </section>
 
             {/* Pay Formula Overhaul */}
-            <section id="how-it-works" className="py-24 bg-black relative overflow-hidden">
+            <section id="how-it-works" className="py-24 bg-black relative">
                 <div className="container max-w-7xl mx-auto px-6">
                     <div className="flex flex-col lg:flex-row gap-16 items-center">
                         <div className="flex-1 space-y-8">
@@ -253,32 +253,32 @@ export default function DriverPortal() {
 
                         <div className="flex-1 w-full">
                             <div className="relative group">
-                                <div className="absolute -inset-2 bg-gradient-to-r from-primary to-emerald-500 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                                <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl flex flex-col h-full justify-between">
+                                <div className="absolute -inset-2 bg-gradient-to-r from-primary to-emerald-500 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                                <div className="relative bg-[#0f0f0f] border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl flex flex-col h-full justify-between">
                                     <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none rotate-12 select-none grayscale overflow-hidden">🏁</div>
-                                    <h3 className="text-2xl font-bold text-white mb-8 border-b border-white/10 pb-6 tracking-tight relative z-10 px-1 pt-1">Sample Driver Payout</h3>
+                                    <h3 className="text-2xl font-bold text-white mb-8 border-b border-white/10 pb-6 tracking-tight relative z-10 px-1 pt-1 ml-[1px]">Sample Driver Payout</h3>
 
-                                    <div className="space-y-6 flex-grow relative z-10 pb-4">
-                                        <div className="flex justify-between items-center text-sm">
+                                    <div className="space-y-6 flex-grow relative z-10 pb-4 px-1">
+                                        <div className="flex justify-between items-center text-sm ml-[1px]">
                                             <span className="text-slate-400 font-medium tracking-wide">Base Pick-up</span>
                                             <span className="text-white font-bold">$3.00</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-sm">
+                                        <div className="flex justify-between items-center text-sm ml-[1px]">
                                             <span className="text-slate-400 font-medium tracking-wide">Distance (4.2 miles)</span>
                                             <span className="text-white font-bold">$3.71</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-sm">
+                                        <div className="flex justify-between items-center text-sm ml-[1px]">
                                             <span className="text-slate-400 font-medium tracking-wide">Wait Time (12 mins)</span>
                                             <span className="text-white font-bold">$0.50</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-sm">
+                                        <div className="flex justify-between items-center text-sm ml-[1px]">
                                             <span className="text-slate-400 font-medium tracking-wide">Customer Tip</span>
                                             <span className="text-emerald-400 font-bold">$6.00</span>
                                         </div>
                                     </div>
 
-                                    <div className="pt-8 border-t border-white/10 flex justify-between items-end mt-4 relative z-10">
-                                        <div>
+                                    <div className="pt-8 border-t border-white/10 flex justify-between items-end mt-4 relative z-10 px-1">
+                                        <div className="ml-[1px]">
                                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total Earned</p>
                                             <p className="text-4xl font-black text-white tracking-tight leading-none">$13.21</p>
                                         </div>
