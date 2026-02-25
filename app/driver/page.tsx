@@ -207,8 +207,8 @@ export default function DriverPortal() {
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-8 pt-6 space-y-3 relative z-20">
-                                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                                <div className="p-8 pt-4 space-y-3 relative z-20 pb-10">
+                                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight">
                                         {item.title}
                                     </h3>
                                     <p className="text-slate-400 text-sm font-medium leading-relaxed">{item.desc}</p>
@@ -254,9 +254,9 @@ export default function DriverPortal() {
                         <div className="flex-1 w-full">
                             <div className="relative group">
                                 <div className="absolute -inset-2 bg-gradient-to-r from-primary to-emerald-500 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                                <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl overflow-hidden flex flex-col h-full justify-between">
-                                    <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none rotate-12 select-none grayscale">🏁</div>
-                                    <h3 className="text-2xl font-bold text-white mb-8 border-b border-white/10 pb-6 tracking-tight relative z-10 mt-2">Sample Driver Payout</h3>
+                                <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl flex flex-col h-full justify-between">
+                                    <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none rotate-12 select-none grayscale overflow-hidden">🏁</div>
+                                    <h3 className="text-2xl font-bold text-white mb-8 border-b border-white/10 pb-6 tracking-tight relative z-10 px-1 pt-1">Sample Driver Payout</h3>
 
                                     <div className="space-y-6 flex-grow relative z-10 pb-4">
                                         <div className="flex justify-between items-center text-sm">
