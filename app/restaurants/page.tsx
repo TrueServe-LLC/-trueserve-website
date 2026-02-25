@@ -138,10 +138,18 @@ async function getRestaurants(
             .neq('name', 'Test Restaurant');
 
         if (error || !restaurants || restaurants.length === 0) {
-            throw new Error("No DB data");
+            // Check if we should allow mock fallback (useful for pilots)
+            const allowMockFallback = process.env.NEXT_PUBLIC_ENABLE_MOCKS === 'true' || true; // Manual toggle
+            if (!allowMockFallback) {
+                return { restaurants: [], locationMeta };
+            }
+            throw new Error("No real data, falling back to mocks");
         }
 
-        const mappedRestaurants = restaurants.map((r: any, index: number) => {
+        // Logic to transition to production: Filter out mock restaurants from DB
+        const realRestaurants = restaurants.filter((r: any) => !r.isMock);
+
+        const mappedRestaurants = realRestaurants.map((r: any, index: number) => {
             const seed = r.name.length + index;
 
             // Data-Driven Ratings (Aggregate from Reviews)
@@ -178,12 +186,30 @@ async function getRestaurants(
             const finalTags = Array.from(new Set(tags));
             if (finalTags.length === 1) finalTags.push("Great Service");
 
+            // Smart Image Selection
+            let displayImage = r.imageUrl || "/restaurant1.jpg";
+            if (!r.imageUrl) {
+                if (finalTags.includes("Pizza")) displayImage = "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Burgers")) displayImage = "https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Asian")) displayImage = "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Mexican")) displayImage = "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Italian")) displayImage = "https://images.unsplash.com/photo-1473093226795-af9932fe5856?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Steak")) displayImage = "https://images.unsplash.com/photo-1546241072-48010ad28c2c?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Coffee")) displayImage = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Dessert")) displayImage = "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=800&auto=format&fit=crop";
+                else if (finalTags.includes("Healthy")) displayImage = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop";
+                else {
+                    // Random premium food image if no tag match
+                    displayImage = `https://images.unsplash.com/photo-${1504674900247 + (seed % 1000)}?q=80&w=800&auto=format&fit=crop`;
+                }
+            }
+
             return {
                 id: r.id,
                 name: r.name,
                 rating: Number(avgRating),
                 reviewCount: realRatings.length,
-                image: r.imageUrl || "/restaurant1.jpg",
+                image: displayImage,
                 tags: finalTags,
                 description: r.description,
                 coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
@@ -195,7 +221,7 @@ async function getRestaurants(
                 priceLevel: "$".repeat((seed % 3) + 1),
                 openTime: r.openTime,
                 closeTime: r.closeTime,
-                deal: seed % 5 === 0 ? { type: 'PROMO', description: seed % 2 === 0 ? 'Spend $20, Save $5' : 'Buy 1 Get 1 Free' } : undefined
+                deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: seed % 2 === 0 ? 'Spend $20, Save $5' : 'Buy 1 Get 1 Free' } : undefined
             };
         });
 
@@ -545,13 +571,9 @@ export default async function RestaurantFinder({
                 {/* Section Divider */}
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent mb-16 md:mb-24"></div>
 
-                {/* Food Categories / Tags Selection - Premium Style */}
-                <div className="mb-20 md:mb-32 overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                    <div className="flex items-center justify-between mb-8 px-1">
-                        <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Browse by Category</h2>
-                        <div className="h-px flex-1 bg-white/5 ml-4 hidden md:block"></div>
-                    </div>
-                    <div className="flex items-center gap-10 md:gap-14 overflow-x-auto pb-8 px-1 no-scrollbar scroll-smooth">
+                {/* Food Categories / Tags Selection - Slim Pill Style */}
+                <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="flex items-center gap-3 overflow-x-auto pb-4 px-1 no-scrollbar scroll-smooth">
                         {/* Show All Option */}
                         <Link
                             href={`/restaurants?${new URLSearchParams({
@@ -561,33 +583,31 @@ export default async function RestaurantFinder({
                                 ...(params.location ? { location: params.location } : {}),
                                 ...(params.search ? { search: params.search } : {})
                             }).toString()}`}
-                            className="flex flex-col items-center gap-4 min-w-[80px] md:min-w-[110px] group transition-all"
-                        >
-                            <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all duration-500 shadow-2xl border-2 
+                            className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all whitespace-nowrap font-bold text-sm
                                 ${!category
-                                    ? "bg-primary border-primary scale-110 shadow-primary/20 rotate-6"
-                                    : "bg-white/5 border-white/10 group-hover:bg-white/10 group-hover:border-primary/50"}`}
-                            >
-                                ✨
-                            </div>
-                            <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-colors
-                                ${!category ? "text-primary" : "text-slate-500 group-hover:text-white"}`}>
-                                All
-                            </span>
+                                    ? "bg-primary border-primary text-black shadow-lg shadow-primary/20"
+                                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20"}`}
+                        >
+                            <span>✨</span>
+                            <span>All</span>
                         </Link>
 
                         {[
-                            { name: "Pizza", icon: "🍕", color: "bg-orange-500/10 text-orange-400" },
-                            { name: "Burgers", icon: "🍔", color: "bg-yellow-500/10 text-yellow-400" },
-                            { name: "Asian", icon: "🥢", color: "bg-red-500/10 text-red-400" },
-                            { name: "Mexican", icon: "🌮", color: "bg-emerald-500/10 text-emerald-400" },
-                            { name: "Italian", icon: "🍝", color: "bg-blue-500/10 text-blue-400" },
-                            { name: "Coffee", icon: "☕", color: "bg-amber-800/10 text-amber-700" },
-                            { name: "Dessert", icon: "🍦", color: "bg-pink-500/10 text-pink-400" },
-                            { name: "Healthy", icon: "🥗", color: "bg-green-500/10 text-green-400" },
-                            { name: "Late Night", icon: "🌙", color: "bg-indigo-500/10 text-indigo-400" },
-                            { name: "Steak", icon: "🥩", color: "bg-slate-500/10 text-slate-400" },
-                            { name: "BBQ", icon: "🍖", color: "bg-red-800/10 text-red-700" }
+                            { name: "Fast Food", icon: "🍟" },
+                            { name: "Burgers", icon: "🍔" },
+                            { name: "Chicken", icon: "🍗" },
+                            { name: "Pizza", icon: "🍕" },
+                            { name: "Sushi", icon: "🍣" },
+                            { name: "Sandwiches", icon: "🥪" },
+                            { name: "Deals", icon: "🉐" },
+                            { name: "Breakfast", icon: "🍳" },
+                            { name: "Desserts", icon: "🍮" },
+                            { name: "Mexican", icon: "🌮" },
+                            { name: "Asian", icon: "🥢" },
+                            { name: "Italian", icon: "🍝" },
+                            { name: "Coffee", icon: "☕" },
+                            { name: "Low Delivery", icon: "💰" },
+                            { name: "Seafood", icon: "🦐" }
                         ].map((cat) => (
                             <Link
                                 key={cat.name}
@@ -599,19 +619,13 @@ export default async function RestaurantFinder({
                                     ...(params.search ? { search: params.search } : {}),
                                     category: cat.name
                                 }).toString()}`}
-                                className="flex flex-col items-center gap-4 min-w-[80px] md:min-w-[110px] group transition-all"
-                            >
-                                <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all duration-500 shadow-2xl border-2 
+                                className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all whitespace-nowrap font-bold text-sm
                                     ${category === cat.name
-                                        ? "bg-primary border-primary scale-110 shadow-primary/20 rotate-6"
-                                        : "bg-white/5 border-white/10 group-hover:bg-white/10 group-hover:border-primary/50 group-active:scale-90"}`}
-                                >
-                                    <span className={category === cat.name ? "text-black" : ""}>{cat.icon}</span>
-                                </div>
-                                <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-colors
-                                    ${category === cat.name ? "text-primary" : "text-slate-500 group-hover:text-white"}`}>
-                                    {cat.name}
-                                </span>
+                                        ? "bg-primary border-primary text-black shadow-lg shadow-primary/20"
+                                        : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20 hover:text-white"}`}
+                            >
+                                <span className="text-lg">{cat.icon}</span>
+                                <span>{cat.name}</span>
                             </Link>
                         ))}
                     </div>
@@ -623,7 +637,6 @@ export default async function RestaurantFinder({
                 <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar mb-14 border-b border-white/5 pt-4">
                     {[
                         { label: 'Deals', icon: '🏷️' },
-                        { label: 'DashPass', icon: '💎' },
                         { label: 'Rating: 4.5+', icon: '⭐', hasArrow: true },
                         { label: 'Under 30 min', icon: '🕒' },
                         { label: 'Price', hasArrow: true },
