@@ -419,7 +419,7 @@ export default async function RestaurantFinder({
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 filter blur-sm -z-10" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent -z-10" />
 
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500">
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500 leading-relaxed py-4">
                         Cravings, meet <span className="text-primary">Speed.</span>
                     </h1>
                     <p className="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl">

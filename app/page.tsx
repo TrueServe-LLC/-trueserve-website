@@ -44,7 +44,7 @@ export default async function Home() {
             <div className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-full text-[10px] md:text-sm font-black tracking-widest uppercase mb-2 border border-primary/20">
               🚀 Premium Delivery Service
             </div>
-            <h1 className="text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter">
+            <h1 className="text-4xl md:text-7xl font-black text-white leading-relaxed tracking-tighter py-4">
               Craving meet <br className="hidden md:block" />
               <span className="text-gradient">Lightning Speed.</span>
             </h1>

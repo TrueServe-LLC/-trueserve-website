@@ -50,14 +50,14 @@ export default function DriverPortal() {
 
                 <div className="container max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-8 text-center lg:text-left">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl">
-                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl leading-relaxed">
+                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#ff992a]"></span>
                             Join the Fleet of the Future
                         </div>
-                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.95] text-white">
-                            Your City. <br />
-                            Your Time. <br />
-                            <span className="text-primary">Your Profit.</span>
+                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-tight py-4">
+                            <span className="text-white">Your City.</span> <br />
+                            <span className="text-white">Your Time.</span> <br />
+                            <span className="text-gradient">Your Profit.</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-300 max-w-xl font-medium leading-relaxed">
                             TrueServe pays 25-40% more than legacy platforms by prioritizing mileage-based earnings and fair driver splits.
@@ -79,12 +79,14 @@ export default function DriverPortal() {
                     </div>
 
                     {/* Compact Hero Form */}
-                    <div ref={formRef} className="lg:max-w-md w-full mx-auto">
-                        <div className="bg-slate-900 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] border border-white/10 rounded-[2.5rem] p-10 md:p-12 backdrop-blur-2xl relative overflow-hidden">
+                    <div ref={formRef} className="lg:max-w-md w-full mx-auto relative z-20">
+                        <div className="bg-slate-900 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] border border-white/10 rounded-[2.5rem] p-10 md:p-12 backdrop-blur-2xl relative overflow-visible">
                             <div className="absolute top-0 right-0 p-8 opacity-5 text-9xl -mr-10 -mt-10 pointer-events-none select-none">🛵</div>
 
-                            <div className="relative z-10 pt-20 pb-12 px-2">
-                                <h2 className="text-4xl font-black text-white mb-4 tracking-tighter leading-relaxed px-4 py-2">Become a Driver</h2>
+                            <div className="relative z-10 pt-24 pb-16 px-2">
+                                <h2 className="text-4xl font-black mb-6 tracking-tighter leading-relaxed px-4 py-2">
+                                    <span className="text-white">Become a</span> <span className="text-gradient">Driver</span>
+                                </h2>
                                 <p className="text-slate-400 text-base mb-12 font-medium leading-relaxed px-4">Earn money and explore your city on your own terms.</p>
 
                                 {state.success ? (
@@ -157,7 +159,7 @@ export default function DriverPortal() {
                                             {isPending ? "Applying..." : "Start earning now"}
                                         </button>
 
-                                        <p className="text-[10px] text-slate-500 text-center px-4 font-medium leading-relaxed">
+                                        <p className="text-[10px] text-slate-500 text-center px-4 font-medium leading-relaxed mt-4">
                                             By clicking "Start earning now", you agree to TrueServe's Terms of Service and Privacy Policy.
                                         </p>
                                     </form>
@@ -182,32 +184,32 @@ export default function DriverPortal() {
                                 title: "Earnings that add up",
                                 desc: "High base pay and distance-driven rates mean you keep more of every delivery fee.",
                                 icon: "💰",
-                                img: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=800&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1621504450181-5d356f63d3ee?auto=format&fit=crop&q=80&w=800"
                             },
                             {
                                 title: "Your own schedule",
                                 desc: "Be your own boss. Schedule yourself ahead of time or start delivering whenever you want.",
                                 icon: "⏰",
-                                img: "https://images.unsplash.com/photo-1534670007418-fbb7f6cf32c3?q=80&w=800&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1594911771122-385038ecbe6e?auto=format&fit=crop&q=80&w=800"
                             },
                             {
                                 title: "Freedom to move",
                                 desc: "Delivery by car, bike, or scooter. You choice how you want to explore your city.",
                                 icon: "🚲",
-                                img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1624508493170-c0ebcde3194a?auto=format&fit=crop&q=80&w=800"
                             }
                         ].map((item, i) => (
-                            <div key={i} className="group bg-slate-900 border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/30 transition-all flex flex-col shadow-2xl">
-                                <div className="h-48 overflow-hidden relative">
+                            <div key={i} className="group bg-slate-900 border border-white/5 rounded-[2.5rem] overflow-visible hover:border-primary/30 transition-all flex flex-col shadow-2xl">
+                                <div className="h-56 overflow-hidden relative rounded-t-[2.5rem]">
                                     <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all"></div>
-                                    <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-xl">
+                                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all"></div>
+                                    <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-xl shadow-lg">
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-8 space-y-3">
-                                    <h3 className="text-xl font-black text-white">{item.title}</h3>
-                                    <p className="text-slate-400 text-sm font-medium leading-relaxed">{item.desc}</p>
+                                <div className="p-10 pt-8 space-y-4">
+                                    <h3 className="text-2xl font-black text-white leading-relaxed py-1">{item.title}</h3>
+                                    <p className="text-slate-400 text-base font-medium leading-relaxed">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -220,8 +222,8 @@ export default function DriverPortal() {
                 <div className="container max-w-7xl mx-auto px-6">
                     <div className="flex flex-col lg:flex-row gap-16 items-center">
                         <div className="flex-1 space-y-8">
-                            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-none">
-                                Transparent pay. <br />
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-relaxed py-4">
+                                <span className="text-white text-gradient">Transparent</span> <span className="text-white">pay.</span> <br />
                                 <span className="text-primary text-3xl md:text-5xl italic">No guessing games.</span>
                             </h2>
                             <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-xl">
