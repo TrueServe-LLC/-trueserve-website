@@ -617,11 +617,26 @@ export default async function RestaurantFinder({
                     </div>
                 </div>
 
-                {/* Dynamic Filters Bar - Simplified */}
-                <div className="flex items-center gap-4 overflow-x-auto pb-6 no-scrollbar mb-16 border-b border-white/5">
-                    {['Offers', 'Price: $', 'Rating 4.0+', 'Delivery Fee'].map((filter) => (
-                        <button key={filter} className="whitespace-nowrap px-8 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-all">
-                            {filter}
+                <div className="h-6"></div>
+
+                {/* Dynamic Filters Bar - DoorDash Style */}
+                <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar mb-14 border-b border-white/5 pt-4">
+                    {[
+                        { label: 'Deals', icon: '🏷️' },
+                        { label: 'DashPass', icon: '💎' },
+                        { label: 'Rating: 4.5+', icon: '⭐', hasArrow: true },
+                        { label: 'Under 30 min', icon: '🕒' },
+                        { label: 'Price', hasArrow: true },
+                        { label: 'HSA/FSA', icon: '💳' }
+                    ].map((filter) => (
+                        <button key={filter.label} className="flex items-center gap-2 whitespace-nowrap px-5 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/40 text-[13px] font-bold text-slate-200 transition-all shrink-0">
+                            {filter.icon && <span>{filter.icon}</span>}
+                            <span>{filter.label}</span>
+                            {filter.hasArrow && (
+                                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            )}
                         </button>
                     ))}
                 </div>
@@ -631,10 +646,14 @@ export default async function RestaurantFinder({
                     <div className="space-y-24 mb-24">
                         {/* Deals Carousel */}
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <div className="flex items-center justify-between mb-8 px-1">
-                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-3">
-                                    Offers for You <span className="text-sm bg-primary/20 text-primary px-3 py-1 rounded-full border border-primary/20">Find Deals</span>
-                                </h2>
+                            <div className="flex items-end justify-between mb-8 px-1">
+                                <div className="flex flex-col gap-1">
+                                    <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Offers for You</h2>
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Local deals and priority discounts</p>
+                                </div>
+                                <Link href="#" className="bg-white/5 hover:bg-white/10 text-primary px-5 py-2 rounded-full text-xs font-black uppercase tracking-[0.15em] border border-primary/20 transition-all">
+                                    Find Deals
+                                </Link>
                             </div>
                             <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 font-black">
                                 {restaurants.filter(r => r.deal).slice(0, 8).map((rest) => (
@@ -656,8 +675,9 @@ export default async function RestaurantFinder({
 
                         {/* Fastest Carousel */}
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <div className="flex items-center justify-between mb-8 px-1">
+                            <div className="flex flex-col gap-1 mb-8 px-1">
                                 <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Fastest</h2>
+                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Speedy delivery from nearby gems</p>
                             </div>
                             <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
                                 {restaurants.filter(r => parseInt(r.prepTime || "30") <= 25).slice(0, 6).map((rest) => (
@@ -681,7 +701,9 @@ export default async function RestaurantFinder({
                     </div>
                 )}
 
-                <div className="mb-10 px-1 border-t border-white/5 pt-16">
+                <div className="h-16"></div>
+
+                <div className="mb-12 px-1 border-t border-white/5 pt-16 flex items-center justify-between">
                     <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">All Spots</h2>
                 </div>
 
