@@ -212,81 +212,113 @@ export default function MerchantPortal() {
                 </section>
 
                 {/* Enrollment Form */}
-                <section id="inquiry-form" className="py-24 border-t border-white/5">
-                    <div className="container mx-auto px-6 max-w-7xl flex justify-center">
-                        <div className="w-full max-w-4xl bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                            <div className="grid grid-cols-1 md:grid-cols-5">
+                <section id="inquiry-form" className="py-24 border-t border-white/5 relative overflow-hidden">
+                    <div className="container mx-auto px-6 max-w-7xl">
+                        <div className="max-w-5xl mx-auto bg-[#0a0a0a] border border-white/10 rounded-[3rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+                            <div className="grid grid-cols-1 md:grid-cols-5 min-h-[600px]">
+                                {/* Left Side - Brand Promise */}
                                 <div className="md:col-span-2 bg-primary p-12 flex flex-col justify-between items-start">
-                                    <div className="space-y-6">
-                                        <h2 className="text-3xl font-bold text-black leading-tight italic">Be a part of the <span className="bg-black text-white px-2 py-1 italic">TrueServe</span> network.</h2>
-                                        <p className="text-black/70 text-sm font-bold">Join 500+ merchants who have reclaimed their local margin.</p>
+                                    <div className="space-y-8">
+                                        <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-2xl shadow-2xl">🤝</div>
+                                        <h2 className="text-4xl font-extrabold text-black leading-[1.1] tracking-tighter italic">
+                                            Be a part <br /> of the <br />
+                                            <span className="bg-black text-white px-3 py-1 inline-block mt-2">TrueServe</span> <br />
+                                            network.
+                                        </h2>
+                                        <p className="text-black/80 text-sm font-bold leading-relaxed max-w-[240px]">
+                                            Join 500+ premium merchants reclaiming their local margin.
+                                        </p>
                                     </div>
                                     <div className="space-y-4 pt-12">
-                                        <div className="flex items-center gap-3 text-black text-xs font-bold uppercase tracking-wider">
-                                            <div className="w-6 h-6 rounded-full bg-black/10 flex items-center justify-center">🛡️</div>
+                                        <div className="flex items-center gap-3 text-black text-[10px] font-black uppercase tracking-widest">
+                                            <div className="w-6 h-6 rounded-full bg-black/10 flex items-center justify-center border border-black/10">🛡️</div>
                                             Secure Enrollment
                                         </div>
-                                        <div className="flex items-center gap-3 text-black text-xs font-bold uppercase tracking-wider">
-                                            <div className="w-6 h-6 rounded-full bg-black/10 flex items-center justify-center">⚡</div>
+                                        <div className="flex items-center gap-3 text-black text-[10px] font-black uppercase tracking-widest">
+                                            <div className="w-6 h-6 rounded-full bg-black/10 flex items-center justify-center border border-black/10">⚡</div>
                                             Fast Onboarding
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="md:col-span-3 p-12">
-                                    <div className="mb-8">
-                                        <h3 className="text-xl font-bold text-white mb-2">Partner Inquiry</h3>
-                                        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-                                            Current Selection: <span className="text-primary">{selectedPlan ? selectedPlan : "Standard Protocol"}</span>
+                                {/* Right Side - Form */}
+                                <div className="md:col-span-3 p-12 lg:p-16 bg-[#0f0f0f]">
+                                    <div className="mb-10">
+                                        <span className="text-primary font-black uppercase tracking-widest text-[9px] mb-2 block">Application Protocol</span>
+                                        <h3 className="text-2xl font-bold text-white tracking-tight italic">Partner Inquiry</h3>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">
+                                            Selection: <span className="text-white">{selectedPlan ? selectedPlan : "Standard Protocol"}</span>
                                         </p>
                                     </div>
 
                                     {state.success ? (
-                                        <div className="text-center py-12 animate-fade-in">
-                                            <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 border border-primary/30">🤝</div>
-                                            <h3 className="text-2xl font-bold text-white mb-4 italic">Welcome to the Network.</h3>
-                                            <p className="text-slate-400 mb-10 text-sm font-medium leading-relaxed">{state.message}</p>
-                                            <Link href="/merchant/dashboard" className="btn btn-primary w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs">
-                                                Access Merchant Portal
+                                        <div className="text-center py-20 animate-fade-in flex flex-col items-center">
+                                            <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center text-5xl mb-8 border border-primary/30 shadow-[0_0_50px_rgba(var(--primary-rgb),0.2)]">🛡️</div>
+                                            <h3 className="text-3xl font-black text-white mb-4 tracking-tighter italic">Enrollment Active.</h3>
+                                            <p className="text-slate-400 mb-12 text-sm font-bold leading-relaxed max-w-sm">{state.message}</p>
+                                            <Link href="/merchant/dashboard" className="btn btn-primary w-full py-6 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl">
+                                                Access Command Center
                                             </Link>
                                         </div>
                                     ) : (
-                                        <form action={formAction} className="space-y-6">
+                                        <form action={formAction} className="space-y-8">
                                             {state.error && (
-                                                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-100 text-[10px] font-black uppercase tracking-widest text-center">
+                                                <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-100 text-[10px] font-black uppercase tracking-widest text-center animate-shake">
                                                     {state.message}
                                                 </div>
                                             )}
 
-                                            <div className="space-y-4">
-                                                <input name="restaurantName" type="text" required placeholder="Business Name" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium" />
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <input name="contactName" type="text" required placeholder="Owner/Manager" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium" />
-                                                    <input name="email" type="email" required placeholder="Email Address" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium" />
-                                                </div>
-                                                <input name="password" type="password" required minLength={8} placeholder="Create Portal Password" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium" />
-
-                                                <div className="pt-2">
-                                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Storefront Location</label>
-                                                    <AddressInput onAddressSelect={handleAddressSelect} initialAddress={formAddress.address} />
-                                                    <input type="hidden" name="address" value={formAddress.address} />
+                                            <div className="space-y-6">
+                                                <div>
+                                                    <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1 mb-2 block">Business Identity</label>
+                                                    <input name="restaurantName" type="text" required placeholder="Legal Restaurant Name" className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all font-bold placeholder:text-slate-800" />
                                                 </div>
 
-                                                <div className="grid grid-cols-3 gap-4">
-                                                    <input name="city" type="text" required placeholder="City" value={formAddress.city} onChange={(e) => setFormAddress({ ...formAddress, city: e.target.value })} className="col-span-1 w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium" />
-                                                    <select name="state" value={formAddress.state} onChange={(e) => setFormAddress({ ...formAddress, state: e.target.value })} className="col-span-1 w-full bg-[#0f0f0f] border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-primary/50 appearance-none font-medium" required>
-                                                        <option value="NC">NC</option>
-                                                        <option value="SC">SC</option>
-                                                    </select>
-                                                    <input name="zip" type="text" placeholder="Zip" className="col-span-1 w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium" />
+                                                <div className="grid grid-cols-2 gap-6">
+                                                    <div>
+                                                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1 mb-2 block">POC Name</label>
+                                                        <input name="contactName" type="text" required placeholder="Owner/Manager" className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all font-bold placeholder:text-slate-800" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1 mb-2 block">Email Address</label>
+                                                        <input name="email" type="email" required placeholder="business@email.com" className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all font-bold placeholder:text-slate-800" />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1 mb-2 block">Secure Access</label>
+                                                    <input name="password" type="password" required minLength={8} placeholder="Create Portal Password" className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all font-bold placeholder:text-slate-800" />
+                                                </div>
+
+                                                <div className="pt-4 border-t border-white/5">
+                                                    <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1 mb-4 block">Storefront Location</label>
+                                                    <div className="space-y-4">
+                                                        <AddressInput onAddressSelect={handleAddressSelect} initialAddress={formAddress.address} />
+                                                        <input type="hidden" name="address" value={formAddress.address} />
+
+                                                        <div className="grid grid-cols-3 gap-4">
+                                                            <input name="city" type="text" required placeholder="City" value={formAddress.city} onChange={(e) => setFormAddress({ ...formAddress, city: e.target.value })} className="col-span-1 w-full bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-bold placeholder:text-slate-800" />
+                                                            <div className="relative col-span-1">
+                                                                <select name="state" value={formAddress.state} onChange={(e) => setFormAddress({ ...formAddress, state: e.target.value })} className="w-full bg-[#0a0a0a] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 appearance-none font-bold" required>
+                                                                    <option value="NC">NC</option>
+                                                                    <option value="SC">SC</option>
+                                                                </select>
+                                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600 text-[10px]">▼</div>
+                                                            </div>
+                                                            <input name="zip" type="text" placeholder="Zip" className="col-span-1 w-full bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-bold placeholder:text-slate-800" />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <input type="hidden" name="plan" value={selectedPlan} />
 
-                                            <button disabled={isPending} className="btn btn-primary w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs mt-4 shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all">
-                                                {isPending ? "Submitting Inquiry..." : "Submit Application"}
-                                            </button>
+                                            <div className="pt-6">
+                                                <button disabled={isPending} className="relative w-full overflow-hidden rounded-2xl bg-primary py-6 text-black font-black uppercase tracking-[0.2em] text-xs shadow-[0_20px_40px_rgba(var(--primary-rgb),0.2)] hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 mt-4">
+                                                    {isPending ? "Configuring Hub..." : "Complete Enrollment"}
+                                                </button>
+                                                <p className="text-center mt-4 text-[9px] text-slate-600 font-bold uppercase tracking-widest">By clicking, you agree to our Terms of Logistics.</p>
+                                            </div>
                                         </form>
                                     )}
                                 </div>
