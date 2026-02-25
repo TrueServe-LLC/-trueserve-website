@@ -17,9 +17,11 @@ interface Restaurant {
     description: string;
     coords: [number, number];
     city?: string;
-    state?: string;
     distance?: string;
     address?: string;
+    deliveryFee?: string;
+    prepTime?: string;
+    priceLevel?: string;
 }
 
 // ... (in getRestaurants function)
@@ -173,7 +175,10 @@ async function getRestaurants(
                 coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
                 city: r.city,
                 state: r.state,
-                address: r.address || `${r.city}, ${r.state}`
+                address: r.address || `${r.city}, ${r.state}`,
+                deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
+                prepTime: `${15 + (seed % 20)}-${25 + (seed % 20)} min`,
+                priceLevel: "$".repeat((seed % 3) + 1)
             };
         });
 
@@ -193,7 +198,10 @@ async function getRestaurants(
         const allMocks = MOCK_RESTAURANTS.map(r => ({
             ...r,
             rating: Number(r.rating),
-            coords: [r.lat, r.lng] as [number, number]
+            coords: [r.lat, r.lng] as [number, number],
+            deliveryFee: r.name.length % 3 === 0 ? "Free" : `$${(r.name.length % 4 + 0.99).toFixed(2)}`,
+            prepTime: `${20 + (r.name.length % 15)}-${30 + (r.name.length % 15)} min`,
+            priceLevel: "$".repeat((r.name.length % 3) + 1)
         }));
 
         let filteredMocks = allMocks.filter(r => r.city.toLowerCase() === matchedLocation.city.toLowerCase());
@@ -424,7 +432,7 @@ export default async function RestaurantFinder({
 
                 {/* Order Again Carousel */}
                 {userId && pastRestaurants.length > 0 && (
-                    <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="mb-16 md:mb-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <div className="flex items-center justify-between mb-4 px-1">
                             <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.25em] text-slate-500">Order Again</h2>
                             <Link href="/orders" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest flex items-center gap-1">
@@ -463,7 +471,7 @@ export default async function RestaurantFinder({
                     </div>
                 )}
 
-                <div className="flex flex-col gap-4 md:gap-6 mb-8">
+                <div className="flex flex-col gap-6 md:gap-10 mb-20 md:mb-32">
                     <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 py-2">
                         <div>
                             <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.3em] mb-1">Delivering to</p>
@@ -499,9 +507,12 @@ export default async function RestaurantFinder({
                     </div>
                 </div>
 
+                {/* Section Divider */}
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent mb-16 md:mb-24"></div>
+
                 {/* Food Categories / Tags Selection - Premium Style */}
-                <div className="mb-12 overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                    <div className="flex items-center justify-between mb-6 px-1">
+                <div className="mb-20 md:mb-32 overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                    <div className="flex items-center justify-between mb-8 px-1">
                         <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Browse by Category</h2>
                         <div className="h-px flex-1 bg-white/5 ml-4 hidden md:block"></div>
                     </div>
@@ -570,12 +581,80 @@ export default async function RestaurantFinder({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+                {/* Dynamic Filters Bar */}
+                <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar mb-12">
+                    {['Over 4.5 Stars', 'Under 30 min', 'Price: $', 'Offers', 'Pickup'].map((filter) => (
+                        <button key={filter} className="whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 text-xs font-black uppercase tracking-widest text-slate-400 transition-all">
+                            {filter}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Featured Collections Style Carousels (DoorDash Style) */}
+                {restaurants.length > 0 && !category && (
+                    <div className="space-y-16 mb-20">
+                        {/* Top Rated Near You */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <div className="flex items-center justify-between mb-8 px-1">
+                                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">Top Rated Near You</h2>
+                                <Link href="#" className="text-xs font-black text-primary uppercase tracking-[0.2em] hover:opacity-80">See All</Link>
+                            </div>
+                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
+                                {restaurants.filter(r => r.rating >= 4.5).slice(0, 6).map((rest) => (
+                                    <Link key={rest.id} href={`/restaurants/${rest.id}...`} className="min-w-[280px] md:min-w-[320px] group">
+                                        <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative">
+                                            <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
+                                                {rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}
+                                            </div>
+                                        </div>
+                                        <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors">{rest.name}</h3>
+                                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold">
+                                            <span className="flex items-center gap-0.5 text-orange-400">★ {rest.rating}</span>
+                                            <span>•</span>
+                                            <span>{rest.prepTime}</span>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Fast & Local */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+                            <div className="flex items-center justify-between mb-8 px-1">
+                                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">Fastest in {locationMeta.name}</h2>
+                            </div>
+                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
+                                {restaurants.filter(r => parseInt(r.prepTime || "30") <= 25).slice(0, 6).map((rest) => (
+                                    <Link key={rest.id} href={`/restaurants/${rest.id}...`} className="min-w-[280px] md:min-w-[320px] group">
+                                        <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative">
+                                            <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
+                                                {rest.prepTime}
+                                            </div>
+                                        </div>
+                                        <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors">{rest.name}</h3>
+                                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold">
+                                            <span className="text-orange-400">★ {rest.rating}</span>
+                                            <span>•</span>
+                                            <span className="text-slate-500">{rest.priceLevel}</span>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="mb-8 px-1">
+                    <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">All Restaurants</h2>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10">
                     {restaurants.length === 0 ? (
                         <div className="col-span-full text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
                             <div className="text-4xl mb-4">🔍</div>
                             <p className="text-xl font-bold text-white">No spots found in {location?.toString()}.</p>
-                            <p className="text-sm text-slate-500 mt-2">Try searching "Charlotte" or "Pineville".</p>
                             <button onClick={() => window.location.href = '/restaurants'} className="btn btn-primary btn-sm mt-6 rounded-full px-8 uppercase font-black tracking-widest text-[10px]">Show All Cities</button>
                         </div>
                     ) : (
@@ -583,19 +662,19 @@ export default async function RestaurantFinder({
                             <Link
                                 href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`}
                                 key={rest.id}
-                                className="group flex flex-col bg-white/5 rounded-3xl border border-white/5 overflow-hidden hover:bg-white/[0.08] hover:border-white/10 transition-all duration-300 active:scale-[0.98]"
+                                className="group flex flex-col transition-all duration-300 active:scale-[0.98]"
                             >
-                                <div className="h-44 md:h-48 w-full relative overflow-hidden">
+                                <div className="h-48 md:h-56 w-full relative overflow-hidden rounded-2xl mb-4">
                                     <img
                                         src={rest.image || "/restaurant1.jpg"}
                                         alt={rest.name}
-                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000 ease-out"
+                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                                     />
 
                                     {/* Glass Overlay Badges */}
                                     <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-                                        <div className="bg-black/40 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10 shadow-xl">
-                                            $0 Delivery
+                                        <div className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-white/10 shadow-xl">
+                                            {rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}
                                         </div>
                                     </div>
 
@@ -608,36 +687,27 @@ export default async function RestaurantFinder({
                                         )}
                                     </div>
 
-                                    <div className="absolute bottom-3 right-3 bg-white text-black px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-2xl">
-                                        <span className="text-primary font-bold">★</span> {rest.rating}
+                                    <div className="absolute bottom-3 right-3 bg-white text-black px-2 py-1 rounded-lg text-[10px] font-black flex items-center gap-1 shadow-2xl">
+                                        <span className="text-orange-500 font-bold">★</span> {rest.rating}
                                     </div>
                                 </div>
 
-                                <div className="p-4 md:p-5">
-                                    <div className="flex justify-between items-start mb-1.5">
-                                        <h3 className="text-lg font-black text-white group-hover:text-primary transition-colors leading-tight tracking-tight">
+                                <div className="px-1">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="text-base font-black text-white group-hover:text-primary transition-colors leading-tight tracking-wide">
                                             {rest.name}
                                         </h3>
-                                        <span className="text-[10px] font-black uppercase bg-white/5 text-slate-400 px-2 py-1 rounded-lg border border-white/5 tracking-tighter">
-                                            20-30m
-                                        </span>
                                     </div>
-                                    <p className="text-[10px] text-slate-400 font-bold mb-1 line-clamp-1">
-                                        {rest.address}
-                                    </p>
-                                    <p className="text-[10px] text-slate-500 font-medium mb-4 line-clamp-1">
-                                        {rest.tags.join(" • ")}
-                                    </p>
-                                    <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-0.5">Fees</span>
-                                            <span className="text-xs font-bold text-emerald-400">$0.00</span>
-                                        </div>
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-0.5">Rating</span>
-                                            <span className="text-xs font-bold text-white uppercase tracking-tighter">Excellent</span>
-                                        </div>
+
+                                    <div className="flex items-center gap-2 text-[12px] text-slate-400 font-bold mb-1">
+                                        <span className="text-emerald-400">{rest.deliveryFee === "Free" ? "Free Delivery" : rest.deliveryFee}</span>
+                                        <span>•</span>
+                                        <span>{rest.prepTime}</span>
                                     </div>
+
+                                    <p className="text-[11px] text-slate-500 font-medium line-clamp-1">
+                                        {rest.priceLevel} • {rest.tags.join(" • ")}
+                                    </p>
                                 </div>
                             </Link>
                         ))
