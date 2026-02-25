@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useRef } from "react";
 import Link from "next/link";
 import { submitDriverApplication } from "./actions";
 
@@ -11,201 +11,335 @@ const initialState = {
 };
 
 export default function DriverPortal() {
-    // Use server action for form submission
     const [state, formAction, isPending] = useActionState(submitDriverApplication, initialState);
+    const formRef = useRef<HTMLDivElement>(null);
+
+    const scrollToForm = () => {
+        formRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-primary selection:text-black">
-            <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4">
-                <div className="container flex justify-between items-center">
+        <div className="min-h-screen bg-black text-white selection:bg-primary selection:text-black font-sans">
+            {/* Transparent Header */}
+            <nav className="fixed top-0 w-full z-50 bg-black/10 backdrop-blur-xl border-b border-white/5 px-6 py-4">
+                <div className="container flex justify-between items-center max-w-7xl mx-auto">
                     <Link href="/" className="flex items-center gap-2 group">
                         <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
                         <span className="text-2xl font-black tracking-tighter text-white">
                             True<span className="text-primary">Serve</span>
                         </span>
                     </Link>
-                    <div className="flex gap-3 md:gap-4 text-xs md:text-sm font-bold text-slate-300">
-                        <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                        <Link href="/merchant" className="hover:text-white transition-colors">For Merchants</Link>
+                    <div className="flex items-center gap-6">
+                        <Link href="/merchant" className="hidden md:block text-sm font-bold text-slate-400 hover:text-white transition-colors">For Merchants</Link>
+                        <Link href="/login?role=driver" className="text-sm font-black uppercase tracking-widest text-primary hover:text-white transition-colors">Log In</Link>
                     </div>
                 </div>
             </nav>
 
-            <main className="container max-w-3xl mx-auto py-16 px-6 relative text-center">
-                {/* Background Decor - Reduced Opacity */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
-
-                <div className="mb-12">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 border border-primary/20 rounded-full text-primary text-xs font-bold uppercase tracking-widest mb-6 shadow-lg shadow-primary/10">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                        </span>
-                        Mileage-Based Delivery Service
-                    </div>
-                    <h1 className="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight leading-[1.1] text-white">
-                        The Future of <br />
-                        <span className="text-primary">TrueServe</span> Delivery
-                    </h1>
-
+            {/* Hero Section */}
+            <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop"
+                        className="w-full h-full object-cover opacity-40 scale-105"
+                        alt="City Road"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                 </div>
 
-                <div className="space-y-12 text-left">
-
-                    {/* Pay Formula Card */}
-                    <div className="rounded-3xl border border-white/20 bg-black/60 backdrop-blur-xl p-8 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-                        <div className="text-center mb-8 relative z-10">
-                            <h2 className="text-2xl font-bold italic text-white">"Know exactly what you earn."</h2>
-                            <p className="text-slate-300 max-w-lg mx-auto mt-2">
-                                See base pay, mileage, and bonuses <strong>before</strong> you accept.
-                            </p>
+                <div className="container max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="space-y-8 text-center lg:text-left">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl">
+                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            Join the Fleet of the Future
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative z-10">
-                            <div className="p-4 bg-black/50 rounded-xl border border-white/10">
-                                <p className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Base Pay</p>
-                                <p className="text-xl font-bold text-white">$3.00 <span className="text-sm font-normal text-slate-400">/order</span></p>
-                            </div>
-                            <div className="p-4 bg-black/50 rounded-xl border border-white/10">
-                                <p className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Floor Guarantee</p>
-                                <p className="text-xl font-bold text-emerald-400">estimated</p>
-                            </div>
-                        </div>
-
-                        <div className="border-t border-white/10 pt-6 relative z-10 flex flex-col items-center">
-                            <ul className="space-y-4 text-base text-slate-300 w-full max-w-lg mx-auto">
-                                <li className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                    <span className="font-medium">Distance Pay</span>
-                                    <span className="text-white font-mono font-bold text-end">$0.70/mi base <br /><span className="text-xs text-slate-400 font-normal">(+ $0.35 after 2mi)</span></span>
-                                </li>
-                                <li className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                    <span className="font-medium">Wait Time</span>
-                                    <span className="text-white font-mono font-bold text-end">$0.25/min <br /><span className="text-xs text-slate-400 font-normal">(after 10m wait)</span></span>
-                                </li>
-                                <li className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                    <span className="font-medium">Batched Orders</span>
-                                    <span className="text-white font-mono font-bold text-end">+$2.00 <br /><span className="text-xs text-slate-400 font-normal">per extra drop</span></span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-
-                    <div className="rounded-3xl p-8 border border-white/10 bg-slate-900 shadow-xl">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-white">Start Earning</h2>
-                        </div>
-
-                        {state.success ? (
-                            <div className="p-6 bg-emerald-500/10 border border-emerald-500/50 rounded-xl text-center animate-fade-in">
-                                <h3 className="text-xl font-bold text-emerald-400 mb-2">Application Received!</h3>
-                                <p className="text-slate-300 text-sm">{state.message}</p>
-                            </div>
-                        ) : (
-                            <form action={formAction} className="space-y-6">
-                                {state.error && (
-                                    <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-200 text-sm font-bold">
-                                        {state.message}
-                                    </div>
-                                )}
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-300 mb-2">Full Name</label>
-                                    <input
-                                        name="name"
-                                        type="text"
-                                        required
-                                        className="w-full bg-black border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-white placeholder:text-slate-600 font-medium"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-300 mb-2">Email</label>
-                                        <input
-                                            name="email"
-                                            type="email"
-                                            required
-                                            className="w-full bg-black border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-white placeholder:text-slate-600 font-medium"
-                                            placeholder="john@example.com"
-                                        />
-                                    </div>
-                                    {/* Password field removed - specificed in user request to be created later */}
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-300 mb-2">Phone Number</label>
-                                        <input
-                                            name="phone"
-                                            type="tel"
-                                            required
-                                            className="w-full bg-black border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-white placeholder:text-slate-600 font-medium"
-                                            placeholder="(555) 555-5555"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-bold text-slate-300 mb-2">Driver's License / ID Document</label>
-                                        <input
-                                            name="idDocument"
-                                            type="file"
-                                            required
-                                            accept="image/*,.pdf"
-                                            className="w-full bg-black border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-all text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-black hover:file:bg-primary-hover cursor-pointer"
-                                        />
-                                        <p className="text-xs text-slate-500 mt-2 font-medium">Upload a clear photo or scan of your government ID.</p>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-300 mb-2">Vehicle</label>
-                                        <div className="relative">
-                                            <select name="vehicleType" className="w-full bg-black border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-all text-white appearance-none cursor-pointer font-medium">
-                                                <option value=" ">Select Vehicle Type</option>
-                                                <option value="Car">Car</option>
-                                                <option value="SUV">SUV</option>
-                                                <option value="Truck">Truck</option>
-                                                <option value="Scooter">Scooter / Bike</option>
-                                            </select>
-                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={isPending}
-                                    className="btn btn-primary w-full py-4 text-lg font-bold shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
-                                >
-                                    {isPending ? "Submitting Application..." : "Submit Application"}
-                                </button>
-                            </form>
-                        )}
-
-                        <div className="mt-8 pt-8 border-t border-white/10 text-center">
-                            <p className="text-slate-400 text-sm mb-4 font-medium">Already have an account?</p>
-                            <Link href="/login?role=driver" className="btn bg-white/5 border border-white/10 hover:bg-white/10 text-white w-full py-4 font-bold uppercase text-xs tracking-widest rounded-xl transition-all hover:border-white/30 block">
-                                Log In
+                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.95] text-white">
+                            Your City. <br />
+                            Your Time. <br />
+                            <span className="text-primary">Your Profit.</span>
+                        </h1>
+                        <p className="text-lg md:text-xl text-slate-300 max-w-xl font-medium leading-relaxed">
+                            TrueServe pays 25-40% more than legacy platforms by prioritizing mileage-based earnings and fair driver splits.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <button
+                                onClick={scrollToForm}
+                                className="btn btn-primary py-4 px-10 text-lg font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:scale-105 transition-all"
+                            >
+                                Get Started
+                            </button>
+                            <Link
+                                href="#how-it-works"
+                                className="btn bg-white/5 border border-white/10 hover:bg-white/10 text-white py-4 px-10 text-lg font-black uppercase tracking-widest rounded-2xl transition-all"
+                            >
+                                How it Works
                             </Link>
                         </div>
                     </div>
 
+                    {/* Compact Hero Form */}
+                    <div ref={formRef} className="lg:max-w-md w-full mx-auto">
+                        <div className="bg-slate-900 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] border border-white/10 rounded-[2.5rem] p-8 md:p-10 backdrop-blur-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-5 text-9xl -mr-8 -mt-8 pointer-events-none">🛵</div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="relative z-10">
+                                <h2 className="text-2xl font-black text-white mb-2 tracking-tight">Become a Dasher</h2>
+                                <p className="text-slate-400 text-sm mb-8 font-medium">Earn money and explore your city on your own terms.</p>
+
+                                {state.success ? (
+                                    <div className="p-8 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl text-center animate-in fade-in zoom-in duration-500">
+                                        <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border border-emerald-500/30">✅</div>
+                                        <h3 className="text-xl font-black text-emerald-400 mb-2">You're on the list!</h3>
+                                        <p className="text-slate-300 text-sm font-medium leading-relaxed">{state.message}</p>
+                                        <Link href="/login" className="btn btn-primary w-full mt-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px]">Log In to Portal</Link>
+                                    </div>
+                                ) : (
+                                    <form action={formAction} className="space-y-4">
+                                        {state.error && (
+                                            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-xs font-bold animate-shake">
+                                                ⚠️ {state.message}
+                                            </div>
+                                        )}
+                                        <div className="space-y-4">
+                                            <input
+                                                name="name"
+                                                type="text"
+                                                required
+                                                className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm"
+                                                placeholder="Full Name"
+                                            />
+                                            <input
+                                                name="email"
+                                                type="email"
+                                                required
+                                                className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm"
+                                                placeholder="Email Address"
+                                            />
+                                            <input
+                                                name="phone"
+                                                type="tel"
+                                                required
+                                                className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm"
+                                                placeholder="Phone Number"
+                                            />
+                                            <div className="relative group">
+                                                <select
+                                                    name="vehicleType"
+                                                    required
+                                                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white appearance-none cursor-pointer font-bold text-sm"
+                                                >
+                                                    <option value="" disabled selected>Select Vehicle</option>
+                                                    <option value="Car">Car</option>
+                                                    <option value="SUV">SUV</option>
+                                                    <option value="Truck">Truck</option>
+                                                    <option value="Scooter">Scooter / Bike</option>
+                                                </select>
+                                                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-primary transition-colors">▼</div>
+                                            </div>
+                                            <div className="p-4 bg-black/30 border border-dashed border-white/10 rounded-2xl">
+                                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Drivers License / ID</label>
+                                                <input
+                                                    name="idDocument"
+                                                    type="file"
+                                                    required
+                                                    accept="image/*,.pdf"
+                                                    className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-white/10 file:text-white hover:file:bg-white/20 file:transition-all cursor-pointer"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={isPending}
+                                            className="btn btn-primary w-full py-5 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-50 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-6"
+                                        >
+                                            {isPending ? "Applying..." : "Start earning now"}
+                                        </button>
+
+                                        <p className="text-[10px] text-slate-500 text-center px-4 font-medium leading-relaxed">
+                                            By clicking "Start earning now", you agree to TrueServe's Terms of Service and Privacy Policy.
+                                        </p>
+                                    </form>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Value Props */}
+            <section className="py-24 bg-white/5 relative">
+                <div className="container max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-16 space-y-4">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">Why deliver with TrueServe?</h2>
+                        <p className="text-slate-400 font-medium max-w-2xl mx-auto">We built a platform that respects your effort and pays fairly for every mile.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { title: "Distance Pay", desc: "Earn significantly more for longer routes.", icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6", color: "text-primary" },
-                            { title: "Wait Time", desc: "Paid $0.25/min for any pickup delays.", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", color: "text-emerald-400" },
-                            { title: "Instant Pay", desc: "Cash out your earnings immediately.", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "text-blue-400" },
-                            { title: "Heatmap", desc: "Find high-demand zones instantly.", icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 7m0 13V7", color: "text-yellow-400" }
+                            {
+                                title: "Earnings that add up",
+                                desc: "High base pay and distance-driven rates mean you keep more of every delivery fee.",
+                                icon: "💰",
+                                img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?q=80&w=800&auto=format&fit=crop"
+                            },
+                            {
+                                title: "Your own schedule",
+                                desc: "Be your own boss. Schedule yourself ahead of time or start delivering whenever you want.",
+                                icon: "⏰",
+                                img: "https://images.unsplash.com/photo-1519003722824-192d992a6059?q=80&w=800&auto=format&fit=crop"
+                            },
+                            {
+                                title: "Freedom to move",
+                                desc: "Delivery by car, bike, or scooter. You choice how you want to explore your city.",
+                                icon: "🚲",
+                                img: "https://images.unsplash.com/photo-1610492317734-fe8b898c7673?q=80&w=800&auto=format&fit=crop"
+                            }
                         ].map((item, i) => (
-                            <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all flex flex-col items-center text-center gap-4 group shadow-lg">
-                                <div className={`p-4 rounded-full bg-white/5 ${item.color} group-hover:scale-110 transition-transform ring-1 ring-white/10 group-hover:ring-${item.color.split('-')[1]}/50`}>
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon}></path></svg>
+                            <div key={i} className="group bg-slate-900 border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/30 transition-all flex flex-col shadow-2xl">
+                                <div className="h-48 overflow-hidden relative">
+                                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all"></div>
+                                    <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-xl">
+                                        {item.icon}
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-base uppercase tracking-wider mb-2 text-white">{item.title}</h3>
-                                    <p className="text-sm text-slate-400 leading-relaxed font-medium">{item.desc}</p>
+                                <div className="p-8 space-y-3">
+                                    <h3 className="text-xl font-black text-white">{item.title}</h3>
+                                    <p className="text-slate-400 text-sm font-medium leading-relaxed">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
-            </main>
+            </section>
+
+            {/* Pay Formula Overhaul */}
+            <section id="how-it-works" className="py-24 bg-black relative overflow-hidden">
+                <div className="container max-w-7xl mx-auto px-6">
+                    <div className="flex flex-col lg:flex-row gap-16 items-center">
+                        <div className="flex-1 space-y-8">
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-none">
+                                Transparent pay. <br />
+                                <span className="text-primary text-3xl md:text-5xl italic">No guessing games.</span>
+                            </h2>
+                            <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-xl">
+                                Unlike other apps that hide their formulas, we show you exactly how your earnings are calculated.
+                                You'll see the total payout before you ever tap "Accept."
+                            </p>
+
+                            <div className="space-y-4">
+                                {[
+                                    { label: "Base Pay", value: "$3.00 / order", detail: "Guaranteed minimum per pickup" },
+                                    { label: "Distance Pay", value: "$0.70 / mile", detail: "Increases to $1.05 after 2 miles" },
+                                    { label: "Wait Pay", value: "$0.25 / min", detail: "Starts after 10 minutes at restaurant" },
+                                    { label: "Tips", value: "100% Yours", detail: "Customers tip directly in the app" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex justify-between items-center p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all">
+                                        <div>
+                                            <p className="text-white font-black text-sm uppercase tracking-widest">{row.label}</p>
+                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">{row.detail}</p>
+                                        </div>
+                                        <p className="text-primary font-black text-lg">{row.value}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex-1 w-full">
+                            <div className="relative group">
+                                <div className="absolute -inset-2 bg-gradient-to-r from-primary to-emerald-500 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                                <div className="relative bg-slate-900 border border-white/10 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-12 text-9xl opacity-5 pointer-events-none rotate-12">🏁</div>
+                                    <h3 className="text-2xl font-black text-white mb-8 border-b border-white/10 pb-6">Sample Driver Payout</h3>
+
+                                    <div className="space-y-6">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Base Pick-up</span>
+                                            <span className="text-white font-black">$3.00</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Distance (4.2 miles)</span>
+                                            <span className="text-white font-black">$3.71</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Wait Time (12 mins)</span>
+                                            <span className="text-white font-black">$0.50</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Customer Tip</span>
+                                            <span className="text-emerald-400 font-black">$6.00</span>
+                                        </div>
+                                        <div className="pt-8 border-t border-white/10 flex justify-between items-end">
+                                            <div>
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Earned</p>
+                                                <p className="text-4xl font-black text-white">$13.21</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Driving Time</p>
+                                                <p className="text-lg font-bold text-slate-300">18 mins</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Requirements & Call to Action */}
+            <section className="py-24 border-t border-white/5 bg-slate-900/50">
+                <div className="container max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                        <div className="space-y-8">
+                            <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">What do you need <br />to start?</h2>
+                            <ul className="space-y-6">
+                                {[
+                                    "18+ years of age",
+                                    "Valid driver's license or state ID",
+                                    "Your own vehicle (Car, Scooter, or Bike)",
+                                    "Social Security number (for tax purposes)",
+                                    "A smartphone (iOS or Android)"
+                                ].map((req, i) => (
+                                    <li key={i} className="flex items-center gap-4 text-slate-300 font-bold">
+                                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 border border-emerald-500/30">✓</div>
+                                        {req}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-primary/20 to-emerald-500/10 border border-primary/20 p-12 rounded-[3rem] text-center space-y-6 relative overflow-hidden group">
+                            <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none group-hover:scale-110 transition-transform duration-1000"></div>
+                            <h3 className="text-3xl font-black text-white relative z-10">Start today. <br />Pay out today.</h3>
+                            <p className="text-slate-400 font-medium relative z-10 mb-8">Join thousands of drivers in Charlotte and Pineville who are earning more with TrueServe.</p>
+                            <button
+                                onClick={scrollToForm}
+                                className="btn btn-primary w-full py-5 text-lg font-black uppercase tracking-widest relative z-10 shadow-2xl shadow-primary/30"
+                            >
+                                Apply Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer className="py-12 bg-black border-t border-white/5">
+                <div className="container max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex items-center gap-2">
+                        <img src="/logo.png" alt="Logo" className="w-8 h-8 opacity-50" />
+                        <span className="font-black text-slate-500 tracking-tighter">TrueServe Fleet &copy; {new Date().getFullYear()}</span>
+                    </div>
+                    <div className="flex gap-8 text-xs font-black uppercase tracking-widest text-slate-600">
+                        <Link href="/legal" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link href="/legal" className="hover:text-white transition-colors">Terms</Link>
+                        <Link href="/help" className="hover:text-white transition-colors">Dasher Help</Link>
+                        <Link href="/login?role=driver" className="hover:text-white transition-colors">Driver Login</Link>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }
