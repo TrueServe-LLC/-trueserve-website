@@ -30,18 +30,18 @@ export default function BenefitsPage() {
                     <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 border border-primary/30">
                         Membership 2.0
                     </div>
-                    <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.85]">
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 leading-tight">
                         Built for <br />
                         <span className="text-gradient italic">Community.</span>
                     </h1>
-                    <p className="text-slate-400 text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed font-medium">
+                    <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-medium text-center">
                         A new standard in delivery, built specifically for local restaurants and the community that supports them.
                     </p>
                 </div>
 
                 {/* Tiered Membership Model - Fixed Clickability */}
                 <div className="mb-48 relative z-20">
-                    <h2 className="text-center text-4xl md:text-5xl font-black mb-20 tracking-tight uppercase">Choose Your Standard</h2>
+                    <h2 className="text-center text-3xl md:text-4xl font-black mb-16 tracking-tight uppercase">Choose Your Standard</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 max-w-6xl mx-auto px-4">
                         <PricingCard
                             tier="Basic"
@@ -128,7 +128,7 @@ export default function BenefitsPage() {
                         </div>
                         <div className="order-1 lg:order-2">
                             <span className="text-primary font-black uppercase tracking-widest text-[10px] bg-primary/10 px-3 py-1 rounded-full border border-primary/20">Convenience & Experience</span>
-                            <h2 className="text-4xl md:text-6xl font-black mt-8 mb-10 leading-[1.1] tracking-tight text-white">
+                            <h2 className="text-3xl md:text-5xl font-black mt-8 mb-10 leading-tight tracking-tight text-white">
                                 Elevate your order <br /> from start to finish.
                             </h2>
                             <div className="space-y-10">
@@ -154,7 +154,7 @@ export default function BenefitsPage() {
 
                 {/* Strategic Call to Action */}
                 <div className="text-center mb-40">
-                    <h2 className="text-5xl font-black mb-6">Start Your Standard.</h2>
+                    <h2 className="text-4xl font-black mb-6">Start Your Standard.</h2>
                     <p className="text-slate-400 mb-12">Launch features include Priority Dispatch, Order Protection, and 5% Restaurant Savings.</p>
                     <Link href="/login" className="btn btn-primary px-12 py-5 text-xl shadow-2xl shadow-primary/30 rounded-2xl">
                         Join {selectedTier} Today
