@@ -431,7 +431,7 @@ export default async function RestaurantFinder({
                                 Past Orders <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
                             </Link>
                         </div>
-                        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4">
+                        <div className="flex gap-6 md:gap-8 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 scroll-smooth">
                             {pastRestaurants.map((res: any) => (
                                 <Link
                                     key={res.id}
@@ -505,7 +505,7 @@ export default async function RestaurantFinder({
                         <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Browse by Category</h2>
                         <div className="h-px flex-1 bg-white/5 ml-4 hidden md:block"></div>
                     </div>
-                    <div className="flex items-center gap-6 overflow-x-auto pb-6 px-1 no-scrollbar scroll-smooth">
+                    <div className="flex items-center gap-10 md:gap-14 overflow-x-auto pb-8 px-1 no-scrollbar scroll-smooth">
                         {/* Show All Option */}
                         <Link
                             href={`/restaurants?${new URLSearchParams({
@@ -515,7 +515,7 @@ export default async function RestaurantFinder({
                                 ...(params.location ? { location: params.location } : {}),
                                 ...(params.search ? { search: params.search } : {})
                             }).toString()}`}
-                            className="flex flex-col items-center gap-3 min-w-[70px] md:min-w-[90px] group transition-all"
+                            className="flex flex-col items-center gap-4 min-w-[80px] md:min-w-[110px] group transition-all"
                         >
                             <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all duration-500 shadow-2xl border-2 
                                 ${!category
@@ -552,7 +552,7 @@ export default async function RestaurantFinder({
                                     ...(params.search ? { search: params.search } : {}),
                                     category: cat.name
                                 }).toString()}`}
-                                className="flex flex-col items-center gap-3 min-w-[70px] md:min-w-[90px] group transition-all"
+                                className="flex flex-col items-center gap-4 min-w-[80px] md:min-w-[110px] group transition-all"
                             >
                                 <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all duration-500 shadow-2xl border-2 
                                     ${category === cat.name
