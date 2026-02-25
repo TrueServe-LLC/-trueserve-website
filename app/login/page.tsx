@@ -19,7 +19,7 @@ function LoginWithParams() {
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get("redirect") || "/restaurants";
 
-    const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('signup');
+    const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
     const [formData, setFormData] = useState({ email: '', password: '', name: '', address: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
@@ -29,11 +29,21 @@ function LoginWithParams() {
         const checkUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                router.push(redirectUrl);
+                // Fetch profile to get role for correct redirection
+                const { data: profile } = await supabase
+                    .from('User')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile?.role === 'MERCHANT') router.push("/merchant/dashboard");
+                else if (profile?.role === 'DRIVER') router.push("/driver/dashboard");
+                else if (profile?.role === 'ADMIN') router.push("/admin/dashboard");
+                else router.push(redirectUrl);
             }
         };
         checkUser();
-    }, [router, supabase]);
+    }, [router, supabase, redirectUrl]);
 
     const handleSubmit = async () => {
         setIsLoading(true);

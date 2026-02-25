@@ -103,15 +103,6 @@ export default function MerchantPortal() {
                                         alt="Professional Kitchen"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                                    <div className="absolute bottom-6 left-6 right-6 p-6 bg-black/60 backdrop-blur-md border border-white/10 rounded-2xl">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xl">📈</div>
-                                            <div>
-                                                <div className="text-white font-bold text-sm">24% Average Revenue Growth</div>
-                                                <div className="text-slate-400 text-xs font-medium uppercase tracking-widest">For Pro Partners in 2025</div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -121,68 +112,45 @@ export default function MerchantPortal() {
                 {/* Scaling Options - Primary Value Focus */}
                 <section className="py-24 relative border-t border-white/5">
                     <div className="container mx-auto px-6 max-w-7xl">
-                        <div className="max-w-3xl mx-auto text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight text-white uppercase italic">TrueScale <span className="text-primary italic">protocols.</span></h2>
-                            <p className="text-slate-400 text-base font-bold italic">Select the logistics engine that fits your capacity.</p>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto items-stretch">
-                            {/* Flex Scale */}
-                            <div className={`flex flex-col group relative p-10 bg-[#0f0f0f] border border-white/10 rounded-[2rem] hover:border-primary/40 transition-all duration-500 ${selectedPlan === 'Flex Options' ? 'ring-2 ring-primary bg-black' : ''}`}>
-                                <div className="mb-8">
-                                    <h3 className="text-2xl font-bold text-white tracking-tight">Flex Scale</h3>
-                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-[9px] mt-1">On-demand growth</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto items-stretch">
+                            {/* Flex Scale Banner */}
+                            <div className={`relative overflow-hidden flex flex-col xl:flex-row items-center cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'ring-4 ring-[#6B71F2]' : 'border border-white/5'} rounded-3xl bg-[#1C1A3B]`} onClick={() => scrollToForm("Flex Options")}>
+                                <div className="p-8 md:p-10 flex-1 z-10 w-full xl:w-1/2">
+                                    <h3 className="text-3xl font-extrabold text-white mb-2">Flex Scale</h3>
+                                    <p className="text-white/80 text-lg mb-8 leading-tight">15% Split <br /> On-demand growth.</p>
+                                    <button className="bg-[#6B71F2] hover:bg-[#5b61de] text-white px-8 py-3 rounded-full font-bold transition-colors w-max shadow-lg shadow-[#6B71F2]/20">Choose Flex</button>
                                 </div>
-
-                                <div className="flex items-baseline gap-2 mb-10">
-                                    <span className="text-6xl font-black text-white tracking-tighter">15%</span>
-                                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Split</span>
+                                <div className="p-8 md:p-10 flex-1 z-10 w-full xl:w-1/2 xl:flex xl:items-center xl:justify-end xl:pl-0">
+                                    <ul className="space-y-3 w-full">
+                                        {["Zero upfront setup", "Full engine access", "Standard local badge", "Cancel anytime"].map((feat, i) => (
+                                            <li key={i} className="flex justify-between items-center text-white/90 text-sm font-bold bg-white/5 px-4 py-3 rounded-xl border border-white/10 backdrop-blur-sm shadow-sm text-left">
+                                                <span>{feat}</span>
+                                                <div className="w-5 h-5 rounded-full bg-[#6B71F2]/20 flex items-center justify-center text-[10px] text-[#6B71F2] shrink-0">✔</div>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-
-                                <ul className="space-y-4 mb-10 flex-grow">
-                                    {["Zero upfront setup", "Full engine access", "Standard local badge", "Cancel anytime"].map((feat, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-slate-400 text-sm font-medium">
-                                            <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] text-primary">✔</div>
-                                            {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <button
-                                    onClick={() => scrollToForm("Flex Options")}
-                                    className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-black transition-all"
-                                >
-                                    Choose Flex
-                                </button>
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#6B71F2] opacity-20 blur-[100px] rounded-full pointer-events-none"></div>
                             </div>
 
-                            {/* Pro Scale */}
-                            <div className={`flex flex-col group relative p-10 bg-[#0f0f0f] border border-white/10 rounded-[2rem] hover:border-emerald-500/40 transition-all duration-500 ${selectedPlan === 'Pro Subscription' ? 'ring-2 ring-emerald-500 bg-black' : ''}`}>
-                                <div className="mb-8">
-                                    <h3 className="text-2xl font-bold text-white tracking-tight">Pro Scale</h3>
-                                    <p className="text-emerald-500 font-black uppercase tracking-widest text-[9px] mt-1">High-Volume Optimized</p>
+                            {/* Pro Scale Banner */}
+                            <div className={`relative overflow-hidden flex flex-col xl:flex-row items-center cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'ring-4 ring-[#0D2440]' : 'border border-[#F29F29]/20'} border-[#F29F29]/20 rounded-3xl bg-[#F29F29]`} onClick={() => scrollToForm("Pro Subscription")}>
+                                <div className="p-8 md:p-10 flex-1 z-10 w-full xl:w-1/2">
+                                    <h3 className="text-3xl font-extrabold text-[#0D2440] mb-2">Pro Scale</h3>
+                                    <p className="text-[#0D2440]/80 text-lg mb-8 leading-tight">$199 Monthly <br /> High-Volume Optimized.</p>
+                                    <button className="bg-[#0D2440] hover:bg-[#0a1c33] text-white px-8 py-3 rounded-full font-bold transition-colors w-max shadow-lg shadow-[#0D2440]/20">Choose Pro</button>
                                 </div>
-
-                                <div className="flex items-baseline gap-2 mb-10">
-                                    <span className="text-6xl font-black text-white tracking-tighter">$199</span>
-                                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Monthly</span>
+                                <div className="p-8 md:p-10 flex-1 z-10 w-full xl:w-1/2 xl:flex xl:items-center xl:justify-end xl:pl-0">
+                                    <ul className="space-y-3 w-full">
+                                        {["0% Split logic", "VIP Merchant Status", "Custom dispatch logic", "Performance Analytics"].map((feat, i) => (
+                                            <li key={i} className="flex justify-between items-center text-[#0D2440] text-sm font-bold bg-white/30 px-4 py-3 rounded-xl border border-[#0D2440]/10 backdrop-blur-sm shadow-sm text-left">
+                                                <span>{feat}</span>
+                                                <div className="w-5 h-5 rounded-full bg-[#0D2440]/20 flex items-center justify-center text-[10px] text-[#0D2440] shrink-0">✔</div>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-
-                                <ul className="space-y-4 mb-10 flex-grow">
-                                    {["0% Split logic", "VIP Merchant Status", "Custom dispatch logic", "Performance Analytics"].map((feat, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-emerald-100/70 text-sm font-medium">
-                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] text-emerald-500">✔</div>
-                                            {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <button
-                                    onClick={() => scrollToForm("Pro Subscription")}
-                                    className="w-full py-4 rounded-xl bg-emerald-500 text-black font-bold uppercase tracking-widest text-[10px] hover:bg-white transition-all shadow-lg shadow-emerald-500/10"
-                                >
-                                    Choose Pro
-                                </button>
                             </div>
                         </div>
                     </div>
