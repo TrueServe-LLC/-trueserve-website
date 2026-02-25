@@ -311,10 +311,6 @@ export default async function RestaurantFinder({
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
-    if (!userId) {
-        redirect("/login");
-    }
-
     let userSavedAddress = "";
     if (userId && !address && !location) {
         const { data: userData } = await supabase.from('User').select('address').eq('id', userId).maybeSingle();
@@ -415,15 +411,7 @@ export default async function RestaurantFinder({
                         </span>
                     </Link>
                     <div className="flex items-center gap-4">
-                        {userId && (
-                            <>
-                                <NotificationBell userId={userId} />
-                                <LogoutButton />
-                            </>
-                        )}
-                        {!userId && (
-                            <Link href="/login" className="btn btn-primary text-xs py-2 px-4 rounded-full font-black uppercase tracking-widest">Login</Link>
-                        )}
+                        <Link href="/login" className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Sign In</Link>
                     </div>
                 </nav>
 
