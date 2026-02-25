@@ -83,9 +83,9 @@ export default function DriverPortal() {
                         <div className="bg-slate-900 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] border border-white/10 rounded-[2.5rem] p-10 md:p-12 backdrop-blur-2xl relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8 opacity-5 text-9xl -mr-10 -mt-10 pointer-events-none select-none">🛵</div>
 
-                            <div className="relative z-10 pt-12 pb-8">
-                                <h2 className="text-4xl font-black text-white mb-3 tracking-tighter leading-tight px-1 py-1">Become a Dasher</h2>
-                                <p className="text-slate-400 text-sm mb-10 font-medium leading-relaxed px-1">Earn money and explore your city on your own terms.</p>
+                            <div className="relative z-10 pt-20 pb-12 px-2">
+                                <h2 className="text-4xl font-black text-white mb-4 tracking-tighter leading-relaxed px-4 py-2">Become a Driver</h2>
+                                <p className="text-slate-400 text-base mb-12 font-medium leading-relaxed px-4">Earn money and explore your city on your own terms.</p>
 
                                 {state.success ? (
                                     <div className="p-10 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] text-center animate-in fade-in zoom-in duration-500 pb-12">
@@ -182,19 +182,19 @@ export default function DriverPortal() {
                                 title: "Earnings that add up",
                                 desc: "High base pay and distance-driven rates mean you keep more of every delivery fee.",
                                 icon: "💰",
-                                img: "https://images.unsplash.com/photo-1614028674026-a65e31bfd27c?q=80&w=800&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=800&auto=format&fit=crop"
                             },
                             {
                                 title: "Your own schedule",
                                 desc: "Be your own boss. Schedule yourself ahead of time or start delivering whenever you want.",
                                 icon: "⏰",
-                                img: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?q=80&w=800&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1534670007418-fbb7f6cf32c3?q=80&w=800&auto=format&fit=crop"
                             },
                             {
                                 title: "Freedom to move",
                                 desc: "Delivery by car, bike, or scooter. You choice how you want to explore your city.",
                                 icon: "🚲",
-                                img: "https://images.unsplash.com/photo-1594732806282-1064f7bc5046?q=80&w=800&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800&auto=format&fit=crop"
                             }
                         ].map((item, i) => (
                             <div key={i} className="group bg-slate-900 border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/30 transition-all flex flex-col shadow-2xl">
@@ -252,7 +252,7 @@ export default function DriverPortal() {
                                 <div className="absolute -inset-2 bg-gradient-to-r from-primary to-emerald-500 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
                                 <div className="relative bg-slate-900 border border-white/10 rounded-[2.5rem] p-10 md:p-14 shadow-2xl overflow-visible flex flex-col min-h-max">
                                     <div className="absolute top-0 right-0 p-12 text-9xl opacity-5 pointer-events-none rotate-12 select-none">🏁</div>
-                                    <h3 className="text-4xl font-black text-white mb-10 border-b border-white/10 pb-8 tracking-tighter leading-tight pt-10 px-1 py-1">Sample Driver Payout</h3>
+                                    <h3 className="text-4xl font-black text-white mb-12 border-b border-white/10 pb-10 tracking-tighter leading-relaxed pt-20 px-4 py-2">Sample Driver Payout</h3>
 
                                     <div className="space-y-8 flex-grow pb-10">
                                         <div className="flex justify-between text-sm">
@@ -335,7 +335,7 @@ export default function DriverPortal() {
                     <div className="flex gap-8 text-xs font-black uppercase tracking-widest text-slate-600">
                         <Link href="/legal" className="hover:text-white transition-colors">Privacy</Link>
                         <Link href="/legal" className="hover:text-white transition-colors">Terms</Link>
-                        <Link href="/help" className="hover:text-white transition-colors">Dasher Help</Link>
+                        <Link href="/help" className="hover:text-white transition-colors">Driver Help</Link>
                         <Link href="/login?role=driver" className="hover:text-white transition-colors">Driver Login</Link>
                     </div>
                 </div>
