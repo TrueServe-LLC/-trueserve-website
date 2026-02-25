@@ -129,7 +129,7 @@ async function getRestaurants(
 
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
-            .select('*, MenuItem(name, description)')
+            .select('*, MenuItem(name, description), Review(rating)')
             .match({ city: cityFilter, state: stateFilter })
             .eq('visibility', 'VISIBLE')
             .neq('name', 'Test Restaurant');
@@ -140,7 +140,12 @@ async function getRestaurants(
 
         const mappedRestaurants = restaurants.map((r: any, index: number) => {
             const seed = r.name.length + index;
-            const mockRating = (4.0 + (seed % 10) / 10).toFixed(1);
+
+            // Data-Driven Ratings (Aggregate from Reviews)
+            const realRatings = (r.Review || []).map((rev: any) => rev.rating);
+            const avgRating = realRatings.length > 0
+                ? (realRatings.reduce((a: number, b: number) => a + b, 0) / realRatings.length).toFixed(1)
+                : (4.0 + (seed % 10) / 10).toFixed(1);
 
             // Smart Tag Inference - Check name, description, and menu items
             const rName = r.name.toLowerCase();
@@ -168,7 +173,8 @@ async function getRestaurants(
             return {
                 id: r.id,
                 name: r.name,
-                rating: Number(mockRating),
+                rating: Number(avgRating),
+                reviewCount: realRatings.length,
                 image: r.imageUrl || "/restaurant1.jpg",
                 tags: finalTags,
                 description: r.description,
@@ -581,10 +587,10 @@ export default async function RestaurantFinder({
                     </div>
                 </div>
 
-                {/* Dynamic Filters Bar */}
-                <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar mb-12">
-                    {['Over 4.5 Stars', 'Under 30 min', 'Price: $', 'Offers', 'Pickup'].map((filter) => (
-                        <button key={filter} className="whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 text-xs font-black uppercase tracking-widest text-slate-400 transition-all">
+                {/* Dynamic Filters Bar - Simplified */}
+                <div className="flex items-center gap-4 overflow-x-auto pb-6 no-scrollbar mb-16 border-b border-white/5">
+                    {['Offers', 'Price: $', 'Rating 4.0+', 'Delivery Fee'].map((filter) => (
+                        <button key={filter} className="whitespace-nowrap px-8 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-all">
                             {filter}
                         </button>
                     ))}
@@ -592,41 +598,15 @@ export default async function RestaurantFinder({
 
                 {/* Featured Collections Style Carousels (DoorDash Style) */}
                 {restaurants.length > 0 && !category && (
-                    <div className="space-y-16 mb-20">
-                        {/* Top Rated Near You */}
+                    <div className="space-y-24 mb-24">
+                        {/* Fastest Carousel */}
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <div className="flex items-center justify-between mb-8 px-1">
-                                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">Top Rated Near You</h2>
-                                <Link href="#" className="text-xs font-black text-primary uppercase tracking-[0.2em] hover:opacity-80">See All</Link>
-                            </div>
-                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
-                                {restaurants.filter(r => r.rating >= 4.5).slice(0, 6).map((rest) => (
-                                    <Link key={rest.id} href={`/restaurants/${rest.id}...`} className="min-w-[280px] md:min-w-[320px] group">
-                                        <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative">
-                                            <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
-                                                {rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}
-                                            </div>
-                                        </div>
-                                        <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors">{rest.name}</h3>
-                                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold">
-                                            <span className="flex items-center gap-0.5 text-orange-400">★ {rest.rating}</span>
-                                            <span>•</span>
-                                            <span>{rest.prepTime}</span>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Fast & Local */}
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-                            <div className="flex items-center justify-between mb-8 px-1">
-                                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">Fastest in {locationMeta.name}</h2>
+                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Fastest</h2>
                             </div>
                             <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
                                 {restaurants.filter(r => parseInt(r.prepTime || "30") <= 25).slice(0, 6).map((rest) => (
-                                    <Link key={rest.id} href={`/restaurants/${rest.id}...`} className="min-w-[280px] md:min-w-[320px] group">
+                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group">
                                         <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative">
                                             <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                             <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
@@ -646,8 +626,8 @@ export default async function RestaurantFinder({
                     </div>
                 )}
 
-                <div className="mb-8 px-1">
-                    <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">All Restaurants</h2>
+                <div className="mb-10 px-1 border-t border-white/5 pt-16">
+                    <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">All Spots</h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10">
@@ -738,7 +718,7 @@ export default async function RestaurantFinder({
                         </div>
                     </div>
                 </section>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }
