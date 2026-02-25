@@ -489,53 +489,75 @@ export default async function RestaurantFinder({
                     </div>
                 </div>
 
-                {/* Food Categories / Tags Selection */}
-                <div className="flex items-center gap-3 overflow-x-auto pb-6 -mx-1 px-1 no-scrollbar scroll-smooth">
-                    <Link
-                        href={`/restaurants?${new URLSearchParams({
-                            ...(params.address ? { address: params.address } : {}),
-                            ...(params.lat ? { lat: params.lat } : {}),
-                            ...(params.lng ? { lng: params.lng } : {}),
-                            ...(params.location ? { location: params.location } : {}),
-                            ...(params.search ? { search: params.search } : {})
-                        }).toString()}`}
-                        className={`px-5 md:px-7 py-3 rounded-2xl whitespace-nowrap text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2
-                            ${!category
-                                ? "bg-primary text-black border-primary shadow-xl shadow-primary/20 scale-105"
-                                : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-white"}`}
-                    >
-                        ✨ SHOW ALL
-                    </Link>
-                    {[
-                        { name: "Pizza", icon: "🍕" },
-                        { name: "Burgers", icon: "🍔" },
-                        { name: "Asian", icon: "🥢" },
-                        { name: "Mexican", icon: "🌮" },
-                        { name: "Italian", icon: "🍝" },
-                        { name: "Coffee", icon: "☕" },
-                        { name: "Dessert", icon: "🍦" },
-                        { name: "Healthy", icon: "🥗" },
-                        { name: "Steak", icon: "🥩" },
-                        { name: "BBQ", icon: "🍖" }
-                    ].map((cat) => (
+                {/* Food Categories / Tags Selection - Premium Style */}
+                <div className="mb-12 overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                    <div className="flex items-center justify-between mb-6 px-1">
+                        <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Browse by Category</h2>
+                        <div className="h-px flex-1 bg-white/5 ml-4 hidden md:block"></div>
+                    </div>
+                    <div className="flex items-center gap-6 overflow-x-auto pb-6 px-1 no-scrollbar scroll-smooth">
+                        {/* Show All Option */}
                         <Link
-                            key={cat.name}
                             href={`/restaurants?${new URLSearchParams({
                                 ...(params.address ? { address: params.address } : {}),
                                 ...(params.lat ? { lat: params.lat } : {}),
                                 ...(params.lng ? { lng: params.lng } : {}),
                                 ...(params.location ? { location: params.location } : {}),
-                                ...(params.search ? { search: params.search } : {}),
-                                category: cat.name
+                                ...(params.search ? { search: params.search } : {})
                             }).toString()}`}
-                            className={`px-5 md:px-7 py-3 rounded-2xl whitespace-nowrap text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2
-                                ${category === cat.name
-                                    ? "bg-primary text-black border-primary shadow-xl shadow-primary/20 scale-105"
-                                    : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-white"}`}
+                            className="flex flex-col items-center gap-3 min-w-[70px] md:min-w-[90px] group transition-all"
                         >
-                            <span>{cat.icon}</span> {cat.name}
+                            <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all duration-500 shadow-2xl border-2 
+                                ${!category
+                                    ? "bg-primary border-primary scale-110 shadow-primary/20 rotate-6"
+                                    : "bg-white/5 border-white/10 group-hover:bg-white/10 group-hover:border-primary/50"}`}
+                            >
+                                ✨
+                            </div>
+                            <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-colors
+                                ${!category ? "text-primary" : "text-slate-500 group-hover:text-white"}`}>
+                                All
+                            </span>
                         </Link>
-                    ))}
+
+                        {[
+                            { name: "Pizza", icon: "🍕", color: "bg-orange-500/10 text-orange-400" },
+                            { name: "Burgers", icon: "🍔", color: "bg-yellow-500/10 text-yellow-400" },
+                            { name: "Asian", icon: "🥢", color: "bg-red-500/10 text-red-400" },
+                            { name: "Mexican", icon: "🌮", color: "bg-emerald-500/10 text-emerald-400" },
+                            { name: "Italian", icon: "🍝", color: "bg-blue-500/10 text-blue-400" },
+                            { name: "Coffee", icon: "☕", color: "bg-amber-800/10 text-amber-700" },
+                            { name: "Dessert", icon: "🍦", color: "bg-pink-500/10 text-pink-400" },
+                            { name: "Healthy", icon: "🥗", color: "bg-green-500/10 text-green-400" },
+                            { name: "Steak", icon: "🥩", color: "bg-slate-500/10 text-slate-400" },
+                            { name: "BBQ", icon: "🍖", color: "bg-red-800/10 text-red-700" }
+                        ].map((cat) => (
+                            <Link
+                                key={cat.name}
+                                href={`/restaurants?${new URLSearchParams({
+                                    ...(params.address ? { address: params.address } : {}),
+                                    ...(params.lat ? { lat: params.lat } : {}),
+                                    ...(params.lng ? { lng: params.lng } : {}),
+                                    ...(params.location ? { location: params.location } : {}),
+                                    ...(params.search ? { search: params.search } : {}),
+                                    category: cat.name
+                                }).toString()}`}
+                                className="flex flex-col items-center gap-3 min-w-[70px] md:min-w-[90px] group transition-all"
+                            >
+                                <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all duration-500 shadow-2xl border-2 
+                                    ${category === cat.name
+                                        ? "bg-primary border-primary scale-110 shadow-primary/20 rotate-6"
+                                        : "bg-white/5 border-white/10 group-hover:bg-white/10 group-hover:border-primary/50 group-active:scale-90"}`}
+                                >
+                                    <span className={category === cat.name ? "text-black" : ""}>{cat.icon}</span>
+                                </div>
+                                <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-colors
+                                    ${category === cat.name ? "text-primary" : "text-slate-500 group-hover:text-white"}`}>
+                                    {cat.name}
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
