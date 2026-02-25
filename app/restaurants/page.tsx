@@ -127,7 +127,7 @@ async function getRestaurants(
 
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
-            .select('*')
+            .select('*, MenuItem(name, description)')
             .match({ city: cityFilter, state: stateFilter })
             .eq('visibility', 'VISIBLE')
             .neq('name', 'Test Restaurant');
@@ -140,25 +140,35 @@ async function getRestaurants(
             const seed = r.name.length + index;
             const mockRating = (4.0 + (seed % 10) / 10).toFixed(1);
 
-            // Infer tags logic (expanded to match UI categories)
-            let tags = ["Local", "Great Service"];
-            const nameLower = r.name.toLowerCase();
-            if (nameLower.includes("pizza") || nameLower.includes("italian")) tags = ["Italian", "Pizza", "Comfort"];
-            else if (nameLower.includes("burger") || nameLower.includes("grill") || nameLower.includes("shake")) tags = ["American", "Burgers", "Grill"];
-            else if (nameLower.includes("asian") || nameLower.includes("thai") || nameLower.includes("sushi") || nameLower.includes("ramen") || nameLower.includes("chinese")) tags = ["Asian", "Healthy", "Spicy"];
-            else if (nameLower.includes("mexican") || nameLower.includes("taco") || nameLower.includes("burrito") || nameLower.includes("cantina")) tags = ["Mexican", "Tacos", "Zesty"];
-            else if (nameLower.includes("coffee") || nameLower.includes("cafe") || nameLower.includes("starbucks") || nameLower.includes("espresso")) tags = ["Coffee", "Breakfast", "Bakery"];
-            else if (nameLower.includes("dessert") || nameLower.includes("cake") || nameLower.includes("ice cream") || nameLower.includes("sweet") || nameLower.includes("bakery")) tags = ["Dessert", "Sweet", "Bakery"];
-            else if (nameLower.includes("steak") || nameLower.includes("chophouse")) tags = ["Steak", "Grill", "Premium"];
-            else if (nameLower.includes("bbq") || nameLower.includes("barbecue") || nameLower.includes("smokehouse")) tags = ["BBQ", "Smoked", "American"];
-            else if (nameLower.includes("salad") || nameLower.includes("bowl") || nameLower.includes("healthy") || nameLower.includes("vegan")) tags = ["Healthy", "Fresh", "Vegan"];
+            // Smart Tag Inference - Check name, description, and menu items
+            const rName = r.name.toLowerCase();
+            const rDesc = (r.description || "").toLowerCase();
+            const menuNames = (r.MenuItem || []).map((m: any) => m.name.toLowerCase()).join(" ");
+
+            const context = `${rName} ${rDesc} ${menuNames}`;
+
+            let tags: string[] = ["Local"];
+
+            if (context.includes("pizza") || context.includes("italian") || context.includes("pasta")) tags.push("Italian", "Pizza");
+            if (context.includes("burger") || context.includes("grill") || context.includes("shake") || context.includes("fry")) tags.push("American", "Burgers");
+            if (context.includes("asian") || context.includes("thai") || context.includes("sushi") || context.includes("ramen") || context.includes("chinese") || context.includes("🥢")) tags.push("Asian");
+            if (context.includes("mexican") || context.includes("taco") || context.includes("burrito") || context.includes("cantina") || context.includes("quesadilla")) tags.push("Mexican", "Tacos");
+            if (context.includes("coffee") || context.includes("cafe") || context.includes("espresso") || context.includes("latte") || context.includes("breakfast")) tags.push("Coffee", "Breakfast");
+            if (context.includes("dessert") || context.includes("cake") || context.includes("ice cream") || context.includes("sweet") || context.includes("bakery") || context.includes("cookie")) tags.push("Dessert", "Sweet");
+            if (context.includes("steak") || context.includes("chophouse") || context.includes("ribeye")) tags.push("Steak", "Premium");
+            if (context.includes("bbq") || context.includes("barbecue") || context.includes("smokehouse") || context.includes("brisket")) tags.push("BBQ", "American");
+            if (context.includes("salad") || context.includes("bowl") || context.includes("healthy") || context.includes("vegan") || context.includes("fresh")) tags.push("Healthy", "Fresh");
+
+            // Deduplicate and fallback
+            const finalTags = Array.from(new Set(tags));
+            if (finalTags.length === 1) finalTags.push("Great Service");
 
             return {
                 id: r.id,
                 name: r.name,
                 rating: Number(mockRating),
                 image: r.imageUrl || "/restaurant1.jpg",
-                tags: tags,
+                tags: finalTags,
                 description: r.description,
                 coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
                 city: r.city,
