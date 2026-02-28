@@ -1,6 +1,8 @@
 
 import twilio from 'twilio';
 import dotenv from 'dotenv';
+import * as Sentry from '@sentry/nextjs';
+import { logger } from './logger';
 
 dotenv.config({ path: '.env.local' });
 if (!process.env.TWILIO_ACCOUNT_SID) dotenv.config();
@@ -13,12 +15,12 @@ const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
 
 export async function sendSMS(to: string, body: string) {
     if (!client || !fromPhone) {
-        console.warn('[SMS] Twilio not configured. Skipping message:', body);
+        logger.warn({ body }, '[SMS] Twilio not configured. Skipping message');
         return { success: false, error: 'Twilio not configured' };
     }
 
     try {
-        console.log(`[SMS] Sending to ${to}: ${body}`);
+        logger.info({ to }, `[SMS] Sending message`);
         const message = await client.messages.create({
             body,
             from: fromPhone,
@@ -26,7 +28,11 @@ export async function sendSMS(to: string, body: string) {
         });
         return { success: true, sid: message.sid };
     } catch (error: any) {
-        console.error('[SMS] Error sending message:', error.message);
+        logger.error({ err: error, to }, '[SMS] Error sending message');
+        Sentry.captureException(error, {
+            tags: { service: 'Twilio' },
+            extra: { to }
+        });
         return { success: false, error: error.message };
     }
 }

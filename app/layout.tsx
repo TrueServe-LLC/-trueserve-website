@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
 };
 
-import MobileNav from "@/components/MobileNav";
+import MobileNavWrapper from "@/components/MobileNavWrapper";
 // ...
 
 export default function RootLayout({
@@ -31,7 +31,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
-        <MobileNav />
+        <MobileNavWrapper />
       </body>
     </html>
   );

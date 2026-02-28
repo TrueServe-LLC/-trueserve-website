@@ -1,21 +1,15 @@
 
 import { Resend } from 'resend';
+import * as Sentry from '@sentry/nextjs';
+import { logger } from './logger';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
 
 export async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: any[]) {
     // Fallback if no API key is set
     if (!process.env.RESEND_API_KEY) {
-        console.warn("⚠️ [MOCK EMAIL] RESEND_API_KEY is missing in .env");
-        console.log(`
-        ==================================================
-        To: ${to}
-        Subject: ${subject}
-        Attachments: ${attachments ? attachments.length : 0} file(s)
-        --------------------------------------------------
-        ${htmlBody.replace(/<br>/g, '\n')}
-        ==================================================
-        `);
+        logger.warn("⚠️ [MOCK EMAIL] RESEND_API_KEY is missing in .env");
+        logger.info({ to, subject, attachments: attachments ? attachments.length : 0 }, '[MOCK EMAIL] details');
         return { success: true };
     }
 
@@ -41,13 +35,21 @@ export async function sendEmail(to: string, subject: string, htmlBody: string, a
         });
 
         if (error) {
-            console.error("Resend API Error:", error);
+            logger.error({ err: error, to, subject }, "Resend API Error");
+            Sentry.captureException(new Error(error.message), {
+                tags: { service: 'Resend' },
+                extra: { to, subject }
+            });
             return { error: true, message: error.message };
         }
 
         return { success: true, data };
     } catch (e: any) {
-        console.error("Email Service Error:", e);
+        logger.error({ err: e, to, subject }, "Email Service Full Error");
+        Sentry.captureException(e, {
+            tags: { service: 'Resend' },
+            extra: { to, subject }
+        });
         return { error: true, message: e.message };
     }
 }

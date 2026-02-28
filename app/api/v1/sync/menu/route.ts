@@ -1,6 +1,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { logger } from "@/lib/logger";
+import * as Sentry from '@sentry/nextjs';
 
 // Initialize Supabase with Service Role Key for administrative actions
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -36,7 +38,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid API Key or Restaurant not found" }, { status: 401 });
         }
 
-        console.log(`[POS Sync] Starting sync for ${restaurant.name} (${items.length} items)`);
+        logger.info({ restaurantId: restaurant.id, restaurantName: restaurant.name, itemsCount: items.length }, '[POS Sync] Starting sync');
 
         const syncResults = {
             updated: 0,
@@ -89,8 +91,9 @@ export async function POST(req: Request) {
                     if (insertError) throw insertError;
                     syncResults.created++;
                 }
-            } catch (itemErr) {
-                console.error(`[POS Sync] Error processing item ${item.name}:`, itemErr);
+            } catch (itemErr: any) {
+                logger.error({ err: itemErr, itemName: item.name }, '[POS Sync] Error processing item');
+                Sentry.captureException(itemErr, { extra: { itemName: item.name, restaurantId: restaurant.id } });
                 syncResults.errors++;
             }
         }
@@ -102,7 +105,8 @@ export async function POST(req: Request) {
         });
 
     } catch (err: any) {
-        console.error("[POS Sync] Global Error:", err);
+        logger.error({ err }, "[POS Sync] Global Error");
+        Sentry.captureException(err, { tags: { service: 'POS Sync Webhook' } });
         return NextResponse.json({ error: "Internal Server Error", message: err.message }, { status: 500 });
     }
 }

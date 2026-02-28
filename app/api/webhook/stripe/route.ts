@@ -3,6 +3,8 @@ import { getStripe } from "@/lib/stripe";
 import { supabase } from "@/lib/supabase";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
+import * as Sentry from '@sentry/nextjs';
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -17,7 +19,8 @@ export async function POST(req: Request) {
             process.env.STRIPE_WEBHOOK_SECRET || ""
         );
     } catch (err: any) {
-        console.error(`Webhook signature verification failed: ${err.message}`);
+        logger.error({ err }, `Webhook signature verification failed`);
+        Sentry.captureException(err, { tags: { service: 'Stripe Webhook' } });
         return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
     }
 
@@ -26,7 +29,7 @@ export async function POST(req: Request) {
     // Handle the event
     switch (event.type) {
         case "payment_intent.succeeded":
-            console.log(`PaymentIntent for ${session.amount} was successful!`);
+            logger.info({ amount: session.amount, id: session.id }, `PaymentIntent was successful!`);
             // Here you could update order status if you weren't doing it in the action
             break;
 
@@ -39,8 +42,12 @@ export async function POST(req: Request) {
                     .update({ stripeOnboardingComplete: true })
                     .eq('stripeAccountId', account.id);
 
-                if (error) console.error("Failed to update merchant onboarding status:", error);
-                else console.log(`Merchant account ${account.id} verified.`);
+                if (error) {
+                    logger.error({ err: error, accountId: account.id }, "Failed to update merchant onboarding status");
+                    Sentry.captureException(error, { extra: { accountId: account.id } });
+                } else {
+                    logger.info({ accountId: account.id }, `Merchant account verified.`);
+                }
             }
             break;
 
@@ -50,11 +57,11 @@ export async function POST(req: Request) {
             const paymentIntentId = charge.payment_intent;
 
             // Note: In a real app, you'd find the order by payment intent ID
-            console.log(`Charge ${charge.id} was refunded.`);
+            logger.info({ chargeId: charge.id, paymentIntentId }, `Charge was refunded.`);
             break;
 
         default:
-            console.log(`Unhandled event type ${event.type}`);
+            logger.info({ type: event.type }, `Unhandled event type`);
     }
 
     return new NextResponse(null, { status: 200 });
