@@ -76,7 +76,7 @@ export default function MerchantPortal() {
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                                     </span>
-                                    <span className="text-white">Partnering with</span> <span className="text-primary">500+ restaurants</span>
+                                    <span className="text-gradient font-extrabold tracking-widest">Empowering Local Restaurants</span>
                                 </div>
                                 <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
                                     Unlock new <br />
@@ -205,7 +205,7 @@ export default function MerchantPortal() {
                                             network.
                                         </h2>
                                         <p className="text-black/80 text-sm font-bold leading-relaxed max-w-[240px]">
-                                            Join 500+ premium merchants reclaiming their local margin.
+                                            Join the premium merchants reclaiming their local margin.
                                         </p>
                                     </div>
                                     <div className="space-y-4 pt-12">
