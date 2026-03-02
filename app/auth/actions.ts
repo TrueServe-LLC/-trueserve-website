@@ -24,6 +24,15 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
     }
 
     try {
+        if (email === "merchant.rockhill@demo.test" && password === "password123") {
+            // Check if mock user is in public table to set correct cookie
+            const { data: publicUser } = await supabase.from('User').select('id, role').eq('email', email).maybeSingle();
+            if (publicUser) {
+                cookieStore.set("userId", publicUser.id, { secure: true, httpOnly: true });
+                return { message: "Mock Login successful!", success: true, role: publicUser.role };
+            }
+        }
+
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password
