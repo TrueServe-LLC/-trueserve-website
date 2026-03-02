@@ -71,16 +71,16 @@ export default function MerchantPortal() {
                     <div className="container mx-auto px-6 max-w-7xl">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                             <div className="space-y-8 text-left">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold uppercase tracking-widest">
                                     <span className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                                     </span>
-                                    Partnering with 500+ Local Kitchens
+                                    <span className="text-white">Partnering with</span> <span className="text-primary">500+ restaurants</span>
                                 </div>
                                 <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
                                     Unlock new <br />
-                                    revenue with <span className="text-primary italic">TrueServe.</span>
+                                    revenue with <span className="italic"><span className="text-white">True</span><span className="text-primary">Serve.</span></span>
                                 </h1>
                                 <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed font-medium">
                                     The delivery platform built for the local margin. Zero hidden fees, fair dispatch, and a marketplace that prioritizes your brand.
