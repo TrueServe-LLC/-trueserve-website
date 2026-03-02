@@ -25,7 +25,7 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
 
     try {
         // Mock Login enabled for all environments so demos/testing work anywhere
-        if (email.endsWith("@demo.test") && password === "password123") {
+        if (email.includes("@demo") && password === "password123") {
             // Use supabaseAdmin to bypass RLS when looking up the mock user
             const { data: publicUser } = await supabaseAdmin.from('User').select('id, role').eq('email', email).maybeSingle();
 
