@@ -24,18 +24,20 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
     }
 
     try {
-        if (email === "merchant.rockhill@demo.test" && password === "password123") {
+        // Mock Login enabled exclusively for Vercel Preview Deployments (Demos)
+        if (process.env.VERCEL_ENV === "preview" && email.endsWith("@demo.test") && password === "password123") {
             // Use supabaseAdmin to bypass RLS when looking up the mock user
             const { data: publicUser } = await supabaseAdmin.from('User').select('id, role').eq('email', email).maybeSingle();
 
             if (publicUser) {
                 cookieStore.set("userId", publicUser.id, { secure: true, httpOnly: true });
-                return { message: "Mock Login successful!", success: true, role: publicUser.role };
+                return { message: "Demo Login successful!", success: true, role: publicUser.role };
             }
 
             // Absolute fallback so you can ALWAYS log in no matter what the DB state is locally
-            cookieStore.set("userId", "mock-merchant-id", { secure: true, httpOnly: true });
-            return { message: "Mock Login successful (Fallback)!", success: true, role: "MERCHANT" };
+            const fallbackRole = email.startsWith("merchant") ? "MERCHANT" : email.startsWith("driver") ? "DRIVER" : "CUSTOMER";
+            cookieStore.set("userId", "mock-user-id", { secure: true, httpOnly: true });
+            return { message: "Demo Login successful (Fallback)!", success: true, role: fallbackRole };
         }
 
         const { data, error } = await supabase.auth.signInWithPassword({
