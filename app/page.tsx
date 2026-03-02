@@ -49,7 +49,7 @@ export default async function Home() {
               <span className="text-gradient">Lightning Speed.</span>
             </h1>
             <p className="text-base md:text-xl text-slate-400 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
-              The freshest food delivery in Charlotte & Pineville.
+              The freshest food delivery.
               Zero hidden fees, transparent driver pay, and purely local flavor.
             </p>
 
