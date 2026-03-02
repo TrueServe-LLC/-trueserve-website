@@ -30,7 +30,6 @@ export default function DriverPortal() {
                         </span>
                     </Link>
                     <div className="flex items-center gap-6">
-                        <Link href="/merchant" className="hidden md:block text-sm font-bold text-slate-400 hover:text-white transition-colors">For Merchants</Link>
                         <Link href="/login?role=driver" className="text-sm font-black uppercase tracking-widest text-primary hover:text-white transition-colors">Log In</Link>
                     </div>
                 </div>
