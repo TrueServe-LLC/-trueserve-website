@@ -197,19 +197,19 @@ export default function DriverPortal() {
                                 img: "/scooter.png"
                             }
                         ].map((item, i) => (
-                            <div key={i} className="group relative bg-slate-900/50 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl flex flex-col">
-                                <div className="h-56 sm:h-64 relative w-full shrink-0">
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10" />
+                            <div key={i} className="group relative bg-[#0f0f0f]/80 backdrop-blur-sm border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl h-full flex flex-col">
+                                <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] shrink-0 overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/80 via-transparent to-transparent z-10" />
                                     <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100" />
                                     <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-2xl px-4 py-2 rounded-2xl border border-white/20 text-3xl shadow-2xl z-20">
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-8 space-y-3 relative z-20 flex-1 flex flex-col justify-start">
-                                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                                <div className="p-8 md:p-10 relative z-20 grow flex flex-col">
+                                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-3">
                                         {item.title}
                                     </h3>
-                                    <p className="text-slate-400 text-sm font-medium leading-relaxed">{item.desc}</p>
+                                    <p className="text-slate-400 text-sm font-medium leading-relaxed mb-4">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
