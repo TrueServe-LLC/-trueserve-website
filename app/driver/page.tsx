@@ -169,7 +169,7 @@ export default function DriverPortal() {
             </section>
 
             {/* Value Props */}
-            <section className="py-24 bg-white/5 relative">
+            <section className="py-24 relative">
                 <div className="container max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16 px-4">
                         <h2 className="text-2xl md:text-4xl font-bold text-white tracking-tight mb-4">Why deliver with <span className="text-gradient">TrueServe?</span></h2>
@@ -220,7 +220,7 @@ export default function DriverPortal() {
             </section>
 
             {/* Pay Formula Overhaul */}
-            <section id="how-it-works" className="py-24 bg-black relative">
+            <section id="how-it-works" className="py-24 relative">
                 <div className="container max-w-7xl mx-auto px-6">
                     <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
                         <div className="flex-1 space-y-6">
