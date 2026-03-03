@@ -197,15 +197,15 @@ export default function DriverPortal() {
                                 img: "/scooter.png"
                             }
                         ].map((item, i) => (
-                            <div key={i} className="group relative bg-slate-900/50 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl">
-                                <div className="h-72 relative">
+                            <div key={i} className="group relative bg-slate-900/50 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl flex flex-col">
+                                <div className="h-56 sm:h-64 relative w-full shrink-0">
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10" />
                                     <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100" />
                                     <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-2xl px-4 py-2 rounded-2xl border border-white/20 text-3xl shadow-2xl z-20">
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-8 pt-4 space-y-3 relative z-20 pb-10">
+                                <div className="p-8 space-y-3 relative z-20 flex-1 flex flex-col justify-start">
                                     <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight">
                                         {item.title}
                                     </h3>
