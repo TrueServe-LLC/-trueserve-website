@@ -114,9 +114,6 @@ export default function MerchantPortal() {
                             <div className={`p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#050505] ring-2 ring-primary shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
                                 {/* Logo Header */}
                                 <div className="flex items-center gap-3 mb-8">
-                                    <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-black text-2xl font-black shadow-sm relative overflow-hidden">
-                                        ✓
-                                    </div>
                                     <div className="flex flex-col pt-0.5">
                                         <span className="text-primary font-black uppercase tracking-[0.25em] text-[10px] leading-none mb-1">TRUESERVE</span>
                                         <span className="text-white font-bold text-2xl leading-none tracking-tight lowercase">flex scale</span>
@@ -145,9 +142,6 @@ export default function MerchantPortal() {
                             <div className={`p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#050505] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
                                 {/* Logo Header */}
                                 <div className="flex items-center gap-3 mb-8">
-                                    <div className="w-11 h-11 rounded-full bg-emerald-500 flex items-center justify-center text-black text-2xl font-black shadow-sm relative overflow-hidden">
-                                        ✓
-                                    </div>
                                     <div className="flex flex-col pt-0.5">
                                         <span className="text-emerald-500 font-black uppercase tracking-[0.25em] text-[10px] leading-none mb-1">TRUESERVE</span>
                                         <span className="text-white font-bold text-2xl leading-none tracking-tight lowercase">pro scale</span>
