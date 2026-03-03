@@ -196,7 +196,7 @@ export default function MerchantPortal() {
                                 <div className="flex flex-col justify-start items-start pt-8">
                                     <div className="space-y-8">
                                         <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-3xl shadow-2xl">🤝</div>
-                                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] tracking-tighter italic">
+                                        <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-[1.1] tracking-tighter italic">
                                             Be a part <br className="hidden md:block" /> of the <br />
                                             <span className="text-primary inline-block mt-2">TrueServe</span> <br />
                                             network.
