@@ -185,7 +185,7 @@ function PricingCard({ tier, price, subtitle, isActive = false, onClick, feature
     return (
         <div
             onClick={onClick}
-            className={`cursor-pointer group relative p-10 md:p-12 rounded-[3.5rem] border-2 flex flex-col items-center text-center transition-all duration-500 h-full scale-[0.98] hover:scale-[1.02] ${isActive
+            className={`cursor-pointer group relative rounded-[3.5rem] border-2 flex flex-col items-center text-center transition-all duration-500 h-full overflow-hidden scale-[0.98] hover:scale-[1.02] ${isActive
                 ? 'bg-slate-900 border-primary shadow-[0_0_80px_rgba(68,140,137,0.15)] z-10 scale-[1.03] ring-1 ring-primary/20'
                 : 'bg-white/5 border-white/10 z-0 hover:border-white/30 hover:bg-white/[0.08]'
                 }`}>
@@ -195,31 +195,33 @@ function PricingCard({ tier, price, subtitle, isActive = false, onClick, feature
                 <div className="absolute inset-0 bg-primary/5 rounded-[3.5rem] blur-2xl -z-10 animate-pulse" />
             )}
 
-            <div className="mb-8">
-                <h3 className={`text-3xl font-black mb-2 transition-colors ${isActive ? 'text-primary' : 'text-white'}`}>{tier}</h3>
-                <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{subtitle}</p>
-            </div>
+            <div className="flex-1 w-full p-10 md:p-12 pb-8 md:pb-10 flex flex-col items-center">
+                <div className="mb-8 w-full">
+                    <h3 className={`text-3xl font-black mb-2 transition-colors ${isActive ? 'text-primary' : 'text-white'}`}>{tier}</h3>
+                    <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{subtitle}</p>
+                </div>
 
-            <div className="flex items-end gap-1 mb-10 text-white">
-                <span className="text-6xl font-black tracking-tighter">{price}</span>
-                {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
-            </div>
+                <div className="flex items-end justify-center gap-1 mb-10 w-full text-white">
+                    <span className="text-6xl font-black tracking-tighter">{price}</span>
+                    {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
+                </div>
 
-            <ul className="space-y-5 mb-12 w-full flex-1">
-                {features.map((f: string) => (
-                    <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
-                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${isActive ? 'bg-primary' : 'bg-primary/40'}`} />
-                        <span className="leading-tight">{f}</span>
-                    </li>
-                ))}
-            </ul>
+                <ul className="space-y-5 w-full flex-1">
+                    {features.map((f: string) => (
+                        <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
+                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${isActive ? 'bg-primary' : 'bg-primary/40'}`} />
+                            <span className="leading-tight">{f}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
 
             <Link
                 href={buttonLink}
                 onClick={(e) => e.stopPropagation()}
-                className={`block w-full py-5 rounded-[1.8rem] font-black text-sm uppercase tracking-widest transition-all text-center relative z-20 ${isActive
-                    ? 'bg-primary text-black hover:bg-white shadow-2xl shadow-primary/30'
-                    : 'bg-white/10 text-white group-hover:bg-white/20 group-hover:border-white/40 border border-transparent'
+                className={`block w-full py-6 font-black text-sm uppercase tracking-widest transition-all text-center relative z-20 ${isActive
+                    ? 'bg-primary text-black hover:bg-white'
+                    : 'bg-white/10 text-white hover:bg-white/20 border-t border-white/10'
                     }`}
             >
                 {buttonText}
