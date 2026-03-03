@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #448c89;
+  --color-secondary: #f1a137;
+  --color-accent: #a54a33;
+  --color-background: #080c14;
+  --color-foreground: #f1a137;
+  --font-serif: var(--font-playfair);
+}
+
 :root {
   /* Original TrueServe Dark Theme */
   --background: #080c14;
