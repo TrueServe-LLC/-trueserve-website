@@ -15,6 +15,9 @@ const config: Config = {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
             },
+            fontFamily: {
+                serif: ['var(--font-playfair)', 'serif'],
+            },
         },
     },
     plugins: [],

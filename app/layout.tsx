@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
   variable: "--font-outfit",
+  subsets: ["latin"],
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
 });
 
@@ -27,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} bg-background text-foreground antialiased pb-24 md:pb-0`}
+        className={`${outfit.variable} ${playfair.variable} bg-background text-foreground antialiased pb-24 md:pb-0`}
         suppressHydrationWarning
       >
         {children}

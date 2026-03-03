@@ -74,9 +74,10 @@ export default function MerchantPortal() {
                                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-2">
                                     <span>Empowering Local Restaurants</span>
                                 </div>
-                                <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
-                                    Unlock new <br />
-                                    revenue with <span className="font-black tracking-tight"><span className="text-white">True</span><span className="text-primary">Serve</span></span>
+                                <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-white leading-[1.1]">
+                                    unlock new <br />
+                                    Revenue with <br />
+                                    <span className="font-sans font-black tracking-tighter text-6xl md:text-7xl mt-4 block"><span className="text-white">True</span><span className="text-primary">Serve</span></span>
                                 </h1>
                                 <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed font-medium">
                                     The delivery platform built for the local margin. Zero hidden fees, fair dispatch, and a marketplace that prioritizes your brand.

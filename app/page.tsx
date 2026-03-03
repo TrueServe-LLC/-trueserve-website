@@ -44,9 +44,9 @@ export default async function Home() {
             <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-4">
               <span>Premium Delivery Service</span>
             </div>
-            <h1 className="text-4xl md:text-7xl font-black text-white leading-relaxed tracking-tighter py-4">
-              Craving meet <br className="hidden md:block" />
-              <span className="text-gradient">Lightning Speed.</span>
+            <h1 className="text-4xl md:text-7xl font-serif font-bold text-white leading-relaxed tracking-tight py-4">
+              craving meet <br className="hidden md:block" />
+              <span className="font-sans font-black text-gradient block mt-2 text-5xl md:text-7xl">Lightning Speed.</span>
             </h1>
             <p className="text-base md:text-xl text-slate-400 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
               The freshest food delivery.
