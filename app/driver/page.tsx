@@ -197,19 +197,19 @@ export default function DriverPortal() {
                                 img: "/scooter.png"
                             }
                         ].map((item, i) => (
-                            <div key={i} className="group relative bg-[#0f0f0f] border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-colors duration-500 shadow-2xl h-full block">
-                                <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-black/50 border-b border-white/5">
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-transparent to-transparent z-10" />
-                                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100 block" />
-                                    <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 text-3xl shadow-2xl z-20">
+                            <div key={i} className="flex flex-col gap-6 group cursor-pointer">
+                                <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10 group-hover:border-primary/50 transition-colors duration-500 bg-[#0f0f0f]">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
+                                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80 group-hover:opacity-100 block" />
+                                    <div className="absolute top-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 text-3xl shadow-2xl z-20">
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-8 md:p-10 relative z-20">
-                                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-3">
+                                <div className="px-2">
+                                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-2 group-hover:text-primary transition-colors">
                                         {item.title}
                                     </h3>
-                                    <p className="text-slate-400 text-sm font-medium leading-relaxed m-0 pb-2">
+                                    <p className="text-slate-400 text-sm font-medium leading-relaxed">
                                         {item.desc}
                                     </p>
                                 </div>
