@@ -114,7 +114,7 @@ export default function MerchantPortal() {
                             <div className={`p-10 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
                                 {/* Large Bold Headline */}
                                 <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words">
-                                    <span className="text-orange-500 block mb-1 text-sm md:text-base font-bold tracking-widest">15% SPLIT</span>
+                                    <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest">15% SPLIT</span>
                                     <span className="text-gradient">FLEX SCALE</span>
                                 </h3>
 
@@ -135,7 +135,7 @@ export default function MerchantPortal() {
                             <div className={`p-10 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#151515] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
                                 {/* Large Bold Headline */}
                                 <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words">
-                                    <span className="text-emerald-500 block mb-1 text-sm md:text-base font-bold tracking-widest">0% SPLIT</span>
+                                    <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest">0% SPLIT</span>
                                     <span className="text-gradient">PRO SCALE</span>
                                 </h3>
 
