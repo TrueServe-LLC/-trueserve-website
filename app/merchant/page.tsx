@@ -111,54 +111,42 @@ export default function MerchantPortal() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                             {/* Flex Scale Card */}
-                            <div className={`p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#050505] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
-                                {/* Logo Header */}
-                                <div className="flex items-center gap-3 mb-8">
-                                    <div className="flex flex-col pt-0.5">
-                                        <span className="text-white font-bold text-2xl leading-none tracking-tight lowercase">flex scale</span>
-                                    </div>
-                                </div>
-
+                            <div className={`p-8 md:p-12 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
                                 {/* Large Bold Headline */}
-                                <h3 className="text-4xl md:text-[2.75rem] font-black text-white tracking-tighter uppercase mb-6 leading-none">
-                                    15% SPLIT<br />FLEX SCALE
+                                <h3 className="text-4xl md:text-[2.75rem] font-black text-white tracking-tighter uppercase mb-8 leading-none">
+                                    <span className="text-orange-500 block mb-2">15% SPLIT</span>
+                                    FLEX SCALE
                                 </h3>
 
                                 {/* Description Paragraph */}
-                                <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10 flex-grow">
+                                <p className="text-slate-400 text-lg font-medium leading-relaxed mb-12 flex-grow">
                                     Experience on-demand growth with zero upfront setup. Gain full engine access and a standard local badge. Cancel anytime.
                                 </p>
 
                                 {/* CTA Button */}
-                                <div className="mt-auto">
-                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-orange-500 text-black' : 'bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-black border border-orange-500/20'} w-full px-8 py-3.5 rounded-full font-bold text-lg transition-all`}>
+                                <div>
+                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-orange-500 text-black' : 'bg-orange-500 hover:bg-orange-400 text-black'} px-10 py-4 rounded-full font-bold text-lg transition-all shadow-lg`}>
                                         Choose Flex
                                     </button>
                                 </div>
                             </div>
 
                             {/* Pro Scale Card */}
-                            <div className={`p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#050505] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
-                                {/* Logo Header */}
-                                <div className="flex items-center gap-3 mb-8">
-                                    <div className="flex flex-col pt-0.5">
-                                        <span className="text-white font-bold text-2xl leading-none tracking-tight lowercase">pro scale</span>
-                                    </div>
-                                </div>
-
+                            <div className={`p-8 md:p-12 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#151515] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
                                 {/* Large Bold Headline */}
-                                <h3 className="text-4xl md:text-[2.75rem] font-black text-white tracking-tighter uppercase mb-6 leading-none break-words">
-                                    $199 / MO<br /><span className="text-emerald-400">0% SPLIT</span>
+                                <h3 className="text-4xl md:text-[2.75rem] font-black text-white tracking-tighter uppercase mb-8 leading-none break-words">
+                                    <span className="text-emerald-500 block mb-2">0% SPLIT</span>
+                                    PRO SCALE
                                 </h3>
 
                                 {/* Description Paragraph */}
-                                <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10 flex-grow">
-                                    High-volume optimized performance. Unlock VIP merchant status, 0% split, custom dispatch logic, and advanced analytics.
+                                <p className="text-slate-400 text-lg font-medium leading-relaxed mb-12 flex-grow">
+                                    $199 / MO. High-volume optimized performance. Unlock VIP merchant status, 0% split, custom dispatch logic, and advanced analytics.
                                 </p>
 
                                 {/* CTA Button */}
-                                <div className="mt-auto">
-                                    <button className={`${selectedPlan === 'Pro Subscription' ? 'bg-emerald-500 text-black' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-black'} w-full px-8 py-3.5 rounded-full font-bold text-lg transition-all`}>
+                                <div>
+                                    <button className={`${selectedPlan === 'Pro Subscription' ? 'bg-emerald-500 text-black' : 'bg-emerald-500 hover:bg-emerald-400 text-black'} px-10 py-4 rounded-full font-bold text-lg transition-all shadow-lg`}>
                                         Choose Pro
                                     </button>
                                 </div>
