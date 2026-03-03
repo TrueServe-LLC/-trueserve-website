@@ -109,54 +109,66 @@ export default function MerchantPortal() {
                 <section className="py-24 relative border-t border-white/5">
                     <div className="container mx-auto px-6 max-w-7xl">
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
-                            {/* Flex Scale Banner */}
-                            <div className={`flex flex-col xl:flex-row gap-6 p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#050505] ring-2 ring-primary' : 'bg-[#0f0f0f] border border-white/10'} rounded-3xl hover:border-primary/40`} onClick={() => scrollToForm("Flex Options")}>
-                                <div className="flex-1 flex flex-col justify-center">
-                                    <h3 className="text-3xl font-black text-white tracking-tight mb-2">Flex Scale</h3>
-                                    <div className="flex items-baseline gap-2 mb-2">
-                                        <span className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-normal">15%</span>
-                                        <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Split</span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                            {/* Flex Scale Card */}
+                            <div className={`p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-white ring-4 ring-[#E51D24] shadow-2xl scale-[1.02]' : 'bg-white border border-slate-200 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
+                                {/* Logo Header */}
+                                <div className="flex items-center gap-3 mb-8">
+                                    <div className="w-11 h-11 rounded-full bg-[#E51D24] flex items-center justify-center text-white text-2xl font-black shadow-sm relative overflow-hidden">
+                                        ✓
                                     </div>
-                                    <p className="text-slate-400 text-sm font-medium mb-6">On-demand growth.</p>
-                                    <div>
-                                        <button className="inline-flex items-center justify-center bg-primary/10 border border-primary/20 hover:bg-primary text-primary hover:text-black px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all shadow-lg whitespace-nowrap">Choose Flex</button>
+                                    <div className="flex flex-col pt-0.5">
+                                        <span className="text-black font-black uppercase tracking-[0.25em] text-[10px] leading-none mb-1">TRUESERVE</span>
+                                        <span className="text-black font-bold text-2xl leading-none tracking-tight lowercase">flex scale</span>
                                     </div>
                                 </div>
-                                <div className="flex-1 flex flex-col justify-center border-t xl:border-t-0 xl:border-l border-white/10 pt-6 xl:pt-0 xl:pl-8">
-                                    <ul className="space-y-4">
-                                        {["Zero upfront setup", "Full engine access", "Standard local badge", "Cancel anytime"].map((feat, i) => (
-                                            <li key={i} className="flex justify-between items-center text-slate-300 text-sm font-medium">
-                                                <span>{feat}</span>
-                                                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[10px] text-primary shrink-0">✔</div>
-                                            </li>
-                                        ))}
-                                    </ul>
+
+                                {/* Large Bold Headline */}
+                                <h3 className="text-4xl md:text-[2.75rem] font-black text-[#311126] tracking-tighter uppercase mb-6 leading-none">
+                                    15% SPLIT<br />FLEX SCALE
+                                </h3>
+
+                                {/* Description Paragraph */}
+                                <p className="text-[#111111] text-lg font-medium leading-relaxed mb-10 flex-grow">
+                                    Experience on-demand growth with zero upfront setup. Gain full engine access and a standard local badge. Cancel anytime.
+                                </p>
+
+                                {/* CTA Button */}
+                                <div className="mt-auto">
+                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-[#c5161f]' : 'bg-[#E51D24]'} hover:bg-[#c5161f] text-white px-8 py-3.5 rounded-full font-bold text-lg transition-all`}>
+                                        Choose Flex
+                                    </button>
                                 </div>
                             </div>
 
-                            {/* Pro Scale Banner */}
-                            <div className={`flex flex-col xl:flex-row gap-6 p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#050505] ring-2 ring-emerald-500' : 'bg-[#0f0f0f] border border-white/10'} rounded-3xl hover:border-emerald-500/40`} onClick={() => scrollToForm("Pro Subscription")}>
-                                <div className="flex-1 flex flex-col justify-center">
-                                    <h3 className="text-3xl font-black text-white tracking-tight mb-2">Pro Scale</h3>
-                                    <div className="flex items-baseline gap-2 mb-2">
-                                        <span className="text-4xl md:text-5xl font-black text-emerald-400 tracking-tighter leading-normal">$199</span>
-                                        <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] italic">Monthly</span>
+                            {/* Pro Scale Card */}
+                            <div className={`p-8 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-white ring-4 ring-[#E51D24] shadow-2xl scale-[1.02]' : 'bg-white border border-slate-200 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
+                                {/* Logo Header */}
+                                <div className="flex items-center gap-3 mb-8">
+                                    <div className="w-11 h-11 rounded-full bg-[#E51D24] flex items-center justify-center text-white text-2xl font-black shadow-sm relative overflow-hidden">
+                                        ✓
                                     </div>
-                                    <p className="text-slate-400 text-sm font-medium mb-6">High-volume optimized.</p>
-                                    <div>
-                                        <button className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-black px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all shadow-lg whitespace-nowrap">Choose Pro</button>
+                                    <div className="flex flex-col pt-0.5">
+                                        <span className="text-black font-black uppercase tracking-[0.25em] text-[10px] leading-none mb-1">TRUESERVE</span>
+                                        <span className="text-black font-bold text-2xl leading-none tracking-tight lowercase">pro scale</span>
                                     </div>
                                 </div>
-                                <div className="flex-1 flex flex-col justify-center border-t xl:border-t-0 xl:border-l border-white/10 pt-6 xl:pt-0 xl:pl-8">
-                                    <ul className="space-y-4">
-                                        {["0% Split logic", "VIP Merchant Status", "Custom dispatch logic", "Performance Analytics"].map((feat, i) => (
-                                            <li key={i} className="flex justify-between items-center text-slate-300 text-sm font-medium">
-                                                <span>{feat}</span>
-                                                <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] text-emerald-500 shrink-0">✔</div>
-                                            </li>
-                                        ))}
-                                    </ul>
+
+                                {/* Large Bold Headline */}
+                                <h3 className="text-4xl md:text-[2.75rem] font-black text-[#311126] tracking-tighter uppercase mb-6 leading-none break-words">
+                                    $199 / MO<br />0% SPLIT
+                                </h3>
+
+                                {/* Description Paragraph */}
+                                <p className="text-[#111111] text-lg font-medium leading-relaxed mb-10 flex-grow">
+                                    High-volume optimized performance. Unlock VIP merchant status, 0% split, custom dispatch logic, and advanced analytics.
+                                </p>
+
+                                {/* CTA Button */}
+                                <div className="mt-auto">
+                                    <button className={`${selectedPlan === 'Pro Subscription' ? 'bg-[#c5161f]' : 'bg-[#E51D24]'} hover:bg-[#c5161f] text-white px-8 py-3.5 rounded-full font-bold text-lg transition-all`}>
+                                        Choose Pro
+                                    </button>
                                 </div>
                             </div>
                         </div>
