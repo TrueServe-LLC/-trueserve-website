@@ -423,7 +423,7 @@ export default async function RestaurantFinder({
                         Cravings, meet <span className="text-primary">Speed.</span>
                     </h1>
                     <p className="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl">
-                        The fastest delivery in Charlotte, Pineville, and beyond. Zero hidden fees, precise tracking, and purely local.
+                        The fastest delivery around. Zero hidden fees, precise tracking, and purely local.
                     </p>
 
                     <LandingSearch locations={
