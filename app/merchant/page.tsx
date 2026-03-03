@@ -220,7 +220,6 @@ export default function MerchantPortal() {
                                 {/* Right Side - Form */}
                                 <div>
                                     <div className="mb-10">
-                                        <span className="text-primary font-black uppercase tracking-widest text-[9px] mb-2 block">Application Protocol</span>
                                         <h3 className="text-3xl font-bold text-white tracking-tight italic">Partner Inquiry</h3>
                                         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-2 block w-full border-b border-white/5 pb-4">
                                             Selection: <span className="text-white">{selectedPlan ? selectedPlan : "Standard Protocol"}</span>
