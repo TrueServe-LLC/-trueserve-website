@@ -55,7 +55,7 @@ export default function DriverPortal() {
                         <h1 className="text-5xl md:text-8xl font-serif font-bold tracking-tight leading-[1.05] py-4">
                             <span className="text-white">your city.</span> <br />
                             <span className="text-white">Your Time.</span> <br />
-                            <span className="font-sans font-black tracking-tighter text-gradient block mt-4 text-6xl md:text-[7rem]">Your Profit.</span>
+                            <span className="text-gradient">Your Profit.</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-300 max-w-xl font-medium leading-relaxed">
                             TrueServe pays 25-40% more than legacy platforms by prioritizing mileage-based earnings and fair driver splits.

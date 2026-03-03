@@ -77,7 +77,7 @@ export default function MerchantPortal() {
                                 <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-white leading-[1.1]">
                                     unlock new <br />
                                     Revenue with <br />
-                                    <span className="font-sans font-black tracking-tighter text-6xl md:text-7xl mt-4 block"><span className="text-white">True</span><span className="text-primary">Serve</span></span>
+                                    <span className="font-sans font-black tracking-tighter"><span className="text-white">True</span><span className="text-primary">Serve</span></span>
                                 </h1>
                                 <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed font-medium">
                                     The delivery platform built for the local margin. Zero hidden fees, fair dispatch, and a marketplace that prioritizes your brand.
