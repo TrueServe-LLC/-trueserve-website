@@ -197,19 +197,21 @@ export default function DriverPortal() {
                                 img: "/scooter.png"
                             }
                         ].map((item, i) => (
-                            <div key={i} className="group relative bg-[#0f0f0f]/80 backdrop-blur-sm border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl h-full flex flex-col">
-                                <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] shrink-0 overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/80 via-transparent to-transparent z-10" />
-                                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100" />
-                                    <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-2xl px-4 py-2 rounded-2xl border border-white/20 text-3xl shadow-2xl z-20">
+                            <div key={i} className="group relative bg-[#0f0f0f] border border-white/5 rounded-3xl overflow-hidden hover:border-primary/30 transition-colors duration-500 shadow-2xl h-full block">
+                                <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-black/50 border-b border-white/5">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-transparent to-transparent z-10" />
+                                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100 block" />
+                                    <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 text-3xl shadow-2xl z-20">
                                         {item.icon}
                                     </div>
                                 </div>
-                                <div className="p-8 md:p-10 relative z-20 grow flex flex-col">
+                                <div className="p-8 md:p-10 relative z-20">
                                     <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-3">
                                         {item.title}
                                     </h3>
-                                    <p className="text-slate-400 text-sm font-medium leading-relaxed mb-4">{item.desc}</p>
+                                    <p className="text-slate-400 text-sm font-medium leading-relaxed m-0 pb-2">
+                                        {item.desc}
+                                    </p>
                                 </div>
                             </div>
                         ))}
