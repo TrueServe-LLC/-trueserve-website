@@ -192,35 +192,37 @@ export default function RewardsPage() {
 
 function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
     return (
-        <div className={`relative p-10 md:p-12 rounded-[3rem] border flex flex-col items-center text-center transition-all h-full ${isPopular
+        <div className={`relative rounded-[3rem] border flex flex-col items-center text-center transition-all h-full overflow-hidden ${isPopular
             ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
             : 'bg-white/5 border-white/10 z-0'
             }`}>
 
-            <div className="mb-8">
-                <h3 className="text-3xl font-black mb-2 text-white">{tier}</h3>
-                <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{subtitle}</p>
-            </div>
+            <div className="flex-1 w-full p-10 md:p-12 pb-8 md:pb-10 flex flex-col items-center">
+                <div className="mb-8 w-full">
+                    <h3 className="text-3xl font-black mb-2 text-white">{tier}</h3>
+                    <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{subtitle}</p>
+                </div>
 
-            <div className="flex items-end gap-1 mb-10 text-white">
-                <span className="text-6xl font-black tracking-tighter">{price}</span>
-                {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
-            </div>
+                <div className="flex items-end justify-center gap-1 mb-10 w-full text-white">
+                    <span className="text-6xl font-black tracking-tighter">{price}</span>
+                    {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
+                </div>
 
-            <ul className="space-y-5 mb-12 w-full flex-1">
-                {features.map((f: string) => (
-                    <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
-                        <span className="leading-tight">{f}</span>
-                    </li>
-                ))}
-            </ul>
+                <ul className="space-y-5 w-full flex-1">
+                    {features.map((f: string) => (
+                        <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
+                            <span className="leading-tight">{f}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
 
             <Link
                 href={buttonLink}
-                className={`block w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all text-center relative z-20 ${isPopular
-                    ? 'bg-primary text-black hover:bg-white hover:scale-[1.02] shadow-2xl shadow-primary/20'
-                    : 'bg-white/10 text-white hover:bg-white/20 hover:border-white/40 border border-transparent'
+                className={`block w-full py-6 font-black text-sm uppercase tracking-widest transition-all text-center relative z-20 ${isPopular
+                    ? 'bg-primary text-black hover:bg-white'
+                    : 'bg-white/10 text-white hover:bg-white/20 border-t border-white/10'
                     }`}
             >
                 {buttonText}
