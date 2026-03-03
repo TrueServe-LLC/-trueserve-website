@@ -14,7 +14,7 @@ const initialState = {
 export default function MerchantPortal() {
     const [state, formAction, isPending] = useActionState(submitMerchantInquiry, initialState);
     const [selectedPlan, setSelectedPlan] = useState<string>("");
-    const [formAddress, setFormAddress] = useState({ address: "", city: "", state: "NC" });
+    const [formAddress, setFormAddress] = useState({ address: "", city: "", state: "" });
 
     const scrollToForm = (plan: string) => {
         setSelectedPlan(plan);
@@ -32,7 +32,7 @@ export default function MerchantPortal() {
             setFormAddress({
                 address: parts[0],
                 city: parts[1],
-                state: parts[2].split(' ')[0] || "NC"
+                state: parts[2].split(' ')[0] || ""
             });
         } else {
             setFormAddress({ ...formAddress, address });
@@ -267,6 +267,7 @@ export default function MerchantPortal() {
                                                             <input name="city" type="text" required placeholder="City" value={formAddress.city} onChange={(e) => setFormAddress({ ...formAddress, city: e.target.value })} className="col-span-1 w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-bold placeholder:text-slate-600" />
                                                             <div className="relative col-span-1">
                                                                 <select name="state" value={formAddress.state} onChange={(e) => setFormAddress({ ...formAddress, state: e.target.value })} className="w-full bg-[#0a0a0a] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 appearance-none font-bold cursor-pointer" required>
+                                                                    <option value="" disabled>State</option>
                                                                     <option value="NC">NC</option>
                                                                     <option value="SC">SC</option>
                                                                 </select>
