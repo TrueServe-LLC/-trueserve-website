@@ -72,7 +72,6 @@ export default function MerchantPortal() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                             <div className="space-y-8 text-left">
                                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-2">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
                                     <span>Empowering Local Restaurants</span>
                                 </div>
                                 <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
