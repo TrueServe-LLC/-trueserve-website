@@ -222,30 +222,28 @@ export default function DriverPortal() {
             {/* Pay Formula Overhaul */}
             <section id="how-it-works" className="py-24 bg-black relative">
                 <div className="container max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col lg:flex-row gap-16 items-center">
-                        <div className="flex-1 space-y-8">
-                            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-relaxed py-4">
-                                <span className="text-white text-gradient">Transparent</span> <span className="text-white">pay.</span> <br />
-                                <span className="text-primary text-3xl md:text-5xl italic">No guessing games.</span>
+                    <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
+                        <div className="flex-1 space-y-6">
+                            <h2 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.05] py-2 text-white">
+                                Transparent pay.<br />
+                                No guessing games.
                             </h2>
-                            <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-xl">
+                            <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
                                 Unlike other apps that hide their formulas, we show you exactly how your earnings are calculated.
                                 You'll see the total payout before you ever tap "Accept."
                             </p>
 
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4 md:gap-6 pt-4">
                                 {[
-                                    { label: "Base Pay", value: "$3.00 / order", detail: "Guaranteed minimum per pickup" },
-                                    { label: "Distance Pay", value: "$0.70 / mile", detail: "Increases to $1.05 after 2 miles" },
-                                    { label: "Wait Pay", value: "$0.25 / min", detail: "Starts after 10 minutes at restaurant" },
-                                    { label: "Tips", value: "100% Yours", detail: "Customers tip directly in the app" }
+                                    { label: "Base Pay", value: "$3.00", detail: "Per Order Minimum" },
+                                    { label: "Distance", value: "$0.70", detail: "Per Mile" },
+                                    { label: "Wait Pay", value: "$0.25", detail: "Per Minute" },
+                                    { label: "Tips", value: "100%", detail: "All Yours" }
                                 ].map((row, i) => (
-                                    <div key={i} className="flex justify-between items-center p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all">
-                                        <div>
-                                            <p className="text-white font-black text-sm uppercase tracking-widest">{row.label}</p>
-                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">{row.detail}</p>
-                                        </div>
-                                        <p className="text-primary font-black text-lg">{row.value}</p>
+                                    <div key={i} className="flex flex-col p-6 md:p-8 bg-white/[0.02] border border-white/5 rounded-3xl hover:bg-white/[0.05] transition-all shadow-xl">
+                                        <p className="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-2">{row.label}</p>
+                                        <p className="text-3xl md:text-4xl font-black text-white mb-2"><span className="text-gradient">{row.value}</span></p>
+                                        <p className="text-emerald-400 text-[10px] md:text-xs font-bold uppercase tracking-widest">{row.detail}</p>
                                     </div>
                                 ))}
                             </div>
