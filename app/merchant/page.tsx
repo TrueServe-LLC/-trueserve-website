@@ -111,10 +111,10 @@ export default function MerchantPortal() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                             {/* Flex Scale Card */}
-                            <div className={`p-8 md:p-12 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
+                            <div className={`p-8 md:p-12 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-primary shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
                                 {/* Large Bold Headline */}
                                 <h3 className="text-4xl md:text-[2.75rem] font-black text-white tracking-tighter uppercase mb-8 leading-none">
-                                    <span className="text-orange-500 block mb-2">15% SPLIT</span>
+                                    <span className="text-primary block mb-2">15% SPLIT</span>
                                     FLEX SCALE
                                 </h3>
 
@@ -125,7 +125,7 @@ export default function MerchantPortal() {
 
                                 {/* CTA Button */}
                                 <div>
-                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-orange-500 text-black' : 'bg-orange-500 hover:bg-orange-400 text-black'} px-10 py-4 rounded-full font-bold text-lg transition-all shadow-lg`}>
+                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-primary text-black' : 'bg-primary hover:bg-primary/80 text-black'} px-10 py-4 rounded-full font-bold text-lg transition-all shadow-lg`}>
                                         Choose Flex
                                     </button>
                                 </div>
