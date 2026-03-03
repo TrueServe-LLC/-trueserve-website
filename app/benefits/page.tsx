@@ -111,10 +111,11 @@ export default function BenefitsPage() {
                                 />
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-emerald-500/10 to-transparent border border-white/5 p-12 rounded-[3rem] relative overflow-hidden group">
-                            <div className="text-7xl mb-8 group-hover:scale-110 transition-transform duration-500">🍔</div>
-                            <p className="text-slate-400 leading-relaxed italic">"TrueServe focuses on bringing traffic to my kitchen, not just taking a cut of my sales. That's why I offer 10% off to Plus members."</p>
-                            <p className="mt-4 text-xs font-bold">— Maria S., Owner of Local Bistro</p>
+                        <div className="hidden md:block">
+                            <div className="w-full aspect-square bg-gradient-to-br from-emerald-500/20 via-emerald-500/5 to-transparent rounded-[4rem] border border-white/5 flex items-center justify-center p-20 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.2),transparent_70%)]" />
+                                <div className="text-[120px] filter drop-shadow-[0_0_30px_rgba(16,185,129,0.3)] animate-float" style={{ animationDelay: '1s' }}>🤝</div>
+                            </div>
                         </div>
                     </div>
 
