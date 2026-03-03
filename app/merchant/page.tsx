@@ -111,42 +111,42 @@ export default function MerchantPortal() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                             {/* Flex Scale Card */}
-                            <div className={`p-8 md:p-12 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
+                            <div className={`p-6 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
                                 {/* Large Bold Headline */}
-                                <h3 className="text-4xl md:text-[2.75rem] font-black text-white tracking-tighter uppercase mb-8 leading-none">
-                                    <span className="text-orange-500 block mb-2">15% SPLIT</span>
+                                <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase mb-6 leading-none break-words">
+                                    <span className="text-orange-500 block mb-1.5 text-xl md:text-2xl">15% SPLIT</span>
                                     FLEX<span className="text-orange-500">SCALE</span>
                                 </h3>
 
                                 {/* Description Paragraph */}
-                                <p className="text-slate-400 text-lg font-medium leading-relaxed mb-12 flex-grow">
+                                <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed mb-10 flex-grow">
                                     Experience on-demand growth with zero upfront setup. Gain full engine access and a standard local badge. Cancel anytime.
                                 </p>
 
                                 {/* CTA Button */}
                                 <div>
-                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-orange-500 text-black' : 'bg-orange-500 hover:bg-orange-400 text-black'} px-10 py-4 rounded-full font-bold text-lg transition-all shadow-lg`}>
+                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-orange-500 text-black' : 'bg-orange-500 hover:bg-orange-400 text-black'} px-8 py-3 rounded-full font-bold text-sm md:text-base transition-all shadow-lg`}>
                                         Choose Flex
                                     </button>
                                 </div>
                             </div>
 
                             {/* Pro Scale Card */}
-                            <div className={`p-8 md:p-12 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#151515] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
+                            <div className={`p-6 md:p-10 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#151515] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
                                 {/* Large Bold Headline */}
-                                <h3 className="text-4xl md:text-[2.75rem] font-black text-white tracking-tighter uppercase mb-8 leading-none break-words">
-                                    <span className="text-emerald-500 block mb-2">0% SPLIT</span>
+                                <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase mb-6 leading-none break-words">
+                                    <span className="text-emerald-500 block mb-1.5 text-xl md:text-2xl">0% SPLIT</span>
                                     PRO<span className="text-emerald-500">SCALE</span>
                                 </h3>
 
                                 {/* Description Paragraph */}
-                                <p className="text-slate-400 text-lg font-medium leading-relaxed mb-12 flex-grow">
+                                <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed mb-10 flex-grow">
                                     $199 / MO. High-volume optimized performance. Unlock VIP merchant status, 0% split, custom dispatch logic, and advanced analytics.
                                 </p>
 
                                 {/* CTA Button */}
                                 <div>
-                                    <button className={`${selectedPlan === 'Pro Subscription' ? 'bg-emerald-500 text-black' : 'bg-emerald-500 hover:bg-emerald-400 text-black'} px-10 py-4 rounded-full font-bold text-lg transition-all shadow-lg`}>
+                                    <button className={`${selectedPlan === 'Pro Subscription' ? 'bg-emerald-500 text-black' : 'bg-emerald-500 hover:bg-emerald-400 text-black'} px-8 py-3 rounded-full font-bold text-sm md:text-base transition-all shadow-lg`}>
                                         Choose Pro
                                     </button>
                                 </div>
