@@ -41,8 +41,9 @@ export default async function Home() {
         {/* Hero Section */}
         <section className="container py-8 md:py-32 flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="flex-1 text-center md:text-left space-y-6 md:space-y-8 animate-fade-in w-full px-2">
-            <div className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-full text-[10px] md:text-sm font-black tracking-widest uppercase mb-2 border border-primary/20">
-              🚀 Premium Delivery Service
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-4">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+              <span>Premium Delivery Service</span>
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-white leading-relaxed tracking-tighter py-4">
               Craving meet <br className="hidden md:block" />

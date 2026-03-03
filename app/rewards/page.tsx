@@ -31,8 +31,9 @@ export default function RewardsPage() {
             <main className="container mx-auto py-12 px-6 animate-fade-in">
                 {/* Hero Section */}
                 <div className="text-center mb-20 relative">
-                    <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-primary/30">
-                        Loyalty Program
+                    <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-6 shadow-2xl backdrop-blur-sm">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+                        <span>Loyalty Program</span>
                     </div>
                     <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 leading-[0.85] text-white">
                         Rewards <br /><span className="text-gradient italic">Center.</span>

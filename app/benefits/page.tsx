@@ -27,8 +27,9 @@ export default function BenefitsPage() {
             <main className="container max-w-7xl py-20 px-6 mx-auto">
                 <div className="text-center mb-40 relative px-4 text-white flex flex-col items-center justify-center">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] -z-10 animate-pulse" />
-                    <div className="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 border border-primary/30">
-                        Membership 2.0
+                    <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-10">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+                        <span>Membership 2.0</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 leading-tight text-center">
                         Built for <br />

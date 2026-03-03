@@ -71,12 +71,9 @@ export default function MerchantPortal() {
                     <div className="container mx-auto px-6 max-w-7xl">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                             <div className="space-y-8 text-left">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold uppercase tracking-widest">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                    </span>
-                                    <span className="text-gradient font-extrabold tracking-widest">Empowering Local Restaurants</span>
+                                <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-2">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+                                    <span>Empowering Local Restaurants</span>
                                 </div>
                                 <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
                                     Unlock new <br />

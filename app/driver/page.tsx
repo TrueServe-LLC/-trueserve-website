@@ -49,8 +49,8 @@ export default function DriverPortal() {
 
                 <div className="container max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-8 text-center lg:text-left">
-                        <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl leading-relaxed">
-                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#ff992a]"></span>
+                        <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl leading-relaxed backdrop-blur-sm">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
                             Join the Fleet of the Future
                         </div>
                         <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-tight py-4">
