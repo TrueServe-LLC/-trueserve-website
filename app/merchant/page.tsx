@@ -115,7 +115,7 @@ export default function MerchantPortal() {
                                 {/* Large Bold Headline */}
                                 <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase mb-6 leading-none break-words">
                                     <span className="text-orange-500 block mb-1.5 text-xl md:text-2xl">15% SPLIT</span>
-                                    FLEX<span className="text-orange-500">SCALE</span>
+                                    <span className="text-gradient">FLEX SCALE</span>
                                 </h3>
 
                                 {/* Description Paragraph */}
@@ -136,7 +136,7 @@ export default function MerchantPortal() {
                                 {/* Large Bold Headline */}
                                 <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase mb-6 leading-none break-words">
                                     <span className="text-emerald-500 block mb-1.5 text-xl md:text-2xl">0% SPLIT</span>
-                                    PRO<span className="text-emerald-500">SCALE</span>
+                                    <span className="text-gradient">PRO SCALE</span>
                                 </h3>
 
                                 {/* Description Paragraph */}
