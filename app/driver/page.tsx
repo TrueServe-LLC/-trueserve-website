@@ -53,7 +53,7 @@ export default function DriverPortal() {
                             Join the Fleet of the Future
                         </div>
                         <h1 className="text-5xl md:text-8xl font-serif font-bold tracking-tight leading-[1.05] py-4">
-                            <span className="text-white">your city.</span> <br />
+                            <span className="text-white">Your City.</span> <br />
                             <span className="text-white">Your Time.</span> <br />
                             <span className="text-gradient">Your Profit.</span>
                         </h1>

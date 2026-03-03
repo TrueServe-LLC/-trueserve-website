@@ -75,8 +75,8 @@ export default function MerchantPortal() {
                                     <span>Empowering Local Restaurants</span>
                                 </div>
                                 <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-white leading-[1.1]">
-                                    unlock new <br />
-                                    Revenue with <br />
+                                    Unlock new <br />
+                                    revenue with <br />
                                     <span className="font-sans font-black tracking-tighter"><span className="text-white">True</span><span className="text-primary">Serve</span></span>
                                 </h1>
                                 <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed font-medium">

@@ -45,7 +45,7 @@ export default async function Home() {
               <span>Premium Delivery Service</span>
             </div>
             <h1 className="text-4xl md:text-7xl font-serif font-bold text-white leading-relaxed tracking-tight py-4">
-              craving meet <br className="hidden md:block" />
+              Cravings meet <br className="hidden md:block" />
               <span className="text-gradient">Lightning Speed.</span>
             </h1>
             <p className="text-base md:text-xl text-slate-400 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
