@@ -28,7 +28,7 @@ async function getRestaurant(id: string) {
                 return {
                     ...mock,
                     imageUrl: mock.image,
-                    menuItems: mock.menuItems.map((item: any) => ({ ...item, imageUrl: item.image }))
+                    menuItems: (mock.menuItems || []).map((item: any) => ({ ...item, imageUrl: item.image || item.imageUrl || null }))
                 };
             }
             if (error) console.error("Supabase Error (getRestaurant):", error);
@@ -36,9 +36,7 @@ async function getRestaurant(id: string) {
         }
 
         // Filter valid menu items
-        if (restaurant.menuItems) {
-            restaurant.menuItems = restaurant.menuItems.filter((item: any) => item.status === "APPROVED");
-        }
+        restaurant.menuItems = (restaurant.menuItems || []).filter((item: any) => item.status === "APPROVED");
 
         return restaurant;
     } catch (e) {
@@ -50,10 +48,10 @@ async function getRestaurant(id: string) {
         if (mock) {
             return {
                 ...mock,
-                imageUrl: mock.image, // Map for compatibility
-                menuItems: mock.menuItems.map((item: any) => ({
+                imageUrl: mock.image || "/restaurant1.jpg",
+                menuItems: (mock.menuItems || []).map((item: any) => ({
                     ...item,
-                    imageUrl: item.image // Map for compatibility
+                    imageUrl: item.image || item.imageUrl || null
                 }))
             };
         }

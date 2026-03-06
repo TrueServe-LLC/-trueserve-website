@@ -63,6 +63,7 @@ async function getMerchantData(userId: string) {
 
             return {
                 ...demoRest,
+                menuItems: demoRest.menuItems || [],
                 orders: combinedOrders
             };
         }
@@ -88,6 +89,7 @@ async function getMerchantData(userId: string) {
             .limit(50);
 
         restaurant.orders = recentOrders || [];
+        restaurant.menuItems = restaurant.menuItems || [];
         return restaurant;
     } catch (e) {
         console.warn("DB failed, using mocks", e);
