@@ -83,10 +83,42 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
         const cleanedText = rawText.replace(/```json|```/g, "").trim();
         const items = JSON.parse(cleanedText);
 
+        // --- SMART SYNC LOGIC ---
+        const { data: currentItems } = await supabase
+            .from('MenuItem')
+            .select('name, price, description')
+            .eq('restaurantId', restaurantId);
+
+        const currentMap = new Map(currentItems?.map(i => [i.name.toLowerCase(), i]));
+
+        const processedItems = items.map((item: any) => {
+            const existing = currentMap.get(item.name.toLowerCase());
+
+            if (!existing) {
+                return { ...item, changeType: 'NEW' };
+            }
+
+            const hasChanged = Number(existing.price) !== Number(item.price) ||
+                existing.description !== item.description;
+
+            return {
+                ...item,
+                changeType: hasChanged ? 'UPDATE' : 'MATCH'
+            };
+        });
+
+        const newCount = processedItems.filter((i: any) => i.changeType === 'NEW').length;
+        const updateCount = processedItems.filter((i: any) => i.changeType === 'UPDATE').length;
+
         return {
             success: true,
-            items: items,
-            message: `AI Scan Success: We found ${items.length} items on your menu!`
+            items: processedItems,
+            summary: {
+                new: newCount,
+                updates: updateCount,
+                total: processedItems.length
+            },
+            message: `Smart Sync: Found ${newCount} new items and ${updateCount} updates!`
         };
 
     } catch (err: any) {
@@ -96,7 +128,7 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
 }
 
 /**
- * Bulk insert items found by AI
+ * Bulk insert/update items found by AI (Smart Sync)
  */
 export async function confirmAIImport(restaurantId: string, items: any[]) {
     const cookieStore = await cookies();
@@ -115,17 +147,37 @@ export async function confirmAIImport(restaurantId: string, items: any[]) {
 
         if (!restaurant) return { success: false, error: "Unauthorized" };
 
-        const { error } = await supabase.from('MenuItem').insert(
-            items.map(item => ({
-                restaurantId,
-                name: item.name,
-                price: Number(item.price) || 0,
-                description: item.description,
-                status: 'APPROVED',
-                updatedAt: new Date().toISOString(),
-                createdAt: new Date().toISOString()
-            }))
-        );
+        // Fetch existing items to resolve IDs for UPSERT
+        const { data: currentItems } = await supabase
+            .from('MenuItem')
+            .select('id, name')
+            .eq('restaurantId', restaurantId);
+
+        const idMap = new Map(currentItems?.map(i => [i.name.toLowerCase(), i.id]));
+
+        const itemsToUpsert = items
+            .filter(item => item.changeType !== 'MATCH') // Skip identical
+            .map(item => {
+                const existingId = idMap.get(item.name.toLowerCase());
+                return {
+                    id: existingId || undefined, // Supabase will insert if undefined
+                    restaurantId,
+                    name: item.name,
+                    price: Number(item.price) || 0,
+                    description: item.description,
+                    status: 'APPROVED',
+                    updatedAt: new Date().toISOString(),
+                    createdAt: existingId ? undefined : new Date().toISOString() // Only set created_at on new
+                };
+            });
+
+        if (itemsToUpsert.length === 0) {
+            return { success: true, message: "No changes needed." };
+        }
+
+        const { error } = await supabase
+            .from('MenuItem')
+            .upsert(itemsToUpsert, { onConflict: 'id' });
 
         if (error) throw error;
 

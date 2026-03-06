@@ -122,16 +122,35 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
             {showResults && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
                     <div className="bg-[#0c121e] border border-white/10 rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+
                         {/* Header */}
                         <div className="p-8 border-b border-white/5 flex justify-between items-center bg-gradient-to-br from-primary/10 via-transparent to-transparent">
                             <div>
                                 <h3 className="text-2xl font-black flex items-center gap-3 tracking-tight">
-                                    <span className="p-2 bg-primary/10 rounded-xl">🪄</span> AI Results
+                                    <span className="p-2 bg-primary/10 rounded-xl">🪄</span> Smart Sync
                                 </h3>
-                                <p className="text-xs text-slate-500 mt-1 font-bold uppercase tracking-widest opacity-60">Verified Extraction Protocol</p>
+                                <p className="text-xs text-slate-500 mt-1 font-bold uppercase tracking-widest opacity-60">Comparing Extract with Database</p>
                             </div>
                             <button onClick={() => setShowResults(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all font-black text-xl">&times;</button>
                         </div>
+
+                        {/* Summary Bar */}
+                        {results.length > 0 && (
+                            <div className="px-8 py-4 bg-white/[0.02] border-b border-white/5 flex gap-6">
+                                <div className="text-center">
+                                    <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">New</p>
+                                    <p className="text-lg font-black text-primary">{results.filter(r => r.changeType === 'NEW').length}</p>
+                                </div>
+                                <div className="text-center pl-6 border-l border-white/5">
+                                    <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">Updates</p>
+                                    <p className="text-lg font-black text-secondary">{results.filter(r => r.changeType === 'UPDATE').length}</p>
+                                </div>
+                                <div className="text-center pl-6 border-l border-white/5">
+                                    <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">Synced</p>
+                                    <p className="text-lg font-black text-slate-400">{results.filter(r => r.changeType === 'MATCH').length}</p>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Content */}
                         <div className="p-8 max-h-[60vh] overflow-y-auto space-y-4 custom-scrollbar">
@@ -140,15 +159,25 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                                     {results.map((item, i) => (
                                         <div
                                             key={i}
-                                            className="item-reveal p-5 bg-white/[0.03] hover:bg-white/[0.07] rounded-3xl border border-white/5 flex justify-between items-center transition-all group hover:scale-[1.01]"
+                                            className={`item-reveal p-5 rounded-3xl border flex justify-between items-center transition-all group hover:scale-[1.01] ${item.changeType === 'NEW' ? 'bg-primary/5 border-primary/20' :
+                                                    item.changeType === 'UPDATE' ? 'bg-secondary/5 border-secondary/20' :
+                                                        'bg-white/[0.02] border-white/5 opacity-50 grayscale'
+                                                }`}
                                             style={{ animationDelay: `${i * 100}ms` }}
                                         >
                                             <div className="flex gap-4 items-center">
-                                                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-black text-primary text-xs shrink-0">
-                                                    {i + 1}
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs shrink-0 ${item.changeType === 'NEW' ? 'bg-primary text-white' :
+                                                        item.changeType === 'UPDATE' ? 'bg-secondary text-white' :
+                                                            'bg-white/10 text-slate-500'
+                                                    }`}>
+                                                    {item.changeType === 'NEW' ? '+' : item.changeType === 'UPDATE' ? '↺' : '✓'}
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-white text-lg tracking-tight group-hover:text-primary transition-colors">{item.name}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="font-black text-white text-lg tracking-tight group-hover:text-primary transition-colors">{item.name}</p>
+                                                        {item.changeType === 'NEW' && <span className="px-2 py-0.5 bg-primary/20 text-primary text-[8px] font-black uppercase rounded-full">New Entry</span>}
+                                                        {item.changeType === 'UPDATE' && <span className="px-2 py-0.5 bg-secondary/20 text-secondary text-[8px] font-black uppercase rounded-full">Update found</span>}
+                                                    </div>
                                                     <p className="text-xs text-slate-500 font-medium italic">{item.description || "No description provided."}</p>
                                                 </div>
                                             </div>
