@@ -257,15 +257,30 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             if (userError) throw userError;
         }
 
-        // Helper: Simple Geocode Lookup for Pilot Cities
-        let lat = 35.2271;
+        // 2b. Google Maps Geocoding API lookup
+        let lat = 35.2271; // Default fallback (Charlotte)
         let lng = -80.8431;
 
-        const cityLower = city.trim().toLowerCase();
-        if (cityLower.includes('charlotte')) { lat = 35.2271; lng = -80.8431; }
-        else if (cityLower.includes('pineville')) { lat = 35.0833; lng = -80.8872; }
-        else if (cityLower.includes('rock hill')) { lat = 34.9249; lng = -81.0251; }
-        else if (cityLower.includes('ramsey')) { lat = 45.2611; lng = -93.4566; }
+        try {
+            const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+            if (apiKey) {
+                const fullAddress = `${address}, ${city}, ${state} ${zip}`;
+                const geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(fullAddress)}&key=${apiKey}`;
+                const geoRes = await fetch(geoUrl);
+                const geoData = await geoRes.json();
+
+                if (geoData.status === 'OK' && geoData.results && geoData.results.length > 0) {
+                    lat = geoData.results[0].geometry.location.lat;
+                    lng = geoData.results[0].geometry.location.lng;
+                } else {
+                    console.warn(`Geocoding API responded with status: ${geoData.status}`);
+                }
+            } else {
+                console.warn("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is not set. Using default coordinates.");
+            }
+        } catch (geoErr) {
+            console.error("Geocoding fetch failed, falling back to default coordinates:", geoErr);
+        }
 
         // 3. Create the Restaurant Shell WITH Location Data - Use ADMIN to bypass RLS
         const restaurantId = uuidv4();
