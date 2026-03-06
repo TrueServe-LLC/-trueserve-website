@@ -312,10 +312,15 @@ export default async function RestaurantFinder({
     const userId = cookieStore.get("userId")?.value;
 
     let userSavedAddress = "";
-    if (userId && !address && !location) {
-        const { data: userData } = await supabase.from('User').select('address').eq('id', userId).maybeSingle();
-        if (userData?.address) {
+    let userName = "";
+
+    if (userId) {
+        const { data: userData } = await supabase.from('User').select('address, name').eq('id', userId).maybeSingle();
+        if (userData?.address && !address && !location) {
             userSavedAddress = userData.address;
+        }
+        if (userData?.name) {
+            userName = userData.name.split(" ")[0];
         }
     }
 
@@ -454,9 +459,27 @@ export default async function RestaurantFinder({
             <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-4 md:px-6 py-3 md:py-4">
                 <div className="container flex justify-between items-center gap-4">
                     <Link href="/" className="flex items-center gap-2 group shrink-0">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                        <span className="text-lg md:text-2xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
+                        {/* Desktop Logo */}
+                        <img src="/logo.png" alt="TrueServe Logo" className="hidden md:block w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
+                        <span className="hidden md:block text-lg md:text-2xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
+
+                        {/* Mobile Profile Image */}
+                        {userId ? (
+                            <div className="md:hidden w-10 h-10 rounded-full bg-slate-800 border border-white/10 shadow-lg overflow-hidden shrink-0">
+                                <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userName || 'User'}`} alt="Profile" className="w-full h-full object-cover" />
+                            </div>
+                        ) : (
+                            <img src="/logo.png" alt="TrueServe Logo" className="md:hidden w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
+                        )}
                     </Link>
+
+                    {/* Mobile Location Pill */}
+                    <div className="md:hidden mt-1 flex flex-1 items-center justify-center">
+                        <Link href="/restaurants" className="flex items-center gap-1.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 shadow-lg">
+                            <svg className="w-3.5 h-3.5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span className="text-xs font-bold text-slate-300 truncate max-w-[120px]">{locationMeta.name || "Set Location"}</span>
+                        </Link>
+                    </div>
 
                     {/* Desktop Search */}
                     <div className="hidden md:flex flex-1 max-w-xl mx-8">
@@ -485,17 +508,39 @@ export default async function RestaurantFinder({
                         </div>
                     </div>
                 </div>
+                {/* Mobile Search -> Moved to Main Content */}
+            </nav>
+
+            <main className="container py-6 md:py-8 px-4 animate-fade-in pb-32">
+                {/* Mobile Welcome Header */}
+                <div className="md:hidden flex flex-col gap-1 mb-6">
+                    <h2 className="text-sm font-bold text-slate-400">Welcome,</h2>
+                    <h1 className="text-2xl font-black text-secondary">{userName || 'Guest'}</h1>
+                </div>
+
+                {/* Mobile Promotional Banner */}
+                <div className="md:hidden w-full bg-gradient-to-r from-slate-900 to-slate-800 rounded-[2rem] p-6 mb-6 relative overflow-hidden border border-white/5 shadow-2xl">
+                    <div className="relative z-10 w-2/3">
+                        <h3 className="text-xl font-black text-white leading-tight mb-5">
+                            50% Discount<br />on selected Restaurant
+                        </h3>
+                        <Link href="/restaurants" className="inline-block bg-secondary text-black text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-full shadow-lg shadow-secondary/20 hover:scale-105 transition-transform">
+                            Order Now
+                        </Link>
+                    </div>
+                    {/* Decorative element mimicking food/image */}
+                    <div className="absolute -right-10 -top-10 bottom-0 w-48 h-48 bg-primary/30 blur-2xl rounded-full"></div>
+                </div>
+
                 {/* Mobile Search */}
-                <div className="container mt-3 md:hidden px-2">
+                <div className="md:hidden mb-8">
                     <LandingSearch
                         locations={serviceLocations}
                         initialValue={location}
                         isCompact={true}
                     />
                 </div>
-            </nav>
 
-            <main className="container py-6 md:py-8 px-4 animate-fade-in pb-32">
                 {/* Active Tracking Banner */}
                 {activeOrders.length > 0 && (
                     <div className="mb-6 md:mb-8 p-5 md:p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl relative overflow-hidden group">
@@ -595,9 +640,9 @@ export default async function RestaurantFinder({
                 {/* Section Divider */}
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent mb-16 md:mb-24"></div>
 
-                {/* Food Categories / Tags Selection - Slim Pill Style */}
+                {/* Food Categories / Tags Selection */}
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <div className="flex items-center gap-3 overflow-x-auto pb-4 px-1 no-scrollbar scroll-smooth">
+                    <div className="flex items-center gap-4 md:gap-3 overflow-x-auto pb-4 px-1 no-scrollbar scroll-smooth">
                         {/* Show All Option */}
                         <Link
                             href={`/restaurants?${new URLSearchParams({
@@ -607,12 +652,14 @@ export default async function RestaurantFinder({
                                 ...(params.location ? { location: params.location } : {}),
                                 ...(params.search ? { search: params.search } : {})
                             }).toString()}`}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all whitespace-nowrap font-bold text-sm
+                            className={`flex flex-col md:flex-row items-center justify-center gap-2 md:px-6 md:py-3 rounded-none md:rounded-full border-transparent md:border transition-all whitespace-nowrap font-bold text-[11px] md:text-sm min-w-[70px] md:min-w-0
                                 ${!category
-                                    ? "bg-primary border-primary text-black shadow-lg shadow-primary/20"
-                                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20"}`}
+                                    ? "text-secondary md:bg-primary md:border-primary md:text-black md:shadow-lg md:shadow-primary/20"
+                                    : "text-slate-400 md:bg-white/5 md:border-white/10 hover:text-white md:hover:bg-white/10"}`}
                         >
-                            <span>✨</span>
+                            <div className={`w-[4.2rem] h-[4.2rem] md:w-auto md:h-auto rounded-[1.3rem] md:rounded-none flex items-center justify-center mb-1 md:mb-0 text-3xl md:text-lg border shadow-lg ${!category ? 'bg-secondary/20 border-secondary/30' : 'bg-slate-800 border-white/5'}`}>
+                                ✨
+                            </div>
                             <span>All</span>
                         </Link>
 
@@ -643,12 +690,14 @@ export default async function RestaurantFinder({
                                     ...(params.search ? { search: params.search } : {}),
                                     category: cat.name
                                 }).toString()}`}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all whitespace-nowrap font-bold text-sm
+                                className={`flex flex-col md:flex-row items-center justify-center gap-2 md:px-6 md:py-3 rounded-none md:rounded-full border-transparent md:border transition-all whitespace-nowrap font-bold text-[11px] md:text-sm min-w-[70px] md:min-w-0
                                     ${category === cat.name
-                                        ? "bg-primary border-primary text-black shadow-lg shadow-primary/20"
-                                        : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20 hover:text-white"}`}
+                                        ? "text-secondary md:bg-primary md:border-primary md:text-black md:shadow-lg md:shadow-primary/20"
+                                        : "text-slate-400 md:bg-white/5 md:border-white/10 hover:text-white md:hover:bg-white/10"}`}
                             >
-                                <span className="text-lg">{cat.icon}</span>
+                                <div className={`w-[4.2rem] h-[4.2rem] md:w-auto md:h-auto rounded-[1.3rem] md:rounded-none flex items-center justify-center mb-1 md:mb-0 text-3xl md:text-lg border shadow-lg transition-colors ${category === cat.name ? 'bg-secondary/20 border-secondary/30' : 'bg-slate-800 border-white/5 hover:border-white/10 hover:bg-slate-700'}`}>
+                                    {cat.icon}
+                                </div>
                                 <span>{cat.name}</span>
                             </Link>
                         ))}

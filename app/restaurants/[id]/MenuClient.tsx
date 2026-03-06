@@ -119,10 +119,20 @@ export default function MenuClient({
     // Success view removed in favor of redirect
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start md:mt-0 -mt-6">
             {/* Menu Section */}
             <div className="md:col-span-2">
-                <h2 className="text-xl md:text-3xl font-black mb-6 md:mb-8 tracking-tight">Menu Highlights</h2>
+                {/* Mobile Tabs */}
+                <div className="md:hidden flex gap-8 mb-6 border-b border-white/10 pb-0">
+                    <button className="text-secondary font-black relative pb-3 after:absolute after:bottom-[-1px] after:left-0 after:w-full after:h-0.5 after:bg-secondary">
+                        Menu
+                    </button>
+                    <button className="text-slate-500 font-bold hover:text-white transition-colors pb-3">
+                        Reviews
+                    </button>
+                </div>
+
+                <h2 className="hidden md:block text-xl md:text-3xl font-black mb-6 md:mb-8 tracking-tight">Menu Highlights</h2>
                 <div className="grid grid-cols-1 gap-4 md:gap-6">
                     {items.map((item) => (
                         <div key={item.id} className="group relative bg-white/5 rounded-2xl border border-white/5 overflow-hidden border-b-2 border-b-white/5 active:border-b-0 active:translate-y-0.5 transition-all">

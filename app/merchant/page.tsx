@@ -112,7 +112,7 @@ export default function MerchantPortal() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                             {/* Flex Scale Card */}
-                            <div className={`p-10 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
+                            <div className={`p-6 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
                                 {/* Large Bold Headline */}
                                 <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words">
                                     <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest">15% SPLIT</span>
@@ -133,7 +133,7 @@ export default function MerchantPortal() {
                             </div>
 
                             {/* Pro Scale Card */}
-                            <div className={`p-10 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#151515] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
+                            <div className={`p-6 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#151515] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
                                 {/* Large Bold Headline */}
                                 <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words">
                                     <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest">0% SPLIT</span>

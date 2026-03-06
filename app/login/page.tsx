@@ -88,19 +88,19 @@ function LoginWithParams() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-            <div className="card w-full max-w-md p-8 animate-fade-in border border-white/10 shadow-2xl bg-slate-900/90 backdrop-blur">
-                <h1 className="text-3xl font-bold text-center mb-2">
+        <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-8 md:py-0">
+            <div className="w-full max-w-md md:p-8 animate-fade-in md:border md:border-white/10 md:shadow-2xl md:bg-slate-900/90 md:backdrop-blur md:rounded-[2rem]">
+                <h1 className="text-4xl md:text-3xl font-black md:text-center mb-2">
                     True<span className="text-gradient">Serve</span>
                 </h1>
-                <h2 className="text-xl font-semibold text-center mb-6 text-slate-300">
-                    {mode === 'login' && "Welcome Back"}
+                <h2 className="text-xl text-slate-400 font-bold md:text-center mb-10 text-slate-300 md:font-semibold">
+                    {mode === 'login' && "Sign in to your account"}
                     {mode === 'signup' && "Create Account"}
                     {mode === 'reset' && "Reset Password"}
                 </h2>
 
                 {message && (
-                    <div className={`p-3 rounded mb-4 text-sm text-center ${message.type === 'error' ? 'bg-red-500/20 text-red-200 border border-red-500/30' : 'bg-green-500/20 text-green-200 border border-green-500/30'}`}>
+                    <div className={`p-3 rounded-2xl mb-6 text-sm text-center font-bold ${message.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
                         {message.text}
                     </div>
                 )}
@@ -109,58 +109,70 @@ function LoginWithParams() {
                     {mode === 'signup' && (
                         <>
                             <div>
-                                <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">Full Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
-                                    placeholder="John Doe"
-                                    value={formData.name}
-                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                />
+                                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Full Name</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">👤</span>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                        placeholder="John Doe"
+                                        value={formData.name}
+                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                    />
+                                </div>
                             </div>
                             <div>
-                                <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">Delivery Address</label>
-                                <input
-                                    type="text"
-                                    className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
-                                    placeholder="123 Main St, Charlotte, NC"
-                                    value={formData.address}
-                                    onChange={e => setFormData({ ...formData, address: e.target.value })}
-                                />
+                                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Delivery Address</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">📍</span>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                        placeholder="123 Main St, Charlotte, NC"
+                                        value={formData.address}
+                                        onChange={e => setFormData({ ...formData, address: e.target.value })}
+                                    />
+                                </div>
                             </div>
                         </>
                     )}
 
                     <div>
-                        <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">Email Address</label>
-                        <input
-                            type="email"
-                            className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
-                            placeholder="you@example.com"
-                            value={formData.email}
-                            onChange={e => setFormData({ ...formData, email: e.target.value })}
-                        />
+                        <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Email Address</label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">✉️</span>
+                            <input
+                                type="email"
+                                className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                placeholder="you@example.com"
+                                value={formData.email}
+                                onChange={e => setFormData({ ...formData, email: e.target.value })}
+                            />
+                        </div>
                     </div>
 
                     {mode !== 'reset' && (
                         <div>
-                            <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">Password</label>
-                            <input
-                                type="password"
-                                className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={e => setFormData({ ...formData, password: e.target.value })}
-                            />
+                            <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Password</label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔒</span>
+                                <input
+                                    type="password"
+                                    className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={e => setFormData({ ...formData, password: e.target.value })}
+                                />
+                            </div>
                         </div>
                     )}
 
                     <button
                         onClick={handleSubmit}
                         disabled={isLoading || !formData.email || (mode !== 'reset' && !formData.password)}
-                        className="w-full btn btn-primary py-3 font-bold shadow-lg shadow-primary/20 disabled:opacity-50 mt-4"
+                        className="w-full bg-secondary text-black py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-[0_10px_20px_rgba(241,161,55,0.2)] disabled:opacity-50 mt-6 md:mt-4 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
-                        {isLoading ? "Processing..." : (mode === 'login' ? "Sign In" : mode === 'signup' ? "Create Account" : "Send Reset Link")}
+                        {isLoading ? "Processing..." : (mode === 'login' ? "Login" : mode === 'signup' ? "Create Account" : "Send Reset Link")}
                     </button>
 
                     <div className="relative my-6">

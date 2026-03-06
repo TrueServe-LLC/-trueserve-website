@@ -78,10 +78,10 @@ export default function DriverPortal() {
 
                     {/* Compact Hero Form */}
                     <div ref={formRef} className="lg:max-w-md w-full mx-auto relative z-20">
-                        <div className="bg-slate-900 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] border border-white/10 rounded-[2.5rem] p-10 md:p-12 backdrop-blur-2xl relative overflow-visible">
+                        <div className="bg-slate-900 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] border border-white/10 rounded-[2.5rem] p-6 md:p-12 backdrop-blur-2xl relative overflow-visible">
                             <div className="absolute top-0 right-0 p-8 opacity-5 text-9xl -mr-10 -mt-10 pointer-events-none select-none">🛵</div>
 
-                            <div className="relative z-10 pt-24 pb-16 px-2">
+                            <div className="relative z-10 pt-16 md:pt-24 pb-8 md:pb-16 px-2">
                                 <h2 className="text-4xl font-black mb-6 tracking-tighter leading-relaxed px-4 py-2">
                                     <span className="text-white">Become a</span> <span className="text-gradient">Driver</span>
                                 </h2>
