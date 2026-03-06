@@ -62,9 +62,18 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
             }
 
             // Fallback for demo users that might not be in the current DB instance
-            console.log(`[AUTH] Falling back to mock role session.`);
+            console.log(`[AUTH] Falling back to mock role session (Local Backup Mode).`);
+
+            let mockSuffix = 'general';
+            if (email.includes('snappylunch')) mockSuffix = 'snappylunch';
+            else if (email.includes('13bones')) mockSuffix = '13bones';
+            else if (email.includes('oldnorthstate')) mockSuffix = 'oldnorthstate';
+            else if (email.includes('olympia')) mockSuffix = 'olympia';
+            else if (email.includes('littlerichards')) mockSuffix = 'littlerichards';
+            else if (email.includes('barneys')) mockSuffix = 'barneys';
+
             const fallbackRole = email.includes("merchant") || email.includes("owner") ? "MERCHANT" : email.includes("driver") ? "DRIVER" : "CUSTOMER";
-            cookieStore.set("userId", `mock-${fallbackRole.toLowerCase()}-id`, { secure: true, httpOnly: true });
+            cookieStore.set("userId", `mock-${fallbackRole.toLowerCase()}-${mockSuffix}`, { secure: true, httpOnly: true });
             return { message: "Demo Login successful (Mock Mode)!", success: true, role: fallbackRole };
         }
 

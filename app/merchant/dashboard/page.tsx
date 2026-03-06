@@ -9,6 +9,7 @@ import { updateOrderStatus, refundOrder, createStripeAccount } from "../actions"
 import LogoutButton from "@/components/LogoutButton";
 import StoreBannerUpload from "./StoreBannerUpload";
 import WelcomeModal from "./WelcomeModal";
+import { MOUNT_AIRY_RESTAURANTS } from "@/lib/demo-data";
 
 export const dynamic = "force-dynamic";
 
@@ -104,9 +105,16 @@ export default async function MerchantDashboard({
         }
     }
 
-    const restaurant = await getMerchantData(userId);
+    let restaurant = await getMerchantData(userId);
 
-    // Fallback UI if no restaurant found (or DB down)
+    // Handle Demo Mode Fallback if DB lookup failed and we have a mock ID
+    if (!restaurant && userId?.startsWith('mock-merchant-')) {
+        const slug = userId.replace('mock-merchant-', '');
+        restaurant = MOUNT_AIRY_RESTAURANTS.find(r => r.email.includes(slug)) as any;
+        if (!restaurant && slug === 'general') restaurant = MOUNT_AIRY_RESTAURANTS[0] as any;
+    }
+
+    // Final Fallback UI if no restaurant found (or DB down and no mock hit)
     if (!restaurant) {
         return (
             <div className="min-h-screen">
