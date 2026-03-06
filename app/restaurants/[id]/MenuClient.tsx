@@ -172,6 +172,12 @@ export default function MenuClient({
                             </div>
                         </div>
                     ))}
+                    {items.length === 0 && (
+                        <div className="col-span-1 p-8 text-center bg-slate-900/50 rounded-2xl border border-white/10">
+                            <h3 className="text-xl font-bold text-white mb-2">No Menu Available</h3>
+                            <p className="text-slate-400">This restaurant has not published their menu yet. Please check back later.</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -211,7 +217,7 @@ export default function MenuClient({
                         {deliveryAddress && (
                             <div className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
                                 <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1.5 opacity-70">Confirming Address:</p>
-                                <p className="text-xs text-white font-bold leading-normal">{deliveryAddress}</p>
+                                <p className="text-xs text-white font-bold leading-normal break-words">{deliveryAddress}</p>
                             </div>
                         )}
                     </div>
