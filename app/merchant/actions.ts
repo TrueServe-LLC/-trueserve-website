@@ -26,6 +26,7 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
+    const image = formData.get("image") as File;
 
     if (!name || isNaN(price)) {
         return { error: true, message: "Invalid input" };
@@ -41,6 +42,36 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
 
         if (!restaurant) throw new Error("Restaurant not found");
 
+        let imageUrl = null;
+
+        // Auto-create bucket just in case (will fail silently if it already exists)
+        await supabaseAdmin.storage.createBucket('menu-images', { public: true }).catch(() => { });
+
+        if (image && image.size > 0) {
+            const fileExt = image.name.split('.').pop();
+            const fileName = `${uuidv4()}.${fileExt}`;
+            const arrayBuffer = await image.arrayBuffer();
+            const buffer = new Uint8Array(arrayBuffer);
+
+            const { error: uploadError } = await supabaseAdmin.storage
+                .from('menu-images')
+                .upload(fileName, buffer, {
+                    contentType: image.type,
+                    upsert: false
+                });
+
+            if (uploadError) {
+                console.error("Image upload failed:", uploadError);
+                throw new Error("Failed to upload image.");
+            }
+
+            const { data: publicUrlData } = supabaseAdmin.storage
+                .from('menu-images')
+                .getPublicUrl(fileName);
+
+            imageUrl = publicUrlData.publicUrl;
+        }
+
         const { error } = await supabase
             .from('MenuItem')
             .insert({
@@ -49,7 +80,8 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
                 name,
                 price,
                 description,
-                status: 'APPROVED', // Assuming MenuItem HAS status based on original seed file
+                imageUrl, // New photo field
+                status: 'APPROVED',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });
@@ -61,6 +93,55 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
     } catch (e: any) {
         console.error("Add Item Error:", e);
         return { error: true, message: e.message || "Failed to add item" };
+    }
+}
+
+export async function updateStoreBanner(prevState: MerchantActionState, formData: FormData): Promise<MerchantActionState> {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+    if (!userId) return { error: true, message: "Unauthorized" };
+
+    const image = formData.get("image") as File;
+    if (!image || image.size === 0) return { error: true, message: "No image provided" };
+
+    try {
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('id')
+            .eq('ownerId', userId)
+            .single();
+
+        if (!restaurant) throw new Error("Restaurant not found");
+
+        await supabaseAdmin.storage.createBucket('restaurant-banners', { public: true }).catch(() => { });
+
+        const fileExt = image.name.split('.').pop();
+        const fileName = `${uuidv4()}.${fileExt}`;
+        const arrayBuffer = await image.arrayBuffer();
+        const buffer = new Uint8Array(arrayBuffer);
+
+        const { error: uploadError } = await supabaseAdmin.storage
+            .from('restaurant-banners')
+            .upload(fileName, buffer, { contentType: image.type, upsert: false });
+
+        if (uploadError) throw new Error("Failed to upload image.");
+
+        const { data: publicUrlData } = supabaseAdmin.storage
+            .from('restaurant-banners')
+            .getPublicUrl(fileName);
+
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({ imageUrl: publicUrlData.publicUrl, updatedAt: new Date().toISOString() })
+            .eq('id', restaurant.id);
+
+        if (error) throw error;
+
+        revalidatePath('/merchant/dashboard');
+        return { success: true, message: "Store banner updated successfully. Give it a minute or refresh to see changes live." };
+    } catch (e: any) {
+        console.error("Banner Upload Error:", e);
+        return { error: true, message: "Failed to update banner." };
     }
 }
 

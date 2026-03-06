@@ -7,6 +7,7 @@ import MenuScanner from "./MenuScanner";
 import POSIntegration from "./POSIntegration";
 import { updateOrderStatus, refundOrder, createStripeAccount } from "../actions";
 import LogoutButton from "@/components/LogoutButton";
+import StoreBannerUpload from "./StoreBannerUpload";
 
 export const dynamic = "force-dynamic";
 
@@ -402,6 +403,10 @@ export default async function MerchantDashboard() {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <StoreBannerUpload currentImageUrl={restaurant.imageUrl} />
                 </div>
 
                 <div className="mb-12">

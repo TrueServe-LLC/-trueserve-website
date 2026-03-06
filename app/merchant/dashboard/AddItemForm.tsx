@@ -55,6 +55,11 @@ export default function AddItemForm() {
                     </div>
                 </div>
                 <div>
+                    <label className="block text-sm text-slate-400 mb-1">Food Photo (Optional)</label>
+                    <input name="image" type="file" accept="image/*"
+                        className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-primary/20 file:text-primary hover:file:bg-primary/30" />
+                </div>
+                <div>
                     <label className="block text-sm text-slate-400 mb-1">Description</label>
                     <textarea name="description" rows={2} placeholder="Brief description..."
                         className="w-full bg-white/5 border border-white/10 rounded px-3 py-2" />
