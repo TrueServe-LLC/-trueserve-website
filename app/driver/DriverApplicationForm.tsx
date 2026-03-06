@@ -89,9 +89,9 @@ export default function DriverApplicationForm() {
             {/* Step Indicators */}
             <div className="flex items-center justify-between mb-8 px-2 relative">
                 <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-white/10 -z-10 translate-y-[-50%]"></div>
-                <div className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 translate-y-[-50%] transition-all duration-300" style={{ width: `${((step - 1) / 2) * 100}%` }}></div>
+                <div className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 translate-y-[-50%] transition-all duration-300" style={{ width: `${((step - 1) / 3) * 100}%` }}></div>
 
-                {[1, 2, 3].map((num) => (
+                {[1, 2, 3, 4].map((num) => (
                     <div key={num} className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black tracking-widest transition-all ${step >= num ? 'bg-primary text-black scale-110 shadow-[0_0_15px_rgba(255,215,0,0.5)]' : 'bg-slate-800 text-slate-500 border border-white/10'}`}>
                         {num}
                     </div>
@@ -99,20 +99,28 @@ export default function DriverApplicationForm() {
             </div>
 
             <div className="min-h-[300px]">
-                {/* STEP 1: Application Intake (Gate 1) */}
+                {/* STEP 1: Contact Info */}
                 {step === 1 && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                         <div className="mb-6">
+                            <h3 className="text-xl font-bold text-white mb-1">Get Started</h3>
+                            <p className="text-xs text-slate-400">Step 1: Contact info.</p>
+                        </div>
+
+                        <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Email Address" />
+                        <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Mobile Phone" />
+                    </div>
+                )}
+
+                {/* STEP 2: Application Intake (Gate 1) */}
+                {step === 2 && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="mb-6">
                             <h3 className="text-xl font-bold text-white mb-1">Personal Info</h3>
-                            <p className="text-xs text-slate-400">Step 1: Your identity & eligibility.</p>
+                            <p className="text-xs text-slate-400">Step 2: Your identity & eligibility.</p>
                         </div>
 
                         <input name="name" type="text" required value={formData.name} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Legal Full Name" />
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Email Address" />
-                            <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Mobile Phone" />
-                        </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <input name="dob" type="date" required value={formData.dob} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Date of Birth" />
@@ -121,12 +129,12 @@ export default function DriverApplicationForm() {
                     </div>
                 )}
 
-                {/* STEP 2: Gov ID & Vehicle (Gate 2 & 5) */}
-                {step === 2 && (
+                {/* STEP 3: Gov ID & Vehicle (Gate 2 & 5) */}
+                {step === 3 && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                         <div className="mb-6">
                             <h3 className="text-xl font-bold text-white mb-1">Vehicle & ID</h3>
-                            <p className="text-xs text-slate-400">Step 2: Security & driving eligibility.</p>
+                            <p className="text-xs text-slate-400">Step 3: Security & driving eligibility.</p>
                         </div>
 
                         <div className="relative group">
@@ -148,12 +156,12 @@ export default function DriverApplicationForm() {
                     </div>
                 )}
 
-                {/* STEP 3: Background Check & Final Consent (Gate 4 & 7) */}
-                {step === 3 && (
+                {/* STEP 4: Background Check & Final Consent (Gate 4 & 7) */}
+                {step === 4 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <div className="mb-6">
                             <h3 className="text-xl font-bold text-white mb-1">Final Consents</h3>
-                            <p className="text-xs text-slate-400">Step 3: Agreements and background checks.</p>
+                            <p className="text-xs text-slate-400">Step 4: Agreements and background checks.</p>
                         </div>
 
                         <label className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer transition-colors">
@@ -182,7 +190,7 @@ export default function DriverApplicationForm() {
                     </button>
                 )}
 
-                {step < 3 ? (
+                {step < 4 ? (
                     <button type="button" onClick={handleNext} className="flex-1 btn btn-primary py-4 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 rounded-2xl hover:scale-[1.02] transition-all">
                         Next Step →
                     </button>
@@ -192,7 +200,7 @@ export default function DriverApplicationForm() {
                     </button>
                 )}
             </div>
-            {step === 3 && (
+            {step === 4 && (
                 <p className="text-[10px] text-slate-500 text-center px-4 font-medium leading-relaxed mt-4">
                     By clicking submit, you acknowledge all TrueServe onboarding requirements.
                 </p>
