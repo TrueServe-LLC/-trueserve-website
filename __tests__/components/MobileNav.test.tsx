@@ -26,7 +26,7 @@ describe('MobileNav Component', () => {
         expect(container).toBeEmptyDOMElement();
     });
 
-    it('renders Driver Navigation when pathname starts with /driver', () => {
+    it('renders Driver Navigation when pathname starts with /driver/dashboard', () => {
         mockUsePathname.mockReturnValue('/driver/dashboard');
         render(<MobileNav role="DRIVER" />);
 
@@ -40,8 +40,8 @@ describe('MobileNav Component', () => {
         expect(screen.queryByText('Cart')).not.toBeInTheDocument(); // customer
     });
 
-    it('renders Merchant Navigation when pathname starts with /merchant', () => {
-        mockUsePathname.mockReturnValue('/merchant/menu');
+    it('renders Merchant Navigation when pathname starts with /merchant/dashboard', () => {
+        mockUsePathname.mockReturnValue('/merchant/dashboard');
         render(<MobileNav role="MERCHANT" />);
 
         // Expect merchant tabs to be visible
