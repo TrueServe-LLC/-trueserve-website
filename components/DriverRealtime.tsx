@@ -7,11 +7,39 @@ import { useRouter } from "next/navigation";
 export default function DriverRealtime({ driverId }: { driverId: string }) {
     const router = useRouter();
     const [lastStatus, setLastStatus] = useState<string | null>(null);
+    const [lastUpdate, setLastUpdate] = useState<number>(0);
 
     useEffect(() => {
         if (!driverId) return;
 
-        // Listen for status changes on orders assigned to this driver
+        // --- 1. Real-time Location Tracking ---
+        let watchId: number;
+        if ("geolocation" in navigator) {
+            watchId = navigator.geolocation.watchPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const now = Date.now();
+
+                    // Throttle updates to once every 10 seconds or if moved significantly
+                    // (approx 20 meters = ~0.0002 deg)
+                    if (now - lastUpdate > 10000) {
+                        setLastUpdate(now);
+                        await supabase
+                            .from('Driver')
+                            .update({
+                                currentLat: latitude,
+                                currentLng: longitude,
+                                lastLocationUpdate: new Date().toISOString()
+                            })
+                            .eq('id', driverId);
+                    }
+                },
+                (error) => console.warn("Driver Location Error:", error),
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        }
+
+        // --- 2. Order Status Subscriptions ---
         const channel = supabase
             .channel(`driver-updates-${driverId}`)
             .on(
@@ -24,16 +52,12 @@ export default function DriverRealtime({ driverId }: { driverId: string }) {
                 },
                 (payload) => {
                     const newStatus = payload.new.status;
-
-                    // If the order status changed to READY_FOR_PICKUP, notify the driver
                     if (newStatus === "READY_FOR_PICKUP" && lastStatus !== "READY_FOR_PICKUP") {
-                        // Play a notification sound
                         try {
                             const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
-                            audio.play().catch(e => console.log("Audio play blocked by browser"));
+                            audio.play().catch(() => { });
                         } catch (e) { }
 
-                        // Show a browser notification if permitted
                         if ("Notification" in window && Notification.permission === "granted") {
                             new Notification("Order Ready!", {
                                 body: "An order you accepted is now ready at the restaurant.",
@@ -41,15 +65,12 @@ export default function DriverRealtime({ driverId }: { driverId: string }) {
                             });
                         }
                     }
-
                     setLastStatus(newStatus);
-                    // Refresh the server component data
                     router.refresh();
                 }
             )
             .subscribe();
 
-        // Also listen for NEW available orders (broadcast style or table watch)
         const availabilityChannel = supabase
             .channel("available-orders")
             .on(
@@ -61,10 +82,9 @@ export default function DriverRealtime({ driverId }: { driverId: string }) {
                 },
                 (payload) => {
                     if (payload.new.status === "PENDING" && !payload.new.driverId) {
-                        // Play a subtle ping for new work
                         try {
                             const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3");
-                            audio.play().catch(e => console.log("Audio play blocked"));
+                            audio.play().catch(() => { });
                         } catch (e) { }
                         router.refresh();
                     }
@@ -72,16 +92,16 @@ export default function DriverRealtime({ driverId }: { driverId: string }) {
             )
             .subscribe();
 
-        // Request notification permission on mount
         if ("Notification" in window && Notification.permission === "default") {
             Notification.requestPermission();
         }
 
         return () => {
+            if (watchId) navigator.geolocation.clearWatch(watchId);
             supabase.removeChannel(channel);
             supabase.removeChannel(availabilityChannel);
         };
-    }, [driverId, router, lastStatus]);
+    }, [driverId, lastStatus]); // Remove 'router' and 'lastUpdate' from deps to avoid cycle, we manage lastUpdate ref-style inside state
 
-    return null; // Invisible component
+    return null;
 }

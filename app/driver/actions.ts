@@ -72,30 +72,26 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             }
         }
 
-        // 3. Create Driver Profile
-        // Attempt to upload document
-        let documentUrl = "";
-        try {
-            // Create a unique file name
-            const fileExt = idDocument.name.split('.').pop();
-            const fileName = `${targetUserId}_${Date.now()}.${fileExt}`;
-
-            // Note: 'driver-documents' bucket must exist in Supabase Storage.
-            const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-                .from('driver-documents')
-                .upload(fileName, idDocument);
-
-            if (!uploadError && uploadData) {
-                const { data: publicUrlData } = supabaseAdmin.storage
+        // Helper for uploads
+        async function uploadDoc(file: File, prefix: string) {
+            if (!file || file.size === 0) return "";
+            try {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${targetUserId}_${prefix}_${Date.now()}.${fileExt}`;
+                const { data, error } = await supabaseAdmin.storage
                     .from('driver-documents')
-                    .getPublicUrl(fileName);
-                documentUrl = publicUrlData.publicUrl;
-            } else {
-                console.warn("[DriverApp] Document upload failed:", uploadError?.message);
-            }
-        } catch (uploadErr) {
-            console.warn("[DriverApp] Document upload exception:", uploadErr);
+                    .upload(fileName, file);
+                if (!error && data) {
+                    const { data: urlData } = supabaseAdmin.storage.from('driver-documents').getPublicUrl(fileName);
+                    return urlData.publicUrl;
+                }
+            } catch (e) { console.error(`Upload failed for ${prefix}:`, e); }
+            return "";
         }
+
+        const idDocumentUrl = await uploadDoc(idDocument, "license");
+        const insuranceUrl = await uploadDoc(formData.get("insuranceDocument") as File, "insurance");
+        const registrationUrl = await uploadDoc(formData.get("registrationDocument") as File, "registration");
 
         const { data: existingDriver } = await supabaseAdmin
             .from('Driver')
@@ -107,6 +103,9 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             return { message: "You have already applied!", error: true };
         }
 
+        const backgroundCheckId = `BCK_${uuidv4().split('-')[0].toUpperCase()}`;
+        console.log(`[DriverApp] Triggering Background Check for ${email}. Provider ID: ${backgroundCheckId}`);
+
         const { error: driverError } = await supabaseAdmin
             .from('Driver')
             .insert({
@@ -117,6 +116,10 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 lat: lat ? parseFloat(lat) : null,
                 lng: lng ? parseFloat(lng) : null,
                 status: "PENDING_APPROVAL",
+                backgroundCheckId: backgroundCheckId,
+                backgroundCheckStatus: "PROCESSING",
+                insuranceDocumentUrl: insuranceUrl,
+                registrationDocumentUrl: registrationUrl,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });
@@ -167,7 +170,9 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             <p><strong>Vehicle:</strong> ${vehicleType}</p>
             <p><strong>Status:</strong> PENDING_APPROVAL</p>
             <hr />
-            <p><strong>ID Document:</strong> <a href="${documentUrl || '#'}">${documentUrl ? 'View Document' : 'Upload Failed / Not Available'}</a></p>
+            <p><strong>ID Document:</strong> <a href="${idDocumentUrl || '#'}">${idDocumentUrl ? 'View License' : 'Not Provided'}</a></p>
+            <p><strong>Insurance:</strong> <a href="${insuranceUrl || '#'}">${insuranceUrl ? 'View Insurance' : 'Not Provided'}</a></p>
+            <p><strong>Registration:</strong> <a href="${registrationUrl || '#'}">${registrationUrl ? 'View Registration' : 'Not Provided'}</a></p>
             <p>Please review explicitly in Supabase dashboard.</p>`
         );
 

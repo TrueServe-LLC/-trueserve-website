@@ -33,9 +33,8 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     const restaurantPos: [number, number] = [restaurantLat, restaurantLng];
 
     // Driver position
-    const driverLoc = order.driver?.currentLocation;
-    const driverLat = (driverLoc && driverLoc[0]) ? Number(driverLoc[0]) : restaurantLat;
-    const driverLng = (driverLoc && driverLoc[1]) ? Number(driverLoc[1]) : restaurantLng;
+    const driverLat = order.driver?.currentLat ? Number(order.driver.currentLat) : restaurantLat;
+    const driverLng = order.driver?.currentLng ? Number(order.driver.currentLng) : restaurantLng;
     const initialDriverPos: [number, number] = [driverLat, driverLng];
 
     // Customer Location
@@ -63,9 +62,9 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     }
 
     useEffect(() => {
-        // Subscribe to Order updates (Realtime)
-        const channel = supabase
-            .channel(`order-${order.id}`)
+        // 1. Subscribe to Order updates (Status)
+        const orderChannel = supabase
+            .channel(`order-track-${order.id}`)
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Order', filter: `id=eq.${order.id}` }, (payload) => {
                 const newOrder = payload.new;
                 setCurrentOrder((prev: any) => ({ ...prev, ...newOrder }));
@@ -75,48 +74,35 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
             })
             .subscribe();
 
-        // Simulation Loop
-        const interval = setInterval(() => {
-            setDriverPos(prev => {
-                const [lat, lng] = prev;
-                let target: [number, number] = restaurantPos;
-
-                if (currentOrder.status === 'PICKED_UP') {
-                    target = customerPos;
-                } else {
-                    // Stay at restaurant if preparing or ready
-                    // For demo visual, we can just snap to restaurant if not delivering
-                    if (Math.abs(lat - restaurantPos[0]) < 0.0001) return restaurantPos;
-                    target = restaurantPos;
-                }
-
-                const [destLat, destLng] = target;
-                const dLat = destLat - lat;
-                const dLng = destLng - lng;
-                const dist = Math.sqrt(dLat * dLat + dLng * dLng);
-
-                if (dist < 0.0001) {
-                    return prev; // Arrived
-                }
-
-                // Update Bearing
-                const bearing = calculateBearing(lat, lng, destLat, destLng);
-                setDriverBearing(bearing);
-
-                // Move speed (adjust for demo pacing)
-                // 0.02 step size is roughly "fast" demo speed
-                // Using a smaller fraction of the distance for smooth approach
-                const step = 0.02;
-
-                return [lat + dLat * step, lng + dLng * step];
-            });
-        }, 100); // 10fps update for smoothness
+        // 2. Subscribe to Driver Location updates (Realtime)
+        let driverChannel: any;
+        if (order.driverId) {
+            driverChannel = supabase
+                .channel(`driver-loc-${order.driverId}`)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'Driver',
+                    filter: `id=eq.${order.driverId}`
+                }, (payload) => {
+                    const { currentLat, currentLng } = payload.new;
+                    if (currentLat && currentLng) {
+                        setDriverPos(prev => {
+                            // Calculate bearing based on previous position
+                            const bearing = calculateBearing(prev[0], prev[1], currentLat, currentLng);
+                            if (bearing !== 0) setDriverBearing(bearing);
+                            return [currentLat, currentLng];
+                        });
+                    }
+                })
+                .subscribe();
+        }
 
         return () => {
-            supabase.removeChannel(channel);
-            clearInterval(interval);
+            supabase.removeChannel(orderChannel);
+            if (driverChannel) supabase.removeChannel(driverChannel);
         };
-    }, [order.id, currentOrder.status, customerPos]);
+    }, [order.id, order.driverId]);
 
     // Calculate progress for timeline
     const getProgressStep = (status: string) => {

@@ -149,3 +149,44 @@ export async function toggleOrderingStatus(enabled: boolean) {
         return { error: e.message };
     }
 }
+
+export async function refreshBackgroundCheck(driverId: string) {
+    try {
+        // Mocking an API call to a provider like Checkr
+        const isClean = Math.random() > 0.2; // 80% pass rate
+        const status = isClean ? "CLEARED" : "FLAGGED";
+
+        // Fetch Driver Email
+        const { data: driver } = await supabaseAdmin
+            .from('Driver')
+            .select('user:User(email, name)')
+            .eq('id', driverId)
+            .single();
+
+        const { error } = await supabaseAdmin
+            .from('Driver')
+            .update({
+                backgroundCheckStatus: status,
+                backgroundCheckClearedAt: isClean ? new Date().toISOString() : null,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', driverId);
+
+        if (error) throw error;
+
+        // Send Email if FLAGGED
+        if (status === 'FLAGGED' && driver?.user) {
+            await sendEmail(
+                (driver.user as any).email,
+                "Action Required: Driver Background Check",
+                `Hi ${(driver.user as any).name},\n\nDuring our routine background screening, some items were flagged on your report. \n\nPlease contact our trust & safety team at safety@trueserve.com if you would like to provide additional context or dispute these findings.\n\nBest,\nThe TrueServe Team`
+            );
+        }
+
+        revalidatePath("/admin/dashboard");
+        return { success: true, status };
+    } catch (e) {
+        console.error("Failed to refresh background check:", e);
+        return { success: false, error: "Failed to refresh background check." };
+    }
+}

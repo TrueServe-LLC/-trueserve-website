@@ -110,6 +110,44 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* Local Spotlight: Mount Airy */}
+        <section className="py-12 md:py-24 bg-gradient-to-b from-black to-slate-900/50">
+          <div className="container mx-auto px-6">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+              <div className="max-w-xl">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span> Local Spotlight
+                </div>
+                <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">Mount Airy, NC</h2>
+                <p className="text-slate-400 font-medium">Experience the historic flavors of Mayberry with TrueServe's premium local network.</p>
+              </div>
+              <Link href="/restaurants?city=Mount%20Airy" className="text-primary font-black uppercase tracking-widest text-xs hover:underline underline-offset-8">Explore the Full Collection &rarr;</Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 overflow-x-auto pb-4 md:pb-0 hide-scrollbar">
+              {[
+                { name: "Snappy Lunch", type: "Historic Diner", img: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop" },
+                { name: "13 Bones", type: "BBQ & Steakhouse", img: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop" },
+                { name: "Old North State Winery", type: "Upscale Casual", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2070&auto=format&fit=crop" }
+              ].map((res) => (
+                <Link key={res.name} href="/restaurants" className="group relative aspect-[4/5] bg-slate-800 rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-8">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
+                  <img src={res.img} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60" alt={res.name} />
+                  <div className="relative z-20">
+                    <p className="text-primary font-black text-[10px] uppercase tracking-widest mb-1">{res.type}</p>
+                    <h3 className="text-2xl font-bold text-white mb-2">{res.name}</h3>
+                    <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
+                      <span>4.9 ★</span>
+                      <span className="w-1 h-1 bg-white/20 rounded-full"></span>
+                      <span>12-18 min</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section className="py-16 md:py-24 relative">
           <div className="container mx-auto px-6">

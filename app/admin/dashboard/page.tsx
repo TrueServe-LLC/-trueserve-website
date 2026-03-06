@@ -143,20 +143,47 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div className="card p-6 bg-white/5 border-white/10 hover:border-primary/50 transition-colors group">
-                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-primary transition-colors">Net Promoter Score (NPS)</p>
+                        <div className="card p-6 bg-white/5 border-white/10 hover:border-primary/50 transition-colors group relative overflow-hidden">
+                            <div className="absolute -right-4 -top-4 w-20 h-20 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all"></div>
+                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-primary transition-colors">Merchant Revenue (MRR)</p>
                             <div className="flex items-end gap-2">
-                                <p className="text-4xl font-bold">78</p>
-                                <p className="text-emerald-400 text-xs font-bold mb-1.5">↑ 4%</p>
+                                {await (async () => {
+                                    const { data } = await supabase.from('Restaurant').select('plan');
+                                    const total = (data || []).reduce((acc: number, r: any) => {
+                                        if (r.plan === 'Pro Subscription') return acc + 199;
+                                        return acc;
+                                    }, 0);
+                                    return (
+                                        <>
+                                            <p className="text-4xl font-bold">${total.toLocaleString()}</p>
+                                            <p className="text-emerald-400 text-xs font-bold mb-1.5">↑ {(data?.filter(r => r.plan === 'Pro Subscription').length || 0)} Pro</p>
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
-                        <div className="card p-6 bg-white/5 border-white/10 hover:border-blue-500/50 transition-colors group">
-                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-blue-400 transition-colors">Avg. Prep-to-Pickup</p>
+
+                        <div className="card p-6 bg-white/5 border-white/10 hover:border-blue-500/50 transition-colors group relative overflow-hidden">
+                            <div className="absolute -right-4 -top-4 w-20 h-20 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all"></div>
+                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-blue-400 transition-colors">Customer MRR</p>
                             <div className="flex items-end gap-2">
-                                <p className="text-4xl font-bold">18.2m</p>
-                                <p className="text-red-400 text-xs font-bold mb-1.5">↓ 2%</p>
+                                {await (async () => {
+                                    const { data } = await supabase.from('User').select('plan');
+                                    const total = (data || []).reduce((acc: number, u: any) => {
+                                        if (u.plan === 'Plus') return acc + 9.99;
+                                        if (u.plan === 'Premium') return acc + 19.99;
+                                        return acc;
+                                    }, 0);
+                                    return (
+                                        <>
+                                            <p className="text-4xl font-bold">${Math.round(total).toLocaleString()}</p>
+                                            <p className="text-blue-400 text-xs font-bold mb-1.5">↑ {(data?.filter(u => u.plan !== 'Basic' && u.plan).length || 0)} Members</p>
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
+
                         <div className="card p-6 bg-white/5 border-white/10 hover:border-yellow-500/50 transition-colors group">
                             <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-yellow-400 transition-colors">Order Density</p>
                             <p className="text-4xl font-bold">4.8 / km²</p>
@@ -217,25 +244,52 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         </h2>
                         <div className="space-y-4">
                             {drivers.filter(d => d.status === 'PENDING_APPROVAL').map((driver) => (
-                                <div key={driver.id} className="card p-6 border-slate-700/50">
+                                <div key={driver.id} className="card p-6 border-slate-700/50 group hover:border-white/20 transition-all">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <h3 className="font-bold text-lg">{driver.user.name}</h3>
-                                            <p className="text-sm text-slate-400">{driver.user.email}</p>
-                                            <p className="text-xs text-slate-500 mt-1 uppercase tracking-widest font-bold">{driver.vehicleType}</p>
+                                            <p className="text-sm text-slate-400 font-medium">{driver.user.email}</p>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <span className="text-[10px] text-slate-500 uppercase tracking-widest font-black">{driver.vehicleType}</span>
+                                                <span className="text-slate-700 text-[10px]">•</span>
+                                                <span className="text-[10px] text-slate-500 font-mono tracking-tight">{driver.backgroundCheckId || "ID_PENDING"}</span>
+                                            </div>
                                         </div>
-                                        <span className="text-xs px-2 py-1 rounded font-bold uppercase bg-yellow-500/20 text-yellow-400">
-                                            Pending
-                                        </span>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <span className="text-xs px-2 py-1 rounded font-bold uppercase bg-yellow-500/20 text-yellow-400">
+                                                Pending Approval
+                                            </span>
+
+                                            {/* Background Check Badge */}
+                                            <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-black uppercase border leading-none ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                                driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                    'bg-white/5 text-slate-400 border-white/10'
+                                                }`}>
+                                                <span className={`w-1 h-1 rounded-full ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-400 shadow-[0_0_50px_rgba(52,211,153,0.5)]' :
+                                                    driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-400' :
+                                                        'bg-slate-400 animate-pulse'
+                                                    }`} />
+                                                Background: {driver.backgroundCheckStatus || "PENDING"}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-2">
+
+                                    <div className="flex flex-wrap gap-2 mt-6">
                                         <form action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }}>
-                                            <button className="btn btn-primary text-xs py-2 px-4 shadow-none">
+                                            <button
+                                                disabled={driver.backgroundCheckStatus !== 'CLEARED'}
+                                                className="btn btn-primary text-[10px] py-2 px-4 shadow-none disabled:opacity-40 disabled:grayscale font-black uppercase tracking-widest"
+                                            >
                                                 Approve Driver
                                             </button>
                                         </form>
-                                        <button className="btn btn-outline text-xs py-2 px-4 border-white/10 text-slate-400 hover:bg-white/5">
-                                            View Logs
+                                        <form action={async () => { "use server"; const { refreshBackgroundCheck } = await import('../actions'); await refreshBackgroundCheck(driver.id); }}>
+                                            <button type="submit" className="btn btn-outline text-[10px] py-1.5 px-3 border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
+                                                Refresh Check
+                                            </button>
+                                        </form>
+                                        <button className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-all">
+                                            View Docs
                                         </button>
                                     </div>
                                 </div>

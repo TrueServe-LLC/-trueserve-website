@@ -32,6 +32,8 @@ export default function DriverApplicationForm() {
         consentBackground: false,
     });
     const [file, setFile] = useState<File | null>(null);
+    const [insuranceFile, setInsuranceFile] = useState<File | null>(null);
+    const [registrationFile, setRegistrationFile] = useState<File | null>(null);
 
     const updateForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -98,6 +100,12 @@ export default function DriverApplicationForm() {
         fd.append("vehicleType", formData.vehicleType);
         if (file) {
             fd.append("idDocument", file);
+        }
+        if (insuranceFile) {
+            fd.append("insuranceDocument", insuranceFile);
+        }
+        if (registrationFile) {
+            fd.append("registrationDocument", registrationFile);
         }
 
         startTransition(() => {
@@ -204,7 +212,17 @@ export default function DriverApplicationForm() {
                         <div className="p-6 bg-black/30 border border-dashed border-white/10 hover:border-primary/50 transition-colors rounded-2xl mt-4">
                             <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Upload Driver's License</label>
                             <input name="idDocument" type="file" required accept="image/*,.pdf" onChange={handleFile} className="w-full text-xs text-slate-400 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:transition-all cursor-pointer" />
-                            <p className="text-[10px] text-slate-500 mt-3 font-medium">Clear photo required for verification.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-6 bg-black/30 border border-dashed border-white/10 hover:border-primary/50 transition-colors rounded-2xl">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Proof of Insurance</label>
+                                <input name="insurance" type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && setInsuranceFile(e.target.files[0])} className="w-full text-[9px] text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[9px] file:font-black file:bg-white/5 file:text-white cursor-pointer" />
+                            </div>
+                            <div className="p-6 bg-black/30 border border-dashed border-white/10 hover:border-primary/50 transition-colors rounded-2xl">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Vehicle Registration</label>
+                                <input name="registration" type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && setRegistrationFile(e.target.files[0])} className="w-full text-[9px] text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[9px] file:font-black file:bg-white/5 file:text-white cursor-pointer" />
+                            </div>
                         </div>
                     </div>
                 )}
