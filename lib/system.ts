@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // Use a direct client for system checks to avoid RLS/Cookie overhead in critical paths
 // validated safe as we are strictly reading public config
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
 const supabase = createClient(supabaseUrl, serviceKey);
 
 export async function isOrderingEnabled(): Promise<boolean> {

@@ -5,8 +5,8 @@ import { logger } from "@/lib/logger";
 import * as Sentry from '@sentry/nextjs';
 
 // Initialize Supabase with Service Role Key for administrative actions
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 /**
