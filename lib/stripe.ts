@@ -11,7 +11,7 @@ if (!key || key === 'sk_test_missing') {
 }
 
 export const stripe = new Stripe(key || 'sk_test_missing', {
-    apiVersion: '2026-01-28.clover',
+    apiVersion: '2026-02-25.clover',
 });
 
 export const getStripe = () => stripe;
