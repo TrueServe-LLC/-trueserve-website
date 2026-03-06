@@ -215,6 +215,66 @@ export const MOCK_RESTAURANTS = [
         state: "NC",
         isMock: true,
         menuItems: []
+    },
+    {
+        id: "00000000-0000-0000-0000-000000000013",
+        name: "Old Town Kitchen (Mock)",
+        address: "300 Technology Center Way, Rock Hill, SC",
+        rating: 4.7,
+        tags: ["American", "Southern", "Upscale"],
+        description: "Craft cocktails and seasonal Southern plates in a reclaimed industrial space.",
+        lat: 34.9249,
+        lng: -81.0251,
+        city: "Rock Hill",
+        state: "SC",
+        openTime: "11:00:00",
+        closeTime: "22:00:00",
+        visibility: "VISIBLE",
+        isMock: true,
+        menuItems: [
+            { id: "rh1-item-1", name: "Short Rib Poutine", description: "Braised short rib, cheese curds, brown gravy", price: 15.00, status: "APPROVED", inventory: 20 },
+            { id: "rh1-item-2", name: "Southern Fried Chicken", description: "Hot honey, collard greens, mashed potatoes", price: 21.00, status: "APPROVED", inventory: 25 }
+        ]
+    },
+    {
+        id: "00000000-0000-0000-0000-000000000014",
+        name: "Legal Remedy Brewery (Mock)",
+        address: "129 Oakland Ave, Rock Hill, SC",
+        rating: 4.6,
+        tags: ["Brewpub", "Burgers", "Wings"],
+        description: "Innovative craft beer and elevated pub fare in a converted auto shop.",
+        lat: 34.9255,
+        lng: -81.0280,
+        city: "Rock Hill",
+        state: "SC",
+        openTime: "11:30:00",
+        closeTime: "23:00:00",
+        visibility: "VISIBLE",
+        isMock: true,
+        menuItems: [
+            { id: "rh2-item-1", name: "The Alibi Burger", description: "Bacon jam, pimento cheese, fried onions", price: 16.50, status: "APPROVED", inventory: 40 },
+            { id: "rh2-item-2", name: "Smoked Wings", description: "Dry rubbed and smoked, choice of sauce", price: 14.00, status: "APPROVED", inventory: 60 }
+        ]
+    },
+    {
+        id: "00000000-0000-0000-0000-000000000015",
+        name: "The Flipside Restaurant (Mock)",
+        address: "129 Caldwell St, Rock Hill, SC",
+        rating: 4.8,
+        tags: ["American", "Farm-to-Table"],
+        description: "Locally-inspired dishes from award-winning chefs in downtown Rock Hill.",
+        lat: 34.9240,
+        lng: -81.0260,
+        city: "Rock Hill",
+        state: "SC",
+        openTime: "10:00:00",
+        closeTime: "21:00:00",
+        visibility: "VISIBLE",
+        isMock: true,
+        menuItems: [
+            { id: "rh3-item-1", name: "Shrimp & Grits", description: "Local grits, tasso ham, tomato gravy", price: 22.00, status: "APPROVED", inventory: 15 },
+            { id: "rh3-item-2", name: "Flipside Burger", description: "Benton’s bacon, sharp cheddar, truffle aioli", price: 17.00, status: "APPROVED", inventory: 30 }
+        ]
     }
 ];
 
