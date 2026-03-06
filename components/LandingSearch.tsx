@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
-import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import { useJsApiLoader } from '@react-google-maps/api';
 import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
 interface ServiceLocation {
@@ -35,14 +35,17 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
         libraries: GOOGLE_MAPS_LIBRARIES
     });
 
-    // Initialize services
     const initServices = () => {
-        if (!autocompleteService.current && window.google) {
-            autocompleteService.current = new window.google.maps.places.AutocompleteService();
-            sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
-            // Create a dummy element for PlacesService, as it requires an HTML element (or map)
-            const dummyElement = document.createElement('div');
-            placesService.current = new window.google.maps.places.PlacesService(dummyElement);
+        try {
+            if (!autocompleteService.current && window.google) {
+                autocompleteService.current = new window.google.maps.places.AutocompleteService();
+                sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
+                // Create a dummy element for PlacesService, as it requires an HTML element (or map)
+                const dummyElement = document.createElement('div');
+                placesService.current = new window.google.maps.places.PlacesService(dummyElement);
+            }
+        } catch (e) {
+            console.error("Google Maps Services initialization failed:", e);
         }
     };
 
@@ -80,33 +83,37 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
         initServices();
 
-        if (placesService.current) {
-            // Need to get details to get Lat/Lng
-            placesService.current.getDetails({
-                placeId: prediction.place_id,
-                fields: ['geometry', 'formatted_address'],
-                sessionToken: sessionToken.current || undefined
-            }, (place, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK && place && place.geometry && place.geometry.location) {
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    const address = place.formatted_address || prediction.description;
+        if (placesService.current && prediction.place_id) {
+            try {
+                placesService.current.getDetails({
+                    placeId: prediction.place_id,
+                    fields: ['geometry', 'formatted_address'],
+                    sessionToken: sessionToken.current || undefined
+                }, (place, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK && place && place.geometry && place.geometry.location) {
+                        const lat = place.geometry.location.lat();
+                        const lng = place.geometry.location.lng();
+                        const address = place.formatted_address || prediction.description;
 
-                    // Reset session token after successful selection
-                    sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
+                        sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
 
-                    router.push(`/restaurants?lat=${lat}&lng=${lng}&address=${encodeURIComponent(address)}`);
-                } else {
-                    // Fallback to text search if details fail
-                    router.push(`/restaurants?search=${encodeURIComponent(prediction.description)}`);
-                }
-            });
+                        router.push(`/restaurants?lat=${lat}&lng=${lng}&address=${encodeURIComponent(address)}`);
+                    } else {
+                        console.warn("Places Details failed or missing geometry:", status);
+                        router.push(`/restaurants?search=${encodeURIComponent(prediction.description)}`);
+                    }
+                });
+            } catch (e) {
+                console.error("Error in getDetails:", e);
+                router.push(`/restaurants?search=${encodeURIComponent(prediction.description)}`);
+            }
+        } else {
+            router.push(`/restaurants?search=${encodeURIComponent(prediction.description)}`);
         }
     };
 
     const handleManualSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        // If they just hit enter without selecting
         router.push(`/restaurants?search=${encodeURIComponent(inputValue)}`);
     };
 
@@ -131,7 +138,6 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                             if (predictions.length > 0) setIsDropdownOpen(true);
                         }}
                         onBlur={() => {
-                            // Delay closing to allow click
                             setTimeout(() => setIsDropdownOpen(false), 200);
                         }}
                     />
@@ -142,7 +148,6 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                 </button>
             </form>
 
-            {/* Custom Dropdown */}
             {isDropdownOpen && predictions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-10 animate-fade-in-up">
                     <ul className="max-h-60 overflow-y-auto">
@@ -150,10 +155,10 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                             <li
                                 key={p.place_id}
                                 className="px-4 py-3 hover:bg-white/10 cursor-pointer text-left border-b border-white/5 last:border-none transition-colors"
-                                onMouseDown={() => handleSelectPrediction(p)} // Use onMouseDown to fire before input blur
+                                onMouseDown={() => handleSelectPrediction(p)}
                             >
-                                <div className="font-bold text-white text-sm">{p.structured_formatting.main_text}</div>
-                                <div className="text-xs text-slate-400">{p.structured_formatting.secondary_text}</div>
+                                <div className="font-bold text-white text-sm">{p.structured_formatting?.main_text || p.description}</div>
+                                <div className="text-xs text-slate-400">{p.structured_formatting?.secondary_text || ""}</div>
                             </li>
                         ))}
                     </ul>

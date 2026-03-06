@@ -26,9 +26,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const vehicleType = formData.get("vehicleType") as string;
     const phone = formData.get("phone") as string;
     const idDocument = formData.get("idDocument") as File;
+    const dob = formData.get("dob") as string;
+    const address = formData.get("address") as string;
+    const lat = formData.get("lat") as string;
+    const lng = formData.get("lng") as string;
 
-    if (!name || !email || !vehicleType || !phone || !idDocument) {
-        return { message: "Please fill in all fields, including documents.", error: true };
+    if (!name || !email || !vehicleType || !phone || !idDocument || !dob || !address) {
+        return { message: "Please fill in all fields, including documents and address.", error: true };
     }
 
     // Mock Verification
@@ -56,6 +60,8 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                     email,
                     phone,
                     role: 'DRIVER',
+                    address,
+                    dob,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 });
@@ -107,7 +113,10 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 id: uuidv4(),
                 userId: targetUserId,
                 vehicleType: vehicleType,
-                status: "PENDING_APPROVAL", // Changed from OFFLINE
+                address: address,
+                lat: lat ? parseFloat(lat) : null,
+                lng: lng ? parseFloat(lng) : null,
+                status: "PENDING_APPROVAL",
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });

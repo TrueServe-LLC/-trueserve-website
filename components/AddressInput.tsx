@@ -71,23 +71,29 @@ export default function AddressInput({ onAddressSelect, initialAddress = "" }: A
         setInputValue(prediction.description);
         setIsDropdownOpen(false);
 
-        if (placesService.current) {
-            placesService.current.getDetails({
-                placeId: prediction.place_id,
-                fields: ['geometry', 'formatted_address'],
-                sessionToken: sessionToken.current || undefined
-            }, (place, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK && place && place.geometry && place.geometry.location) {
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    const address = place.formatted_address || prediction.description;
+        if (placesService.current && prediction.place_id) {
+            try {
+                placesService.current.getDetails({
+                    placeId: prediction.place_id,
+                    fields: ['geometry', 'formatted_address'],
+                    sessionToken: sessionToken.current || undefined
+                }, (place, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK && place && place.geometry && place.geometry.location) {
+                        const lat = place.geometry.location.lat();
+                        const lng = place.geometry.location.lng();
+                        const address = place.formatted_address || prediction.description;
 
-                    // Reset session token
-                    sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
+                        // Reset session token
+                        sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
 
-                    onAddressSelect(address, lat, lng);
-                }
-            });
+                        onAddressSelect(address, lat, lng);
+                    } else {
+                        console.warn("AddressInput getDetails failed:", status);
+                    }
+                });
+            } catch (e) {
+                console.error("AddressInput error in getDetails:", e);
+            }
         }
     };
 
@@ -127,8 +133,8 @@ export default function AddressInput({ onAddressSelect, initialAddress = "" }: A
                             className="px-4 py-3 hover:bg-white/10 cursor-pointer border-b border-white/5 last:border-none transition-colors"
                             onMouseDown={() => handleSelectPrediction(p)}
                         >
-                            <div className="font-bold text-white text-sm">{p.structured_formatting.main_text}</div>
-                            <div className="text-xs text-slate-400">{p.structured_formatting.secondary_text}</div>
+                            <div className="font-bold text-white text-sm">{p.structured_formatting?.main_text || p.description}</div>
+                            <div className="text-xs text-slate-400">{p.structured_formatting?.secondary_text || ""}</div>
                         </div>
                     ))}
                     <div className="bg-black/50 px-2 py-1 flex justify-end">

@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useState, useRef, startTransition } from "react";
+import { useActionState, useState, useRef, startTransition, useEffect } from "react";
 import Link from "next/link";
 import { submitDriverApplication } from "./actions";
+import AddressInput from "@/components/AddressInput";
 
 const initialState = {
     message: "",
@@ -23,6 +24,8 @@ export default function DriverApplicationForm() {
         phone: "",
         dob: "",
         address: "",
+        lat: 0,
+        lng: 0,
         vehicleType: "",
         // Consents
         consentIdentity: false,
@@ -40,13 +43,27 @@ export default function DriverApplicationForm() {
         }
     };
 
+    const handleAddressSelect = (address: string, lat: number, lng: number) => {
+        setFormData(prev => ({ ...prev, address, lat, lng }));
+    };
+
     const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
         }
     };
 
-    const handleNext = () => setStep(prev => prev + 1);
+    const handleNext = () => {
+        // Validation before next step
+        if (step === 1) {
+            if (!formData.email || !formData.phone) return;
+        }
+        if (step === 2) {
+            if (!formData.name || !formData.dob || !formData.address) return;
+        }
+        setStep(prev => prev + 1);
+    };
+
     const handleBack = () => setStep(prev => prev - 1);
 
     const fillTestData = () => {
@@ -56,6 +73,8 @@ export default function DriverApplicationForm() {
             phone: "555-0100-1234",
             dob: "1990-01-01",
             address: "123 Test Street, New York, NY 10001",
+            lat: 40.7128,
+            lng: -74.0060,
             vehicleType: "Car",
             consentIdentity: true,
             consentBackground: true,
@@ -68,11 +87,14 @@ export default function DriverApplicationForm() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Build FormData properly to pass to Server Action
         const fd = new FormData();
         fd.append("name", formData.name);
         fd.append("email", formData.email);
         fd.append("phone", formData.phone);
+        fd.append("dob", formData.dob);
+        fd.append("address", formData.address);
+        fd.append("lat", formData.lat.toString());
+        fd.append("lng", formData.lng.toString());
         fd.append("vehicleType", formData.vehicleType);
         if (file) {
             fd.append("idDocument", file);
@@ -121,7 +143,7 @@ export default function DriverApplicationForm() {
                 ))}
             </div>
 
-            <div className="min-h-[300px]">
+            <div className="min-h-[350px]">
                 {/* STEP 1: Contact Info */}
                 {step === 1 && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
@@ -135,24 +157,32 @@ export default function DriverApplicationForm() {
                     </div>
                 )}
 
-                {/* STEP 2: Application Intake (Gate 1) */}
+                {/* STEP 2: Personal Info & Address */}
                 {step === 2 && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                         <div className="mb-6">
                             <h3 className="text-xl font-bold text-white mb-1">Personal Info</h3>
-                            <p className="text-xs text-slate-400">Step 2: Your identity & eligibility.</p>
+                            <p className="text-xs text-slate-400">Step 2: Your identity & location.</p>
                         </div>
 
-                        <input name="name" type="text" required value={formData.name} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Legal Full Name" />
+                        <input name="name" type="text" required value={formData.name} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm mb-2" placeholder="Legal Full Name" />
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <input name="dob" type="date" required value={formData.dob} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Date of Birth" />
-                            <input name="address" type="text" required value={formData.address} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Home Address" />
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Home Address</label>
+                            <AddressInput
+                                initialAddress={formData.address}
+                                onAddressSelect={handleAddressSelect}
+                            />
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Date of Birth</label>
+                            <input name="dob" type="date" required value={formData.dob} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" />
                         </div>
                     </div>
                 )}
 
-                {/* STEP 3: Gov ID & Vehicle (Gate 2 & 5) */}
+                {/* STEP 3: Gov ID & Vehicle */}
                 {step === 3 && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                         <div className="mb-6">
@@ -179,7 +209,7 @@ export default function DriverApplicationForm() {
                     </div>
                 )}
 
-                {/* STEP 4: Background Check & Final Consent (Gate 4 & 7) */}
+                {/* STEP 4: Background Check & Final Consent */}
                 {step === 4 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <div className="mb-6">
