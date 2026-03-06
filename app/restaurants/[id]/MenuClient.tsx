@@ -49,6 +49,7 @@ export default function MenuClient({
     const [deliveryAddress, setDeliveryAddress] = useState<string | null>(initialAddress || null);
     const [deliveryLat, setDeliveryLat] = useState<number | null>(initialLat || null);
     const [deliveryLng, setDeliveryLng] = useState<number | null>(initialLng || null);
+    const [deliveryInstructions, setDeliveryInstructions] = useState("");
 
     const handleCartChange = async (newCart: { [key: string]: number }, currentTip: number = tip) => {
         setCart(newCart);
@@ -104,7 +105,16 @@ export default function MenuClient({
             return;
         }
 
-        const response = await placeOrder(restaurant.id, cartItems, paymentIntentId, deliveryLat, deliveryLng, deliveryAddress, tip);
+        const response = await placeOrder(
+            restaurant.id,
+            cartItems,
+            paymentIntentId,
+            deliveryLat,
+            deliveryLng,
+            deliveryAddress,
+            tip,
+            deliveryInstructions
+        );
 
         if (response.success && response.orderId) {
             setCart({});
@@ -215,11 +225,22 @@ export default function MenuClient({
                             }}
                         />
                         {deliveryAddress && (
-                            <div className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
+                            <div className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in anim-delay-1">
                                 <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1.5 opacity-70">Confirming Address:</p>
                                 <p className="text-xs text-white font-bold leading-normal break-words">{deliveryAddress}</p>
                             </div>
                         )}
+                        <div className="mt-6">
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-4">
+                                Delivery Instructions
+                            </h3>
+                            <textarea
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-xs font-medium focus:border-primary/50 focus:bg-white/10 outline-none transition-all min-h-[80px] text-white placeholder:text-slate-600"
+                                placeholder='e.g., "Leave at front door," "Gate code 1234," "Blue house with white fence"'
+                                value={deliveryInstructions}
+                                onChange={(e) => setDeliveryInstructions(e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <h3 className="font-black mb-6 text-xl flex items-center gap-3 text-white border-b border-white/5 pb-4">

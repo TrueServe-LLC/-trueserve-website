@@ -8,6 +8,7 @@ import { calculateDistance, getNavigationUrl } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import DriverRealtime from "@/components/DriverRealtime";
 import DriverChatButton from "@/components/DriverChatButton";
+import ActiveOrderNavigation from "@/components/ActiveOrderNavigation";
 
 export const dynamic = 'force-dynamic';
 
@@ -187,68 +188,89 @@ export default async function DriverDashboard() {
                                 const statusLabel = isPickedUp ? "Delivering" : "Pickup";
 
                                 return (
-                                    <div key={order.id} className="card bg-emerald-500/10 border-emerald-500/20 p-5">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-bold text-lg text-emerald-100">{destinationName}</h3>
-                                            <div className="flex flex-col items-end gap-1">
-                                                <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{statusLabel}</span>
-                                                {Number(order.tip) > 0 && (
-                                                    <span className="text-[10px] font-black text-primary animate-pulse">+$ {Number(order.tip).toFixed(2)} Tip</span>
-                                                )}
+                                    <div key={order.id} className="space-y-4">
+                                        {(order.status === 'READY_FOR_PICKUP' || order.status === 'PICKED_UP') && (
+                                            <ActiveOrderNavigation
+                                                order={order}
+                                                driverLat={driver?.currentLat || 35.2271}
+                                                driverLng={driver?.currentLng || -80.8431}
+                                            />
+                                        )}
+                                        <div className="card bg-emerald-500/10 border-emerald-500/20 p-5 shadow-lg">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="font-bold text-lg text-emerald-100">{destinationName}</h3>
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{statusLabel}</span>
+                                                    {Number(order.tip) > 0 && (
+                                                        <span className="text-[10px] font-black text-primary animate-pulse">+$ {Number(order.tip).toFixed(2)} Tip</span>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <p className="text-sm text-emerald-200/60 mb-4">{destinationAddress}</p>
-                                        <div className="flex flex-col gap-2 mt-4">
-                                            <div className="flex gap-2">
-                                                <a
-                                                    href={getNavigationUrl(destinationAddress || "", (driver as any)?.navigationApp || 'google', destLat, destLng)}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex-1 btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
-                                                >
-                                                    {isPickedUp ? "Navigate to Hub" : "Navigate to Store"}
-                                                </a>
+                                            <p className="text-sm text-emerald-200/60 mb-4">{destinationAddress}</p>
 
-                                                {isPickedUp && order.user?.phone && (
-                                                    <a
-                                                        href={`tel:${order.user.phone}`}
-                                                        className="btn bg-white/10 text-white px-4 flex items-center justify-center border border-white/10 hover:bg-emerald-500/20 transition-all text-lg"
-                                                        title="Call Customer"
-                                                    >
-                                                        📞
-                                                    </a>
-                                                )}
-
-                                                <DriverChatButton orderId={order.id} />
-                                            </div>
-
-                                            {['PENDING', 'PREPARING'].includes(order.status) && (
-                                                <div className="w-full py-3 text-center border dashed border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] rounded">
-                                                    Waiting for Restaurant Prep...
+                                            {/* Delivery Instructions Badge */}
+                                            {isPickedUp && order.deliveryInstructions && (
+                                                <div className="mb-4 p-3 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-start gap-3">
+                                                    <span className="text-base shrink-0">📝</span>
+                                                    <div>
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">Customer Instruction</p>
+                                                        <p className="text-xs text-orange-100 font-medium leading-snug">{order.deliveryInstructions}</p>
+                                                    </div>
                                                 </div>
                                             )}
 
-                                            {order.status === 'READY_FOR_PICKUP' && (
-                                                <form action={async () => {
-                                                    "use server";
-                                                    await pickupOrder(order.id);
-                                                }}>
-                                                    <button type="submit" className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
-                                                        Confirm Pickup
-                                                    </button>
-                                                </form>
-                                            )}
+                                            <div className="flex flex-col gap-2 mt-4">
+                                                <div className="flex gap-2">
+                                                    <a
+                                                        href={getNavigationUrl(destinationAddress || "", (driver as any)?.navigationApp || 'google', destLat, destLng)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex-1 btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
+                                                    >
+                                                        {isPickedUp ? "Navigate to Hub" : "Navigate to Store"}
+                                                    </a>
 
-                                            {order.status === 'PICKED_UP' && (
-                                                <form action={async () => {
-                                                    "use server";
-                                                    await completeDelivery(order.id);
-                                                }}>
-                                                    <button type="submit" className="w-full btn bg-emerald-500 text-black py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-colors">
-                                                        Complete Delivery
-                                                    </button>
-                                                </form>
-                                            )}
+                                                    {isPickedUp && order.user?.phone && (
+                                                        <a
+                                                            href={`tel:${order.user.phone}`}
+                                                            className="btn bg-white/10 text-white px-4 flex items-center justify-center border border-white/10 hover:bg-emerald-500/20 transition-all text-lg"
+                                                            title="Call Customer"
+                                                        >
+                                                            📞
+                                                        </a>
+                                                    )}
+
+                                                    <DriverChatButton orderId={order.id} />
+                                                </div>
+
+                                                {['PENDING', 'PREPARING'].includes(order.status) && (
+                                                    <div className="w-full py-3 text-center border dashed border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] rounded">
+                                                        Waiting for Restaurant Prep...
+                                                    </div>
+                                                )}
+
+                                                {order.status === 'READY_FOR_PICKUP' && (
+                                                    <form action={async () => {
+                                                        "use server";
+                                                        await pickupOrder(order.id);
+                                                    }}>
+                                                        <button type="submit" className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
+                                                            Confirm Pickup
+                                                        </button>
+                                                    </form>
+                                                )}
+
+                                                {order.status === 'PICKED_UP' && (
+                                                    <form action={async () => {
+                                                        "use server";
+                                                        await completeDelivery(order.id);
+                                                    }}>
+                                                        <button type="submit" className="w-full btn bg-emerald-500 text-black py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-colors">
+                                                            Complete Delivery
+                                                        </button>
+                                                    </form>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 );

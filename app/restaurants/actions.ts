@@ -25,7 +25,8 @@ export async function placeOrder(
     customerLat?: number,
     customerLng?: number,
     customerAddress?: string,
-    tip: number = 0
+    tip: number = 0,
+    deliveryInstructions?: string
 ): Promise<OrderState> {
 
     // ... (inside the insert call) ...
@@ -209,6 +210,7 @@ export async function placeOrder(
             deliveryLat: customerLat,
             deliveryLng: customerLng,
             deliveryAddress: customerAddress,
+            deliveryInstructions: deliveryInstructions,
             updatedAt: new Date().toISOString(),
             createdAt: new Date().toISOString()
         });

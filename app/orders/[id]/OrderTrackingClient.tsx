@@ -26,6 +26,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     const [currentOrder, setCurrentOrder] = useState(order);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
+    const [eta, setEta] = useState<string>("Calculating...");
 
     // Initial positions (Ensure numbers)
     const restaurantLat = Number(order.restaurant.lat) || 35.2271;
@@ -177,7 +178,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Estimated Arrival</p>
                     <div className="flex items-baseline gap-2">
                         <p className="text-xl md:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                            {currentStep >= 5 ? "Arrived" : "15-20 min"}
+                            {currentStep >= 5 ? "Arrived" : eta}
                         </p>
                         {currentStep < 5 && (
                             <span className="text-[10px] md:text-sm text-emerald-400 font-bold">({distanceMiles} mi away)</span>
@@ -192,6 +193,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         destination={{ lat: customerPos[0], lng: customerPos[1] }}
                         driverRotation={driverBearing}
                         showDriver={true}
+                        onDurationUpdate={setEta}
                     />
                 </div>
 

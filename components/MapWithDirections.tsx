@@ -22,14 +22,39 @@ interface MapWithDirectionsProps {
     routeOrigin?: string | google.maps.LatLngLiteral; // For calculating the blue line (stable)
     driverRotation?: number;
     showDriver?: boolean;
+    onDurationUpdate?: (duration: string) => void;
+    onStepsUpdate?: (steps: any[]) => void;
 }
 
-export default function MapWithDirections({ origin, destination, routeOrigin, driverRotation = 0, showDriver = true }: MapWithDirectionsProps) {
+export default function MapWithDirections({ origin, destination, routeOrigin, driverRotation = 0, showDriver = true, onDurationUpdate, onStepsUpdate }: MapWithDirectionsProps) {
     const { isLoaded } = useJsApiLoader({
         id: GOOGLE_MAPS_SCRIPT_ID,
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
         libraries: GOOGLE_MAPS_LIBRARIES
     });
+
+    // Guard: show clear error if API key is missing
+    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
+        return (
+            <div className="h-full w-full min-h-[300px] bg-slate-900 rounded-2xl flex flex-col items-center justify-center gap-4 border border-red-500/30 p-6 text-center">
+                <span className="text-4xl">🗺️</span>
+                <div>
+                    <p className="font-black text-red-400 text-sm mb-1">Google Maps API Key Missing</p>
+                    <p className="text-xs text-slate-400 max-w-xs">
+                        Add <code className="bg-white/10 px-1 py-0.5 rounded text-primary text-[10px]">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> to your <code className="bg-white/10 px-1 py-0.5 rounded text-[10px]">.env.local</code> file and restart the dev server.
+                    </p>
+                    <a
+                        href="https://console.cloud.google.com/apis/credentials"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-3 text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
+                    >
+                        Get API Key →
+                    </a>
+                </div>
+            </div>
+        );
+    }
 
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -57,6 +82,12 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
             console.log("MapWithDirections: Result", status, result);
             if (status === window.google.maps.DirectionsStatus.OK && result) {
                 setDirections(result);
+                if (onDurationUpdate && result.routes[0]?.legs[0]?.duration?.text) {
+                    onDurationUpdate(result.routes[0].legs[0].duration.text);
+                }
+                if (onStepsUpdate && result.routes[0]?.legs[0]?.steps) {
+                    onStepsUpdate(result.routes[0].legs[0].steps);
+                }
             } else {
                 console.error(`Directions request failed due to ${status}`);
                 setError(`Route Error: ${status}`);

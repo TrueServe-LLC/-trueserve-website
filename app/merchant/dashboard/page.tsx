@@ -16,7 +16,8 @@ export const dynamic = "force-dynamic";
 async function getMerchantData(userId: string) {
     const supabase = await createClient();
     try {
-        const { data: restaurant, error } = await supabase
+        // First try finding by ownerId (Real DB path)
+        let { data: restaurant, error } = await supabase
             .from('Restaurant')
             .select(`
                 *,
@@ -34,9 +35,24 @@ async function getMerchantData(userId: string) {
             .eq('ownerId', userId)
             .maybeSingle();
 
-        if (!restaurant || error) {
-            return null;
+        // If not found by ID (Demo Mode), and we have a mock ID, try finding by name to catch live orders
+        if (!restaurant && userId.startsWith('mock-merchant-')) {
+            const slug = userId.replace('mock-merchant-', '');
+            const demoRest = MOUNT_AIRY_RESTAURANTS.find(r => r.email.includes(slug));
+            if (demoRest) {
+                const { data: dbRest } = await supabase
+                    .from('Restaurant')
+                    .select('*, orders:Order(*, user:User(*), items:OrderItem(*, menuItem:MenuItem(*)))')
+                    .ilike('name', `%${demoRest.name}%`)
+                    .maybeSingle();
+
+                if (dbRest) {
+                    restaurant = dbRest;
+                }
+            }
         }
+
+        if (!restaurant) return null;
 
         // Fetch real orders for real restaurant
         const { data: recentOrders } = await supabase
@@ -62,18 +78,17 @@ async function getMerchantData(userId: string) {
         restaurant.menuItems = restaurant.menuItems || [];
 
         // Calculate REAL average prep time (diff between PENDING -> READY_FOR_PICKUP)
-        // For simplicity here, we'll look at most recent delivered/ready orders
         const readyOrders = restaurant.orders.filter((o: any) => o.status === 'READY_FOR_PICKUP' || o.status === 'DELIVERED');
         if (readyOrders.length > 0) {
             const totalPrepTime = readyOrders.reduce((sum: number, o: any) => {
                 const start = new Date(o.createdAt).getTime();
-                const end = new Date(o.updatedAt).getTime(); // updatedAt should be when it was marked ready
+                const end = new Date(o.updatedAt).getTime();
                 return sum + ((end - start) / 60000); // Minutes
             }, 0);
             restaurant.avgPrepTime = Math.round(totalPrepTime / readyOrders.length);
             restaurant.readyCount = readyOrders.length;
         } else {
-            restaurant.avgPrepTime = 0; // 0 means no history yet
+            restaurant.avgPrepTime = 0;
             restaurant.readyCount = 0;
         }
 
@@ -360,17 +375,23 @@ export default async function MerchantDashboard({
                                                 "use server";
                                                 await updateOrderStatus(order.id, 'PREPARING');
                                             }}>
-                                                <button className="btn btn-primary text-sm py-2">Accept & Start Cooking</button>
+                                                <button type="submit" className="btn btn-primary text-sm py-2">Accept & Start Cooking</button>
                                             </form>
                                         ) : (
                                             <form action={async () => {
                                                 "use server";
                                                 await updateOrderStatus(order.id, 'READY_FOR_PICKUP');
                                             }}>
-                                                <button className="btn bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">Mark as Ready</button>
+                                                <button type="submit" className="btn bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">Mark as Ready</button>
                                             </form>
                                         )}
-                                        <button className="btn btn-outline text-sm py-2 text-red-400 border-red-500/20 hover:bg-red-500/10">Reject</button>
+
+                                        <form action={async () => {
+                                            "use server";
+                                            await updateOrderStatus(order.id, 'CANCELLED');
+                                        }}>
+                                            <button type="submit" className="btn btn-outline text-sm py-2 text-red-400 border-red-500/20 hover:bg-red-500/10">Reject</button>
+                                        </form>
 
                                         {/* Track Driver Button */}
                                         {order.driver && order.driver.currentLat && (

@@ -60,7 +60,7 @@ export const MOUNT_AIRY_RESTAURANTS = [
         imageUrl: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2940&auto=format&fit=crop",
         plan: "Flex Scale",
         menuItems: [
-            { name: "Western Omelet", description: "Ham, onions, peppers, and cheese", price: 9.49, category: "Breakfast", status: 'APPROVED', imageUrl: "https://images.unsplash.com/photo-1510693206972-df098062cb71?q=80&w=2940&auto=format&fit=crop" },
+            { name: "Western Omelet", description: "Ham, onions, peppers, and cheese", price: 9.49, category: "Breakfast", status: 'APPROVED', imageUrl: "/olympia_western_omelet.png" },
             { name: "Rib-eye Steak Sub", description: "Grilled rib-eye with lettuce, tomato, and mayo", price: 11.99, category: "Dinner", status: 'APPROVED', imageUrl: "https://images.unsplash.com/photo-1513185158878-8d8c196b8962?q=80&w=2940&auto=format&fit=crop" }
         ],
         orders: []
@@ -93,7 +93,7 @@ export const MOUNT_AIRY_RESTAURANTS = [
         plan: "Flex Scale",
         menuItems: [
             { name: "Big Country Breakfast", description: "Eggs, choice of meat, grits, and biscuit/toast.", price: 12.00, category: "Breakfast", status: 'APPROVED', imageUrl: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?q=80&w=2940&auto=format&fit=crop" },
-            { name: "Mayberry Club", description: "Triple decker with ham, turkey, and bacon.", price: 10.50, category: "Sandwiches", status: 'APPROVED', imageUrl: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=2940&auto=format&fit=crop" }
+            { name: "Mayberry Club", description: "Triple decker with ham, turkey, and bacon.", price: 10.50, category: "Sandwiches", status: 'APPROVED', imageUrl: "/barneys_club_sandwich.png" }
         ],
         orders: []
     }
