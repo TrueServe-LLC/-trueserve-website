@@ -114,7 +114,7 @@ function LoginWithParams() {
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">👤</span>
                                     <input
                                         type="text"
-                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
                                         placeholder="John Doe"
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -127,7 +127,7 @@ function LoginWithParams() {
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">📍</span>
                                     <input
                                         type="text"
-                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
                                         placeholder="123 Main St, Charlotte, NC"
                                         value={formData.address}
                                         onChange={e => setFormData({ ...formData, address: e.target.value })}
@@ -143,7 +143,7 @@ function LoginWithParams() {
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">✉️</span>
                             <input
                                 type="email"
-                                className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
                                 placeholder="you@example.com"
                                 value={formData.email}
                                 onChange={e => setFormData({ ...formData, email: e.target.value })}
@@ -158,7 +158,7 @@ function LoginWithParams() {
                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔒</span>
                                 <input
                                     type="password"
-                                    className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
+                                    className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 pl-12 focus:bg-slate-800 focus:border-primary outline-none transition-all"
                                     placeholder="••••••••"
                                     value={formData.password}
                                     onChange={e => setFormData({ ...formData, password: e.target.value })}

@@ -43,8 +43,8 @@ export default function MerchantPortal() {
         <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans">
             {/* Global Background Elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[180px] animate-pulse" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[150px]" />
+                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[80px] md:blur-[180px] animate-pulse" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[60px] md:blur-[150px]" />
             </div>
 
             {/* Premium Navigation */}

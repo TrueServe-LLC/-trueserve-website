@@ -14,10 +14,10 @@ export default function MobileNav({ role }: { role?: string | null }) {
     const isActive = (path: string) => pathname === path || (pathname.startsWith(path) && path !== '/');
 
     // 1. Driver Navigation Mode
-    if (pathname.startsWith('/driver')) {
+    if (pathname.startsWith('/driver/dashboard')) {
         return (
-            <div className="md:hidden fixed bottom-4 left-4 right-4 z-[100]">
-                <nav className="bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-3 flex justify-around items-center text-[10px] font-bold uppercase tracking-wider text-slate-500">
+            <div className="md:hidden fixed bottom-6 left-6 right-6 z-[100]">
+                <nav className="w-full bg-slate-900 border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 px-6 flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     <Link href="/driver/dashboard" className={`flex flex-col items-center gap-1 flex-1 transition-all ${isActive('/driver/dashboard') ? 'text-emerald-400 scale-110' : 'active:scale-95'}`}>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         <span>Board</span>
@@ -40,15 +40,15 @@ export default function MobileNav({ role }: { role?: string | null }) {
     }
 
     // 2. Merchant Navigation Mode
-    if (pathname.startsWith('/merchant')) {
+    if (pathname.startsWith('/merchant/dashboard')) {
         return (
-            <div className="md:hidden fixed bottom-4 left-4 right-4 z-[100]">
-                <nav className="bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-3 flex justify-around items-center text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    <Link href="/merchant/dashboard" className={`flex flex-col items-center gap-1 flex-1 transition-all ${isActive('/merchant/dashboard') ? 'text-primary' : 'active:scale-95'}`}>
+            <div className="md:hidden fixed bottom-6 left-6 right-6 z-[100]">
+                <nav className="w-full bg-slate-900 border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 px-8 flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    <Link href="/merchant/dashboard" className={`flex flex-col items-center gap-1 flex-1 transition-all ${isActive('/merchant/dashboard') && !isActive('/merchant/menu') ? 'text-primary' : 'active:scale-95'}`}>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                         <span>Orders</span>
                     </Link>
-                    <Link href="/merchant/dashboard" className={`flex flex-col items-center gap-1 flex-1 transition-all ${isActive('/merchant/menu') ? 'text-primary' : 'active:scale-95'}`}>
+                    <Link href="/merchant/menu" className={`flex flex-col items-center gap-1 flex-1 transition-all ${isActive('/merchant/menu') ? 'text-primary' : 'active:scale-95'}`}>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         <span>Menu</span>
                     </Link>
