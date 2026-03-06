@@ -15,7 +15,7 @@ export async function sendEmail(to: string, subject: string, htmlBody: string, a
 
     try {
         const { data, error } = await resend.emails.send({
-            from: 'TrueServe <onboarding@resend.dev>', // Use 'onboarding@resend.dev' for testing without a domain
+            from: process.env.RESEND_FROM_EMAIL || 'TrueServe <onboarding@resend.dev>', // In production, set RESEND_FROM_EMAIL to a verified domain
             to: [to],
             subject: subject,
             html: `

@@ -222,6 +222,12 @@ export default async function DriverDashboard() {
                                                 <DriverChatButton orderId={order.id} />
                                             </div>
 
+                                            {['PENDING', 'PREPARING'].includes(order.status) && (
+                                                <div className="w-full py-3 text-center border dashed border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] rounded">
+                                                    Waiting for Restaurant Prep...
+                                                </div>
+                                            )}
+
                                             {order.status === 'READY_FOR_PICKUP' && (
                                                 <form action={async () => {
                                                     "use server";

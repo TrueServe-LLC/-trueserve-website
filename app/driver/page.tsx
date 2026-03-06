@@ -314,16 +314,18 @@ export default function DriverPortal() {
                             </ul>
                         </div>
 
-                        <div className="bg-gradient-to-br from-primary/20 to-emerald-500/10 p-12 rounded-[3rem] text-center space-y-6 relative overflow-hidden group">
+                        <div className="bg-gradient-to-br from-primary/20 to-emerald-500/10 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] text-center space-y-6 relative overflow-hidden group">
                             <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none group-hover:scale-110 transition-transform duration-1000"></div>
                             <h3 className="text-3xl font-black text-white relative z-10">Start today. <br />Pay out today.</h3>
-                            <p className="text-slate-400 font-medium relative z-10 mb-8">Join thousands of drivers who are earning more with TrueServe.</p>
-                            <button
-                                onClick={scrollToForm}
-                                className="btn btn-primary w-full py-5 text-lg font-black uppercase tracking-widest relative z-10 shadow-2xl shadow-primary/30"
-                            >
-                                Apply Now
-                            </button>
+                            <p className="text-slate-400 font-medium relative z-10 mb-8 mt-2">Join thousands of drivers who are earning more with TrueServe.</p>
+                            <div className="relative z-10 pt-2 pb-2">
+                                <button
+                                    onClick={scrollToForm}
+                                    className="btn btn-primary rounded-full w-auto px-10 md:px-14 py-4 md:py-5 text-base md:text-lg font-black uppercase tracking-widest shadow-2xl shadow-primary/30"
+                                >
+                                    Apply Now
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

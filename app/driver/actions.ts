@@ -188,18 +188,19 @@ export async function acceptOrder(orderId: string) {
 
         if (!driver) throw new Error("Driver profile not found");
 
-        // We assign the driverId but keep status as READY_FOR_PICKUP until they actually pick it up
-        const { error } = await supabase
+        const { error, data: updatedOrder } = await supabase
             .from('Order')
             .update({
                 driverId: driver.id,
                 updatedAt: new Date().toISOString()
             })
             .eq('id', orderId)
-            .eq('status', 'READY_FOR_PICKUP')
-            .is('driverId', null); // Ensure not already taken
+            .in('status', ['PENDING', 'PREPARING', 'READY_FOR_PICKUP'])
+            .is('driverId', null) // Ensure not already taken
+            .select()
+            .single();
 
-        if (error) throw new Error("Failed to accept order. It may have been taken or isn't ready.");
+        if (error || !updatedOrder) throw new Error("Failed to accept order. It may have been taken or cancelled.");
 
         // --- NEW: Trigger SMS Confirmation to Driver ---
         try {

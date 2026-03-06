@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { GoogleMap, useJsApiLoader, HeatmapLayerF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, HeatmapLayerF, MarkerF } from '@react-google-maps/api';
 import { createClient } from "@/lib/supabase/client";
 import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
@@ -179,6 +179,17 @@ export default function DriverMap() {
                                 'rgba(191, 0, 31, 1)',
                                 'rgba(255, 0, 0, 1)'
                             ]
+                        }}
+                    />
+                )}
+
+                {/* Driver Car Icon Marker */}
+                {mapCenter && (
+                    <MarkerF
+                        position={mapCenter}
+                        icon={{
+                            url: "https://maps.google.com/mapfiles/kml/shapes/cabs.png",
+                            scaledSize: new window.google.maps.Size(32, 32),
                         }}
                     />
                 )}
