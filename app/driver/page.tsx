@@ -1,17 +1,10 @@
 "use client";
 
-import { useActionState, useState, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import { submitDriverApplication } from "./actions";
-
-const initialState = {
-    message: "",
-    success: false,
-    error: false,
-};
+import DriverApplicationForm from "./DriverApplicationForm";
 
 export default function DriverPortal() {
-    const [state, formAction, isPending] = useActionState(submitDriverApplication, initialState);
     const formRef = useRef<HTMLDivElement>(null);
 
     const scrollToForm = () => {
@@ -87,81 +80,7 @@ export default function DriverPortal() {
                                 </h2>
                                 <p className="text-slate-400 text-base mb-12 font-medium leading-relaxed px-4">Earn money and explore your city on your own terms.</p>
 
-                                {state.success ? (
-                                    <div className="p-10 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] text-center animate-in fade-in zoom-in duration-500 pb-12">
-                                        <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center text-5xl mx-auto mb-8 border border-emerald-500/30">✅</div>
-                                        <h3 className="text-2xl font-black text-emerald-400 mb-2 leading-tight py-1">You're on the list!</h3>
-                                        <p className="text-slate-300 text-sm font-medium leading-relaxed">{state.message}</p>
-                                        <Link href="/login" className="btn btn-primary w-full mt-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px]">Log In to Portal</Link>
-                                    </div>
-                                ) : (
-                                    <form action={formAction} className="space-y-4">
-                                        {state.error && (
-                                            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-xs font-bold animate-shake">
-                                                ⚠️ {state.message}
-                                            </div>
-                                        )}
-                                        <div className="space-y-4">
-                                            <input
-                                                name="name"
-                                                type="text"
-                                                required
-                                                className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm"
-                                                placeholder="Full Name"
-                                            />
-                                            <input
-                                                name="email"
-                                                type="email"
-                                                required
-                                                className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm"
-                                                placeholder="Email Address"
-                                            />
-                                            <input
-                                                name="phone"
-                                                type="tel"
-                                                required
-                                                className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm"
-                                                placeholder="Phone Number"
-                                            />
-                                            <div className="relative group">
-                                                <select
-                                                    name="vehicleType"
-                                                    required
-                                                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white appearance-none cursor-pointer font-bold text-sm"
-                                                >
-                                                    <option value="" disabled selected>Select Vehicle</option>
-                                                    <option value="Car">Car</option>
-                                                    <option value="SUV">SUV</option>
-                                                    <option value="Truck">Truck</option>
-                                                    <option value="Scooter">Scooter / Bike</option>
-                                                </select>
-                                                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-primary transition-colors">▼</div>
-                                            </div>
-                                            <div className="p-4 bg-black/30 border border-dashed border-white/10 rounded-2xl">
-                                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Drivers License / ID</label>
-                                                <input
-                                                    name="idDocument"
-                                                    type="file"
-                                                    required
-                                                    accept="image/*,.pdf"
-                                                    className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-white/10 file:text-white hover:file:bg-white/20 file:transition-all cursor-pointer"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            type="submit"
-                                            disabled={isPending}
-                                            className="btn btn-primary w-full py-5 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-50 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-6"
-                                        >
-                                            {isPending ? "Applying..." : "Start earning now"}
-                                        </button>
-
-                                        <p className="text-[10px] text-slate-500 text-center px-4 font-medium leading-relaxed mt-4">
-                                            By clicking "Start earning now", you agree to TrueServe's Terms of Service and Privacy Policy.
-                                        </p>
-                                    </form>
-                                )}
+                                <DriverApplicationForm />
                             </div>
                         </div>
                     </div>
