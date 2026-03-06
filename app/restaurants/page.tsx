@@ -10,6 +10,8 @@ import { cookies } from "next/headers";
 import { calculateDistance } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 interface Restaurant {
     id: string;
     name: string;
