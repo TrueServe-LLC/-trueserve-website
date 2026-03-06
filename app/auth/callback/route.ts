@@ -13,13 +13,15 @@ export async function GET(request: Request) {
 
         if (!error && data?.user) {
             // SYNC: Ensure the user exists in our public User table
-            const { data: existingUser } = await supabase
+            const { data: profile } = await supabase
                 .from('User')
-                .select('id')
+                .select('id, role')
                 .eq('id', data.user.id)
                 .maybeSingle();
 
-            if (!existingUser) {
+            let role = 'CUSTOMER';
+
+            if (!profile) {
                 // First time logging in with Google - create the profile
                 await supabase.from('User').insert({
                     id: data.user.id,
@@ -29,19 +31,40 @@ export async function GET(request: Request) {
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 });
+            } else {
+                role = profile.role;
             }
 
             const forwardedHost = request.headers.get('x-forwarded-host')
             const isLocalEnv = process.env.NODE_ENV === 'development'
 
+            // Default redirect based on role if next is not explicitly provided or is just root
+            let finalNext = next;
+            if (next === '/') {
+                if (role === 'MERCHANT') finalNext = '/merchant/dashboard';
+                else if (role === 'DRIVER') finalNext = '/driver/dashboard';
+                else if (role === 'ADMIN') finalNext = '/admin/dashboard';
+            }
+
             // Success - continue to 'next' path
             const redirectUrl = isLocalEnv
-                ? `${origin}${next}`
+                ? `${origin}${finalNext}`
                 : forwardedHost
-                    ? `https://${forwardedHost}${next}`
-                    : `${origin}${next}`;
+                    ? `https://${forwardedHost}${finalNext}`
+                    : `${origin}${finalNext}`;
 
-            return NextResponse.redirect(redirectUrl)
+            const response = NextResponse.redirect(redirectUrl)
+
+            // Set userId cookie for compatibility with existing dashboard logic
+            response.cookies.set('userId', data.user.id, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'lax',
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7 // 1 week
+            })
+
+            return response
         }
     }
 

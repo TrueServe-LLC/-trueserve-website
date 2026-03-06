@@ -47,9 +47,25 @@ async function getPendingDrivers() {
 
 export default async function AdminDashboard({ searchParams }: { searchParams: { stripe_connected?: string } }) {
     const cookieStore = await cookies();
-    const session = cookieStore.get("admin_session");
+    const adminSession = cookieStore.get("admin_session");
+    const userId = cookieStore.get("userId")?.value;
 
-    if (!session) {
+    let isAuthorized = !!adminSession;
+
+    if (!isAuthorized && userId) {
+        // Double check the role in DB
+        const { data: user } = await supabase
+            .from('User')
+            .select('role')
+            .eq('id', userId)
+            .single();
+
+        if (user?.role === 'ADMIN') {
+            isAuthorized = true;
+        }
+    }
+
+    if (!isAuthorized) {
         redirect("/admin/login");
     }
 

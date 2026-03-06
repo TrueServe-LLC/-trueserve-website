@@ -77,11 +77,19 @@ async function getMerchantData(userId: string) {
 
 export default async function MerchantDashboard() {
     const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
+    let userId = cookieStore.get("userId")?.value;
 
     if (!userId) {
-        // In a real app, verify session. For now, rely on cookie or redirect
-        redirect("/login?role=merchant");
+        // Fallback: Check Supabase session directly
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            userId = user.id;
+            // Note: We can't set cookies in a Server Component body easily without a specialized pattern,
+            // but we can proceed with the ID we found.
+        } else {
+            redirect("/login?role=merchant");
+        }
     }
 
     const restaurant = await getMerchantData(userId);

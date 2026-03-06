@@ -49,6 +49,22 @@ export default function DriverApplicationForm() {
     const handleNext = () => setStep(prev => prev + 1);
     const handleBack = () => setStep(prev => prev - 1);
 
+    const fillTestData = () => {
+        setFormData({
+            name: "Test Driver",
+            email: "test.driver@example.com",
+            phone: "555-0100-1234",
+            dob: "1990-01-01",
+            address: "123 Test Street, New York, NY 10001",
+            vehicleType: "Car",
+            consentIdentity: true,
+            consentBackground: true,
+        });
+        const dummyFile = new File(["dummy id content"], "dummy_license.jpg", { type: "image/jpeg" });
+        setFile(dummyFile);
+        setStep(4);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -85,6 +101,13 @@ export default function DriverApplicationForm() {
                     ⚠️ {state.message}
                 </div>
             )}
+
+            {/* QUICK TEST UTILITY */}
+            <div className="flex justify-end">
+                <button type="button" onClick={fillTestData} className="text-[10px] font-black uppercase tracking-widest bg-white/5 hover:bg-white/10 text-slate-400 py-2 px-4 rounded-xl transition-all border border-white/5">
+                    ⚡ Form Test Data
+                </button>
+            </div>
 
             {/* Step Indicators */}
             <div className="flex items-center justify-between mb-8 px-2 relative">
