@@ -51,7 +51,7 @@ async function getRestaurant(id: string) {
             return {
                 ...mock,
                 imageUrl: mock.image, // Map for compatibility
-                menuItems: mock.menuItems.map(item => ({
+                menuItems: mock.menuItems.map((item: any) => ({
                     ...item,
                     imageUrl: item.image // Map for compatibility
                 }))
