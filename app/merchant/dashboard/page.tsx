@@ -59,6 +59,23 @@ async function getMerchantData(userId: string) {
 
         restaurant.orders = recentOrders || [];
         restaurant.menuItems = restaurant.menuItems || [];
+
+        // Calculate REAL average prep time (diff between PENDING -> READY_FOR_PICKUP)
+        // For simplicity here, we'll look at most recent delivered/ready orders
+        const readyOrders = restaurant.orders.filter((o: any) => o.status === 'READY_FOR_PICKUP' || o.status === 'DELIVERED');
+        if (readyOrders.length > 0) {
+            const totalPrepTime = readyOrders.reduce((sum: number, o: any) => {
+                const start = new Date(o.createdAt).getTime();
+                const end = new Date(o.updatedAt).getTime(); // updatedAt should be when it was marked ready
+                return sum + ((end - start) / 60000); // Minutes
+            }, 0);
+            restaurant.avgPrepTime = Math.round(totalPrepTime / readyOrders.length);
+            restaurant.readyCount = readyOrders.length;
+        } else {
+            restaurant.avgPrepTime = 0; // 0 means no history yet
+            restaurant.readyCount = 0;
+        }
+
         return restaurant;
     } catch (e) {
         console.warn("getMerchantData Error:", e);
@@ -241,10 +258,20 @@ export default async function MerchantDashboard({
                             <span className="text-emerald-400 text-xs font-mono uppercase font-bold tracking-widest">Live</span>
                         </div>
                         <div className="flex items-end gap-2">
-                            <p className="text-5xl font-bold">8</p>
-                            <p className="text-slate-400 mb-1 font-semibold">min to pickup</p>
+                            {pendingOrders.some((o: any) => o.driverId) ? (
+                                <>
+                                    <p className="text-5xl font-bold">~5-10</p>
+                                    <p className="text-slate-400 mb-1 font-semibold">min to pickup</p>
+                                </>
+                            ) : (
+                                <p className="text-3xl font-bold text-primary animate-pulse">Seeking Driver</p>
+                            )}
                         </div>
-                        <p className="text-xs text-slate-500 mt-4">Nearest driver is 1.2km away.</p>
+                        <p className="text-xs text-slate-500 mt-4">
+                            {pendingOrders.some((o: any) => o.driverId)
+                                ? "Nearest courier has been dispatched."
+                                : "Awaiting a driver to accept the request."}
+                        </p>
                     </div>
 
                     <div className="card bg-blue-500/5 border-blue-500/20">
@@ -253,9 +280,20 @@ export default async function MerchantDashboard({
                             <span className="text-blue-400 text-xs font-mono uppercase font-bold tracking-widest">Operational</span>
                         </div>
                         <div className="flex items-end gap-2 text-blue-400">
-                            <p className="text-5xl font-bold">92%</p>
+                            {restaurant.avgPrepTime > 0 ? (
+                                <>
+                                    <p className="text-5xl font-bold">{Math.round((15 / restaurant.avgPrepTime) * 100)}%</p>
+                                    <p className="text-xs text-slate-500 mb-1 leading-tight">Score</p>
+                                </>
+                            ) : (
+                                <p className="text-xl font-bold text-slate-500 animate-pulse">Building Profile...</p>
+                            )}
                         </div>
-                        <p className="text-xs text-slate-500 mt-4">Kitchen is performing 8% faster than 7-day average.</p>
+                        <p className="text-xs text-slate-500 mt-4">
+                            {restaurant.avgPrepTime > 0
+                                ? `Current performance based on ${restaurant.readyCount} recent orders.`
+                                : "Awaiting enough operational data to calculate score."}
+                        </p>
                     </div>
                 </div>
 

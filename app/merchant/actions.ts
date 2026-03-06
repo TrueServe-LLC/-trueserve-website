@@ -429,6 +429,10 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         }
 
         // Default: Flex / Standard Onboarding
+        // Auto-create Stripe account and redirect to onboarding
+        await createStripeAccount(userId);
+
+        // This line is technically unreachable due to redirect inside createStripeAccount
         redirect('/merchant/dashboard');
 
     } catch (e: any) {
@@ -438,10 +442,20 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     }
 }
 
-export async function createStripeAccount() {
+export async function createStripeAccount(providedId?: string | FormData) {
     const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
+    let userId: string | undefined;
+
+    if (typeof providedId === 'string') {
+        userId = providedId;
+    } else {
+        userId = cookieStore.get("userId")?.value;
+    }
+
     if (!userId) {
+        if (providedId && typeof providedId === 'string') {
+            throw new Error("No User ID for Stripe Account");
+        }
         redirect("/login?role=merchant");
     }
 
