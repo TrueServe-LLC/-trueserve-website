@@ -19,7 +19,8 @@ test.describe('Mobile Navigation End-to-End Tests', () => {
 
         // 2. Assert all Customer Tabs exist
         await expect(navContainer.getByText('Home')).toBeVisible();
-        await expect(navContainer.getByText('Nearby')).toBeVisible();
+        await expect(navContainer.getByText('Sell')).toBeVisible();
+        await expect(navContainer.getByText('Drive')).toBeVisible();
         await expect(navContainer.getByText('Cart')).toBeVisible();
         await expect(navContainer.getByText('Profile')).toBeVisible();
 

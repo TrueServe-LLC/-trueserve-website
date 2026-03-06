@@ -59,7 +59,8 @@ describe('MobileNav Component', () => {
 
         // Expect customer tabs to be visible
         expect(screen.getByText('Home')).toBeInTheDocument();
-        expect(screen.getByText('Nearby')).toBeInTheDocument();
+        expect(screen.getByText('Sell')).toBeInTheDocument();
+        expect(screen.getByText('Drive')).toBeInTheDocument();
         expect(screen.getByText('Cart')).toBeInTheDocument();
         expect(screen.getByText('Profile')).toBeInTheDocument();
     });
