@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import MobileNavWrapper from "@/components/MobileNavWrapper";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -21,9 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-import MobileNavWrapper from "@/components/MobileNavWrapper";
-// ...
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${playfair.variable} bg-background text-foreground antialiased pb-24 md:pb-0`}
+        className={`${outfit.variable} ${playfair.variable} bg-background text-foreground antialiased pb-24 md:pb-0 font-sans`}
         suppressHydrationWarning
       >
         {children}

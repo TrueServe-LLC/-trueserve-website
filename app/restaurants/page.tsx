@@ -433,23 +433,7 @@ export default async function RestaurantFinder({
                         The fastest delivery around. Zero hidden fees, precise tracking, and purely local.
                     </p>
 
-                    <LandingSearch locations={
-                        // We fetch these quickly here for the landing page props
-                        // In a real app, optimize this data fetching
-                        await (async () => {
-                            const fallbackMocks = [
-                                { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
-                                { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
-                                { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 }
-                            ];
-                            try {
-                                const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
-                                return dbLocs && dbLocs.length > 0 ? dbLocs : fallbackMocks;
-                            } catch {
-                                return fallbackMocks;
-                            }
-                        })()
-                    } />
+                    <LandingSearch locations={serviceLocations} />
                 </main>
             </div>
         );
@@ -796,7 +780,9 @@ export default async function RestaurantFinder({
                         <div className="col-span-full text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
                             <div className="text-4xl mb-4">🔍</div>
                             <p className="text-xl font-bold text-white">No spots found in {location?.toString()}.</p>
-                            <button onClick={() => window.location.href = '/restaurants'} className="btn btn-primary btn-sm mt-6 rounded-full px-8 uppercase font-black tracking-widest text-[10px]">Show All Cities</button>
+                            <Link href="/restaurants" className="btn btn-primary btn-sm mt-6 rounded-full px-8 uppercase font-black tracking-widest text-[10px] inline-flex items-center">
+                                Show All Cities
+                            </Link>
                         </div>
                     ) : (
                         restaurants.map((rest) => (

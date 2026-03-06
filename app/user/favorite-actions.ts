@@ -59,7 +59,8 @@ export async function getFavorites() {
 
     const { data, error } = await supabase
         .from('Favorite')
-        .select('restaurantId');
+        .select('restaurantId')
+        .eq('userId', userId);
 
     if (error) {
         console.error("Get favorites error:", error);

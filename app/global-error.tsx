@@ -2,7 +2,6 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
-import Link from "next/link";
 
 export default function GlobalError({
   error,
@@ -18,7 +17,7 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="bg-black text-white font-sans antialiased">
+      <body className="bg-black text-white font-sans antialiased overflow-hidden">
         <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
           <div className="mb-8 p-6 bg-red-500/10 rounded-full animate-pulse">
             <svg className="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,43 +26,43 @@ export default function GlobalError({
           </div>
 
           <h1 className="text-4xl font-black mb-4 tracking-tighter">System Interruption</h1>
-          <p className="text-slate-400 mb-10 max-w-lg text-lg leading-relaxed">
+          <p className="text-slate-400 mb-10 max-w-lg text-lg leading-relaxed font-medium">
             A critical part of the application failed to load. We've logged this for our engineers.
           </p>
 
-          <div className="bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-[2rem] p-8 mb-10 w-full max-w-2xl text-left overflow-hidden shadow-2xl">
+          <div className="bg-slate-900 border border-white/10 rounded-3xl p-8 mb-10 w-full max-w-2xl text-left shadow-2xl overflow-hidden relative group">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-2 h-2 rounded-full bg-red-500"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-400">Technical Details</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-400">Diagnostic Info</span>
             </div>
-            <p className="text-red-400 font-mono text-sm break-words line-clamp-4 leading-relaxed bg-black/40 p-4 rounded-xl border border-red-500/10">
-              {error.message || "A client-side exception occurred."}
+            <p className="text-slate-300 font-mono text-sm break-words line-clamp-4 leading-relaxed bg-black/50 p-6 rounded-2xl border border-white/5">
+              {error.message || "A client-side exception occurred during rendering."}
             </p>
             {error.digest && (
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Error Trace ID</span>
-                <span className="text-xs text-slate-400 font-mono bg-white/5 px-3 py-1 rounded-full">{error.digest}</span>
+              <div className="mt-6 flex items-center justify-between opacity-50">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Trace ID</span>
+                <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-3 py-1 rounded-lg">{error.digest}</span>
               </div>
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-6 w-full max-w-md">
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md relative z-10">
             <button
               onClick={() => reset()}
-              className="flex-1 bg-primary text-black h-16 rounded-2xl font-black uppercase tracking-widest text-sm shadow-[0_20px_40px_rgba(255,153,42,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+              className="flex-1 bg-white text-black h-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl hover:bg-slate-200 transition-all active:scale-95"
             >
               Retry App
             </button>
-            <Link
+            <a
               href="/"
-              className="flex-1 bg-white/5 border border-white/10 text-white h-16 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center hover:bg-white/10 active:scale-[0.98] transition-all"
+              className="flex-1 bg-slate-900 border border-white/10 text-white h-16 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center hover:bg-slate-800 transition-all active:scale-95"
             >
-              Return Home
-            </Link>
+              Back Home
+            </a>
           </div>
 
-          <p className="mt-12 text-[10px] text-slate-600 font-black uppercase tracking-[0.3em]">
-            TrueServe Global Infrastructure
+          <p className="mt-16 text-[10px] text-slate-700 font-black uppercase tracking-[0.4em]">
+            TrueServe Global Fleet
           </p>
         </div>
       </body>
