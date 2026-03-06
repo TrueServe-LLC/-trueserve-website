@@ -116,6 +116,11 @@ function LoginWithParams() {
                 {message && (
                     <div className={`p-3 rounded-2xl mb-6 text-sm text-center font-bold ${message.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
                         {message.text}
+                        {message.text.includes("Email logins are disabled") && (
+                            <div className="mt-2 text-xs opacity-80 font-medium">
+                                Hint: Use an email ending in <span className="text-primary">.test</span> or <span className="text-primary">.live</span> for the demo bypass.
+                            </div>
+                        )}
                     </div>
                 )}
 
