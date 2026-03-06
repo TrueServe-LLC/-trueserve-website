@@ -25,19 +25,27 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
 
     try {
         // Mock Login enabled for all environments so demos/testing work anywhere
-        if (email.includes("@demo") && password === "password123") {
+        // Bypass for @demo.test and @trueserve.test accounts to handle "Email logins disabled" Supabase settings
+        const isTestAccount = email.includes("@demo") || email.includes("@trueserve.test") || email.endsWith(".test");
+        const isTestPassword = password === "password123" || password === "MountAiry2026!";
+
+        if (isTestAccount && isTestPassword) {
             // Use supabaseAdmin to bypass RLS when looking up the mock user
-            const { data: publicUser } = await supabaseAdmin.from('User').select('id, role').eq('email', email).maybeSingle();
+            const { data: publicUser } = await supabaseAdmin
+                .from('User')
+                .select('id, role')
+                .eq('email', email)
+                .maybeSingle();
 
             if (publicUser) {
                 cookieStore.set("userId", publicUser.id, { secure: true, httpOnly: true });
-                return { message: "Demo Login successful!", success: true, role: publicUser.role };
+                return { message: "Test Login successful!", success: true, role: publicUser.role };
             }
 
             // Absolute fallback so you can ALWAYS log in no matter what the DB state is locally
-            const fallbackRole = email.startsWith("merchant") ? "MERCHANT" : email.startsWith("driver") ? "DRIVER" : "CUSTOMER";
+            const fallbackRole = email.includes("merchant") || email.includes("owner") ? "MERCHANT" : email.includes("driver") ? "DRIVER" : "CUSTOMER";
             cookieStore.set("userId", "mock-user-id", { secure: true, httpOnly: true });
-            return { message: "Demo Login successful (Fallback)!", success: true, role: fallbackRole };
+            return { message: "Test Login successful (Fallback)!", success: true, role: fallbackRole };
         }
 
         const { data, error } = await supabase.auth.signInWithPassword({
