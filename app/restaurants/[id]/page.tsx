@@ -21,16 +21,6 @@ async function getRestaurant(id: string) {
             .single();
 
         if (error || !restaurant) {
-            // Fallback checking for mocks
-            const { getMockRestaurant } = await import('@/lib/mocks');
-            const mock = getMockRestaurant(id);
-            if (mock) {
-                return {
-                    ...mock,
-                    imageUrl: mock.image,
-                    menuItems: (mock.menuItems || []).map((item: any) => ({ ...item, imageUrl: item.image || item.imageUrl || null }))
-                };
-            }
             if (error) console.error("Supabase Error (getRestaurant):", error);
             return null;
         }
@@ -41,20 +31,6 @@ async function getRestaurant(id: string) {
         return restaurant;
     } catch (e) {
         console.warn("DB failed", e);
-        console.warn("DB failed or not found, checking mocks", e);
-        const { getMockRestaurant } = await import('@/lib/mocks');
-        const mock = getMockRestaurant(id);
-
-        if (mock) {
-            return {
-                ...mock,
-                imageUrl: mock.image || "/restaurant1.jpg",
-                menuItems: (mock.menuItems || []).map((item: any) => ({
-                    ...item,
-                    imageUrl: item.image || item.imageUrl || null
-                }))
-            };
-        }
         return null;
     }
 }

@@ -33,39 +33,7 @@ async function getMerchantData(userId: string) {
             .maybeSingle();
 
         if (!restaurant || error) {
-            // Fallback to Mock Data for Demo/Testing
-            const { MOCK_RESTAURANTS, MOCK_ORDERS } = await import('@/lib/mocks');
-
-            // Try to find a mock that matches the user's preference or just use the first one
-            // In a better system, this would be saved in user metadata
-            const demoRest = MOCK_RESTAURANTS.find(r => r.city === 'Rock Hill') || MOCK_RESTAURANTS[0];
-
-            // Fetch REAL orders from the database that were placed against this mock ID
-            // This allows the "Order & Confirm" loop to work during mocks/demos!
-            const { data: realOrders } = await supabase
-                .from('Order')
-                .select(`
-                    *,
-                    user:User(*),
-                    items:OrderItem(
-                        *,
-                        menuItem:MenuItem(*)
-                    )
-                `)
-                .eq('restaurantId', demoRest.id)
-                .order('createdAt', { ascending: false });
-
-            // Combine mock orders (for volume) with real ones (for live testing)
-            const combinedOrders = [
-                ...(realOrders || []),
-                ...MOCK_ORDERS.filter(o => o.restaurantId === demoRest.id)
-            ];
-
-            return {
-                ...demoRest,
-                menuItems: demoRest.menuItems || [],
-                orders: combinedOrders
-            };
+            return null;
         }
 
         // Fetch real orders for real restaurant
@@ -92,13 +60,8 @@ async function getMerchantData(userId: string) {
         restaurant.menuItems = restaurant.menuItems || [];
         return restaurant;
     } catch (e) {
-        console.warn("DB failed, using mocks", e);
-        const { MOCK_RESTAURANTS, MOCK_ORDERS } = await import('@/lib/mocks');
-        const demoRest = MOCK_RESTAURANTS[0];
-        return {
-            ...demoRest,
-            orders: MOCK_ORDERS.filter(o => o.restaurantId === demoRest.id)
-        };
+        console.warn("getMerchantData Error:", e);
+        return null;
     }
 }
 

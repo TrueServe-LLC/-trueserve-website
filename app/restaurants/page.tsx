@@ -142,12 +142,8 @@ async function getRestaurants(
             .neq('name', 'Test Restaurant');
 
         if (error || !restaurants || restaurants.length === 0) {
-            // Check if we should allow mock fallback (useful for pilots)
-            const allowMockFallback = process.env.NEXT_PUBLIC_ENABLE_MOCKS === 'true' || true; // Manual toggle
-            if (!allowMockFallback) {
-                return { restaurants: [], locationMeta };
-            }
-            throw new Error("No real data, falling back to mocks");
+            // No mock fallback for pilot launch
+            return { restaurants: [], locationMeta };
         }
 
         // Logic to transition to production: Filter out mock restaurants from DB
@@ -240,52 +236,9 @@ async function getRestaurants(
         return { restaurants: finalRestaurants, locationMeta };
 
     } catch (error) {
-        // Mock Data Fallback
-        const { MOCK_RESTAURANTS } = await import('@/lib/mocks');
-        const allMocks = MOCK_RESTAURANTS.map((r, index) => {
-            const seed = r.name.length + index;
-            let displayImage = r.image;
-
-            // Smart Image Selection for Mocks
-            if (!displayImage || displayImage.startsWith('/restaurant')) {
-                const tags = r.tags || [];
-                if (tags.includes("Pizza")) displayImage = "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Burgers")) displayImage = "https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Asian")) displayImage = "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Mexican")) displayImage = "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Italian")) displayImage = "https://images.unsplash.com/photo-1473093226795-af9932fe5856?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Steak")) displayImage = "https://images.unsplash.com/photo-1546241072-48010ad28c2c?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Coffee")) displayImage = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Dessert")) displayImage = "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("Healthy")) displayImage = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop";
-                else if (tags.includes("BBQ")) displayImage = "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?q=80&w=800&auto=format&fit=crop";
-                else {
-                    displayImage = `https://images.unsplash.com/photo-${1504674900247 + (seed % 1000)}?q=80&w=800&auto=format&fit=crop`;
-                }
-            }
-
-            return {
-                ...r,
-                image: displayImage,
-                rating: Number(r.rating),
-                coords: [r.lat, r.lng] as [number, number],
-                deliveryFee: r.name.length % 3 === 0 ? "Free" : `$${(r.name.length % 4 + 0.99).toFixed(2)}`,
-                prepTime: `${20 + (r.name.length % 15)}-${30 + (r.name.length % 15)} min`,
-                priceLevel: "$".repeat((r.name.length % 3) + 1)
-            };
-        });
-
-        let filteredMocks = allMocks.filter(r => r.city.toLowerCase() === matchedLocation.city.toLowerCase());
-
-        if (category) {
-            const catLower = category.toLowerCase();
-            filteredMocks = filteredMocks.filter(r =>
-                r.tags.some(t => t.toLowerCase() === catLower)
-            );
-        }
-
+        console.error("getRestaurants DB Error:", error);
         return {
-            restaurants: filteredMocks,
+            restaurants: [],
             locationMeta
         };
     }
