@@ -652,14 +652,12 @@ export default async function RestaurantFinder({
                                 ...(params.location ? { location: params.location } : {}),
                                 ...(params.search ? { search: params.search } : {})
                             }).toString()}`}
-                            className={`flex flex-col md:flex-row items-center justify-center gap-2 md:px-6 md:py-3 rounded-none md:rounded-full border-transparent md:border transition-all whitespace-nowrap font-bold text-[11px] md:text-sm min-w-[70px] md:min-w-0
+                            className={`flex flex-row items-center justify-center gap-2 px-5 py-2.5 rounded-full border transition-all whitespace-nowrap font-bold text-sm shrink-0
                                 ${!category
-                                    ? "text-secondary md:bg-primary md:border-primary md:text-black md:shadow-lg md:shadow-primary/20"
-                                    : "text-slate-400 md:bg-white/5 md:border-white/10 hover:text-white md:hover:bg-white/10"}`}
+                                    ? "bg-white text-black border-transparent shadow-lg"
+                                    : "bg-slate-800 text-white border-white/10 hover:bg-slate-700 hover:border-white/20"}`}
                         >
-                            <div className={`w-[4.2rem] h-[4.2rem] md:w-auto md:h-auto rounded-[1.3rem] md:rounded-none flex items-center justify-center mb-1 md:mb-0 text-3xl md:text-lg border shadow-lg ${!category ? 'bg-secondary/20 border-secondary/30' : 'bg-slate-800 border-white/5'}`}>
-                                ✨
-                            </div>
+                            <span className="text-lg">✨</span>
                             <span>All</span>
                         </Link>
 
@@ -690,14 +688,12 @@ export default async function RestaurantFinder({
                                     ...(params.search ? { search: params.search } : {}),
                                     category: cat.name
                                 }).toString()}`}
-                                className={`flex flex-col md:flex-row items-center justify-center gap-2 md:px-6 md:py-3 rounded-none md:rounded-full border-transparent md:border transition-all whitespace-nowrap font-bold text-[11px] md:text-sm min-w-[70px] md:min-w-0
+                                className={`flex flex-row items-center justify-center gap-2 px-5 py-2.5 rounded-full border transition-all whitespace-nowrap font-bold text-sm shrink-0
                                     ${category === cat.name
-                                        ? "text-secondary md:bg-primary md:border-primary md:text-black md:shadow-lg md:shadow-primary/20"
-                                        : "text-slate-400 md:bg-white/5 md:border-white/10 hover:text-white md:hover:bg-white/10"}`}
+                                        ? "bg-white text-black border-transparent shadow-lg"
+                                        : "bg-slate-800 text-white border-white/10 hover:bg-slate-700 hover:border-white/20"}`}
                             >
-                                <div className={`w-[4.2rem] h-[4.2rem] md:w-auto md:h-auto rounded-[1.3rem] md:rounded-none flex items-center justify-center mb-1 md:mb-0 text-3xl md:text-lg border shadow-lg transition-colors ${category === cat.name ? 'bg-secondary/20 border-secondary/30' : 'bg-slate-800 border-white/5 hover:border-white/10 hover:bg-slate-700'}`}>
-                                    {cat.icon}
-                                </div>
+                                <span className="text-lg leading-none">{cat.icon}</span>
                                 <span>{cat.name}</span>
                             </Link>
                         ))}
