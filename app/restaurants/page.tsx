@@ -249,7 +249,7 @@ import LandingSearch from "@/components/LandingSearch";
 export default async function RestaurantFinder({
     searchParams
 }: {
-    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string }>
+    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string; welcome?: string }>
 }) {
     const params = await searchParams;
     const location = params.location || params.search || params.address;
@@ -638,6 +638,22 @@ export default async function RestaurantFinder({
                         ))}
                     </div>
                 </div>
+
+                {/* Membership Welcome Banner */}
+                {params.welcome === 'member' && (
+                    <div className="mb-12 p-8 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border border-primary/30 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-8 animate-in zoom-in-95 duration-700 shadow-[0_0_50px_rgba(var(--primary-rgb),0.1)]">
+                        <div className="flex items-center gap-8 text-center md:text-left">
+                            <div className="w-20 h-20 bg-primary/20 rounded-[2rem] flex items-center justify-center text-5xl shadow-2xl animate-pulse">✨</div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white mb-2 tracking-tight italic">Welcome to the Inner Circle.</h2>
+                                <p className="text-slate-400 max-w-md font-medium text-lg leading-relaxed">Your TrueServe Membership is now active. Enjoy priority dispatch and exclusive community discounts.</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-2 shrink-0">
+                            <div className="px-6 py-3 bg-white/5 text-primary border border-primary/20 rounded-2xl text-xs font-black uppercase tracking-[0.2em] text-center backdrop-blur-md">Membership: Active</div>
+                        </div>
+                    </div>
+                )}
 
                 <div className="h-6"></div>
 

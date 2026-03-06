@@ -77,6 +77,7 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const role = (formData.get("role") as string) || 'CUSTOMER';
+    const plan = formData.get("plan") as string || 'Basic'; // Capture requested plan
     const name = (formData.get("name") as string) || email.split('@')[0];
     const address = formData.get("address") as string;
     const cookieStore = await cookies();
@@ -98,7 +99,7 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
             return { message: "This email is already registered. Please log in instead.", error: true };
         }
 
-        // 1. Sign Up in Supabase Auth - Use Admin API to bypass "Sign up disabled" settings
+        // 1. Sign Up in Supabase Auth
         const { data, error } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
@@ -114,30 +115,58 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
         }
 
         if (data.user) {
-            // 2. Create Public User Record - Use ADMIN to bypass RLS
-            // We use the SAME ID as the Auth User for consistency
+            // 2. Create Public User Record
             const { error: dbError } = await supabaseAdmin.from('User').insert({
                 id: data.user.id,
                 email: email,
                 name: name,
                 role: role,
+                plan: plan, // Store the plan
                 address: address || null,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });
 
-            if (dbError) {
-                // If ID already exists (maybe duplicated email in public table but not auth), log it
-                console.error("Public User Insert Error:", dbError);
-                // We don't fail the auth, but sync might be off.
-            }
+            if (dbError) console.error("Public User Insert Error:", dbError);
 
             cookieStore.set("userId", data.user.id, { secure: true, httpOnly: true });
+
+            // 3. STRIPE REDIRECTION FOR PLUS/PREMIUM
+            if (role === 'CUSTOMER' && (plan === 'Plus' || plan === 'Premium')) {
+                const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+                const amount = plan === 'Plus' ? 999 : 1999;
+
+                const session = await (await import("@/lib/stripe")).getStripe().checkout.sessions.create({
+                    payment_method_types: ['card'],
+                    line_items: [{
+                        price_data: {
+                            currency: 'usd',
+                            product_data: {
+                                name: `TrueServe ${plan} Membership`,
+                                description: plan === 'Plus' ? 'Priority dispatch & Member-only discounts' : 'Zero delivery fees & Concierge support'
+                            },
+                            unit_amount: amount,
+                            recurring: { interval: 'month' }
+                        },
+                        quantity: 1,
+                    }],
+                    mode: 'subscription',
+                    success_url: `${baseUrl}/auth/onboarding-success?session_id={CHECKOUT_SESSION_ID}&type=customer`,
+                    cancel_url: `${baseUrl}/benefits`,
+                    metadata: {
+                        userId: data.user.id,
+                        plan: plan
+                    }
+                });
+
+                if (session.url) redirect(session.url);
+            }
         }
 
-        return { message: "Account created! Please check your email/login.", success: true };
+        return { message: "Account created! Redirecting...", success: true };
 
     } catch (e: any) {
+        if (e.message?.includes('NEXT_REDIRECT')) throw e;
         return { message: e.message || "Signup failed", error: true };
     }
 }

@@ -18,8 +18,11 @@ function LoginWithParams() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get("redirect") || "/restaurants";
+    const isPlus = searchParams.get("plus") === "true";
+    const isPremium = searchParams.get("premium") === "true";
+    const requestedPlan = isPremium ? 'Premium' : isPlus ? 'Plus' : 'Basic';
 
-    const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
+    const [mode, setMode] = useState<'login' | 'signup' | 'reset'>(isPlus || isPremium ? 'signup' : 'login');
     const [formData, setFormData] = useState({ email: '', password: '', name: '', address: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
@@ -54,6 +57,7 @@ function LoginWithParams() {
         data.append("password", formData.password);
         data.append("name", formData.name);
         data.append("address", formData.address);
+        data.append("plan", requestedPlan); // Passthrough the plan
 
         let res;
         if (mode === 'login') {
@@ -95,7 +99,17 @@ function LoginWithParams() {
                 </h1>
                 <h2 className="text-xl text-slate-400 font-bold md:text-center mb-10 text-slate-300 md:font-semibold">
                     {mode === 'login' && "Sign in to your account"}
-                    {mode === 'signup' && "Create Account"}
+                    {mode === 'signup' && (
+                        <div className="flex flex-col items-center">
+                            <span>Create Account</span>
+                            {(isPlus || isPremium) && (
+                                <span className={`mt-2 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${isPremium ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-primary/10 text-primary border-primary/20'
+                                    }`}>
+                                    TrueServe {requestedPlan} Membership
+                                </span>
+                            )}
+                        </div>
+                    )}
                     {mode === 'reset' && "Reset Password"}
                 </h2>
 

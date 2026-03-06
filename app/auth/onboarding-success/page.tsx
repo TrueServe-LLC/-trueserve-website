@@ -4,13 +4,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
 
-export default async function OnboardingSuccessPage({
+export default async function AuthOnboardingSuccessPage({
     searchParams
 }: {
-    searchParams: { session_id?: string }
+    searchParams: { session_id?: string; type?: string }
 }) {
     const sessionId = searchParams.session_id;
-    if (!sessionId) redirect('/merchant/dashboard');
+    if (!sessionId) redirect('/');
 
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
@@ -23,24 +23,22 @@ export default async function OnboardingSuccessPage({
         const session = await getStripe().checkout.sessions.retrieve(sessionId);
 
         if (session.payment_status === 'paid' || session.status === 'complete') {
-            const restaurantId = session.metadata?.restaurantId;
             const subscriptionId = session.subscription as string;
+            const plan = session.metadata?.plan || 'Plus';
 
-            // 2. Update Restaurant Record
-            if (restaurantId) {
-                await supabase
-                    .from('Restaurant')
-                    .update({
-                        plan: 'Pro Subscription',
-                        stripeSubscriptionId: subscriptionId,
-                        updatedAt: new Date().toISOString()
-                    })
-                    .eq('id', restaurantId);
-            }
+            // 2. Update User Record
+            await supabase
+                .from('User')
+                .update({
+                    plan: plan,
+                    stripeSubscriptionId: subscriptionId,
+                    updatedAt: new Date().toISOString()
+                })
+                .eq('id', userId);
         }
     } catch (err) {
-        console.error("Stripe Verification Error:", err);
+        console.error("Auth Stripe Verification Error:", err);
     }
 
-    redirect('/merchant/dashboard?welcome=pro');
+    redirect('/restaurants?welcome=member');
 }

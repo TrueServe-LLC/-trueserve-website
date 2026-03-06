@@ -375,7 +375,8 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             lat: lat,
             lng: lng,
             imageUrl: '/restaurant1.jpg',
-            avgPrepTime: null, // Explicitly empty for new signups
+            plan: plan || 'Flex Options', // Track the chosen plan
+            avgPrepTime: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
@@ -386,17 +387,52 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         await sendEmail(
             email,
             "Welcome to TrueServe Partner Network",
-            `Hi ${contactName},\n\nThank you for choosing TrueServe! We've received your request to join as a ${plan || 'Partner'} merchant.\n\nYour restaurant "${restaurantName}" has been registered in our system.\n\nYou can now log in to your dashboard to complete your profile and start uploading your menu: [Link to Dashboard]\n\nOur onboarding team will review your menu within 24 hours.\n\nBest,\nThe TrueServe Team`
+            `Hi ${contactName},\n\nThank you for choosing TrueServe! We've received your request to join as a ${plan || 'Partner'} merchant.\n\nYour restaurant "${restaurantName}" has been registered in our system.\n\nBest,\nThe TrueServe Team`
         );
 
         // 5. Auto-Login Cookie
         const cookieStore = await cookies();
         cookieStore.set("userId", userId, { secure: true, httpOnly: true });
 
-        // revalidatePath('/merchant/dashboard'); // Ensure dashboard is fresh
-        return { message: "Account created! Redirecting...", success: true };
+        // 6. STRIPE REDIRECTION LOGIC
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+        if (plan === 'Pro Subscription') {
+            console.log("[Merchant Signup] Creating Stripe Checkout for Pro Plan...");
+
+            // Create a checkout session for $199/mo (using on-the-fly price if no ID)
+            const session = await getStripe().checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: [{
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: 'TrueServe Pro Scale Plan',
+                            description: '0% Split, VIP Dispatch, Advanced Analytics'
+                        },
+                        unit_amount: 19900, // $199.00
+                        recurring: { interval: 'month' }
+                    },
+                    quantity: 1,
+                }],
+                mode: 'subscription',
+                success_url: `${baseUrl}/merchant/onboarding-success?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${baseUrl}/merchant/onboarding-failed`,
+                metadata: {
+                    restaurantId,
+                    userId,
+                    plan: 'PRO'
+                }
+            });
+
+            if (session.url) redirect(session.url);
+        }
+
+        // Default: Flex / Standard Onboarding
+        redirect('/merchant/dashboard');
 
     } catch (e: any) {
+        if (e.message?.includes('NEXT_REDIRECT')) throw e; // Let Next.js handle redirects
         console.error("Merchant Signup Error:", e);
         return { message: "An error occurred: " + (e.message || "Unknown error"), error: true };
     }

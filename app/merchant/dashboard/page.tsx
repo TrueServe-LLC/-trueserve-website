@@ -65,7 +65,11 @@ async function getMerchantData(userId: string) {
     }
 }
 
-export default async function MerchantDashboard() {
+export default async function MerchantDashboard({
+    searchParams
+}: {
+    searchParams: { welcome?: string }
+}) {
     const cookieStore = await cookies();
     let userId = cookieStore.get("userId")?.value;
 
@@ -139,7 +143,13 @@ export default async function MerchantDashboard() {
                         True<span className="text-primary">Serve</span> <span className="text-slate-500">Merchant</span>
                     </Link>
                     <div className="flex gap-4 items-center">
-                        <span className="px-4 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest shadow-inner">
+                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${restaurant.plan === 'Pro Subscription'
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+                            : 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                            }`}>
+                            {restaurant.plan === 'Pro Subscription' ? 'Pro Scale' : 'Flex Scale'}
+                        </span>
+                        <span className="px-4 py-1.5 bg-white/5 text-white border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest shadow-inner">
                             {restaurant.name}
                         </span>
                         <LogoutButton />
@@ -148,6 +158,21 @@ export default async function MerchantDashboard() {
             </nav>
 
             <main className="container py-6 md:py-12 px-4 animate-fade-in pb-32">
+                {/* Welcome Celebration Banner */}
+                {searchParams.welcome === 'pro' && (
+                    <div className="mb-12 p-8 bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border border-emerald-500/30 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-8 animate-in slide-in-from-top-12 duration-1000">
+                        <div className="flex items-center gap-8">
+                            <div className="w-20 h-20 bg-emerald-500/20 rounded-[2rem] flex items-center justify-center text-5xl shadow-2xl animate-bounce">🚀</div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white mb-2 tracking-tight italic">VIP Status Activated.</h2>
+                                <p className="text-slate-400 max-w-md font-medium text-lg leading-relaxed">Welcome to the 0% Split network. Your business is now optimized for maximum local margin.</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="px-6 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-center">Active Subscription: $199/mo</div>
+                        </div>
+                    </div>
+                )}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 mb-8 md:mb-12">
                     <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all min-h-[140px] md:min-h-[180px] flex flex-col justify-end">
                         <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">📋</div>
