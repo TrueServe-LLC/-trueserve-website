@@ -585,9 +585,9 @@ export default async function RestaurantFinder({
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
                                         <div className="absolute inset-0 p-3 flex flex-col justify-end">
-                                            <div className="flex justify-between items-end gap-2">
-                                                <div className="min-w-0">
-                                                    <h3 className="text-white text-[11px] md:text-xs font-black truncate drop-shadow-md">{res.name}</h3>
+                                            <div className="flex justify-between items-end gap-2 w-full">
+                                                <div className="min-w-0 flex-1">
+                                                    <h3 className="text-white text-[11px] md:text-xs font-black truncate drop-shadow-md w-full">{res.name}</h3>
                                                 </div>
                                                 <div className="shrink-0 bg-primary/20 backdrop-blur-md border border-primary/20 px-1.5 py-0.5 rounded-lg text-primary text-[9px] font-black shadow-lg">
                                                     ★ {res.rating || '4.5'}
@@ -746,10 +746,10 @@ export default async function RestaurantFinder({
                                             <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                                             <div className="absolute bottom-4 left-4 right-4">
-                                                <div className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black shadow-2xl inline-block mb-2">
+                                                <div className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black shadow-2xl inline-block mb-2 max-w-full truncate">
                                                     {rest.deal?.description}
                                                 </div>
-                                                <h3 className="text-white text-lg font-black">{rest.name}</h3>
+                                                <h3 className="text-white text-[15px] md:text-lg font-black truncate w-full">{rest.name}</h3>
                                             </div>
                                         </div>
                                     </Link>
@@ -765,18 +765,20 @@ export default async function RestaurantFinder({
                             </div>
                             <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
                                 {restaurants.filter(r => parseInt(r.prepTime || "30") <= 25).slice(0, 6).map((rest) => (
-                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group">
-                                        <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative">
+                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col">
+                                        <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative shrink-0">
                                             <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                             <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
                                                 {rest.prepTime}
                                             </div>
                                         </div>
-                                        <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors">{rest.name}</h3>
-                                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold">
-                                            <span className="text-orange-400">★ {rest.rating}</span>
-                                            <span>•</span>
-                                            <span className="text-slate-500">{rest.priceLevel}</span>
+                                        <div className="px-1 w-full">
+                                            <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
+                                            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
+                                                <span className="text-orange-400 shrink-0">★ {rest.rating}</span>
+                                                <span className="shrink-0">•</span>
+                                                <span className="text-slate-500 truncate">{rest.priceLevel}</span>
+                                            </div>
                                         </div>
                                     </Link>
                                 ))}
