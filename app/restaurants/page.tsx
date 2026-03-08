@@ -528,9 +528,7 @@ export default async function RestaurantFinder({
                                                 <div className="min-w-0 flex-1">
                                                     <h3 className="text-white text-[11px] md:text-xs font-black truncate drop-shadow-md w-full">{res.name}</h3>
                                                 </div>
-                                                <div className="shrink-0 bg-primary/20 backdrop-blur-md border border-primary/20 px-1.5 py-0.5 rounded-lg text-primary text-[9px] font-black shadow-lg">
-                                                    ★ {res.rating || '4.5'}
-                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -661,9 +659,8 @@ export default async function RestaurantFinder({
                 <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar mb-14 border-b border-white/5 pt-4">
                     {[
                         { label: 'Deals', icon: '🏷️' },
-                        { label: 'Rating: 4.5+', icon: '⭐', hasArrow: true },
                         { label: 'Under 30 min', icon: '🕒' }
-                    ].map((filter) => (
+                    ].map((filter: any) => (
                         <button key={filter.label} className="flex items-center gap-2 whitespace-nowrap px-5 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/40 text-[13px] font-bold text-slate-200 transition-all shrink-0">
                             {filter.icon && <span>{filter.icon}</span>}
                             <span>{filter.label}</span>
@@ -726,8 +723,6 @@ export default async function RestaurantFinder({
                                         <div className="px-1 w-full">
                                             <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
                                             <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
-                                                <span className="text-orange-400 shrink-0">★ {rest.rating}</span>
-                                                <span className="shrink-0">•</span>
                                                 <span className="text-slate-500 truncate">{rest.priceLevel}</span>
                                             </div>
                                         </div>
@@ -788,9 +783,6 @@ export default async function RestaurantFinder({
                                         )}
                                     </div>
 
-                                    <div className="absolute bottom-3 right-3 bg-white text-black px-2.5 py-1 rounded-full text-[11px] font-black flex items-center gap-1 shadow-2xl border border-white/20">
-                                        <span className="text-orange-500 font-bold">★</span> {rest.rating}
-                                    </div>
                                 </div>
 
                                 <div className="px-1">

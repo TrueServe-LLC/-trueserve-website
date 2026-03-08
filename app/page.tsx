@@ -110,44 +110,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Local Spotlight: Mount Airy */}
-        <section className="py-12 md:py-24 bg-gradient-to-b from-black to-slate-900/50">
-          <div className="container mx-auto px-6">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-              <div className="max-w-xl">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4">
-                  <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span> Local Spotlight
-                </div>
-                <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">Mount Airy, NC</h2>
-                <p className="text-slate-400 font-medium">Experience the historic flavors of Mayberry with TrueServe's premium local network.</p>
-              </div>
-              <Link href="/restaurants?city=Mount%20Airy" className="text-primary font-black uppercase tracking-widest text-xs hover:underline underline-offset-8">Explore the Full Collection &rarr;</Link>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              {[
-                { name: "Snappy Lunch", type: "Historic Diner", img: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop" },
-                { name: "13 Bones", type: "BBQ & Steakhouse", img: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop" },
-                { name: "Old North State Winery", type: "Upscale Casual", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2070&auto=format&fit=crop" }
-              ].map((res) => (
-                <Link key={res.name} href="/restaurants" className="group relative aspect-[4/5] bg-slate-900 rounded-3xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 flex flex-col justify-end">
-                  {/* Image */}
-                  <img
-                    src={res.img}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-75"
-                    alt={res.name}
-                  />
-                  {/* Gentle gradient — only covers bottom third */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                  {/* Name only — clean & minimal */}
-                  <div className="relative z-10 p-6">
-                    <h3 className="text-xl font-bold text-white leading-tight">{res.name}</h3>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Features Section */}
         <section className="py-16 md:py-24 relative">
