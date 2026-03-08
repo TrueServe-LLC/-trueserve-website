@@ -6,8 +6,8 @@ import { createClient } from "@supabase/supabase-js";
 import { describe, expect, test, beforeAll, afterAll } from "@jest/globals";
 import * as dotenv from "dotenv";
 
-dotenv.config({ path: '.env.local' });
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) dotenv.config();
+dotenv.config({ path: '.env.local', override: true });
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('mock')) dotenv.config({ override: true });
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

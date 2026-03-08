@@ -124,23 +124,24 @@ export default async function Home() {
               <Link href="/restaurants?city=Mount%20Airy" className="text-primary font-black uppercase tracking-widest text-xs hover:underline underline-offset-8">Explore the Full Collection &rarr;</Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 overflow-x-auto pb-4 md:pb-0 hide-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {[
                 { name: "Snappy Lunch", type: "Historic Diner", img: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop" },
                 { name: "13 Bones", type: "BBQ & Steakhouse", img: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop" },
                 { name: "Old North State Winery", type: "Upscale Casual", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2070&auto=format&fit=crop" }
               ].map((res) => (
-                <Link key={res.name} href="/restaurants" className="group relative aspect-[4/5] bg-slate-800 rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-8">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
-                  <img src={res.img} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60" alt={res.name} />
-                  <div className="relative z-20">
-                    <p className="text-primary font-black text-[10px] uppercase tracking-widest mb-1">{res.type}</p>
-                    <h3 className="text-2xl font-bold text-white mb-2">{res.name}</h3>
-                    <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
-                      <span>4.9 ★</span>
-                      <span className="w-1 h-1 bg-white/20 rounded-full"></span>
-                      <span>12-18 min</span>
-                    </div>
+                <Link key={res.name} href="/restaurants" className="group relative aspect-[4/5] bg-slate-900 rounded-3xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 flex flex-col justify-end">
+                  {/* Image */}
+                  <img
+                    src={res.img}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-75"
+                    alt={res.name}
+                  />
+                  {/* Gentle gradient — only covers bottom third */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                  {/* Name only — clean & minimal */}
+                  <div className="relative z-10 p-6">
+                    <h3 className="text-xl font-bold text-white leading-tight">{res.name}</h3>
                   </div>
                 </Link>
               ))}

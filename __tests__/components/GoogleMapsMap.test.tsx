@@ -1,31 +1,40 @@
-
 import { render, screen } from '@testing-library/react';
 import GoogleMapsMap from '@/components/GoogleMapsMap';
+
+// Set a fake key so the "Missing Key" guard doesn't fire
+process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY = 'test-key';
 
 // Mock the Google Maps API Loader & Components
 jest.mock('@react-google-maps/api', () => ({
     GoogleMap: ({ children }: any) => <div data-testid="google-map">{children}</div>,
     useJsApiLoader: () => ({ isLoaded: true }),
     Marker: ({ title }: any) => <div data-testid="marker" title={title} />,
-    OverlayView: ({ children }: any) => <div data-testid="overlay-view">{children}</div>,
+    OverlayView: Object.assign(
+        ({ children }: any) => <div data-testid="overlay-view">{children}</div>,
+        { OVERLAY_MOUSE_TARGET: 'overlayMouseTarget' }
+    ),
 }));
 
-// Mock window.google object for marker icon creation in tests
+// Mock maps-config so GOOGLE_MAPS_API_KEY is never empty in the module
+jest.mock('@/lib/maps-config', () => ({
+    GOOGLE_MAPS_API_KEY: 'test-key',
+    GOOGLE_MAPS_SCRIPT_ID: 'test-script',
+    GOOGLE_MAPS_LIBRARIES: [],
+}));
+
+// Mock window.google
 window.google = {
     maps: {
-        Size: class { },
-        Point: class { },
+        Size: class { constructor(public w: number, public h: number) { } },
+        Point: class { constructor(public x: number, public y: number) { } },
         LatLngBounds: class {
-            extend() { }
+            extend() { return this; }
             fitBounds() { }
         },
     }
 } as any;
 
 describe('GoogleMapsMap Component', () => {
-    // Provide a valid fake key so it doesn't render "Missing Key" message
-    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY = 'test-key';
-
     it('renders markers for restaurants', () => {
         const restaurants = [
             { id: '1', name: 'Test Rest', coords: [35, -80] as [number, number] }
@@ -34,7 +43,6 @@ describe('GoogleMapsMap Component', () => {
         render(<GoogleMapsMap center={[35, -80]} restaurants={restaurants} />);
 
         expect(screen.getByTestId('google-map')).toBeInTheDocument();
-        // Since we mock Marker to have title attribute
         expect(screen.getByTitle('Test Rest')).toBeInTheDocument();
     });
 
@@ -46,9 +54,7 @@ describe('GoogleMapsMap Component', () => {
         render(<GoogleMapsMap center={[35, -80]} restaurants={drivers} />);
 
         expect(screen.getByTestId('overlay-view')).toBeInTheDocument();
-        // Check for rotation style inside
         const overlay = screen.getByTestId('overlay-view');
-        // OverlayView children are rendered inside our mock div
         expect(overlay.innerHTML).toContain('rotate(45deg)');
     });
 });

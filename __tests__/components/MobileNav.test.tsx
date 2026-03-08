@@ -47,7 +47,7 @@ describe('MobileNav Component', () => {
         // Expect merchant tabs to be visible
         expect(screen.getByText('Orders')).toBeInTheDocument();
         expect(screen.getByText('Menu')).toBeInTheDocument();
-        expect(screen.getByText('Log out')).toBeInTheDocument();
+        expect(screen.getByText('Profile')).toBeInTheDocument();
 
         // Ensure driver tabs are NOT visible
         expect(screen.queryByText('Board')).not.toBeInTheDocument();

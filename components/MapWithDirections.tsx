@@ -150,14 +150,6 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
                 mapTypeControl: false,
             }}
         >
-            {/* Debug Overlay */}
-            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs p-2 rounded z-20 pointer-events-none">
-                <p>Status: {directions ? "Route Loaded" : "Fetching..."}</p>
-                {/* @ts-ignore */}
-                <p>Start: {startPoint?.lat?.toFixed(4) || "?"}</p>
-                {/* @ts-ignore */}
-                <p>End: {destination?.lat?.toFixed(4) || "?"}</p>
-            </div>
             {/* 1. The Route Line - Google Blue */}
             {directions && (
                 <DirectionsRenderer

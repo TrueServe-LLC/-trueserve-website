@@ -1,6 +1,15 @@
 import 'whatwg-fetch'
 import '@testing-library/jest-dom'
 
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://mock.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'mock-anon-key';
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'mock-service-key';
+// Only set mock fallbacks — don't override real keys already loaded from .env.local
+// This allows integration tests to use the real Supabase project
+// while unit tests (which don't load .env.local) still get safe mock values.
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://mock.supabase.co';
+}
+if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'mock-anon-key';
+}
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'mock-service-key';
+}
