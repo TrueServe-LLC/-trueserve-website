@@ -450,7 +450,7 @@ export default async function RestaurantFinder({
                 {/* Mobile Search -> Moved to Main Content */}
             </nav>
 
-            <main className="container py-6 md:py-8 px-4 animate-fade-in pb-32">
+            <main className="container py-6 md:py-8 px-4 animate-fade-in pb-40">
                 {/* Mobile Welcome Header */}
                 <div className="md:hidden flex flex-col gap-1 mb-6">
                     <h2 className="text-sm font-bold text-slate-400">Welcome,</h2>
@@ -459,7 +459,7 @@ export default async function RestaurantFinder({
 
                 {/* Mobile Promotional Banner */}
                 <div className="md:hidden w-full bg-gradient-to-r from-slate-900 to-slate-800 rounded-[2rem] p-6 mb-6 relative overflow-hidden border border-white/5 shadow-2xl">
-                    <div className="relative z-10 w-2/3">
+                    <div className="relative z-10 w-3/4 md:w-2/3">
                         <h3 className="text-xl font-black text-white leading-tight mb-5">
                             50% Discount<br />on selected Restaurant
                         </h3>
@@ -567,7 +567,7 @@ export default async function RestaurantFinder({
                     </div>
 
                     {/* Google Maps Embed - Responsive Height */}
-                    <div className="w-full h-[250px] md:h-[400px] rounded-3xl overflow-hidden border border-white/5 shadow-2xl relative z-0">
+                    <div className="w-full h-[250px] md:h-[400px] rounded-3xl overflow-hidden border border-white/5 shadow-2xl relative z-0 bg-slate-900/50 flex items-center justify-center">
                         <GoogleMapsMap
                             center={mapCenter}
                             zoom={13}

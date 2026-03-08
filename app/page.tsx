@@ -202,8 +202,8 @@ export default async function Home() {
         </section>
       </main>
 
-      <footer className="bg-black/20 py-12 border-t border-white/5 mt-12">
-        <div className="container flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+      <footer className="bg-black/20 py-12 border-t border-white/5 mt-12 pb-32 md:pb-12">
+        <div className="container flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm px-6">
           <p>&copy; {new Date().getFullYear()} TrueServe Inc.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <Link href="/legal" className="hover:text-primary">Privacy</Link>

@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${playfair.variable} bg-background text-foreground antialiased pb-24 md:pb-0 font-sans`}
+        className={`${outfit.variable} ${playfair.variable} bg-black text-slate-200 antialiased pb-24 md:pb-0 font-sans overflow-x-hidden`}
         suppressHydrationWarning
       >
         {children}

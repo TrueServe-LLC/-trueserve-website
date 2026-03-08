@@ -61,15 +61,15 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     }, [map, center, restaurants, zoom]);
 
     if (!isLoaded) {
-        return <div className="h-full w-full bg-slate-800 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Google Maps...</div>;
+        return <div className="h-full w-full bg-slate-900 border border-white/5 animate-pulse rounded-xl flex items-center justify-center text-primary/50 font-bold tracking-widest text-sm uppercase">Loading Map...</div>;
     }
 
     if (!GOOGLE_MAPS_API_KEY) {
         return (
-            <div className="h-full w-full bg-slate-800 rounded-xl flex items-center justify-center text-red-500 p-4 border border-red-500/20 text-center font-bold">
-                Error: Missing Google Maps API Key
-                <br />
-                <span className="text-sm font-normal text-slate-400">Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env file</span>
+            <div className="h-full w-full bg-slate-900 rounded-xl flex items-center justify-center flex-col text-red-500 p-4 border border-red-500/20 text-center font-bold">
+                <span className="text-2xl mb-2">🗺️</span>
+                <span>Error: Missing Google Maps API Key</span>
+                <span className="text-sm font-normal text-slate-400 mt-2">Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env file</span>
             </div>
         );
     }
