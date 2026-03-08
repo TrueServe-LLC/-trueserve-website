@@ -65,7 +65,12 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
                 contents: [{
                     parts: [
                         { text: "Extract all food and drink items from this menu. For each item, provide the 'name', 'price' (as a number), 'description', and 'category' (e.g., Starters, Mains, Desserts, Drinks). Return the data ONLY as a valid JSON array of objects. Do not include any other text." },
-                        { inline_data: { mime_type: "image/png", data: base64Data } }
+                        {
+                            inlineData: {
+                                mimeType: "image/png",
+                                data: base64Data
+                            }
+                        }
                     ]
                 }]
             })
