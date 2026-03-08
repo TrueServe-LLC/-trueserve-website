@@ -13,6 +13,7 @@ import { getStripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 import { sendSMS } from "@/lib/sms";
 import { createNotification } from "@/lib/notifications";
+import { scanDocumentWithAI } from "@/lib/aiScanner";
 
 export type DriverApplicationState = {
     message: string;
@@ -26,12 +27,14 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const vehicleType = formData.get("vehicleType") as string;
     const phone = formData.get("phone") as string;
     const idDocument = formData.get("idDocument") as File;
+    const insuranceDocument = formData.get("insuranceDocument") as File | null;
+    const registrationDocument = formData.get("registrationDocument") as File | null;
     const dob = formData.get("dob") as string;
     const address = formData.get("address") as string;
     const lat = formData.get("lat") as string;
     const lng = formData.get("lng") as string;
 
-    if (!name || !email || !vehicleType || !phone || !idDocument || !dob || !address) {
+    if (!name || !email || !vehicleType || !phone || !idDocument || !insuranceDocument || !registrationDocument || !dob || !address) {
         return { message: "Please fill in all fields, including documents and address.", error: true };
     }
 
@@ -106,6 +109,31 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         const backgroundCheckId = `BCK_${uuidv4().split('-')[0].toUpperCase()}`;
         console.log(`[DriverApp] Triggering Background Check for ${email}. Provider ID: ${backgroundCheckId}`);
 
+        // --- AI SCANNER AUTOMATION ---
+        console.log(`[DriverApp] Running AI Scanner for ${email}...`);
+        const [idScan, insuranceScan, registrationScan] = await Promise.all([
+            scanDocumentWithAI(idDocument),
+            scanDocumentWithAI(insuranceDocument),
+            scanDocumentWithAI(registrationDocument)
+        ]);
+
+        console.log("[AI Scan Results]", { idScan, insuranceScan, registrationScan });
+
+        const isIdValid = idScan.isValid && idScan.extractedData.documentType === 'LICENSE' && !idScan.extractedData.isExpired;
+        const isInsuranceValid = insuranceScan.isValid && insuranceScan.extractedData.documentType === 'INSURANCE' && !insuranceScan.extractedData.isExpired;
+        const isRegistrationValid = registrationScan.isValid && registrationScan.extractedData.documentType === 'REGISTRATION' && !registrationScan.extractedData.isExpired;
+
+        const isAutoApproved = isIdValid && isInsuranceValid && isRegistrationValid;
+
+        const driveStatus = isAutoApproved ? "APPROVED" : "PENDING_APPROVAL";
+        const bckStatus = isAutoApproved ? "CLEAR" : "PROCESSING";
+
+        if (isAutoApproved) {
+            console.log(`[DriverApp] 🟢 AI AUTO-APPROVED Application for ${email}!`);
+        } else {
+            console.log(`[DriverApp] 🟡 AI Sent to Manual Review for ${email}. Reason: Scans failed automated compliance checks.`);
+        }
+
         const { error: driverError } = await supabaseAdmin
             .from('Driver')
             .insert({
@@ -115,9 +143,10 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 address: address,
                 lat: lat ? parseFloat(lat) : null,
                 lng: lng ? parseFloat(lng) : null,
-                status: "PENDING_APPROVAL",
+                status: driveStatus,
                 backgroundCheckId: backgroundCheckId,
-                backgroundCheckStatus: "PROCESSING",
+                backgroundCheckStatus: bckStatus,
+                vehicleVerified: isAutoApproved,
                 insuranceDocumentUrl: insuranceUrl,
                 registrationDocumentUrl: registrationUrl,
                 createdAt: new Date().toISOString(),
@@ -146,29 +175,43 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         }
 
         // Send Confirmation Email to Driver
-        await sendEmail(
-            email,
-            "Application Received - TrueServe Driver",
-            `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will review your application shortly.\n\n**Please find the attached Onboarding Process document for your review.**\n\nOnce approved, you will receive an email to create your account and password.\n\nBest,\nThe TrueServe Team`,
-            attachments
-        );
+        if (isAutoApproved) {
+            await sendEmail(
+                email,
+                "Welcome to TrueServe! Your Account is Approved",
+                `Hi ${name},\n\nGreat news! Our automated integration system has verified your documents and you are approved to drive with TrueServe immediately.\n\n**Please find the attached Onboarding Process document for your review.**\n\nYou can now log in using your email to set a password and start accepting deliveries!\n\nBest,\nThe TrueServe Team`,
+                attachments
+            );
 
-        // --- NEW: Send Confirmation SMS to Driver ---
-        await sendSMS(
-            phone,
-            `TrueServe: Hi ${name.split(' ')[0]}, thanks for applying! We've received your documents and will text you once approved.`
-        );
+            await sendSMS(
+                phone,
+                `TrueServe: Hi ${name.split(' ')[0]}, great news! Your documents were auto-verified and you are approved to drive immediately. Check your email to login.`
+            );
+        } else {
+            await sendEmail(
+                email,
+                "Application Received - TrueServe Driver",
+                `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will manually review your application shortly.\n\n**Please find the attached Onboarding Process document for your review.**\n\nOnce approved, you will receive an email to create your account and password.\n\nBest,\nThe TrueServe Team`,
+                attachments
+            );
+
+            await sendSMS(
+                phone,
+                `TrueServe: Hi ${name.split(' ')[0]}, thanks for applying! We've received your documents and will text you once our team reviews them.`
+            );
+        }
 
         // Send Notification to Admin
         await sendEmail(
             "admin@trueserve.com",
-            `New Driver Application: ${name}`,
+            `New Driver Application: ${name} (${driveStatus})`,
             `<h1>New Driver Application</h1>
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
             <p><strong>Phone:</strong> ${phone}</p>
             <p><strong>Vehicle:</strong> ${vehicleType}</p>
-            <p><strong>Status:</strong> PENDING_APPROVAL</p>
+            <p><strong>Status:</strong> <span style="color: ${isAutoApproved ? 'green' : 'orange'}">${driveStatus}</span></p>
+            ${isAutoApproved ? `<p><em>This application was automatically approved by the AI Scanner because all 3 documents were verified.</em></p>` : `<p><em>This application requires manual review. AI confidence or document verification failed.</em></p>`}
             <hr />
             <p><strong>ID Document:</strong> <a href="${idDocumentUrl || '#'}">${idDocumentUrl ? 'View License' : 'Not Provided'}</a></p>
             <p><strong>Insurance:</strong> <a href="${insuranceUrl || '#'}">${insuranceUrl ? 'View Insurance' : 'Not Provided'}</a></p>
@@ -176,7 +219,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             <p>Please review explicitly in Supabase dashboard.</p>`
         );
 
-        return { message: "Application submitted! We'll email you when approved.", success: true };
+        return { message: isAutoApproved ? "Application auto-approved! Check your email to start driving." : "Application submitted! We'll email you when approved.", success: true };
 
     } catch (e: any) {
         console.error("Failed to submit application:", e);
