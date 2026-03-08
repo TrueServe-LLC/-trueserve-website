@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createDriverStripeAccount } from "../../actions";
 import Link from "next/link";
+import DriverProfileForm from "@/components/DriverProfileForm";
 
 export const dynamic = 'force-dynamic';
 
@@ -27,21 +28,37 @@ export default async function DriverAccount() {
         <div className="max-w-2xl mx-auto space-y-8 animate-fade-in-up">
             <h1 className="text-3xl font-bold">Account</h1>
 
-            <div className="card bg-white/5 border-white/10 p-6 flex items-center gap-6">
-                <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center text-3xl font-bold text-primary border-2 border-primary/30">
-                    {user.email?.charAt(0).toUpperCase()}
-                </div>
+            <div className="card bg-white/5 border-white/10 p-6 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                {driver.photoUrl ? (
+                    <img src={driver.photoUrl} alt="Driver" className="w-24 h-24 md:w-20 md:h-20 rounded-full object-cover border-4 border-primary/30 shadow-2xl" />
+                ) : (
+                    <div className="w-24 h-24 md:w-20 md:h-20 rounded-full bg-primary/20 flex items-center justify-center text-4xl md:text-3xl font-bold text-primary border-4 border-primary/30 shadow-2xl shrink-0">
+                        {user.email?.charAt(0).toUpperCase()}
+                    </div>
+                )}
                 <div>
-                    <h2 className="text-xl font-bold">{user.user_metadata?.displayName || user.email?.split('@')[0]}</h2>
-                    <p className="text-slate-400">Driver since {new Date(driver.createdAt).toLocaleDateString()}</p>
-                    <div className="flex gap-2 mt-2">
-                        <span className={`px-2 py-1 ${driver.status === 'ONLINE' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400'} text-[10px] font-black uppercase rounded tracking-widest`}>
+                    <h2 className="text-2xl md:text-xl font-black">{user.user_metadata?.displayName || user.email?.split('@')[0]}</h2>
+                    <p className="text-slate-400 font-bold text-sm">Driver since • {new Date(driver.createdAt).toLocaleDateString()}</p>
+                    {driver.aboutMe && (
+                        <p className="mt-4 text-white italic max-w-lg">"{driver.aboutMe}"</p>
+                    )}
+                    <div className="flex justify-center md:justify-start gap-2 mt-4 md:mt-2">
+                        <span className={`px-2 py-1 ${driver.status === 'ONLINE' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20' : 'bg-slate-500/20 text-slate-400'} text-[10px] font-black uppercase rounded tracking-widest`}>
                             {driver.status}
                         </span>
-                        <span className="px-2 py-1 bg-primary/20 text-primary text-[10px] font-black uppercase rounded tracking-widest">Standard Tier</span>
+                        <span className="px-2 py-1 bg-primary/20 text-primary text-[10px] font-black uppercase rounded tracking-widest border border-primary/20">Standard Tier</span>
                     </div>
                 </div>
             </div>
+
+            {/* Public Profile Settings */}
+            <section>
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-bold uppercase tracking-wider text-slate-500 text-[10px]">Public Profile</h3>
+                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/20 font-black uppercase tracking-widest">Visible to Customers</span>
+                </div>
+                <DriverProfileForm driver={driver} />
+            </section>
 
             {/* Payout Settings / Stripe Section */}
             <section>
