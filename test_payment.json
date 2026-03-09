@@ -1,0 +1,7 @@
+{
+    "amount": 1000,
+    "currency": "usd",
+    "automatic_payment_methods": {
+        "enabled": true
+    }
+}
