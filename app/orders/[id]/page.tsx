@@ -47,43 +47,7 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
     const order = await getOrder(id);
 
     if (!order) {
-        // Mocking for demo if DB entry missing
-        const mockOrder = {
-            id: id || "MOCK-123",
-            status: "PREPARING",
-            createdAt: new Date().toISOString(),
-            restaurant: {
-                name: "Bella Italia (Demo)",
-                lat: 40.7128,
-                lng: -74.0060,
-                coords: [40.7128, -74.0060]
-            },
-            driver: {
-                user: { name: "Alex (Demo)" },
-                currentLat: 40.7128 + 0.01,
-                currentLng: -74.0060 + 0.01
-            },
-            items: []
-        };
-
-        return (
-            <div className="min-h-screen bg-[#0a0a0a] text-white p-8">
-                <main className="container max-w-5xl py-20">
-                    <h1 className="text-3xl font-bold mb-8">Tracking Order #{id.slice(-6).toUpperCase()} (Demo)</h1>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-8">
-                            <OrderTrackingClient order={mockOrder} />
-                        </div>
-                        <div className="space-y-6">
-                            <div className="card bg-white/5 border-white/10 p-6">
-                                <h3 className="font-bold mb-4">Order Summary</h3>
-                                <p className="text-slate-400 text-sm">Demo Mode Active.</p>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-            </div>
-        );
+        return notFound();
     }
 
     const driverName = order.driver?.user.name || "Michael T.";
