@@ -34,7 +34,7 @@ function SetupForm({
             confirmParams: {
                 return_url: `${window.location.origin}/user/settings`, // Should technically not redirect if handled via elements redirect: 'if_required', but we'll try that
             },
-            redirect: 'if_required'
+            redirect: 'if_required' 
         });
 
         if (error) {
@@ -51,7 +51,7 @@ function SetupForm({
         <form onSubmit={handleSubmit} className="p-4 bg-slate-900 rounded-xl border border-white/10 mt-4 animate-fade-in">
             <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-widest text-primary">Add Payment Method</h4>
             <PaymentElement options={{ layout: "tabs" }} />
-
+            
             {message && (
                 <div className="mt-4 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 p-2 rounded">
                     {message}
@@ -105,7 +105,7 @@ export default function WalletUI({ userId }: { userId: string }) {
         try {
             await detachPaymentMethod(userId, id);
             await loadMethods();
-        } catch (e) {
+        } catch(e) {
             alert("Failed to remove card.");
         }
     };
@@ -114,8 +114,10 @@ export default function WalletUI({ userId }: { userId: string }) {
         setIsAddingCard(true);
         try {
             const secret = await createSetupIntent(userId);
+            if (!secret) throw new Error("No client secret returned");
             setClientSecret(secret);
-        } catch (e) {
+        } catch (e: any) {
+            console.error("SetupIntent creation failed:", e);
             alert("Failed to initialize securely.");
             setIsAddingCard(false);
         }
@@ -149,7 +151,7 @@ export default function WalletUI({ userId }: { userId: string }) {
                                         <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{pm.displaySecondary}</p>
                                     </div>
                                 </div>
-                                <button
+                                <button 
                                     onClick={() => handleRemove(pm.id)}
                                     className="w-8 h-8 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors"
                                     title="Remove Card"
@@ -163,7 +165,7 @@ export default function WalletUI({ userId }: { userId: string }) {
             )}
 
             {!isAddingCard ? (
-                <button
+                <button 
                     onClick={handleAddClick}
                     className="btn btn-outline border-white/20 hover:border-primary hover:text-primary w-full mt-6 py-3 text-sm font-bold transition-all text-slate-300"
                 >
@@ -171,8 +173,8 @@ export default function WalletUI({ userId }: { userId: string }) {
                 </button>
             ) : clientSecret ? (
                 <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
-                    <SetupForm
-                        clientSecret={clientSecret}
+                    <SetupForm 
+                        clientSecret={clientSecret} 
                         onSuccess={() => {
                             setIsAddingCard(false);
                             setClientSecret(null);
