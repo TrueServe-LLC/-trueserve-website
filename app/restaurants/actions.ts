@@ -293,14 +293,34 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
         const amountInCents = Math.round(amount * 100);
         if (amountInCents < 50) throw new Error("Amount must be at least 50 cents");
 
+        // Fetch User and Customer ID if logged in
+        const cookieStore = await cookies();
+        const userId = cookieStore.get("userId")?.value;
+        let customerId: string | undefined;
+
+        if (userId) {
+            const { data: user } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).single();
+            if (user) {
+                if (user.stripeCustomerId) {
+                    customerId = user.stripeCustomerId;
+                } else {
+                    const customer = await getStripe().customers.create({
+                        email: user.email,
+                        name: user.name,
+                        metadata: { userId }
+                    });
+                    await supabase.from('User').update({ stripeCustomerId: customer.id }).eq('id', userId);
+                    customerId = customer.id;
+                }
+            }
+        }
+
         // 3. Prepare Intent Options
         const stripeOptions: any = {
             amount: amountInCents,
             currency: 'usd',
             automatic_payment_methods: {
                 enabled: true,
-                // Stripe enabled 'apple_pay' and 'google_pay' by default with automatic_payment_methods
-                // But we specify it here for clarity and compatibility
             },
             description: `Order from ${restaurant?.name || 'Restaurant'}`,
             metadata: {
@@ -310,6 +330,10 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
                 tipAmount: tip.toString()
             }
         };
+
+        if (customerId) {
+            stripeOptions.customer = customerId;
+        }
 
         // If restaurant has a Stripe account, do a Destination Charge
         if (restaurant?.stripeAccountId) {

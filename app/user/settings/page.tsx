@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
+import WalletUI from "@/components/WalletUI";
 
 export default async function UserSettings() {
     const cookieStore = await cookies();
