@@ -78,6 +78,8 @@ export default async function UserSettings() {
                                 </div>
                             </div>
                         </div>
+
+                        <WalletUI userId={userId} />
                     </div>
 
                     {/* Main Content */}
