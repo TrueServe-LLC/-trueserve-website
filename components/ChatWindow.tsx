@@ -24,7 +24,7 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
     useEffect(() => {
         const fetchMessages = async () => {
             const { data } = await supabase
-                .from('ChatMessage')
+                .from('OrderChatMessage')
                 .select('*')
                 .eq('orderId', orderId)
                 .order('createdAt', { ascending: true });
@@ -48,7 +48,7 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
                 {
                     event: 'INSERT',
                     schema: 'public',
-                    table: 'ChatMessage',
+                    table: 'OrderChatMessage',
                     filter: `orderId=eq.${orderId}`
                 },
                 (payload) => {
@@ -74,7 +74,7 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
         setInput(""); // Optimistic clear
 
         await supabase
-            .from('ChatMessage')
+            .from('OrderChatMessage')
             .insert({
                 orderId: orderId,
                 sender: role,
