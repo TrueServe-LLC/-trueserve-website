@@ -83,6 +83,36 @@ export default async function UserSettings() {
                             <button className="btn btn-outline w-full border-white/20 hover:bg-white/5 text-slate-300">Edit Profile</button>
                         </div>
 
+                        {/* Upgrade Roles Section */}
+                        <div className="card bg-white/5 border border-white/10 p-6 space-y-4">
+                            <h3 className="font-bold text-white mb-2">Partner with TrueServe</h3>
+                            <Link href="/driver" className="flex items-center justify-between p-4 bg-slate-900 border border-white/5 rounded-xl hover:bg-emerald-500/10 hover:border-emerald-500/50 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-lg text-emerald-400 border border-emerald-500/20">
+                                        🛵
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">Drive With Us</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">Earn 25-40% more.</p>
+                                    </div>
+                                </div>
+                                <span className="text-slate-500 group-hover:text-emerald-400 transition-colors">→</span>
+                            </Link>
+
+                            <Link href="/merchant" className="flex items-center justify-between p-4 bg-slate-900 border border-white/5 rounded-xl hover:bg-primary/10 hover:border-primary/50 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg text-primary border border-primary/20">
+                                        🏪
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm text-white group-hover:text-primary transition-colors">Add Your Restaurant</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">Reach more customers.</p>
+                                    </div>
+                                </div>
+                                <span className="text-slate-500 group-hover:text-primary transition-colors">→</span>
+                            </Link>
+                        </div>
+
                         <div className="card bg-white/5 border border-white/10 p-6">
                             <h3 className="font-bold text-white mb-4">Payment Methods</h3>
                             <div className="space-y-4">
