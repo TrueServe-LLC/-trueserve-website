@@ -33,28 +33,7 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
         libraries: GOOGLE_MAPS_LIBRARIES
     });
 
-    // Guard: show clear error if API key is missing
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
-        return (
-            <div className="h-full w-full min-h-[300px] bg-slate-900 rounded-2xl flex flex-col items-center justify-center gap-4 border border-red-500/30 p-6 text-center">
-                <span className="text-4xl">🗺️</span>
-                <div>
-                    <p className="font-black text-red-400 text-sm mb-1">Google Maps API Key Missing</p>
-                    <p className="text-xs text-slate-400 max-w-xs">
-                        Add <code className="bg-white/10 px-1 py-0.5 rounded text-primary text-[10px]">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> to your <code className="bg-white/10 px-1 py-0.5 rounded text-[10px]">.env.local</code> file and restart the dev server.
-                    </p>
-                    <a
-                        href="https://console.cloud.google.com/apis/credentials"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block mt-3 text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
-                    >
-                        Get API Key →
-                    </a>
-                </div>
-            </div>
-        );
-    }
+
 
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -117,6 +96,29 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
         }
     }, [directions, startPoint, destination]);
 
+
+    // Guard: show clear error if API key is missing
+    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
+        return (
+            <div className="h-full w-full min-h-[300px] bg-slate-900 rounded-2xl flex flex-col items-center justify-center gap-4 border border-red-500/30 p-6 text-center">
+                <span className="text-4xl">🗺️</span>
+                <div>
+                    <p className="font-black text-red-400 text-sm mb-1">Google Maps API Key Missing</p>
+                    <p className="text-xs text-slate-400 max-w-xs">
+                        Add <code className="bg-white/10 px-1 py-0.5 rounded text-primary text-[10px]">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> to your <code className="bg-white/10 px-1 py-0.5 rounded text-[10px]">.env.local</code> file and restart the dev server.
+                    </p>
+                    <a
+                        href="https://console.cloud.google.com/apis/credentials"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-3 text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
+                    >
+                        Get API Key →
+                    </a>
+                </div>
+            </div>
+        );
+    }
 
     if (!isLoaded) return <div className="h-[400px] w-full bg-slate-900 animate-pulse rounded-2xl flex items-center justify-center text-slate-500">Loading Map...</div>;
 
