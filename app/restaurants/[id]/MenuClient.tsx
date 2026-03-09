@@ -50,6 +50,7 @@ export default function MenuClient({
     const [deliveryLat, setDeliveryLat] = useState<number | null>(initialLat || null);
     const [deliveryLng, setDeliveryLng] = useState<number | null>(initialLng || null);
     const [deliveryInstructions, setDeliveryInstructions] = useState("");
+    const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
 
     const handleCartChange = async (newCart: { [key: string]: number }, currentTip: number = tip) => {
         setCart(newCart);
@@ -378,6 +379,103 @@ export default function MenuClient({
                     )}
                 </div>
 
+                {/* Mobile Cart / Checkout Bottom Sheet Modal */}
+                {isMobileCartOpen && (
+                    <div className="md:hidden fixed inset-0 z-[100] flex flex-col justify-end pointer-events-none">
+                        {/* Backdrop */}
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto transition-opacity"
+                            onClick={() => setIsMobileCartOpen(false)}
+                        ></div>
+
+                        {/* Drawer */}
+                        <div className="relative z-10 bg-slate-900 w-full h-[85vh] rounded-t-[2.5rem] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] pointer-events-auto flex flex-col animate-in slide-in-from-bottom-full duration-300">
+                            {/* Drag Handle */}
+                            <div className="w-full flex justify-center py-4 shrink-0" onClick={() => setIsMobileCartOpen(false)}>
+                                <div className="w-12 h-1.5 bg-white/20 rounded-full"></div>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto px-6 pb-24 custom-scrollbar">
+                                <h3 className="font-black mb-6 text-2xl flex items-center justify-between text-white pb-4 border-b border-white/5">
+                                    <span className="flex items-center gap-3"><span className="text-2xl">🛒</span> Checkout</span>
+                                    <button onClick={() => setIsMobileCartOpen(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white transition-colors">✕</button>
+                                </h3>
+
+                                {/* Delivery Info inside Mobile Modal */}
+                                <div className="mb-8">
+                                    <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-4">
+                                        Delivery Details
+                                    </h3>
+                                    <AddressInput
+                                        initialAddress={deliveryAddress || ""}
+                                        onAddressSelect={(addr, lat, lng) => {
+                                            setDeliveryAddress(addr);
+                                            setDeliveryLat(lat);
+                                            setDeliveryLng(lng);
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Cart Items inside Mobile Modal */}
+                                <div className="space-y-4 mb-6">
+                                    {Object.entries(cart).map(([id, quantity]) => {
+                                        const item = items.find(i => i.id === id);
+                                        if (!item) return null;
+                                        return (
+                                            <div key={id} className="flex justify-between items-center text-sm border-b border-white/5 pb-3">
+                                                <div className="flex-grow">
+                                                    <span className="font-bold text-white block">{item.name} <span className="text-slate-500 font-medium">x{quantity}</span></span>
+                                                </div>
+                                                <span className="font-black text-white">${(Number(item.price) * quantity).toFixed(2)}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Totals inside Mobile Modal */}
+                                <div className="space-y-3 text-sm border-t border-white/10 pt-4 mb-6">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Subtotal</span>
+                                        <span className="font-bold text-white">${totalPrice.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-slate-400">Driver Tip</span>
+                                        <span className="font-bold text-white">${tip.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xl font-bold pt-4 text-white border-t border-white/10 mt-2">
+                                        <span>Total</span>
+                                        <span className="text-primary">${(totalPrice + tip).toFixed(2)}</span>
+                                    </div>
+                                </div>
+
+                                {/* Mobile Checkout Action */}
+                                <div className="mt-8 pt-6 border-t border-white/10">
+                                    {!userId ? (
+                                        <Link
+                                            href={`/login?redirect=/restaurants/${restaurant.id}`}
+                                            className="btn btn-primary w-full text-black font-black uppercase tracking-widest text-xs py-5 rounded-2xl shadow-lg shadow-primary/20"
+                                        >
+                                            Sign In to Order
+                                        </Link>
+                                    ) : clientSecret ? (
+                                        <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
+                                            <CheckoutForm
+                                                totalAmount={totalPrice + tip}
+                                                onSuccess={handlePaymentSuccess}
+                                                disabled={!orderingEnabled || !deliveryAddress}
+                                            />
+                                        </Elements>
+                                    ) : (
+                                        <button disabled className="btn btn-primary w-full opacity-50 cursor-not-allowed">
+                                            Loading Payment...
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Info & Map Sidebar (Now integrated) */}
                 <div className="card p-0 overflow-hidden border-white/10">
                     <div className="h-48 relative">
@@ -416,21 +514,24 @@ export default function MenuClient({
             </div>
 
             {/* Mobile Sticky Cart Bar */}
-            {cartTotalItems > 0 && (
+            {cartTotalItems > 0 && !isMobileCartOpen && (
                 <div className="md:hidden fixed bottom-6 left-6 right-6 z-[60] animate-in fade-in slide-in-from-bottom-8 duration-500">
                     <button
-                        onClick={() => {
-                            document.querySelector('.card.p-6.bg-slate-900\\/50')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="w-full bg-primary text-black h-16 rounded-2xl flex items-center justify-between px-6 shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        onClick={() => setIsMobileCartOpen(true)}
+                        className="w-full bg-primary text-black h-16 rounded-3xl flex items-center justify-between px-6 shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all border border-primary/20"
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-8 h-8 bg-black/10 rounded-lg flex items-center justify-center font-black">
+                            <div className="w-8 h-8 bg-black/10 rounded-xl flex items-center justify-center font-black">
                                 {cartTotalItems}
                             </div>
-                            <span className="font-bold tracking-tight uppercase text-sm">View Cart</span>
+                            <span className="font-black tracking-widest uppercase text-[10px] md:text-sm">Checkout</span>
                         </div>
-                        <span className="font-black text-lg">${totalPrice.toFixed(2)}</span>
+                        <div className="flex items-center gap-3">
+                            <span className="font-black text-lg">${totalPrice.toFixed(2)}</span>
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary shadow-inner">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            </div>
+                        </div>
                     </button>
                 </div>
             )}
