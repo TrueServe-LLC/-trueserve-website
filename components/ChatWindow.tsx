@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { translateText } from "@/app/actions/translate";
+import { createClient } from "@/lib/supabase/client";
 
 interface Message {
     id: string;
@@ -14,50 +15,72 @@ interface Message {
 }
 
 export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: string, role?: "CUSTOMER" | "DRIVER" }) {
-    const [messages, setMessages] = useState<Message[]>([
-        { id: "1", content: "Hola, estoy en camino con tu comida.", sender: "DRIVER", timestamp: new Date() }
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [translating, setTranslating] = useState<string | null>(null);
+    const supabase = createClient();
 
-    const sendMessage = () => {
-        if (!input.trim()) return;
-        const newMsg: Message = {
-            id: Date.now().toString(),
-            content: input,
-            sender: role, // Use the actual role of the sender
-            timestamp: new Date()
-        };
-        setMessages([...messages, newMsg]);
-        setInput("");
-    };
-
-    // Simulate Reply logic (adjust based on role)
+    // Fetch initial messages and subscribe
     useEffect(() => {
-        const lastMsg = messages[messages.length - 1];
-        if (lastMsg && lastMsg.sender === role) {
-            const timer = setTimeout(() => {
-                const targetRole = role === "CUSTOMER" ? "DRIVER" : "USER"; // Simulate the 'other' side
-                const replies = [
-                    role === "DRIVER" ? "Where are you exactly?" : "On my way!",
-                    "Thanks for the update.",
-                    "See you soon!",
-                    "Traffic is a bit heavy, but moving.",
-                    "Almost there!"
-                ];
-                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        const fetchMessages = async () => {
+            const { data } = await supabase
+                .from('ChatMessage')
+                .select('*')
+                .eq('orderId', orderId)
+                .order('createdAt', { ascending: true });
 
-                const replyMsg: Message = {
-                    id: Date.now().toString(),
-                    content: randomReply,
-                    sender: role === "CUSTOMER" ? "DRIVER" : "USER" as any,
-                    timestamp: new Date()
-                };
-                // setMessages(prev => [...prev, replyMsg]); // Disabled simulation for now to avoid confusion during live testing
-            }, 3000 + Math.random() * 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [messages, role]);
+            if (data) {
+                setMessages(data.map(m => ({
+                    id: m.id,
+                    content: m.content,
+                    sender: m.sender as any,
+                    timestamp: new Date(m.createdAt)
+                })));
+            }
+        };
+
+        fetchMessages();
+
+        const channel = supabase
+            .channel(`chat-${orderId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'ChatMessage',
+                    filter: `orderId=eq.${orderId}`
+                },
+                (payload) => {
+                    const newMsg = payload.new;
+                    setMessages(prev => [...prev, {
+                        id: newMsg.id,
+                        content: newMsg.content,
+                        sender: newMsg.sender as any,
+                        timestamp: new Date(newMsg.createdAt)
+                    }]);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [orderId]);
+
+    const sendMessage = async () => {
+        if (!input.trim()) return;
+        const msgText = input;
+        setInput(""); // Optimistic clear
+
+        await supabase
+            .from('ChatMessage')
+            .insert({
+                orderId: orderId,
+                sender: role,
+                content: msgText
+            });
+    };
 
     const handleTranslate = async (id: string, text: string) => {
         setTranslating(id);
