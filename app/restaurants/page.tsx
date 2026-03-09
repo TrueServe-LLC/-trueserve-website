@@ -732,6 +732,60 @@ export default async function RestaurantFinder({
                                 ))}
                             </div>
                         </div>
+
+                        {/* Top Rated Carousel */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+                            <div className="flex flex-col gap-1 mb-8 px-1">
+                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Top Rated</h2>
+                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Highest community ratings</p>
+                            </div>
+                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 scroll-snap-x snap-mandatory">
+                                {restaurants.filter(r => r.rating >= 4.5).sort((a, b) => b.rating - a.rating).slice(0, 6).map((rest) => (
+                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[260px] md:min-w-[300px] group flex flex-col snap-center">
+                                        <div className="h-40 md:h-44 w-full rounded-[1.5rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
+                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <div className="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded-[0.5rem] text-[11px] font-black drop-shadow-xl flex items-center gap-1">
+                                                <span>★</span> {rest.rating}
+                                            </div>
+                                        </div>
+                                        <div className="px-1 w-full">
+                                            <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
+                                            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
+                                                <span className="text-emerald-400">{rest.deliveryFee === "Free" ? "Free Delivery" : rest.deliveryFee}</span>
+                                                <span>•</span>
+                                                <span className="text-slate-500 truncate">{rest.tags.slice(0, 2).join(" • ")}</span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Local Gems Carousel */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+                            <div className="flex flex-col gap-1 mb-8 px-1">
+                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Local Gems</h2>
+                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Support your neighborhood</p>
+                            </div>
+                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 scroll-snap-x snap-mandatory">
+                                {restaurants.filter(r => r.tags.includes("Local")).slice(0, 6).map((rest) => (
+                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col snap-center">
+                                        <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
+                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <div className="absolute bottom-3 right-3 bg-secondary text-black px-3 py-1.5 rounded-[0.75rem] text-[10px] font-black uppercase tracking-widest drop-shadow-xl">
+                                                Local Favorite
+                                            </div>
+                                        </div>
+                                        <div className="px-1 w-full">
+                                            <h3 className="text-white font-black text-base mb-1 group-hover:text-secondary transition-colors truncate w-full">{rest.name}</h3>
+                                            <div className="flex items-center gap-2 text-[12px] text-slate-400 font-bold w-full">
+                                                <span className="text-slate-500 truncate">{rest.prepTime}</span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
 
