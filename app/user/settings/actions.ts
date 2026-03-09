@@ -104,3 +104,48 @@ export async function detachPaymentMethod(userId: string, paymentMethodId: strin
     revalidatePath('/user/settings');
     return { success: true };
 }
+
+export async function subscribeToPlus(userId: string) {
+    const supabase = getSupabaseAdmin();
+    // 1. Get user and ensure they have a Stripe Customer ID
+    const { data: user } = await supabase.from('User').select('stripeCustomerId, email, name').eq('id', userId).single();
+    if (!user) return { error: "User not found" };
+
+    let customerId = user.stripeCustomerId;
+    if (!customerId) {
+        return { error: "Please add a payment method to your wallet first." };
+    }
+
+    // 2. We don't have a real Price ID because we haven't created one in Stripe for this demo yet, 
+    // so we will just update the database directly to simulate a successful subscription!
+
+    // In a real app we would do:
+    // const subscription = await getStripe().subscriptions.create({
+    //     customer: customerId,
+    //     items: [{ price: 'price_abc123' }],
+    //     default_payment_method: paymentMethodId,
+    // });
+    // await supabase.from('User').update({ plan: 'Plus', stripeSubscriptionId: subscription.id }).eq('id', userId);
+
+    await supabase.from('User').update({ plan: 'Plus', stripeSubscriptionId: 'sub_mock123' }).eq('id', userId);
+
+    revalidatePath('/user/settings');
+    return { success: true };
+}
+
+export async function cancelMembership(userId: string) {
+    const supabase = getSupabaseAdmin();
+    const { data: user } = await supabase.from('User').select('stripeSubscriptionId').eq('id', userId).single();
+
+    if (!user) return { error: "User not found" };
+
+    // In a real app we would do:
+    // if (user.stripeSubscriptionId && !user.stripeSubscriptionId.startsWith('sub_mock')) {
+    //     await getStripe().subscriptions.cancel(user.stripeSubscriptionId);
+    // }
+
+    await supabase.from('User').update({ plan: 'Basic', stripeSubscriptionId: null }).eq('id', userId);
+
+    revalidatePath('/user/settings');
+    return { success: true };
+}

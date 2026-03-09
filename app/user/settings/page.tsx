@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
 import WalletUI from "@/components/WalletUI";
+import MembershipUI from "@/components/MembershipUI";
 
 export default async function UserSettings() {
     const cookieStore = await cookies();
@@ -80,6 +81,7 @@ export default async function UserSettings() {
                         </div>
 
                         <WalletUI userId={userId} />
+                        <MembershipUI userId={userId} plan={user?.plan || "Basic"} hasPaymentMethod={!!user?.stripeCustomerId} />
                     </div>
 
                     {/* Main Content */}
