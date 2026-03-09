@@ -169,8 +169,8 @@ export default async function Home() {
         <div className="container flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm px-6">
           <p>&copy; {new Date().getFullYear()} TrueServe Inc.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="/legal" className="hover:text-primary">Privacy</Link>
-            <Link href="/legal" className="hover:text-primary">Terms</Link>
+            <Link href="/legal#privacy" className="hover:text-primary">Privacy Policy</Link>
+            <Link href="/legal#terms" className="hover:text-primary">Terms of Service</Link>
             <Link href="/admin" className="hover:text-primary">Admin</Link>
           </div>
         </div>
