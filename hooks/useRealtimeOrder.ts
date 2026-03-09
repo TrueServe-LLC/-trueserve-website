@@ -38,32 +38,39 @@ export function useRealtimeOrder(orderId: string) {
             )
             .subscribe();
 
+        let locationSubscription: any = null;
+
         // 3. Subscribe to Driver Location changes (if a driver is assigned)
-        // Note: You need a separate 'DriverLocation' table or column that updates frequently
-        const locationSubscription = supabase
-            .channel(`driver-location`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT', // or UPDATE depending on how you log locations
-                    schema: 'public',
-                    table: 'DriverLocation',
-                    filter: `orderId=eq.${orderId}` // Assuming you link location logs to orders
-                },
-                (payload) => {
-                    setDriverLocation({
-                        lat: payload.new.lat,
-                        lng: payload.new.lng
-                    });
-                }
-            )
-            .subscribe();
+        if (order?.driverId) {
+            locationSubscription = supabase
+                .channel(`driver-location-${order.driverId}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'Driver',
+                        filter: `id=eq.${order.driverId}`
+                    },
+                    (payload) => {
+                        if (payload.new.currentLat && payload.new.currentLng) {
+                            setDriverLocation({
+                                lat: payload.new.currentLat,
+                                lng: payload.new.currentLng
+                            });
+                        }
+                    }
+                )
+                .subscribe();
+        }
 
         return () => {
             supabase.removeChannel(orderSubscription);
-            supabase.removeChannel(locationSubscription);
+            if (locationSubscription) {
+                supabase.removeChannel(locationSubscription);
+            }
         };
-    }, [orderId]);
+    }, [orderId, order?.driverId]);
 
     return { order, driverLocation };
 }
