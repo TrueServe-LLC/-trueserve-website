@@ -101,7 +101,8 @@ describe('Order Actions - Business Logic Scenarios', () => {
 
     test('Scenario 1.4: Delivery Zone Restriction', async () => {
         (stripe.paymentIntents.retrieve as jest.Mock).mockResolvedValue({ status: 'succeeded' });
-        mockSupabase.single.mockResolvedValue({ data: { lat: 35.2271, lng: -80.8431 }, error: null });
+        jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('12:00:00');
+        mockSupabase.single.mockResolvedValue({ data: { lat: 35.2271, lng: -80.8431, openTime: '08:00:00', closeTime: '22:00:00' }, error: null });
         jest.spyOn(Date.prototype, 'getHours').mockReturnValue(12);
 
         const result = await placeOrder('rest-123', [{ id: 'item-1', price: 10, quantity: 1 }], 'intent-123', 35.7796, -78.6382);
