@@ -40,18 +40,40 @@ export async function getPaymentMethods(userId: string) {
         return [];
     }
 
-    const paymentMethods = await getStripe().paymentMethods.list({
-        customer: user.stripeCustomerId,
-        type: 'card',
-    });
+    const [cardPm, paypalPm, cashappPm] = await Promise.all([
+        getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'card' }),
+        getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'paypal' }),
+        getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'cashapp' })
+    ]);
 
-    return paymentMethods.data.map(pm => ({
-        id: pm.id,
-        brand: pm.card?.brand,
-        last4: pm.card?.last4,
-        expMonth: pm.card?.exp_month,
-        expYear: pm.card?.exp_year,
-    }));
+    const allPms = [...cardPm.data, ...paypalPm.data, ...cashappPm.data];
+
+    return allPms.map(pm => {
+        let brand = "Card";
+        let displayPrimary = "";
+        let displaySecondary = "";
+
+        if (pm.type === 'card') {
+            brand = pm.card?.brand || "Card";
+            displayPrimary = `•••• ${pm.card?.last4}`;
+            displaySecondary = `Exp ${pm.card?.exp_month}/${pm.card?.exp_year}`;
+        } else if (pm.type === 'paypal') {
+            brand = "PayPal";
+            displayPrimary = pm.paypal?.payer_email || "PayPal Account";
+            displaySecondary = "Connected";
+        } else if (pm.type === 'cashapp') {
+            brand = "CashApp";
+            displayPrimary = pm.cashapp?.cashtag || "CashApp Pay";
+            displaySecondary = "Connected";
+        }
+
+        return {
+            id: pm.id,
+            brand: brand,
+            displayPrimary,
+            displaySecondary,
+        };
+    });
 }
 
 export async function createSetupIntent(userId: string) {
@@ -59,7 +81,7 @@ export async function createSetupIntent(userId: string) {
 
     const intent = await getStripe().setupIntents.create({
         customer: customerId,
-        payment_method_types: ['card'],
+        automatic_payment_methods: { enabled: true },
         usage: 'off_session',
     });
 

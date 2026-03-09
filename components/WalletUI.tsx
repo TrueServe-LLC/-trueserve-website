@@ -49,7 +49,7 @@ function SetupForm({
 
     return (
         <form onSubmit={handleSubmit} className="p-4 bg-slate-900 rounded-xl border border-white/10 mt-4 animate-fade-in">
-            <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-widest text-primary">Add New Card</h4>
+            <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-widest text-primary">Add Payment Method</h4>
             <PaymentElement options={{ layout: "tabs" }} />
 
             {message && (
@@ -71,7 +71,7 @@ function SetupForm({
                     disabled={isSaving || !stripe || !elements}
                     className="flex-1 btn btn-primary py-2 font-bold disabled:opacity-50"
                 >
-                    {isSaving ? "Saving..." : "Save Card"}
+                    {isSaving ? "Saving..." : "Save Payment Method"}
                 </button>
             </div>
         </form>
@@ -145,8 +145,8 @@ export default function WalletUI({ userId }: { userId: string }) {
                                         {pm.brand || "Card"}
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-white tracking-widest">•••• {pm.last4}</p>
-                                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">Exp {pm.expMonth}/{pm.expYear}</p>
+                                        <p className="text-sm font-bold text-white tracking-widest">{pm.displayPrimary}</p>
+                                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{pm.displaySecondary}</p>
                                     </div>
                                 </div>
                                 <button
@@ -167,7 +167,7 @@ export default function WalletUI({ userId }: { userId: string }) {
                     onClick={handleAddClick}
                     className="btn btn-outline border-white/20 hover:border-primary hover:text-primary w-full mt-6 py-3 text-sm font-bold transition-all text-slate-300"
                 >
-                    + Add New Card
+                    + Add Payment Method
                 </button>
             ) : clientSecret ? (
                 <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
