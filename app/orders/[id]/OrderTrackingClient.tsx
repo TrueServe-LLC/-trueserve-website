@@ -171,22 +171,22 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     };
 
     return (
-        <div className="space-y-8">
-            {/* Map Section */}
-            <div className="card p-0 overflow-hidden relative group border border-white/5 shadow-2xl rounded-3xl">
-                <div className="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur-md p-3 md:p-4 rounded-2xl border border-white/10 shadow-lg pointer-events-none">
-                    <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Estimated Arrival</p>
-                    <div className="flex items-baseline gap-2">
-                        <p className="text-xl md:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                            {currentStep >= 5 ? "Arrived" : eta}
+        <div className="md:space-y-8 flex flex-col min-h-[calc(100vh-80px)] md:min-h-0 bg-slate-950">
+            {/* Map Section - Full Bleed on Mobile */}
+            <div className="relative w-full h-[55vh] md:h-[400px] md:card md:p-0 md:overflow-hidden md:border md:border-white/5 md:shadow-2xl md:rounded-3xl z-0">
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 bg-black/80 backdrop-blur-xl px-6 py-3 rounded-full border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.8)] text-center w-max max-w-[90%]">
+                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Estimated Arrival</p>
+                    <div className="flex items-center justify-center gap-2">
+                        <p className="text-xl md:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-200">
+                            {currentStep >= 5 ? "Delivered" : eta}
                         </p>
                         {currentStep < 5 && (
-                            <span className="text-[10px] md:text-sm text-emerald-400 font-bold">({distanceMiles} mi away)</span>
+                            <span className="text-[10px] md:text-sm text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full inline-flex border border-emerald-500/20">{distanceMiles} mi</span>
                         )}
                     </div>
                 </div>
 
-                <div className="h-[250px] md:h-[400px] w-full relative z-0">
+                <div className="absolute inset-0 z-0">
                     <MapWithDirections
                         routeOrigin={{ lat: restaurantPos[0], lng: restaurantPos[1] }}
                         origin={{ lat: driverPos[0], lng: driverPos[1] }}
@@ -196,201 +196,199 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         onDurationUpdate={setEta}
                     />
                 </div>
-
-                <div className="p-4 md:p-6 bg-slate-900/80 flex flex-col sm:flex-row gap-4 sm:gap-6 md:gap-12 items-stretch sm:items-center backdrop-blur-2xl border-t border-white/5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center border border-white/10 flex-shrink-0">
-                            🏪
-                        </div>
-                        <div>
-                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-[0.2em] mb-0.5">Restaurant</p>
-                            <p className="font-bold text-xs md:text-sm text-white truncate max-w-[120px] md:max-w-none">{order.restaurant?.name || "Restaurant"}</p>
-                            <p className="text-[10px] text-slate-400">{restaurantDistance} miles away</p>
-                        </div>
-                    </div>
-
-                    {/* Progress Bar Line */}
-                    <div className="hidden sm:block flex-1 h-1 bg-white/5 rounded-full overflow-hidden relative">
-                        <div
-                            className="absolute top-0 left-0 h-full bg-primary transition-all duration-1000 ease-linear shadow-[0_0_8px_rgba(255,153,42,0.5)]"
-                            style={{ width: `${(currentStep / 5) * 100}%` }}
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center border border-orange-500/20 flex-shrink-0">
-                            📍
-                        </div>
-                        <div>
-                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-[0.2em] mb-0.5">Destination</p>
-                            <p className="font-bold text-xs md:text-sm text-white truncate max-w-[120px] md:max-w-none">{order.deliveryAddress || "Home"}</p>
-                            <p className="text-[10px] text-slate-400">Hub</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 flex-1">
-                        <div className="w-10 h-10 rounded-xl bg-primary text-black flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20 flex-shrink-0">
-                            {/* Driver Initials */}
-                            {currentOrder.driver?.user?.name?.charAt(0) || "D"}
-                        </div>
-                        <div>
-                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-[0.2em] mb-0.5">Driver</p>
-                            <p className="font-bold text-xs md:text-sm text-white truncate max-w-[120px] md:max-w-none">{currentOrder.driver?.user?.name || "Assigning..."}</p>
-                            {currentOrder.driver?.vehicleType && (
-                                <p className="text-[10px] text-slate-400 capitalize">{currentOrder.driver.vehicleType} • <span className="text-emerald-400 font-bold">{distanceMiles} mi</span></p>
-                            )}
-                        </div>
-                    </div>
-
-                    {currentOrder.driver?.user?.phone && (
-                        <a
-                            href={`tel:${currentOrder.driver.user.phone}`}
-                            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:bg-emerald-500/10 hover:border-emerald-500/50 transition-all"
-                            title="Call Driver"
-                        >
-                            📞
-                        </a>
-                    )}
-                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Timeline Section */}
-                <div className="md:col-span-2 card p-8 border border-white/10 bg-slate-900/50 backdrop-blur-sm">
-                    <h3 className="font-bold text-xl mb-8 flex items-center gap-2">
-                        <span>📍</span> Order Status
-                    </h3>
-                    <div className="space-y-8 relative before:absolute before:inset-0 before:left-[19px] before:w-0.5 before:bg-white/10">
+            {/* Bottom Sheet UI overlaying the map on mobile */}
+            <div className="relative z-10 flex-1 -mt-8 md:mt-0 bg-slate-950 md:bg-transparent rounded-t-[2.5rem] md:rounded-none shadow-[0_-10px_40px_rgba(0,0,0,0.3)] md:shadow-none border-t border-white/10 md:border-0 pt-2 md:pt-0 px-6 md:px-0 pb-32">
+                {/* Mobile Drag Handle */}
+                <div className="w-14 h-1.5 bg-white/20 rounded-full mx-auto mb-6 md:hidden"></div>
 
-                        {/* Step 1 */}
-                        <div className="flex gap-6 relative">
-                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 1 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
-                                ✓
-                            </div>
-                            <div className={currentStep >= 1 ? 'opacity-100' : 'opacity-40'}>
-                                <p className="font-bold text-lg">Order Received</p>
-                                <p className="text-sm text-slate-400">{new Date(currentOrder.createdAt).toLocaleTimeString()} - We've sent your order to the kitchen.</p>
-                            </div>
-                        </div>
-
-                        {/* Step 2 */}
-                        <div className="flex gap-6 relative">
-                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 2 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
-                                🔥
-                            </div>
-                            <div className={currentStep >= 2 ? 'opacity-100' : 'opacity-40'}>
-                                <p className="font-bold text-lg">Preparing Food</p>
-                                <p className="text-sm text-slate-400">The kitchen is cooking up your meal.</p>
-                            </div>
-                        </div>
-
-                        {/* Step 4 */}
-                        <div className="flex gap-6 relative">
-                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 4 ? 'bg-primary text-black' : 'bg-slate-800 text-slate-500'}`}>
-                                🛵
-                            </div>
-                            <div className={currentStep >= 4 ? 'opacity-100' : 'opacity-40'}>
-                                <p className="font-bold text-lg">Out for Delivery</p>
-                                <p className="text-sm text-slate-400">{currentStep === 4 ? "Driver heading your way!" : "Driver picked up your order."}</p>
-                            </div>
-                        </div>
-
-                        {/* Step 5 */}
-                        <div className="flex gap-6 relative">
-                            <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-4 border-slate-900 z-10 transition-colors ${currentStep >= 5 ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
-                                🏠
-                            </div>
-                            <div className={currentStep >= 5 ? 'opacity-100' : 'opacity-40'}>
-                                <p className="font-bold text-lg">Delivered</p>
-                                <p className="text-sm text-slate-400">Enjoy your meal!</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                {/* Order Summary Section */}
-                <div className="card p-6 border border-white/10 bg-slate-900/50 backdrop-blur-sm h-fit sticky top-24">
-                    <h3 className="font-bold text-xl mb-4 border-b border-white/10 pb-4">Receipt</h3>
-                    <div className="space-y-4 mb-6">
-                        {order.items?.map((item: any, i: number) => (
-                            <div key={item.id || i} className="flex justify-between items-start text-sm">
-                                <div className="flex gap-2">
-                                    <span className="font-bold text-emerald-400">{item.quantity}x</span>
-                                    <span className="text-slate-300">{item.menuItem?.name || item.name || "Item"}</span>
+                {/* Premium Driver Profile Card */}
+                {currentOrder.driverId ? (
+                    <div className="bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 shadow-2xl mb-8 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-xl font-black text-black shadow-lg shadow-primary/20 overflow-hidden">
+                                    {currentOrder.driver?.user?.name?.charAt(0) || "D"}
                                 </div>
-                                <span className="text-slate-400 mono">${Number(item.price).toFixed(2)}</span>
+                                {/* Online Ping Indicator */}
+                                <div className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-900 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                             </div>
-                        ))}
+                            <div>
+                                <p className="font-black text-lg text-white mb-0.5">{currentOrder.driver?.user?.name || "Your Driver"}</p>
+                                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+                                    <span className="flex items-center gap-1"><span className="text-primary">★</span> 5.0</span>
+                                    <span>•</span>
+                                    <span className="capitalize">{currentOrder.driver?.vehicleType || "Vehicle"}</span>
+                                    {currentOrder.driver?.licensePlate && (
+                                        <>
+                                            <span>•</span>
+                                            <span className="px-1.5 py-0.5 bg-white/10 rounded uppercase text-[9px] tracking-wider border border-white/10">{currentOrder.driver.licensePlate}</span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        {currentOrder.driver?.user?.phone && (
+                            <a
+                                href={`tel:${currentOrder.driver.user.phone}`}
+                                className="w-12 h-12 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-xl hover:bg-emerald-500 hover:text-black hover:border-emerald-400 transition-all shadow-lg"
+                                title="Call Driver"
+                            >
+                                📞
+                            </a>
+                        )}
                     </div>
-
-                    <div className="space-y-2 pt-4 border-t border-white/10 text-xs text-slate-400">
-                        <div className="flex justify-between">
-                            <span>Subtotal</span>
-                            <span>${(Number(order.total) || 0).toFixed(2)}</span>
+                ) : (
+                    <div className="bg-slate-900/50 border border-white/10 rounded-3xl p-5 mb-8 flex items-center gap-4 animate-pulse">
+                        <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xl shadow-lg">
+                            🔍
                         </div>
-                        <div className="flex justify-between">
-                            <span>Delivery Fee</span>
-                            <span>$0.00</span>
+                        <div>
+                            <p className="font-bold text-white mb-1">Searching for a Driver...</p>
+                            <p className="text-xs text-slate-400">We're finding the best courier for you.</p>
                         </div>
-                        <div className="flex justify-between">
-                            <span>Service Fee</span>
-                            <span>$0.00</span>
-                        </div>
-                        <div className="flex justify-between text-emerald-400 font-medium">
-                            <span>Driver Tip</span>
-                            <span>${(Number(order.tip) || 0).toFixed(2)}</span>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center font-bold text-xl text-white">
-                        <span>Total</span>
-                        <span>${((Number(order.total) || 0) + (Number(order.tip) || 0)).toFixed(2)}</span>
-                    </div>
-
-                    <button
-                        onClick={handleDownloadReceipt}
-                        className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-xs"
-                    >
-                        Download PDF Receipt
-                    </button>
-
-                    {currentOrder.status === 'DELIVERED' && currentOrder.driverId && (
-                        <button
-                            onClick={() => setIsReviewOpen(true)}
-                            className="w-full btn btn-primary mt-2 text-xs shadow-lg shadow-primary/20"
-                        >
-                            Rate Driver
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {/* Floating Chat Widget */}
-            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
-                {isChatOpen && (
-                    <div className="w-80 shadow-2xl animate-fade-in-up">
-                        <ChatWindow orderId={currentOrder.id} role="CUSTOMER" />
                     </div>
                 )}
 
-                <button
-                    onClick={() => setIsChatOpen(!isChatOpen)}
-                    className="btn btn-circle btn-primary h-14 w-14 shadow-lg shadow-primary/20 flex items-center justify-center text-xl hover:scale-110 transition-transform"
-                >
-                    {isChatOpen ? '✕' : '💬'}
-                </button>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Timeline Section */}
+                    <div className="md:col-span-2 card p-8 border border-white/10 bg-slate-900/50 backdrop-blur-sm">
+                        <h3 className="font-bold text-xl mb-8 flex items-center gap-2">
+                            <span>📍</span> Order Status
+                        </h3>
+                        <div className="space-y-8 relative before:absolute before:inset-0 before:left-[19px] before:w-0.5 before:bg-white/5">
 
-            {currentOrder.driverId && (
-                <ReviewModal
-                    isOpen={isReviewOpen}
-                    onClose={() => setIsReviewOpen(false)}
-                    orderId={currentOrder.id}
-                    driverId={currentOrder.driverId}
-                    customerId={currentOrder.userId}
-                />
-            )}
+                            {/* Step 1 */}
+                            <div className="flex gap-6 relative">
+                                <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-[3px] z-10 transition-all duration-700 ${currentStep >= 1 ? 'border-primary bg-primary/20 text-primary shadow-[0_0_15px_rgba(255,153,42,0.3)]' : 'border-white/10 bg-slate-900 text-slate-500'}`}>
+                                    {currentStep === 1 ? <span className="animate-pulse">✓</span> : "✓"}
+                                </div>
+                                <div className={currentStep >= 1 ? 'opacity-100' : 'opacity-40'}>
+                                    <p className={`font-bold text-lg ${currentStep === 1 ? 'text-primary' : 'text-white'}`}>Order Received</p>
+                                    <p className="text-sm text-slate-400 mt-1">{new Date(currentOrder.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Sent to kitchen.</p>
+                                </div>
+                            </div>
+
+                            {/* Step 2 */}
+                            <div className="flex gap-6 relative">
+                                <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-[3px] z-10 transition-all duration-700 ${currentStep >= 2 ? 'border-orange-500 bg-orange-500/20 text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'border-white/10 bg-slate-900 text-slate-500'}`}>
+                                    {currentStep === 2 ? <span className="animate-pulse">🔥</span> : "🔥"}
+                                </div>
+                                <div className={currentStep >= 2 ? 'opacity-100' : 'opacity-40'}>
+                                    <p className={`font-bold text-lg ${currentStep === 2 ? 'text-orange-400' : 'text-white'}`}>Preparing Food</p>
+                                    <p className="text-sm text-slate-400 mt-1">The kitchen is cooking up your meal.</p>
+                                </div>
+                            </div>
+
+                            {/* Step 4 */}
+                            <div className="flex gap-6 relative">
+                                <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-[3px] z-10 transition-all duration-700 ${currentStep >= 4 ? 'border-emerald-400 bg-emerald-400/20 text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.3)]' : 'border-white/10 bg-slate-900 text-slate-500'}`}>
+                                    {currentStep === 4 ? <span className="animate-pulse">🛵</span> : "🛵"}
+                                </div>
+                                <div className={currentStep >= 4 ? 'opacity-100' : 'opacity-40'}>
+                                    <p className={`font-bold text-lg ${currentStep === 4 ? 'text-emerald-400' : 'text-white'}`}>Out for Delivery</p>
+                                    <p className="text-sm text-slate-400 mt-1">{currentStep === 4 ? "Driver heading your way!" : "Driver has picked up the order."}</p>
+                                </div>
+                            </div>
+
+                            {/* Step 5 */}
+                            <div className="flex gap-6 relative">
+                                <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-[3px] z-10 transition-all duration-700 ${currentStep >= 5 ? 'border-emerald-500 bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.5)]' : 'border-white/10 bg-slate-900 text-slate-500'}`}>
+                                    🏠
+                                </div>
+                                <div className={currentStep >= 5 ? 'opacity-100' : 'opacity-40'}>
+                                    <p className="font-bold text-lg">Delivered</p>
+                                    <p className="text-sm text-slate-400 mt-1">Enjoy your meal!</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {/* Order Summary Section */}
+                    <div className="card p-6 border border-white/10 bg-slate-900/50 backdrop-blur-sm h-fit sticky top-24">
+                        <h3 className="font-bold text-xl mb-4 border-b border-white/10 pb-4">Receipt</h3>
+                        <div className="space-y-4 mb-6">
+                            {order.items?.map((item: any, i: number) => (
+                                <div key={item.id || i} className="flex justify-between items-start text-sm">
+                                    <div className="flex gap-2">
+                                        <span className="font-bold text-emerald-400">{item.quantity}x</span>
+                                        <span className="text-slate-300">{item.menuItem?.name || item.name || "Item"}</span>
+                                    </div>
+                                    <span className="text-slate-400 mono">${Number(item.price).toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="space-y-2 pt-4 border-t border-white/10 text-xs text-slate-400">
+                            <div className="flex justify-between">
+                                <span>Subtotal</span>
+                                <span>${(Number(order.total) || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Delivery Fee</span>
+                                <span>$0.00</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Service Fee</span>
+                                <span>$0.00</span>
+                            </div>
+                            <div className="flex justify-between text-emerald-400 font-medium">
+                                <span>Driver Tip</span>
+                                <span>${(Number(order.tip) || 0).toFixed(2)}</span>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center font-bold text-xl text-white">
+                            <span>Total</span>
+                            <span>${((Number(order.total) || 0) + (Number(order.tip) || 0)).toFixed(2)}</span>
+                        </div>
+
+                        <button
+                            onClick={handleDownloadReceipt}
+                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-xs"
+                        >
+                            Download PDF Receipt
+                        </button>
+
+                        {currentOrder.status === 'DELIVERED' && currentOrder.driverId && (
+                            <button
+                                onClick={() => setIsReviewOpen(true)}
+                                className="w-full btn btn-primary mt-2 text-xs shadow-lg shadow-primary/20"
+                            >
+                                Rate Driver
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <div className="fixed bottom-[100px] md:bottom-28 right-6 z-50 flex flex-col items-end gap-3">
+                    {isChatOpen && (
+                        <div className="w-80 shadow-2xl animate-fade-in-up md:w-96 rounded-3xl overflow-hidden border border-white/10">
+                            <ChatWindow orderId={currentOrder.id} role="CUSTOMER" />
+                        </div>
+                    )}
+
+                    <button
+                        onClick={() => setIsChatOpen(!isChatOpen)}
+                        className="w-16 h-16 rounded-full bg-slate-900 border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.8)] flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all text-primary relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors"></div>
+                        {isChatOpen ? '✕' : '💬'}
+                    </button>
+                </div>
+
+                {currentOrder.driverId && (
+                    <ReviewModal
+                        isOpen={isReviewOpen}
+                        onClose={() => setIsReviewOpen(false)}
+                        orderId={currentOrder.id}
+                        driverId={currentOrder.driverId}
+                        customerId={currentOrder.userId}
+                    />
+                )}
+            </div>
         </div>
     );
 }

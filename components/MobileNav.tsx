@@ -64,46 +64,49 @@ export default function MobileNav({ role }: { role?: string | null }) {
     // 3. Default Customer Navigation
     if (role === 'ADMIN' || role === 'CUSTOMER' || !role) {
         return (
-            <div className="md:hidden fixed bottom-6 left-6 right-6 z-[100]">
-                <nav className="bg-slate-900 border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 flex justify-between items-center px-6 text-slate-500">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] pb-safe">
+                <nav className="w-full bg-slate-950/80 backdrop-blur-2xl border-t border-white/5 pt-3 pb-6 px-6 flex justify-between items-center text-slate-500 relative">
+                    {/* Optional: subtle top glow effect */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
                     <Link
                         href="/restaurants"
-                        className={`flex flex-col items-center gap-1.5 transition-all ${isActive('/restaurants') && !isActive('/orders') ? 'text-secondary scale-110' : 'hover:text-slate-300 active:scale-95'}`}
+                        className={`flex flex-col items-center gap-1.5 transition-all w-16 ${isActive('/restaurants') && !pathname.includes('#search') && !isActive('/orders') ? 'text-white scale-105' : 'hover:text-slate-300 active:scale-95'}`}
                     >
-                        <svg className="w-6 h-6" fill={isActive('/restaurants') && !isActive('/orders') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/restaurants') && !isActive('/orders') ? "1" : "2"} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        <span className="text-[10px] font-bold tracking-wide">Home</span>
+                        <svg className="w-6 h-6" fill={isActive('/restaurants') && !pathname.includes('#search') && !isActive('/orders') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/restaurants') && !pathname.includes('#search') && !isActive('/orders') ? "1.5" : "2"} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span className="text-[10px] font-semibold tracking-wide">Home</span>
                     </Link>
 
                     <Link
-                        href="/merchant"
-                        className={`flex flex-col items-center gap-1.5 transition-all ${isActive('/merchant') ? 'text-primary scale-110' : 'hover:text-primary active:scale-95'}`}
+                        href="/restaurants#search"
+                        className={`flex flex-col items-center gap-1.5 transition-all w-16 ${pathname.includes('#search') ? 'text-white scale-105' : 'hover:text-slate-300 active:scale-95'}`}
                     >
-                        <svg className="w-6 h-6" fill={isActive('/merchant') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/merchant') ? "1" : "2"} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        <span className="text-[10px] font-bold tracking-wide">Sell</span>
-                    </Link>
-
-                    <Link
-                        href="/driver"
-                        className={`flex flex-col items-center gap-1.5 transition-all ${isActive('/driver') ? 'text-emerald-400 scale-110' : 'hover:text-emerald-400 active:scale-95'}`}
-                    >
-                        <svg className="w-6 h-6" fill={isActive('/driver') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/driver') ? "0" : "2"} d="M4 11l1.5-4h13L20 11m-16 0v7a1 1 0 001 1h2a1 1 0 001-1v-1h8v1a1 1 0 001 1h2a1 1 0 001-1v-7m-16 0h16M7 14h.01M17 14h.01" /></svg>
-                        <span className="text-[10px] font-bold tracking-wide">Drive</span>
+                        <svg className="w-6 h-6" fill={pathname.includes('#search') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={pathname.includes('#search') ? "1.5" : "2"} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <span className="text-[10px] font-semibold tracking-wide">Search</span>
                     </Link>
 
                     <Link
                         href="/orders"
-                        className={`flex flex-col items-center gap-1.5 transition-all ${isActive('/orders') ? 'text-secondary scale-110' : 'hover:text-slate-300 active:scale-95'}`}
+                        className={`flex flex-col items-center gap-1.5 transition-all w-16 ${(isActive('/orders') || isActive('/orders/[id]')) ? 'text-white scale-105' : 'hover:text-slate-300 active:scale-95'}`}
                     >
-                        <svg className="w-6 h-6" fill={isActive('/orders') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/orders') ? "1" : "2"} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7A1 1 0 006 17h12m-9 3A2 2 0 109 23a2 2 0 00-2-2zm7 0a2 2 0 109 23a2 2 0 00-2-2z"></path></svg>
-                        <span className="text-[10px] font-bold tracking-wide">Cart</span>
+                        <svg className="w-6 h-6" fill={(isActive('/orders') || isActive('/orders/[id]')) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={(isActive('/orders') || isActive('/orders/[id]')) ? "1.5" : "2"} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        <span className="text-[10px] font-semibold tracking-wide">Orders</span>
                     </Link>
 
                     <Link
                         href="/user/settings"
-                        className={`flex flex-col items-center gap-1.5 transition-all ${isActive('/user/settings') ? 'text-secondary scale-110' : 'hover:text-slate-300 active:scale-95'}`}
+                        className={`flex flex-col items-center gap-1.5 transition-all w-16 ${isActive('/user/settings') ? 'text-white scale-105' : 'hover:text-slate-300 active:scale-95'}`}
                     >
-                        <svg className="w-6 h-6" fill={isActive('/user/settings') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/user/settings') ? "1" : "2"} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        <span className="text-[10px] font-bold tracking-wide">Profile</span>
+                        <svg className="w-6 h-6" fill={isActive('/user/settings') ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/user/settings') ? "1.5" : "2"} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span className="text-[10px] font-semibold tracking-wide">Profile</span>
                     </Link>
                 </nav>
             </div>
