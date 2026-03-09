@@ -149,7 +149,7 @@ export default function MenuClient({
                             <div className="flex flex-row">
                                 <div className="w-24 sm:w-32 md:w-40 bg-slate-800 shrink-0 relative overflow-hidden">
                                     {item.imageUrl ? (
-                                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                                        <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-slate-500 text-[10px] uppercase font-bold text-center p-4">No Image</div>
                                     )}

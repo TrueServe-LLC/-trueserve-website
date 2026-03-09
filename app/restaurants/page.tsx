@@ -518,6 +518,8 @@ export default async function RestaurantFinder({
                                     <div className="aspect-[4/3] w-full rounded-2xl overflow-hidden relative border border-white/5 shadow-lg group-hover:shadow-primary/5 group-hover:border-primary/20 transition-all duration-300">
                                         <img
                                             src={res.imageUrl || "/restaurant1.jpg"}
+                                            loading="lazy"
+                                            decoding="async"
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                                             alt={res.name}
                                         />
@@ -691,7 +693,7 @@ export default async function RestaurantFinder({
                                 {restaurants.filter(r => r.deal).slice(0, 8).map((rest) => (
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[300px] md:min-w-[350px] group">
                                         <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-4 relative border border-white/5">
-                                            <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                                             <div className="absolute bottom-4 left-4 right-4">
                                                 <div className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black shadow-2xl inline-block mb-2 max-w-full truncate">
@@ -715,7 +717,7 @@ export default async function RestaurantFinder({
                                 {restaurants.filter(r => parseInt(r.prepTime || "30") <= 25).slice(0, 6).map((rest) => (
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col">
                                         <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative shrink-0">
-                                            <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                             <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
                                                 {rest.prepTime}
                                             </div>
@@ -759,6 +761,8 @@ export default async function RestaurantFinder({
                                     <img
                                         src={rest.image || "/restaurant1.jpg"}
                                         alt={rest.name}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                                     />
 
