@@ -35,11 +35,7 @@ export default async function UserSettings() {
 
     const savedStores = savedStoresData?.map(s => s.restaurant) || [];
 
-    // Mock stored cards
-    const paymentMethods = [
-        { id: 1, type: "Visa", last4: "4242", expiry: "12/28" },
-        { id: 2, type: "Mastercard", last4: "5567", expiry: "09/25" }
-    ];
+
 
     return (
         <div className="min-h-screen bg-[#080c14] text-slate-200 font-sans">
@@ -80,60 +76,6 @@ export default async function UserSettings() {
                                     <p className="text-slate-400 text-sm">{user?.email}</p>
                                 </div>
                             </div>
-                            <button className="btn btn-outline w-full border-white/20 hover:bg-white/5 text-slate-300">Edit Profile</button>
-                        </div>
-
-                        {/* Upgrade Roles Section */}
-                        <div className="card bg-white/5 border border-white/10 p-6 space-y-4">
-                            <h3 className="font-bold text-white mb-2">Partner with TrueServe</h3>
-                            <Link href="/driver" className="flex items-center justify-between p-4 bg-slate-900 border border-white/5 rounded-xl hover:bg-emerald-500/10 hover:border-emerald-500/50 transition-all group">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-lg text-emerald-400 border border-emerald-500/20">
-                                        🛵
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">Drive With Us</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">Earn 25-40% more.</p>
-                                    </div>
-                                </div>
-                                <span className="text-slate-500 group-hover:text-emerald-400 transition-colors">→</span>
-                            </Link>
-
-                            <Link href="/merchant" className="flex items-center justify-between p-4 bg-slate-900 border border-white/5 rounded-xl hover:bg-primary/10 hover:border-primary/50 transition-all group">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg text-primary border border-primary/20">
-                                        🏪
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-white group-hover:text-primary transition-colors">Add Your Restaurant</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">Reach more customers.</p>
-                                    </div>
-                                </div>
-                                <span className="text-slate-500 group-hover:text-primary transition-colors">→</span>
-                            </Link>
-                        </div>
-
-                        <div className="card bg-white/5 border border-white/10 p-6">
-                            <h3 className="font-bold text-white mb-4">Payment Methods</h3>
-                            <div className="space-y-4">
-                                {paymentMethods.map(pm => (
-                                    <div key={pm.id} className="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/5">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-6 bg-slate-700 rounded flex items-center justify-center text-[10px] font-bold text-white">
-                                                {pm.type}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-semibold text-white">•••• {pm.last4}</p>
-                                                <p className="text-xs text-slate-500">Expires {pm.expiry}</p>
-                                            </div>
-                                        </div>
-                                        <button className="text-xs text-red-400 hover:text-red-300">Remove</button>
-                                    </div>
-                                ))}
-                            </div>
-                            <button className="btn btn-primary w-full mt-6 py-3 text-black text-sm font-bold shadow-lg shadow-primary/20">
-                                + Add New Card
-                            </button>
                         </div>
                     </div>
 
