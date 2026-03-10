@@ -25,7 +25,18 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const vehicleType = formData.get("vehicleType") as string;
-    const phone = formData.get("phone") as string;
+    let phone = formData.get("phone") as string;
+
+    // Normalize phone to E.164 for Supabase Auth SMS compatibility (assuming US for demo)
+    if (phone) {
+        let formattedPhone = phone.replace(/[^\d+]/g, '');
+        if (!formattedPhone.startsWith('+')) {
+            if (formattedPhone.length === 10) formattedPhone = `+1${formattedPhone}`;
+            else if (formattedPhone.startsWith('1') && formattedPhone.length === 11) formattedPhone = `+${formattedPhone}`;
+            else formattedPhone = `+1${formattedPhone}`; // Fallback best-effort
+        }
+        phone = formattedPhone;
+    }
     const idDocument = formData.get("idDocument") as File;
     const insuranceDocument = formData.get("insuranceDocument") as File | null;
     const registrationDocument = formData.get("registrationDocument") as File | null;
