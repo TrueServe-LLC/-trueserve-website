@@ -44,6 +44,7 @@ export default function AddressInput({ onAddressSelect, initialAddress = "" }: A
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setInputValue(val);
+        onAddressSelect(val, 0, 0);
 
         if (!val) {
             setPredictions([]);
