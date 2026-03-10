@@ -30,6 +30,7 @@ export default async function Home() {
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
+            {userId && <LogoutButton />}
             {userId && <NotificationBell userId={userId} />}
             {userId && (
               <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
