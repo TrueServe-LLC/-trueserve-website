@@ -34,7 +34,7 @@ function SetupForm({
             confirmParams: {
                 return_url: `${window.location.origin}/user/settings`, // Should technically not redirect if handled via elements redirect: 'if_required', but we'll try that
             },
-            redirect: 'if_required' 
+            redirect: 'if_required'
         });
 
         if (error) {
@@ -52,12 +52,12 @@ function SetupForm({
             <h4 className="font-bold text-white mb-6 text-sm uppercase tracking-widest text-primary flex items-center gap-2">
                 <span className="text-xl">💳</span> Add Payment Method
             </h4>
-            
+
             {/* PaymentElement container with enhanced styling hook */}
             <div className="bg-white/5 p-4 rounded-xl border border-white/10">
                 <PaymentElement options={{ layout: "tabs" }} />
             </div>
-            
+
             {message && (
                 <div className="mt-4 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-lg flex items-center gap-2">
                     <span>⚠️</span> {message}
@@ -113,7 +113,7 @@ export default function WalletUI({ userId }: { userId: string }) {
         try {
             await detachPaymentMethod(userId, id);
             await loadMethods();
-        } catch(e) {
+        } catch (e) {
             alert("Failed to remove card.");
         }
     };
@@ -122,9 +122,10 @@ export default function WalletUI({ userId }: { userId: string }) {
         setIsAddingCard(true);
         setError(null);
         try {
-            const secret = await createSetupIntent(userId);
-            if (!secret) throw new Error("Our secure payment tunnel is reconnecting. Please refresh and try again.");
-            setClientSecret(secret);
+            const result = await createSetupIntent(userId);
+            if (result && result.error) throw new Error(result.error);
+            if (!result || !result.secret) throw new Error("Our secure payment tunnel is reconnecting. Please refresh and try again.");
+            setClientSecret(result.secret);
         } catch (e: any) {
             console.error("SetupIntent creation failed:", e);
             setError(e.message || "Failed to initialize securely.");
@@ -136,7 +137,7 @@ export default function WalletUI({ userId }: { userId: string }) {
         <div className="card bg-white/5 border border-white/10 p-6 shadow-2xl backdrop-blur-md">
             <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
                 <h3 className="font-bold text-white text-xl flex items-center gap-3">
-                    <span className="text-2xl bg-white/10 p-2 rounded-xl">💳</span> 
+                    <span className="text-2xl bg-white/10 p-2 rounded-xl">💳</span>
                     Digital Wallet
                 </h3>
             </div>
@@ -165,19 +166,19 @@ export default function WalletUI({ userId }: { userId: string }) {
                             <div key={pm.id} className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-primary/50 hover:bg-white/10 transition-all group shadow-sm">
                                 <div className="flex items-center gap-4">
                                     <div className="w-14 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-[10px] font-black text-white shadow-inner border border-white/10 group-hover:scale-105 transition-transform overflow-hidden">
-                                        {pm.brand === "PayPal" ? <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" className="h-4" /> : 
-                                         pm.brand === "CashApp" ? <span className="text-emerald-400">CashApp</span> : 
-                                         <span className="opacity-80 uppercase tracking-wider">{pm.brand || "Card"}</span>}
+                                        {pm.brand === "PayPal" ? <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" className="h-4" /> :
+                                            pm.brand === "CashApp" ? <span className="text-emerald-400">CashApp</span> :
+                                                <span className="opacity-80 uppercase tracking-wider">{pm.brand || "Card"}</span>}
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-white tracking-widest leading-none mb-1.5">{pm.displayPrimary}</p>
                                         <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black flex items-center gap-1">
-                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> 
+                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                                             {pm.displaySecondary}
                                         </p>
                                     </div>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => handleRemove(pm.id)}
                                     className="w-10 h-10 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all hover:scale-110 shadow-sm"
                                     title="Remove Payment Method"
@@ -191,7 +192,7 @@ export default function WalletUI({ userId }: { userId: string }) {
             )}
 
             {!isAddingCard ? (
-                <button 
+                <button
                     onClick={handleAddClick}
                     className={`btn btn-outline border-white/20 hover:border-primary hover:bg-primary/5 hover:text-primary w-full mt-8 py-4 text-sm font-black uppercase tracking-widest transition-all text-slate-300 rounded-2xl ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
@@ -199,8 +200,8 @@ export default function WalletUI({ userId }: { userId: string }) {
                 </button>
             ) : clientSecret ? (
                 <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#00f2fe', colorBackground: '#1e293b', colorText: '#f8fafc' } } }}>
-                    <SetupForm 
-                        clientSecret={clientSecret} 
+                    <SetupForm
+                        clientSecret={clientSecret}
                         onSuccess={() => {
                             setIsAddingCard(false);
                             setClientSecret(null);

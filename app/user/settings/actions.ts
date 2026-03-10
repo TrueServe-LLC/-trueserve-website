@@ -84,7 +84,9 @@ export async function getPaymentMethods(userId: string) {
 }
 
 export async function createSetupIntent(userId: string) {
-    if (userId.startsWith('mock-')) return null; // Prevent crashes for mock accounts
+    if (userId.startsWith('mock-')) {
+        return { error: "Demo accounts cannot store secure payment methods. Please log out and sign up with a real account to test this feature." };
+    }
 
     try {
         const customerId = await getOrCreateStripeCustomer(userId);
@@ -95,10 +97,10 @@ export async function createSetupIntent(userId: string) {
             usage: 'off_session',
         });
 
-        return intent.client_secret;
+        return { secret: intent.client_secret };
     } catch (e: any) {
         console.error("[createSetupIntent Error]:", e.message);
-        return null;
+        return { error: "Our secure payment tunnel is reconnecting. Please refresh and try again." };
     }
 }
 
