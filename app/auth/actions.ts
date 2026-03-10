@@ -54,7 +54,7 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
 
                 if (publicUser) {
                     console.log(`[AUTH] User found in DB. Authenticating as ${publicUser.id} (${publicUser.role})`);
-                    cookieStore.set("userId", publicUser.id, { secure: true, httpOnly: true });
+                    cookieStore.set("userId", publicUser.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
                     return { message: "Demo Login successful!", success: true, role: publicUser.role };
                 }
             } else {
@@ -73,7 +73,7 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
             else if (email.includes('barneys')) mockSuffix = 'barneys';
 
             const fallbackRole = email.includes("merchant") || email.includes("owner") ? "MERCHANT" : email.includes("driver") ? "DRIVER" : "CUSTOMER";
-            cookieStore.set("userId", `mock-${fallbackRole.toLowerCase()}-${mockSuffix}`, { secure: true, httpOnly: true });
+            cookieStore.set("userId", `mock-${fallbackRole.toLowerCase()}-${mockSuffix}`, { secure: process.env.NODE_ENV === "production", httpOnly: true });
             return { message: "Demo Login successful (Mock Mode)!", success: true, role: fallbackRole };
         }
 
@@ -98,10 +98,10 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
             if (publicUser) {
                 role = publicUser.role;
                 // Set App Cookie for compatibility
-                cookieStore.set("userId", publicUser.id, { secure: true, httpOnly: true });
+                cookieStore.set("userId", publicUser.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
             } else {
                 // Fallback if public user missing but Auth exists (shouldn't happen often)
-                cookieStore.set("userId", data.user.id, { secure: true, httpOnly: true });
+                cookieStore.set("userId", data.user.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
             }
         }
 
@@ -168,7 +168,7 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
 
             if (dbError) console.error("Public User Insert Error:", dbError);
 
-            cookieStore.set("userId", data.user.id, { secure: true, httpOnly: true });
+            cookieStore.set("userId", data.user.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
 
             // 3. STRIPE REDIRECTION FOR PLUS/PREMIUM
             if (role === 'CUSTOMER' && (plan === 'Plus' || plan === 'Premium')) {

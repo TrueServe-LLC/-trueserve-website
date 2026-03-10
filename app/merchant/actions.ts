@@ -392,7 +392,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         // 5. Auto-Login Cookie
         const cookieStore = await cookies();
-        cookieStore.set("userId", userId, { secure: true, httpOnly: true });
+        cookieStore.set("userId", userId, { secure: process.env.NODE_ENV === "production", httpOnly: true });
 
         // 6. STRIPE REDIRECTION LOGIC
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

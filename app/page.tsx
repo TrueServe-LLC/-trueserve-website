@@ -29,7 +29,13 @@ export default async function Home() {
             <Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link>
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
+            {userId && <NotificationBell userId={userId} />}
+            {userId && (
+              <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              </Link>
+            )}
             <Link href="/restaurants" className="btn btn-primary !py-1.5 md:!py-2 !px-3 md:!px-6 !text-[10px] md:!text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap uppercase tracking-widest font-black">
               {userId ? 'Browse Food' : 'Get Started'}
             </Link>
