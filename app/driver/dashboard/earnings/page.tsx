@@ -9,7 +9,7 @@ export default async function DriverEarningsPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        redirect("/login?role=driver");
+        redirect("/driver/login");
     }
 
     // 1. Fetch Driver Profile

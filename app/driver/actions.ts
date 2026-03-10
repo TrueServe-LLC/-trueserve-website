@@ -447,7 +447,7 @@ export async function createDriverStripeAccount() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-        redirect("/login?role=driver");
+        redirect("/driver/login");
     }
 
     let url = "";
@@ -526,7 +526,7 @@ export async function createDriverStripeAccount() {
 export async function createDriverPayout() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/login?role=driver");
+    if (!user) redirect("/driver/login");
 
     try {
         // 1. Get Driver

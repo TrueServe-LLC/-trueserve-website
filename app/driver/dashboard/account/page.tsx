@@ -11,7 +11,7 @@ export default async function DriverAccount() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        redirect("/login?role=driver");
+        redirect("/driver/login");
     }
 
     const { data: driver } = await supabase

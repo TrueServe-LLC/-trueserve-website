@@ -9,7 +9,7 @@ export default async function DriverDashboardLayout({ children }: { children: Re
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        redirect('/login?role=driver&next=/driver/dashboard');
+        redirect('/driver/login&next=/driver/dashboard');
     }
 
     // Shield: Ensure only registered drivers can access these subpages

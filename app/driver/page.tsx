@@ -23,7 +23,7 @@ export default function DriverPortal() {
                         </span>
                     </Link>
                     <div className="flex items-center gap-6">
-                        <Link href="/login?role=driver" className="text-sm font-black uppercase tracking-widest text-primary hover:text-white transition-colors">Log In</Link>
+                        <Link href="/driver/login" className="text-sm font-black uppercase tracking-widest text-primary hover:text-white transition-colors">Log In</Link>
                     </div>
                 </div>
             </nav>
@@ -260,7 +260,7 @@ export default function DriverPortal() {
                         <Link href="/legal" className="hover:text-white transition-colors">Privacy</Link>
                         <Link href="/legal" className="hover:text-white transition-colors">Terms</Link>
                         <Link href="/help" className="hover:text-white transition-colors">Driver Help</Link>
-                        <Link href="/login?role=driver" className="hover:text-white transition-colors">Driver Login</Link>
+                        <Link href="/driver/login" className="hover:text-white transition-colors">Driver Login</Link>
                     </div>
                 </div>
             </footer>
