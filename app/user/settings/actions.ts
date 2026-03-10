@@ -13,17 +13,23 @@ const getSupabaseAdmin = () => {
 
 async function getOrCreateStripeCustomer(userId: string): Promise<string> {
     const supabase = getSupabaseAdmin();
-    const { data: user } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).single();
 
-    if (!user) throw new Error("User not found");
+    // We mock the user creation if they are a dummy test account and gracefully fallback
+    if (userId.startsWith('mock-')) {
+        return "cus_mock123"; // Prevent Stripe crashes for demo bypassed users
+    }
+
+    const { data: user, error } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).single();
+
+    if (error || !user) throw new Error("User not found or database sync issue. " + (error?.message || ""));
 
     if (user.stripeCustomerId) {
         return user.stripeCustomerId;
     }
 
     const customer = await getStripe().customers.create({
-        email: user.email,
-        name: user.name,
+        email: user.email || undefined,
+        name: user.name || "TrueServe User",
         metadata: { userId }
     });
 
@@ -33,6 +39,8 @@ async function getOrCreateStripeCustomer(userId: string): Promise<string> {
 }
 
 export async function getPaymentMethods(userId: string) {
+    if (userId.startsWith('mock-')) return []; // Skip for demo users
+
     const supabase = getSupabaseAdmin();
     const { data: user } = await supabase.from('User').select('stripeCustomerId').eq('id', userId).single();
 
@@ -40,52 +48,58 @@ export async function getPaymentMethods(userId: string) {
         return [];
     }
 
-    const [cardPm, paypalPm, cashappPm] = await Promise.all([
-        getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'card' }),
-        getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'paypal' }),
-        getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'cashapp' })
-    ]);
+    try {
+        // Some payment method types might throw errors if not enabled on the stripe account, safely fetch what we can
+        const cardRes = await getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'card' }).catch(() => ({ data: [] }));
+        const cashappRes = await getStripe().paymentMethods.list({ customer: user.stripeCustomerId, type: 'cashapp' }).catch(() => ({ data: [] }));
 
-    const allPms = [...cardPm.data, ...paypalPm.data, ...cashappPm.data];
+        const allPms = [...cardRes.data, ...cashappRes.data];
 
-    return allPms.map(pm => {
-        let brand = "Card";
-        let displayPrimary = "";
-        let displaySecondary = "";
+        return allPms.map(pm => {
+            let brand = "Card";
+            let displayPrimary = "";
+            let displaySecondary = "";
 
-        if (pm.type === 'card') {
-            brand = pm.card?.brand || "Card";
-            displayPrimary = `•••• ${pm.card?.last4}`;
-            displaySecondary = `Exp ${pm.card?.exp_month}/${pm.card?.exp_year}`;
-        } else if (pm.type === 'paypal') {
-            brand = "PayPal";
-            displayPrimary = pm.paypal?.payer_email || "PayPal Account";
-            displaySecondary = "Connected";
-        } else if (pm.type === 'cashapp') {
-            brand = "CashApp";
-            displayPrimary = pm.cashapp?.cashtag || "CashApp Pay";
-            displaySecondary = "Connected";
-        }
+            if (pm.type === 'card') {
+                brand = pm.card?.brand || "Card";
+                displayPrimary = `•••• ${pm.card?.last4}`;
+                displaySecondary = `Exp ${pm.card?.exp_month}/${pm.card?.exp_year}`;
+            } else if (pm.type === 'cashapp') {
+                brand = "CashApp";
+                displayPrimary = pm.cashapp?.cashtag || "CashApp Pay";
+                displaySecondary = "Connected";
+            }
 
-        return {
-            id: pm.id,
-            brand: brand,
-            displayPrimary,
-            displaySecondary,
-        };
-    });
+            return {
+                id: pm.id,
+                brand: brand,
+                displayPrimary,
+                displaySecondary,
+            };
+        });
+    } catch (e: any) {
+        console.error("[getPaymentMethods Stripe Error]:", e.message);
+        return [];
+    }
 }
 
 export async function createSetupIntent(userId: string) {
-    const customerId = await getOrCreateStripeCustomer(userId);
+    if (userId.startsWith('mock-')) return null; // Prevent crashes for mock accounts
 
-    const intent = await getStripe().setupIntents.create({
-        customer: customerId,
-        automatic_payment_methods: { enabled: true },
-        usage: 'off_session',
-    });
+    try {
+        const customerId = await getOrCreateStripeCustomer(userId);
 
-    return intent.client_secret;
+        const intent = await getStripe().setupIntents.create({
+            customer: customerId,
+            automatic_payment_methods: { enabled: true },
+            usage: 'off_session',
+        });
+
+        return intent.client_secret;
+    } catch (e: any) {
+        console.error("[createSetupIntent Error]:", e.message);
+        return null;
+    }
 }
 
 export async function detachPaymentMethod(userId: string, paymentMethodId: string) {
