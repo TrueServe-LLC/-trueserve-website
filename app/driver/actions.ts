@@ -130,6 +130,20 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         if (isAutoApproved) {
             console.log(`[DriverApp] 🟢 AI AUTO-APPROVED Application for ${email}!`);
+
+            // Create the true Auth identity here so they can log in via SMS!
+            const { error: authError } = await supabaseAdmin.auth.admin.createUser({
+                id: targetUserId, // link to the raw User row we created earlier
+                email: email,
+                phone: phone,
+                phone_confirm: true,
+                email_confirm: true,
+                user_metadata: { displayName: name, role: 'DRIVER' }
+            });
+
+            if (authError && !authError.message.includes('already exists')) {
+                console.error("Auto-Approve Auth Creation Failed:", authError);
+            }
         } else {
             console.log(`[DriverApp] 🟡 AI Sent to Manual Review for ${email}. Reason: Scans failed automated compliance checks.`);
         }

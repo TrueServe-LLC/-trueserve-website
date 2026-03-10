@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email";
+import { sendSMS } from "@/lib/sms";
 
 export async function approveMenuItem(id: string) {
     try {
@@ -80,13 +81,16 @@ export async function approveDriver(id: string) {
 
         const email = driver.user.email;
         const name = driver.user.name;
+        const phone = driver.user.phone;
         const tempPassword = `TrueServe!${Math.random().toString(36).slice(-8)}`;
 
         // 2. Create Auth User if not exists
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
+            phone,
             password: tempPassword,
             email_confirm: true,
+            phone_confirm: true,
             user_metadata: {
                 displayName: name,
                 role: 'DRIVER'
@@ -94,6 +98,7 @@ export async function approveDriver(id: string) {
         });
 
         // If user already exists, just proceed to status update (maybe they signed up as customer)
+        // If phone already exists, that's fine too.
         if (authError && !authError.message.includes("already exists")) {
             console.error("Auth Creation Error:", authError);
             throw authError;
@@ -107,11 +112,16 @@ export async function approveDriver(id: string) {
 
         if (statusError) throw statusError;
 
-        // 4. Send Approval Email
+        // 4. Send Approval Email/SMS
         await sendEmail(
             email,
             "Your TrueServe Driver Application - APPROVED",
-            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in to the driver portal and start accepting orders.\n\n**Email:** ${email}\n**Temporary Password:** ${tempPassword}\n\n[Link to Driver Portal]\n\nPlease change your password after your first login.\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
+            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in using your phone number to receive a secure SMS code.\n\nPlease go to trueserve.delivery/driver/login to start accepting orders!\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
+        );
+
+        await sendSMS(
+            phone,
+            `TrueServe: Your driver application is approved! You can now log in using this phone number at trueserve.delivery/driver/login`
         );
 
         revalidatePath("/admin/dashboard");
