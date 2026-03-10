@@ -31,53 +31,7 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
     try {
         console.log(`[AUTH] Checking login for: "${email}"`);
 
-        // Mock Login enabled for all environments so demos/testing work anywhere
-        // Bypass for @demo.test and @trueserve.test accounts to handle "Email logins disabled" Supabase settings
-        const isTestAccount = email?.includes("@demo") || email?.includes("trueserve") || email?.endsWith(".test") || email?.endsWith(".live");
-
-        // Normalize passwords for the bypass (handle case sensitivity for all known combinations)
-        const normalizedPass = password?.toLowerCase();
-        const isTestPassword = normalizedPass === "password123" || normalizedPass === "mountairy2026!" || normalizedPass === "andy2026";
-
-        if (isTestAccount && isTestPassword) {
-            console.log(`[AUTH] >>> Demo Bypass Triggered for: ${email}`);
-
-            const isConfigured = !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-            if (isConfigured) {
-                // Try to find the REAL user in our DB first
-                const { data: publicUser } = await supabaseAdmin
-                    .from('User')
-                    .select('id, role')
-                    .eq('email', email)
-                    .maybeSingle();
-
-                if (publicUser) {
-                    console.log(`[AUTH] User found in DB. Authenticating as ${publicUser.id} (${publicUser.role})`);
-                    cookieStore.set("userId", publicUser.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
-                    return { message: "Demo Login successful!", success: true, role: publicUser.role };
-                }
-            } else {
-                console.warn("[AUTH] Supabase Keys are placeholders or missing. Skipping DB check.");
-            }
-
-            // Fallback for demo users that might not be in the current DB instance
-            console.log(`[AUTH] Falling back to mock role session (Local Backup Mode).`);
-
-            let mockSuffix = 'general';
-            if (email.includes('snappylunch')) mockSuffix = 'snappylunch';
-            else if (email.includes('13bones')) mockSuffix = '13bones';
-            else if (email.includes('oldnorthstate')) mockSuffix = 'oldnorthstate';
-            else if (email.includes('olympia')) mockSuffix = 'olympia';
-            else if (email.includes('littlerichards')) mockSuffix = 'littlerichards';
-            else if (email.includes('barneys')) mockSuffix = 'barneys';
-
-            const fallbackRole = email.includes("merchant") || email.includes("owner") ? "MERCHANT" : email.includes("driver") ? "DRIVER" : "CUSTOMER";
-            cookieStore.set("userId", `mock-${fallbackRole.toLowerCase()}-${mockSuffix}`, { secure: process.env.NODE_ENV === "production", httpOnly: true });
-            return { message: "Demo Login successful (Mock Mode)!", success: true, role: fallbackRole };
-        }
-
-        console.log(`[AUTH] No bypass hit. Attempting standard Supabase Auth...`);
+        console.log(`[AUTH] Attempting standard Supabase Auth for: ${email}`);
 
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
