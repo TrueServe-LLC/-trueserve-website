@@ -234,3 +234,28 @@ export async function logout() {
     cookieStore.delete("userId");
     redirect("/login");
 }
+
+export async function getAuthSession() {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+
+    // We only consider the user fully logged in if our custom cookie exists
+    if (!userId) {
+        return { isAuth: false };
+    }
+
+    try {
+        const { data: publicUser } = await supabaseAdmin
+            .from('User')
+            .select('role')
+            .eq('id', userId)
+            .maybeSingle();
+
+        return {
+            isAuth: true,
+            role: publicUser?.role || 'CUSTOMER'
+        };
+    } catch (e) {
+        return { isAuth: false };
+    }
+}

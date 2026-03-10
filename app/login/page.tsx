@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginWithPassword, signupWithPassword, resetPassword } from "../auth/actions";
+import { loginWithPassword, signupWithPassword, resetPassword, getAuthSession } from "../auth/actions";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -30,19 +30,20 @@ function LoginWithParams() {
 
     useEffect(() => {
         const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                // Fetch profile to get role for correct redirection
-                const { data: profile } = await supabase
-                    .from('User')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
+            const session = await getAuthSession();
 
-                if (profile?.role === 'MERCHANT') router.push("/merchant/dashboard");
-                else if (profile?.role === 'DRIVER') router.push("/driver/dashboard");
-                else if (profile?.role === 'ADMIN') router.push("/admin/dashboard");
+            if (session.isAuth) {
+                if (session.role === 'MERCHANT') router.push("/merchant/dashboard");
+                else if (session.role === 'DRIVER') router.push("/driver/dashboard");
+                else if (session.role === 'ADMIN') router.push("/admin/dashboard");
                 else router.push(redirectUrl);
+            } else {
+                // If the user's cookie was lost/cleared but Supabase local storage remembers something,
+                // we should firmly sign them out of the local cache so they don't get stuck finding food.
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    await supabase.auth.signOut();
+                }
             }
         };
         checkUser();
