@@ -22,12 +22,17 @@ export async function GET(request: Request) {
             let role = 'CUSTOMER';
 
             if (!profile) {
+                // Auto-assign admin conditionally
+                if (data.user.email === process.env.ADMIN_EMAIL || data.user.email?.endsWith('@trueserve.com') || data.user.email?.endsWith('@trueserve.delivery')) {
+                    role = 'ADMIN';
+                }
+
                 // First time logging in with Google - create the profile
                 await supabase.from('User').insert({
                     id: data.user.id,
                     email: data.user.email,
                     name: data.user.user_metadata.full_name || data.user.user_metadata.name || data.user.email?.split('@')[0],
-                    role: 'CUSTOMER',
+                    role: role,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 });
