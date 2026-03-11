@@ -13,6 +13,9 @@ export default function DriverRealtime({ driverId }: { driverId: string }) {
         if (!driverId) return;
 
         // --- 1. Real-time Location Tracking ---
+        const broadcastChannel = supabase.channel(`driver-loc-${driverId}`);
+        broadcastChannel.subscribe();
+
         let watchId: number;
         if ("geolocation" in navigator) {
             watchId = navigator.geolocation.watchPosition(
@@ -20,7 +23,14 @@ export default function DriverRealtime({ driverId }: { driverId: string }) {
                     const { latitude, longitude } = position.coords;
                     const now = Date.now();
 
-                    // Throttle updates to once every 10 seconds or if moved significantly
+                    // Broadcast high-frequency updates instantly via RAMEN architecture
+                    broadcastChannel.send({
+                        type: 'broadcast',
+                        event: 'location_update',
+                        payload: { lat: latitude, lng: longitude }
+                    });
+
+                    // Throttle DB updates to once every 10 seconds for persistence
                     // (approx 20 meters = ~0.0002 deg)
                     if (now - lastUpdate > 10000) {
                         setLastUpdate(now);

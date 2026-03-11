@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { GoogleMap, useJsApiLoader, HeatmapLayerF, MarkerF } from '@react-google-maps/api';
 import { createClient } from "@/lib/supabase/client";
 import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
+import { getAIPredictedHeatmap } from "@/app/driver/actions";
 
 // Dark Mode Map Style for Heatmaps
 const darkMapStyle = [
@@ -71,41 +72,27 @@ export default function DriverMap() {
     // Fetch Initial Data & Subscribe
     useEffect(() => {
         const supabase = createClient();
+        let channel: any = null;
 
-        // 1. Fetch recent orders (last 7 days for demo density)
-        const fetchHeatmap = async () => {
-            // Join with Restaurant to get coords
-            const { data, error } = await supabase
-                .from('Order')
-                .select(`
-                    total,
-                    restaurant:Restaurant(lat, lng)
-                `)
-                .order('createdAt', { ascending: false })
-                .limit(100);
-
-            if (data) {
-                const points = data
-                    .filter((o: any) => o.restaurant?.lat && o.restaurant?.lng)
-                    .map((o: any) => ({
-                        location: new google.maps.LatLng(o.restaurant.lat, o.restaurant.lng),
-                        weight: o.total // Higher order value = more "heat"
-                    }));
-                setHeatmapData(points);
-                setLastUpdate(new Date().toLocaleTimeString());
-            }
+        const fetchData = async () => {
+            // Fetch initial blended data (Live Orders + AI Predictors)
+            const predictedPoints = await getAIPredictedHeatmap();
+            const points = predictedPoints.map(p => ({
+                location: new google.maps.LatLng(p.lat, p.lng),
+                weight: p.weight
+            }));
+            setHeatmapData(points);
+            setLastUpdate(new Date().toLocaleTimeString());
         };
 
         if (isLoaded) {
-            fetchHeatmap();
+            fetchData();
 
-            // 2. Real-time Subscription
-            const channel = supabase
+            // Real-time Subscription to continually pump live points into the AI map!
+            channel = supabase
                 .channel('realtime-orders')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Order' }, async (payload) => {
                     console.log('New Order! Updating Heatmap...', payload);
-                    // We need to fetch the restaurant coords for this new order
-                    // Payload only has order data usually
                     const newOrder = payload.new as any;
 
                     if (newOrder.restaurantId) {
@@ -120,7 +107,7 @@ export default function DriverMap() {
                                 ...prev,
                                 {
                                     location: new google.maps.LatLng(rest.lat, rest.lng),
-                                    weight: newOrder.total || 10
+                                    weight: newOrder.total || 25 // Give active live orders an instant heavy weight
                                 }
                             ]);
                             setLastUpdate(new Date().toLocaleTimeString());
@@ -130,7 +117,7 @@ export default function DriverMap() {
                 .subscribe();
 
             return () => {
-                supabase.removeChannel(channel);
+                if (channel) supabase.removeChannel(channel);
             };
         }
     }, [isLoaded]);
@@ -162,22 +149,13 @@ export default function DriverMap() {
                         options={{
                             radius: 40,
                             opacity: 0.8,
-                            // Gradient: Blue -> Green -> Red
+                            // Unified Gradient: Live hot centers melt into predictive gold edges
                             gradient: [
-                                'rgba(0, 255, 255, 0)',
-                                'rgba(0, 255, 255, 1)',
-                                'rgba(0, 191, 255, 1)',
-                                'rgba(0, 127, 255, 1)',
-                                'rgba(0, 63, 255, 1)',
-                                'rgba(0, 0, 255, 1)',
-                                'rgba(0, 0, 223, 1)',
-                                'rgba(0, 0, 191, 1)',
-                                'rgba(0, 0, 159, 1)',
-                                'rgba(0, 0, 127, 1)',
-                                'rgba(63, 0, 91, 1)',
-                                'rgba(127, 0, 63, 1)',
-                                'rgba(191, 0, 31, 1)',
-                                'rgba(255, 0, 0, 1)'
+                                'rgba(255, 153, 42, 0)',   // Transparent core
+                                'rgba(255, 173, 82, 0.4)', // Soft Gold (Predictive boundary)
+                                'rgba(255, 153, 42, 0.8)', // Warning Orange 
+                                'rgba(239, 68, 68, 1)',    // Hot Red (Live Order Mass)
+                                'rgba(185, 28, 28, 1)',    // Deep Red Core
                             ]
                         }}
                     />
@@ -195,21 +173,25 @@ export default function DriverMap() {
                 )}
             </GoogleMap>
 
-            {/* Live Data Overlay */}
-            <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md p-4 rounded-lg border border-white/10 z-[10]">
-                <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_#ef4444]"></div>
-                    <h4 className="text-xs font-bold uppercase text-white tracking-widest">Live Demand</h4>
+            {/* Always-on AI Unified Overlay */}
+            <div className="absolute top-4 left-4 flex gap-2 z-[10]">
+                <div className="bg-black/80 backdrop-blur-md p-3 rounded-xl border border-white/10 flex flex-col items-start gap-1 shadow-2xl">
+                    <div className="flex items-center gap-2">
+                        <span className="relative flex h-2 w-2">
+                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        <h4 className="text-[10px] uppercase font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-primary">Smart Heatmap</h4>
+                    </div>
+                    <p className="text-[9px] text-slate-400 font-bold max-w-[120px]">Live orders & predictive demand zones blended automatically.</p>
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">
-                    <p>Points: <span className="text-emerald-400">{heatmapData.length}</span></p>
-                    <p>Last Update: <span className="text-white">{lastUpdate}</span></p>
-                </div>
-                <div className="mt-2 h-1 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 rounded-full"></div>
-                <div className="flex justify-between text-[8px] text-slate-500 mt-1 font-bold uppercase">
-                    <span>Low</span>
-                    <span>High</span>
-                </div>
+            </div>
+
+            {/* Info Box */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 z-[10] text-center w-max shadow-2xl">
+                <p className="text-[10px] text-slate-400 font-mono">
+                    <span className="text-primary font-black text-xs mr-2">{heatmapData.length}</span> Active Regions • Last Sync: {lastUpdate}
+                </p>
             </div>
         </div>
     );

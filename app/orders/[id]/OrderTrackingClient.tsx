@@ -75,24 +75,19 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
             })
             .subscribe();
 
-        // 2. Subscribe to Driver Location updates (Realtime)
+        // 2. Subscribe to Driver Location updates via RAMEN Broadcast
         let driverChannel: any;
         if (order.driverId) {
             driverChannel = supabase
                 .channel(`driver-loc-${order.driverId}`)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'Driver',
-                    filter: `id=eq.${order.driverId}`
-                }, (payload) => {
-                    const { currentLat, currentLng } = payload.new;
-                    if (currentLat && currentLng) {
+                .on('broadcast', { event: 'location_update' }, (payload) => {
+                    const { lat, lng } = payload.payload;
+                    if (lat && lng) {
                         setDriverPos(prev => {
                             // Calculate bearing based on previous position
-                            const bearing = calculateBearing(prev[0], prev[1], currentLat, currentLng);
+                            const bearing = calculateBearing(prev[0], prev[1], lat, lng);
                             if (bearing !== 0) setDriverBearing(bearing);
-                            return [currentLat, currentLng];
+                            return [lat, lng];
                         });
                     }
                 })
@@ -185,6 +180,20 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         )}
                     </div>
                 </div>
+
+                {/* Show Delivery PIN to Customer when out for delivery */}
+                {currentOrder.status === 'PICKED_UP' && currentOrder.deliveryPin && (
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 bg-slate-900 border border-emerald-500/30 p-4 rounded-2xl shadow-2xl flex flex-col items-center animate-fade-in-up md:bottom-10 w-[90%] md:w-auto">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Give this PIN to your driver</p>
+                        <div className="flex items-center gap-3">
+                            {currentOrder.deliveryPin.split('').map((digit: string, idx: number) => (
+                                <div key={idx} className="w-10 h-12 md:w-12 md:h-14 bg-black border border-emerald-500/50 rounded-xl flex items-center justify-center text-2xl font-mono text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                                    {digit}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="absolute inset-0 z-0">
                     <MapWithDirections
@@ -297,9 +306,24 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                 <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-[3px] z-10 transition-all duration-700 ${currentStep >= 5 ? 'border-emerald-500 bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.5)]' : 'border-white/10 bg-slate-900 text-slate-500'}`}>
                                     🏠
                                 </div>
-                                <div className={currentStep >= 5 ? 'opacity-100' : 'opacity-40'}>
+                                <div className={currentStep >= 5 ? 'opacity-100 flex-1' : 'opacity-40 flex-1'}>
                                     <p className="font-bold text-lg">Delivered</p>
                                     <p className="text-sm text-slate-400 mt-1">Enjoy your meal!</p>
+                                    
+                                    {/* Proof of Delivery Photo */}
+                                    {currentOrder.proofOfDeliveryUrl && (
+                                        <div className="mt-4 bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-fade-in-up">
+                                            <div className="p-3 border-b border-white/5 bg-white/5 backdrop-blur-sm flex items-center gap-2">
+                                                <span>📸</span>
+                                                <p className="text-[10px] font-black uppercase text-slate-300 tracking-widest">Proof of Delivery</p>
+                                            </div>
+                                            <img 
+                                                src={currentOrder.proofOfDeliveryUrl} 
+                                                alt="Delivery Proof" 
+                                                className="w-full h-auto aspect-video object-cover"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

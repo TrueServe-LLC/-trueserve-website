@@ -56,10 +56,16 @@ export default async function RestaurantMenu({
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
     let initialIsFavorited = false;
+    let truePointsBalance = 0;
 
     if (userId) {
         const favs = await getFavorites();
         initialIsFavorited = favs.includes(id);
+
+        const { data: userData } = await supabase.from('User').select('truePointsBalance').eq('id', userId).single();
+        if (userData) {
+            truePointsBalance = userData.truePointsBalance || 0;
+        }
     }
 
     if (!restaurant) {
@@ -144,6 +150,7 @@ export default async function RestaurantMenu({
             <main className="container py-8 md:py-12 animate-fade-in">
                 <MenuClient
                     userId={userId}
+                    truePointsBalance={truePointsBalance}
                     restaurant={restaurant}
                     items={restaurant.menuItems.map((item: any) => ({
                         ...item,

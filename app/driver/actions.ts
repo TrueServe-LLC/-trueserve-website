@@ -14,6 +14,7 @@ import { redirect } from "next/navigation";
 import { sendSMS } from "@/lib/sms";
 import { createNotification } from "@/lib/notifications";
 import { scanDocumentWithAI } from "@/lib/aiScanner";
+import { calculateDistance } from "@/lib/utils";
 
 export type DriverApplicationState = {
     message: string;
@@ -25,6 +26,10 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const vehicleType = formData.get("vehicleType") as string;
+    const vehicleMake = formData.get("vehicleMake") as string;
+    const vehicleModel = formData.get("vehicleModel") as string;
+    const vehicleColor = formData.get("vehicleColor") as string;
+    const licensePlate = formData.get("licensePlate") as string;
     let phone = formData.get("phone") as string;
 
     // Normalize phone to E.164 for Supabase Auth SMS compatibility (assuming US for demo)
@@ -45,8 +50,8 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const lat = formData.get("lat") as string;
     const lng = formData.get("lng") as string;
 
-    if (!name || !email || !vehicleType || !phone || !idDocument || !insuranceDocument || !registrationDocument || !dob || !address) {
-        return { message: "Please fill in all fields, including documents and address.", error: true };
+    if (!name || !email || !vehicleType || !vehicleMake || !vehicleModel || !vehicleColor || !licensePlate || !phone || !idDocument || !insuranceDocument || !registrationDocument || !dob || !address) {
+        return { message: "Please fill in all fields, including vehicle details and documents.", error: true };
     }
 
     // Mock Verification
@@ -171,6 +176,10 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 id: uuidv4(),
                 userId: targetUserId,
                 vehicleType: vehicleType,
+                vehicleMake: vehicleMake,
+                vehicleModel: vehicleModel,
+                vehicleColor: vehicleColor,
+                licensePlate: licensePlate,
                 address: address,
                 lat: lat ? parseFloat(lat) : null,
                 lng: lng ? parseFloat(lng) : null,
@@ -248,7 +257,8 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 <p><strong>Name:</strong> ${name}</p>
                 <p><strong>Email:</strong> ${email}</p>
                 <p><strong>Phone:</strong> ${phone}</p>
-                <p><strong>Vehicle:</strong> ${vehicleType}</p>
+                <p><strong>Vehicle:</strong> ${vehicleColor} ${vehicleMake} ${vehicleModel} (${vehicleType})</p>
+                <p><strong>License Plate:</strong> ${licensePlate}</p>
                 <p><strong>Status:</strong> <span style="color: ${isAutoApproved ? 'green' : 'orange'}">${driveStatus}</span></p>
                 ${isAutoApproved ? `<p><em>This application was automatically approved by the AI Scanner because all 3 documents were verified.</em></p>` : `<p><em>This application requires manual review. AI confidence or document verification failed.</em></p>`}
                 <hr />
@@ -374,18 +384,31 @@ export async function pickupOrder(orderId: string) {
     }
 }
 
-export async function completeDelivery(orderId: string) {
+export async function completeDelivery(orderId: string, deliveryPin?: string, driverLat?: number, driverLng?: number) {
     try {
         const supabase = await createClient();
 
         // 1. Fetch order details for payout calculation
         const { data: order } = await supabase
             .from('Order')
-            .select('totalPay, tip, driverId')
+            .select('totalPay, tip, driverId, deliveryPin, deliveryLat, deliveryLng')
             .eq('id', orderId)
             .single();
 
         if (!order) throw new Error("Order not found");
+
+        // Geo-Fenced Safe Drop Protocol
+        if (driverLat && driverLng && order.deliveryLat && order.deliveryLng) {
+            const distance = Number(calculateDistance(driverLat, driverLng, order.deliveryLat, order.deliveryLng));
+            // Require driver to be within 0.05 miles (~260 feet) of the dropoff location
+            if (distance > 0.05) {
+                return { error: `Geo-Fence Active: You are too far (${distance} mi) from the drop-off location.` };
+            }
+        }
+
+        if (order.deliveryPin && order.deliveryPin !== deliveryPin) {
+            return { error: "Incorrect PIN. Ask customer for the 4-digit PIN." };
+        }
 
         // 2. Update order status
         const { error } = await supabase
@@ -447,6 +470,124 @@ export async function completeDelivery(orderId: string) {
     }
 }
 
+export async function completePhotoDelivery(formData: FormData) {
+    try {
+        const orderId = formData.get('orderId') as string;
+        const driverLat = parseFloat(formData.get('driverLat') as string);
+        const driverLng = parseFloat(formData.get('driverLng') as string);
+        const photo = formData.get('photo') as File | null;
+
+        if (!orderId) throw new Error("Order ID is required");
+
+        const supabase = await createClient();
+
+        // 1. Fetch order details for payout calculation
+        const { data: order } = await supabase
+            .from('Order')
+            .select('totalPay, tip, driverId, deliveryLat, deliveryLng')
+            .eq('id', orderId)
+            .single();
+
+        if (!order) throw new Error("Order not found");
+
+        // Geo-Fenced Safe Drop Protocol
+        if (!isNaN(driverLat) && !isNaN(driverLng) && order.deliveryLat && order.deliveryLng) {
+            const distance = Number(calculateDistance(driverLat, driverLng, order.deliveryLat, order.deliveryLng));
+            if (distance > 0.05) {
+                return { error: `Geo-Fence Active: You are too far (${distance} mi) from the drop-off location.` };
+            }
+        }
+
+        let proofOfDeliveryUrl = null;
+
+        // 2. Upload Photo Proof to Supabase Storage
+        if (photo && photo.size > 0) {
+            const fileExt = photo.name.split('.').pop() || 'jpg';
+            const fileName = `delivery_${orderId}_${Date.now()}.${fileExt}`;
+            
+            const buffer = Buffer.from(await photo.arrayBuffer());
+            
+            const { error: uploadError } = await supabaseAdmin
+                .storage
+                .from('delivery_proofs')
+                .upload(fileName, buffer, {
+                    contentType: photo.type || 'image/jpeg',
+                    upsert: false
+                });
+
+            if (uploadError) {
+                console.error("Storage upload failed:", uploadError);
+                return { error: "Failed to upload photo proof." };
+            }
+
+            const { data: publicData } = supabaseAdmin.storage.from('delivery_proofs').getPublicUrl(fileName);
+            proofOfDeliveryUrl = publicData.publicUrl;
+        }
+
+        // 3. Update order status & attach photo URL
+        const checkColumn = await supabase.from('Order').update({ status: 'DELIVERED' }).eq('id', '00000000-0000-0000-0000-000000000000');
+        let updatePayload: any = {
+            status: 'DELIVERED',
+            updatedAt: new Date().toISOString()
+        };
+        // Add photo URL (We assume column exists, if SQL schema script was executed)
+        // If not, we still update status to DELIVERED.
+        
+        const { error } = await supabase
+            .from('Order')
+            .update({
+                status: 'DELIVERED',
+                proofOfDeliveryUrl: proofOfDeliveryUrl,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId)
+            .eq('status', 'PICKED_UP');
+
+        if (error) {
+            // fallback if column missing
+            await supabase.from('Order').update({ status: 'DELIVERED', updatedAt: new Date().toISOString() }).eq('id', orderId).eq('status', 'PICKED_UP');
+        }
+
+        // Notify Customer
+        try {
+            const { data: orderData } = await supabaseAdmin
+                .from('Order')
+                .select('userId, restaurant:Restaurant(name)')
+                .eq('id', orderId)
+                .single();
+
+            if (orderData) {
+                await createNotification({
+                    userId: orderData.userId,
+                    orderId: orderId,
+                    title: "Order Delivered! 📸",
+                    message: "Your order has been left at the door. View tracking for a photo of the drop-off!"
+                });
+            }
+        } catch (notifErr) {
+            console.error("[Customer Notification Error]:", notifErr);
+        }
+
+        // 4. Payout driver
+        if (order.driverId) {
+            const earnings = (Number(order.totalPay) || 0) + (Number(order.tip) || 0);
+            if (earnings > 0) {
+                await supabase.rpc('increment_driver_balance', {
+                    driver_id: order.driverId,
+                    amount: earnings
+                });
+            }
+        }
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
+        revalidatePath('/driver/dashboard/earnings');
+        return { success: true };
+    } catch (e: any) {
+        console.error("Photo Delivery Error", e);
+        return { error: e.message };
+    }
+}
 export async function saveDriverPreferences(prefs: {
     navigationApp: string;
     acceptAlcohol: boolean;
@@ -661,5 +802,275 @@ export async function updateDriverProfile(prevState: any, formData: FormData) {
     } catch (e: any) {
         console.error("Profile Update Error:", e);
         return { message: "Failed to update profile", error: true };
+    }
+}
+
+// ============================================================================
+// AI Heatmap Predictions (Real API using Gemini)
+// ============================================================================
+export async function getAIPredictedHeatmap() {
+    const supabase = await createClient();
+
+    const { data: orders } = await supabase
+        .from('Order')
+        .select(`
+            total,
+            createdAt,
+            restaurant:Restaurant(lat, lng)
+        `)
+        .order('createdAt', { ascending: false })
+        .limit(200);
+
+    const heatmapPoints: { lat: number, lng: number, weight: number }[] = [];
+    if (!orders || orders.length === 0) return heatmapPoints;
+
+    // Base hotspots
+    orders.forEach((o: any) => {
+        if (o.restaurant?.lat && o.restaurant?.lng) {
+            const hoursOld = (Date.now() - new Date(o.createdAt).getTime()) / (1000 * 60 * 60);
+            const freshnessMultiplier = Math.max(1, 24 - hoursOld) / 10;
+            const weight = (Number(o.total) || 15) * freshnessMultiplier;
+            
+            heatmapPoints.push({
+                lat: o.restaurant.lat,
+                lng: o.restaurant.lng,
+                weight: weight
+            });
+        }
+    });
+
+    // Get the top recent hotspots to send to the AI
+    const topSpots = [...heatmapPoints].sort((a, b) => b.weight - a.weight).slice(0, 20);
+
+    try {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) throw new Error("Missing GEMINI_API_KEY");
+
+        const prompt = `You are an AI trained to predict food delivery demand surges.
+I will give you the top current hotspot coordinates (latitude, longitude, and weight).
+Predict 15 new high-demand coordinate clusters for the upcoming hour.
+Assume demand spreads slightly outward from these current hotspots (approx 0.01 - 0.03 degrees) or emerges between them.
+Higher weight means higher predicted demand (range 10 to 50).
+
+Respond STRICTLY with a valid raw JSON array of objects. Do not use markdown blocks. Do not include any other text.
+Example format: [{"lat": 35.227, "lng": -80.843, "weight": 45.5}]
+
+Current Data:
+${JSON.stringify(topSpots.map(s => ({lat: Number(s.lat.toFixed(4)), lng: Number(s.lng.toFixed(4)), weight: Number(s.weight.toFixed(1))}))) }`;
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.7, topK: 40 }
+            }),
+            next: { revalidate: 300 } // Cache predictions for 5 minutes
+        });
+
+        if (!response.ok) {
+            throw new Error(`Gemini API Error: ${response.statusText}`);
+        }
+
+        const jsonResponse = await response.json();
+        const textResponse = jsonResponse.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        
+        // Clean up formatting if the AI ignores instructions and uses markdown
+        const cleanedText = textResponse.replace(/^```json/i, '').replace(/```$/i, '').trim();
+        
+        const predictedSpots: { lat: number, lng: number, weight: number }[] = JSON.parse(cleanedText);
+        
+        // Combine real current spots with predictive surge spots (given a 1.5x multiplier to stand out)
+        for (const spot of predictedSpots) {
+            if (spot.lat && spot.lng && spot.weight) {
+                heatmapPoints.push({
+                    lat: spot.lat,
+                    lng: spot.lng,
+                    weight: spot.weight * 1.5
+                });
+            }
+        }
+        
+    } catch (e) {
+        console.error("Failed to generate real AI Heatmap Predictions (falling back to current spots):", e);
+    }
+
+    return heatmapPoints;
+}
+
+// ============================================================================
+// Phone Number Masking (Twilio Proxy Calls)
+// ============================================================================
+export async function initiateMaskedCall(orderId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    const { data: order } = await supabase
+        .from('Order')
+        .select(`
+            id,
+            user:User(phone)
+        `)
+        .eq('id', orderId)
+        .single();
+
+    if (!order || !(order.user as any)?.phone) {
+        return { error: "Customer phone not available or missing" };
+    }
+
+    const { data: driver } = await supabase
+        .from('User')
+        .select('phone')
+        .eq('id', user.id)
+        .single();
+
+    if (!driver || !driver.phone) {
+        return { error: "Driver phone not available or missing" };
+    }
+
+    try {
+        const accountSid = process.env.TWILIO_ACCOUNT_SID;
+        const authToken = process.env.TWILIO_AUTH_TOKEN;
+        const proxyServiceSid = process.env.TWILIO_PROXY_SERVICE_SID;
+
+        if (!accountSid || !authToken || !proxyServiceSid) {
+            return { error: "Twilio proxy credentials missing from environment" };
+        }
+
+        const twilio = require('twilio');
+        const client = twilio(accountSid, authToken);
+
+        // 1. Create a dynamic Proxy Session for this specific delivery
+        const session = await client.proxy.v1
+            .services(proxyServiceSid)
+            .sessions.create({
+                uniqueName: `delivery_${orderId}_${Date.now()}`,
+                ttl: 3600 // Expire after 60 mins exactly like Uber/DoorDash
+            });
+
+        // 2. Add Customer as a Participant
+        await client.proxy.v1
+            .services(proxyServiceSid)
+            .sessions(session.sid)
+            .participants.create({
+                identifier: (order.user as any).phone,
+                friendlyName: 'Customer'
+            });
+
+        // 3. Add Driver as a Participant
+        const driverParticipant = await client.proxy.v1
+            .services(proxyServiceSid)
+            .sessions(session.sid)
+            .participants.create({
+                identifier: driver.phone,
+                friendlyName: 'Driver'
+            });
+
+        const proxyNumber = driverParticipant.proxyIdentifier;
+        if (!proxyNumber) return { error: "Failed to allocate proxy number" };
+
+        const telUri = `tel:${proxyNumber}`;
+        return { success: true, maskedUri: telUri };
+    } catch (e: any) {
+        console.error("Proxy Call Error", e);
+        return { error: e.message || "Failed to initiate masked call" };
+    }
+}
+
+// ============================================================================
+// Zero-Wait Handoff Notifications
+// ============================================================================
+export async function triggerZeroWaitHandoff(orderId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { data: order } = await supabase
+            .from('Order')
+            .select(`
+                status,
+                restaurant:Restaurant(ownerId, name)
+            `)
+            .eq('id', orderId)
+            .single();
+
+        if (!order || !['PENDING', 'ACCEPTED', 'PREPARING'].includes(order.status)) {
+            return { success: false, reason: "Order not active or already picked up" };
+        }
+
+        const ownerId = (order.restaurant as any)?.ownerId;
+        if (!ownerId) return { success: false, reason: "No restaurant owner linked" };
+
+        // Prevent duplicate spam: Check if we already sent a Zero-Wait ping for this order today
+        const { data: recentNotifs } = await supabase
+            .from('Notification')
+            .select('id')
+            .eq('orderId', orderId)
+            .eq('type', 'ZERO_WAIT_HANDOFF')
+            .limit(1);
+
+        if (recentNotifs && recentNotifs.length > 0) {
+            return { success: true, message: "Already notified" };
+        }
+
+        // Notify Restaurant Owner
+        await createNotification({
+            userId: ownerId,
+            orderId: orderId,
+            title: "ZERO-WAIT HANDOFF! 🚗💨",
+            message: `Driver is arriving in < 2 minutes for Order #${orderId.slice(-4)}. Please bring the order to the counter for an instant handoff!`,
+            type: 'ZERO_WAIT_HANDOFF'
+        });
+        
+        return { success: true };
+    } catch (e: any) {
+        console.error("Zero-Wait Handoff Error", e);
+        return { error: e.message };
+    }
+}
+
+// ============================================================================
+// AI Identity Spot Checks
+// ============================================================================
+export async function performAISpotCheck(formData: FormData) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        const file = formData.get('selfie') as File | null;
+        if (!file) return { success: false, error: "No image provided" };
+
+        const { verifyDriverIdentityWithAI } = await import('@/lib/aiScanner');
+        
+        // Use Gemini AI to deeply analyze the selfie to ensure a real live human driver is present (and prevent account sharing / bots)
+        const verification = await verifyDriverIdentityWithAI(file);
+        
+        if (!verification.success) {
+            return { 
+                success: false, 
+                error: `Spot Check Failed: ${verification.reason}` 
+            };
+        }
+
+        // Ideally, in production we would optionally compare the extracted face data to their ID on file. 
+        // For now, logging the successful scan into the database to clear their lock.
+        const { error: dbError } = await supabase
+            .from('Driver')
+            .update({ 
+                lastSpotCheckAt: new Date().toISOString() 
+            })
+            .eq('userId', user.id);
+
+        if (dbError) {
+             console.warn("Could not update lastSpotCheckAt column (might not exist yet):", dbError);
+        }
+
+        return { success: true, message: "Identity Verified" };
+    } catch (e: any) {
+        console.error("Spot Check Error:", e);
+        return { success: false, error: e.message || "Unknown error during AI face verification." };
     }
 }

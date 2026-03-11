@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MapWithDirections from "./MapWithDirections";
+import { triggerZeroWaitHandoff } from "@/app/driver/actions";
 
 interface ActiveOrderNavigationProps {
     order: any;
@@ -12,6 +13,7 @@ interface ActiveOrderNavigationProps {
 export default function ActiveOrderNavigation({ order, driverLat, driverLng }: ActiveOrderNavigationProps) {
     const [steps, setSteps] = useState<any[]>([]);
     const [eta, setEta] = useState<string>("Calculating...");
+    const [isArriving, setIsArriving] = useState(false);
 
     const isPickedUp = order.status === 'PICKED_UP';
     const destinationPos = isPickedUp
@@ -26,9 +28,26 @@ export default function ActiveOrderNavigation({ order, driverLat, driverLng }: A
                     <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></span>
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-white">Live Navigation</h4>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-slate-500 uppercase font-bold">ETA:</span>
-                    <span className="text-xs font-black text-primary">{eta}</span>
+                <div className="flex items-center gap-3">
+                    {!isPickedUp && (
+                        <button 
+                            onClick={async () => {
+                                setIsArriving(true);
+                                await triggerZeroWaitHandoff(order.id);
+                            }}
+                            disabled={isArriving}
+                            className={`px-3 py-1 rounded text-[9px] font-black uppercase tracking-widest transition-all
+                                ${isArriving 
+                                    ? 'bg-primary/20 text-primary border border-primary/30' 
+                                    : 'bg-white/10 text-white hover:bg-emerald-500/20 hover:text-emerald-400 border border-white/10'}`}
+                        >
+                            {isArriving ? "Restaurant Pinged ⚡" : "Zero-Wait Ping"}
+                        </button>
+                    )}
+                    <div className="bg-black/40 px-3 py-1 rounded border border-white/5 flex items-center gap-2">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold">ETA:</span>
+                        <span className="text-xs font-black text-primary">{eta}</span>
+                    </div>
                 </div>
             </div>
 
@@ -38,7 +57,14 @@ export default function ActiveOrderNavigation({ order, driverLat, driverLng }: A
                     origin={{ lat: driverLat, lng: driverLng }}
                     destination={destinationPos}
                     showDriver={true}
-                    onDurationUpdate={setEta}
+                    onDurationUpdate={(duration) => {
+                        setEta(duration);
+                        // Auto-ping restaurant if driver is less than 3 minutes away
+                        if (!isPickedUp && !isArriving && (duration.includes("1 min") || duration.includes("2 min") || duration.includes("3 min"))) {
+                            setIsArriving(true);
+                            triggerZeroWaitHandoff(order.id).catch(console.error);
+                        }
+                    }}
                     onStepsUpdate={setSteps}
                 />
 

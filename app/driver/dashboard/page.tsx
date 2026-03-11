@@ -8,7 +8,10 @@ import { calculateDistance, getNavigationUrl } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import DriverRealtime from "@/components/DriverRealtime";
 import DriverChatButton from "@/components/DriverChatButton";
+import DriverCallButton from "@/components/DriverCallButton";
+import SpotCheckTrigger from "@/components/SpotCheckTrigger";
 import ActiveOrderNavigation from "@/components/ActiveOrderNavigation";
+import CompleteDeliveryForm from "./CompleteDeliveryForm";
 
 export const dynamic = 'force-dynamic';
 
@@ -110,6 +113,7 @@ export default async function DriverDashboard() {
                     <button className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-lg text-sm font-bold border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
                         Withdraw
                     </button>
+                    <SpotCheckTrigger />
                 </div>
             </header>
 
@@ -231,13 +235,7 @@ export default async function DriverDashboard() {
                                                     </a>
 
                                                     {isPickedUp && order.user?.phone && (
-                                                        <a
-                                                            href={`tel:${order.user.phone}`}
-                                                            className="btn bg-white/10 text-white px-4 flex items-center justify-center border border-white/10 hover:bg-emerald-500/20 transition-all text-lg"
-                                                            title="Call Customer"
-                                                        >
-                                                            📞
-                                                        </a>
+                                                        <DriverCallButton orderId={order.id} />
                                                     )}
 
                                                     <DriverChatButton orderId={order.id} />
@@ -261,14 +259,7 @@ export default async function DriverDashboard() {
                                                 )}
 
                                                 {order.status === 'PICKED_UP' && (
-                                                    <form action={async () => {
-                                                        "use server";
-                                                        await completeDelivery(order.id);
-                                                    }}>
-                                                        <button type="submit" className="w-full btn bg-emerald-500 text-black py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-colors">
-                                                            Complete Delivery
-                                                        </button>
-                                                    </form>
+                                                    <CompleteDeliveryForm orderId={order.id} />
                                                 )}
                                             </div>
                                         </div>

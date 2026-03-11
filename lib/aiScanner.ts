@@ -122,3 +122,82 @@ export async function scanDocumentWithAI(file: File): Promise<ScanResult> {
         };
     }
 }
+
+/**
+ * AI Spot Check: Verifies a driver's live selfie to ensure account security.
+ * Uses Gemini Vision API to detect if the image contains a clear human face and appears to be a live photograph.
+ */
+export async function verifyDriverIdentityWithAI(imageFile: Blob): Promise<{ success: boolean; confidence: number; reason?: string }> {
+    if (!GEMINI_API_KEY) {
+        return { success: false, confidence: 0, reason: "AI Spot Check is not configured." };
+    }
+
+    try {
+        const buffer = await imageFile.arrayBuffer();
+        const base64Data = Buffer.from(buffer).toString('base64');
+        const mimeType = imageFile.type;
+
+        const prompt = `
+        You are an advanced security AI performing an identity Spot Check for a delivery driver.
+        Analyze this image and respond ENTIRELY in valid JSON format.
+        
+        Required JSON structure:
+        {
+            "isHumanFace": boolean, // True if the image clearly contains exactly one human face.
+            "isLivePhoto": boolean, // True if the image appears to be a live selfie (e.g., proper lighting, no visible screen borders, no glare from a picture of a picture).
+            "confidence": number, // 0.0 to 1.0 confidence score
+            "reason": string // If it fails, concisely explain why (e.g., "Multiple faces detected", "Appears to be a photo of a screen", "Too blurry")
+        }
+        `;
+
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: mimeType,
+                                        data: base64Data
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        temperature: 0.1,
+                        responseMimeType: "application/json"
+                    }
+                })
+            }
+        );
+
+        if (!response.ok) throw new Error("Gemini API Error");
+
+        const data = await response.json();
+        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!responseText) throw new Error("No text returned from Gemini API");
+
+        const parsed = JSON.parse(responseText);
+
+        // Security logic: Must be a human face AND appear to be a real live photo with high confidence
+        if (parsed.isHumanFace && parsed.isLivePhoto && parsed.confidence > 0.8) {
+            return { success: true, confidence: parsed.confidence };
+        } else {
+            return { 
+                success: false, 
+                confidence: parsed.confidence || 0, 
+                reason: parsed.reason || "Verification failed security threshold." 
+            };
+        }
+
+    } catch (e: any) {
+        console.error("[AI Spot Check] Error:", e);
+        return { success: false, confidence: 0, reason: e.message || "Unknown error during AI face verification." };
+    }
+}

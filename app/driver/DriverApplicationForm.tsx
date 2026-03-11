@@ -27,6 +27,10 @@ export default function DriverApplicationForm() {
         lat: 0,
         lng: 0,
         vehicleType: "",
+        vehicleMake: "",
+        vehicleModel: "",
+        vehicleColor: "",
+        licensePlate: "",
         // Consents
         consentIdentity: false,
         consentBackground: false,
@@ -82,6 +86,10 @@ export default function DriverApplicationForm() {
         fd.append("lat", formData.lat.toString());
         fd.append("lng", formData.lng.toString());
         fd.append("vehicleType", formData.vehicleType);
+        fd.append("vehicleMake", formData.vehicleMake);
+        fd.append("vehicleModel", formData.vehicleModel);
+        fd.append("vehicleColor", formData.vehicleColor);
+        fd.append("licensePlate", formData.licensePlate);
         if (file) {
             fd.append("idDocument", file);
         }
@@ -186,6 +194,13 @@ export default function DriverApplicationForm() {
                                 <option value="Scooter">Scooter / Bike</option>
                             </select>
                             <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-primary transition-colors">▼</div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mt-4">
+                            <input name="vehicleMake" type="text" required value={formData.vehicleMake} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Make (e.g. Toyota)" />
+                            <input name="vehicleModel" type="text" required value={formData.vehicleModel} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Model (e.g. Camry)" />
+                            <input name="vehicleColor" type="text" required value={formData.vehicleColor} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Color (e.g. Silver)" />
+                            <input name="licensePlate" type="text" required value={formData.licensePlate} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 uppercase focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="License Plate" />
                         </div>
 
                         <div className="p-6 bg-black/30 border border-dashed border-white/10 hover:border-primary/50 transition-colors rounded-2xl mt-4">

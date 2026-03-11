@@ -86,6 +86,50 @@ export default async function UserSettings() {
 
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* TruePoints Wallet */}
+                        <section>
+                            <div className="bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/20 rounded-3xl p-8 relative overflow-hidden shadow-[0_0_50px_rgba(249,115,22,0.05)]">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
+                                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                    <div>
+                                        <h3 className="text-orange-400 font-black uppercase tracking-[0.2em] text-[10px] mb-2 flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+                                            TruePoints Balance
+                                        </h3>
+                                        <div className="flex items-end gap-3">
+                                            <span className="text-5xl font-black text-white tracking-tighter">
+                                                {user?.truePointsBalance || 0}
+                                            </span>
+                                            <span className="text-slate-400 font-bold mb-1 mr-2">pts</span>
+                                            <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-slate-300 mb-2">
+                                                =${((user?.truePointsBalance || 0) / 100).toFixed(2)} Value
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="w-full md:w-auto bg-black/40 border border-white/5 rounded-2xl p-4 backdrop-blur-md">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-[10px] text-slate-400 uppercase font-black uppercase tracking-widest">Rewards Progress</span>
+                                            <span className="text-[10px] text-orange-400 font-bold">1,000 pts = $10</span>
+                                        </div>
+                                        <div className="w-full md:w-48 h-2 bg-white/5 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full relative"
+                                                style={{ width: `${Math.min(100, ((user?.truePointsBalance || 0) / 1000) * 100)}%` }}
+                                            >
+                                                <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-r from-transparent to-white/30 truncate"></div>
+                                            </div>
+                                        </div>
+                                        {user?.plan !== 'Plus' && (
+                                            <p className="text-[9px] text-slate-500 mt-3 text-center transition-all">
+                                                Want to earn <span className="text-orange-400 font-bold">3x faster?</span> Upgrade to Plus.
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
                         <section>
                             <h2 className="text-2xl font-bold text-white mb-6">Recent Orders</h2>
                             <div className="space-y-4">

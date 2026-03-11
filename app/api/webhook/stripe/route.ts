@@ -36,17 +36,30 @@ export async function POST(req: Request) {
         case "account.updated":
             const account = event.data.object as any;
             if (account.details_submitted) {
-                // Update restaurant status to onboarding complete
-                const { error } = await supabase
-                    .from('Restaurant')
-                    .update({ stripeOnboardingComplete: true })
-                    .eq('stripeAccountId', account.id);
-
-                if (error) {
-                    logger.error({ err: error, accountId: account.id }, "Failed to update merchant onboarding status");
-                    Sentry.captureException(error, { extra: { accountId: account.id } });
+                if (account.metadata?.role === 'driver') {
+                     // Update driver status
+                    const { error } = await supabase
+                        .from('Driver')
+                        .update({ stripeOnboardingComplete: true })
+                        .eq('stripeAccountId', account.id);
+                    if (error) {
+                        logger.error({ err: error, accountId: account.id }, "Failed to update driver onboarding status");
+                    } else {
+                        logger.info({ accountId: account.id }, `Driver account verified.`);
+                    }
                 } else {
-                    logger.info({ accountId: account.id }, `Merchant account verified.`);
+                    // Update restaurant status to onboarding complete
+                    const { error } = await supabase
+                        .from('Restaurant')
+                        .update({ stripeOnboardingComplete: true })
+                        .eq('stripeAccountId', account.id);
+
+                    if (error) {
+                        logger.error({ err: error, accountId: account.id }, "Failed to update merchant onboarding status");
+                        Sentry.captureException(error, { extra: { accountId: account.id } });
+                    } else {
+                        logger.info({ accountId: account.id }, `Merchant account verified.`);
+                    }
                 }
             }
             break;

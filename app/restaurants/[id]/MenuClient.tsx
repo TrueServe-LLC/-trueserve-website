@@ -24,6 +24,7 @@ interface MenuItem {
 
 interface MenuClientProps {
     userId?: string;
+    truePointsBalance?: number;
     restaurant: any; // We'll pass the whole restaurant object
     items: MenuItem[];
     orderingEnabled: boolean;
@@ -34,6 +35,7 @@ interface MenuClientProps {
 
 export default function MenuClient({
     userId,
+    truePointsBalance = 0,
     restaurant,
     items,
     orderingEnabled,
@@ -51,14 +53,42 @@ export default function MenuClient({
     const [deliveryLng, setDeliveryLng] = useState<number | null>(initialLng || null);
     const [deliveryInstructions, setDeliveryInstructions] = useState("");
     const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
+    
+    const [redeemPoints, setRedeemPoints] = useState(false);
 
-    const handleCartChange = async (newCart: { [key: string]: number }, currentTip: number = tip) => {
+    const cartTotalItems = Object.values(cart).reduce((sum, q) => sum + q, 0);
+    const rawTotalPrice = Object.entries(cart).reduce((sum, [itemId, quantity]) => {
+        const item = items.find(i => i.id === itemId);
+        return sum + (item ? Number(item.price) * quantity : 0);
+    }, 0);
+    
+    // Dynamic Points Calculation
+    // Never allow a user to spend MORE points than the total price (minus $0.50 Stripe minimum)
+    const maxPointsSpendable = Math.max(0, Math.floor((rawTotalPrice + tip - 0.50) * 100));
+    const pointsValue = Math.min(Math.floor(truePointsBalance / 100) * 100, maxPointsSpendable);
+    
+    const pointsDiscountAmount = pointsValue > 0 && redeemPoints ? pointsValue * 0.01 : 0;
+    const totalPrice = rawTotalPrice;
+
+    const handleCartChange = async (newCart: { [key: string]: number }, currentTip: number = tip, currentRedeem: boolean = redeemPoints) => {
         setCart(newCart);
 
         const hasItems = Object.values(newCart).some(q => q > 0);
         if (hasItems) {
             const cartItems = Object.entries(newCart).map(([id, quantity]) => ({ id, quantity }));
-            const res = await createPaymentIntent(restaurant.id, cartItems, currentTip);
+            
+            // Recalculate max points based on new cart state to pass to backend immediately
+            const rawNewTotal = cartItems.reduce((sum, cartItem) => {
+                const i = items.find(itemObj => itemObj.id === cartItem.id);
+                return sum + (i ? Number(i.price) * cartItem.quantity : 0);
+            }, 0);
+            
+            const newMaxPoints = Math.max(0, Math.floor((rawNewTotal + currentTip - 0.50) * 100));
+            const newPointsValue = Math.min(Math.floor(truePointsBalance / 100) * 100, newMaxPoints);
+            const pointsToSpend = currentRedeem ? newPointsValue : 0;
+
+            const res = await createPaymentIntent(restaurant.id, cartItems, currentTip, pointsToSpend);
+            
             console.log("[Stripe] createPaymentIntent response received", { hasSecret: !!res.clientSecret });
             if (res.clientSecret) {
                 setClientSecret(res.clientSecret);
@@ -74,7 +104,7 @@ export default function MenuClient({
             ...cart,
             [itemId]: (cart[itemId] || 0) + 1
         };
-        handleCartChange(newCart);
+        handleCartChange(newCart, tip, redeemPoints);
     };
 
     const removeFromCart = (itemId: string) => {
@@ -84,14 +114,8 @@ export default function MenuClient({
         } else {
             delete newCart[itemId];
         }
-        handleCartChange(newCart);
+        handleCartChange(newCart, tip, redeemPoints);
     };
-
-    const cartTotalItems = Object.values(cart).reduce((sum, q) => sum + q, 0);
-    const totalPrice = Object.entries(cart).reduce((sum, [itemId, quantity]) => {
-        const item = items.find(i => i.id === itemId);
-        return sum + (item ? Number(item.price) * quantity : 0);
-    }, 0);
 
     const handlePaymentSuccess = async (paymentIntentId: string) => {
         setIsSubmitting(true);
@@ -106,6 +130,8 @@ export default function MenuClient({
             return;
         }
 
+        const pointsToSpend = redeemPoints ? pointsValue : 0;
+
         const response = await placeOrder(
             restaurant.id,
             cartItems,
@@ -114,7 +140,8 @@ export default function MenuClient({
             deliveryLng,
             deliveryAddress,
             tip,
-            deliveryInstructions
+            deliveryInstructions,
+            pointsToSpend
         );
 
         if (response.success && response.orderId) {
@@ -317,9 +344,32 @@ export default function MenuClient({
                             <p className="text-[10px] text-slate-500 italic">100% of tips go to your driver.</p>
                         </div>
 
+                        {userId && pointsValue > 0 && (
+                            <div className="pt-4 border-t border-white/5">
+                                <label className="flex items-center justify-between p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 cursor-pointer hover:bg-orange-500/20 transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={redeemPoints} 
+                                            onChange={(e) => {
+                                                setRedeemPoints(e.target.checked);
+                                                handleCartChange(cart, tip, e.target.checked);
+                                            }}
+                                            className="w-4 h-4 rounded border-orange-500/30 text-orange-500 focus:ring-orange-500 focus:ring-offset-slate-900 bg-black"
+                                        />
+                                        <div>
+                                            <p className="font-bold text-orange-400 text-xs">Use TruePoints</p>
+                                            <p className="text-[10px] text-orange-400/70 opacity-80">Redeem {pointsValue} pts</p>
+                                        </div>
+                                    </div>
+                                    <span className="font-bold text-orange-400">-${pointsDiscountAmount.toFixed(2)}</span>
+                                </label>
+                            </div>
+                        )}
+
                         <div className="flex justify-between text-xl font-bold pt-4 text-white border-t border-white/10 mt-2">
                             <span>Total</span>
-                            <span>${(totalPrice + tip).toFixed(2)}</span>
+                            <span>${Math.max(0, totalPrice + tip - pointsDiscountAmount).toFixed(2)}</span>
                         </div>
                     </div>
 
@@ -356,7 +406,7 @@ export default function MenuClient({
                                     <p className="text-[10px] font-black uppercase text-slate-500 mb-4 tracking-widest">Secure Payment Gateway</p>
                                     <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
                                         <CheckoutForm
-                                            totalAmount={totalPrice + tip}
+                                            totalAmount={Math.max(0, totalPrice + tip - pointsDiscountAmount)}
                                             onSuccess={handlePaymentSuccess}
                                             disabled={!orderingEnabled || !deliveryAddress}
                                         />
@@ -442,9 +492,33 @@ export default function MenuClient({
                                         <span className="text-slate-400">Driver Tip</span>
                                         <span className="font-bold text-white">${tip.toFixed(2)}</span>
                                     </div>
+
+                                    {userId && pointsValue > 0 && (
+                                        <div className="pt-4 border-t border-white/5 mt-4">
+                                            <label className="flex items-center justify-between p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 cursor-pointer hover:bg-orange-500/20 transition-all">
+                                                <div className="flex items-center gap-3">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={redeemPoints} 
+                                                        onChange={(e) => {
+                                                            setRedeemPoints(e.target.checked);
+                                                            handleCartChange(cart, tip, e.target.checked);
+                                                        }}
+                                                        className="w-4 h-4 rounded border-orange-500/30 text-orange-500 focus:ring-orange-500 focus:ring-offset-slate-900 bg-black"
+                                                    />
+                                                    <div>
+                                                        <p className="font-bold text-orange-400 text-xs">Use TruePoints</p>
+                                                        <p className="text-[10px] text-orange-400/70 opacity-80">Redeem {pointsValue} pts</p>
+                                                    </div>
+                                                </div>
+                                                <span className="font-bold text-orange-400">-${pointsDiscountAmount.toFixed(2)}</span>
+                                            </label>
+                                        </div>
+                                    )}
+
                                     <div className="flex justify-between text-xl font-bold pt-4 text-white border-t border-white/10 mt-2">
                                         <span>Total</span>
-                                        <span className="text-primary">${(totalPrice + tip).toFixed(2)}</span>
+                                        <span className="text-primary">${Math.max(0, totalPrice + tip - pointsDiscountAmount).toFixed(2)}</span>
                                     </div>
                                 </div>
 
@@ -460,7 +534,7 @@ export default function MenuClient({
                                     ) : clientSecret ? (
                                         <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
                                             <CheckoutForm
-                                                totalAmount={totalPrice + tip}
+                                                totalAmount={Math.max(0, totalPrice + tip - pointsDiscountAmount)}
                                                 onSuccess={handlePaymentSuccess}
                                                 disabled={!orderingEnabled || !deliveryAddress}
                                             />
@@ -527,7 +601,7 @@ export default function MenuClient({
                             <span className="font-black tracking-widest uppercase text-[10px] md:text-sm">Checkout</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="font-black text-lg">${totalPrice.toFixed(2)}</span>
+                            <span className="font-black text-lg">${Math.max(0, totalPrice + tip - pointsDiscountAmount).toFixed(2)}</span>
                             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary shadow-inner">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                             </div>

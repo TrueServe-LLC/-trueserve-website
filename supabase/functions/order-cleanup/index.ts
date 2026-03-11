@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 /**
  * Order Timeout Cleanup
@@ -18,7 +18,7 @@ const TIMEOUTS: Record<string, number> = {
     READY_FOR_PICKUP: 60,
 };
 
-Deno.serve(async (_req) => {
+Deno.serve(async (_req: Request) => {
     try {
         const supabase = createClient(
             Deno.env.get('SUPABASE_URL')!,
@@ -52,14 +52,14 @@ Deno.serve(async (_req) => {
         // Optionally insert a Notification for each cancelled order
         if (cancelled.length > 0) {
             // Get userId for each cancelled order so we can notify the customer
-            const ids = cancelled.map(o => o.id);
+            const ids = cancelled.map((o: { id: string }) => o.id);
             const { data: orders } = await supabase
                 .from('Order')
                 .select('id, userId')
                 .in('id', ids);
 
             if (orders?.length) {
-                const notifications = orders.map(o => ({
+                const notifications = orders.map((o: { id: string, userId: string }) => ({
                     userId: o.userId,
                     title: 'Order Cancelled',
                     message: 'Your order was automatically cancelled because it wasn\'t picked up in time. You have not been charged.',
@@ -75,7 +75,7 @@ Deno.serve(async (_req) => {
             success: true,
             timestamp: new Date().toISOString(),
             cancelled: cancelled.length,
-            cancelledIds: cancelled.map(o => o.id),
+            cancelledIds: cancelled.map((o: { id: string }) => o.id),
             errors: errors.length ? errors : undefined
         };
 

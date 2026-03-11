@@ -26,7 +26,8 @@ export async function placeOrder(
     customerLng?: number,
     customerAddress?: string,
     tip: number = 0,
-    deliveryInstructions?: string
+    deliveryInstructions?: string,
+    pointsToRedeem: number = 0
 ): Promise<OrderState> {
 
     // ... (inside the insert call) ...
@@ -220,6 +221,34 @@ export async function placeOrder(
             throw new Error(insertError.message);
         }
 
+        // 4.5 Process TruePoints Redemptions & Earnings
+        if (finalUserId) {
+            const { data: userRecord } = await supabase.from('User').select('isTrueServePlus, truePointsBalance').eq('id', finalUserId).single();
+            
+            // Redeem Points
+            if (pointsToRedeem > 0 && userRecord && userRecord.truePointsBalance >= pointsToRedeem) {
+                await supabase.from('PointsTransaction').insert({
+                    userId: finalUserId,
+                    orderId: newOrderId,
+                    amount: -pointsToRedeem,
+                    type: 'SPENT_ON_REWARD',
+                    description: `Redeemed ${pointsToRedeem} points for discount`
+                });
+            }
+
+            // Award Points (1x for Standard, 3x for Plus)
+            const multiplier = userRecord?.isTrueServePlus ? 3 : 1;
+            const pointsEarned = Math.floor(total) * multiplier;
+            
+            await supabase.from('PointsTransaction').insert({
+                userId: finalUserId,
+                orderId: newOrderId,
+                amount: pointsEarned,
+                type: 'EARNED_FROM_ORDER',
+                description: `Earned ${pointsEarned} points from order`
+            });
+        }
+
         // 5. Insert Items
         const orderItems = verifiedItems.map(i => ({
             id: uuidv4(),
@@ -257,7 +286,7 @@ export async function placeOrder(
     }
 }
 
-export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[], tip: number = 0) {
+export async function createPaymentIntent(restaurantId: string, cartItems: { id: string; quantity: number }[], tip: number = 0, pointsToRedeem: number = 0) {
     // 0. Safety Net: Check if ordering is enabled globally
     const { isOrderingEnabled } = await import('@/lib/system');
     if (!(await isOrderingEnabled())) {
@@ -278,7 +307,7 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
 
         if (!items) throw new Error("Could not find menu items");
 
-        const amount = cartItems.reduce((sum, cartItem) => {
+        let amount = cartItems.reduce((sum, cartItem) => {
             const dbItem = items.find(i => i.id === cartItem.id);
             return sum + (dbItem ? Number(dbItem.price) * cartItem.quantity : 0);
         }, 0) + tip;
@@ -293,14 +322,32 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
         const amountInCents = Math.round(amount * 100);
         if (amountInCents < 50) throw new Error("Amount must be at least 50 cents");
 
+        // Apply Points Discount
+        let customerId: string | undefined;
+        let isTrueServePlus = false;
+        
         // Fetch User and Customer ID if logged in
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
-        let customerId: string | undefined;
 
         if (userId) {
-            const { data: user } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).single();
+            const { data: user } = await supabase.from('User').select('email, name, stripeCustomerId, truePointsBalance, isTrueServePlus').eq('id', userId).single();
             if (user) {
+                isTrueServePlus = user.isTrueServePlus;
+                // Verify they actually have the points before validating discount
+                if (pointsToRedeem > 0 && user.truePointsBalance >= pointsToRedeem) {
+                    const discountAmount = pointsToRedeem * 0.01; // 1 point = 1 cent
+                    
+                    // CRITICAL BUG FIX: Stripe requires a minimum charge of 50 cents ($0.50). 
+                    // If points cover the entire meal, we must leave at least $0.50 for Stripe, 
+                    // otherwise the transaction and the entire cart will crash.
+                    if (amount - discountAmount < 0.50) {
+                        amount = 0.50;
+                    } else {
+                        amount = amount - discountAmount;
+                    }
+                }
+
                 if (user.stripeCustomerId) {
                     customerId = user.stripeCustomerId;
                 } else {
