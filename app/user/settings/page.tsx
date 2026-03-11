@@ -93,48 +93,47 @@ export default async function UserSettings() {
                     <div className="lg:col-span-2 space-y-8">
                         {/* TruePoints Wallet */}
                         <section>
-                            <div className="bg-slate-900 border border-orange-500/20 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
+                            <div className="bg-slate-900 border border-orange-500/20 rounded-3xl relative overflow-hidden shadow-2xl" style={{ padding: '28px 32px' }}>
                                 <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
                                 
-                                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+                                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                                     <div className="flex-1 w-full">
-                                        <h3 className="text-orange-400 font-bold uppercase tracking-[0.2em] text-xs mb-4 flex items-center gap-3">
-                                            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.8)]"></span>
+                                        <h3 className="text-orange-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-2 flex items-center gap-3">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.8)]"></span>
                                             TruePoints Wallet
                                         </h3>
                                         <div className="flex items-center gap-4 mt-2">
-                                            <div className="text-6xl md:text-7xl font-black text-white tracking-tighter">
+                                            <div className="text-5xl font-black text-white tracking-tighter">
                                                 {user?.truePointsBalance || 0}
                                             </div>
                                             <div className="flex flex-col items-start gap-1 justify-center">
-                                                <span className="text-slate-400 font-black text-lg md:text-xl uppercase tracking-widest leading-tight">pts</span>
-                                                <span className="text-orange-400 font-bold text-[10px] md:text-xs bg-orange-500/10 px-3 py-1.5 rounded-full border border-orange-500/20 mt-1 whitespace-nowrap">
+                                                <span className="text-slate-400 font-black text-sm uppercase tracking-widest leading-none">pts</span>
+                                                <span className="text-orange-400 font-bold text-[10px] bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20 whitespace-nowrap">
                                                     =${((user?.truePointsBalance || 0) / 100).toFixed(2)} Value
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <div className="w-full lg:w-[320px] shrink-0 bg-black/60 border border-white/10 rounded-2xl p-6 shadow-2xl backdrop-blur-md">
-                                        <div className="flex justify-between items-end mb-4">
-                                            <span className="text-[11px] text-slate-500 uppercase font-black tracking-widest pb-0.5">Next Reward</span>
+                                    <div className="w-full lg:w-[280px] shrink-0 bg-black/60 border border-white/10 rounded-2xl p-5 shadow-2xl backdrop-blur-md">
+                                        <div className="flex justify-between items-end mb-3">
+                                            <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest pb-0.5">Next Reward</span>
                                             <div className="text-right">
-                                                <span className="text-[13px] text-orange-400 font-black block border-b border-orange-500/20 pb-1 mb-1">1,000 pts</span>
-                                                <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">$10.00 Off</span>
+                                                <span className="text-xs text-orange-400 font-black block border-b border-orange-500/20 pb-1 mb-1">1,000 pts</span>
+                                                <span className="text-[9px] text-slate-500 uppercase font-bold tracking-widest">$10.00 Off</span>
                                             </div>
                                         </div>
-                                        <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden shadow-inner mb-4 border border-white/5">
+                                        <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden shadow-inner mb-3 border border-white/5">
                                             <div 
                                                 className="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full relative"
                                                 style={{ width: `${Math.min(100, ((user?.truePointsBalance || 0) / 1000) * 100)}%` }}
                                             >
-                                                <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-r from-transparent to-white/30"></div>
                                             </div>
                                         </div>
                                         {user?.plan !== 'Plus' && (
-                                            <div className="pt-4 border-t border-white/5 text-center">
-                                                <p className="text-[10px] text-slate-400 font-medium tracking-wide">
-                                                    Want to earn <span className="text-orange-400 font-black">3x faster?</span> <Link href="/#subscription" className="text-white underline hover:text-orange-400 transition-colors ml-1">Upgrade</Link>
+                                            <div className="pt-3 border-t border-white/5 text-center">
+                                                <p className="text-[9px] text-slate-400 font-medium tracking-wide">
+                                                    Earn <span className="text-orange-400 font-black">3x faster?</span> <Link href="/#subscription" className="text-white underline hover:text-orange-400 ml-1">Upgrade</Link>
                                                 </p>
                                             </div>
                                         )}
