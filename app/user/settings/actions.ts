@@ -19,9 +19,17 @@ async function getOrCreateStripeCustomer(userId: string): Promise<string> {
         return "cus_mock123"; // Prevent Stripe crashes for demo bypassed users
     }
 
-    const { data: user, error } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).single();
+    const { data: user, error } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).maybeSingle();
 
-    if (error || !user) throw new Error("User not found or database sync issue. " + (error?.message || ""));
+    if (error) {
+        console.error("Stripe User Lookup Error:", error);
+        throw new Error("Stripe DB Lookup Error: " + error.message);
+    }
+    
+    if (!user) {
+        console.error("Stripe User Not Found with ID:", userId);
+        throw new Error(`User not found in Database for Stripe Connection. ID: ${userId}`);
+    }
 
     if (user.stripeCustomerId) {
         return user.stripeCustomerId;
