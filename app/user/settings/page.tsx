@@ -6,6 +6,7 @@ import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
 import WalletUI from "@/components/WalletUI";
 import MembershipUI from "@/components/MembershipUI";
+import ProfileNameEditor from "@/components/ProfileNameEditor";
 
 export default async function UserSettings() {
     const cookieStore = await cookies();
@@ -73,9 +74,9 @@ export default async function UserSettings() {
                                 <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold border border-primary/20">
                                     {user?.name?.[0] || "U"}
                                 </div>
-                                <div>
-                                    <h2 className="font-bold text-white text-lg">{user?.name || "User"}</h2>
-                                    <p className="text-slate-400 text-sm">{user?.email}</p>
+                                <div className="flex-grow">
+                                    <ProfileNameEditor userId={userId} initialName={user?.name || ""} />
+                                    <p className="text-slate-400 text-sm mt-1">{user?.email}</p>
                                 </div>
                             </div>
                         </div>
@@ -88,31 +89,36 @@ export default async function UserSettings() {
                     <div className="lg:col-span-2 space-y-8">
                         {/* TruePoints Wallet */}
                         <section>
-                            <div className="bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/20 rounded-3xl p-8 relative overflow-hidden shadow-[0_0_50px_rgba(249,115,22,0.05)]">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
-                                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                                    <div>
-                                        <h3 className="text-orange-400 font-black uppercase tracking-[0.2em] text-[10px] mb-2 flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-                                            TruePoints Balance
+                            <div className="bg-slate-900 border border-orange-500/20 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden shadow-2xl">
+                                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-[100px] -mr-[200px] -mt-[200px] pointer-events-none"></div>
+                                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-12">
+                                    <div className="flex-1">
+                                        <h3 className="text-orange-400 font-black uppercase tracking-[0.2em] text-xs mb-4 flex items-center gap-3">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.8)]"></span>
+                                            TruePoints Wallet
                                         </h3>
-                                        <div className="flex items-end gap-3">
-                                            <span className="text-5xl font-black text-white tracking-tighter">
+                                        <div className="flex items-center gap-4 mt-2">
+                                            <div className="text-7xl font-black text-white tracking-tighter leading-none">
                                                 {user?.truePointsBalance || 0}
-                                            </span>
-                                            <span className="text-slate-400 font-bold mb-1 mr-2">pts</span>
-                                            <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-slate-300 mb-2">
-                                                =${((user?.truePointsBalance || 0) / 100).toFixed(2)} Value
-                                            </span>
+                                            </div>
+                                            <div className="flex flex-col items-start gap-1 justify-center">
+                                                <span className="text-slate-400 font-black text-xl uppercase tracking-widest leading-none">pts</span>
+                                                <span className="text-orange-400 font-bold text-xs bg-orange-500/10 px-3 py-1.5 rounded-full border border-orange-500/20 mt-1 whitespace-nowrap">
+                                                    =${((user?.truePointsBalance || 0) / 100).toFixed(2)} Value
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     
-                                    <div className="w-full md:w-auto bg-black/40 border border-white/5 rounded-2xl p-4 backdrop-blur-md">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-[10px] text-slate-400 uppercase font-black uppercase tracking-widest">Rewards Progress</span>
-                                            <span className="text-[10px] text-orange-400 font-bold">1,000 pts = $10</span>
+                                    <div className="w-full md:w-auto bg-black border border-white/5 rounded-3xl p-6 shadow-2xl md:min-w-[320px]">
+                                        <div className="flex justify-between items-end mb-4">
+                                            <span className="text-[11px] text-slate-500 uppercase font-black tracking-widest leading-none pb-0.5">Next Reward</span>
+                                            <div className="text-right">
+                                                <span className="text-[13px] text-orange-400 font-black leading-none block border-b border-orange-500/20 pb-1 mb-1">1,000 pts</span>
+                                                <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">$10.00 Off</span>
+                                            </div>
                                         </div>
-                                        <div className="w-full md:w-48 h-2 bg-white/5 rounded-full overflow-hidden">
+                                        <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden shadow-inner mb-4 border border-white/5">
                                             <div 
                                                 className="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full relative"
                                                 style={{ width: `${Math.min(100, ((user?.truePointsBalance || 0) / 1000) * 100)}%` }}
@@ -121,9 +127,11 @@ export default async function UserSettings() {
                                             </div>
                                         </div>
                                         {user?.plan !== 'Plus' && (
-                                            <p className="text-[9px] text-slate-500 mt-3 text-center transition-all">
-                                                Want to earn <span className="text-orange-400 font-bold">3x faster?</span> Upgrade to Plus.
-                                            </p>
+                                            <div className="pt-4 border-t border-white/5 text-center">
+                                                <p className="text-[10px] text-slate-400 font-medium tracking-wide">
+                                                    Want to earn <span className="text-orange-400 font-black">3x faster?</span> <Link href="/#subscription" className="text-white underline hover:text-orange-400 transition-colors ml-1">Upgrade to Plus</Link>
+                                                </p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>

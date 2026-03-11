@@ -100,7 +100,7 @@ export async function createSetupIntent(userId: string) {
         return { secret: intent.client_secret };
     } catch (e: any) {
         console.error("[createSetupIntent Error]:", e.message);
-        return { error: "Our secure payment tunnel is reconnecting. Please refresh and try again." };
+        return { error: "Stripe Error: " + e.message };
     }
 }
 
@@ -162,6 +162,13 @@ export async function cancelMembership(userId: string) {
 
     await supabase.from('User').update({ plan: 'Basic', stripeSubscriptionId: null }).eq('id', userId);
 
+    revalidatePath('/user/settings');
+    return { success: true };
+}
+
+export async function updateProfileName(userId: string, newName: string) {
+    const supabase = getSupabaseAdmin();
+    await supabase.from('User').update({ name: newName }).eq('id', userId);
     revalidatePath('/user/settings');
     return { success: true };
 }
