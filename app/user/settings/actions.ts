@@ -16,19 +16,45 @@ async function getOrCreateStripeCustomer(userId: string): Promise<string> {
 
     // We mock the user creation if they are a dummy test account and gracefully fallback
     if (userId.startsWith('mock-')) {
-        return "cus_mock123"; // Prevent Stripe crashes for demo bypassed users
+        return "cus_mock123";
     }
 
-    const { data: user, error } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).maybeSingle();
+    let { data: user, error } = await supabase.from('User').select('email, name, stripeCustomerId').eq('id', userId).maybeSingle();
 
     if (error) {
-        console.error("Stripe User Lookup Error:", error);
         throw new Error("Stripe DB Lookup Error: " + error.message);
     }
     
     if (!user) {
-        console.error("Stripe User Not Found with ID:", userId);
-        throw new Error(`User not found in Database for Stripe Connection. ID: ${userId}`);
+        console.warn(`[RECOVERY] User ID ${userId} is missing from public.User. Attempting to reconstruct from Auth table...`);
+        const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(userId);
+        
+        if (authError || !authUser?.user) {
+            throw new Error(`Critical Authentication desync: The system could not verify your identity. ID: ${userId}`);
+        }
+        
+        const recoveredUser = {
+            id: userId,
+            email: authUser.user.email || null,
+            name: authUser.user.user_metadata?.full_name || authUser.user.user_metadata?.name || 'TrueServe Customer',
+            role: 'CUSTOMER',
+            plan: 'Basic',
+            stripeCustomerId: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        const { error: insertError } = await supabase.from('User').insert(recoveredUser);
+        if (insertError) {
+            throw new Error("Failed to heal database profile: " + insertError.message);
+        }
+        
+        // Use the recovered object internally
+        user = {
+            email: recoveredUser.email,
+            name: recoveredUser.name,
+            stripeCustomerId: recoveredUser.stripeCustomerId
+        };
     }
 
     if (user.stripeCustomerId) {
