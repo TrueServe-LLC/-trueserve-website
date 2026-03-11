@@ -70,8 +70,8 @@ export default async function UserSettings() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Sidebar */}
                     <div className="lg:col-span-1 space-y-6">
-                        <div className="card bg-white/5 border border-white/10 p-6">
-                            <div className="flex items-center gap-4 mb-6">
+                        <div className="card bg-white/5 border border-white/10 p-6 relative z-50">
+                            <div className="flex items-center gap-4 mb-6 relative">
                                 <ProfileAvatar 
                                     userId={userId} 
                                     initialName={user?.name || ""} 
