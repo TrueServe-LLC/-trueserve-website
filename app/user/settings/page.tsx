@@ -7,6 +7,7 @@ import LogoutButton from "@/components/LogoutButton";
 import WalletUI from "@/components/WalletUI";
 import MembershipUI from "@/components/MembershipUI";
 import ProfileNameEditor from "@/components/ProfileNameEditor";
+import ProfileAvatar from "@/components/ProfileAvatar";
 
 export default async function UserSettings() {
     const cookieStore = await cookies();
@@ -71,9 +72,12 @@ export default async function UserSettings() {
                     <div className="lg:col-span-1 space-y-6">
                         <div className="card bg-white/5 border border-white/10 p-6">
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold border border-primary/20">
-                                    {user?.name?.[0] || "U"}
-                                </div>
+                                <ProfileAvatar 
+                                    userId={userId} 
+                                    initialName={user?.name || ""} 
+                                    initialColor={user?.avatarColor} 
+                                    initialUrl={user?.avatarUrl} 
+                                />
                                 <div className="flex-grow">
                                     <ProfileNameEditor userId={userId} initialName={user?.name || ""} />
                                     <p className="text-slate-400 text-sm mt-1">{user?.email}</p>

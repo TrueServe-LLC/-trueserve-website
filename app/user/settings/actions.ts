@@ -167,8 +167,35 @@ export async function cancelMembership(userId: string) {
 }
 
 export async function updateProfileName(userId: string, newName: string) {
-    const supabase = getSupabaseAdmin();
-    await supabase.from('User').update({ name: newName }).eq('id', userId);
-    revalidatePath('/user/settings');
-    return { success: true };
+    if (!userId) return { error: "User ID missing" };
+    try {
+        const supabase = getSupabaseAdmin();
+        const { error } = await supabase.from('User').update({ name: newName }).eq('id', userId);
+        if (error) throw error;
+        
+        revalidatePath('/user/settings');
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to update profile name:", e);
+        return { error: e.message || "Failed to update" };
+    }
+}
+
+export async function updateAvatarDetails(userId: string, color: string, url: string | null) {
+    if (!userId) return { error: "User ID missing" };
+    try {
+        const supabase = getSupabaseAdmin();
+        const { error } = await supabase.from('User').update({ 
+            avatarColor: color,
+            avatarUrl: url 
+        }).eq('id', userId);
+        
+        if (error) throw error;
+        
+        revalidatePath('/user/settings');
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to update avatar details:", e);
+        return { error: e.message || "Failed to update avatar" };
+    }
 }
