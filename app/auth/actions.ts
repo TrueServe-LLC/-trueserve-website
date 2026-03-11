@@ -186,7 +186,7 @@ export async function logout() {
     const supabase = await createClient();
     await supabase.auth.signOut();
     cookieStore.delete("userId");
-    redirect("/login");
+    redirect("/");
 }
 
 export async function getAuthSession() {

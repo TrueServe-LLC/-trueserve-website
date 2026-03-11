@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createDriverStripeAccount } from "../../actions";
+import { logout } from "@/app/auth/actions";
 import Link from "next/link";
 import DriverProfileForm from "@/components/DriverProfileForm";
 
@@ -116,7 +117,9 @@ export default async function DriverAccount() {
                 </div>
             </section>
 
-            <Link href="/logout" className="w-full btn btn-outline border-red-500/20 text-red-500 hover:bg-red-500/10 py-4 font-black uppercase tracking-widest text-xs transition-all">Sign Out</Link>
+            <form action={logout}>
+                <button type="submit" className="w-full btn btn-outline border-red-500/20 text-red-500 hover:bg-red-500/10 py-4 font-black uppercase tracking-widest text-xs transition-all">Sign Out</button>
+            </form>
         </div>
     );
 }
