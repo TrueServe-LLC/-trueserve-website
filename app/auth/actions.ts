@@ -255,10 +255,9 @@ export async function loginAsDemoDriver() {
     const cookieStore = await cookies();
     
     // We'll use a known driver ID from the database for the demo
-    // From my search: a18a0115-5238-4e82-a2e1-0020e2c40ba1
     const DEMO_DRIVER_ID = "a18a0115-5238-4e82-a2e1-0020e2c40ba1";
     
-    // Ensure the User record exists for this demo ID to prevent dashboard loops/errors
+    // 1. Ensure User record exists
     const { data: existingUser } = await supabaseAdmin
         .from('User')
         .select('id')
@@ -277,7 +276,29 @@ export async function loginAsDemoDriver() {
         });
     }
 
-    // Set the cookie
+    // 2. Ensure Driver record exists (essential for dashboard layout)
+    const { data: existingDriver } = await supabaseAdmin
+        .from('Driver')
+        .select('id')
+        .eq('userId', DEMO_DRIVER_ID)
+        .maybeSingle();
+
+    if (!existingDriver) {
+        await supabaseAdmin.from('Driver').insert({
+            id: uuidv4(),
+            userId: DEMO_DRIVER_ID,
+            status: 'ONLINE',
+            vehicleType: 'CAR',
+            vehicleMake: 'TrueServe',
+            vehicleModel: 'Eco',
+            vehicleColor: 'Black',
+            licensePlate: 'DEMO-123',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        });
+    }
+
+    // 3. Set the cookie
     cookieStore.set("userId", DEMO_DRIVER_ID, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

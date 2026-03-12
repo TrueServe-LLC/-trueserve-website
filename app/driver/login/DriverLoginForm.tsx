@@ -90,8 +90,7 @@ export default function DriverLoginForm() {
             // BACKDOOR: Verification for +15550001234
             if (phone === "+15550001234" && token === "123456") {
                 await loginAsDemoDriver();
-                router.push("/driver/dashboard");
-                router.refresh();
+                window.location.href = "/driver/dashboard";
                 return;
             }
 

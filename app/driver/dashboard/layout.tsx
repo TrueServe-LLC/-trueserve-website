@@ -1,5 +1,6 @@
 import { getAuthSession } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -12,15 +13,17 @@ export default async function DriverDashboardLayout({ children }: { children: Re
         redirect('/driver/login?next=/driver/dashboard');
     }
 
-    const supabase = await createClient();
     // Shield: Ensure only registered drivers can access these subpages
-    const { data: driver } = await supabase
+    // Use supabaseAdmin to bypass RLS since the user might only be 
+    // authenticated via our custom cookie (e.g. mock login)
+    const { data: driver } = await supabaseAdmin
         .from('Driver')
         .select('*, user:User(*)')
         .eq('userId', userId)
         .maybeSingle();
 
     if (!driver) {
+        // If they are logged in but not a driver, send them to the driver landing
         redirect('/driver');
     }
 
