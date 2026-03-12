@@ -161,7 +161,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         const isAutoApproved = isIdValid && isInsuranceValid && isRegistrationValid;
 
-        const driveStatus = isAutoApproved ? "APPROVED" : "PENDING_APPROVAL";
+        const driveStatus = isAutoApproved ? "APPROVED" : "PENDING";
         const bckStatus = isAutoApproved ? "CLEAR" : "PROCESSING";
 
         if (isAutoApproved) {
