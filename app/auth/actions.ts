@@ -251,3 +251,41 @@ export async function syncUserSession() {
     return { success: false };
 }
 
+export async function loginAsDemoDriver() {
+    const cookieStore = await cookies();
+    
+    // We'll use a known driver ID from the database for the demo
+    // From my search: a18a0115-5238-4e82-a2e1-0020e2c40ba1
+    const DEMO_DRIVER_ID = "a18a0115-5238-4e82-a2e1-0020e2c40ba1";
+    
+    // Ensure the User record exists for this demo ID to prevent dashboard loops/errors
+    const { data: existingUser } = await supabaseAdmin
+        .from('User')
+        .select('id')
+        .eq('id', DEMO_DRIVER_ID)
+        .maybeSingle();
+        
+    if (!existingUser) {
+        await supabaseAdmin.from('User').insert({
+            id: DEMO_DRIVER_ID,
+            name: "Demo Driver",
+            email: "demo-driver@trueserve.delivery",
+            role: "DRIVER",
+            phone: "+15550001234",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        });
+    }
+
+    // Set the cookie
+    cookieStore.set("userId", DEMO_DRIVER_ID, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 // 24 hours
+    });
+    
+    return { success: true };
+}
+

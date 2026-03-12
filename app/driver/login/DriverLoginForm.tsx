@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { loginAsDemoDriver } from "@/app/auth/actions";
 
 export default function DriverLoginForm() {
     const supabase = createClient();
@@ -136,6 +137,28 @@ export default function DriverLoginForm() {
                     <p className="text-[10px] text-center text-slate-500 leading-relaxed max-w-[250px] mx-auto opacity-70">
                         By continuing, you consent to receive automated authentication text messages from TrueServe.
                     </p>
+
+                    <div className="relative my-4">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-white/5" />
+                        </div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
+                            <span className="bg-[#080c14] px-4 text-slate-600">Development Only</span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={async () => {
+                            setIsLoading(true);
+                            await loginAsDemoDriver();
+                            router.push("/driver/dashboard");
+                            router.refresh();
+                        }}
+                        className="w-full bg-white/5 border border-white/10 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-white/10 transition-all active:scale-95"
+                    >
+                        Try Demo Dashboard
+                    </button>
                 </form>
             ) : (
                 <form onSubmit={handleVerifyOTP} className="space-y-4 animate-slide-up">
