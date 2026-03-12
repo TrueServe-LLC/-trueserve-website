@@ -8,12 +8,11 @@ import WalletUI from "@/components/WalletUI";
 import MembershipUI from "@/components/MembershipUI";
 import ProfileNameEditor from "@/components/ProfileNameEditor";
 import ProfileAvatar from "@/components/ProfileAvatar";
+import { getAuthSession } from "@/app/auth/actions";
 
 export default async function UserSettings() {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
-
-    if (!userId) {
+    const { isAuth, userId, role } = await getAuthSession();
+    if (!isAuth || !userId) {
         redirect("/login");
     }
 

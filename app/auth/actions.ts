@@ -52,10 +52,10 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
             if (publicUser) {
                 role = publicUser.role;
                 // Set App Cookie for compatibility
-                cookieStore.set("userId", publicUser.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
+                cookieStore.set("userId", publicUser.id, { secure: process.env.NODE_ENV === "production", httpOnly: true, path: '/' });
             } else {
                 // Fallback if public user missing but Auth exists (shouldn't happen often)
-                cookieStore.set("userId", data.user.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
+                cookieStore.set("userId", data.user.id, { secure: process.env.NODE_ENV === "production", httpOnly: true, path: '/' });
             }
         }
 
@@ -122,7 +122,11 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
 
             if (dbError) console.error("Public User Insert Error:", dbError);
 
-            cookieStore.set("userId", data.user.id, { secure: process.env.NODE_ENV === "production", httpOnly: true });
+            cookieStore.set("userId", data.user.id, { 
+                secure: process.env.NODE_ENV === "production", 
+                httpOnly: true,
+                path: '/' 
+            });
 
             // 3. STRIPE REDIRECTION FOR PLUS/PREMIUM
             if (role === 'CUSTOMER' && (plan === 'Plus' || plan === 'Premium')) {
@@ -189,27 +193,61 @@ export async function logout() {
     redirect("/");
 }
 
-export async function getAuthSession() {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
-
-    // We only consider the user fully logged in if our custom cookie exists
-    if (!userId) {
-        return { isAuth: false };
-    }
-
+export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: string; role?: string }> {
     try {
+        const cookieStore = await cookies();
+        const userId = cookieStore.get("userId")?.value;
+
+        if (!userId) {
+            // Fallback: Check Supabase session directly
+            const supabase = await createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: publicUser } = await supabaseAdmin
+                    .from('User')
+                    .select('role')
+                    .eq('id', user.id)
+                    .maybeSingle();
+
+                return { isAuth: true, userId: user.id, role: publicUser?.role || 'CUSTOMER' };
+            }
+            return { isAuth: false };
+        }
+
         const { data: publicUser } = await supabaseAdmin
             .from('User')
             .select('role')
             .eq('id', userId)
             .maybeSingle();
 
-        return {
-            isAuth: true,
-            role: publicUser?.role || 'CUSTOMER'
-        };
+        return { isAuth: true, userId, role: publicUser?.role || 'CUSTOMER' };
     } catch (e) {
         return { isAuth: false };
     }
 }
+
+export async function syncUserSession() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const cookieStore = await cookies();
+
+    if (user) {
+        // Sync with public User table
+        const { data: publicUser } = await supabaseAdmin
+            .from('User')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle();
+            
+        cookieStore.set("userId", user.id, { 
+            secure: process.env.NODE_ENV === "production", 
+            httpOnly: true,
+            path: '/' 
+        });
+        
+        return { success: true, role: publicUser?.role || 'CUSTOMER' };
+    }
+
+    return { success: false };
+}
+

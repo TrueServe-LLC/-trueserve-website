@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
+import { getAuthSession } from "@/app/auth/actions";
 
 async function getPendingItems() {
     try {
@@ -48,22 +49,9 @@ async function getPendingDrivers() {
 export default async function AdminDashboard({ searchParams }: { searchParams: { stripe_connected?: string } }) {
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
-    const userId = cookieStore.get("userId")?.value;
+    const { isAuth, role } = await getAuthSession();
 
-    let isAuthorized = !!adminSession;
-
-    if (!isAuthorized && userId) {
-        // Double check the role in DB
-        const { data: user } = await supabase
-            .from('User')
-            .select('role')
-            .eq('id', userId)
-            .single();
-
-        if (user?.role === 'ADMIN') {
-            isAuthorized = true;
-        }
-    }
+    let isAuthorized = !!adminSession || (isAuth && role === 'ADMIN');
 
     if (!isAuthorized) {
         redirect("/admin/login");

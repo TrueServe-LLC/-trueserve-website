@@ -33,16 +33,29 @@ function LoginWithParams() {
             const session = await getAuthSession();
 
             if (session.isAuth) {
-                if (session.role === 'MERCHANT') router.push("/merchant/dashboard");
-                else if (session.role === 'DRIVER') router.push("/driver/dashboard");
-                else if (session.role === 'ADMIN') router.push("/admin/dashboard");
-                else router.push(redirectUrl);
+                // Determine destination
+                let dest = redirectUrl;
+                if (session.role === 'MERCHANT') dest = "/merchant/dashboard";
+                else if (session.role === 'DRIVER') dest = "/driver/dashboard";
+                else if (session.role === 'ADMIN') dest = "/admin/dashboard";
+                
+                // Only push if we're not already planning to go there
+                router.push(dest);
             } else {
                 // If the user's cookie was lost/cleared but Supabase local storage remembers something,
-                // we should firmly sign them out of the local cache so they don't get stuck finding food.
+                // we should try to restore the session rather than just signing them out.
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
-                    await supabase.auth.signOut();
+                    console.log("Restoring session for user:", user.id);
+                    // We can't set cookies directly here easily, but we can call a sync action
+                    const { syncUserSession } = await import("../auth/actions");
+                    const res = await syncUserSession();
+                    if (res.success) {
+                        router.refresh(); // Refresh to pick up the new cookie
+                    } else {
+                        // If sync failed (e.g. user not in DB), then sign out
+                        await supabase.auth.signOut();
+                    }
                 }
             }
         };
