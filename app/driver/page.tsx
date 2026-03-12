@@ -182,7 +182,7 @@ export default function DriverPortal() {
                                         </div>
                                         <div className="flex justify-between items-center text-sm ml-[1px]">
                                             <span className="text-slate-400 font-medium tracking-wide">Distance (4.2 miles)</span>
-                                            <span className="text-white font-bold">$3.71</span>
+                                            <span className="text-white font-bold">$2.94</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm ml-[1px]">
                                              <span className="text-slate-400 font-medium tracking-wide">Wait Time (12 mins)</span>
@@ -197,7 +197,7 @@ export default function DriverPortal() {
                                     <div className="pt-8 border-t border-white/10 flex justify-between items-end mt-4 relative z-10 px-1">
                                         <div className="ml-[1px]">
                                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total Earned</p>
-                                            <p className="text-4xl font-black text-white tracking-tight leading-none">$15.71</p>
+                                            <p className="text-4xl font-black text-white tracking-tight leading-none">$14.94</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Driving Time</p>

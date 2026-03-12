@@ -21,19 +21,13 @@ export function calculateDriverPay(
 ): PayCalculation {
     const BASE_PAY = 3.00;
     const DISTANCE_RATE = 0.70;
-    const LONG_DISTANCE_BONUS = 0.35; // added after 2 miles
     const TIME_RATE = 0.25; // Per minute
     const BATCH_FEE = 2.00;
 
     const basePay = BASE_PAY;
 
-    // Distance pay: $0.70/mi everywhere, plus $0.35/mi for miles after 2
-    let distancePay = distanceMiles * DISTANCE_RATE;
-    if (distanceMiles > 2) {
-        distancePay += (distanceMiles - 2) * LONG_DISTANCE_BONUS;
-    }
-    // Round distance pay to avoid float precision issues in multiplier
-    distancePay = Math.round(distancePay * 100) / 100;
+    // Distance pay: Flat $0.70/mi
+    const distancePay = Math.round(distanceMiles * DISTANCE_RATE * 100) / 100;
 
     // Time pay: $0.25/min for every minute
     const timePay = Math.round(waitMinutes * TIME_RATE * 100) / 100;
