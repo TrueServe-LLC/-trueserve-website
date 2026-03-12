@@ -1,3 +1,5 @@
+import { getAuthSession } from "@/app/auth/actions";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -16,24 +18,23 @@ import CompleteDeliveryForm from "./CompleteDeliveryForm";
 export const dynamic = 'force-dynamic';
 
 async function getDriverData() {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { isAuth, userId } = await getAuthSession();
 
-    if (authError || !user) return null;
+    if (!isAuth || !userId) return null;
 
     try {
-        const { data: driver, error } = await supabase
+        const { data: driver, error } = await supabaseAdmin
             .from('Driver')
             .select(`
                 *,
                 user:User(*),
                 orders:Order(*)
             `)
-            .eq('userId', user.id)
+            .eq('userId', userId)
             .maybeSingle();
 
         if (error) {
-            console.error("Supabase Error (getDriverData):", error.message);
+            console.error("Supabase Admin Error (getDriverData):", error.message);
             return null;
         }
         return driver;
