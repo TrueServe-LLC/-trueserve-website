@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import HeroCarousel from "@/components/HeroCarousel";
 import LandingSearch from "@/components/LandingSearch";

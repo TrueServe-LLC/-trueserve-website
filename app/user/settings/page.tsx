@@ -9,6 +9,7 @@ import MembershipUI from "@/components/MembershipUI";
 import ProfileNameEditor from "@/components/ProfileNameEditor";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import { getAuthSession } from "@/app/auth/actions";
+export const dynamic = "force-dynamic";
 
 export default async function UserSettings() {
     const { isAuth, userId, role } = await getAuthSession();
