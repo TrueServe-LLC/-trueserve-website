@@ -13,6 +13,7 @@ import DriverCallButton from "@/components/DriverCallButton";
 import SpotCheckTrigger from "@/components/SpotCheckTrigger";
 import ActiveOrderNavigation from "@/components/ActiveOrderNavigation";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
+import { getCurrentWeather } from "@/lib/weather";
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,8 @@ export default async function DriverDashboard() {
         .neq('status', 'COMPLETED')
         .order('createdAt', { ascending: false })
         .limit(20);
+
+    const weather = await getCurrentWeather(driver?.currentLat || 35.2271, driver?.currentLng || -80.8431);
 
     let availableOrders = rawOrders || [];
 
@@ -77,9 +80,15 @@ export default async function DriverDashboard() {
                     <span className="text-xl font-black tracking-tight">True<span className="text-emerald-400">Serve</span> Driver</span>
                 </Link>
                 <div className="flex gap-4 items-center">
-                    <div className="text-right">
-                        <p className="text-[10px] text-slate-500 uppercase font-bold">Current Balance</p>
-                        <p className="text-emerald-400 font-bold">${stats.balance.toFixed(2)}</p>
+                    <div className="text-right flex items-center gap-3">
+                        <div className="hidden sm:block">
+                            <p className="text-[10px] text-slate-500 uppercase font-bold">Weather</p>
+                            <p className="text-slate-300 font-bold">{weather.temperature}°F {weather.description}</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] text-slate-500 uppercase font-bold">Current Balance</p>
+                            <p className="text-emerald-400 font-bold">${stats.balance.toFixed(2)}</p>
+                        </div>
                     </div>
                     <button className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-lg text-sm font-bold border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
                         Withdraw
@@ -126,11 +135,18 @@ export default async function DriverDashboard() {
                                     <div>
                                         <p className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</p>
                                         <p className="text-sm text-slate-400">{order.restaurant?.address || "Location Hidden"}</p>
-                                        <div className="flex gap-3 mt-2 text-xs font-mono uppercase">
-                                            <span className="bg-white/10 px-2 py-1 rounded text-slate-300">{(order.total * 0.2).toLocaleString('en-US', { style: 'currency', currency: 'USD' })} est. pay</span>
+                                        <div className="flex flex-wrap gap-3 mt-2 text-xs font-mono uppercase">
+                                            <span className="bg-white/10 px-2 py-1 rounded text-slate-300">
+                                                {calculateDriverPay(order.distance || 0, 0, false, weather.multiplier).totalPay.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} est. pay
+                                            </span>
                                             <span className={`px-2 py-1 rounded ${order.distance < 3 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-slate-300'}`}>
                                                 {order.distance} mi away
                                             </span>
+                                            {weather.multiplier > 1 && (
+                                                <span className="bg-primary/20 text-primary px-2 py-1 rounded animate-pulse font-black">
+                                                    {(weather.multiplier - 1) * 100}% {weather.isSnowing ? 'Snow' : 'Rain'} Bonus
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                     <form action={async () => {
