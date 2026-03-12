@@ -156,7 +156,7 @@ export default function DriverPortal() {
                                 {[
                                     { label: "Base Pay", value: "$3.00", detail: "Per Order Minimum" },
                                     { label: "Distance", value: "$0.70", detail: "Per Mile" },
-                                    { label: "Wait Pay", value: "$0.75", detail: "Per Minute" },
+                                     { label: "Wait Pay", value: "$0.25", detail: "Per Minute" },
                                     { label: "Tips", value: "100%", detail: "All Yours" }
                                 ].map((row, i) => (
                                     <div key={i} className="flex flex-col p-6 md:p-8 bg-white/[0.02] border border-white/5 rounded-3xl hover:bg-white/[0.05] transition-all shadow-xl">
@@ -185,8 +185,8 @@ export default function DriverPortal() {
                                             <span className="text-white font-bold">$3.71</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm ml-[1px]">
-                                            <span className="text-slate-400 font-medium tracking-wide">Wait Time (12 mins)</span>
-                                            <span className="text-white font-bold">$9.00</span>
+                                             <span className="text-slate-400 font-medium tracking-wide">Wait Time (12 mins)</span>
+                                            <span className="text-white font-bold">$3.00</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm ml-[1px]">
                                             <span className="text-slate-400 font-medium tracking-wide">Customer Tip</span>
@@ -197,7 +197,7 @@ export default function DriverPortal() {
                                     <div className="pt-8 border-t border-white/10 flex justify-between items-end mt-4 relative z-10 px-1">
                                         <div className="ml-[1px]">
                                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total Earned</p>
-                                            <p className="text-4xl font-black text-white tracking-tight leading-none">$21.71</p>
+                                            <p className="text-4xl font-black text-white tracking-tight leading-none">$15.71</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Driving Time</p>
