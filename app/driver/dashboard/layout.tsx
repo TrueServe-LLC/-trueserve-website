@@ -7,9 +7,11 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export default async function DriverDashboardLayout({ children }: { children: React.ReactNode }) {
-    const { isAuth, userId } = await getAuthSession();
+    const { isAuth, userId, role } = await getAuthSession();
+    console.log("[DriverLayout] isAuth:", isAuth, "userId:", userId, "role:", role);
 
     if (!isAuth || !userId) {
+        console.log("[DriverLayout] Redirecting to login: Not Auth");
         redirect('/driver/login?next=/driver/dashboard');
     }
 
@@ -22,8 +24,11 @@ export default async function DriverDashboardLayout({ children }: { children: Re
         .eq('userId', userId)
         .maybeSingle();
 
+    console.log("[DriverLayout] Driver record found:", !!driver);
+
     if (!driver) {
         // If they are logged in but not a driver, send them to the driver landing
+        console.log("[DriverLayout] Redirecting to /driver: No driver record");
         redirect('/driver');
     }
 

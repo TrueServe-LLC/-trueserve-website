@@ -89,8 +89,7 @@ export default function DriverLoginForm() {
         try {
             // BACKDOOR: Verification for +15550001234
             if (phone === "+15550001234" && token === "123456") {
-                await loginAsDemoDriver();
-                window.location.href = "/driver/dashboard";
+                window.location.href = "/auth/demo";
                 return;
             }
 

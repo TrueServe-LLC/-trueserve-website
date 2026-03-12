@@ -7,8 +7,13 @@ const supabase = createClient(
 );
 
 async function check() {
-    const { data: users, error } = await supabase.from('User').select('id, name, email, phone, role').eq('role', 'DRIVER').limit(5);
-    if (error) console.error(error);
-    console.log('Drivers:', JSON.stringify(users, null, 2));
+    const userId = "a18a0115-5238-4e82-a2e1-0020e2c40ba1";
+    console.log('Checking records for userId:', userId);
+
+    const { data: user, error: userError } = await supabase.from('User').select('*').eq('id', userId).maybeSingle();
+    console.log('User Record:', JSON.stringify(user, null, 2));
+
+    const { data: driver, error: driverError } = await supabase.from('Driver').select('*').eq('userId', userId).maybeSingle();
+    console.log('Driver Record:', JSON.stringify(driver, null, 2));
 }
 check();

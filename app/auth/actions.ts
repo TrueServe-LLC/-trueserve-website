@@ -197,11 +197,13 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
     try {
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
+        console.log("[AuthSession] userId from cookie:", userId);
 
         if (!userId) {
             // Fallback: Check Supabase session directly
             const supabase = await createClient();
             const { data: { user } } = await supabase.auth.getUser();
+            console.log("[AuthSession] Supabase fallback user:", user?.id);
             if (user) {
                 const { data: publicUser } = await supabaseAdmin
                     .from('User')
@@ -219,9 +221,12 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             .select('role')
             .eq('id', userId)
             .maybeSingle();
+        
+        console.log("[AuthSession] Result:", { isAuth: true, userId, role: publicUser?.role });
 
         return { isAuth: true, userId, role: publicUser?.role || 'CUSTOMER' };
     } catch (e) {
+        console.error("[AuthSession] Error:", e);
         return { isAuth: false };
     }
 }
