@@ -102,8 +102,9 @@ async function getMerchantData(userId: string) {
 export default async function MerchantDashboard({
     searchParams
 }: {
-    searchParams: { welcome?: string }
+    searchParams: Promise<{ welcome?: string }>
 }) {
+    const { welcome } = await searchParams;
     const cookieStore = await cookies();
     let userId = cookieStore.get("userId")?.value;
 

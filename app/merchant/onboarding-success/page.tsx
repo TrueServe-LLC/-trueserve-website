@@ -7,9 +7,9 @@ import { getStripe } from "@/lib/stripe";
 export default async function OnboardingSuccessPage({
     searchParams
 }: {
-    searchParams: { session_id?: string }
+    searchParams: Promise<{ session_id?: string }>
 }) {
-    const sessionId = searchParams.session_id;
+    const { session_id: sessionId } = await searchParams;
     if (!sessionId) redirect('/merchant/dashboard');
 
     const cookieStore = await cookies();
