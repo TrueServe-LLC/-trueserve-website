@@ -1,3 +1,4 @@
+import { getAuthSession } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -5,18 +6,18 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export default async function DriverDashboardLayout({ children }: { children: React.ReactNode }) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { isAuth, userId } = await getAuthSession();
 
-    if (!user) {
+    if (!isAuth || !userId) {
         redirect('/driver/login?next=/driver/dashboard');
     }
 
+    const supabase = await createClient();
     // Shield: Ensure only registered drivers can access these subpages
     const { data: driver } = await supabase
         .from('Driver')
         .select('*, user:User(*)')
-        .eq('userId', user.id)
+        .eq('userId', userId)
         .maybeSingle();
 
     if (!driver) {
