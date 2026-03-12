@@ -1,5 +1,4 @@
-import { getAuthSession } from "@/app/auth/actions";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getDriverOrRedirect } from "@/lib/driver-auth";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -17,37 +16,8 @@ import CompleteDeliveryForm from "./CompleteDeliveryForm";
 
 export const dynamic = 'force-dynamic';
 
-async function getDriverData() {
-    const { isAuth, userId } = await getAuthSession();
-
-    if (!isAuth || !userId) return null;
-
-    try {
-        const { data: driver, error } = await supabaseAdmin
-            .from('Driver')
-            .select(`
-                *,
-                user:User(*),
-                orders:Order(*)
-            `)
-            .eq('userId', userId)
-            .maybeSingle();
-
-        if (error) {
-            console.error("Supabase Admin Error (getDriverData):", error.message);
-            return null;
-        }
-        return driver;
-    } catch (e) {
-        return null;
-    }
-}
-
 export default async function DriverDashboard() {
-    const driver = await getDriverData();
-    if (!driver) {
-        redirect("/driver/login");
-    }
+    const driver = await getDriverOrRedirect();
     const supabase = await createClient();
 
     // Fetch Available Orders

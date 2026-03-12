@@ -1,29 +1,28 @@
+import { getDriverOrRedirect } from "@/lib/driver-auth";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { createDriverStripeAccount } from "../../actions";
 import { logout } from "@/app/auth/actions";
 import Link from "next/link";
 import DriverProfileForm from "@/components/DriverProfileForm";
+import { getAuthSession } from "@/app/auth/actions";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DriverAccount() {
+    const driver = await getDriverOrRedirect();
+    const { userId } = await getAuthSession();
+
+    if (!userId) {
+        return <div className="p-8 text-center bg-red-500/10 border border-red-500/20 rounded-xl">Authentication error.</div>;
+    }
+    
+    // We need a user object for the UI (email, metadata)
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-        redirect("/driver/login");
-    }
-
-    const { data: driver } = await supabase
-        .from('Driver')
-        .select('*')
-        .eq('userId', user.id)
-        .single();
-
-    if (!driver) {
-        return <div className="p-8 text-center bg-red-500/10 border border-red-500/20 rounded-xl">Driver profile not found. Please complete your application.</div>;
-    }
+    // Fallback if Supabase user is missing but we have a driver record (e.g. mock login)
+    const displayEmail = user?.email || "driver@mock.com";
+    const displayName = user?.user_metadata?.displayName || "Demo Driver";
 
     return (
         <div className="max-w-2xl mx-auto space-y-8 animate-fade-in-up">
@@ -34,11 +33,11 @@ export default async function DriverAccount() {
                     <img src={driver.photoUrl} alt="Driver" className="w-24 h-24 md:w-20 md:h-20 rounded-full object-cover border-4 border-primary/30 shadow-2xl" />
                 ) : (
                     <div className="w-24 h-24 md:w-20 md:h-20 rounded-full bg-primary/20 flex items-center justify-center text-4xl md:text-3xl font-bold text-primary border-4 border-primary/30 shadow-2xl shrink-0">
-                        {user.email?.charAt(0).toUpperCase()}
+                        {displayEmail.charAt(0).toUpperCase()}
                     </div>
                 )}
                 <div>
-                    <h2 className="text-2xl md:text-xl font-black">{user.user_metadata?.displayName || user.email?.split('@')[0]}</h2>
+                    <h2 className="text-2xl md:text-xl font-black">{displayName}</h2>
                     <p className="text-slate-400 font-bold text-sm">Driver since • {new Date(driver.createdAt).toLocaleDateString()}</p>
                     {driver.aboutMe && (
                         <p className="mt-4 text-white italic max-w-lg">"{driver.aboutMe}"</p>
@@ -95,7 +94,7 @@ export default async function DriverAccount() {
                 <div className="card bg-white/5 border-white/10 p-0 overflow-hidden divide-y divide-white/5">
                     <div className="p-4 flex justify-between items-center hover:bg-white/[0.02] transition-colors">
                         <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Email</span>
-                        <span className="text-white text-sm font-semibold">{user.email}</span>
+                        <span className="text-white text-sm font-semibold">{displayEmail}</span>
                     </div>
                     <div className="p-4 flex justify-between items-center hover:bg-white/[0.02] transition-colors">
                         <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Support Code</span>
