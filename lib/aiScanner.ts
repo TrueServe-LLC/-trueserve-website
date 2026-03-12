@@ -20,7 +20,10 @@ export type ScanResult = {
  * Identifies if it's a valid driver's license, insurance card, or registration,
  * and extracts key details for AI auto-verification.
  */
-export async function scanDocumentWithAI(file: File): Promise<ScanResult> {
+export async function scanDocumentWithAI(file: File | null): Promise<ScanResult> {
+    if (!file) {
+        return { isValid: false, confidence: 0, extractedData: {}, error: "No file provided." };
+    }
     if (!GEMINI_API_KEY) {
         console.warn("[AI Scanner] GEMINI_API_KEY is missing. Using fallback mock.");
         return { isValid: false, confidence: 0, extractedData: {}, error: "AI Scanner is not configured." };

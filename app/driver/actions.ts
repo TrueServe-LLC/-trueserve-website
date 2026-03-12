@@ -80,7 +80,6 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                     phone,
                     role: 'DRIVER',
                     address,
-                    dob,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 });
@@ -181,8 +180,8 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 vehicleColor: vehicleColor,
                 licensePlate: licensePlate,
                 address: address,
-                lat: lat ? parseFloat(lat) : null,
-                lng: lng ? parseFloat(lng) : null,
+                currentLat: lat ? parseFloat(lat) : null,
+                currentLng: lng ? parseFloat(lng) : null,
                 status: driveStatus,
                 backgroundCheckId: backgroundCheckId,
                 backgroundCheckStatus: bckStatus,
