@@ -22,7 +22,7 @@ export function calculateDriverPay(
     const BASE_PAY = 3.00;
     const DISTANCE_RATE = 0.70;
     const LONG_DISTANCE_BONUS = 0.35; // added after 2 miles
-    const TIME_RATE = 0.25; // after 10 min
+    const TIME_RATE = 0.75; // Per minute
     const BATCH_FEE = 2.00;
 
     const basePay = BASE_PAY;
@@ -35,8 +35,8 @@ export function calculateDriverPay(
     // Round distance pay to avoid float precision issues in multiplier
     distancePay = Math.round(distancePay * 100) / 100;
 
-    // Time pay: $0.25/min after 10 min wait
-    const timePay = Math.round(Math.max(0, waitMinutes - 10) * TIME_RATE * 100) / 100;
+    // Time pay: $0.75/min for every minute
+    const timePay = Math.round(waitMinutes * TIME_RATE * 100) / 100;
 
     // Batch bonus
     const batchBonus = isBatched ? BATCH_FEE : 0;

@@ -24,14 +24,13 @@ describe('Driver Pay Engine - Business Logic Validation', () => {
 
     test('1.3 Wait Time Calculation', () => {
         // Distance: 3 miles, wait time: 18 minutes, no peak
-        // Wait: 18 - 10 = 8 minutes eligible
-        // Wait Pay: 8 * $0.25 = $2.00
+        // Wait Pay: 18 * $0.75 = $13.50
         // Distance: (2 * $0.70) + (1 * $1.05) = $1.40 + $1.05 = $2.45
-        // Total: $3 (Base) + $2.45 (Dist) + $2.00 (Wait) = $7.45
+        // Total: $3 (Base) + $2.45 (Dist) + $13.50 (Wait) = $18.95
         const result = calculateDriverPay(3, 18, false, 1.0);
-        expect(result.timePay).toBe(2.00);
+        expect(result.timePay).toBe(13.50);
         expect(result.distancePay).toBe(2.45);
-        expect(result.totalPay).toBe(7.45);
+        expect(result.totalPay).toBe(18.95);
     });
 
     test('1.4 Batched Order Logic', () => {
@@ -59,16 +58,16 @@ describe('Driver Pay Engine - Business Logic Validation', () => {
         // 6 miles, 15 minutes wait, 2 orders (batched), 1.3x peak boost
         // Distance: (2 * $0.70) + (4 * $1.05) = $1.40 + $4.20 = $5.60
         // Base: $3
-        // Wait: (15 - 10) * $0.25 = $1.25
+        // Wait: 15 * $0.75 = $11.25
         // Batch: $2.00
-        // Calculation: ((3 + 5.60) * 1.3) + 1.25 + 2.00
+        // Calculation: ((3 + 5.60) * 1.3) + 11.25 + 2.00
         // (8.60 * 1.3) = 11.18
-        // 11.18 + 1.25 + 2.00 = $14.43
+        // 11.18 + 11.25 + 2.00 = $24.43
         const result = calculateDriverPay(6, 15, true, 1.3);
         expect(result.distancePay).toBe(5.60);
-        expect(result.timePay).toBe(1.25);
+        expect(result.timePay).toBe(11.25);
         expect(result.batchBonus).toBe(2.00);
-        expect(result.totalPay).toBe(14.43);
+        expect(result.totalPay).toBe(24.43);
     });
 
 });
