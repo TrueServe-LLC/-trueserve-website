@@ -194,7 +194,6 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 vehicleModel: vehicleModel,
                 vehicleColor: vehicleColor,
                 licensePlate: licensePlate,
-                address: address,
                 currentLat: (lat && !isNaN(parseFloat(lat))) ? parseFloat(lat) : null,
                 currentLng: (lng && !isNaN(parseFloat(lng))) ? parseFloat(lng) : null,
                 status: driveStatus,
