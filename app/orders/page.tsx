@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import MobileNav from "@/components/MobileNav";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrdersPage() {
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;

@@ -1,9 +1,11 @@
 "use server";
 
+
 import { supabase } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
 import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email";
 import { sendSMS } from "@/lib/sms";
@@ -102,6 +104,14 @@ export async function approveDriver(id: string) {
         if (authError && !authError.message.includes("already exists")) {
             console.error("Auth Creation Error:", authError);
             throw authError;
+        }
+
+        // 2b. Sync role for existing users
+        if (authError?.message.includes("already exists")) {
+            const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(driver.userId, {
+                user_metadata: { role: 'DRIVER', displayName: name }
+            });
+            if (updateError) console.error("Failed to sync role for existing driver:", updateError);
         }
 
         // 3. Update Driver Status

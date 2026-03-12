@@ -186,8 +186,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         const { error: driverError } = await supabaseAdmin
             .from('Driver')
-            .insert({
-                id: uuidv4(),
+            .upsert({
                 userId: targetUserId,
                 vehicleType: vehicleType,
                 vehicleMake: vehicleMake,
@@ -202,9 +201,8 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 vehicleVerified: false, // Always false on signup, admin must approve
                 insuranceDocumentUrl: insuranceUrl,
                 registrationDocumentUrl: registrationUrl,
-                createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
-            });
+            }, { onConflict: 'userId' });
 
         if (driverError) {
             throw driverError;
