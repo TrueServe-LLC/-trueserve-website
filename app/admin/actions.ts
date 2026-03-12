@@ -107,7 +107,7 @@ export async function approveDriver(id: string) {
         // 3. Update Driver Status
         const { error: statusError } = await supabaseAdmin
             .from('Driver')
-            .update({ status: "OFFLINE", updatedAt: new Date().toISOString() })
+            .update({ status: "OFFLINE", vehicleVerified: true, updatedAt: new Date().toISOString() })
             .eq('id', id);
 
         if (statusError) throw statusError;

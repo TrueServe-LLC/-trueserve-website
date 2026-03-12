@@ -161,7 +161,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         const isAutoApproved = isIdValid && isInsuranceValid && isRegistrationValid;
 
-        const driveStatus = isAutoApproved ? "APPROVED" : "PENDING";
+        const driveStatus = "OFFLINE";
         const bckStatus = isAutoApproved ? "CLEAR" : "PROCESSING";
 
         if (isAutoApproved) {
@@ -199,7 +199,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 status: driveStatus,
                 backgroundCheckId: backgroundCheckId,
                 backgroundCheckStatus: bckStatus,
-                vehicleVerified: isAutoApproved,
+                vehicleVerified: false, // Always false on signup, admin must approve
                 insuranceDocumentUrl: insuranceUrl,
                 registrationDocumentUrl: registrationUrl,
                 createdAt: new Date().toISOString(),

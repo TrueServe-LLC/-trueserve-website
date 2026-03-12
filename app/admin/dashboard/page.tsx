@@ -228,10 +228,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <section>
                         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                             🚗 Driver Applications
-                            <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">{drivers.filter(d => d.status === 'PENDING').length}</span>
+                            <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">{drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).length}</span>
                         </h2>
                         <div className="space-y-4">
-                            {drivers.filter(d => d.status === 'PENDING').map((driver) => (
+                            {drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).map((driver) => (
                                 <div key={driver.id} className="card p-6 border-slate-700/50 group hover:border-white/20 transition-all">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
@@ -282,7 +282,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     </div>
                                 </div>
                             ))}
-                            {drivers.filter(d => d.status === 'PENDING').length === 0 && (
+                            {drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).length === 0 && (
                                 <p className="text-slate-500 italic">No drivers pending approval.</p>
                             )}
                         </div>
