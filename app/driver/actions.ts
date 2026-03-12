@@ -94,16 +94,31 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         async function uploadDoc(file: File, prefix: string) {
             if (!file || file.size === 0) return "";
             try {
+                // Ensure bucket exists (auto-create if missing)
+                await supabaseAdmin.storage.createBucket('driver-documents', { public: true }).catch(() => { });
+
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${targetUserId}_${prefix}_${Date.now()}.${fileExt}`;
+                
+                const arrayBuffer = await file.arrayBuffer();
+                const buffer = new Uint8Array(arrayBuffer);
+
                 const { data, error } = await supabaseAdmin.storage
                     .from('driver-documents')
-                    .upload(fileName, file);
+                    .upload(fileName, buffer, {
+                        contentType: file.type,
+                        upsert: false
+                    });
+
                 if (!error && data) {
                     const { data: urlData } = supabaseAdmin.storage.from('driver-documents').getPublicUrl(fileName);
                     return urlData.publicUrl;
+                } else if (error) {
+                    console.error(`Supabase Upload Error for ${prefix}:`, error);
                 }
-            } catch (e) { console.error(`Upload failed for ${prefix}:`, e); }
+            } catch (e) { 
+                console.error(`[Upload Crash] failed for ${prefix}:`, e); 
+            }
             return "";
         }
 
@@ -180,8 +195,8 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 vehicleColor: vehicleColor,
                 licensePlate: licensePlate,
                 address: address,
-                currentLat: lat ? parseFloat(lat) : null,
-                currentLng: lng ? parseFloat(lng) : null,
+                currentLat: (lat && !isNaN(parseFloat(lat))) ? parseFloat(lat) : null,
+                currentLng: (lng && !isNaN(parseFloat(lng))) ? parseFloat(lng) : null,
                 status: driveStatus,
                 backgroundCheckId: backgroundCheckId,
                 backgroundCheckStatus: bckStatus,

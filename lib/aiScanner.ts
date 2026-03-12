@@ -62,11 +62,15 @@ export async function scanDocumentWithAI(file: File | null): Promise<ScanResult>
         }
         `;
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({
                     contents: [
                         {
@@ -90,10 +94,12 @@ export async function scanDocumentWithAI(file: File | null): Promise<ScanResult>
         );
 
         if (!response.ok) {
+            clearTimeout(timeoutId);
             const errBody = await response.text();
             throw new Error(`Gemini API Error: ${response.status} - ${errBody}`);
         }
 
+        clearTimeout(timeoutId);
         const data = await response.json();
         const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
