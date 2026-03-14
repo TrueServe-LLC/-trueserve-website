@@ -15,6 +15,7 @@ import { sendSMS } from "@/lib/sms";
 import { createNotification } from "@/lib/notifications";
 import { scanDocumentWithAI } from "@/lib/aiScanner";
 import { calculateDistance } from "@/lib/utils";
+import { normalizePhoneNumber } from "@/lib/phoneUtils";
 
 export type DriverApplicationState = {
     message: string;
@@ -32,16 +33,8 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const licensePlate = formData.get("licensePlate") as string;
     let phone = formData.get("phone") as string;
 
-    // Normalize phone to E.164 for Supabase Auth SMS compatibility (assuming US for demo)
-    if (phone) {
-        let formattedPhone = phone.replace(/[^\d+]/g, '');
-        if (!formattedPhone.startsWith('+')) {
-            if (formattedPhone.length === 10) formattedPhone = `+1${formattedPhone}`;
-            else if (formattedPhone.startsWith('1') && formattedPhone.length === 11) formattedPhone = `+${formattedPhone}`;
-            else formattedPhone = `+1${formattedPhone}`; // Fallback best-effort
-        }
-        phone = formattedPhone;
-    }
+    // Normalize phone to E.164 for Supabase Auth SMS compatibility
+    phone = normalizePhoneNumber(phone || "");
     const idDocument = formData.get("idDocument") as File;
     const insuranceDocument = formData.get("insuranceDocument") as File | null;
     const registrationDocument = formData.get("registrationDocument") as File | null;
