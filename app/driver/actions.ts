@@ -87,8 +87,11 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         async function uploadDoc(file: File, prefix: string) {
             if (!file || file.size === 0) return "";
             try {
-                // Ensure bucket exists (auto-create if missing)
-                await supabaseAdmin.storage.createBucket('driver-documents', { public: true }).catch(() => { });
+                // Ensure bucket exists (check first to avoid 400 logs)
+                const { data: buckets } = await supabaseAdmin.storage.listBuckets();
+                if (!buckets?.find(b => b.id === 'driver-documents')) {
+                    await supabaseAdmin.storage.createBucket('driver-documents', { public: true });
+                }
 
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${targetUserId}_${prefix}_${Date.now()}.${fileExt}`;

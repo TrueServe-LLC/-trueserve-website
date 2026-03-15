@@ -6,9 +6,9 @@ import { logger } from './logger';
 const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
 
 export async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: any[]) {
-    // Fallback if no API key is set
-    if (!process.env.RESEND_API_KEY) {
-        logger.warn("⚠️ [MOCK EMAIL] RESEND_API_KEY is missing in .env");
+    // Fallback if no API key is set or if it's a dummy key
+    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY.includes('dummy')) {
+        logger.warn("⚠️ [MOCK EMAIL] RESEND_API_KEY is missing or invalid (dummy) in .env");
         logger.info({ to, subject, attachments: attachments ? attachments.length : 0 }, '[MOCK EMAIL] details');
         return { success: true };
     }
