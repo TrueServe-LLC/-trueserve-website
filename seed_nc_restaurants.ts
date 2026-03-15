@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
 import { v4 as uuidv4 } from 'uuid'
 
-dotenv.config()
+dotenv.config({ path: '.env.local' })
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -107,7 +107,17 @@ async function seedRealRestaurants() {
     await supabase.from('ServiceLocation').upsert([
         { id: uuidv4(), city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], isActive: true, updatedAt: now, createdAt: now },
         { id: uuidv4(), city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], isActive: true, updatedAt: now, createdAt: now },
-        { id: uuidv4(), city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], isActive: true, updatedAt: now, createdAt: now }
+        { id: uuidv4(), city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Greenville', state: 'SC', zipPrefixes: ['29601', '29605', '29607', '29609', '29611', '29617'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Simpsonville', state: 'SC', zipPrefixes: ['29680', '29681'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Spartanburg', state: 'SC', zipPrefixes: ['29301', '29302', '29303', '29306', '29307'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Clemson', state: 'SC', zipPrefixes: ['29631', '29634'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Greer', state: 'SC', zipPrefixes: ['29650', '29651'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Athens', state: 'GA', zipPrefixes: ['30601', '30605', '30606', '30607'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Marietta', state: 'GA', zipPrefixes: ['30008', '30060', '30062', '30064', '30066', '30067', '30068'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Evans', state: 'GA', zipPrefixes: ['30809'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Davidson', state: 'NC', zipPrefixes: ['28035', '28036'], isActive: true, updatedAt: now, createdAt: now },
+        { id: uuidv4(), city: 'Brevard', state: 'NC', zipPrefixes: ['28712'], isActive: true, updatedAt: now, createdAt: now }
     ], { onConflict: 'city' });
 
     let createdCount = 0;

@@ -61,10 +61,21 @@ async function getRestaurants(
     let searchCity = "";
 
     // Define fallbacks (mocks) for demo/offline
+    // State-of-the-art service locations expansion
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
         { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], lat: 35.0833, lng: -80.8872 },
-        { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 }
+        { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 },
+        { city: 'Greenville', state: 'SC', zipPrefixes: ['29601', '29605', '29607', '29609', '29611', '29617'], lat: 34.8526, lng: -82.3940 },
+        { city: 'Simpsonville', state: 'SC', zipPrefixes: ['29680', '29681'], lat: 34.7371, lng: -82.2537 },
+        { city: 'Spartanburg', state: 'SC', zipPrefixes: ['29301', '29302', '29303', '29306', '29307'], lat: 34.9496, lng: -81.9320 },
+        { city: 'Clemson', state: 'SC', zipPrefixes: ['29631', '29634'], lat: 34.6834, lng: -82.8374 },
+        { city: 'Greer', state: 'SC', zipPrefixes: ['29650', '29651'], lat: 34.8956, lng: -82.2189 }, // GSP Airport area
+        { city: 'Athens', state: 'GA', zipPrefixes: ['30601', '30605', '30606', '30607'], lat: 33.9519, lng: -83.3576 },
+        { city: 'Marietta', state: 'GA', zipPrefixes: ['30008', '30060', '30062', '30064', '30066', '30067', '30068'], lat: 33.9526, lng: -84.5499 },
+        { city: 'Evans', state: 'GA', zipPrefixes: ['30809'], lat: 33.5335, lng: -82.1307 },
+        { city: 'Davidson', state: 'NC', zipPrefixes: ['28035', '28036'], lat: 35.4993, lng: -80.8487 },
+        { city: 'Brevard', state: 'NC', zipPrefixes: ['28712'], lat: 35.2334, lng: -82.7343 }
     ];
 
     let validLocations: any[] = fallbackMocks;
@@ -370,7 +381,17 @@ export default async function RestaurantFinder({
         const fallbackMocks = [
             { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
             { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
-            { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 }
+            { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 },
+            { city: 'Greenville', state: 'SC', lat: 34.8526, lng: -82.3940 },
+            { city: 'Simpsonville', state: 'SC', lat: 34.7371, lng: -82.2537 },
+            { city: 'Spartanburg', state: 'SC', lat: 34.9496, lng: -81.9320 },
+            { city: 'Clemson', state: 'SC', lat: 34.6834, lng: -82.8374 },
+            { city: 'Greer', state: 'SC', lat: 34.8956, lng: -82.2189 },
+            { city: 'Athens', state: 'GA', lat: 33.9519, lng: -83.3576 },
+            { city: 'Marietta', state: 'GA', lat: 33.9526, lng: -84.5499 },
+            { city: 'Evans', state: 'GA', lat: 33.5335, lng: -82.1307 },
+            { city: 'Davidson', state: 'NC', lat: 35.4993, lng: -80.8487 },
+            { city: 'Brevard', state: 'NC', lat: 35.2334, lng: -82.7343 }
         ];
         try {
             const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
