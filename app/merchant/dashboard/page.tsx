@@ -15,7 +15,9 @@ import OperationalSettings from "./OperationalSettings";
 import SmartOperations from "./SmartOperations";
 import MerchantAnalytics from "./MerchantAnalytics";
 import InventoryManager from "./InventoryManager";
+import CustomerPulse from "./CustomerPulse";
 import MenuRow from "./MenuRow";
+
 
 
 import { MOUNT_AIRY_RESTAURANTS } from "@/lib/demo-data";
@@ -319,7 +321,10 @@ export default async function MerchantDashboard({
                     restaurantName={restaurant.name} 
                 />
 
+                <CustomerPulse restaurantId={restaurant.id} />
+
                 <InventoryManager
+
                     restaurantId={restaurant.id}
                     menuItems={restaurant.menuItems || []}
                     outOfStockIngredients={restaurant.outOfStockIngredients || []}

@@ -722,3 +722,27 @@ export async function updateAutoPilotSettings(restaurantId: string, enabled: boo
         return { error: e.message };
     }
 }
+
+import { analyzeMerchantSentiment } from "@/lib/customerPulse";
+
+export async function getMerchantSentiment(restaurantId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { data: reviews, error } = await supabase
+            .from('Review')
+            .select('comment, rating')
+            .eq('restaurantId', restaurantId)
+            .eq('type', 'RESTAURANT')
+            .limit(20);
+
+        if (error) throw error;
+
+        const analysis = await analyzeMerchantSentiment(reviews || []);
+        return { success: true, analysis };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
