@@ -56,7 +56,20 @@ export default function MenuRow({ item, outOfStockIngredients }: MenuRowProps) {
 
             </div>
             <div className="text-right">
-                <p className="font-bold text-xl">${Number(item.price).toFixed(2)}</p>
+                <div className="flex flex-col items-end">
+                    {item.saleUntil && new Date(item.saleUntil) > new Date() ? (
+                        <>
+                            <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 bg-emerald-500/10 px-2 py-0.5 rounded">Flash Sale</p>
+                            <div className="flex items-center gap-2">
+                                <span className="text-slate-500 line-through text-sm font-bold">${Number(item.originalPrice || item.price * 1.15).toFixed(2)}</span>
+                                <p className="font-bold text-2xl text-white">${Number(item.price).toFixed(2)}</p>
+                            </div>
+                        </>
+                    ) : (
+                        <p className="font-bold text-2xl">${Number(item.price).toFixed(2)}</p>
+                    )}
+                </div>
+
                 <div className="flex flex-col items-end gap-1 mt-1">
                     <div className="flex gap-4 mt-1 items-center">
                         <button 

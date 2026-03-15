@@ -781,3 +781,86 @@ export async function getMerchantBriefing(restaurantId: string) {
     }
 }
 
+import { suggestMenuOptimizations } from "@/lib/merchantAI";
+
+export async function getMenuOptimizations(restaurantId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('id, menuItems:MenuItem(*), orders:Order(id, status, items:OrderItem(*))')
+            .eq('id', restaurantId)
+            .single();
+
+        if (!restaurant) throw new Error("Restaurant not found");
+
+        const optimizations = await suggestMenuOptimizations(restaurant.menuItems || [], restaurant.orders || []);
+        return { success: true, optimizations };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function startFlashSale(itemId: string, discountPercent: number, hours: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { data: item } = await supabase.from('MenuItem').select('*').eq('id', itemId).single();
+        if (!item) throw new Error("Item not found");
+
+        const saleUntil = new Date();
+        saleUntil.setHours(saleUntil.getHours() + hours);
+
+        const newPrice = Number(item.price) * (1 - (discountPercent / 100));
+
+        const { error } = await supabase
+            .from('MenuItem')
+            .update({
+                originalPrice: item.price,
+                price: newPrice,
+                saleUntil: saleUntil.toISOString(),
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', itemId);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function sendKitchenReassurance(orderId: string, message: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { data: order } = await supabase.from('Order').select('userId, id').eq('id', orderId).single();
+        if (!order) throw new Error("Order not found");
+
+        const { error } = await supabase
+            .from('Notification')
+            .insert({
+                userId: order.userId,
+                title: "Message from the Kitchen",
+                message: message,
+                type: 'ORDER_UPDATE',
+                orderId: order.id,
+                isRead: false
+            });
+
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+

@@ -63,3 +63,57 @@ export async function generateMerchantBriefing(data: {
         };
     }
 }
+
+export type MenuOptimization = {
+    itemId: string;
+    itemName: string;
+    reason: string;
+    suggestion: string;
+    suggestedPrice: number;
+};
+
+export async function suggestMenuOptimizations(menuItems: any[], orders: any[]): Promise<MenuOptimization[]> {
+    if (!GEMINI_API_KEY || menuItems.length === 0) return [];
+
+    const itemPerformance = menuItems.map(item => {
+        const count = orders.filter(o => o.items?.some((i: any) => i.menuItemId === item.id)).length;
+        return { id: item.id, name: item.name, price: item.price, orders: count };
+    });
+
+    const prompt = `
+    You are a Menu Strategy AI for a delivery app.
+    Based on the following item performance, suggest 2 items that could benefit from price adjustments or promotions.
+    Items: ${JSON.stringify(itemPerformance)}
+    
+    Respond ENTIRELY in valid JSON:
+    [
+        {
+            "itemId": "string",
+            "itemName": "string",
+            "reason": "e.g., High price but low orders compared to others",
+            "suggestion": "e.g., Drop price by $1 to attract new customers",
+            "suggestedPrice": number
+        }
+    ]
+    `;
+
+    try {
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                })
+            }
+        );
+        const json = await response.json();
+        return JSON.parse(json.candidates[0].content.parts[0].text);
+    } catch (e) {
+        console.error("[Merchant AI] Optimization Error:", e);
+        return [];
+    }
+}
+

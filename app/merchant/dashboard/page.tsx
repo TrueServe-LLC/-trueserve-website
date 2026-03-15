@@ -18,7 +18,10 @@ import InventoryManager from "./InventoryManager";
 import CustomerPulse from "./CustomerPulse";
 import MorningBriefing from "./MorningBriefing";
 import DriverPerformance from "./DriverPerformance";
+import MenuArchitect from "./MenuArchitect";
+import LiveReassurance from "./LiveReassurance";
 import MenuRow from "./MenuRow";
+
 
 
 
@@ -322,6 +325,8 @@ export default async function MerchantDashboard({
                     capacityThreshold={restaurant.capacityThreshold || 10}
                 />
 
+                <MenuArchitect restaurantId={restaurant.id} />
+
                 <MerchantAnalytics 
                     orders={restaurant.orders || []} 
                     restaurantName={restaurant.name} 
@@ -437,7 +442,13 @@ export default async function MerchantDashboard({
                                                 <span>📍</span> Track Driver
                                             </a>
                                         )}
+
+                                        <LiveReassurance 
+                                            orderId={order.id} 
+                                            customerName={order.user.name} 
+                                        />
                                     </div>
+
 
                                     {!(order as any).isRefunded && (
                                         <form action={async () => {
