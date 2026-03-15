@@ -42,10 +42,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const address = formData.get("address") as string;
     const lat = formData.get("lat") as string;
     const lng = formData.get("lng") as string;
+    const hasSignedAgreement = formData.get("hasSignedAgreement") === "true";
 
-    if (!name || !email || !vehicleType || !vehicleMake || !vehicleModel || !vehicleColor || !licensePlate || !phone || !idDocument || !insuranceDocument || !registrationDocument || !dob || !address) {
-        return { message: "Please fill in all fields, including vehicle details and documents.", error: true };
+    if (!name || !email || !vehicleType || !vehicleMake || !vehicleModel || !vehicleColor || !licensePlate || !phone || !idDocument || !insuranceDocument || !registrationDocument || !dob || !address || !hasSignedAgreement) {
+        return { message: "Please fill in all fields and sign the agreement.", error: true };
     }
+
+
 
     // Mock Verification
     console.log(`[DriverApp] Docs Received for ${email}: File(${idDocument.name}, ${idDocument.size} bytes)`);
@@ -197,8 +200,11 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 vehicleVerified: false, // Always false on signup, admin must approve
                 insuranceDocumentUrl: insuranceUrl,
                 registrationDocumentUrl: registrationUrl,
+                hasSignedAgreement: true,
+                agreementSignedAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             }, { onConflict: 'userId' });
+
 
         if (driverError) {
             throw driverError;

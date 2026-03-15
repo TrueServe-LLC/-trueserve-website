@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import AddItemForm from "./AddItemForm";
 import MenuScanner from "./MenuScanner";
 import POSIntegration from "./POSIntegration";
-import { updateOrderStatus, refundOrder, createStripeAccount } from "../actions";
+import { updateOrderStatus, refundOrder, createStripeAccount, toggleBusyMode, toggleItemStock } from "../actions";
 import LogoutButton from "@/components/LogoutButton";
 import StoreBannerUpload from "./StoreBannerUpload";
 import WelcomeModal from "./WelcomeModal";
+import MerchantRealtime from "@/components/MerchantRealtime";
+
 import { MOUNT_AIRY_RESTAURANTS } from "@/lib/demo-data";
 
 export const dynamic = "force-dynamic";
@@ -165,7 +167,9 @@ export default async function MerchantDashboard({
 
     return (
         <div className="min-h-screen">
+            <MerchantRealtime restaurantId={restaurant.id} />
             <WelcomeModal restaurantName={restaurant.name} />
+
             <header className="md:hidden flex p-4 border-b border-white/5 justify-between items-center sticky top-0 bg-black/80 backdrop-blur-2xl z-50">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">M</div>
@@ -177,8 +181,19 @@ export default async function MerchantDashboard({
                         <p className="text-sm font-black text-white leading-tight truncate max-w-[120px]">{restaurant.name}</p>
                     </div>
                 </div>
-                <LogoutButton />
+                <div className="flex items-center gap-2">
+                    <form action={async () => {
+                        "use server";
+                        await toggleBusyMode(restaurant.id, restaurant.isBusy);
+                    }}>
+                        <button className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-all ${restaurant.isBusy ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+                            {restaurant.isBusy ? 'Busy Mode: ON' : 'Busy Mode: OFF'}
+                        </button>
+                    </form>
+                    <LogoutButton />
+                </div>
             </header>
+
 
             <nav className="hidden md:flex sticky top-0 z-50 backdrop-blur-lg bg-black/40 border-b border-white/10 px-6 py-4">
                 <div className="container flex justify-between items-center">
@@ -195,8 +210,17 @@ export default async function MerchantDashboard({
                         <span className="px-4 py-1.5 bg-white/5 text-white border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest shadow-inner">
                             {restaurant.name}
                         </span>
+                        <form action={async () => {
+                            "use server";
+                            await toggleBusyMode(restaurant.id, restaurant.isBusy);
+                        }}>
+                            <button className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${restaurant.isBusy ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+                                {restaurant.isBusy ? 'System Paused' : 'Accepting Orders'}
+                            </button>
+                        </form>
                         <LogoutButton />
                     </div>
+
                 </div>
             </nav>
 
@@ -523,7 +547,18 @@ export default async function MerchantDashboard({
                             <div className="text-right">
                                 <p className="font-bold text-xl">${Number(item.price).toFixed(2)}</p>
                                 <div className="flex flex-col items-end gap-1 mt-1">
-                                    <button className="text-xs text-primary hover:underline">Edit Item</button>
+                                    <div className="flex gap-3 mt-1">
+                                        <button className="text-xs text-slate-500 hover:text-white transition-colors">Edit</button>
+                                        <form action={async () => {
+                                            "use server";
+                                            await toggleItemStock(item.id, item.isAvailable);
+                                        }}>
+                                            <button className={`text-xs font-bold uppercase tracking-wider ${item.isAvailable === false ? 'text-emerald-400' : 'text-red-400 hover:underline'}`}>
+                                                {item.isAvailable === false ? 'Restock' : 'Mark Sold Out'}
+                                            </button>
+                                        </form>
+                                    </div>
+
                                     {item.status === 'FLAGGED' && (
                                         <p className="text-[10px] text-orange-400 italic font-semibold">Admin flagged this item: Please review.</p>
                                     )}

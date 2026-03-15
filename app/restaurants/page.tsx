@@ -29,7 +29,9 @@ interface Restaurant {
     deal?: { type: string; description: string };
     openTime?: string;
     closeTime?: string;
+    isBusy?: boolean;
 }
+
 
 // ... (in getRestaurants function)
 
@@ -221,8 +223,10 @@ async function getRestaurants(
                 priceLevel: "$".repeat((seed % 3) + 1),
                 openTime: r.openTime,
                 closeTime: r.closeTime,
+                isBusy: !!r.isBusy,
                 deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: seed % 2 === 0 ? 'Spend $20, Save $5' : 'Buy 1 Get 1 Free' } : undefined
             };
+
         });
 
         let finalRestaurants = mappedRestaurants;
@@ -695,7 +699,13 @@ export default async function RestaurantFinder({
                                         <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-4 relative border border-white/5">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                            {rest.isBusy && (
+                                                <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
                                             <div className="absolute bottom-4 left-4 right-4">
+
                                                 <div className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black shadow-2xl inline-block mb-2 max-w-full truncate">
                                                     {rest.deal?.description}
                                                 </div>
@@ -718,10 +728,16 @@ export default async function RestaurantFinder({
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col">
                                         <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative shrink-0">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
+                                            {rest.isBusy && (
+                                                <div className="absolute top-2 left-2 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
+                                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
                                                 {rest.prepTime}
                                             </div>
                                         </div>
+
                                         <div className="px-1 w-full">
                                             <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
                                             <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
@@ -744,10 +760,16 @@ export default async function RestaurantFinder({
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[260px] md:min-w-[300px] group flex flex-col snap-center">
                                         <div className="h-40 md:h-44 w-full rounded-[1.5rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            <div className="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded-[0.5rem] text-[11px] font-black drop-shadow-xl flex items-center gap-1">
+                                            <div className="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded-[0.5rem] text-[11px] font-black drop-shadow-xl flex items-center gap-1 z-10">
                                                 <span>★</span> {rest.rating}
                                             </div>
+                                            {rest.isBusy && (
+                                                <div className="absolute top-3 right-3 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
                                         </div>
+
                                         <div className="px-1 w-full">
                                             <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
                                             <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
@@ -772,10 +794,16 @@ export default async function RestaurantFinder({
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col snap-center">
                                         <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            {rest.isBusy && (
+                                                <div className="absolute top-3 left-3 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
                                             <div className="absolute bottom-3 right-3 bg-secondary text-black px-3 py-1.5 rounded-[0.75rem] text-[10px] font-black uppercase tracking-widest drop-shadow-xl">
                                                 Local Favorite
                                             </div>
                                         </div>
+
                                         <div className="px-1 w-full">
                                             <h3 className="text-white font-black text-base mb-1 group-hover:text-secondary transition-colors truncate w-full">{rest.name}</h3>
                                             <div className="flex items-center gap-2 text-[12px] text-slate-400 font-bold w-full">
@@ -839,7 +867,13 @@ export default async function RestaurantFinder({
                                                 initialIsFavorited={favorites.includes(rest.id)}
                                             />
                                         )}
+                                        {rest.isBusy && (
+                                            <div className="bg-red-600 text-white text-[9px] font-black px-2 py-1.5 rounded-lg uppercase tracking-widest shadow-xl animate-pulse text-center">
+                                                System Busy
+                                            </div>
+                                        )}
                                     </div>
+
 
                                 </div>
 

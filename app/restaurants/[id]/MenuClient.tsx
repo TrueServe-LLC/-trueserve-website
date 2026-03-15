@@ -158,8 +158,25 @@ export default function MenuClient({
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start md:mt-0 -mt-6">
+            {/* Busy Mode Alert */}
+            {restaurant.isBusy && (
+                <div className="col-span-1 md:col-span-3 bg-red-500/10 border border-red-500/20 p-6 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse mb-4">
+                    <div className="flex items-center gap-6">
+                        <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center text-3xl shadow-lg border border-red-500/30">🔥</div>
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-black text-white mb-1 tracking-tight">Operating at Capacity</h2>
+                            <p className="text-slate-400 text-sm font-medium">This restaurant is currently overwhelmed and has paused new orders to maintain quality.</p>
+                        </div>
+                    </div>
+                    <div className="px-6 py-2 bg-red-500/20 rounded-full border border-red-500/30 text-red-500 text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                        Paused Temporarily
+                    </div>
+                </div>
+            )}
+
             {/* Menu Section */}
-            <div className="md:col-span-2">
+            <div className={`md:col-span-2 ${restaurant.isBusy ? 'opacity-40 grayscale pointer-events-none transition-all' : ''}`}>
+
                 {/* Mobile Tabs */}
                 <div className="md:hidden flex gap-8 mb-6 border-b border-white/10 pb-0">
                     <button className="text-secondary font-black relative pb-3 after:absolute after:bottom-[-1px] after:left-0 after:w-full after:h-0.5 after:bg-secondary">
@@ -408,8 +425,9 @@ export default function MenuClient({
                                         <CheckoutForm
                                             totalAmount={Math.max(0, totalPrice + tip - pointsDiscountAmount)}
                                             onSuccess={handlePaymentSuccess}
-                                            disabled={!orderingEnabled || !deliveryAddress}
+                                            disabled={!orderingEnabled || !deliveryAddress || restaurant.isBusy}
                                         />
+
                                     </Elements>
                                 </>
                             ) : orderingEnabled && (
@@ -536,8 +554,9 @@ export default function MenuClient({
                                             <CheckoutForm
                                                 totalAmount={Math.max(0, totalPrice + tip - pointsDiscountAmount)}
                                                 onSuccess={handlePaymentSuccess}
-                                                disabled={!orderingEnabled || !deliveryAddress}
+                                                disabled={!orderingEnabled || !deliveryAddress || restaurant.isBusy}
                                             />
+
                                         </Elements>
                                     ) : (
                                         <button disabled className="btn btn-primary w-full opacity-50 cursor-not-allowed">

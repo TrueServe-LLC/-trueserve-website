@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createDriverPayout } from "../../actions";
+import { createDriverPayout, createDriverStripeAccount } from "../../actions";
+
 
 interface DriverEarningsClientProps {
     driver: any;
@@ -41,6 +42,17 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
     const totalWeek = weeklyData.reduce((acc, curr) => acc + curr.amount, 0);
 
     const handleCashOut = async () => {
+        if (!driver.stripeAccountId) {
+            setLoading(true);
+            try {
+                await createDriverStripeAccount();
+            } catch (e) {
+                setMessage("Failed to start Stripe connection.");
+                setLoading(false);
+            }
+            return;
+        }
+
         if (!confirm("Are you sure you want to transfer your balance to your bank account?")) return;
         setLoading(true);
         setMessage("");
@@ -49,7 +61,7 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
             if (result.error) setMessage("Error: " + result.error);
             else {
                 setMessage("Payout successful! Funds are on the way.");
-                window.location.reload(); // Refresh to show 0 balance
+                setTimeout(() => window.location.reload(), 2000);
             }
         } catch (e: any) {
             setMessage("Payout failed.");
@@ -57,6 +69,7 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
             setLoading(false);
         }
     };
+
 
     return (
         <div className="max-w-4xl mx-auto animate-fade-in space-y-8">
@@ -73,14 +86,15 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
                     {message && <p className="text-[10px] text-emerald-400 font-bold mt-2 animate-bounce">{message}</p>}
                     <button
                         onClick={handleCashOut}
-                        disabled={loading || Number(driver.balance) <= 0}
-                        className={`w-full md:w-auto btn btn-primary h-12 mt-4 font-black text-xs uppercase tracking-widest px-8 shadow-lg shadow-primary/20 transition-all ${loading ? 'opacity-50 animate-pulse' : ''}`}
+                        disabled={loading || (Number(driver.balance) <= 0 && !!driver.stripeAccountId)}
+                        className={`w-full md:w-auto btn ${!driver.stripeAccountId ? 'bg-blue-600 hover:bg-blue-700' : 'btn-primary'} h-12 mt-4 font-black text-xs uppercase tracking-widest px-8 shadow-lg shadow-primary/20 transition-all ${loading ? 'opacity-50 animate-pulse' : ''}`}
                     >
-                        {loading ? 'Processing...' : 'Cash Out Now'}
+                        {loading ? 'Processing...' : (!driver.stripeAccountId ? 'Connect Stripe to Cash Out' : 'Cash Out Now')}
                     </button>
                     {!driver.stripeAccountId && (
-                        <p className="text-[9px] text-red-400 mt-2 font-black uppercase tracking-widest">⚠️ Connect Stripe in Account to Cash Out</p>
+                        <p className="text-[9px] text-blue-400 mt-2 font-black uppercase tracking-widest">Secure Identity Verification Required</p>
                     )}
+
                 </div>
             </header>
 

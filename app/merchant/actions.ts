@@ -467,3 +467,43 @@ export async function createStripeAccount(providedId?: string | FormData) {
         throw e;
     }
 }
+
+export async function toggleBusyMode(restaurantId: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({ isBusy: !currentStatus, updatedAt: new Date().toISOString() })
+            .eq('id', restaurantId)
+            .eq('ownerId', user.id);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function toggleItemStock(itemId: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { error } = await supabase
+            .from('MenuItem')
+            .update({ isAvailable: !currentStatus, updatedAt: new Date().toISOString() })
+            .eq('id', itemId);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+

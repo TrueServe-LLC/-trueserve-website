@@ -26,8 +26,14 @@ async function getRestaurant(id: string) {
             return null;
         }
 
-        // Filter valid menu items
-        restaurant.menuItems = (restaurant.menuItems || []).filter((item: any) => item.status === "APPROVED");
+        // Filter valid menu items (only APPROVED and AVAILABLE)
+        restaurant.menuItems = (restaurant.menuItems || []).filter((item: any) => 
+            item.status === "APPROVED" && (item.isAvailable !== false)
+        );
+
+        // Explicitly cast isBusy to boolean for client use
+        restaurant.isBusy = !!restaurant.isBusy;
+
 
         return restaurant;
     } catch (e) {
