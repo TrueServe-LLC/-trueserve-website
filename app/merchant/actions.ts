@@ -746,3 +746,38 @@ export async function getMerchantSentiment(restaurantId: string) {
         return { error: e.message };
     }
 }
+
+import { generateMerchantBriefing } from "@/lib/merchantAI";
+
+export async function getMerchantBriefing(restaurantId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select(`
+                name, 
+                outOfStockIngredients,
+                orders:Order(id, status, createdAt),
+                reviews:Review(rating, comment)
+            `)
+            .eq('id', restaurantId)
+            .single();
+
+        if (!restaurant) throw new Error("Restaurant not found");
+
+        const briefing = await generateMerchantBriefing({
+            restaurantName: restaurant.name,
+            recentOrders: (restaurant.orders as any[]) || [],
+            reviews: (restaurant.reviews as any[]) || [],
+            outOfStock: (restaurant.outOfStockIngredients as string[]) || []
+        });
+
+        return { success: true, briefing };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+

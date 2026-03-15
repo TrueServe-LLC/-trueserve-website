@@ -16,7 +16,10 @@ import SmartOperations from "./SmartOperations";
 import MerchantAnalytics from "./MerchantAnalytics";
 import InventoryManager from "./InventoryManager";
 import CustomerPulse from "./CustomerPulse";
+import MorningBriefing from "./MorningBriefing";
+import DriverPerformance from "./DriverPerformance";
 import MenuRow from "./MenuRow";
+
 
 
 
@@ -38,15 +41,15 @@ async function getMerchantData(userId: string) {
                 menuItems:MenuItem(*),
                 schedules:MerchantSchedule(*),
                 orders:Order(
-
-
                     *,
                     user:User(*),
+                    driver:Driver(*, user:User(*)),
                     items:OrderItem(
                         *,
                         menuItem:MenuItem(*)
                     )
                 )
+
             `)
             .eq('ownerId', userId)
             .maybeSingle();
@@ -264,6 +267,9 @@ export default async function MerchantDashboard({
                     </div>
                 </div>
 
+                <MorningBriefing restaurantId={restaurant.id} />
+
+
                 {/* Stripe Connect Banner (If not connected) */}
                 {!restaurant.stripeAccountId && (
                     <div className="mb-12 p-8 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
@@ -323,7 +329,10 @@ export default async function MerchantDashboard({
 
                 <CustomerPulse restaurantId={restaurant.id} />
 
+                <DriverPerformance orders={restaurant.orders || []} />
+
                 <InventoryManager
+
 
                     restaurantId={restaurant.id}
                     menuItems={restaurant.menuItems || []}
@@ -360,7 +369,22 @@ export default async function MerchantDashboard({
                                                 {(order.status as any) === 'READY_FOR_PICKUP' ? 'PICKUP READY' : order.status}
                                             </span>
                                             {(order as any).isRefunded && <span className="text-[10px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded font-bold uppercase">Refunded</span>}
+                                            {(() => {
+                                                const waitTime = (Date.now() - new Date(order.createdAt).getTime()) / 60000;
+                                                const isStressed = waitTime > 8 && order.status !== 'DELIVERED' && order.status !== 'CANCELLED';
+                                                const noDriver = !order.driverId && order.status === 'READY_FOR_PICKUP';
+                                                
+                                                if (isStressed || noDriver) {
+                                                    return (
+                                                        <span className="text-[10px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded font-black uppercase flex items-center gap-1 animate-pulse border border-orange-500/20">
+                                                            <span>⌛</span> {noDriver ? 'Waiting for Courier' : `Delayed +${Math.floor(waitTime)}m`}
+                                                        </span>
+                                                    );
+                                                }
+                                                return null;
+                                            })()}
                                         </div>
+
                                         <h3 className="font-bold text-lg">{order.user.name}</h3>
                                         <p className="text-xs text-slate-500">LogKey: <span className="text-primary font-mono">{order.posReference}</span></p>
                                     </div>
