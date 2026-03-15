@@ -30,10 +30,17 @@ ADD COLUMN IF NOT EXISTS "saleUntil" TIMESTAMP WITH TIME ZONE;
 
 COMMENT ON COLUMN "MenuItem"."isAvailable" IS 'When false, the item is hidden or shown as out of stock.';
 COMMENT ON COLUMN "MenuItem"."ingredients" IS 'List of key ingredients to enable smart inventory dependencies';
-COMMENT ON COLUMN "MenuItem"."originalPrice" IS 'Stores the price before a flash sale was applied';
-COMMENT ON COLUMN "MenuItem"."saleUntil" IS 'When the current discount or flash sale expires';
+COMMENT ON COLUMN "MenuItem"."originalPrice" IS 'Stores the price before a merchant-funded flash sale was applied';
+COMMENT ON COLUMN "MenuItem"."saleUntil" IS 'When the merchant-funded discount expires';
 
--- 3. ENHANCE ORDER TABLE (Cancellation Tracking)
+-- 3. ENHANCE ORDERITEM TABLE (Discount Tracking)
+ALTER TABLE "OrderItem"
+ADD COLUMN IF NOT EXISTS "merchantDiscount" DECIMAL(10,2) DEFAULT 0.00;
+
+COMMENT ON COLUMN "OrderItem"."merchantDiscount" IS 'The amount of discount absorbed by the merchant for this item (Pilot Audit)';
+
+-- 4. ENHANCE ORDER TABLE (Cancellation Tracking)
+
 ALTER TABLE "Order"
 ADD COLUMN IF NOT EXISTS "cancelReason" TEXT,
 ADD COLUMN IF NOT EXISTS "cancelComment" TEXT;

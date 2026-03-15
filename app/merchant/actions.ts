@@ -810,31 +810,40 @@ export async function startFlashSale(itemId: string, discountPercent: number, ho
     if (!user) return { error: "Unauthorized" };
 
     try {
-        const { data: item } = await supabase.from('MenuItem').select('*').eq('id', itemId).single();
-        if (!item) throw new Error("Item not found");
+        // Secure check: Ensure item belongs to a restaurant owned by this user
+        const { data: item, error: fetchError } = await supabase
+            .from('MenuItem')
+            .select('*, restaurant:Restaurant(ownerId)')
+            .eq('id', itemId)
+            .single();
+
+        if (fetchError || !item) throw new Error("Item not found");
+        if ((item.restaurant as any).ownerId !== user.id) throw new Error("Unauthorized: You do not own this restaurant");
 
         const saleUntil = new Date();
         saleUntil.setHours(saleUntil.getHours() + hours);
 
-        const newPrice = Number(item.price) * (1 - (discountPercent / 100));
+        const currentPrice = Number(item.originalPrice || item.price);
+        const newPrice = currentPrice * (1 - (discountPercent / 100));
 
-        const { error } = await supabase
+        const { error: updateError } = await supabase
             .from('MenuItem')
             .update({
-                originalPrice: item.price,
+                originalPrice: currentPrice,
                 price: newPrice,
                 saleUntil: saleUntil.toISOString(),
                 updatedAt: new Date().toISOString()
             })
             .eq('id', itemId);
 
-        if (error) throw error;
+        if (updateError) throw updateError;
         revalidatePath('/merchant/dashboard');
         return { success: true };
     } catch (e: any) {
         return { error: e.message };
     }
 }
+
 
 export async function sendKitchenReassurance(orderId: string, message: string) {
     const supabase = await createClient();

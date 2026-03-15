@@ -80,9 +80,11 @@ export default function MenuArchitect({ restaurantId }: MenuArchitectProps) {
                 </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/5 text-[10px] text-slate-500 italic">
-                * Our AI analyzes order frequency vs. price points to maximize your revenue during slow periods.
+            <div className="mt-8 pt-6 border-t border-white/5 text-[10px] text-slate-500 italic flex justify-between items-center">
+                <span>* Our AI analyzes order frequency vs. price points to maximize your revenue during slow periods.</span>
+                <span className="font-black text-primary/40 uppercase tracking-widest">Merchant Funded Pilot</span>
             </div>
+
         </div>
     );
 }
