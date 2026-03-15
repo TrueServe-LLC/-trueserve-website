@@ -143,6 +143,38 @@ export async function approveDriver(id: string) {
     }
 }
 
+export async function rejectDriver(id: string) {
+    try {
+        const { data: driver, error: fetchError } = await supabaseAdmin
+            .from('Driver')
+            .select('user:User(email, name)')
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !driver) throw new Error("Driver not found");
+
+        const { error: statusError } = await supabaseAdmin
+            .from('Driver')
+            .update({ status: "REJECTED", vehicleVerified: false, updatedAt: new Date().toISOString() })
+            .eq('id', id);
+
+        if (statusError) throw statusError;
+
+        await sendEmail(
+            (driver.user as any).email,
+            "Driver Application Update - TrueServe",
+            `Hi ${(driver.user as any).name.split(' ')[0]},\n\nWe have reviewed your application to drive with TrueServe. At this time, we are unable to move forward with your onboarding.\n\nThank you for your interest.\n\nBest,\nThe TrueServe Team`
+        );
+
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to reject driver:", e);
+        return { success: false, error: e.message || "Failed to reject driver." };
+    }
+}
+
+
 export async function connectStripe(_formData?: FormData) {
     const session = (await cookies()).get("admin_session");
     if (!session) {

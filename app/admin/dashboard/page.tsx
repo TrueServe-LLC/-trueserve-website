@@ -238,10 +238,13 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                             <h3 className="font-bold text-lg">{driver.user.name}</h3>
                                             <p className="text-sm text-slate-400 font-medium">{driver.user.email}</p>
                                             <div className="flex items-center gap-2 mt-2">
-                                                <span className="text-[10px] text-slate-500 uppercase tracking-widest font-black">{driver.vehicleType}</span>
-                                                <span className="text-slate-700 text-[10px]">•</span>
                                                 <span className="text-[10px] text-slate-500 font-mono tracking-tight">{driver.backgroundCheckId || "ID_PENDING"}</span>
+                                                <span className="text-slate-700 text-[10px]">•</span>
+                                                <span className={`text-[10px] font-black uppercase tracking-widest ${driver.hasSignedAgreement ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                    Agreement: {driver.hasSignedAgreement ? 'SIGNED' : 'NOT SIGNED'}
+                                                </span>
                                             </div>
+
                                         </div>
                                         <div className="flex flex-col items-end gap-2">
                                             <span className="text-xs px-2 py-1 rounded font-bold uppercase bg-yellow-500/20 text-yellow-400">
@@ -264,21 +267,39 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                                     <div className="flex flex-wrap gap-2 mt-6">
                                         <form action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }}>
-                                            <button
-                                                disabled={driver.backgroundCheckStatus !== 'CLEARED'}
-                                                className="btn btn-primary text-[10px] py-2 px-4 shadow-none disabled:opacity-40 disabled:grayscale font-black uppercase tracking-widest"
-                                            >
-                                                Approve Driver
-                                            </button>
-                                        </form>
+                                             <button
+                                                 disabled={driver.backgroundCheckStatus !== 'CLEARED' || !driver.hasSignedAgreement}
+                                                 className="btn btn-primary text-[10px] py-2 px-4 shadow-none disabled:opacity-40 disabled:grayscale font-black uppercase tracking-widest"
+                                             >
+                                                 Approve Driver
+                                             </button>
+                                         </form>
+                                         <form action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }}>
+                                             <button
+                                                 className="btn btn-outline text-[10px] py-2 px-4 border-red-500/50 text-red-400 hover:bg-red-500/10 font-black uppercase tracking-widest"
+                                             >
+                                                 Reject
+                                             </button>
+                                         </form>
+
                                         <form action={async () => { "use server"; const { refreshBackgroundCheck } = await import('../actions'); await refreshBackgroundCheck(driver.id); }}>
                                             <button type="submit" className="btn btn-outline text-[10px] py-1.5 px-3 border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
                                                 Refresh Check
                                             </button>
                                         </form>
-                                        <button className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-all">
-                                            View Docs
-                                        </button>
+                                        <div className="flex gap-2">
+                                            {driver.insuranceDocumentUrl && (
+                                                <a href={driver.insuranceDocumentUrl} target="_blank" className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
+                                                    Insurance
+                                                </a>
+                                            )}
+                                            {driver.registrationDocumentUrl && (
+                                                <a href={driver.registrationDocumentUrl} target="_blank" className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
+                                                    Registration
+                                                </a>
+                                            )}
+                                        </div>
+
                                     </div>
                                 </div>
                             ))}
