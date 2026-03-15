@@ -183,6 +183,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             console.log(`[DriverApp] 🟡 AI Sent to Manual Review for ${email}. Reason: Scans failed automated compliance checks.`);
         }
 
+        const aiMetadata = {
+            idScan,
+            insuranceScan,
+            registrationScan,
+            scannedAt: new Date().toISOString()
+        };
+
         const { error: driverError } = await supabaseAdmin
             .from('Driver')
             .upsert({
@@ -202,8 +209,10 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 registrationDocumentUrl: registrationUrl,
                 hasSignedAgreement: true,
                 agreementSignedAt: new Date().toISOString(),
+                aiMetadata: aiMetadata,
                 updatedAt: new Date().toISOString()
             }, { onConflict: 'userId' });
+
 
 
         if (driverError) {

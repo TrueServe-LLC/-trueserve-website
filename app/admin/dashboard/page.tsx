@@ -363,7 +363,31 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                                     }`} />
                                                 Background: {driver.backgroundCheckStatus || "PENDING"}
                                             </div>
+
+                                            {driver.aiMetadata && (
+                                                <div className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">AI Audit Log</span>
+                                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                                            driver.aiMetadata.idScan?.isValid ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-500'
+                                                        }`}>
+                                                            Confidence: {(driver.aiMetadata.idScan?.confidence * 100 || 0).toFixed(0)}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div className="text-[9px]">
+                                                            <p className="text-slate-500 uppercase font-black tracking-tighter">Extracted Name</p>
+                                                            <p className="text-white font-bold truncate">{driver.aiMetadata.idScan?.extractedData?.name || "???"}</p>
+                                                        </div>
+                                                        <div className="text-[9px]">
+                                                            <p className="text-slate-500 uppercase font-black tracking-tighter">Doc Type</p>
+                                                            <p className="text-white font-bold">{driver.aiMetadata.idScan?.extractedData?.documentType || "???"}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
+
                                     </div>
 
                                     <div className="flex flex-wrap gap-2 mt-6">

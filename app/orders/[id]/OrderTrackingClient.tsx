@@ -165,6 +165,21 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         doc.save(`receipt_${currentOrder.id}.pdf`);
     };
 
+    const handleCancelOrder = async () => {
+        if (!confirm("Are you sure you want to cancel your order?")) return;
+        try {
+            const { error } = await supabase
+                .from('Order')
+                .update({ status: 'CANCELLED' })
+                .eq('id', currentOrder.id);
+            if (error) alert("Failed to cancel: " + error.message);
+            else window.location.reload();
+        } catch (e) {
+            alert("An error occurred.");
+        }
+    };
+
+
     return (
         <div className="md:space-y-8 flex flex-col min-h-[calc(100vh-80px)] md:min-h-0 bg-slate-950">
             {/* Map Section - Full Bleed on Mobile */}
@@ -371,10 +386,20 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
                         <button
                             onClick={handleDownloadReceipt}
-                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-xs"
+                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-[10px] font-black uppercase tracking-widest h-10"
                         >
                             Download PDF Receipt
                         </button>
+
+                        {currentOrder.status === 'PENDING' && (
+                            <button
+                                onClick={handleCancelOrder}
+                                className="w-full btn mt-2 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest h-10"
+                            >
+                                Cancel Order
+                            </button>
+                        )}
+
 
                         {currentOrder.status === 'DELIVERED' && currentOrder.driverId && (
                             <button
