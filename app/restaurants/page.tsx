@@ -29,7 +29,9 @@ interface Restaurant {
     deal?: { type: string; description: string };
     openTime?: string;
     closeTime?: string;
+    isBusy?: boolean;
 }
+
 
 // ... (in getRestaurants function)
 
@@ -59,10 +61,21 @@ async function getRestaurants(
     let searchCity = "";
 
     // Define fallbacks (mocks) for demo/offline
+    // State-of-the-art service locations expansion
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
         { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], lat: 35.0833, lng: -80.8872 },
-        { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 }
+        { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 },
+        { city: 'Greenville', state: 'SC', zipPrefixes: ['29601', '29605', '29607', '29609', '29611', '29617'], lat: 34.8526, lng: -82.3940 },
+        { city: 'Simpsonville', state: 'SC', zipPrefixes: ['29680', '29681'], lat: 34.7371, lng: -82.2537 },
+        { city: 'Spartanburg', state: 'SC', zipPrefixes: ['29301', '29302', '29303', '29306', '29307'], lat: 34.9496, lng: -81.9320 },
+        { city: 'Clemson', state: 'SC', zipPrefixes: ['29631', '29634'], lat: 34.6834, lng: -82.8374 },
+        { city: 'Greer', state: 'SC', zipPrefixes: ['29650', '29651'], lat: 34.8956, lng: -82.2189 }, // GSP Airport area
+        { city: 'Athens', state: 'GA', zipPrefixes: ['30601', '30605', '30606', '30607'], lat: 33.9519, lng: -83.3576 },
+        { city: 'Marietta', state: 'GA', zipPrefixes: ['30008', '30060', '30062', '30064', '30066', '30067', '30068'], lat: 33.9526, lng: -84.5499 },
+        { city: 'Evans', state: 'GA', zipPrefixes: ['30809'], lat: 33.5335, lng: -82.1307 },
+        { city: 'Davidson', state: 'NC', zipPrefixes: ['28035', '28036'], lat: 35.4993, lng: -80.8487 },
+        { city: 'Brevard', state: 'NC', zipPrefixes: ['28712'], lat: 35.2334, lng: -82.7343 }
     ];
 
     let validLocations: any[] = fallbackMocks;
@@ -136,10 +149,17 @@ async function getRestaurants(
 
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
-            .select('*, MenuItem(name, description), Review(rating)')
+            .select(`
+                *,
+                MenuItem(name, description),
+                Review(rating),
+                schedules:MerchantSchedule(*),
+                orders:Order(id, status)
+            `)
             .match({ city: cityFilter, state: stateFilter })
             .eq('visibility', 'VISIBLE')
             .neq('name', 'Test Restaurant');
+
 
         if (error || !restaurants || restaurants.length === 0) {
             // No mock fallback for pilot launch
@@ -217,12 +237,49 @@ async function getRestaurants(
                 state: r.state,
                 address: r.address || `${r.city}, ${r.state}`,
                 deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
-                prepTime: `${15 + (seed % 20)}-${25 + (seed % 20)} min`,
+                // Smart Prep Time and Busy Logic
+                ...(() => {
+                    const now = new Date();
+                    const currentDay = now.getDay();
+                    const currentTime = now.toTimeString().slice(0, 8);
+                    
+                    let isBusy = !!r.isBusy;
+                    let extraBuffer = 0;
+                    
+                    // 1. Temporary Busy State
+                    if (r.busyUntil && new Date(r.busyUntil) > now) isBusy = true;
+                    
+                    // 2. Automated Schedules
+                    if (r.schedules && Array.isArray(r.schedules)) {
+                        for (const s of r.schedules) {
+                            if (s.isEnabled && s.dayOfWeek === currentDay && currentTime >= s.startTime && currentTime <= s.endTime) {
+                                if (s.action === 'PAUSE') isBusy = true;
+                                if (s.action === 'BUFFER') extraBuffer += (s.extraPrepTime || 0);
+                            }
+                        }
+                    }
+
+                    // 3. Auto-Pilot Load Check
+                    const pendingOrders = (r.orders || []).filter((o: any) => o.status === 'PENDING' || o.status === 'PREPARING').length;
+                    if (r.autoPilotEnabled && pendingOrders >= (r.capacityThreshold || 10)) isBusy = true;
+
+                    // 4. Prep Time Calculation
+                    let basePrep = r.manualPrepTime || (15 + (seed % 10));
+                    if (!r.manualPrepTime) basePrep += Math.floor(pendingOrders * 1.5);
+                    const totalPrep = basePrep + extraBuffer;
+
+                    return {
+                        isBusy,
+                        prepTime: `${totalPrep}-${totalPrep + 10} min`
+                    };
+                })(),
                 priceLevel: "$".repeat((seed % 3) + 1),
                 openTime: r.openTime,
                 closeTime: r.closeTime,
                 deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: seed % 2 === 0 ? 'Spend $20, Save $5' : 'Buy 1 Get 1 Free' } : undefined
+
             };
+
         });
 
         let finalRestaurants = mappedRestaurants;
@@ -324,7 +381,17 @@ export default async function RestaurantFinder({
         const fallbackMocks = [
             { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
             { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
-            { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 }
+            { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 },
+            { city: 'Greenville', state: 'SC', lat: 34.8526, lng: -82.3940 },
+            { city: 'Simpsonville', state: 'SC', lat: 34.7371, lng: -82.2537 },
+            { city: 'Spartanburg', state: 'SC', lat: 34.9496, lng: -81.9320 },
+            { city: 'Clemson', state: 'SC', lat: 34.6834, lng: -82.8374 },
+            { city: 'Greer', state: 'SC', lat: 34.8956, lng: -82.2189 },
+            { city: 'Athens', state: 'GA', lat: 33.9519, lng: -83.3576 },
+            { city: 'Marietta', state: 'GA', lat: 33.9526, lng: -84.5499 },
+            { city: 'Evans', state: 'GA', lat: 33.5335, lng: -82.1307 },
+            { city: 'Davidson', state: 'NC', lat: 35.4993, lng: -80.8487 },
+            { city: 'Brevard', state: 'NC', lat: 35.2334, lng: -82.7343 }
         ];
         try {
             const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
@@ -695,7 +762,13 @@ export default async function RestaurantFinder({
                                         <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-4 relative border border-white/5">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                            {rest.isBusy && (
+                                                <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
                                             <div className="absolute bottom-4 left-4 right-4">
+
                                                 <div className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black shadow-2xl inline-block mb-2 max-w-full truncate">
                                                     {rest.deal?.description}
                                                 </div>
@@ -718,10 +791,16 @@ export default async function RestaurantFinder({
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col">
                                         <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative shrink-0">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
+                                            {rest.isBusy && (
+                                                <div className="absolute top-2 left-2 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
+                                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
                                                 {rest.prepTime}
                                             </div>
                                         </div>
+
                                         <div className="px-1 w-full">
                                             <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
                                             <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
@@ -744,10 +823,16 @@ export default async function RestaurantFinder({
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[260px] md:min-w-[300px] group flex flex-col snap-center">
                                         <div className="h-40 md:h-44 w-full rounded-[1.5rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            <div className="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded-[0.5rem] text-[11px] font-black drop-shadow-xl flex items-center gap-1">
+                                            <div className="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded-[0.5rem] text-[11px] font-black drop-shadow-xl flex items-center gap-1 z-10">
                                                 <span>★</span> {rest.rating}
                                             </div>
+                                            {rest.isBusy && (
+                                                <div className="absolute top-3 right-3 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
                                         </div>
+
                                         <div className="px-1 w-full">
                                             <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
                                             <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
@@ -772,10 +857,16 @@ export default async function RestaurantFinder({
                                     <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col snap-center">
                                         <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
                                             <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            {rest.isBusy && (
+                                                <div className="absolute top-3 left-3 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
+                                                    Busy
+                                                </div>
+                                            )}
                                             <div className="absolute bottom-3 right-3 bg-secondary text-black px-3 py-1.5 rounded-[0.75rem] text-[10px] font-black uppercase tracking-widest drop-shadow-xl">
                                                 Local Favorite
                                             </div>
                                         </div>
+
                                         <div className="px-1 w-full">
                                             <h3 className="text-white font-black text-base mb-1 group-hover:text-secondary transition-colors truncate w-full">{rest.name}</h3>
                                             <div className="flex items-center gap-2 text-[12px] text-slate-400 font-bold w-full">
@@ -839,7 +930,13 @@ export default async function RestaurantFinder({
                                                 initialIsFavorited={favorites.includes(rest.id)}
                                             />
                                         )}
+                                        {rest.isBusy && (
+                                            <div className="bg-red-600 text-white text-[9px] font-black px-2 py-1.5 rounded-lg uppercase tracking-widest shadow-xl animate-pulse text-center">
+                                                System Busy
+                                            </div>
+                                        )}
                                     </div>
+
 
                                 </div>
 

@@ -34,7 +34,9 @@ export default function DriverApplicationForm() {
         // Consents
         consentIdentity: false,
         consentBackground: false,
+        hasSignedAgreement: false,
     });
+
     const [file, setFile] = useState<File | null>(null);
     const [insuranceFile, setInsuranceFile] = useState<File | null>(null);
     const [registrationFile, setRegistrationFile] = useState<File | null>(null);
@@ -64,11 +66,15 @@ export default function DriverApplicationForm() {
         if (step === 1) {
             if (!formData.email || !formData.phone) return;
         }
-        if (step === 2) {
-            if (!formData.name || !formData.dob || !formData.address) return;
+        if (step === 3) {
+            if (!formData.vehicleType || !formData.vehicleMake || !file) return;
+        }
+        if (step === 4) {
+            if (!formData.consentIdentity || !formData.consentBackground) return;
         }
         setStep(prev => prev + 1);
     };
+
 
     const handleBack = () => setStep(prev => prev - 1);
 
@@ -90,6 +96,8 @@ export default function DriverApplicationForm() {
         fd.append("vehicleModel", formData.vehicleModel);
         fd.append("vehicleColor", formData.vehicleColor);
         fd.append("licensePlate", formData.licensePlate);
+        fd.append("hasSignedAgreement", formData.hasSignedAgreement.toString());
+
         if (file) {
             fd.append("idDocument", file);
         }
@@ -129,9 +137,10 @@ export default function DriverApplicationForm() {
             {/* Step Indicators */}
             <div className="flex items-center justify-between mb-8 px-2 relative">
                 <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-white/10 -z-10 translate-y-[-50%]"></div>
-                <div className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 translate-y-[-50%] transition-all duration-300" style={{ width: `${((step - 1) / 3) * 100}%` }}></div>
+                <div className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 translate-y-[-50%] transition-all duration-300" style={{ width: `${((step - 1) / 4) * 100}%` }}></div>
 
-                {[1, 2, 3, 4].map((num) => (
+                {[1, 2, 3, 4, 5].map((num) => (
+
                     <div key={num} className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black tracking-widest transition-all ${step >= num ? 'bg-primary text-black scale-110 shadow-[0_0_15px_rgba(255,215,0,0.5)]' : 'bg-slate-800 text-slate-500 border border-white/10'}`}>
                         {num}
                     </div>
@@ -246,7 +255,50 @@ export default function DriverApplicationForm() {
                         </label>
                     </div>
                 )}
+
+                {/* STEP 5: IC Agreement */}
+                {step === 5 && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="mb-6">
+                            <h3 className="text-xl font-bold text-white mb-1">Contractor Agreement</h3>
+                            <p className="text-xs text-slate-400">Step 5: Review and sign our delivery terms.</p>
+                        </div>
+
+                        <div className="bg-black/80 border border-white/10 rounded-2xl p-6 h-64 overflow-y-auto custom-scrollbar text-[11px] text-slate-400 leading-relaxed font-medium">
+                            <h4 className="text-white font-black uppercase tracking-widest mb-4">INDEPENDENT CONTRACTOR AGREEMENT</h4>
+                            <p className="mb-4">This Agreement is between <strong>TrueServe LLC</strong> ("TrueServe") and the <strong>Independent Contractor</strong> ("Contractor").</p>
+                            
+                            <p className="mb-4"><strong>1. NATURE OF SERVICE:</strong> Contractor is an independent contractor, not an employee of TrueServe. Contractor maintains the right to perform services for other companies and is not required to work exclusively for TrueServe.</p>
+                            
+                            <p className="mb-4"><strong>2. EQUIPMENT & EXPENSES:</strong> Contractor shall provide their own vehicle and equipment. All expenses incurred while performing services (fuel, maintenance, insurance, mobile data) are the sole responsibility of the Contractor.</p>
+                            
+                            <p className="mb-4"><strong>3. COMPENSATION:</strong> Contractor will be paid on a per-delivery basis. Current rates and breakdown are visible in the TrueServe Driver Dashboard. Payouts are processed via Stripe Connect.</p>
+                            
+                            <p className="mb-4"><strong>4. TAXES & COMPLIANCE:</strong> As an independent contractor, Contractor is responsible for all local, state, and federal taxes. TrueServe will issue a 1099-NEC if earnings exceed the IRS threshold.</p>
+                            
+                            <p className="mb-4"><strong>5. TERMINATION:</strong> Either party may terminate this agreement at any time, for any reason, with written notice or by stopping the use of the platform.</p>
+                            
+                            <p className="mb-4"><strong>6. CONFIDENTIALITY:</strong> Contractor agrees to protect customer data and restaurant trade secrets encountered during deliveries.</p>
+                        </div>
+
+                        <label className="flex items-center gap-4 p-5 rounded-2xl border-2 border-primary/20 bg-primary/5 cursor-pointer transition-all hover:border-primary">
+                            <input 
+                                type="checkbox" 
+                                name="hasSignedAgreement" 
+                                required 
+                                checked={formData.hasSignedAgreement} 
+                                onChange={updateForm} 
+                                className="w-6 h-6 rounded border-white/20 text-primary focus:ring-primary bg-black" 
+                            />
+                            <div>
+                                <p className="text-sm font-black text-white">I agree to the Contractor Terms</p>
+                                <p className="text-[10px] text-primary/70 font-bold uppercase tracking-widest">Sign Digitally</p>
+                            </div>
+                        </label>
+                    </div>
+                )}
             </div>
+
 
             <div className="flex gap-4 mt-8 pt-6 border-t border-white/10">
                 {step > 1 && (
@@ -255,17 +307,18 @@ export default function DriverApplicationForm() {
                     </button>
                 )}
 
-                {step < 4 ? (
+                {step < 5 ? (
                     <button type="button" onClick={handleNext} className="flex-1 btn btn-primary py-4 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 rounded-2xl hover:scale-[1.02] transition-all">
                         Next Step →
                     </button>
                 ) : (
-                    <button type="submit" disabled={isPending || !formData.consentIdentity || !formData.consentBackground} className="flex-1 btn btn-primary py-4 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-50 disabled:hover:scale-100 rounded-2xl hover:scale-[1.02] transition-all">
-                        {isPending ? "Submitting..." : "Submit Application"}
+                    <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="flex-1 btn btn-primary py-4 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-50 disabled:hover:scale-100 rounded-2xl hover:scale-[1.02] transition-all">
+                        {isPending ? "Finish & Submit" : "Sign & Submit Application"}
                     </button>
                 )}
             </div>
-            {step === 4 && (
+            {step === 5 && (
+
                 <p className="text-[10px] text-slate-500 text-center px-4 font-medium leading-relaxed mt-4">
                     By clicking submit, you acknowledge all TrueServe onboarding requirements.
                 </p>

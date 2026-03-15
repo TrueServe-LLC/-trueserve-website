@@ -14,6 +14,8 @@ import ChatWindow from "@/components/ChatWindow";
 import GoogleMapsMap from "@/components/GoogleMapsMap";
 import MapWithDirections from "@/components/MapWithDirections";
 import ReviewModal from "@/components/ReviewModal";
+import { customerCancelOrder } from "../actions";
+
 
 
 
@@ -26,7 +28,12 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     const [currentOrder, setCurrentOrder] = useState(order);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [cancelReason, setCancelReason] = useState("");
+    const [cancelComment, setCancelComment] = useState("");
+    const [isCancelling, setIsCancelling] = useState(false);
     const [eta, setEta] = useState<string>("Calculating...");
+
 
     // Initial positions (Ensure numbers)
     const restaurantLat = Number(order.restaurant.lat) || 35.2271;
@@ -164,6 +171,27 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
         doc.save(`receipt_${currentOrder.id}.pdf`);
     };
+
+    const handleCancelOrder = async () => {
+        if (!cancelReason) {
+            alert("Please select a reason for cancellation.");
+            return;
+        }
+        
+        setIsCancelling(true);
+        const res = await customerCancelOrder(currentOrder.id, cancelReason, cancelComment);
+        setIsCancelling(false);
+
+        if (res.success) {
+            setIsCancelModalOpen(false);
+            window.location.reload();
+        } else {
+            alert(res.error);
+        }
+    };
+
+
+
 
     return (
         <div className="md:space-y-8 flex flex-col min-h-[calc(100vh-80px)] md:min-h-0 bg-slate-950">
@@ -371,10 +399,22 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
                         <button
                             onClick={handleDownloadReceipt}
-                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-xs"
+                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-[10px] font-black uppercase tracking-widest h-10"
                         >
                             Download PDF Receipt
                         </button>
+
+                        {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
+                            <button
+                                onClick={() => setIsCancelModalOpen(true)}
+                                className="w-full btn mt-2 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest h-10"
+                            >
+                                Cancel Order
+                            </button>
+                        )}
+
+
+
 
                         {currentOrder.status === 'DELIVERED' && currentOrder.driverId && (
                             <button
@@ -412,8 +452,71 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         customerId={currentOrder.userId}
                     />
                 )}
+
+                {/* Cancellation Survey Modal */}
+                {isCancelModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <div 
+                            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+                            onClick={() => !isCancelling && setIsCancelModalOpen(false)}
+                        ></div>
+                        <div className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl animate-fade-in-up">
+                            <h2 className="text-2xl font-black mb-2">We're sorry to see you go!</h2>
+                            <p className="text-slate-400 text-sm mb-8 font-medium">Please let us know why you're cancelling so we can improve.</p>
+
+                            <div className="space-y-3 mb-8">
+                                {[
+                                    "Wait time is too long",
+                                    "Incorrect delivery address",
+                                    "Forgot to add an item",
+                                    "Changed my mind",
+                                    "Ordered by mistake",
+                                    "Other"
+                                ].map((reason) => (
+                                    <button
+                                        key={reason}
+                                        onClick={() => setCancelReason(reason)}
+                                        className={`w-full p-4 rounded-2xl border transition-all text-left text-sm font-bold flex justify-between items-center ${
+                                            cancelReason === reason 
+                                            ? 'bg-primary/20 border-primary text-primary' 
+                                            : 'bg-white/5 border-white/5 text-slate-300 hover:border-white/20'
+                                        }`}
+                                    >
+                                        {reason}
+                                        {cancelReason === reason && <span>✓</span>}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <textarea
+                                placeholder="Additional comments (optional)..."
+                                value={cancelComment}
+                                onChange={(e) => setCancelComment(e.target.value)}
+                                className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 mb-8 min-h-[100px] resize-none"
+                            ></textarea>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setIsCancelModalOpen(false)}
+                                    disabled={isCancelling}
+                                    className="flex-1 btn btn-outline border-white/10 hover:bg-white/5 py-4 font-black uppercase tracking-widest text-xs h-14"
+                                >
+                                    Go Back
+                                </button>
+                                <button
+                                    onClick={handleCancelOrder}
+                                    disabled={!cancelReason || isCancelling}
+                                    className="flex-1 btn btn-primary py-4 font-black uppercase tracking-widest text-xs h-14 shadow-lg shadow-primary/20"
+                                >
+                                    {isCancelling ? "Processing..." : "Confirm Cancel"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
+
 

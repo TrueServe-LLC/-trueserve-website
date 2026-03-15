@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
-import { acceptOrder, pickupOrder, completeDelivery } from "../actions";
+import { acceptOrder, pickupOrder, completeDelivery, unassignOrder } from "../actions";
+
 import DriverMap from "@/components/DriverMap";
 import { calculateDistance, getNavigationUrl } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
@@ -248,7 +249,23 @@ export default async function DriverDashboard() {
                                                 {order.status === 'PICKED_UP' && (
                                                     <CompleteDeliveryForm orderId={order.id} />
                                                 )}
+
+                                                {!isPickedUp && (
+                                                    <form action={async () => {
+                                                        "use server";
+                                                        await unassignOrder(order.id, "Emergency/Vehicle Trouble");
+                                                    }}>
+                                                        <button 
+                                                            type="submit" 
+                                                            className="w-full text-red-400 text-[9px] font-black uppercase tracking-widest py-2 hover:bg-red-500/10 rounded transition-colors"
+                                                            onClick={() => !confirm("Are you sure you want to drop this order? This will affect your reliability rating.") && event?.preventDefault()}
+                                                        >
+                                                            Drop Order
+                                                        </button>
+                                                    </form>
+                                                )}
                                             </div>
+
                                         </div>
                                     </div>
                                 );

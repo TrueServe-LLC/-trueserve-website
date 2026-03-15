@@ -14,7 +14,9 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-describe("Driver Payout Integration", () => {
+const isMock = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('mock');
+
+(isMock ? describe.skip : describe)("Driver Payout Integration", () => {
     let testDriverId: string;
     let testUserId: string;
 
