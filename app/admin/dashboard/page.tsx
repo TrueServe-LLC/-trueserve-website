@@ -46,7 +46,34 @@ async function getPendingDrivers() {
     }
 }
 
+
+
+async function getActiveOrders() {
+    try {
+        const { data, error } = await supabase
+            .from('Order')
+            .select(`
+                *,
+                user:User(*),
+                restaurant:Restaurant(*),
+                driver:Driver(user:User(*))
+            `)
+            .in('status', ['READY_FOR_PICKUP', 'PICKED_UP', 'PREPARING'])
+            .order('createdAt', { ascending: false });
+
+        if (error) {
+            console.error("Supabase Error (getActiveOrders):", error);
+            return [];
+        }
+        return data || [];
+    } catch (e) {
+        console.log("Admin Dashboard - Error fetching active orders:", e);
+        return [];
+    }
+}
+
 export default async function AdminDashboard({ searchParams }: { searchParams: { stripe_connected?: string } }) {
+
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
@@ -59,6 +86,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
     const pendingItems = await getPendingItems();
     const drivers = await getPendingDrivers();
+    const activeOrders = await getActiveOrders();
+
+
     const isStripeConnected = searchParams.stripe_connected === "true";
 
     return (
@@ -182,6 +212,77 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         </div>
                     </div>
                 </section>
+
+                {/* Active Deliveries Map / List */}
+                <section className="mb-16">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold flex items-center gap-2">
+                            🛰️ Live Delivery Monitor
+                            <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full">{activeOrders.length} Active</span>
+                        </h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {activeOrders.map((order) => (
+                            <div key={order.id} className="card p-6 bg-black/40 border-white/5 hover:border-emerald-500/30 transition-all group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Order {order.id.slice(-6).toUpperCase()}</span>
+                                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter ${
+                                                order.status === 'PICKED_UP' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'
+                                            }`}>
+                                                {order.status.replace('_', ' ')}
+                                            </span>
+                                        </div>
+                                        <h3 className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</h3>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-black text-white">${Number(order.totalAmount).toFixed(2)}</p>
+                                        <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Revenue Impact</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-sm">👤</div>
+                                        <div>
+                                            <p className="text-xs font-bold text-white">{order.user?.name}</p>
+                                            <p className="text-[9px] text-slate-500 font-medium">{order.user?.phone}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm">🚗</div>
+                                        <div>
+                                            <p className="text-xs font-bold text-white">{order.driver?.user?.name || "Dispatching..."}</p>
+                                            <p className="text-[9px] text-slate-500 font-medium">{order.driver?.user?.phone || "Awaiting Pickup"}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
+                                    <form action={async () => { "use server"; const { forceCompleteOrder } = await import('../actions'); await forceCompleteOrder(order.id); }} className="flex-1">
+                                        <button className="w-full text-[9px] font-black uppercase tracking-widest py-2 hover:bg-white/5 rounded-lg transition-colors">
+                                            Force Complete
+                                        </button>
+                                    </form>
+                                    <form action={async () => { "use server"; const { adminCancelOrder } = await import('../actions'); await adminCancelOrder(order.id); }} className="flex-1">
+                                        <button className="w-full text-[9px] font-black uppercase tracking-widest py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                                            Cancel Order
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        ))}
+                        {activeOrders.length === 0 && (
+                            <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-[2rem]">
+                                <p className="text-4xl mb-4 opacity-20">📡</p>
+                                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No active deliveries at this time.</p>
+                            </div>
+                        )}
+                    </div>
+                </section>
+
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Menu Approval Section */}

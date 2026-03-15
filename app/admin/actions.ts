@@ -242,3 +242,40 @@ export async function refreshBackgroundCheck(driverId: string) {
         return { success: false, error: "Failed to refresh background check." };
     }
 }
+
+export async function forceCompleteOrder(orderId: string) {
+    try {
+        const { error } = await supabaseAdmin
+            .from('Order')
+            .update({
+                status: 'DELIVERED',
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (error) throw error;
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
+export async function adminCancelOrder(orderId: string) {
+    try {
+        const { error } = await supabaseAdmin
+            .from('Order')
+            .update({
+                status: 'CANCELLED',
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (error) throw error;
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
