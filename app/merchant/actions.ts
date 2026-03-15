@@ -96,6 +96,62 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
     }
 }
 
+export async function updateMenuItem(prevState: MerchantActionState, formData: FormData): Promise<MerchantActionState> {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: true, message: "Unauthorized" };
+
+    const itemId = formData.get("itemId") as string;
+    const name = formData.get("name") as string;
+    const price = parseFloat(formData.get("price") as string);
+    const description = formData.get("description") as string;
+    const image = formData.get("image") as File;
+
+    if (!itemId || !name || isNaN(price)) {
+        return { error: true, message: "Invalid input" };
+    }
+
+    try {
+        let imageUrl = formData.get("currentImageUrl") as string || null;
+
+        if (image && image.size > 0) {
+            const fileExt = image.name.split('.').pop();
+            const fileName = `${uuidv4()}.${fileExt}`;
+            const arrayBuffer = await image.arrayBuffer();
+            const buffer = new Uint8Array(arrayBuffer);
+
+            const { error: uploadError } = await supabaseAdmin.storage
+                .from('menu-images')
+                .upload(fileName, buffer, { contentType: image.type, upsert: false });
+
+            if (!uploadError) {
+                const { data: publicUrlData } = supabaseAdmin.storage.from('menu-images').getPublicUrl(fileName);
+                imageUrl = publicUrlData.publicUrl;
+            }
+        }
+
+        const { error } = await supabase
+            .from('MenuItem')
+            .update({
+                name,
+                price,
+                description,
+                imageUrl,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', itemId);
+
+        if (error) throw error;
+
+        revalidatePath('/merchant/dashboard');
+        return { success: true, message: "Item updated successfully" };
+    } catch (e: any) {
+        console.error("Update Item Error:", e);
+        return { error: true, message: e.message || "Failed to update item" };
+    }
+}
+
+
 export async function updateStoreBanner(prevState: MerchantActionState, formData: FormData): Promise<MerchantActionState> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -145,7 +201,7 @@ export async function updateStoreBanner(prevState: MerchantActionState, formData
     }
 }
 
-export async function updateOrderStatus(orderId: string, nextStatus: string) {
+export async function updateOrderStatus(orderId: string, nextStatus: string, reason?: string, comment?: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: "Unauthorized" };
@@ -172,10 +228,17 @@ export async function updateOrderStatus(orderId: string, nextStatus: string) {
             return { error: `Invalid transition from ${order.status} to ${nextStatus}` };
         }
 
+        const updateData: any = { status: nextStatus, updatedAt: new Date().toISOString() };
+        if (nextStatus === 'CANCELLED') {
+            updateData.cancelReason = reason || 'Merchant Cancelled';
+            updateData.cancelComment = comment || 'No comment provided by merchant';
+        }
+
         const { error } = await supabase
             .from('Order')
-            .update({ status: nextStatus, updatedAt: new Date().toISOString() })
+            .update(updateData)
             .eq('id', orderId);
+
 
         if (error) throw error;
 
@@ -506,4 +569,50 @@ export async function toggleItemStock(itemId: string, currentStatus: boolean) {
         return { error: e.message };
     }
 }
+
+export async function updatePrepTime(restaurantId: string, minutes: number | null) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({ manualPrepTime: minutes, updatedAt: new Date().toISOString() })
+            .eq('id', restaurantId)
+            .eq('ownerId', user.id);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function setBusyDuration(restaurantId: string, minutes: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const busyUntil = new Date(Date.now() + minutes * 60000).toISOString();
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({ 
+                isBusy: true, 
+                busyUntil: busyUntil,
+                updatedAt: new Date().toISOString() 
+            })
+            .eq('id', restaurantId)
+            .eq('ownerId', user.id);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
 

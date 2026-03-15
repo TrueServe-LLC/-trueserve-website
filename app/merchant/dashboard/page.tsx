@@ -10,8 +10,12 @@ import LogoutButton from "@/components/LogoutButton";
 import StoreBannerUpload from "./StoreBannerUpload";
 import WelcomeModal from "./WelcomeModal";
 import MerchantRealtime from "@/components/MerchantRealtime";
-
+import MerchantRejectButton from "./MerchantRejectButton";
+import OperationalSettings from "./OperationalSettings";
+import MenuRow from "./MenuRow";
 import { MOUNT_AIRY_RESTAURANTS } from "@/lib/demo-data";
+
+
 
 export const dynamic = "force-dynamic";
 
@@ -287,63 +291,14 @@ export default async function MerchantDashboard({
                 )}
 
                 {/* Prep-time Prediction & Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    <div className="card bg-primary/5 border-primary/20">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg">Prep-time Prediction</h3>
-                            <span className="text-primary text-xs font-mono uppercase font-bold tracking-widest">AI Engine</span>
-                        </div>
-                        <div className="flex items-end gap-2">
-                            <p className="text-5xl font-bold">{(restaurant as any).avgPrepTime || 14}</p>
-                            <p className="text-slate-400 mb-1 font-semibold">minutes</p>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-4">Predicted based on orders and current load.</p>
-                    </div>
+                <OperationalSettings 
+                    restaurantId={restaurant.id}
+                    currentManualPrepTime={(restaurant as any).manualPrepTime}
+                    avgPrepTime={(restaurant as any).avgPrepTime || 15}
+                    isBusy={restaurant.isBusy}
+                    busyUntil={restaurant.busyUntil}
+                />
 
-                    <div className="card bg-emerald-500/5 border-emerald-500/20">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg">Courier ETA</h3>
-                            <span className="text-emerald-400 text-xs font-mono uppercase font-bold tracking-widest">Live</span>
-                        </div>
-                        <div className="flex items-end gap-2">
-                            {pendingOrders.some((o: any) => o.driverId) ? (
-                                <>
-                                    <p className="text-5xl font-bold">~5-10</p>
-                                    <p className="text-slate-400 mb-1 font-semibold">min to pickup</p>
-                                </>
-                            ) : (
-                                <p className="text-3xl font-bold text-primary animate-pulse">Seeking Driver</p>
-                            )}
-                        </div>
-                        <p className="text-xs text-slate-500 mt-4">
-                            {pendingOrders.some((o: any) => o.driverId)
-                                ? "Nearest courier has been dispatched."
-                                : "Awaiting a driver to accept the request."}
-                        </p>
-                    </div>
-
-                    <div className="card bg-blue-500/5 border-blue-500/20">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg">Pacing Metrics</h3>
-                            <span className="text-blue-400 text-xs font-mono uppercase font-bold tracking-widest">Operational</span>
-                        </div>
-                        <div className="flex items-end gap-2 text-blue-400">
-                            {restaurant.avgPrepTime > 0 ? (
-                                <>
-                                    <p className="text-5xl font-bold">{Math.round((15 / restaurant.avgPrepTime) * 100)}%</p>
-                                    <p className="text-xs text-slate-500 mb-1 leading-tight">Score</p>
-                                </>
-                            ) : (
-                                <p className="text-xl font-bold text-slate-500 animate-pulse">Building Profile...</p>
-                            )}
-                        </div>
-                        <p className="text-xs text-slate-500 mt-4">
-                            {restaurant.avgPrepTime > 0
-                                ? `Current performance based on ${restaurant.readyCount} recent orders.`
-                                : "Awaiting enough operational data to calculate score."}
-                        </p>
-                    </div>
-                </div>
 
                 {/* Orders Section */}
                 <section className="mb-12">
@@ -411,12 +366,8 @@ export default async function MerchantDashboard({
                                             </form>
                                         )}
 
-                                        <form action={async () => {
-                                            "use server";
-                                            await updateOrderStatus(order.id, 'CANCELLED');
-                                        }}>
-                                            <button type="submit" className="btn btn-outline text-sm py-2 text-red-400 border-red-500/20 hover:bg-red-500/10">Reject</button>
-                                        </form>
+                                        <MerchantRejectButton orderId={order.id} />
+
 
                                         {/* Track Driver Button */}
                                         {order.driver && order.driver.currentLat && (
@@ -525,47 +476,9 @@ export default async function MerchantDashboard({
 
                 <div className="grid grid-1 gap-4">
                     {restaurant.menuItems.map((item: any) => (
-                        <div key={item.id} className="card p-4 flex justify-between items-center hover:bg-white/5 transition-colors">
-                            <div className="flex gap-4 items-center">
-                                <div className="h-16 w-16 bg-slate-700 rounded-lg overflow-hidden shrink-0">
-                                    {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />}
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-lg">{item.name}</h3>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${item.status === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400' :
-                                            item.status === 'REJECTED' ? 'bg-red-500/20 text-red-400' :
-                                                item.status === 'FLAGGED' ? 'bg-orange-500/20 text-orange-400' :
-                                                    'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
-                                            {item.status}
-                                        </span>
-                                    </div>
-                                    <p className="text-slate-400 text-sm">{item.description}</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-bold text-xl">${Number(item.price).toFixed(2)}</p>
-                                <div className="flex flex-col items-end gap-1 mt-1">
-                                    <div className="flex gap-3 mt-1">
-                                        <button className="text-xs text-slate-500 hover:text-white transition-colors">Edit</button>
-                                        <form action={async () => {
-                                            "use server";
-                                            await toggleItemStock(item.id, item.isAvailable);
-                                        }}>
-                                            <button className={`text-xs font-bold uppercase tracking-wider ${item.isAvailable === false ? 'text-emerald-400' : 'text-red-400 hover:underline'}`}>
-                                                {item.isAvailable === false ? 'Restock' : 'Mark Sold Out'}
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    {item.status === 'FLAGGED' && (
-                                        <p className="text-[10px] text-orange-400 italic font-semibold">Admin flagged this item: Please review.</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        <MenuRow key={item.id} item={item} />
                     ))}
+
                 </div>
             </main>
         </div>
