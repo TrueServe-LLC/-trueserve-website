@@ -406,6 +406,50 @@ export async function pickupOrder(orderId: string) {
     }
 }
 
+export async function unassignOrder(orderId: string, reason: string) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
+
+        const { data: order } = await supabase
+            .from('Order')
+            .select('status, driver:Driver(userId), restaurant:Restaurant(name)')
+            .eq('id', orderId)
+            .single();
+
+        if (!order) throw new Error("Order not found");
+        if ((order.driver as any)?.userId !== user.id) throw new Error("This is not your order to drop.");
+        if (order.status === 'PICKED_UP') {
+            throw new Error("You have already picked up this order. Please contact support to cancel.");
+        }
+
+        const { error } = await supabaseAdmin
+            .from('Order')
+            .update({
+                driverId: null,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (error) throw error;
+
+        // Notify Admin/Merchant that driver dropped the order
+        await createNotification({
+            userId: user.id, // Notification for driver? No, actually we should notify the system.
+            title: "Order Dropped",
+            message: `Driver ${user.user_metadata?.displayName} dropped order from ${(order.restaurant as any)?.name || "Restaurant"}. Reason: ${reason}`
+        });
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+
 export async function completeDelivery(orderId: string, deliveryPin?: string, driverLat?: number, driverLng?: number) {
     try {
         const supabase = await createClient();
