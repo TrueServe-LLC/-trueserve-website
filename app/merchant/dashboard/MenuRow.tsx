@@ -6,11 +6,17 @@ import EditItemModal from "./EditItemModal";
 
 interface MenuRowProps {
     item: any;
+    outOfStockIngredients: string[];
 }
 
-export default function MenuRow({ item }: MenuRowProps) {
+export default function MenuRow({ item, outOfStockIngredients }: MenuRowProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+
+    const missingIngredients = (item.ingredients || []).filter((ing: string) => 
+        outOfStockIngredients.includes(ing.toLowerCase())
+    );
+
 
     const handleToggleStock = async () => {
         setIsUpdating(true);
@@ -41,7 +47,13 @@ export default function MenuRow({ item }: MenuRowProps) {
                         </span>
                     </div>
                     <p className="text-slate-500 text-xs line-clamp-1 max-w-[200px] md:max-w-none">{item.description}</p>
+                    {missingIngredients.length > 0 && (
+                        <p className="text-[10px] text-red-400 font-bold mt-1 flex items-center gap-1">
+                            <span className="text-xs">⚠️</span> Missing: {missingIngredients.join(', ')}
+                        </p>
+                    )}
                 </div>
+
             </div>
             <div className="text-right">
                 <p className="font-bold text-xl">${Number(item.price).toFixed(2)}</p>

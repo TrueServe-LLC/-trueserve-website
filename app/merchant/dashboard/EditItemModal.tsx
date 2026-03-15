@@ -83,10 +83,21 @@ export default function EditItemModal({ item, onClose }: EditItemModalProps) {
                         <textarea
                             name="description"
                             defaultValue={item.description}
-                            className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium h-32 resize-none"
+                            className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium h-24 resize-none"
                             placeholder="Describe your delicious creation..."
                         />
                     </div>
+
+                    <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Ingredients (Comma Separated)</label>
+                        <input
+                            name="ingredients"
+                            defaultValue={item.ingredients?.join(', ')}
+                            className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 transition-all font-medium"
+                            placeholder="flour, eggs, milk, blueberries..."
+                        />
+                    </div>
+
 
                     {state.message && (
                         <p className={`text-xs font-bold text-center ${state.error ? 'text-red-400' : 'text-emerald-400'}`}>

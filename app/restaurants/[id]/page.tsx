@@ -15,7 +15,9 @@ async function getRestaurant(id: string) {
             .from('Restaurant')
             .select(`
                 *,
-                menuItems:MenuItem(*)
+                menuItems:MenuItem(*),
+                schedules:MerchantSchedule(*),
+                orders:Order(id, status)
             `)
             .eq('id', id)
             .eq('visibility', 'VISIBLE')
@@ -26,14 +28,39 @@ async function getRestaurant(id: string) {
             return null;
         }
 
-        // Filter valid menu items (only APPROVED and AVAILABLE)
+        // Filter valid menu items (only APPROVED and unavailable handled in client but filtering here for performance)
         restaurant.menuItems = (restaurant.menuItems || []).filter((item: any) => 
             item.status === "APPROVED" && (item.isAvailable !== false)
         );
 
-        // Explicitly cast isBusy to boolean for client use
-        restaurant.isBusy = !!restaurant.isBusy;
+        // Smart Status Resolution
+        const now = new Date();
+        const currentDay = now.getDay();
+        const currentTime = now.toTimeString().slice(0, 8);
+        const seed = restaurant.name.length;
+        
+        let isBusy = !!restaurant.isBusy;
+        let extraBuffer = 0;
 
+        if (restaurant.busyUntil && new Date(restaurant.busyUntil) > now) isBusy = true;
+
+        if (restaurant.schedules) {
+            for (const s of restaurant.schedules) {
+                if (s.isEnabled && s.dayOfWeek === currentDay && currentTime >= s.startTime && currentTime <= s.endTime) {
+                    if (s.action === 'PAUSE') isBusy = true;
+                    if (s.action === 'BUFFER') extraBuffer += s.extraPrepTime;
+                }
+            }
+        }
+
+        const pendingOrders = (restaurant.orders || []).filter((o: any) => o.status === 'PENDING' || o.status === 'PREPARING').length;
+        if (restaurant.autoPilotEnabled && pendingOrders >= (restaurant.capacityThreshold || 10)) isBusy = true;
+
+        let basePrep = restaurant.manualPrepTime || (15 + (seed % 10));
+        if (!restaurant.manualPrepTime) basePrep += Math.floor(pendingOrders * 1.5);
+        
+        restaurant.isBusy = isBusy;
+        restaurant.prepTime = `${basePrep + extraBuffer}-${basePrep + extraBuffer + 10} min`;
 
         return restaurant;
     } catch (e) {
@@ -41,6 +68,7 @@ async function getRestaurant(id: string) {
         return null;
     }
 }
+
 
 export default async function RestaurantMenu({
     params,

@@ -12,8 +12,14 @@ import WelcomeModal from "./WelcomeModal";
 import MerchantRealtime from "@/components/MerchantRealtime";
 import MerchantRejectButton from "./MerchantRejectButton";
 import OperationalSettings from "./OperationalSettings";
+import SmartOperations from "./SmartOperations";
+import MerchantAnalytics from "./MerchantAnalytics";
+import InventoryManager from "./InventoryManager";
 import MenuRow from "./MenuRow";
+
+
 import { MOUNT_AIRY_RESTAURANTS } from "@/lib/demo-data";
+
 
 
 
@@ -27,9 +33,11 @@ async function getMerchantData(userId: string) {
             .from('Restaurant')
             .select(`
                 *,
-                apiKey,
                 menuItems:MenuItem(*),
+                schedules:MerchantSchedule(*),
                 orders:Order(
+
+
                     *,
                     user:User(*),
                     items:OrderItem(
@@ -299,6 +307,26 @@ export default async function MerchantDashboard({
                     busyUntil={restaurant.busyUntil}
                 />
 
+                <SmartOperations
+                    restaurantId={restaurant.id}
+                    schedules={restaurant.schedules || []}
+                    autoPilotEnabled={restaurant.autoPilotEnabled || false}
+                    capacityThreshold={restaurant.capacityThreshold || 10}
+                />
+
+                <MerchantAnalytics 
+                    orders={restaurant.orders || []} 
+                    restaurantName={restaurant.name} 
+                />
+
+                <InventoryManager
+                    restaurantId={restaurant.id}
+                    menuItems={restaurant.menuItems || []}
+                    outOfStockIngredients={restaurant.outOfStockIngredients || []}
+                />
+
+
+
 
                 {/* Orders Section */}
                 <section className="mb-12">
@@ -476,8 +504,13 @@ export default async function MerchantDashboard({
 
                 <div className="grid grid-1 gap-4">
                     {restaurant.menuItems.map((item: any) => (
-                        <MenuRow key={item.id} item={item} />
+                        <MenuRow 
+                            key={item.id} 
+                            item={item} 
+                            outOfStockIngredients={restaurant.outOfStockIngredients || []}
+                        />
                     ))}
+
 
                 </div>
             </main>

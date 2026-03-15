@@ -105,6 +105,8 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
+    const ingredientsRaw = formData.get("ingredients") as string;
+    const ingredients = ingredientsRaw ? ingredientsRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "") : [];
     const image = formData.get("image") as File;
 
     if (!itemId || !name || isNaN(price)) {
@@ -137,9 +139,11 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
                 price,
                 description,
                 imageUrl,
+                ingredients,
                 updatedAt: new Date().toISOString()
             })
             .eq('id', itemId);
+
 
         if (error) throw error;
 
@@ -615,4 +619,106 @@ export async function setBusyDuration(restaurantId: string, minutes: number) {
     }
 }
 
+export async function upsertBusyZone(restaurantId: string, schedule: any) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
 
+    try {
+        const { error } = await supabase
+            .from('MerchantSchedule')
+            .upsert({
+                id: schedule.id || uuidv4(),
+                restaurantId,
+                ...schedule,
+                updatedAt: new Date().toISOString()
+            });
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function deleteBusyZone(id: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { error } = await supabase
+            .from('MerchantSchedule')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function updateAutoPilotSettings(restaurantId: string, enabled: boolean, threshold: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({ 
+                autoPilotEnabled: enabled, 
+                capacityThreshold: threshold,
+                updatedAt: new Date().toISOString() 
+            })
+            .eq('id', restaurantId)
+            .eq('ownerId', user.id);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}export async function toggleIngredientStock(restaurantId: string, ingredient: string, isNowAvailable: boolean) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        // Fetch current out of stock list
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('outOfStockIngredients')
+            .eq('id', restaurantId)
+            .single();
+
+        let list = restaurant?.outOfStockIngredients || [];
+        
+        if (isNowAvailable) {
+            list = list.filter((i: string) => i !== ingredient.toLowerCase());
+        } else {
+            if (!list.includes(ingredient.toLowerCase())) {
+                list.push(ingredient.toLowerCase());
+            }
+        }
+
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({ 
+                outOfStockIngredients: list,
+                updatedAt: new Date().toISOString() 
+            })
+            .eq('id', restaurantId)
+            .eq('ownerId', user.id);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}

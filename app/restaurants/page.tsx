@@ -138,10 +138,17 @@ async function getRestaurants(
 
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
-            .select('*, MenuItem(name, description), Review(rating)')
+            .select(`
+                *,
+                MenuItem(name, description),
+                Review(rating),
+                schedules:MerchantSchedule(*),
+                orders:Order(id, status)
+            `)
             .match({ city: cityFilter, state: stateFilter })
             .eq('visibility', 'VISIBLE')
             .neq('name', 'Test Restaurant');
+
 
         if (error || !restaurants || restaurants.length === 0) {
             // No mock fallback for pilot launch
@@ -219,12 +226,47 @@ async function getRestaurants(
                 state: r.state,
                 address: r.address || `${r.city}, ${r.state}`,
                 deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
-                prepTime: `${15 + (seed % 20)}-${25 + (seed % 20)} min`,
+                // Smart Prep Time and Busy Logic
+                ...(() => {
+                    const now = new Date();
+                    const currentDay = now.getDay();
+                    const currentTime = now.toTimeString().slice(0, 8);
+                    
+                    let isBusy = !!r.isBusy;
+                    let extraBuffer = 0;
+                    
+                    // 1. Temporary Busy State
+                    if (r.busyUntil && new Date(r.busyUntil) > now) isBusy = true;
+                    
+                    // 2. Automated Schedules
+                    if (r.schedules && Array.isArray(r.schedules)) {
+                        for (const s of r.schedules) {
+                            if (s.isEnabled && s.dayOfWeek === currentDay && currentTime >= s.startTime && currentTime <= s.endTime) {
+                                if (s.action === 'PAUSE') isBusy = true;
+                                if (s.action === 'BUFFER') extraBuffer += (s.extraPrepTime || 0);
+                            }
+                        }
+                    }
+
+                    // 3. Auto-Pilot Load Check
+                    const pendingOrders = (r.orders || []).filter((o: any) => o.status === 'PENDING' || o.status === 'PREPARING').length;
+                    if (r.autoPilotEnabled && pendingOrders >= (r.capacityThreshold || 10)) isBusy = true;
+
+                    // 4. Prep Time Calculation
+                    let basePrep = r.manualPrepTime || (15 + (seed % 10));
+                    if (!r.manualPrepTime) basePrep += Math.floor(pendingOrders * 1.5);
+                    const totalPrep = basePrep + extraBuffer;
+
+                    return {
+                        isBusy,
+                        prepTime: `${totalPrep}-${totalPrep + 10} min`
+                    };
+                })(),
                 priceLevel: "$".repeat((seed % 3) + 1),
                 openTime: r.openTime,
                 closeTime: r.closeTime,
-                isBusy: !!r.isBusy,
                 deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: seed % 2 === 0 ? 'Spend $20, Save $5' : 'Buy 1 Get 1 Free' } : undefined
+
             };
 
         });
