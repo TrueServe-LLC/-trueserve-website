@@ -5,11 +5,31 @@ import { redirect } from "next/navigation";
 import AddItemForm from "./AddItemForm";
 import MenuScanner from "./MenuScanner";
 import POSIntegration from "./POSIntegration";
-import { updateOrderStatus, refundOrder, createStripeAccount } from "../actions";
+import { updateOrderStatus, refundOrder, createStripeAccount, toggleBusyMode, toggleItemStock } from "../actions";
 import LogoutButton from "@/components/LogoutButton";
 import StoreBannerUpload from "./StoreBannerUpload";
 import WelcomeModal from "./WelcomeModal";
+import MerchantRealtime from "@/components/MerchantRealtime";
+import MerchantRejectButton from "./MerchantRejectButton";
+import OperationalSettings from "./OperationalSettings";
+import SmartOperations from "./SmartOperations";
+import MerchantAnalytics from "./MerchantAnalytics";
+import InventoryManager from "./InventoryManager";
+import CustomerPulse from "./CustomerPulse";
+import MorningBriefing from "./MorningBriefing";
+import DriverPerformance from "./DriverPerformance";
+import MenuArchitect from "./MenuArchitect";
+import LiveReassurance from "./LiveReassurance";
+import MenuRow from "./MenuRow";
+
+
+
+
+
 import { MOUNT_AIRY_RESTAURANTS } from "@/lib/demo-data";
+
+
+
 
 export const dynamic = "force-dynamic";
 
@@ -21,16 +41,18 @@ async function getMerchantData(userId: string) {
             .from('Restaurant')
             .select(`
                 *,
-                apiKey,
                 menuItems:MenuItem(*),
+                schedules:MerchantSchedule(*),
                 orders:Order(
                     *,
                     user:User(*),
+                    driver:Driver(*, user:User(*)),
                     items:OrderItem(
                         *,
                         menuItem:MenuItem(*)
                     )
                 )
+
             `)
             .eq('ownerId', userId)
             .maybeSingle();
@@ -165,7 +187,9 @@ export default async function MerchantDashboard({
 
     return (
         <div className="min-h-screen">
+            <MerchantRealtime restaurantId={restaurant.id} />
             <WelcomeModal restaurantName={restaurant.name} />
+
             <header className="md:hidden flex p-4 border-b border-white/5 justify-between items-center sticky top-0 bg-black/80 backdrop-blur-2xl z-50">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">M</div>
@@ -177,8 +201,19 @@ export default async function MerchantDashboard({
                         <p className="text-sm font-black text-white leading-tight truncate max-w-[120px]">{restaurant.name}</p>
                     </div>
                 </div>
-                <LogoutButton />
+                <div className="flex items-center gap-2">
+                    <form action={async () => {
+                        "use server";
+                        await toggleBusyMode(restaurant.id, restaurant.isBusy);
+                    }}>
+                        <button className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-all ${restaurant.isBusy ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+                            {restaurant.isBusy ? 'Busy Mode: ON' : 'Busy Mode: OFF'}
+                        </button>
+                    </form>
+                    <LogoutButton />
+                </div>
             </header>
+
 
             <nav className="hidden md:flex sticky top-0 z-50 backdrop-blur-lg bg-black/40 border-b border-white/10 px-6 py-4">
                 <div className="container flex justify-between items-center">
@@ -195,8 +230,17 @@ export default async function MerchantDashboard({
                         <span className="px-4 py-1.5 bg-white/5 text-white border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest shadow-inner">
                             {restaurant.name}
                         </span>
+                        <form action={async () => {
+                            "use server";
+                            await toggleBusyMode(restaurant.id, restaurant.isBusy);
+                        }}>
+                            <button className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${restaurant.isBusy ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+                                {restaurant.isBusy ? 'System Paused' : 'Accepting Orders'}
+                            </button>
+                        </form>
                         <LogoutButton />
                     </div>
+
                 </div>
             </nav>
 
@@ -225,6 +269,9 @@ export default async function MerchantDashboard({
                         </p>
                     </div>
                 </div>
+
+                <MorningBriefing restaurantId={restaurant.id} />
+
 
                 {/* Stripe Connect Banner (If not connected) */}
                 {!restaurant.stripeAccountId && (
@@ -263,63 +310,42 @@ export default async function MerchantDashboard({
                 )}
 
                 {/* Prep-time Prediction & Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    <div className="card bg-primary/5 border-primary/20">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg">Prep-time Prediction</h3>
-                            <span className="text-primary text-xs font-mono uppercase font-bold tracking-widest">AI Engine</span>
-                        </div>
-                        <div className="flex items-end gap-2">
-                            <p className="text-5xl font-bold">{(restaurant as any).avgPrepTime || 14}</p>
-                            <p className="text-slate-400 mb-1 font-semibold">minutes</p>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-4">Predicted based on orders and current load.</p>
-                    </div>
+                <OperationalSettings 
+                    restaurantId={restaurant.id}
+                    currentManualPrepTime={(restaurant as any).manualPrepTime}
+                    avgPrepTime={(restaurant as any).avgPrepTime || 15}
+                    isBusy={restaurant.isBusy}
+                    busyUntil={restaurant.busyUntil}
+                />
 
-                    <div className="card bg-emerald-500/5 border-emerald-500/20">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg">Courier ETA</h3>
-                            <span className="text-emerald-400 text-xs font-mono uppercase font-bold tracking-widest">Live</span>
-                        </div>
-                        <div className="flex items-end gap-2">
-                            {pendingOrders.some((o: any) => o.driverId) ? (
-                                <>
-                                    <p className="text-5xl font-bold">~5-10</p>
-                                    <p className="text-slate-400 mb-1 font-semibold">min to pickup</p>
-                                </>
-                            ) : (
-                                <p className="text-3xl font-bold text-primary animate-pulse">Seeking Driver</p>
-                            )}
-                        </div>
-                        <p className="text-xs text-slate-500 mt-4">
-                            {pendingOrders.some((o: any) => o.driverId)
-                                ? "Nearest courier has been dispatched."
-                                : "Awaiting a driver to accept the request."}
-                        </p>
-                    </div>
+                <SmartOperations
+                    restaurantId={restaurant.id}
+                    schedules={restaurant.schedules || []}
+                    autoPilotEnabled={restaurant.autoPilotEnabled || false}
+                    capacityThreshold={restaurant.capacityThreshold || 10}
+                />
 
-                    <div className="card bg-blue-500/5 border-blue-500/20">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg">Pacing Metrics</h3>
-                            <span className="text-blue-400 text-xs font-mono uppercase font-bold tracking-widest">Operational</span>
-                        </div>
-                        <div className="flex items-end gap-2 text-blue-400">
-                            {restaurant.avgPrepTime > 0 ? (
-                                <>
-                                    <p className="text-5xl font-bold">{Math.round((15 / restaurant.avgPrepTime) * 100)}%</p>
-                                    <p className="text-xs text-slate-500 mb-1 leading-tight">Score</p>
-                                </>
-                            ) : (
-                                <p className="text-xl font-bold text-slate-500 animate-pulse">Building Profile...</p>
-                            )}
-                        </div>
-                        <p className="text-xs text-slate-500 mt-4">
-                            {restaurant.avgPrepTime > 0
-                                ? `Current performance based on ${restaurant.readyCount} recent orders.`
-                                : "Awaiting enough operational data to calculate score."}
-                        </p>
-                    </div>
-                </div>
+                <MenuArchitect restaurantId={restaurant.id} />
+
+                <MerchantAnalytics 
+                    orders={restaurant.orders || []} 
+                    restaurantName={restaurant.name} 
+                />
+
+                <CustomerPulse restaurantId={restaurant.id} />
+
+                <DriverPerformance orders={restaurant.orders || []} />
+
+                <InventoryManager
+
+
+                    restaurantId={restaurant.id}
+                    menuItems={restaurant.menuItems || []}
+                    outOfStockIngredients={restaurant.outOfStockIngredients || []}
+                />
+
+
+
 
                 {/* Orders Section */}
                 <section className="mb-12">
@@ -348,7 +374,22 @@ export default async function MerchantDashboard({
                                                 {(order.status as any) === 'READY_FOR_PICKUP' ? 'PICKUP READY' : order.status}
                                             </span>
                                             {(order as any).isRefunded && <span className="text-[10px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded font-bold uppercase">Refunded</span>}
+                                            {(() => {
+                                                const waitTime = (Date.now() - new Date(order.createdAt).getTime()) / 60000;
+                                                const isStressed = waitTime > 8 && order.status !== 'DELIVERED' && order.status !== 'CANCELLED';
+                                                const noDriver = !order.driverId && order.status === 'READY_FOR_PICKUP';
+                                                
+                                                if (isStressed || noDriver) {
+                                                    return (
+                                                        <span className="text-[10px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded font-black uppercase flex items-center gap-1 animate-pulse border border-orange-500/20">
+                                                            <span>⌛</span> {noDriver ? 'Waiting for Courier' : `Delayed +${Math.floor(waitTime)}m`}
+                                                        </span>
+                                                    );
+                                                }
+                                                return null;
+                                            })()}
                                         </div>
+
                                         <h3 className="font-bold text-lg">{order.user.name}</h3>
                                         <p className="text-xs text-slate-500">LogKey: <span className="text-primary font-mono">{order.posReference}</span></p>
                                     </div>
@@ -387,12 +428,8 @@ export default async function MerchantDashboard({
                                             </form>
                                         )}
 
-                                        <form action={async () => {
-                                            "use server";
-                                            await updateOrderStatus(order.id, 'CANCELLED');
-                                        }}>
-                                            <button type="submit" className="btn btn-outline text-sm py-2 text-red-400 border-red-500/20 hover:bg-red-500/10">Reject</button>
-                                        </form>
+                                        <MerchantRejectButton orderId={order.id} />
+
 
                                         {/* Track Driver Button */}
                                         {order.driver && order.driver.currentLat && (
@@ -405,7 +442,13 @@ export default async function MerchantDashboard({
                                                 <span>📍</span> Track Driver
                                             </a>
                                         )}
+
+                                        <LiveReassurance 
+                                            orderId={order.id} 
+                                            customerName={order.user.name} 
+                                        />
                                     </div>
+
 
                                     {!(order as any).isRefunded && (
                                         <form action={async () => {
@@ -501,36 +544,14 @@ export default async function MerchantDashboard({
 
                 <div className="grid grid-1 gap-4">
                     {restaurant.menuItems.map((item: any) => (
-                        <div key={item.id} className="card p-4 flex justify-between items-center hover:bg-white/5 transition-colors">
-                            <div className="flex gap-4 items-center">
-                                <div className="h-16 w-16 bg-slate-700 rounded-lg overflow-hidden shrink-0">
-                                    {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />}
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-lg">{item.name}</h3>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${item.status === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400' :
-                                            item.status === 'REJECTED' ? 'bg-red-500/20 text-red-400' :
-                                                item.status === 'FLAGGED' ? 'bg-orange-500/20 text-orange-400' :
-                                                    'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
-                                            {item.status}
-                                        </span>
-                                    </div>
-                                    <p className="text-slate-400 text-sm">{item.description}</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-bold text-xl">${Number(item.price).toFixed(2)}</p>
-                                <div className="flex flex-col items-end gap-1 mt-1">
-                                    <button className="text-xs text-primary hover:underline">Edit Item</button>
-                                    {item.status === 'FLAGGED' && (
-                                        <p className="text-[10px] text-orange-400 italic font-semibold">Admin flagged this item: Please review.</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        <MenuRow 
+                            key={item.id} 
+                            item={item} 
+                            outOfStockIngredients={restaurant.outOfStockIngredients || []}
+                        />
                     ))}
+
+
                 </div>
             </main>
         </div>

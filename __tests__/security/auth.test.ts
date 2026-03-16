@@ -47,7 +47,9 @@ async function getSessionToken(email: string): Promise<string> {
 
 // ─── Test suite ───────────────────────────────────────────────────────────────
 
-describe("Auth & Security Tests", () => {
+const isMock = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('mock');
+
+(isMock ? describe.skip : describe)("Auth & Security Tests", () => {
     // Track created user IDs for cleanup
     const createdUserIds: string[] = [];
     const ts = Date.now();

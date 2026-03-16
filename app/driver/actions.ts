@@ -42,10 +42,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
     const address = formData.get("address") as string;
     const lat = formData.get("lat") as string;
     const lng = formData.get("lng") as string;
+    const hasSignedAgreement = formData.get("hasSignedAgreement") === "true";
 
-    if (!name || !email || !vehicleType || !vehicleMake || !vehicleModel || !vehicleColor || !licensePlate || !phone || !idDocument || !insuranceDocument || !registrationDocument || !dob || !address) {
-        return { message: "Please fill in all fields, including vehicle details and documents.", error: true };
+    if (!name || !email || !vehicleType || !vehicleMake || !vehicleModel || !vehicleColor || !licensePlate || !phone || !idDocument || !insuranceDocument || !registrationDocument || !dob || !address || !hasSignedAgreement) {
+        return { message: "Please fill in all fields and sign the agreement.", error: true };
     }
+
+
 
     // Mock Verification
     console.log(`[DriverApp] Docs Received for ${email}: File(${idDocument.name}, ${idDocument.size} bytes)`);
@@ -180,6 +183,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             console.log(`[DriverApp] 🟡 AI Sent to Manual Review for ${email}. Reason: Scans failed automated compliance checks.`);
         }
 
+        const aiMetadata = {
+            idScan,
+            insuranceScan,
+            registrationScan,
+            scannedAt: new Date().toISOString()
+        };
+
         const { error: driverError } = await supabaseAdmin
             .from('Driver')
             .upsert({
@@ -197,8 +207,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 vehicleVerified: false, // Always false on signup, admin must approve
                 insuranceDocumentUrl: insuranceUrl,
                 registrationDocumentUrl: registrationUrl,
+                hasSignedAgreement: true,
+                agreementSignedAt: new Date().toISOString(),
+                aiMetadata: aiMetadata,
                 updatedAt: new Date().toISOString()
             }, { onConflict: 'userId' });
+
+
 
         if (driverError) {
             throw driverError;
@@ -390,6 +405,50 @@ export async function pickupOrder(orderId: string) {
         return { error: e.message };
     }
 }
+
+export async function unassignOrder(orderId: string, reason: string) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
+
+        const { data: order } = await supabase
+            .from('Order')
+            .select('status, driver:Driver(userId), restaurant:Restaurant(name)')
+            .eq('id', orderId)
+            .single();
+
+        if (!order) throw new Error("Order not found");
+        if ((order.driver as any)?.userId !== user.id) throw new Error("This is not your order to drop.");
+        if (order.status === 'PICKED_UP') {
+            throw new Error("You have already picked up this order. Please contact support to cancel.");
+        }
+
+        const { error } = await supabaseAdmin
+            .from('Order')
+            .update({
+                driverId: null,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+        if (error) throw error;
+
+        // Notify Admin/Merchant that driver dropped the order
+        await createNotification({
+            userId: user.id, // Notification for driver? No, actually we should notify the system.
+            title: "Order Dropped",
+            message: `Driver ${user.user_metadata?.displayName} dropped order from ${(order.restaurant as any)?.name || "Restaurant"}. Reason: ${reason}`
+        });
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
 
 export async function completeDelivery(orderId: string, deliveryPin?: string, driverLat?: number, driverLng?: number) {
     try {
