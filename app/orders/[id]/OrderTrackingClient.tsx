@@ -399,7 +399,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
                         <button
                             onClick={handleDownloadReceipt}
-                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-6 text-[10px] font-black uppercase tracking-widest h-10"
+                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-8 text-[11px] font-black uppercase tracking-[0.2em] py-4 h-auto min-h-[50px] leading-tight"
                         >
                             Download PDF Receipt
                         </button>
@@ -407,7 +407,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
                             <button
                                 onClick={() => setIsCancelModalOpen(true)}
-                                className="w-full btn mt-2 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest h-10"
+                                className="w-full btn mt-3 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all text-[11px] font-black uppercase tracking-[0.2em] py-4 h-auto min-h-[50px] leading-tight"
                             >
                                 Cancel Order
                             </button>

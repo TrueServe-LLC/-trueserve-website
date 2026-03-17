@@ -240,16 +240,17 @@ export default function MenuClient({
             <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-8 p-5 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative overflow-hidden">
-                        <div className="flex items-center gap-3 mb-3">
+                    <Link href="/benefits" className="block mb-8 p-6 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative overflow-hidden">
+                        <div className="flex items-center gap-3 mb-4">
                             <span className="text-xl">💎</span>
                             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">TrueServe+ Benefit</span>
                         </div>
-                        <p className="text-xs text-slate-300 font-medium leading-relaxed">
-                            Zero delivery fees on this order.
-                            <br />
-                            <span className="text-primary group-hover:underline underline-offset-4 font-bold inline-block mt-1">Explore Benefits &rarr;</span>
-                        </p>
+                        <div className="space-y-2">
+                            <p className="text-sm text-slate-300 font-medium leading-relaxed">
+                                Zero delivery fees on this order.
+                            </p>
+                            <span className="text-primary group-hover:underline underline-offset-4 font-bold inline-block text-xs">Explore Benefits &rarr;</span>
+                        </div>
                     </Link>
 
                     <div className="mb-8 group">
@@ -270,9 +271,9 @@ export default function MenuClient({
                             }}
                         />
                         {deliveryAddress && (
-                            <div className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in anim-delay-1">
-                                <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1.5 opacity-70">Confirming Address:</p>
-                                <p className="text-xs text-white font-bold leading-normal break-words">{deliveryAddress}</p>
+                            <div className="mt-6 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in anim-delay-1">
+                                <p className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.25em] mb-2 opacity-80">Confirming Address:</p>
+                                <p className="text-sm text-white font-bold leading-relaxed break-words">{deliveryAddress}</p>
                             </div>
                         )}
                         <div className="mt-6">
@@ -280,7 +281,7 @@ export default function MenuClient({
                                 Delivery Instructions
                             </h3>
                             <textarea
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-xs font-medium focus:border-primary/50 focus:bg-white/10 outline-none transition-all min-h-[80px] text-white placeholder:text-slate-600"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5 text-sm md:text-base font-medium focus:border-primary/50 focus:bg-white/10 outline-none transition-all min-h-[100px] text-white placeholder:text-slate-600 leading-relaxed"
                                 placeholder='e.g., "Leave at front door," "Gate code 1234," "Blue house with white fence"'
                                 value={deliveryInstructions}
                                 onChange={(e) => setDeliveryInstructions(e.target.value)}
