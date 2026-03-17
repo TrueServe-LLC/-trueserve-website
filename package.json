@@ -9,9 +9,11 @@
     "lint": "eslint",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
+    "db:seed": "tsx seed_service_data.ts",
     "test": "jest",
     "test:security": "jest __tests__/security/auth.test.ts",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.8",

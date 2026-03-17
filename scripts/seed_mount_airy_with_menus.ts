@@ -146,47 +146,77 @@ async function seedMountAiry() {
     for (const res of mountAiryData) {
         console.log(`Processing: ${res.name}...`);
 
-        const merchantId = uuidv4();
         const safeName = res.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
         const email = `owner_${safeName}@trueserve.test`;
         const tempPassword = `MountAiry2026!`;
 
-        // Create User record
-        await supabase.from('User').upsert({
-            id: merchantId,
-            email: email,
-            name: `${res.name} Manager`,
-            role: 'MERCHANT',
-            updatedAt: now,
-            createdAt: now
-        }, { onConflict: 'email' });
+        // Create or Update User record
+        let merchantId: string;
+        const { data: existingUser } = await supabase.from('User')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
 
-        const rId = uuidv4();
-        // Insert Restaurant
-        const { data: rest, error: rError } = await supabase.from('Restaurant').upsert({
-            id: rId,
-            name: res.name,
-            address: res.address,
-            city: res.city,
-            state: res.state,
-            lat: res.lat,
-            lng: res.lng,
-            description: `A fine ${res.cuisine} establishment in historic Mount Airy.`,
-            imageUrl: `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2940&auto=format&fit=crop`,
-            ownerId: merchantId,
-            updatedAt: now,
-            createdAt: now,
-            visibility: 'VISIBLE'
-        }, { onConflict: 'name' });
-
-        if (rError) {
-            console.error(`- Error seeding ${res.name}:`, rError);
-            continue;
+        if (existingUser) {
+            merchantId = existingUser.id;
+            await supabase.from('User').update({
+                name: `${res.name} Manager`,
+                updatedAt: now
+            }).eq('id', merchantId);
+        } else {
+            merchantId = uuidv4();
+            await supabase.from('User').insert({
+                id: merchantId,
+                email: email,
+                name: `${res.name} Manager`,
+                role: 'MERCHANT',
+                updatedAt: now,
+                createdAt: now
+            });
         }
 
-        // Fetch the restaurant ID (in case of upsert)
-        const { data: actualRest } = await supabase.from('Restaurant').select('id').eq('name', res.name).single();
-        const finalRId = actualRest?.id || rId;
+        // Insert or Update Restaurant
+        let finalRId: string;
+        const { data: existingRest } = await supabase.from('Restaurant')
+            .select('id')
+            .eq('name', res.name)
+            .maybeSingle();
+
+        if (existingRest) {
+            finalRId = existingRest.id;
+            await supabase.from('Restaurant').update({
+                address: res.address,
+                city: res.city,
+                state: res.state,
+                lat: res.lat,
+                lng: res.lng,
+                description: `A fine ${res.cuisine} establishment in historic Mount Airy.`,
+                imageUrl: `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2940&auto=format&fit=crop`,
+                ownerId: merchantId,
+                updatedAt: now,
+                visibility: 'VISIBLE'
+            }).eq('id', finalRId);
+        } else {
+            finalRId = uuidv4();
+            await supabase.from('Restaurant').insert({
+                id: finalRId,
+                name: res.name,
+                address: res.address,
+                city: res.city,
+                state: res.state,
+                lat: res.lat,
+                lng: res.lng,
+                description: `A fine ${res.cuisine} establishment in historic Mount Airy.`,
+                imageUrl: `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2940&auto=format&fit=crop`,
+                ownerId: merchantId,
+                updatedAt: now,
+                createdAt: now,
+                visibility: 'VISIBLE'
+            });
+        }
+
+        // Cleanup existing menu items
+        await supabase.from('MenuItem').delete().eq('restaurantId', finalRId);
 
         // Insert Menu Items
         const menuItems = res.menu.map(item => ({
