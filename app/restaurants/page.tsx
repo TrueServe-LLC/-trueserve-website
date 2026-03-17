@@ -66,6 +66,7 @@ async function getRestaurants(
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
         { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], lat: 35.0833, lng: -80.8872 },
         { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 },
+        { city: 'Mount Airy', state: 'NC', zipPrefixes: ['27030'], lat: 36.4993, lng: -80.6073 },
         { city: 'Greenville', state: 'SC', zipPrefixes: ['29601', '29605', '29607', '29609', '29611', '29617'], lat: 34.8526, lng: -82.3940 },
         { city: 'Simpsonville', state: 'SC', zipPrefixes: ['29680', '29681'], lat: 34.7371, lng: -82.2537 },
         { city: 'Spartanburg', state: 'SC', zipPrefixes: ['29301', '29302', '29303', '29306', '29307'], lat: 34.9496, lng: -81.9320 },
@@ -80,11 +81,21 @@ async function getRestaurants(
 
     let validLocations: any[] = fallbackMocks;
 
-    // Try fetching from DB
+    // Try fetching from DB and ensure lat/lng are populated
     try {
         const { data: dbLocations } = await supabase.from('ServiceLocation').select('*').eq('isActive', true);
         if (dbLocations && dbLocations.length > 0) {
-            validLocations = [...dbLocations];
+            validLocations = dbLocations.map(dbLoc => {
+                const mockMatch = fallbackMocks.find(m => m.city === dbLoc.city);
+                return {
+                    lat: mockMatch?.lat || 0,
+                    lng: mockMatch?.lng || 0,
+                    zipPrefixes: [],
+                    ...mockMatch,
+                    ...dbLoc
+                };
+            }).filter(l => l.lat && l.lng); // Filter out any that STILL don't have coords
+            
             // Merge mocks if not present (for demo continuity)
             for (const mock of fallbackMocks) {
                 const exists = validLocations.find(l => l.city === mock.city && l.state === mock.state);
@@ -140,7 +151,9 @@ async function getRestaurants(
 
     const locationMeta = {
         name: address || (term && term.length > 10 ? term : `${matchedLocation.city}, ${matchedLocation.state}`),
-        center: (lat && lng) ? [lat, lng] as [number, number] : [matchedLocation.lat, matchedLocation.lng] as [number, number]
+        center: (lat && !isNaN(lat) && lng && !isNaN(lng)) 
+            ? [lat, lng] as [number, number] 
+            : [matchedLocation.lat || DEFAULT_CENTER[0], matchedLocation.lng || DEFAULT_CENTER[1]] as [number, number]
     };
 
     try {
@@ -382,6 +395,7 @@ export default async function RestaurantFinder({
             { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
             { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
             { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 },
+            { city: 'Mount Airy', state: 'NC', lat: 36.4993, lng: -80.6073 },
             { city: 'Greenville', state: 'SC', lat: 34.8526, lng: -82.3940 },
             { city: 'Simpsonville', state: 'SC', lat: 34.7371, lng: -82.2537 },
             { city: 'Spartanburg', state: 'SC', lat: 34.9496, lng: -81.9320 },
