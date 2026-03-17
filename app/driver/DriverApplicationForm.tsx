@@ -80,6 +80,49 @@ export default function DriverApplicationForm() {
 
 
 
+    const fillDemoData = (hubName?: string) => {
+        const hubs = [
+            { name: "Alex Luthor", city: "Fayetteville", address: "225 Hay St, Fayetteville, NC 28301", lat: 35.0527, lng: -78.8784 },
+            { name: "Bruce Wayne", city: "Charlotte", address: "101 N Tryon St, Charlotte, NC 28202", lat: 35.2271, lng: -80.8431 },
+            { name: "Clark Kent", city: "Mount Airy", address: "125 N Main St, Mount Airy, NC 27030", lat: 36.5028, lng: -80.6084 },
+            { name: "Diana Prince", city: "Greenville", address: "101 N Main St, Greenville, SC 29601", lat: 34.8526, lng: -82.3940 }
+        ];
+        
+        const hub = hubName 
+            ? hubs.find(h => h.city === hubName) || hubs[0]
+            : hubs[Math.floor(Math.random() * hubs.length)];
+
+        setFormData({
+            name: `${hub.name} (Demo)`,
+            email: `driver_${hub.city.toLowerCase()}_${Math.floor(Math.random() * 1000)}@truelogistics.test`,
+            phone: "+1555" + Math.floor(Math.random() * 9000000 + 1000000),
+            dob: "1992-05-15",
+            address: hub.address,
+            lat: hub.lat,
+            lng: hub.lng,
+            vehicleType: "Car",
+            vehicleMake: "Tesla",
+            vehicleModel: "Model 3",
+            vehicleColor: "Deep Blue Metallic",
+            licensePlate: `TS-${hub.city.substring(0,3).toUpperCase()}-1`,
+            consentIdentity: true,
+            consentBackground: true,
+            hasSignedAgreement: true,
+        });
+
+        // Create a dummy 1x1 pixel image for the file uploads
+        const dummyFile = new File(
+            [new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52])], 
+            "demo_license.png", 
+            { type: "image/png" }
+        );
+        
+        setFile(dummyFile);
+        setInsuranceFile(dummyFile);
+        setRegistrationFile(dummyFile);
+        setStep(5); // Skip to the final signature step
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -126,6 +169,24 @@ export default function DriverApplicationForm() {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            {process.env.NODE_ENV === 'development' && (
+                <div className="space-y-2 mb-6 p-4 bg-primary/5 border border-dashed border-primary/20 rounded-2xl">
+                    <p className="text-[9px] font-black text-primary uppercase tracking-widest text-center mb-2">⚡ Mock Signup (Selection)</p>
+                    <div className="grid grid-cols-2 gap-2">
+                        {["Fayetteville", "Charlotte", "Mount Airy", "Greenville"].map((city) => (
+                            <button 
+                                key={city}
+                                type="button" 
+                                onClick={() => fillDemoData(city)}
+                                className="py-2.5 bg-black/40 hover:bg-black/60 border border-white/5 rounded-xl text-[9px] font-black text-white hover:text-primary uppercase tracking-widest transition-all"
+                            >
+                                {city}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {state.error && (
                 <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-xs font-bold animate-shake">
                     ⚠️ {state.message}

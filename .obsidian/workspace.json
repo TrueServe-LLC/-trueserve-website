@@ -185,15 +185,16 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "get_restaurants_list.ts",
+    "get_locations.ts",
+    "seed_fayetteville_v2.ts",
+    "check_res_schema.ts",
+    "seed_fayetteville.ts",
+    "add_fayetteville_v2.ts",
     "check_sloc_schema.ts",
+    "add_fayetteville.ts",
     "check_sloc_final.ts",
     "deep_check_coords.ts",
-    "check_coords.ts",
-    "final_seed.ts",
-    "check_service_loc.ts",
-    "check_cols_manually.ts",
-    "debug_visibility.ts",
-    "temp_check.ts",
-    "check_mount_airy.ts"
+    "check_coords.ts"
   ]
 }

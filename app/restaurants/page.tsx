@@ -76,7 +76,8 @@ async function getRestaurants(
         { city: 'Marietta', state: 'GA', zipPrefixes: ['30008', '30060', '30062', '30064', '30066', '30067', '30068'], lat: 33.9526, lng: -84.5499 },
         { city: 'Evans', state: 'GA', zipPrefixes: ['30809'], lat: 33.5335, lng: -82.1307 },
         { city: 'Davidson', state: 'NC', zipPrefixes: ['28035', '28036'], lat: 35.4993, lng: -80.8487 },
-        { city: 'Brevard', state: 'NC', zipPrefixes: ['28712'], lat: 35.2334, lng: -82.7343 }
+        { city: 'Brevard', state: 'NC', zipPrefixes: ['28712'], lat: 35.2334, lng: -82.7343 },
+        { city: 'Fayetteville', state: 'NC', zipPrefixes: ['283'], lat: 35.0527, lng: -78.8784 }
     ];
 
     let validLocations: any[] = fallbackMocks;
@@ -405,7 +406,8 @@ export default async function RestaurantFinder({
             { city: 'Marietta', state: 'GA', lat: 33.9526, lng: -84.5499 },
             { city: 'Evans', state: 'GA', lat: 33.5335, lng: -82.1307 },
             { city: 'Davidson', state: 'NC', lat: 35.4993, lng: -80.8487 },
-            { city: 'Brevard', state: 'NC', lat: 35.2334, lng: -82.7343 }
+            { city: 'Brevard', state: 'NC', lat: 35.2334, lng: -82.7343 },
+            { city: 'Fayetteville', state: 'NC', lat: 35.0527, lng: -78.8784 }
         ];
         try {
             const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
