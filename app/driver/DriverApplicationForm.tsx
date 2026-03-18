@@ -82,10 +82,21 @@ export default function DriverApplicationForm() {
 
     const fillDemoData = (hubName?: string) => {
         const hubs = [
-            { name: "Alex Luthor", city: "Fayetteville", address: "225 Hay St, Fayetteville, NC 28301", lat: 35.0527, lng: -78.8784 },
-            { name: "Bruce Wayne", city: "Charlotte", address: "101 N Tryon St, Charlotte, NC 28202", lat: 35.2271, lng: -80.8431 },
-            { name: "Clark Kent", city: "Mount Airy", address: "125 N Main St, Mount Airy, NC 27030", lat: 36.5028, lng: -80.6084 },
-            { name: "Diana Prince", city: "Greenville", address: "101 N Main St, Greenville, SC 29601", lat: 34.8526, lng: -82.3940 }
+            // North Carolina
+            { name: "Alex Luthor", city: "Fayetteville", state: "NC", address: "225 Hay St, Fayetteville, NC 28301", lat: 35.0527, lng: -78.8784 },
+            { name: "Bruce Wayne", city: "Charlotte", state: "NC", address: "101 N Tryon St, Charlotte, NC 28202", lat: 35.2271, lng: -80.8431 },
+            { name: "Clark Kent", city: "Mount Airy", state: "NC", address: "125 N Main St, Mount Airy, NC 27030", lat: 36.5028, lng: -80.6084 },
+            { name: "Peter Parker", city: "Davidson", state: "NC", address: "405 N Main St, Davidson, NC 28036", lat: 35.4993, lng: -80.8487 },
+            
+            // South Carolina
+            { name: "Diana Prince", city: "Greenville", state: "SC", address: "101 N Main St, Greenville, SC 29601", lat: 34.8526, lng: -82.3940 },
+            { name: "Arthur Curry", city: "Rock Hill", state: "SC", address: "155 Johnston St, Rock Hill, SC 29730", lat: 34.9249, lng: -81.0251 },
+            { name: "Barry Allen", city: "Clemson", state: "SC", address: "105 Sikes Hall, Clemson, SC 29634", lat: 34.6834, lng: -82.8374 },
+            
+            // Georgia
+            { name: "Tony Stark", city: "Marietta", state: "GA", address: "205 Lawrence St NE, Marietta, GA 30060", lat: 33.9526, lng: -84.5499 },
+            { name: "Steve Rogers", city: "Athens", state: "GA", address: "301 College Ave, Athens, GA 30601", lat: 33.9519, lng: -83.3576 },
+            { name: "Natasha Romanoff", city: "Evans", state: "GA", address: "4350 Towne Centre Blvd, Evans, GA 30809", lat: 33.5335, lng: -82.1307 }
         ];
         
         const hub = hubName 
@@ -94,7 +105,7 @@ export default function DriverApplicationForm() {
 
         setFormData({
             name: `${hub.name} (Demo)`,
-            email: `driver_${hub.city.toLowerCase()}_${Math.floor(Math.random() * 1000)}@truelogistics.test`,
+            email: `driver_${hub.city.toLowerCase().replace(' ', '_')}_${Math.floor(Math.random() * 1000)}@truelogistics.test`,
             phone: "+1555" + Math.floor(Math.random() * 9000000 + 1000000),
             dob: "1992-05-15",
             address: hub.address,
@@ -110,9 +121,8 @@ export default function DriverApplicationForm() {
             hasSignedAgreement: true,
         });
 
-        // Create a dummy 1x1 pixel image for the file uploads
         const dummyFile = new File(
-            [new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52])], 
+            [new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])], 
             "demo_license.png", 
             { type: "image/png" }
         );
@@ -120,7 +130,7 @@ export default function DriverApplicationForm() {
         setFile(dummyFile);
         setInsuranceFile(dummyFile);
         setRegistrationFile(dummyFile);
-        setStep(5); // Skip to the final signature step
+        setStep(5);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -162,7 +172,7 @@ export default function DriverApplicationForm() {
                 <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center text-5xl mx-auto mb-8 border border-emerald-500/30">✅</div>
                 <h3 className="text-2xl font-black text-emerald-400 mb-2 leading-tight py-1">Thanks for applying!</h3>
                 <p className="text-slate-300 text-sm font-medium leading-relaxed">We will get back with you soon.</p>
-                <Link href="/login" className="btn btn-primary w-full mt-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px]">Log In to Portal</Link>
+                <Link href="/driver/login" className="btn btn-primary w-full mt-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px]">Log In to Portal</Link>
             </div>
         );
     }
@@ -170,10 +180,10 @@ export default function DriverApplicationForm() {
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {process.env.NODE_ENV === 'development' && (
-                <div className="space-y-2 mb-6 p-4 bg-primary/5 border border-dashed border-primary/20 rounded-2xl">
-                    <p className="text-[9px] font-black text-primary uppercase tracking-widest text-center mb-2">⚡ Mock Signup (Selection)</p>
-                    <div className="grid grid-cols-2 gap-2">
-                        {["Fayetteville", "Charlotte", "Mount Airy", "Greenville"].map((city) => (
+                <div className="space-y-4 mb-8 p-6 bg-primary/5 border border-dashed border-primary/30 rounded-3xl">
+                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] text-center">⚡ Mock Driver Signup (NC / SC / GA)</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {["Charlotte", "Mount Airy", "Fayetteville", "Davidson", "Greenville", "Rock Hill", "Clemson", "Marietta", "Athens", "Evans"].map((city) => (
                             <button 
                                 key={city}
                                 type="button" 
