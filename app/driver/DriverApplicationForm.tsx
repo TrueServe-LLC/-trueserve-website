@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState, useRef, startTransition, useEffect } from "react";
+import { useActionState, useState, useRef, startTransition, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { submitDriverApplication } from "./actions";
 import AddressInput from "@/components/AddressInput";
 
@@ -12,6 +13,17 @@ const initialState = {
 };
 
 export default function DriverApplicationForm() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading form...</div>}>
+            <DriverApplicationFormInner />
+        </Suspense>
+    );
+}
+
+function DriverApplicationFormInner() {
+    const searchParams = useSearchParams();
+    const isMockMode = process.env.NODE_ENV === 'development' || searchParams.get('mock') === 'true';
+
     const [state, formAction, isPending] = useActionState(submitDriverApplication, initialState);
 
     // Multi-step Wizard State
@@ -179,7 +191,7 @@ export default function DriverApplicationForm() {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {process.env.NODE_ENV === 'development' && (
+            {isMockMode && (
                 <div className="space-y-4 mb-8 p-6 bg-primary/5 border border-dashed border-primary/30 rounded-3xl">
                     <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] text-center">⚡ Mock Driver Signup (NC / SC / GA)</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">

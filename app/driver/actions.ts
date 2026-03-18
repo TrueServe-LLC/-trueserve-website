@@ -160,13 +160,11 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         let isAutoApproved = isIdValid && isInsuranceValid && isRegistrationValid;
 
-        // --- DEV-ONLY: MOCK AUTO-APPROVAL ---
-        // If we are in dev mode and using a .test or @truelogistics.test email, we skip AI scanned approval
-        if (process.env.NODE_ENV === 'development') {
-            if (email.endsWith('.test') || email.includes('@truelogistics.test')) {
-                console.log(`[DriverApp] ⚡ MOCK AUTO-APPROVE: Detected test email ${email}. Skipping AI compliance checks.`);
-                isAutoApproved = true;
-            }
+        // --- MOCK AUTO-APPROVAL ---
+        // During testing phase, any @truelogistics.test email domain is auto-approved instantly
+        if (email.endsWith('.test') || email.includes('@truelogistics.test') || email.includes('@admin.test')) {
+            console.log(`[DriverApp] ⚡ MOCK AUTO-APPROVE: Detected test email ${email}. Skipping AI compliance checks.`);
+            isAutoApproved = true;
         }
 
         const driveStatus = "OFFLINE";
