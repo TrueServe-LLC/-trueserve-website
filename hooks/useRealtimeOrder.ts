@@ -32,7 +32,7 @@ export function useRealtimeOrder(orderId: string) {
                     table: 'Order',
                     filter: `id=eq.${orderId}`
                 },
-                (payload) => {
+                (payload: any) => {
                     setOrder((prev: any) => ({ ...prev, ...payload.new }));
                 }
             )
@@ -52,7 +52,7 @@ export function useRealtimeOrder(orderId: string) {
                         table: 'Driver',
                         filter: `id=eq.${order.driverId}`
                     },
-                    (payload) => {
+                    (payload: any) => {
                         if (payload.new.currentLat && payload.new.currentLng) {
                             setDriverLocation({
                                 lat: payload.new.currentLat,

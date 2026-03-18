@@ -30,7 +30,7 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
                 .order('createdAt', { ascending: true });
 
             if (data) {
-                setMessages(data.map(m => ({
+                setMessages(data.map((m: any) => ({
                     id: m.id,
                     content: m.content,
                     sender: m.sender as any,
@@ -51,7 +51,7 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
                     table: 'OrderChatMessage',
                     filter: `orderId=eq.${orderId}`
                 },
-                (payload) => {
+                (payload: any) => {
                     const newMsg = payload.new;
                     setMessages(prev => [...prev, {
                         id: newMsg.id,

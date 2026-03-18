@@ -91,7 +91,7 @@ export default function DriverMap() {
             // Real-time Subscription to continually pump live points into the AI map!
             channel = supabase
                 .channel('realtime-orders')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Order' }, async (payload) => {
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Order' }, async (payload: any) => {
                     console.log('New Order! Updating Heatmap...', payload);
                     const newOrder = payload.new as any;
 

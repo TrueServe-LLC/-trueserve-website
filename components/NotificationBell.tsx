@@ -31,7 +31,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
                     table: 'Notification',
                     filter: `userId=eq.${userId}`
                 },
-                (payload) => {
+                (payload: any) => {
                     setNotifications(prev => [payload.new, ...prev]);
                     setUnreadCount(prev => prev + 1);
                 }
