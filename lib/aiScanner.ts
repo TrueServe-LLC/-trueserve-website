@@ -210,3 +210,98 @@ export async function verifyDriverIdentityWithAI(imageFile: Blob): Promise<{ suc
         return { success: false, confidence: 0, reason: e.message || "Unknown error during AI face verification." };
     }
 }
+
+/**
+ * AI Menu Scanner: Extracts restaurant details and menu items from a photo.
+ * Used for automated merchant onboarding.
+ */
+export type MenuScanResult = {
+    restaurantName?: string;
+    address?: string;
+    phone?: string;
+    description?: string;
+    menuItems: Array<{
+        name: string;
+        description: string;
+        price: number;
+        category?: string;
+    }>;
+    confidence: number;
+};
+
+export async function scanRestaurantMenuWithAI(file: File): Promise<MenuScanResult | null> {
+    if (!GEMINI_API_KEY) {
+        return null;
+    }
+
+    try {
+        const buffer = await file.arrayBuffer();
+        const base64Data = Buffer.from(buffer).toString('base64');
+        const mimeType = file.type;
+
+        const prompt = `
+        You are an expert menu digitizer. Analyze this photo of a restaurant menu and extract ALL relevant information.
+        Extract the restaurant name, address, and phone number if visible.
+        Then, list every menu item with its name, a brief description, and its price.
+        Respond ENTIRELY in valid JSON format.
+        
+        Required JSON structure:
+        {
+            "restaurantName": string | null,
+            "address": string | null,
+            "phone": string | null,
+            "description": "A short marketing description based on the cuisine",
+            "menuItems": [
+                {
+                    "name": string,
+                    "description": string,
+                    "price": number,
+                    "category": string // e.g., "Appetizers", "Main Course", "Drinks"
+                }
+            ],
+            "confidence": number // 0.0 to 1.0
+        }
+        `;
+
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: mimeType,
+                                        data: base64Data
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        temperature: 0.1,
+                        responseMimeType: "application/json"
+                    }
+                })
+            }
+        );
+
+        if (!response.ok) throw new Error("Gemini API Error");
+
+        const data = await response.json();
+        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!responseText) throw new Error("No text returned from Gemini API");
+
+        const parsed = JSON.parse(responseText);
+        return parsed as MenuScanResult;
+
+    } catch (e) {
+        console.error("[AI Menu Scanner] Error:", e);
+        return null;
+    }
+}
+

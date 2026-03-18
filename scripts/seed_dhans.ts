@@ -18,29 +18,55 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 async function addDhansKitchen() {
     console.log("Adding Dhan's Kitchen to Fayetteville...")
     const now = new Date().toISOString()
-    const merchantId = uuidv4()
-    const restaurantId = uuidv4()
-
-    // 1. Create Merchant User
-    const { error: userError } = await supabase.from('User').insert({
-        id: merchantId,
-        name: 'Dhan Griffin',
-        email: 'dhanskitchen@trueserve.test',
-        phone: '+19102638591',
-        role: 'MERCHANT',
-        address: '432 Chatham St, Fayetteville, NC 28301',
-        createdAt: now,
-        updatedAt: now
-    })
-
-    if (userError) {
-        console.error('User creation error:', userError)
+    
+    // 1. Find or Create Merchant User
+    const merchantEmail = 'dhanskitchen@trueserve.test'
+    let merchantId = ''
+    
+    const { data: existingUser } = await supabase
+        .from('User')
+        .select('id')
+        .eq('email', merchantEmail)
+        .single()
+        
+    if (existingUser) {
+        merchantId = existingUser.id
+        console.log('Using existing merchant account:', merchantId)
     } else {
-        console.log('Merchant account created.')
+        merchantId = uuidv4()
+        const { error: userError } = await supabase.from('User').insert({
+            id: merchantId,
+            name: 'Dhan Griffin',
+            email: merchantEmail,
+            phone: '+19102638591',
+            role: 'MERCHANT',
+            address: '432 Chatham St, Fayetteville, NC 28301',
+            createdAt: now,
+            updatedAt: now
+        })
+        if (userError) {
+            console.error('User creation error:', userError)
+            return
+        }
+        console.log('New merchant account created.')
     }
 
-    // 2. Create Restaurant
-    const { error: restError } = await supabase.from('Restaurant').insert({
+    // 2. Find or Create Restaurant
+    let restaurantId = ''
+    const { data: existingRest } = await supabase
+        .from('Restaurant')
+        .select('id')
+        .eq('name', "Dhan's Kitchen")
+        .single()
+        
+    if (existingRest) {
+        restaurantId = existingRest.id
+        console.log('Updating existing restaurant:', restaurantId)
+    } else {
+        restaurantId = uuidv4()
+    }
+
+    const { error: restError } = await supabase.from('Restaurant').upsert({
         id: restaurantId,
         name: "Dhan's Kitchen",
         address: '432 Chatham St',
@@ -49,21 +75,20 @@ async function addDhansKitchen() {
         lat: 35.0503,
         lng: -78.8781,
         description: 'Authentic Caribbean Flavor from the Islands. Specialize in Trinidadian street food, doubles, and hearty curry platters.',
-        imageUrl: 'https://images.unsplash.com/photo-1599307767316-776533da941c?q=80&w=2000&auto=format&fit=crop',
+        imageUrl: 'https://images.squarespace-cdn.com/content/v1/65b858c7baf8b0029d04970b/1770229040424-64H9DWZX259ZRF8VQ9Y1/image-asset.jpeg',
         ownerId: merchantId,
         visibility: 'VISIBLE',
         isMock: false,
         openTime: '11:00:00',
         closeTime: '20:00:00',
-        createdAt: now,
         updatedAt: now
     })
 
     if (restError) {
-        console.error('Restaurant creation error:', restError)
+        console.error('Restaurant upsert error:', restError)
         return
     }
-    console.log('Restaurant added.')
+    console.log('Restaurant profile updated.')
 
     // 3. Menu Items
     const menuItems = [
@@ -99,7 +124,12 @@ async function addDhansKitchen() {
         { name: "Sorrel", price: 4.50, description: "Traditional hibiscus-based beverage." },
         { name: "Peanut Punch", price: 4.50, description: "Creamy, nutty Caribbean punch." },
         { name: "Shandy Carib", price: 3.99, description: "Light beer shandy in various flavors." }
-    ].map(item => ({
+    ]
+
+    // Clear existing menu items first for clean re-seed
+    await supabase.from('MenuItem').delete().eq('restaurantId', restaurantId)
+
+    const fullMenuItems = menuItems.map(item => ({
         id: uuidv4(),
         restaurantId: restaurantId,
         name: item.name,
@@ -111,11 +141,11 @@ async function addDhansKitchen() {
         updatedAt: now
     }))
 
-    const { error: menuError } = await supabase.from('MenuItem').insert(menuItems)
+    const { error: menuError } = await supabase.from('MenuItem').insert(fullMenuItems)
     if (menuError) {
         console.error('Menu items insertion error:', menuError)
     } else {
-        console.log('Full menu added (23 items).')
+        console.log('Full menu re-seeded (23 items).')
     }
 
     console.log('Seed process finished.')
