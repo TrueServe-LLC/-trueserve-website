@@ -185,16 +185,16 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
-    "get_restaurants_list.ts",
-    "get_locations.ts",
-    "seed_fayetteville_v2.ts",
-    "check_res_schema.ts",
-    "seed_fayetteville.ts",
-    "add_fayetteville_v2.ts",
-    "check_sloc_schema.ts",
-    "add_fayetteville.ts",
-    "check_sloc_final.ts",
+    "lib/restaurantScraper.ts",
+    "scripts/check_rest_image.ts",
+    "scripts/scrape_dhans_images.ts",
+    "scripts/remove_firehouse.ts",
+    "scripts/verify_dhans.ts",
+    "scripts/seed_dhans.ts",
+    "db/seed_dhans_kitchen.sql",
     "deep_check_coords.ts",
-    "check_coords.ts"
+    "test_visible.txt",
+    "get_restaurants_list.ts",
+    "get_locations.ts"
   ]
 }

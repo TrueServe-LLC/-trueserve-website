@@ -59,7 +59,7 @@ async function getRestaurant(id: string) {
         let basePrep = restaurant.manualPrepTime || (15 + (seed % 10));
         if (!restaurant.manualPrepTime) basePrep += Math.floor(pendingOrders * 1.5);
         
-        restaurant.isBusy = isBusy;
+        restaurant.isBusy = restaurant.isMock ? false : isBusy;
         restaurant.prepTime = `${basePrep + extraBuffer}-${basePrep + extraBuffer + 10} min`;
 
         return restaurant;

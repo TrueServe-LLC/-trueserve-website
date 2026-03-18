@@ -216,17 +216,25 @@ export async function verifyDriverIdentityWithAI(imageFile: Blob): Promise<{ suc
  * Used for automated merchant onboarding.
  */
 export type MenuScanResult = {
-    restaurantName?: string;
-    address?: string;
-    phone?: string;
-    description?: string;
+    restaurantName: string | null;
+    address: string | null;
+    phone: string | null;
+    description: string;
     menuItems: Array<{
         name: string;
         description: string;
         price: number;
         category?: string;
+        imageUrl: string | null;
+        photoBox: {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+        } | null;
     }>;
     confidence: number;
+    hasImages: boolean;
 };
 
 export async function scanRestaurantMenuWithAI(file: File): Promise<MenuScanResult | null> {
@@ -240,9 +248,15 @@ export async function scanRestaurantMenuWithAI(file: File): Promise<MenuScanResu
         const mimeType = file.type;
 
         const prompt = `
-        You are an expert menu digitizer. Analyze this photo of a restaurant menu and extract ALL relevant information.
-        Extract the restaurant name, address, and phone number if visible.
-        Then, list every menu item with its name, a brief description, and its price.
+        You are a high-level automated menu digitizer, similar to those used by DoorDash and Uber Eats.
+        Analyze this photo of a restaurant menu and extract ALL relevant information with extreme precision.
+        
+        Tasks:
+        1. Identify Restaurant Name, Address, and Phone.
+        2. Create a marketing-friendly description of the restaurant.
+        3. List every menu item with its name, description, and price.
+        4. CRITICAL: For each menu item, if there is a picture of the food next to it, output the "photoBox" coordinates (top, left, height, width as percentages 0 to 100).
+        
         Respond ENTIRELY in valid JSON format.
         
         Required JSON structure:
@@ -250,16 +264,19 @@ export async function scanRestaurantMenuWithAI(file: File): Promise<MenuScanResu
             "restaurantName": string | null,
             "address": string | null,
             "phone": string | null,
-            "description": "A short marketing description based on the cuisine",
+            "description": string,
             "menuItems": [
                 {
                     "name": string,
                     "description": string,
                     "price": number,
-                    "category": string // e.g., "Appetizers", "Main Course", "Drinks"
+                    "category": string,
+                    "imageUrl": string | null,
+                    "photoBox": { "x": number, "y": number, "width": number, "height": number } | null
                 }
             ],
-            "confidence": number // 0.0 to 1.0
+            "confidence": number,
+            "hasImages": boolean
         }
         `;
 

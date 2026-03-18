@@ -75,7 +75,7 @@ async function addDhansKitchen() {
         lat: 35.0503,
         lng: -78.8781,
         description: 'Authentic Caribbean Flavor from the Islands. Specialize in Trinidadian street food, doubles, and hearty curry platters.',
-        imageUrl: 'https://images.squarespace-cdn.com/content/v1/65b858c7baf8b0029d04970b/1770229040424-64H9DWZX259ZRF8VQ9Y1/image-asset.jpeg',
+        imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/oLPcuUuBPIjZ4ry4f88rjg/o.jpg', // High-res Jerk Chicken as cover
         ownerId: merchantId,
         visibility: 'VISIBLE',
         isMock: false,
@@ -88,29 +88,29 @@ async function addDhansKitchen() {
         console.error('Restaurant upsert error:', restError)
         return
     }
-    console.log('Restaurant profile updated.')
+    console.log('Restaurant profile updated with real cover photo.')
 
     // 3. Menu Items
     const menuItems = [
         // Combo Meals
-        { name: "Veggie Combo", price: 13.99, description: "All combos served with Rice & Beans, White Rice, or Roti. Includes two sides." },
-        { name: "Curry Chicken Combo", price: 15.99, description: "Authentic curry chicken with your choice of sides." },
-        { name: "Brown Stew Chicken Combo", price: 15.99, description: "Slow-cooked stew chicken in a rich brown gravy." },
-        { name: "Jerk Chicken Combo", price: 15.99, description: "Spicy grilled jerk chicken with island spices." },
-        { name: "Jerk Ribs Combo", price: 18.99, description: "Tender pork ribs with smoky jerk seasoning." },
-        { name: "Curry Shrimp Combo", price: 18.99, description: "Savory shrimp in a rich curry sauce." },
-        { name: "Stewed Oxtails Combo", price: 19.99, description: "Rich, fall-off-the-bone stewed oxtails." },
-        { name: "Curry Goat Combo", price: 21.99, description: "Tender goat meat slow-cooked in traditional curry." },
-        { name: "Mrs. Griffin 'All veggie' Sampler", price: 22.99, description: "A massive sampler of all our vegan and veggie favorites." },
-        { name: "Mr. Griffin 'All meats' Sampler", price: 26.99, description: "The ultimate carnivore sampler." },
+        { name: "Veggie Combo", price: 13.99, description: "All combos served with Rice & Beans, White Rice, or Roti. Includes two sides.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/d_rlrAXrGbFE6xS_3n2fYA/o.jpg' },
+        { name: "Curry Chicken Combo", price: 15.99, description: "Authentic curry chicken with your choice of sides.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/AVsIbsfpQb0ulnLRSSGDlQ/o.jpg' },
+        { name: "Brown Stew Chicken Combo", price: 15.99, description: "Slow-cooked stew chicken in a rich brown gravy.", imageUrl: null },
+        { name: "Jerk Chicken Combo", price: 15.99, description: "Spicy grilled jerk chicken with island spices.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/oLPcuUuBPIjZ4ry4f88rjg/o.jpg' },
+        { name: "Jerk Ribs Combo", price: 18.99, description: "Tender pork ribs with smoky jerk seasoning.", imageUrl: null },
+        { name: "Curry Shrimp Combo", price: 18.99, description: "Savory shrimp in a rich curry sauce.", imageUrl: null },
+        { name: "Stewed Oxtails Combo", price: 19.99, description: "Rich, fall-off-the-bone stewed oxtails.", imageUrl: null },
+        { name: "Curry Goat Combo", price: 21.99, description: "Tender goat meat slow-cooked in traditional curry.", imageUrl: null },
+        { name: "Mrs. Griffin 'All veggie' Sampler", price: 22.99, description: "A massive sampler of all our vegan and veggie favorites.", imageUrl: null },
+        { name: "Mr. Griffin 'All meats' Sampler", price: 26.99, description: "The ultimate carnivore sampler.", imageUrl: null },
 
         // Non-Vegan Items
-        { name: "Doubles with Chicken", price: 4.99, description: "Trinidadian doubles topped with curried chicken." },
-        { name: "Bake & Saltfish", price: 10.99, description: "Fried dough topped with savory saltfish." },
-        { name: "Macaroni Pie", price: 4.50, description: "Baked cheesy macaroni, a Caribbean staple." },
+        { name: "Doubles with Chicken", price: 4.99, description: "Trinidadian doubles topped with curried chicken.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/gSNbwEK1MOiRTPz1EmuhoQ/o.jpg' },
+        { name: "Bake & Saltfish", price: 10.99, description: "Fried dough topped with savory saltfish.", imageUrl: null },
+        { name: "Macaroni Pie", price: 4.50, description: "Baked cheesy macaroni, a Caribbean staple.", imageUrl: null },
 
         // Vegan Items
-        { name: "Doubles (Vegan)", price: 3.50, description: "Traditional curried chickpeas between two fried flatbreads." },
+        { name: "Doubles (Vegan)", price: 3.50, description: "Traditional curried chickpeas between two fried flatbreads.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/gSNbwEK1MOiRTPz1EmuhoQ/o.jpg' },
         { name: "Dhalpuri Roti (1)", price: 5.00, description: "Single dhalpuri roti skin." },
         { name: "Buss-Up-Shot Roti (1)", price: 5.00, description: "Single paratha roti skin." },
         { name: "Fried Sweet Plantains", price: 3.99, description: "Perfectly ripened, sweet fried plantains." },

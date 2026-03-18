@@ -181,7 +181,7 @@ async function getRestaurants(
         }
 
         // Logic to transition to production: Filter out mock restaurants from DB
-        const realRestaurants = restaurants.filter((r: any) => !r.isMock);
+        const realRestaurants = restaurants; // Include mocks for testing/staging visibility
 
         const mappedRestaurants = realRestaurants.map((r: any, index: number) => {
             const seed = r.name.length + index;
