@@ -359,59 +359,63 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     </div>
 
                     {/* Order Summary Section */}
-                    <div className="card p-6 border border-white/10 bg-slate-900/50 backdrop-blur-sm h-fit sticky top-24">
-                        <h3 className="font-bold text-xl mb-4 border-b border-white/10 pb-4">Receipt</h3>
-                        <div className="space-y-4 mb-6">
+                    <div className="card p-5 md:p-8 border border-white/5 bg-slate-900/40 backdrop-blur-xl h-fit sticky top-24 rounded-[2rem] shadow-2xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="font-black text-xs uppercase tracking-[0.3em] text-slate-500">Order Receipt</h3>
+                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">🧾</div>
+                        </div>
+
+                        <div className="space-y-5 mb-8">
                             {order.items?.map((item: any, i: number) => (
-                                <div key={item.id || i} className="flex justify-between items-start text-sm">
-                                    <div className="flex gap-2">
-                                        <span className="font-bold text-emerald-400">{item.quantity}x</span>
-                                        <span className="text-slate-300">{item.menuItem?.name || item.name || "Item"}</span>
+                                <div key={item.id || i} className="flex justify-between items-start gap-4">
+                                    <div className="flex gap-3 min-w-0">
+                                        <span className="font-black text-secondary text-sm shrink-0">{item.quantity}x</span>
+                                        <div className="min-w-0">
+                                            <p className="text-sm text-white font-bold leading-tight break-words">{item.menuItem?.name || item.name || "Item"}</p>
+                                        </div>
                                     </div>
-                                    <span className="text-slate-400 mono">${Number(item.price).toFixed(2)}</span>
+                                    <span className="text-sm text-slate-400 font-mono shrink-0">${Number(item.price).toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="space-y-2 pt-4 border-t border-white/10 text-xs text-slate-400">
+                        <div className="space-y-3 pt-6 border-t border-white/5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                             <div className="flex justify-between">
                                 <span>Subtotal</span>
-                                <span>${(Number(order.total) || 0).toFixed(2)}</span>
+                                <span className="text-white">${(Number(order.total) || 0).toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Delivery Fee</span>
-                                <span>$0.00</span>
+                                <span>Delivery & Service</span>
+                                <span className="text-white">$0.00</span>
                             </div>
-                            <div className="flex justify-between">
-                                <span>Service Fee</span>
-                                <span>$0.00</span>
-                            </div>
-                            <div className="flex justify-between text-emerald-400 font-medium">
+                            <div className="flex justify-between text-emerald-500">
                                 <span>Driver Tip</span>
                                 <span>${(Number(order.tip) || 0).toFixed(2)}</span>
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center font-bold text-xl text-white">
-                            <span>Total</span>
-                            <span>${((Number(order.total) || 0) + (Number(order.tip) || 0)).toFixed(2)}</span>
+                        <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-baseline">
+                            <span className="font-black text-[10px] uppercase tracking-[0.4em] text-slate-500">Total Amount</span>
+                            <span className="font-black text-2xl text-white tracking-tighter">${((Number(order.total) || 0) + (Number(order.tip) || 0)).toFixed(2)}</span>
                         </div>
 
-                        <button
-                            onClick={handleDownloadReceipt}
-                            className="w-full btn btn-outline border-white/10 hover:bg-white/5 mt-8 text-[11px] font-black uppercase tracking-[0.2em] py-4 h-auto min-h-[50px] leading-tight"
-                        >
-                            Download PDF Receipt
-                        </button>
-
-                        {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
+                        <div className="mt-8 space-y-3">
                             <button
-                                onClick={() => setIsCancelModalOpen(true)}
-                                className="w-full btn mt-3 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all text-[11px] font-black uppercase tracking-[0.2em] py-4 h-auto min-h-[50px] leading-tight"
+                                onClick={handleDownloadReceipt}
+                                className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-[10px] font-black uppercase tracking-[0.25em] text-white transition-all shadow-lg flex items-center justify-center gap-2 group"
                             >
-                                Cancel Order
+                                <span className="group-hover:scale-110 transition-transform">📄</span> Download PDF
                             </button>
-                        )}
+
+                            {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
+                                <button
+                                    onClick={() => setIsCancelModalOpen(true)}
+                                    className="w-full py-4 rounded-2xl bg-red-500/5 border border-red-500/20 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-[0.25em] text-red-500 transition-all flex items-center justify-center gap-2 group"
+                                >
+                                    <span className="group-hover:rotate-12 transition-transform">✕</span> Cancel Order
+                                </button>
+                            )}
+                        </div>
 
 
 
