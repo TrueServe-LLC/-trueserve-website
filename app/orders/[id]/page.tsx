@@ -81,10 +81,13 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
                     <div className="space-y-8">
                         <ChatWindow orderId={order.id} />
 
-                        <div className="card p-6 border-primary/20 bg-primary/5">
-                            <h3 className="font-bold mb-4">TrueServe+ Benefits</h3>
-                            <p className="text-sm text-slate-400 mb-6">Enjoy $0 delivery fees and exclusive perks on every order.</p>
-                            <Link href="/benefits" className="w-full btn btn-primary">Join Membership</Link>
+                        <div className="card p-7 pb-9 border-primary/20 bg-primary/5 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                            <div className="flex items-center gap-3 mb-5">
+                                <span className="text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">💎</span>
+                                <h3 className="font-black text-[11px] uppercase tracking-[0.25em] text-primary">TrueServe+ Benefit</h3>
+                            </div>
+                            <p className="text-base text-slate-300 font-medium leading-[1.6] mb-8">Enjoy $0 delivery fees and exclusive perks on every order.</p>
+                            <Link href="/benefits" className="w-full btn btn-primary text-black font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl shadow-lg shadow-primary/20">Join Membership</Link>
                         </div>
                     </div>
                 </div>

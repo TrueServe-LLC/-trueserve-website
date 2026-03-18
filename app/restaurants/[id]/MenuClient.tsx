@@ -240,16 +240,18 @@ export default function MenuClient({
             <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-8 p-6 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative overflow-hidden">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="text-xl">💎</span>
-                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">TrueServe+ Benefit</span>
+                    <Link href="/benefits" className="block mb-8 p-7 pb-9 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative overflow-hidden shadow-2xl">
+                        <div className="flex items-center gap-3 mb-5">
+                            <span className="text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">💎</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.25em] text-primary">TrueServe+ Benefit</span>
                         </div>
-                        <div className="space-y-2">
-                            <p className="text-sm text-slate-300 font-medium leading-relaxed">
+                        <div className="space-y-4">
+                            <p className="text-base text-slate-300 font-medium leading-[1.6]">
                                 Zero delivery fees on this order.
                             </p>
-                            <span className="text-primary group-hover:underline underline-offset-4 font-bold inline-block text-xs">Explore Benefits &rarr;</span>
+                            <div className="flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
+                                <span className="text-primary underline-offset-4 font-black inline-block text-xs uppercase tracking-widest bg-primary/10 px-4 py-2 rounded-full border border-primary/20 group-hover:bg-primary group-hover:text-black transition-all">Explore Benefits &rarr;</span>
+                            </div>
                         </div>
                     </Link>
 
