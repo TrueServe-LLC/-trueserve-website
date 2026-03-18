@@ -240,20 +240,20 @@ export default function MenuClient({
             <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-8 p-9 pb-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative shadow-2xl overflow-visible">
-                        <div className="flex items-center gap-3 mb-6">
-                            <span className="text-3xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">💎</span>
-                            <span className="text-[11px] font-black uppercase tracking-[0.3em] text-primary">TrueServe+ Benefit</span>
-                        </div>
-                        <div className="space-y-6">
-                            <p className="text-lg text-slate-200 font-bold leading-[1.4] pr-4">
-                                Zero delivery fees on this order.
-                            </p>
-                            <div className="flex items-center pt-2">
-                                <span className="text-primary font-black inline-block text-[11px] uppercase tracking-[0.2em] bg-primary/10 px-6 py-3 rounded-full border border-primary/30 group-hover:bg-primary group-hover:text-black transition-all shadow-lg">Explore Benefits &rarr;</span>
+                    <Link href="/benefits" className="block mb-10 p-10 rounded-[2rem] bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/30 hover:border-primary/60 transition-all group relative shadow-2xl text-center overflow-hidden">
+                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative z-10 flex flex-col items-center gap-5">
+                            <span className="text-4xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">💎</span>
+                            <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block mb-3">TrueServe+ Benefit</span>
+                                <p className="text-xl text-white font-black leading-tight max-w-[200px] mx-auto">
+                                    Zero delivery fees on this order.
+                                </p>
+                            </div>
+                            <div className="mt-2 bg-primary text-black px-8 py-3 rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl group-hover:scale-110 transition-all duration-300">
+                                Explore Benefits &rarr;
                             </div>
                         </div>
-                        {/* Remove overflow-hidden if blobs aren't needed, otherwise keep blobs contained */}
                     </Link>
 
                     <div className="mb-8 group">

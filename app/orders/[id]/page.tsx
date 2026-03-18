@@ -81,13 +81,16 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
                     <div className="space-y-8">
                         <ChatWindow orderId={order.id} />
 
-                        <div className="card p-9 pb-16 border-primary/20 bg-primary/5 rounded-[3rem] shadow-2xl relative overflow-visible group">
-                            <div className="flex items-center gap-3 mb-6">
-                                <span className="text-3xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">💎</span>
-                                <h3 className="font-black text-[11px] uppercase tracking-[0.3em] text-primary">TrueServe+ Benefit</h3>
+                        <div className="card p-10 rounded-[2rem] bg-gradient-to-br from-primary/10 to-secondary/5 border border-primary/30 shadow-2xl relative overflow-hidden text-center group">
+                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative z-10 flex flex-col items-center gap-5">
+                                <span className="text-4xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">💎</span>
+                                <div>
+                                    <h3 className="font-black text-[10px] uppercase tracking-[0.4em] text-primary mb-3">TrueServe+ Benefit</h3>
+                                    <p className="text-xl text-white font-black leading-tight max-w-[220px] mx-auto mb-2">Enjoy $0 delivery fees and exclusive perks.</p>
+                                </div>
+                                <Link href="/benefits" className="w-full bg-primary text-black font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl shadow-xl group-hover:scale-105 transition-all">Join Membership</Link>
                             </div>
-                            <p className="text-lg text-slate-200 font-bold leading-[1.4] mb-8 pr-4">Enjoy $0 delivery fees and exclusive perks on every order.</p>
-                            <Link href="/benefits" className="w-full btn btn-primary text-black font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl shadow-lg shadow-primary/20">Join Membership</Link>
                         </div>
                     </div>
                 </div>
