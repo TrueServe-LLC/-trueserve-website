@@ -240,19 +240,20 @@ export default function MenuClient({
             <div className="space-y-6 md:sticky md:top-24">
                 <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-8 p-7 pb-9 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative overflow-hidden shadow-2xl">
-                        <div className="flex items-center gap-3 mb-5">
-                            <span className="text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">💎</span>
-                            <span className="text-[11px] font-black uppercase tracking-[0.25em] text-primary">TrueServe+ Benefit</span>
+                    <Link href="/benefits" className="block mb-8 p-9 pb-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all group relative shadow-2xl overflow-visible">
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className="text-3xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">💎</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.3em] text-primary">TrueServe+ Benefit</span>
                         </div>
-                        <div className="space-y-4">
-                            <p className="text-base text-slate-300 font-medium leading-[1.6]">
+                        <div className="space-y-6">
+                            <p className="text-lg text-slate-200 font-bold leading-[1.4] pr-4">
                                 Zero delivery fees on this order.
                             </p>
-                            <div className="flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
-                                <span className="text-primary underline-offset-4 font-black inline-block text-xs uppercase tracking-widest bg-primary/10 px-4 py-2 rounded-full border border-primary/20 group-hover:bg-primary group-hover:text-black transition-all">Explore Benefits &rarr;</span>
+                            <div className="flex items-center pt-2">
+                                <span className="text-primary font-black inline-block text-[11px] uppercase tracking-[0.2em] bg-primary/10 px-6 py-3 rounded-full border border-primary/30 group-hover:bg-primary group-hover:text-black transition-all shadow-lg">Explore Benefits &rarr;</span>
                             </div>
                         </div>
+                        {/* Remove overflow-hidden if blobs aren't needed, otherwise keep blobs contained */}
                     </Link>
 
                     <div className="mb-8 group">
