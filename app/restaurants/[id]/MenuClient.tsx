@@ -52,6 +52,7 @@ export default function MenuClient({
     const [deliveryLat, setDeliveryLat] = useState<number | null>(initialLat || null);
     const [deliveryLng, setDeliveryLng] = useState<number | null>(initialLng || null);
     const [deliveryInstructions, setDeliveryInstructions] = useState("");
+    const [deliveryOption, setDeliveryOption] = useState<"leave" | "hand">("leave");
     const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
     
     const [redeemPoints, setRedeemPoints] = useState(false);
@@ -140,7 +141,7 @@ export default function MenuClient({
             deliveryLng,
             deliveryAddress,
             tip,
-            deliveryInstructions,
+            `[Method: ${deliveryOption === 'leave' ? 'Leave at Door' : 'Hand it to me'}] ${deliveryInstructions}`,
             pointsToSpend
         );
 
@@ -279,6 +280,34 @@ export default function MenuClient({
                                 <p className="text-sm text-white font-bold leading-relaxed break-words">{deliveryAddress}</p>
                             </div>
                         )}
+                        <div className="mt-6 mb-8">
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-4">
+                                Delivery Method
+                            </h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setDeliveryOption('leave')}
+                                    className={`p-4 rounded-3xl border transition-all text-left group relative overflow-hidden ${deliveryOption === 'leave' ? 'bg-primary/10 border-primary/40 ring-1 ring-primary/20' : 'bg-white/5 border-white/10 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
+                                >
+                                    <div className="text-2xl mb-2">🚪</div>
+                                    <h4 className={`font-black text-xs uppercase tracking-widest ${deliveryOption === 'leave' ? 'text-primary' : 'text-white'}`}>Leave at door</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold mt-1">No-contact drop off</p>
+                                    {deliveryOption === 'leave' && <div className="absolute top-2 right-2 text-primary">✓</div>}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setDeliveryOption('hand')}
+                                    className={`p-4 rounded-3xl border transition-all text-left group relative overflow-hidden ${deliveryOption === 'hand' ? 'bg-primary/10 border-primary/40 ring-1 ring-primary/20' : 'bg-white/5 border-white/10 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
+                                >
+                                    <div className="text-2xl mb-2">🤝</div>
+                                    <h4 className={`font-black text-xs uppercase tracking-widest ${deliveryOption === 'hand' ? 'text-primary' : 'text-white'}`}>Hand it to me</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold mt-1">Meet outside</p>
+                                    {deliveryOption === 'hand' && <div className="absolute top-2 right-2 text-primary">✓</div>}
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="mt-6">
                             <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-4">
                                 Delivery Instructions

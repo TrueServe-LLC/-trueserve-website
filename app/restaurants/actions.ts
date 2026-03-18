@@ -89,7 +89,7 @@ export async function placeOrder(
     try {
         const { data: restaurant } = await supabase
             .from('Restaurant')
-            .select('lat, lng, openTime, closeTime')
+            .select('lat, lng, openTime, closeTime, isMock, city')
             .eq('id', restaurantId)
             .single();
 
@@ -102,8 +102,11 @@ export async function placeOrder(
             const openTime = restaurant.openTime || '08:00:00';
             const closeTime = restaurant.closeTime || '22:00:00';
 
+            // Pilot Bypass: Allow mock restaurants AND Mount Airy test region restaurants anytime
+            const isTestBypass = restaurant.isMock || restaurant.city === 'Mount Airy';
+
             // Simple string comparison for HH:MM:SS works perfectly for 24h time
-            if (currentTime < openTime || currentTime > closeTime) {
+            if (!isTestBypass && (currentTime < openTime || currentTime > closeTime)) {
                 return { message: `Restaurant is currently closed. Hours: ${openTime} - ${closeTime}`, error: true };
             }
 
@@ -119,7 +122,7 @@ export async function placeOrder(
                 const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                 const dist = R * c;
 
-                if (dist > 10) {
+                if (!restaurant.isMock && dist > 10) {
                     return { message: "Address is outside our 10-mile delivery radius.", error: true };
                 }
             }
