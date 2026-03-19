@@ -9,6 +9,27 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email";
 import { sendSMS } from "@/lib/sms";
+import { getAuthSession } from "@/app/auth/actions";
+
+async function logAuditAction(action: string, targetId: string, entityType: string, before: any = null, after: any = null, message: string = "") {
+    try {
+        const { isAuth, userId } = await getAuthSession();
+        if (!isAuth || !userId) return;
+
+        await supabaseAdmin.from('AuditLog').insert({
+            actorId: userId,
+            action,
+            targetId,
+            entityType,
+            before,
+            after,
+            message,
+            createdAt: new Date().toISOString()
+        });
+    } catch (e) {
+        console.error("Critical: Failed to log audit action:", e);
+    }
+}
 
 export async function approveMenuItem(id: string) {
     try {
@@ -20,6 +41,8 @@ export async function approveMenuItem(id: string) {
         if (error) {
             throw error;
         }
+
+        await logAuditAction("APPROVE_MENU_ITEM", id, "MenuItem", { status: "PENDING" }, { status: "APPROVED" });
 
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
@@ -41,6 +64,8 @@ export async function rejectMenuItem(id: string) {
             throw error;
         }
 
+        await logAuditAction("REJECT_MENU_ITEM", id, "MenuItem", { status: "PENDING" }, { status: "REJECTED" });
+
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
         return { success: true };
@@ -60,6 +85,8 @@ export async function flagMenuItem(id: string) {
         if (error) {
             throw error;
         }
+
+        await logAuditAction("FLAG_MENU_ITEM", id, "MenuItem", { status: "PENDING" }, { status: "FLAGGED" });
 
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
@@ -99,14 +126,11 @@ export async function approveDriver(id: string) {
             }
         });
 
-        // If user already exists, just proceed to status update (maybe they signed up as customer)
-        // If phone already exists, that's fine too.
         if (authError && !authError.message.includes("already exists")) {
             console.error("Auth Creation Error:", authError);
             throw authError;
         }
 
-        // 2b. Sync role for existing users
         if (authError?.message.includes("already exists")) {
             const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(driver.userId, {
                 user_metadata: { role: 'DRIVER', displayName: name }
@@ -114,7 +138,6 @@ export async function approveDriver(id: string) {
             if (updateError) console.error("Failed to sync role for existing driver:", updateError);
         }
 
-        // 3. Update Driver Status
         const { error: statusError } = await supabaseAdmin
             .from('Driver')
             .update({ status: "OFFLINE", vehicleVerified: true, updatedAt: new Date().toISOString() })
@@ -122,7 +145,8 @@ export async function approveDriver(id: string) {
 
         if (statusError) throw statusError;
 
-        // 4. Send Approval Email/SMS
+        await logAuditAction("APPROVE_DRIVER", id, "Driver", { status: "PENDING" }, { status: "OFFLINE" });
+
         await sendEmail(
             email,
             "Your TrueServe Driver Application - APPROVED",
@@ -160,6 +184,8 @@ export async function rejectDriver(id: string) {
 
         if (statusError) throw statusError;
 
+        await logAuditAction("REJECT_DRIVER", id, "Driver", { status: "PENDING" }, { status: "REJECTED" });
+
         await sendEmail(
             (driver.user as any).email,
             "Driver Application Update - TrueServe",
@@ -180,6 +206,9 @@ export async function connectStripe(_formData?: FormData) {
     if (!session) {
         redirect("/admin/login");
     }
+
+    await logAuditAction("CONNECT_STRIPE_PORTAL", "STRIPE", "System");
+
     redirect("https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create");
 }
 
@@ -195,6 +224,9 @@ export async function toggleOrderingStatus(enabled: boolean) {
             .upsert({ key: 'ordering_enabled', value: enabled });
 
         if (error) throw error;
+
+        await logAuditAction("TOGGLE_ORDERING", "SYSTEM", "SystemSettings", { enabled: !enabled }, { enabled });
+
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e: any) {
@@ -204,11 +236,9 @@ export async function toggleOrderingStatus(enabled: boolean) {
 
 export async function refreshBackgroundCheck(driverId: string) {
     try {
-        // Mocking an API call to a provider like Checkr
-        const isClean = Math.random() > 0.2; // 80% pass rate
+        const isClean = Math.random() > 0.2;
         const status = isClean ? "CLEARED" : "FLAGGED";
 
-        // Fetch Driver Email
         const { data: driver } = await supabaseAdmin
             .from('Driver')
             .select('user:User(email, name)')
@@ -226,7 +256,8 @@ export async function refreshBackgroundCheck(driverId: string) {
 
         if (error) throw error;
 
-        // Send Email if FLAGGED
+        await logAuditAction("REFRESH_BACKGROUND_CHECK", driverId, "Driver", null, { status });
+
         if (status === 'FLAGGED' && driver?.user) {
             await sendEmail(
                 (driver.user as any).email,
@@ -249,11 +280,15 @@ export async function forceCompleteOrder(orderId: string) {
             .from('Order')
             .update({
                 status: 'DELIVERED',
+                deliveredAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             })
             .eq('id', orderId);
 
         if (error) throw error;
+
+        await logAuditAction("FORCE_COMPLETE_ORDER", orderId, "Order", { status: "ACTIVE" }, { status: "DELIVERED" });
+
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e: any) {
@@ -272,6 +307,9 @@ export async function adminCancelOrder(orderId: string) {
             .eq('id', orderId);
 
         if (error) throw error;
+
+        await logAuditAction("ADMIN_CANCEL_ORDER", orderId, "Order", { status: "ACTIVE" }, { status: "CANCELLED" });
+
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e: any) {

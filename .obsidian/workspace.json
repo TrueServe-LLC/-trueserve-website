@@ -185,16 +185,17 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
-    "lib/restaurantScraper.ts",
-    "scripts/check_rest_image.ts",
-    "scripts/scrape_dhans_images.ts",
-    "scripts/remove_firehouse.ts",
-    "scripts/verify_dhans.ts",
-    "scripts/seed_dhans.ts",
-    "db/seed_dhans_kitchen.sql",
-    "deep_check_coords.ts",
-    "test_visible.txt",
-    "get_restaurants_list.ts",
-    "get_locations.ts"
+    "app/admin/support/page.tsx",
+    "components/admin/SupportCenter.tsx",
+    "app/admin/support/actions.ts",
+    "app/admin/support",
+    "scripts/verify_support_tables.ts",
+    "docs/Infrastructure/Security.md",
+    "docs/Infrastructure",
+    "supabase/retention_policy.sql",
+    "app/admin/pricing/page.tsx",
+    "components/admin/PricingRulesManager.tsx",
+    "app/admin/pricing/actions.ts",
+    "app/admin/pricing"
   ]
 }

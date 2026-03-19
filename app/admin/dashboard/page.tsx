@@ -4,6 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
 import { getAuthSession } from "@/app/auth/actions";
+import KPIDashboard from "@/components/admin/KPIDashboard";
 
 async function getPendingItems() {
     try {
@@ -22,6 +23,46 @@ async function getPendingItems() {
         return data || [];
     } catch (e) {
         console.log("Admin Dashboard - Error fetching items:", e);
+        return [];
+    }
+}
+
+async function getAllOrders() {
+    try {
+        const { data, error } = await supabase
+            .from('Order')
+            .select('*')
+            .order('createdAt', { ascending: false });
+
+        if (error) {
+            console.error("Supabase Error (getAllOrders):", error);
+            return [];
+        }
+        return data || [];
+    } catch (e) {
+        console.log("Admin Dashboard - Error fetching all orders:", e);
+        return [];
+    }
+}
+
+async function getAuditLogs() {
+    try {
+        const { data, error } = await supabase
+            .from('AuditLog')
+            .select(`
+                *,
+                actor:User(*)
+            `)
+            .order('createdAt', { ascending: false })
+            .limit(10);
+
+        if (error) {
+            console.error("Supabase Error (getAuditLogs):", error);
+            return [];
+        }
+        return data || [];
+    } catch (e) {
+        console.log("Admin Dashboard - Error fetching logs:", e);
         return [];
     }
 }
@@ -45,8 +86,6 @@ async function getPendingDrivers() {
         return [];
     }
 }
-
-
 
 async function getActiveOrders() {
     try {
@@ -78,7 +117,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
 
-    let isAuthorized = !!adminSession || (isAuth && role === 'ADMIN');
+    let isAuthorized = !!adminSession || (isAuth && role === "ADMIN");
 
     if (!isAuthorized) {
         redirect("/admin/login");
@@ -87,7 +126,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     const pendingItems = await getPendingItems();
     const drivers = await getPendingDrivers();
     const activeOrders = await getActiveOrders();
-
+    const allOrders = await getAllOrders();
+    const auditLogs = await getAuditLogs();
 
     const isStripeConnected = searchParams.stripe_connected === "true";
 
@@ -98,12 +138,15 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <Link href="/" className="text-2xl font-bold tracking-tighter">
                         True<span className="text-gradient">Serve</span> Admin
                     </Link>
-                    <div className="flex gap-4">
+                    <div className="flex gap-8 items-center">
+                        <Link href="/admin/dashboard" className="text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Control Center</Link>
+                        <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing Engine</Link>
+                        <Link href="/admin/support" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Support Desk</Link>
                         <form action={async () => {
                             "use server";
                             await logout();
                         }}>
-                            <button className="hover:text-primary transition-colors">Log Out</button>
+                            <button className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors">Log Out</button>
                         </form>
                     </div>
                 </div>
@@ -143,7 +186,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     "use server";
                                     await connectStripe();
                                 }}>
-                                    <button className="btn btn-primary py-2 px-4 shadow-lg shadow-primary/20">
+                                    <button className="btn btn-primary py-2 px-4 shadow-lg shadow-primary/20 font-black uppercase tracking-widest text-[10px]">
                                         Connect Stripe
                                     </button>
                                 </form>
@@ -152,66 +195,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     </div>
                 </div>
 
-                {/* Real-time Analytics Section */}
-                <section className="mb-16">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">Platform Analytics</h2>
-                        <span className="flex items-center gap-2 text-[10px] font-bold text-emerald-400 border border-emerald-500/20 bg-emerald-500/5 px-2 py-1 rounded-full uppercase">
-                            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> Live Metrics
-                        </span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div className="card p-6 bg-white/5 border-white/10 hover:border-primary/50 transition-colors group relative overflow-hidden">
-                            <div className="absolute -right-4 -top-4 w-20 h-20 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all"></div>
-                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-primary transition-colors">Merchant Revenue (MRR)</p>
-                            <div className="flex items-end gap-2">
-                                {await (async () => {
-                                    const { data } = await supabase.from('Restaurant').select('plan');
-                                    const total = (data || []).reduce((acc: number, r: any) => {
-                                        if (r.plan === 'Pro Subscription') return acc + 199;
-                                        return acc;
-                                    }, 0);
-                                    return (
-                                        <>
-                                            <p className="text-4xl font-bold">${total.toLocaleString()}</p>
-                                            <p className="text-emerald-400 text-xs font-bold mb-1.5">↑ {(data?.filter(r => r.plan === 'Pro Subscription').length || 0)} Pro</p>
-                                        </>
-                                    );
-                                })()}
-                            </div>
-                        </div>
-
-                        <div className="card p-6 bg-white/5 border-white/10 hover:border-blue-500/50 transition-colors group relative overflow-hidden">
-                            <div className="absolute -right-4 -top-4 w-20 h-20 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all"></div>
-                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-blue-400 transition-colors">Customer MRR</p>
-                            <div className="flex items-end gap-2">
-                                {await (async () => {
-                                    const { data } = await supabase.from('User').select('plan');
-                                    const total = (data || []).reduce((acc: number, u: any) => {
-                                        if (u.plan === 'Plus') return acc + 9.99;
-                                        if (u.plan === 'Premium') return acc + 19.99;
-                                        return acc;
-                                    }, 0);
-                                    return (
-                                        <>
-                                            <p className="text-4xl font-bold">${Math.round(total).toLocaleString()}</p>
-                                            <p className="text-blue-400 text-xs font-bold mb-1.5">↑ {(data?.filter(u => u.plan !== 'Basic' && u.plan).length || 0)} Members</p>
-                                        </>
-                                    );
-                                })()}
-                            </div>
-                        </div>
-
-                        <div className="card p-6 bg-white/5 border-white/10 hover:border-yellow-500/50 transition-colors group">
-                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-yellow-400 transition-colors">Order Density</p>
-                            <p className="text-4xl font-bold">4.8 / km²</p>
-                        </div>
-                        <div className="card p-6 bg-white/5 border-white/10 hover:border-emerald-500/50 transition-colors group">
-                            <p className="text-slate-500 text-[10px] uppercase font-bold mb-1 group-hover:text-emerald-400 transition-colors">Fraud Flag Rate</p>
-                            <p className="text-4xl font-bold">0.12%</p>
-                        </div>
-                    </div>
-                </section>
+                {/* KPI Dashboard (V1) */}
+                <KPIDashboard orders={allOrders} drivers={drivers} />
 
                 {/* Active Deliveries Map / List */}
                 <section className="mb-16">
@@ -228,16 +213,15 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Order {order.id.slice(-6).toUpperCase()}</span>
-                                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter ${
-                                                order.status === 'PICKED_UP' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'
-                                            }`}>
+                                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter ${order.status === 'PICKED_UP' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'
+                                                }`}>
                                                 {order.status.replace('_', ' ')}
                                             </span>
                                         </div>
                                         <h3 className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</h3>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-black text-white">${Number(order.totalAmount).toFixed(2)}</p>
+                                        <p className="text-sm font-black text-white">${Number(order.totalAmount || order.total).toFixed(2)}</p>
                                         <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Revenue Impact</p>
                                     </div>
                                 </div>
@@ -261,13 +245,13 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                                 <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
                                     <form action={async () => { "use server"; const { forceCompleteOrder } = await import('../actions'); await forceCompleteOrder(order.id); }} className="flex-1">
-                                        <button className="w-full text-[9px] font-black uppercase tracking-widest py-2 hover:bg-white/5 rounded-lg transition-colors">
+                                        <button className="w-full text-[10px] font-black uppercase tracking-widest py-2 hover:bg-white/5 rounded-lg transition-colors">
                                             Force Complete
                                         </button>
                                     </form>
                                     <form action={async () => { "use server"; const { adminCancelOrder } = await import('../actions'); await adminCancelOrder(order.id); }} className="flex-1">
-                                        <button className="w-full text-[9px] font-black uppercase tracking-widest py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
-                                            Cancel Order
+                                        <button className="w-full text-[10px] font-black uppercase tracking-widest py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                                            Cancel
                                         </button>
                                     </form>
                                 </div>
@@ -284,7 +268,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 </section>
 
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
                     {/* Menu Approval Section */}
                     <section>
                         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
@@ -307,12 +291,12 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     <p className="text-slate-300 text-sm mb-4">{item.description}</p>
                                     <div className="flex gap-2">
                                         <form action={async () => { "use server"; await approveMenuItem(item.id); }}>
-                                            <button className="btn btn-primary text-xs py-2 px-4 bg-emerald-600 hover:bg-emerald-500 shadow-none">
+                                            <button className="btn btn-primary text-[10px] font-black uppercase tracking-widest py-2 px-4 shadow-lg shadow-primary/20">
                                                 Approve
                                             </button>
                                         </form>
                                         <form action={async () => { "use server"; await rejectMenuItem(item.id); }}>
-                                            <button className="btn btn-outline text-xs py-2 px-4 border-red-500/50 text-red-400 hover:bg-red-500/10">
+                                            <button className="btn btn-outline text-[10px] font-black uppercase tracking-widest py-2 px-4 border-red-500/50 text-red-400 hover:bg-red-500/10">
                                                 Reject
                                             </button>
                                         </form>
@@ -320,7 +304,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 </div>
                             ))}
                             {pendingItems.length === 0 && (
-                                <p className="text-slate-500 italic">No menu items pending approval.</p>
+                                <div className="p-12 text-center rounded-[2rem] border border-dashed border-white/10 opacity-50">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic">No menu items pending approval.</p>
+                                </div>
                             )}
                         </div>
                     </section>
@@ -368,9 +354,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                                 <div className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                                                     <div className="flex justify-between items-center">
                                                         <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">AI Audit Log</span>
-                                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                                                            driver.aiMetadata.idScan?.isValid ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-500'
-                                                        }`}>
+                                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${driver.aiMetadata.idScan?.isValid ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-500'
+                                                            }`}>
                                                             Confidence: {(driver.aiMetadata.idScan?.confidence * 100 || 0).toFixed(0)}%
                                                         </span>
                                                     </div>
@@ -392,27 +377,27 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                                     <div className="flex flex-wrap gap-2 mt-6">
                                         <form action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }}>
-                                             <button
-                                                 disabled={driver.backgroundCheckStatus !== 'CLEARED' || !driver.hasSignedAgreement}
-                                                 className="btn btn-primary text-[10px] py-2 px-4 shadow-none disabled:opacity-40 disabled:grayscale font-black uppercase tracking-widest"
-                                             >
-                                                 Approve Driver
-                                             </button>
-                                         </form>
-                                         <form action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }}>
-                                             <button
-                                                 className="btn btn-outline text-[10px] py-2 px-4 border-red-500/50 text-red-400 hover:bg-red-500/10 font-black uppercase tracking-widest"
-                                             >
-                                                 Reject
-                                             </button>
-                                         </form>
-
-                                        <form action={async () => { "use server"; const { refreshBackgroundCheck } = await import('../actions'); await refreshBackgroundCheck(driver.id); }}>
-                                            <button type="submit" className="btn btn-outline text-[10px] py-1.5 px-3 border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
-                                                Refresh Check
+                                            <button
+                                                disabled={driver.backgroundCheckStatus !== 'CLEARED' || !driver.hasSignedAgreement}
+                                                className="btn btn-primary text-[10px] py-1.5 px-3 shadow-none disabled:opacity-40 disabled:grayscale font-black uppercase tracking-widest"
+                                            >
+                                                Approve
                                             </button>
                                         </form>
-                                        <div className="flex gap-2">
+                                        <form action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }}>
+                                            <button
+                                                className="btn btn-outline text-[10px] py-1.5 px-3 border-red-500/50 text-red-400 hover:bg-red-500/10 font-black uppercase tracking-widest"
+                                            >
+                                                Reject
+                                            </button>
+                                        </form>
+
+                                        <form action={async () => { "use server"; const { refreshBackgroundCheck } = await import('../actions'); await refreshBackgroundCheck(driver.id); }}>
+                                            <button type="submit" className="btn btn-outline text-[10px] py-1.5 px-2 border-white/5 text-slate-500 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
+                                                ↻ Check
+                                            </button>
+                                        </form>
+                                        <div className="flex gap-1 ml-auto">
                                             {driver.insuranceDocumentUrl && (
                                                 <a href={driver.insuranceDocumentUrl} target="_blank" className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
                                                     Insurance
@@ -420,7 +405,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                             )}
                                             {driver.registrationDocumentUrl && (
                                                 <a href={driver.registrationDocumentUrl} target="_blank" className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
-                                                    Registration
+                                                    Docs
                                                 </a>
                                             )}
                                         </div>
@@ -429,11 +414,67 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 </div>
                             ))}
                             {drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).length === 0 && (
-                                <p className="text-slate-500 italic">No drivers pending approval.</p>
+                                <div className="p-12 text-center rounded-[2rem] border border-dashed border-white/10 opacity-50">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic">No drivers pending approval.</p>
+                                </div>
                             )}
                         </div>
                     </section>
                 </div>
+
+                {/* Audit Log / Change History */}
+                <section>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold flex items-center gap-2">
+                            📜 System Audit Log
+                            <span className="bg-white/5 text-slate-500 text-xs px-2 py-1 rounded-full">{auditLogs.length} Recent</span>
+                        </h2>
+                    </div>
+                    <div className="card overflow-hidden border-white/5 bg-black/40">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-white/5 bg-white/5">
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Actor</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Action</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Target</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Time</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {auditLogs.map((log) => (
+                                    <tr key={log.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-primary/20 text-[10px] flex items-center justify-center font-bold">A</div>
+                                                <span className="text-xs font-bold">{log.actor?.name || "System"}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white">{log.action.replace(/_/g, " ")}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-xs font-mono text-slate-500">
+                                            {log.entityType}: {log.targetId?.slice(-8)}
+                                        </td>
+                                        <td className="px-6 py-4 text-xs text-slate-400">
+                                            {new Date(log.createdAt).toLocaleString()}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button className="text-[10px] font-bold text-primary group-hover:underline uppercase tracking-tighter">View Diff</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {auditLogs.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-12 text-center text-slate-500 italic text-[10px] font-black uppercase tracking-widest">
+                                            Audit trail is currently empty. Critical system events will appear here.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </main>
         </div>
     );

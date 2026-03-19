@@ -95,11 +95,11 @@ async function addDhansKitchen() {
         // Combo Meals
         { name: "Veggie Combo", price: 13.99, description: "All combos served with Rice & Beans, White Rice, or Roti. Includes two sides.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/d_rlrAXrGbFE6xS_3n2fYA/o.jpg' },
         { name: "Curry Chicken Combo", price: 15.99, description: "Authentic curry chicken with your choice of sides.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/AVsIbsfpQb0ulnLRSSGDlQ/o.jpg' },
-        { name: "Brown Stew Chicken Combo", price: 15.99, description: "Slow-cooked stew chicken in a rich brown gravy.", imageUrl: null },
+        { name: "Brown Stew Chicken Combo", price: 15.99, description: "Slow-cooked stew chicken in a rich brown gravy.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/oLPcuUuBPIjZ4ry4f88rjg/o.jpg' },
         { name: "Jerk Chicken Combo", price: 15.99, description: "Spicy grilled jerk chicken with island spices.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/oLPcuUuBPIjZ4ry4f88rjg/o.jpg' },
         { name: "Jerk Ribs Combo", price: 18.99, description: "Tender pork ribs with smoky jerk seasoning.", imageUrl: null },
-        { name: "Curry Shrimp Combo", price: 18.99, description: "Savory shrimp in a rich curry sauce.", imageUrl: null },
-        { name: "Stewed Oxtails Combo", price: 19.99, description: "Rich, fall-off-the-bone stewed oxtails.", imageUrl: null },
+        { name: "Curry Shrimp Combo", price: 18.99, description: "Savory shrimp in a rich curry sauce.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/pQoLPcuUuBPIjZ4ry4f88rjg/o.jpg' },
+        { name: "Stewed Oxtails Combo", price: 19.99, description: "Rich, fall-off-the-bone stewed oxtails.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/AVsIbsfpQb0ulnLRSSGDlQ/o.jpg' },
         { name: "Curry Goat Combo", price: 21.99, description: "Tender goat meat slow-cooked in traditional curry.", imageUrl: null },
         { name: "Mrs. Griffin 'All veggie' Sampler", price: 22.99, description: "A massive sampler of all our vegan and veggie favorites.", imageUrl: null },
         { name: "Mr. Griffin 'All meats' Sampler", price: 26.99, description: "The ultimate carnivore sampler.", imageUrl: null },
@@ -135,6 +135,7 @@ async function addDhansKitchen() {
         name: item.name,
         price: item.price,
         description: item.description,
+        imageUrl: item.imageUrl, // 👈 KEY FIX: Added missing imageUrl mapping
         status: 'APPROVED',
         inventory: 100,
         createdAt: now,
