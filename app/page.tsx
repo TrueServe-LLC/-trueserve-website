@@ -13,9 +13,13 @@ export default async function Home() {
   const userId = cookieStore.get("userId")?.value;
   
   // Determine the correct dashboard link based on role
+  // We use absolute URLs to force subdomain transition
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const baseDomain = process.env.NODE_ENV === "production" ? "trueserve.delivery" : "localhost:3000";
+  
   let dashboardHref = "/login";
   if (userId) {
-    // Robust Role Detection using direct fetch + service key to bypass RLS
+    // Robust Role Detection using direct fetch + service key
     const roleRes = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${userId}&select=role`,
         {
@@ -23,16 +27,21 @@ export default async function Home() {
                 'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
                 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
             },
-            next: { revalidate: 0 } // No caching
+            next: { revalidate: 0 }
         }
     );
     const roles = await roleRes.json();
     const userRole = roles?.[0]?.role || "CUSTOMER";
 
-    if (["ADMIN", "OPS", "SUPPORT", "FINANCE"].includes(userRole)) dashboardHref = "/admin/dashboard";
-    else if (userRole === "MERCHANT") dashboardHref = "/merchant/dashboard";
-    else if (userRole === "DRIVER") dashboardHref = "/driver/dashboard";
-    else dashboardHref = "/restaurants";
+    if (["ADMIN", "OPS", "SUPPORT", "FINANCE"].includes(userRole)) {
+        dashboardHref = `${protocol}://admin.${baseDomain}`;
+    } else if (userRole === "MERCHANT") {
+        dashboardHref = `${protocol}://merchant.${baseDomain}`;
+    } else if (userRole === "DRIVER") {
+        dashboardHref = `${protocol}://driver.${baseDomain}`;
+    } else {
+        dashboardHref = "/restaurants";
+    }
   }
 
   return (
