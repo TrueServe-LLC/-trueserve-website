@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { logout } from "@/app/auth/actions";
 
 export default function MobileNav({ role }: { role?: string | null }) {
     const pathname = usePathname();
