@@ -85,8 +85,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl)
     }
 
-    // 2. Fetch User Role for strict portal check
-    const { data: userData } = await supabase
+    // 2. Fetch User Role for strict portal check (using Service Role to bypass RLS)
+    const adminClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { cookies: { getAll: () => [], setAll: () => {} } }
+    )
+
+    const { data: userData } = await adminClient
       .from('User')
       .select('role')
       .eq('id', user.id)
