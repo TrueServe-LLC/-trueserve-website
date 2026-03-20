@@ -111,6 +111,14 @@ async function getActiveOrders() {
     }
 }
 
+async function getAllRestaurants() {
+    try {
+        const { data, error } = await supabase.from('Restaurant').select('id, name, isActive, isApproved, createdAt');
+        if (error) return [];
+        return data || [];
+    } catch { return []; }
+}
+
 import { isInternalStaff } from "@/lib/rbac";
 
 export default async function AdminDashboard({ searchParams }: { searchParams: { stripe_connected?: string } }) {
@@ -129,6 +137,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     const drivers = await getPendingDrivers();
     const activeOrders = await getActiveOrders();
     const allOrders = await getAllOrders();
+    const restaurants = await getAllRestaurants();
     const auditLogs = await getAuditLogs();
 
     const isStripeConnected = searchParams.stripe_connected === "true";
@@ -200,7 +209,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 </div>
 
                 {/* KPI Dashboard (V1) */}
-                <KPIDashboard orders={allOrders} drivers={drivers} />
+                <KPIDashboard orders={allOrders} drivers={drivers} restaurants={restaurants} />
 
                 {/* Active Deliveries Map / List */}
                 <section className="mb-16">

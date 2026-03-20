@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -6,10 +5,11 @@ import React, { useState, useMemo } from 'react';
 interface KPIDashboardProps {
     orders: any[];
     drivers: any[];
+    restaurants: any[];
 }
 
-export default function KPIDashboard({ orders, drivers }: KPIDashboardProps) {
-    const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | 'all'>('7d');
+export default function KPIDashboard({ orders, drivers, restaurants }: KPIDashboardProps) {
+    const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | 'all'>('all');
 
     const filteredOrders = useMemo(() => {
         const now = new Date();
@@ -23,6 +23,7 @@ export default function KPIDashboard({ orders, drivers }: KPIDashboardProps) {
     }, [orders, timeRange]);
 
     const stats = useMemo(() => {
+        // Order Stats
         const total = filteredOrders.length;
         const cancelled = filteredOrders.filter(o => o.status === 'CANCELLED' || o.isRefunded).length;
         const completed = filteredOrders.filter(o => o.status === 'COMPLETED' || o.deliveredAt).length;
@@ -39,20 +40,30 @@ export default function KPIDashboard({ orders, drivers }: KPIDashboardProps) {
         }, 0);
         const avgPrepToPickup = pickedUpOrders.length > 0 ? (totalPrepToPickup / pickedUpOrders.length) / 60000 : 0; // in minutes
 
-        // Cost per Drop
+        // Revenue / Cost
         const totalPay = filteredOrders.reduce((acc, o) => acc + (Number(orderTotalPay(o)) || 0), 0);
-        const costPerDrop = completed > 0 ? totalPay / completed : 0;
+        const Revenue = filteredOrders.reduce((acc, o) => acc + (Number(o.totalAmount || o.total) || 0), 0);
+
+        // Merchant Stats
+        const activeMerchants = restaurants.filter(r => r.isApproved).length;
+        
+        // Driver Stats
+        const activeDrivers = drivers.filter(d => d.status === 'ONLINE').length;
+        const approvedDrivers = drivers.filter(d => d.backgroundCheckStatus === 'CLEARED' && d.hasSignedAgreement).length;
 
         return {
             total,
             cancelRate: total > 0 ? (cancelled / total) * 100 : 0,
             onTimeRate,
             avgPrepToPickup: avgPrepToPickup.toFixed(1),
-            costPerDrop: costPerDrop.toFixed(2),
-            activeDrivers: drivers.filter(d => d.status === 'ONLINE').length,
-            acceptanceRate: 94.2 // Placeholder until OrderOffer table is ready
+            totalRevenue: Revenue.toFixed(2),
+            activeDrivers,
+            totalMerchants: restaurants.length,
+            activeMerchants,
+            totalDrivers: drivers.length,
+            approvedDrivers
         };
-    }, [filteredOrders, drivers]);
+    }, [filteredOrders, drivers, restaurants]);
 
     function orderTotalPay(order: any) {
         return order.totalPay || (Number(order.basePay || 0) + Number(order.boostPay || 0));
@@ -112,13 +123,14 @@ export default function KPIDashboard({ orders, drivers }: KPIDashboardProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <KPICard title="Order Volume" value={stats.total} subtext="Total Orders" color="primary" />
+                <KPICard title="Platform Revenue" value={`$${stats.totalRevenue}`} subtext="Total Order Volume" color="emerald" />
                 <KPICard title="Cancel Rate" value={`${stats.cancelRate.toFixed(1)}%`} subtext="Refunds/Cancellations" color="red" />
-                <KPICard title="On-Time Rate" value={`${stats.onTimeRate.toFixed(1)}%`} subtext="vs Estimated ETA" color="emerald" />
                 <KPICard title="Prep-to-Pickup" value={`${stats.avgPrepToPickup}m`} subtext="Avg Dispatch Speed" color="blue" />
-                <KPICard title="Cost per Drop" value={`$${stats.costPerDrop}`} subtext="Driver Payout Avg" color="yellow" />
-                <KPICard title="Active Drivers" value={stats.activeDrivers} subtext="Currently Online" color="purple" />
-                <KPICard title="Acceptance Rate" value={`${stats.acceptanceRate}%`} subtext="Fleet Engagement" color="orange" />
-                <KPICard title="CSAT Score" value="4.8/5" subtext="NPS Placeholder" color="pink" />
+                
+                <KPICard title="Merchants" value={stats.totalMerchants} subtext={`${stats.activeMerchants} Approved & Active`} color="yellow" />
+                <KPICard title="Driver Pilots" value={stats.totalDrivers} subtext={`${stats.approvedDrivers} Approved Signups`} color="purple" />
+                <KPICard title="Active Fleet" value={stats.activeDrivers} subtext="Drivers Currently Online" color="orange" />
+                <KPICard title="On-Time Rate" value={`${stats.onTimeRate.toFixed(1)}%`} subtext="vs Estimated ETA" color="pink" />
             </div>
         </section>
     );
