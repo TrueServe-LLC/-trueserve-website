@@ -20,9 +20,13 @@ export async function middleware(request: NextRequest) {
   const cleanHost = host.split(':')[0]
   const isLocal = cleanHost.includes("localhost")
   const isVercel = cleanHost.endsWith(".vercel.app")
-  const cookieDomain = isLocal || isVercel ? "" : ".trueserve.delivery"
-
+  
+  // Dynamic root domain detection
   const pieces = cleanHost.split('.')
+  let cookieDomain = ""
+  if (!isLocal && !isVercel && pieces.length >= 2) {
+    cookieDomain = `.${pieces.slice(-2).join('.')}`
+  }
   // For trueserve.delivery, pieces.length is 2. Subdomain exists if length > 2.
   // For sub.trueserve-website.vercel.app, pieces.length is 4. Subdomain exists if length > 3.
   const isSub = isVercel 
