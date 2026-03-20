@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
       
       if (user && !isAllowedPath) {
         const roleResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
           {
             headers: {
               'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -109,7 +109,7 @@ export async function middleware(request: NextRequest) {
     if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
     const roleRes = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
       {
         headers: {
           'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
