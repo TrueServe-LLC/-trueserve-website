@@ -63,10 +63,10 @@ export async function middleware(request: NextRequest) {
   if (subdomain && allowedSubdomains.includes(subdomain)) {
     // SECURITY GATE: Only allow internal staff on admin subdomain
     if (subdomain === 'admin') {
-      const isLoginPage = path === '/login' || path.startsWith('/admin/login')
-      if (!user && !isLoginPage) return NextResponse.redirect(new URL('/login', request.url))
+      const isAllowedPath = path === '/login' || path.startsWith('/admin/login') || path.startsWith('/auth/callback')
+      if (!user && !isAllowedPath) return NextResponse.redirect(new URL('/login', request.url))
       
-      if (user && !isLoginPage) {
+      if (user && !isAllowedPath) {
         const roleResponse = await fetch(
           `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
           {
