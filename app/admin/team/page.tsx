@@ -47,7 +47,23 @@ export default async function TeamManagementPage() {
                         <h1 className="text-3xl font-bold tracking-tight">Identity & Access</h1>
                         <p className="text-slate-400 text-sm mt-1">Manage admin roles, API permissions, and internal team members.</p>
                     </div>
-                    {/* Add Member Button - Ideally a modal, but for now just basic structure */}
+                    <div className="bg-slate-800/50 p-4 border border-white/5 rounded-2xl w-full max-w-md mt-6 md:mt-0">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Invite New Team Member</h3>
+                        <form action={async (formData) => { 
+                            "use server"; 
+                            const { inviteTeamMember } = await import("./actions"); 
+                            await inviteTeamMember(formData); 
+                        }} className="flex gap-2">
+                            <input required name="email" type="email" placeholder="Employee Email..." className="flex-1 bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors" />
+                            <select required name="role" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors cursor-pointer w-[110px]">
+                                <option value="OPS">Ops</option>
+                                <option value="SUPPORT">Support</option>
+                                <option value="FINANCE">Finance</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                            <button type="submit" className="bg-primary text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded hover:brightness-110 transition-all">Invite</button>
+                        </form>
+                    </div>
                 </div>
 
                 <div className="card">
@@ -89,13 +105,25 @@ export default async function TeamManagementPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex gap-2 justify-end">
-                                                <button className="text-slate-400 hover:text-white px-3 py-1 bg-slate-800 rounded text-xs transition-colors border border-slate-700">
-                                                    Reset Password
-                                                </button>
-                                                {member.role !== 'ADMIN' && (
-                                                    <button className="text-red-400 hover:text-white px-3 py-1 bg-red-950/30 rounded text-xs transition-colors border border-red-900/50">
-                                                        Revoke
+                                                <form action={async () => {
+                                                    "use server";
+                                                    const { sendPasswordReset } = await import("./actions");
+                                                    await sendPasswordReset(member.id, member.email);
+                                                }}>
+                                                    <button type="submit" className="text-slate-400 hover:text-white px-3 py-1 bg-slate-800 rounded text-xs transition-colors border border-slate-700">
+                                                        Reset Password
                                                     </button>
+                                                </form>
+                                                {member.role !== 'ADMIN' && (
+                                                    <form action={async () => {
+                                                        "use server";
+                                                        const { revokeAccess } = await import("./actions");
+                                                        await revokeAccess(member.id, member.email);
+                                                    }}>
+                                                        <button type="submit" className="text-red-400 hover:text-white px-3 py-1 bg-red-950/30 rounded text-xs transition-colors border border-red-900/50">
+                                                            Revoke
+                                                        </button>
+                                                    </form>
                                                 )}
                                             </div>
                                         </td>

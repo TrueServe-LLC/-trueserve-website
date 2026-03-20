@@ -209,6 +209,8 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
         const userId = cookieStore.get("userId")?.value;
         console.log("[AuthSession] userId from cookie:", userId);
 
+        let role = 'CUSTOMER';
+
         if (!userId) {
             // Fallback: Check Supabase session directly
             const supabase = await createClient();
@@ -218,7 +220,7 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
                 const { data: publicUser } = await supabaseAdmin
                     .from('User')
                     .select('role')
-                    .eq('id', user.id)
+                    .eq('email', user.email)
                     .maybeSingle();
 
                 return { isAuth: true, userId: user.id, role: publicUser?.role || 'CUSTOMER' };
@@ -226,15 +228,34 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             return { isAuth: false };
         }
 
-        const { data: publicUser } = await supabaseAdmin
+        // Try getting by ID first
+        let { data: publicUser } = await supabaseAdmin
             .from('User')
             .select('role')
             .eq('id', userId)
             .maybeSingle();
-        
-        console.log("[AuthSession] Result:", { isAuth: true, userId, role: publicUser?.role });
 
-        return { isAuth: true, userId, role: publicUser?.role || 'CUSTOMER' };
+        if (publicUser?.role) {
+            role = publicUser.role;
+        } else {
+            // ID Mismatch fallback: Try by email
+            const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+            if (authUser?.user?.email) {
+                const { data: publicUserByEmail } = await supabaseAdmin
+                    .from('User')
+                    .select('role')
+                    .eq('email', authUser.user.email)
+                    .maybeSingle();
+                
+                if (publicUserByEmail?.role) {
+                    role = publicUserByEmail.role;
+                }
+            }
+        }
+        
+        console.log("[AuthSession] Result:", { isAuth: true, userId, role });
+
+        return { isAuth: true, userId, role };
     } catch (e) {
         console.error("[AuthSession] Error:", e);
         return { isAuth: false };
