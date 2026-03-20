@@ -20,12 +20,12 @@ export async function login(formData: FormData) {
         });
 
         if (authData.user && !authError) {
-            // Check Role
+            // Check Role by Email (To handle ID mismatches between Google OAuth and Password Signups)
             const { data: userData, error: userError } = await supabase
                 .from('User')
                 .select('role')
-                .eq('id', authData.user.id)
-                .single();
+                .eq('email', email)
+                .maybeSingle();
 
             if (userData && ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(userData.role)) {
                 // Success - Set System-wide Cookies manually as fallback
