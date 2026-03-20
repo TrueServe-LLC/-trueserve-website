@@ -410,26 +410,25 @@ export default async function MerchantDashboard({
                                     </ul>
                                 </div>
 
-                                <div className="flex justify-between items-center">
-                                    <div className="flex gap-3">
+                                <div className="flex flex-wrap gap-3 items-center">
+                                    <div className="flex flex-wrap gap-2 flex-grow">
                                         {(order.status as any) === 'PENDING' ? (
                                             <form action={async () => {
                                                 "use server";
                                                 await updateOrderStatus(order.id, 'PREPARING');
                                             }}>
-                                                <button type="submit" className="btn btn-primary text-sm py-2">Accept & Start Cooking</button>
+                                                <button type="submit" className="btn btn-primary text-[10px] md:text-sm py-2 px-3">Accept & Start</button>
                                             </form>
                                         ) : (
                                             <form action={async () => {
                                                 "use server";
                                                 await updateOrderStatus(order.id, 'READY_FOR_PICKUP');
                                             }}>
-                                                <button type="submit" className="btn bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">Mark as Ready</button>
+                                                <button type="submit" className="btn bg-blue-600 hover:bg-blue-700 text-white text-[10px] md:text-sm py-2 px-3">Mark Ready</button>
                                             </form>
                                         )}
 
                                         <MerchantRejectButton orderId={order.id} />
-
 
                                         {/* Track Driver Button */}
                                         {order.driver && order.driver.currentLat && (
@@ -437,9 +436,9 @@ export default async function MerchantDashboard({
                                                 href={`https://www.google.com/maps/search/?api=1&query=${order.driver.currentLat},${order.driver.currentLng}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="btn btn-outline text-sm py-2 text-blue-400 border-blue-500/20 hover:bg-blue-500/10 flex items-center gap-2"
+                                                className="btn btn-outline text-[10px] md:text-sm py-2 px-3 text-blue-400 border-blue-500/20 hover:bg-blue-500/10 flex items-center gap-2"
                                             >
-                                                <span>📍</span> Track Driver
+                                                <span>📍</span> Track
                                             </a>
                                         )}
 

@@ -11,6 +11,7 @@ import { getStripe } from "@/lib/stripe";
 import { sendSMS } from "@/lib/sms";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createNotification } from "@/lib/notifications";
+import { logAuditAction } from "@/lib/audit";
 
 export type MerchantActionState = {
     message: string;
@@ -88,6 +89,8 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
 
         if (error) throw error;
 
+        await logAuditAction({ action: "ADD_MENU_ITEM", targetId: restaurant.id, entityType: "Restaurant", message: `Added item: ${name}`, after: { name, price } });
+
         revalidatePath('/merchant/dashboard');
         return { success: true, message: "Item added successfully" };
     } catch (e: any) {
@@ -146,6 +149,8 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
 
 
         if (error) throw error;
+
+        await logAuditAction({ action: "UPDATE_MENU_ITEM", targetId: itemId, entityType: "MenuItem", after: { name, price } });
 
         revalidatePath('/merchant/dashboard');
         return { success: true, message: "Item updated successfully" };
@@ -243,8 +248,16 @@ export async function updateOrderStatus(orderId: string, nextStatus: string, rea
             .update(updateData)
             .eq('id', orderId);
 
-
         if (error) throw error;
+
+        await logAuditAction({ 
+            action: "UPDATE_ORDER_STATUS", 
+            targetId: orderId, 
+            entityType: "Order", 
+            before: { status: (order as any).status }, 
+            after: { status: nextStatus },
+            message: nextStatus === 'CANCELLED' ? `Reason: ${reason}` : ""
+        });
 
         // Notify Customer
         try {
@@ -326,6 +339,13 @@ export async function refundOrder(orderId: string) {
             .eq('id', orderId);
 
         if (error) throw error;
+
+        await logAuditAction({ 
+            action: "REFUND_ORDER", 
+            targetId: orderId, 
+            entityType: "Order", 
+            message: "Merchant initiated refund and cancellation"
+        });
         revalidatePath('/merchant/dashboard');
         return { success: true };
     } catch (e: any) {
@@ -548,6 +568,14 @@ export async function toggleBusyMode(restaurantId: string, currentStatus: boolea
             .eq('ownerId', user.id);
 
         if (error) throw error;
+
+        await logAuditAction({ 
+            action: "TOGGLE_BUSY_MODE", 
+            targetId: restaurantId, 
+            entityType: "Restaurant", 
+            before: { isBusy: currentStatus }, 
+            after: { isBusy: !currentStatus } 
+        });
         revalidatePath('/merchant/dashboard');
         return { success: true };
     } catch (e: any) {
@@ -567,6 +595,14 @@ export async function toggleItemStock(itemId: string, currentStatus: boolean) {
             .eq('id', itemId);
 
         if (error) throw error;
+
+        await logAuditAction({ 
+            action: "TOGGLE_ITEM_STOCK", 
+            targetId: itemId, 
+            entityType: "MenuItem", 
+            before: { isAvailable: currentStatus }, 
+            after: { isAvailable: !currentStatus } 
+        });
         revalidatePath('/merchant/dashboard');
         return { success: true };
     } catch (e: any) {
@@ -837,6 +873,13 @@ export async function startFlashSale(itemId: string, discountPercent: number, ho
             .eq('id', itemId);
 
         if (updateError) throw updateError;
+
+        await logAuditAction({ 
+            action: "START_FLASH_SALE", 
+            targetId: itemId, 
+            entityType: "MenuItem", 
+            after: { discountPercent, hours, newPrice } 
+        });
         revalidatePath('/merchant/dashboard');
         return { success: true };
     } catch (e: any) {

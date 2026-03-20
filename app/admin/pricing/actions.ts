@@ -2,6 +2,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
+import { logAuditAction } from "@/lib/audit";
 
 export async function getPricingRules() {
     const { data, error } = await supabaseAdmin
@@ -24,6 +25,14 @@ export async function upsertPricingRule(rule: any) {
         .single();
     
     if (error) throw error;
+
+    await logAuditAction({ 
+        action: "UPSERT_PRICING_RULE", 
+        targetId: data.id, 
+        entityType: "PricingRule", 
+        after: data 
+    });
+
     revalidatePath("/admin/pricing");
     return data;
 }
@@ -35,6 +44,14 @@ export async function deletePricingRule(id: string) {
         .eq('id', id);
     
     if (error) throw error;
+
+    await logAuditAction({ 
+        action: "DELETE_PRICING_RULE", 
+        targetId: id, 
+        entityType: "PricingRule",
+        message: "Pricing rule deleted by admin"
+    });
+
     revalidatePath("/admin/pricing");
     return { success: true };
 }
@@ -46,6 +63,15 @@ export async function toggleRuleStatus(id: string, isActive: boolean) {
         .eq('id', id);
     
     if (error) throw error;
+
+    await logAuditAction({ 
+        action: "TOGGLE_RULE_STATUS", 
+        targetId: id, 
+        entityType: "PricingRule", 
+        before: { isActive: !isActive }, 
+        after: { isActive } 
+    });
+
     revalidatePath("/admin/pricing");
     return { success: true };
 }

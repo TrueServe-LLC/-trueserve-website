@@ -30,9 +30,12 @@ export default async function Home() {
             <Link href="/restaurants" className="hover:text-primary transition-colors">Order Food</Link>
             <Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link>
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
+            <Link href="/login" className="btn btn-primary !py-2 !px-5 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg shadow-primary/20 ml-2">
+              {userId ? "Dashboard" : "Login"}
+            </Link>
           </div>
-          <div className="flex items-center gap-2 md:gap-4">
-            {userId && <LogoutButton />}
+          <div className="flex items-center gap-1.5 md:gap-4">
+            {userId && <div className="hidden sm:block"><LogoutButton /></div>}
             {userId && <NotificationBell userId={userId} />}
             {userId && (
               <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
@@ -40,7 +43,16 @@ export default async function Home() {
               </Link>
             )}
             <Link href="/restaurants" className="btn btn-primary !py-1.5 md:!py-2 !px-3 md:!px-6 !text-[10px] md:!text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap uppercase tracking-widest font-black">
-              {userId ? 'Browse Food' : 'Get Started'}
+              {userId ? (
+                <span className="hidden xs:inline">Browse Food</span>
+              ) : (
+                <span className="xs:hidden">Join</span>
+              )}
+              {userId ? (
+                <span className="xs:hidden">Browse</span>
+              ) : (
+                <span className="hidden xs:inline">Get Started</span>
+              )}
             </Link>
           </div>
         </div>
@@ -177,10 +189,12 @@ export default async function Home() {
       <footer className="bg-black/20 py-12 border-t border-white/5 mt-12 pb-32 md:pb-12">
         <div className="container flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm px-6">
           <p>&copy; {new Date().getFullYear()} TrueServe Inc.</p>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="/legal#privacy" className="hover:text-primary">Privacy Policy</Link>
-            <Link href="/legal#terms" className="hover:text-primary">Terms of Service</Link>
-            <Link href="/admin" className="hover:text-primary">Admin</Link>
+          <div className="flex flex-wrap gap-x-6 gap-y-3 mt-6 md:mt-0 justify-center md:justify-end">
+            <Link href="/legal#privacy" className="hover:text-primary transition-colors">Privacy</Link>
+            <Link href="/legal#terms" className="hover:text-primary transition-colors">Terms</Link>
+            <Link href="/admin" className="hover:text-primary transition-colors">Admin</Link>
+            <Link href="/merchant" className="hover:text-primary transition-colors">Merchant</Link>
+            <Link href="/driver" className="hover:text-primary transition-colors">Driver</Link>
           </div>
         </div>
       </footer>

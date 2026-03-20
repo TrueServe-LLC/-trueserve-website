@@ -115,10 +115,10 @@ export default async function DriverDashboard() {
                         <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Rating</p>
                         <p className="text-2xl md:text-4xl font-black text-yellow-400">★ {stats.rating}</p>
                     </Link>
-                    <Link href="/driver/dashboard/account" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all">
+                    <Link href="/driver/dashboard/account" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all text-xs">
                         <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">🏆</div>
                         <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Level</p>
-                        <p className="text-2xl md:text-4xl font-black text-primary">Gold</p>
+                        <p className="text-xl md:text-3xl lg:text-4xl font-black text-primary">Gold</p>
                     </Link>
                 </div>
 
@@ -212,21 +212,22 @@ export default async function DriverDashboard() {
                                             )}
 
                                             <div className="flex flex-col gap-2 mt-4">
-                                                <div className="flex gap-2">
+                                                <div className="flex flex-wrap gap-2">
                                                     <a
                                                         href={getNavigationUrl(destinationAddress || "", (driver as any)?.navigationApp || 'google', destLat, destLng)}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex-1 btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
+                                                        className="flex-1 min-w-[140px] btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
                                                     >
                                                         {isPickedUp ? "Navigate to Hub" : "Navigate to Store"}
                                                     </a>
 
-                                                    {isPickedUp && order.user?.phone && (
-                                                        <DriverCallButton orderId={order.id} />
-                                                    )}
-
-                                                    <DriverChatButton orderId={order.id} />
+                                                    <div className="flex gap-2 flex-grow">
+                                                        {isPickedUp && order.user?.phone && (
+                                                            <DriverCallButton orderId={order.id} />
+                                                        )}
+                                                        <DriverChatButton orderId={order.id} />
+                                                    </div>
                                                 </div>
 
                                                 {['PENDING', 'PREPARING'].includes(order.status) && (
@@ -290,8 +291,8 @@ export default async function DriverDashboard() {
                                     Base Rate: <span className="text-emerald-400">$3.00/order</span>
                                 </div>
                             </div>
-                            <div className="card bg-white/5 border-white/10 overflow-hidden">
-                                <table className="w-full">
+                            <div className="card bg-white/5 border-white/10 overflow-x-auto custom-scrollbar">
+                                <table className="w-full min-w-[600px]">
                                     <thead className="bg-white/5 text-left text-xs text-slate-500 uppercase font-bold">
                                         <tr>
                                             <th className="p-4">Date</th>

@@ -53,7 +53,7 @@ export default function MerchantPortal() {
                     <Link href="/" className="flex items-center gap-2 group">
                         <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg" />
                         <span className="text-xl font-bold tracking-tight">
-                            True<span className="text-primary">Serve</span> for Merchants
+                            True<span className="text-primary">Serve</span> <span className="hidden xs:inline">for Merchants</span>
                         </span>
                     </Link>
                     <div className="hidden md:flex gap-8 items-center text-sm font-medium text-slate-400">
@@ -74,9 +74,9 @@ export default function MerchantPortal() {
                                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-2">
                                     <span>Empowering Local Restaurants</span>
                                 </div>
-                                <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-white leading-[1.1]">
-                                    Unlock new <br />
-                                    revenue with <br />
+                                <h1 className="text-4xl md:text-7xl font-serif font-bold tracking-tight text-white leading-[1.1]">
+                                    Unlock new <br className="hidden xs:block" />
+                                    revenue with <br className="hidden xs:block" />
                                     <span className="font-sans font-black tracking-tighter"><span className="text-white">True</span><span className="text-primary">Serve</span></span>
                                 </h1>
                                 <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed font-medium">
@@ -242,7 +242,7 @@ export default function MerchantPortal() {
                                                     <input name="restaurantName" type="text" required placeholder="Legal Restaurant Name" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all font-bold placeholder:text-slate-600" />
                                                 </div>
 
-                                                <div className="grid grid-cols-2 gap-5">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                                     <div>
                                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-2 block">POC Name</label>
                                                         <input name="contactName" type="text" required placeholder="Owner/Manager" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all font-bold placeholder:text-slate-600" />
@@ -320,7 +320,7 @@ export default function MerchantPortal() {
                         <div className="space-y-4">
                             <h4 className="text-white text-xs font-bold uppercase tracking-widest">Support</h4>
                             <ul className="text-slate-500 text-sm space-y-2 font-medium">
-                                <li><Link href="mailto:support@trueserve.com" className="hover:text-primary transition-colors">Help Center</Link></li>
+                                <li><Link href="mailto:support@trueserve.delivery" className="hover:text-primary transition-colors">Help Center</Link></li>
                                 <li><Link href="/legal#terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                                 <li><Link href="/legal#privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
                             </ul>

@@ -18,7 +18,7 @@ In a pilot, things *will* break. You need a way for users to report critical iss
 
 ## 3. Email & Communication Reputation
 *   [ ] **Custom Domain for Email**: You are currently using `onboarding@resend.dev`.
-    *   **Action**: Verify your domain (e.g., `trueserve.com`) in Resend credentials.
+    *   **Action**: Verify your domain (e.g., `trueserve.delivery`) in Resend credentials.
     *   **Update**: Change the `from` address in `lib/email.ts` to `no-reply@yourdomain.com`.
 *   [ ] **SMS Brand Name**: Ensure your Twilio message service is configured to always prepend your brand name (already done in code manually, but cleaner via Service).
 

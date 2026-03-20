@@ -256,11 +256,11 @@ export default function DriverPortal() {
                         <img src="/logo.png" alt="Logo" className="w-8 h-8 opacity-50" />
                         <span className="font-black text-slate-500 tracking-tighter">TrueServe Fleet &copy; {new Date().getFullYear()}</span>
                     </div>
-                    <div className="flex gap-8 text-xs font-black uppercase tracking-widest text-slate-600">
+                    <div className="flex flex-wrap justify-center md:justify-end gap-x-8 gap-y-4 text-[10px] font-black uppercase tracking-widest text-slate-600">
                         <Link href="/legal" className="hover:text-white transition-colors">Privacy</Link>
                         <Link href="/legal" className="hover:text-white transition-colors">Terms</Link>
-                        <Link href="/help" className="hover:text-white transition-colors">Driver Help</Link>
-                        <Link href="/driver/login" className="hover:text-white transition-colors">Driver Login</Link>
+                        <Link href="/help" className="hover:text-white transition-colors">Help</Link>
+                        <Link href="/driver/login" className="hover:text-white transition-colors">Login</Link>
                     </div>
                 </div>
             </footer>

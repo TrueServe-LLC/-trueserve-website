@@ -111,13 +111,15 @@ async function getActiveOrders() {
     }
 }
 
+import { isInternalStaff } from "@/lib/rbac";
+
 export default async function AdminDashboard({ searchParams }: { searchParams: { stripe_connected?: string } }) {
 
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
 
-    let isAuthorized = !!adminSession || (isAuth && role === "ADMIN");
+    let isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
 
     if (!isAuthorized) {
         redirect("/admin/login");
@@ -138,10 +140,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <Link href="/" className="text-2xl font-bold tracking-tighter">
                         True<span className="text-gradient">Serve</span> Admin
                     </Link>
-                    <div className="flex gap-8 items-center">
-                        <Link href="/admin/dashboard" className="text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Control Center</Link>
-                        <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing Engine</Link>
-                        <Link href="/admin/support" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Support Desk</Link>
+                    <div className="flex gap-4 items-center">
+                        <Link href="/admin/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Control Center</Link>
+                        <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>
+                        <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>
+                        <Link href="/admin/support" className="hidden xs:block text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Support</Link>
                         <form action={async () => {
                             "use server";
                             await logout();
@@ -153,8 +156,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             </nav>
 
             <main className="container py-12 animate-fade-in">
-                <div className="flex justify-between items-center mb-12">
-                    <h1 className="text-4xl font-bold">Admin Control Center</h1>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tighter">Admin <span className="text-gradient">Registry</span></h1>
 
                     <div className="flex items-center gap-4">
                         {/* System Status Toggle */}
@@ -430,7 +433,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             <span className="bg-white/5 text-slate-500 text-xs px-2 py-1 rounded-full">{auditLogs.length} Recent</span>
                         </h2>
                     </div>
-                    <div className="card overflow-hidden border-white/5 bg-black/40">
+                    <div className="card overflow-x-auto custom-scrollbar border-white/5 bg-black/40">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-white/5 bg-white/5">
@@ -446,28 +449,49 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     <tr key={log.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-6 h-6 rounded-full bg-primary/20 text-[10px] flex items-center justify-center font-bold">A</div>
-                                                <span className="text-xs font-bold">{log.actor?.name || "System"}</span>
+                                                <div className="w-6 h-6 rounded-full bg-primary/20 text-[10px] flex items-center justify-center font-bold text-primary">
+                                                    {log.actor?.name?.[0] || 'S'}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-bold text-white">{log.actor?.name || "System"}</span>
+                                                    <span className="text-[9px] text-slate-500 font-medium">{log.actor?.role || 'SYSTEM'}</span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white">{log.action.replace(/_/g, " ")}</span>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">{log.action.replace(/_/g, " ")}</span>
+                                                {log.message && <span className="text-[10px] text-slate-400 italic line-clamp-1">{log.message}</span>}
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 text-xs font-mono text-slate-500">
-                                            {log.entityType}: {log.targetId?.slice(-8)}
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase text-slate-500 tracking-tighter">{log.entityType}</span>
+                                                <span className="text-[9px] font-mono text-slate-600 truncate max-w-[100px]">{log.targetId}</span>
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 text-xs text-slate-400">
-                                            {new Date(log.createdAt).toLocaleString()}
+                                        <td className="px-6 py-4 text-xs text-slate-400 whitespace-nowrap">
+                                            {new Date(log.createdAt).toLocaleDateString()}
+                                            <span className="block text-[10px] text-slate-600">{new Date(log.createdAt).toLocaleTimeString()}</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="text-[10px] font-bold text-primary group-hover:underline uppercase tracking-tighter">View Diff</button>
+                                            {(log.before || log.after) ? (
+                                                <button className="text-[10px] font-black text-primary group-hover:underline uppercase tracking-widest border border-primary/20 px-2 py-1 rounded-md hover:bg-primary/5 transition-all">
+                                                    View Diff
+                                                </button>
+                                            ) : (
+                                                <span className="text-[9px] text-slate-700 uppercase font-bold">No Data</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
                                 {auditLogs.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-slate-500 italic text-[10px] font-black uppercase tracking-widest">
-                                            Audit trail is currently empty. Critical system events will appear here.
+                                        <td colSpan={5} className="px-6 py-20 text-center">
+                                            <div className="flex flex-col items-center gap-2 opacity-20">
+                                                <span className="text-4xl text-white">📜</span>
+                                                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Audit trail is empty</p>
+                                            </div>
                                         </td>
                                     </tr>
                                 )}

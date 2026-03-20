@@ -51,6 +51,16 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
 
             if (publicUser) {
                 role = publicUser.role;
+
+                // Log Audit Login Event
+                const { logAuditAction } = await import('@/lib/audit');
+                await logAuditAction({
+                    action: "LOGIN",
+                    targetId: publicUser.id,
+                    entityType: "User",
+                    message: `Login successful for role: ${role}`
+                });
+
                 // Set App Cookie for compatibility
                 cookieStore.set("userId", publicUser.id, { secure: process.env.NODE_ENV === "production", httpOnly: true, path: '/' });
             } else {

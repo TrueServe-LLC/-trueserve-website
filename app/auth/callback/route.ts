@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
             if (!profile) {
                 // Auto-assign admin conditionally
-                if (data.user.email === process.env.ADMIN_EMAIL || data.user.email?.endsWith('@trueserve.com') || data.user.email?.endsWith('@trueserve.delivery')) {
+                if (data.user.email === process.env.ADMIN_EMAIL || data.user.email?.endsWith('@trueserve.delivery')) {
                     role = 'ADMIN';
                 }
 

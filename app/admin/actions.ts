@@ -10,26 +10,9 @@ import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email";
 import { sendSMS } from "@/lib/sms";
 import { getAuthSession } from "@/app/auth/actions";
+import { logAuditAction } from "@/lib/audit";
 
-async function logAuditAction(action: string, targetId: string, entityType: string, before: any = null, after: any = null, message: string = "") {
-    try {
-        const { isAuth, userId } = await getAuthSession();
-        if (!isAuth || !userId) return;
-
-        await supabaseAdmin.from('AuditLog').insert({
-            actorId: userId,
-            action,
-            targetId,
-            entityType,
-            before,
-            after,
-            message,
-            createdAt: new Date().toISOString()
-        });
-    } catch (e) {
-        console.error("Critical: Failed to log audit action:", e);
-    }
-}
+// Removed local logAuditAction, using shared version from @/lib/audit
 
 export async function approveMenuItem(id: string) {
     try {
@@ -42,7 +25,7 @@ export async function approveMenuItem(id: string) {
             throw error;
         }
 
-        await logAuditAction("APPROVE_MENU_ITEM", id, "MenuItem", { status: "PENDING" }, { status: "APPROVED" });
+        await logAuditAction({ action: "APPROVE_MENU_ITEM", targetId: id, entityType: "MenuItem", before: { status: "PENDING" }, after: { status: "APPROVED" } });
 
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
@@ -64,7 +47,7 @@ export async function rejectMenuItem(id: string) {
             throw error;
         }
 
-        await logAuditAction("REJECT_MENU_ITEM", id, "MenuItem", { status: "PENDING" }, { status: "REJECTED" });
+        await logAuditAction({ action: "REJECT_MENU_ITEM", targetId: id, entityType: "MenuItem", before: { status: "PENDING" }, after: { status: "REJECTED" } });
 
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
@@ -86,7 +69,7 @@ export async function flagMenuItem(id: string) {
             throw error;
         }
 
-        await logAuditAction("FLAG_MENU_ITEM", id, "MenuItem", { status: "PENDING" }, { status: "FLAGGED" });
+        await logAuditAction({ action: "FLAG_MENU_ITEM", targetId: id, entityType: "MenuItem", before: { status: "PENDING" }, after: { status: "FLAGGED" } });
 
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
@@ -145,17 +128,17 @@ export async function approveDriver(id: string) {
 
         if (statusError) throw statusError;
 
-        await logAuditAction("APPROVE_DRIVER", id, "Driver", { status: "PENDING" }, { status: "OFFLINE" });
+        await logAuditAction({ action: "APPROVE_DRIVER", targetId: id, entityType: "Driver", before: { status: "PENDING" }, after: { status: "OFFLINE" } });
 
         await sendEmail(
             email,
             "Your TrueServe Driver Application - APPROVED",
-            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in using your phone number to receive a secure SMS code.\n\nPlease go to trueserve.delivery/driver/login to start accepting orders!\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
+            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in using your phone number to receive a secure SMS code.\n\nPlease go to driver.trueserve.delivery/login to start accepting orders!\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
         );
 
         await sendSMS(
             phone,
-            `TrueServe: Your driver application is approved! You can now log in using this phone number at trueserve.delivery/driver/login`
+            `TrueServe: Your driver application is approved! You can now log in using this phone number at driver.trueserve.delivery/login`
         );
 
         revalidatePath("/admin/dashboard");
@@ -184,7 +167,7 @@ export async function rejectDriver(id: string) {
 
         if (statusError) throw statusError;
 
-        await logAuditAction("REJECT_DRIVER", id, "Driver", { status: "PENDING" }, { status: "REJECTED" });
+        await logAuditAction({ action: "REJECT_DRIVER", targetId: id, entityType: "Driver", before: { status: "PENDING" }, after: { status: "REJECTED" } });
 
         await sendEmail(
             (driver.user as any).email,
@@ -207,7 +190,7 @@ export async function connectStripe(_formData?: FormData) {
         redirect("/admin/login");
     }
 
-    await logAuditAction("CONNECT_STRIPE_PORTAL", "STRIPE", "System");
+    await logAuditAction({ action: "CONNECT_STRIPE_PORTAL", targetId: "STRIPE", entityType: "System" });
 
     redirect("https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create");
 }
@@ -219,15 +202,23 @@ export async function logout() {
 
 export async function toggleOrderingStatus(enabled: boolean) {
     try {
-        const { error } = await supabase
-            .from('SystemSettings')
-            .upsert({ key: 'ordering_enabled', value: enabled });
-
-        if (error) throw error;
-
-        await logAuditAction("TOGGLE_ORDERING", "SYSTEM", "SystemSettings", { enabled: !enabled }, { enabled });
+        const { updateSystemConfig } = await import('@/lib/system');
+        await updateSystemConfig('ORDERING_SYSTEM_ENABLED', enabled);
 
         revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/settings");
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function updateConfigParam(key: any, value: any) {
+    try {
+        const { updateSystemConfig } = await import('@/lib/system');
+        await updateSystemConfig(key, value);
+
+        revalidatePath("/admin/settings");
         return { success: true };
     } catch (e: any) {
         return { error: e.message };
@@ -256,13 +247,13 @@ export async function refreshBackgroundCheck(driverId: string) {
 
         if (error) throw error;
 
-        await logAuditAction("REFRESH_BACKGROUND_CHECK", driverId, "Driver", null, { status });
+        await logAuditAction({ action: "REFRESH_BACKGROUND_CHECK", targetId: driverId, entityType: "Driver", after: { status } });
 
         if (status === 'FLAGGED' && driver?.user) {
             await sendEmail(
                 (driver.user as any).email,
                 "Action Required: Driver Background Check",
-                `Hi ${(driver.user as any).name},\n\nDuring our routine background screening, some items were flagged on your report. \n\nPlease contact our trust & safety team at safety@trueserve.com if you would like to provide additional context or dispute these findings.\n\nBest,\nThe TrueServe Team`
+                `Hi ${(driver.user as any).name},\n\nDuring our routine background screening, some items were flagged on your report. \n\nPlease contact our trust & safety team at safety@trueserve.delivery if you would like to provide additional context or dispute these findings.\n\nBest,\nThe TrueServe Team`
             );
         }
 
@@ -287,7 +278,7 @@ export async function forceCompleteOrder(orderId: string) {
 
         if (error) throw error;
 
-        await logAuditAction("FORCE_COMPLETE_ORDER", orderId, "Order", { status: "ACTIVE" }, { status: "DELIVERED" });
+        await logAuditAction({ action: "FORCE_COMPLETE_ORDER", targetId: orderId, entityType: "Order", before: { status: "ACTIVE" }, after: { status: "DELIVERED" } });
 
         revalidatePath("/admin/dashboard");
         return { success: true };
@@ -308,7 +299,7 @@ export async function adminCancelOrder(orderId: string) {
 
         if (error) throw error;
 
-        await logAuditAction("ADMIN_CANCEL_ORDER", orderId, "Order", { status: "ACTIVE" }, { status: "CANCELLED" });
+        await logAuditAction({ action: "ADMIN_CANCEL_ORDER", targetId: orderId, entityType: "Order", before: { status: "ACTIVE" }, after: { status: "CANCELLED" } });
 
         revalidatePath("/admin/dashboard");
         return { success: true };

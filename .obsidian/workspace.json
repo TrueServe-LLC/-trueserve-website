@@ -185,6 +185,10 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "app/admin/settings/page.tsx",
+    "app/admin/settings",
+    "lib/rbac.ts",
+    "lib/audit.ts",
     "app/admin/support/page.tsx",
     "components/admin/SupportCenter.tsx",
     "app/admin/support/actions.ts",
@@ -192,10 +196,6 @@
     "scripts/verify_support_tables.ts",
     "docs/Infrastructure/Security.md",
     "docs/Infrastructure",
-    "supabase/retention_policy.sql",
-    "app/admin/pricing/page.tsx",
-    "components/admin/PricingRulesManager.tsx",
-    "app/admin/pricing/actions.ts",
-    "app/admin/pricing"
+    "supabase/retention_policy.sql"
   ]
 }
