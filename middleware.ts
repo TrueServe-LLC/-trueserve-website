@@ -14,29 +14,32 @@ export async function middleware(request: NextRequest) {
   // --- 2. SUBDOMAIN DETECTION ---
   const pieces = host.split('.')
   const isLocal = host.includes("localhost")
+  const isVercelPreview = host.endsWith('.vercel.app')
   const subdomainPiece = pieces[0].toLowerCase()
   
-  // Logic: pieces.length > 1 for localhost (e.g., driver.localhost:3000), 
-  //        pieces.length > 2 for production (e.g., driver.trueserve.delivery)
-  const isSub = pieces.length > (isLocal ? 1 : 2) && !['www', 'localhost'].includes(subdomainPiece)
+  // Logic: Only detect subdomains on custom domains or localhost (e.g. admin.trueserve.delivery)
+  // Skip subdomain logic for .vercel.app preview URLs
+  const isSub = !isVercelPreview && pieces.length > (isLocal ? 1 : 2) && !['www', 'localhost'].includes(subdomainPiece)
   const subdomain = isSub ? subdomainPiece : ""
 
   const allowedSubdomains = ["admin", "merchant", "driver"]
 
   // --- 3. GLOBAL REDIRECTION (Path-based) ---
-  // If user hits /driver on www, or /admin on merchant, etc.
-  for (const sub of allowedSubdomains) {
-    if (path.startsWith(`/${sub}`)) {
-      if (subdomain !== sub) {
-        // Base host: strip existing known prefixes
-        const baseHost = host.replace(/^(?:www\.|admin\.|merchant\.|driver\.)/, '')
-        const protocol = isLocal ? 'http' : 'https'
-        
-        // Clean the path to avoid /driver/dashboard -> dashboard
-        const newPath = path.replace(`/${sub}`, '') || '/'
-        const redirectUrl = new URL(newPath, `${protocol}://${sub}.${baseHost}`)
-        redirectUrl.search = url.search
-        return NextResponse.redirect(redirectUrl)
+  // Only enforce subdomain redirection if we are NOT on a Vercel preview domain
+  if (!isVercelPreview) {
+    for (const sub of allowedSubdomains) {
+      if (path.startsWith(`/${sub}`)) {
+        if (subdomain !== sub) {
+          // Base host: strip existing known prefixes
+          const baseHost = host.replace(/^(?:www\.|admin\.|merchant\.|driver\.)/, '')
+          const protocol = isLocal ? 'http' : 'https'
+          
+          // Clean the path to avoid /driver/dashboard -> dashboard
+          const newPath = path.replace(`/${sub}`, '') || '/'
+          const redirectUrl = new URL(newPath, `${protocol}://${sub}.${baseHost}`)
+          redirectUrl.search = url.search
+          return NextResponse.redirect(redirectUrl)
+        }
       }
     }
   }

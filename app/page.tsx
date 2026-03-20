@@ -11,11 +11,15 @@ import { redirect } from "next/navigation";
 export default async function Home() {
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
-  const userRole = cookieStore.get("userRole")?.value;
-
+  
   // Determine the correct dashboard link based on role
   let dashboardHref = "/login";
   if (userId) {
+    // Fetch the Source of Truth for the role from the DB
+    const { supabase } = await import('@/lib/supabase');
+    const { data: userData } = await supabase.from('User').select('role').eq('id', userId).maybeSingle();
+    const userRole = userData?.role;
+
     if (userRole === "ADMIN" || userRole === "OPS" || userRole === "SUPPORT" || userRole === "FINANCE") dashboardHref = "/admin/dashboard";
     else if (userRole === "MERCHANT") dashboardHref = "/merchant/dashboard";
     else if (userRole === "DRIVER") dashboardHref = "/driver/dashboard";
