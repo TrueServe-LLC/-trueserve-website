@@ -20,8 +20,9 @@ export async function login(formData: FormData) {
         });
 
         if (authData.user && !authError) {
-            // Check Role by Email (To handle ID mismatches between Google OAuth and Password Signups)
-            const { data: userData, error: userError } = await supabase
+            // Check Role by Email (To handle ID mismatches) - MUST use Admin client to bypass RLS
+            const { supabaseAdmin } = await import("@/lib/supabase-admin");
+            const { data: userData, error: userError } = await supabaseAdmin
                 .from('User')
                 .select('role')
                 .eq('email', email)
