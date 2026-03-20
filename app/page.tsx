@@ -15,15 +15,24 @@ export default async function Home() {
   // Determine the correct dashboard link based on role
   let dashboardHref = "/login";
   if (userId) {
-    // Fetch the Source of Truth for the role from the DB
-    const { supabase } = await import('@/lib/supabase');
-    const { data: userData } = await supabase.from('User').select('role').eq('id', userId).maybeSingle();
-    const userRole = userData?.role;
+    // Robust Role Detection using direct fetch + service key to bypass RLS
+    const roleRes = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${userId}&select=role`,
+        {
+            headers: {
+                'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+                'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+            },
+            next: { revalidate: 0 } // No caching
+        }
+    );
+    const roles = await roleRes.json();
+    const userRole = roles?.[0]?.role || "CUSTOMER";
 
-    if (userRole === "ADMIN" || userRole === "OPS" || userRole === "SUPPORT" || userRole === "FINANCE") dashboardHref = "/admin/dashboard";
+    if (["ADMIN", "OPS", "SUPPORT", "FINANCE"].includes(userRole)) dashboardHref = "/admin/dashboard";
     else if (userRole === "MERCHANT") dashboardHref = "/merchant/dashboard";
     else if (userRole === "DRIVER") dashboardHref = "/driver/dashboard";
-    else dashboardHref = "/restaurants"; // Regular user
+    else dashboardHref = "/restaurants";
   }
 
   return (
