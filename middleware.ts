@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const path = url.pathname
 
   // --- 1. EXCLUSIONS ---
-  const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.')
+  const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.') || path === '/login'
   if (isInternal) return NextResponse.next()
 
   const response = NextResponse.next({
@@ -50,6 +50,26 @@ export async function middleware(request: NextRequest) {
   const allowedSubdomains = ["admin", "merchant", "driver"]
   
   if (subdomain && allowedSubdomains.includes(subdomain)) {
+    // SECURITY GATE: Only allow internal staff on admin subdomain
+    if (subdomain === 'admin') {
+       if (!user) return NextResponse.redirect(new URL('/login', request.url))
+       
+       const roleResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
+          {
+              headers: {
+                  'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+                  'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+              }
+          }
+       )
+       const roles = await roleResponse.json()
+       const role = roles?.[0]?.role || 'CUSTOMER'
+       if (!['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
+          return NextResponse.redirect(new URL('/', request.url))
+       }
+    }
+
     // 1. Rewrite to the internal folder silently
     if (!path.startsWith(`/${subdomain}`)) {
       const rewriteUrl = new URL(`/${subdomain}${path}${url.search}`, request.url)
@@ -58,26 +78,6 @@ export async function middleware(request: NextRequest) {
       // Transfer cookies/headers
       response.cookies.getAll().forEach(cookie => rewriteResponse.cookies.set(cookie.name, cookie.value))
       response.headers.forEach((v, k) => rewriteResponse.headers.set(k, v))
-      
-      // Add a security check ONLY if it's the admin subdomain
-      if (subdomain === 'admin') {
-         if (!user) return NextResponse.redirect(new URL('/login', request.url))
-         
-         const roleResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
-            {
-                headers: {
-                    'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-                    'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-                }
-            }
-         )
-         const roles = await roleResponse.json()
-         const role = roles?.[0]?.role || 'CUSTOMER'
-         if (!['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
-            return NextResponse.redirect(new URL('/', request.url))
-         }
-      }
       
       return rewriteResponse
     }
