@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const path = url.pathname
 
   // --- 1. EXCLUSIONS ---
-  const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.') || path === '/login'
+  const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.')
   if (isInternal) return NextResponse.next()
 
   const response = NextResponse.next({
@@ -17,14 +17,20 @@ export async function middleware(request: NextRequest) {
   })
 
   // Determine the cookie domain for universal sessions (including subdomains)
-  const isLocal = host.includes("localhost")
-  const isVercel = host.endsWith(".vercel.app")
+  const cleanHost = host.split(':')[0]
+  const isLocal = cleanHost.includes("localhost")
+  const isVercel = cleanHost.endsWith(".vercel.app")
   const cookieDomain = isLocal || isVercel ? "" : ".trueserve.delivery"
 
-  const pieces = host.split('.')
+  const pieces = cleanHost.split('.')
+  // For trueserve.delivery, pieces.length is 2. Subdomain exists if length > 2.
+  // For sub.trueserve-website.vercel.app, pieces.length is 4. Subdomain exists if length > 3.
+  const isSub = isVercel 
+    ? pieces.length > 3 
+    : pieces.length > (isLocal ? 1 : 2)
+  
   const subdomainPiece = pieces[0].toLowerCase()
-  const isSub = !isVercel && pieces.length > (isLocal ? 1 : 2) && !['www', 'localhost'].includes(subdomainPiece)
-  const subdomain = isSub ? subdomainPiece : ""
+  const subdomain = isSub && !['www', 'localhost'].includes(subdomainPiece) ? subdomainPiece : ""
 
   // --- 2. SUPABASE SESSION SYNC ---
   const supabase = createServerClient(
