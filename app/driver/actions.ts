@@ -472,10 +472,13 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
 
         // Geo-Fenced Safe Drop Protocol
         if (driverLat && driverLng && order.deliveryLat && order.deliveryLng) {
+            const { getSystemConfig } = await import('@/lib/system');
+            const completionRadius = await getSystemConfig('DELIVERY_COMPLETION_RADIUS_MILES', 0.05);
+
             const distance = Number(calculateDistance(driverLat, driverLng, order.deliveryLat, order.deliveryLng));
-            // Require driver to be within 0.05 miles (~260 feet) of the dropoff location
-            if (distance > 0.05) {
-                return { error: `Geo-Fence Active: You are too far (${distance} mi) from the drop-off location.` };
+            // Require driver to be within the configurable radius
+            if (distance > completionRadius) {
+                return { error: `Geo-Fence Active: You are too far (${distance} mi) from the drop-off location. Must be within ${completionRadius} mi.` };
             }
         }
 

@@ -11,6 +11,16 @@ import { redirect } from "next/navigation";
 export default async function Home() {
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
+  const userRole = cookieStore.get("userRole")?.value;
+
+  // Determine the correct dashboard link based on role
+  let dashboardHref = "/login";
+  if (userId) {
+    if (userRole === "ADMIN" || userRole === "OPS" || userRole === "SUPPORT" || userRole === "FINANCE") dashboardHref = "/admin/dashboard";
+    else if (userRole === "MERCHANT") dashboardHref = "/merchant/dashboard";
+    else if (userRole === "DRIVER") dashboardHref = "/driver/dashboard";
+    else dashboardHref = "/restaurants"; // Regular user
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden font-sans text-slate-200 bg-black">
@@ -30,7 +40,7 @@ export default async function Home() {
             <Link href="/restaurants" className="hover:text-primary transition-colors">Order Food</Link>
             <Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link>
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
-            <Link href="/login" className="btn btn-primary !py-2 !px-5 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg shadow-primary/20 ml-2">
+            <Link href={dashboardHref} className="btn btn-primary !py-2 !px-5 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg shadow-primary/20 ml-2">
               {userId ? "Dashboard" : "Login"}
             </Link>
           </div>

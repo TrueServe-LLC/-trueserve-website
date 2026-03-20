@@ -72,6 +72,54 @@ export async function middleware(request: NextRequest) {
   // Refresh session - required for Server Components
   const { data: { user } } = await supabase.auth.getUser()
 
+  // --- 5. STRICT SUBDOMAIN ISOLATION & ROLE CHECK ---
+  if (subdomain && allowedSubdomains.includes(subdomain)) {
+    // 1. Must be logged in to access ANY subdomain portal
+    if (!user) {
+      const loginUrl = new URL('/login', request.url)
+      // Remove subdomain from login URL to prevent infinite loops if login is only on www
+      loginUrl.hostname = host.replace(`${subdomain}.`, '')
+      return NextResponse.redirect(loginUrl)
+    }
+
+    // 2. Fetch User Role for strict portal check
+    const { data: userData } = await supabase
+      .from('User')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = userData?.role || 'CUSTOMER'
+
+    // 3. Define access rules
+    const isAdminRole = ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)
+    const isDriverRole = role === 'DRIVER'
+    const isMerchantRole = role === 'MERCHANT'
+
+    // REJECTION LOGIC
+    if (subdomain === 'admin' && !isAdminRole) {
+      return NextResponse.redirect(new URL('/', request.url)) // Unauthorized customers to home
+    }
+    if (subdomain === 'driver' && !isDriverRole) {
+      return NextResponse.redirect(new URL('/driver', request.url)) // Re-route to driver info landing
+    }
+    if (subdomain === 'merchant' && !isMerchantRole) {
+      return NextResponse.redirect(new URL('/merchant', request.url)) // Re-route to merchant info landing
+    }
+
+    // 4. If all checks pass, Rewrite to the internal folder
+    if (!path.startsWith(`/${subdomain}`)) {
+      const rewriteUrl = new URL(`/${subdomain}${path}${url.search}`, request.url)
+      const rewriteResponse = NextResponse.rewrite(rewriteUrl)
+      
+      // Transfer cookies/headers
+      response.cookies.getAll().forEach(cookie => rewriteResponse.cookies.set(cookie.name, cookie.value))
+      response.headers.forEach((v, k) => rewriteResponse.headers.set(k, v))
+      
+      return rewriteResponse
+    }
+  }
+
   // SYNC: Ensure the custom userId cookie is present for the client
   const userId = request.cookies.get('userId')?.value
   if (user && !userId) {
@@ -82,25 +130,6 @@ export async function middleware(request: NextRequest) {
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7 // 1 week
     })
-  }
-
-  // --- 5. SUBDOMAIN REWRITE (Internal Routing) ---
-  // Rewrite handled subdomains to their internal folder structure
-  if (subdomain && allowedSubdomains.includes(subdomain)) {
-    if (!path.startsWith(`/${subdomain}`)) {
-      const rewriteUrl = new URL(`/${subdomain}${path}${url.search}`, request.url)
-      const rewriteResponse = NextResponse.rewrite(rewriteUrl)
-      
-      // Transfer cookies/headers to the rewrite response
-      response.cookies.getAll().forEach(cookie => {
-        rewriteResponse.cookies.set(cookie.name, cookie.value)
-      })
-      response.headers.forEach((value, key) => {
-        rewriteResponse.headers.set(key, value)
-      })
-      
-      return rewriteResponse
-    }
   }
 
   return response

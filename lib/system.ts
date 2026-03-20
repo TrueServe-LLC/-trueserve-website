@@ -8,7 +8,13 @@ export type ConfigKey =
     | 'MAX_DELIVERY_RADIUS_MILES'
     | 'BASE_SERVICE_FEE_PERCENT'
     | 'DRIVER_SHIFT_MAX_HOURS'
-    | 'ORDERING_SYSTEM_ENABLED';
+    | 'ORDERING_SYSTEM_ENABLED'
+    | 'DRIVER_BASE_PAY'
+    | 'DRIVER_MILEAGE_RATE'
+    | 'DRIVER_TIME_RATE_MIN'
+    | 'STRIPE_SERVICE_FEE_PERCENT'
+    | 'DELIVERY_COMPLETION_RADIUS_MILES'
+    | 'IS_ALPHA_TESTING';
 
 export async function getSystemConfig(key: ConfigKey, defaultValue?: any): Promise<any> {
     try {
@@ -23,6 +29,29 @@ export async function getSystemConfig(key: ConfigKey, defaultValue?: any): Promi
     } catch (e) {
         console.error(`Error fetching config ${key}:`, e);
         return defaultValue;
+    }
+}
+
+/**
+ * Bulk fetcher for multiple configurations to reduce DB hits in loops
+ */
+export async function getManyConfigs(keys: ConfigKey[]): Promise<Record<string, any>> {
+    try {
+        const { data, error } = await supabase
+            .from('SystemConfig')
+            .select('key, value')
+            .in('key', keys);
+
+        if (error || !data) return {};
+        
+        const configMap: Record<string, any> = {};
+        data.forEach(item => {
+            configMap[item.key] = item.value;
+        });
+        return configMap;
+    } catch (e) {
+        console.error("Error bulk fetching configs:", e);
+        return {};
     }
 }
 

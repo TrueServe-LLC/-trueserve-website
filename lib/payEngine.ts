@@ -17,23 +17,27 @@ export function calculateDriverPay(
     distanceMiles: number,
     waitMinutes: number = 0,
     isBatched: boolean = false,
-    peakMultiplier: number = 1.0
+    peakMultiplier: number = 1.0,
+    overrides?: {
+        basePay?: number;
+        mileageRate?: number;
+        timeRate?: number;
+        batchFee?: number;
+    }
 ): PayCalculation {
-    const BASE_PAY = 3.00;
-    const DISTANCE_RATE = 0.70;
-    const TIME_RATE = 0.25; // Per minute
-    const BATCH_FEE = 2.00;
-
-    const basePay = BASE_PAY;
+    const basePay = overrides?.basePay ?? 3.00;
+    const distanceRate = overrides?.mileageRate ?? 0.70;
+    const timeRate = overrides?.timeRate ?? 0.25; // Per minute
+    const batchFee = overrides?.batchFee ?? 2.00;
 
     // Distance pay: Flat $0.70/mi
-    const distancePay = Math.round(distanceMiles * DISTANCE_RATE * 100) / 100;
+    const distancePay = Math.round(distanceMiles * distanceRate * 100) / 100;
 
     // Time pay: $0.25/min for every minute
-    const timePay = Math.round(waitMinutes * TIME_RATE * 100) / 100;
+    const timePay = Math.round(waitMinutes * timeRate * 100) / 100;
 
     // Batch bonus
-    const batchBonus = isBatched ? BATCH_FEE : 0;
+    const batchBonus = isBatched ? batchFee : 0;
 
     // Apply multiplier only to (base + distance) as per logic scenario 1.6
     const multiplierSubtotal = (basePay + distancePay) * peakMultiplier;

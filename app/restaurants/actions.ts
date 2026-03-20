@@ -112,6 +112,9 @@ export async function placeOrder(
 
             // SCENARIO 1.4: Delivery Zone Restriction (10 mile radius)
             if (customerLat && customerLng && restaurant.lat && restaurant.lng) {
+                const { getSystemConfig } = await import('@/lib/system');
+                const maxRadius = await getSystemConfig('MAX_DELIVERY_RADIUS_MILES', 10);
+
                 const R = 3959; // Earth radius in miles
                 const dLat = (customerLat - restaurant.lat) * (Math.PI / 180);
                 const dLon = (customerLng - restaurant.lng) * (Math.PI / 180);
@@ -122,8 +125,8 @@ export async function placeOrder(
                 const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                 const dist = R * c;
 
-                if (!restaurant.isMock && dist > 10) {
-                    return { message: "Address is outside our 10-mile delivery radius.", error: true };
+                if (!restaurant.isMock && dist > maxRadius) {
+                    return { message: `Address is outside our ${maxRadius}-mile delivery radius.`, error: true };
                 }
             }
         }
@@ -390,8 +393,10 @@ export async function createPaymentIntent(restaurantId: string, cartItems: { id:
             stripeOptions.transfer_data = {
                 destination: restaurant.stripeAccountId,
             };
-            // Platform Fee (e.g., 10%)
-            stripeOptions.application_fee_amount = Math.round(amountInCents * 0.10);
+            // Platform Fee (dynamic)
+            const { getSystemConfig } = await import('@/lib/system');
+            const feePercent = await getSystemConfig('STRIPE_SERVICE_FEE_PERCENT', 10);
+            stripeOptions.application_fee_amount = Math.round(amountInCents * (feePercent / 100));
         }
 
         const paymentIntent = await getStripe().paymentIntents.create(stripeOptions);

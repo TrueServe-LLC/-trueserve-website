@@ -331,9 +331,6 @@ export default async function RestaurantFinder({
 
     // View State: Landing if no inputs provided
     // If ANY input is provided (location, search, or coords), we show results
-    const showLanding = !location && !address && (!lat || !lng);
-
-    // Auth & Active Orders Check
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
@@ -351,6 +348,9 @@ export default async function RestaurantFinder({
     }
 
     const effectiveAddress = address || location || userSavedAddress;
+
+    // View State: Landing if no inputs AND no saved address provided
+    const showLanding = !effectiveAddress && (!lat || !lng);
 
     const { restaurants: fetchedRest, locationMeta: meta } = await getRestaurants({
         term: effectiveAddress, // Use effectiveAddress as the primary search term
