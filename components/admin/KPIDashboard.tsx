@@ -31,7 +31,7 @@ export default function KPIDashboard({ orders, drivers, restaurants }: KPIDashbo
         // On-time Delivery
         const deliveredOrders = filteredOrders.filter(o => o.deliveredAt && o.estimatedETA);
         const onTimeCount = deliveredOrders.filter(o => new Date(o.deliveredAt) <= new Date(o.estimatedETA)).length;
-        const onTimeRate = deliveredOrders.length > 0 ? (onTimeCount / deliveredOrders.length) * 100 : 100;
+        const onTimeRate = deliveredOrders.length > 0 ? (onTimeCount / deliveredOrders.length) * 100 : 0;
 
         // Prep-to-Pickup
         const pickedUpOrders = filteredOrders.filter(o => o.pickedUpAt && o.prepTimeEnd);
