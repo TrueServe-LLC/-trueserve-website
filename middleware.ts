@@ -84,8 +84,8 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Rewrite to the internal folder silently
-    if (!path.startsWith(`/${subdomain}`)) {
+    // Rewrite to the internal folder silently (except for shared auth callback)
+    if (!path.startsWith(`/${subdomain}`) && !path.startsWith('/auth')) {
       const rewriteUrl = new URL(`/${subdomain}${path}${url.search}`, request.url)
       const rewriteResponse = NextResponse.rewrite(rewriteUrl)
       
