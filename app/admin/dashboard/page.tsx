@@ -49,10 +49,7 @@ async function getAuditLogs() {
     try {
         const { data, error } = await supabase
             .from('AuditLog')
-            .select(`
-                *,
-                actor:User(*)
-            `)
+            .select('*')
             .order('createdAt', { ascending: false })
             .limit(10);
 
@@ -166,21 +163,24 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             </nav>
 
             <main className="container py-12 animate-fade-in">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-                    <h1 className="text-3xl md:text-4xl font-black tracking-tighter">Admin <span className="text-gradient">Registry</span></h1>
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 w-full border-b border-white/10 pb-6">
+                    <div>
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter">Admin <span className="text-gradient">Registry</span></h1>
+                        <p className="text-slate-400 text-sm mt-1 uppercase tracking-widest font-bold">Control Center configuration</p>
+                    </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                         {/* System Status Toggle */}
                         <div className="px-4 py-2 border border-white/10 rounded-full flex items-center gap-3 bg-white/5">
-                            <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Ordering System</span>
+                            <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Ordering System</span>
                             {await (async () => {
                                 const { isOrderingEnabled } = await import('@/lib/system');
                                 const enabled = await isOrderingEnabled();
                                 const { toggleOrderingStatus } = await import('../actions');
                                 return (
                                     <form action={async () => { "use server"; await toggleOrderingStatus(!enabled); }}>
-                                        <button className={`w-12 h-6 rounded-full p-1 transition-colors relative ${enabled ? 'bg-emerald-500' : 'bg-red-500'}`}>
-                                            <div className={`w-4 h-4 rounded-full bg-white shadow-md transition-transform ${enabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        <button className={`w-10 h-5 rounded-full p-1 transition-colors relative ${enabled ? 'bg-emerald-500' : 'bg-red-500'}`}>
+                                            <div className={`w-3 h-3 rounded-full bg-white shadow-md transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'}`} />
                                         </button>
                                     </form>
                                 );
@@ -189,21 +189,14 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                         {/* Stripe Connect Section */}
                         {isStripeConnected ? (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 font-bold text-sm">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 font-black uppercase tracking-widest text-[10px]">
                                 <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                                 Stripe Connected
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2">
-                                <form action={async () => {
-                                    "use server";
-                                    await connectStripe();
-                                }}>
-                                    <button className="btn btn-primary py-2 px-4 shadow-lg shadow-primary/20 font-black uppercase tracking-widest text-[10px]">
-                                        Connect Stripe
-                                    </button>
-                                </form>
-                            </div>
+                            <a href="https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create" target="_blank" rel="noopener noreferrer" className="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-full font-black uppercase tracking-widest text-[10px] transition-colors shadow-lg shadow-primary/20">
+                                Connect Stripe
+                            </a>
                         )}
                     </div>
                 </div>

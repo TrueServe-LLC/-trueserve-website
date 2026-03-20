@@ -106,22 +106,27 @@ export async function middleware(request: NextRequest) {
   const matchedPortal = portals.find(p => path.startsWith(p))
 
   if (matchedPortal) {
-    if (!user) return NextResponse.redirect(new URL('/login', request.url))
+    // If it's the admin portal and they have a manual admin_session cookie, let the page-layer auth guard handle it
+    if (path.startsWith('/admin') && request.cookies.has("admin_session")) {
+        // Do nothing, let it pass through to the page
+    } else {
+        if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-    const roleRes = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
-      {
-        headers: {
-          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        const roleRes = await fetch(
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
+          {
+            headers: {
+              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+            }
+          }
+        )
+        const roles = await roleRes.json()
+        const role = roles?.[0]?.role || 'CUSTOMER'
+
+        if (path.startsWith('/admin') && !['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
+          return NextResponse.redirect(new URL('/', request.url))
         }
-      }
-    )
-    const roles = await roleRes.json()
-    const role = roles?.[0]?.role || 'CUSTOMER'
-
-    if (path.startsWith('/admin') && !['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
-      return NextResponse.redirect(new URL('/', request.url))
     }
   }
 
