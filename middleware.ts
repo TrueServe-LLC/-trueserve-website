@@ -21,6 +21,11 @@ export async function middleware(request: NextRequest) {
   const isVercel = host.endsWith(".vercel.app")
   const cookieDomain = isLocal || isVercel ? "" : ".trueserve.delivery"
 
+  const pieces = host.split('.')
+  const subdomainPiece = pieces[0].toLowerCase()
+  const isSub = !isVercel && pieces.length > (isLocal ? 1 : 2) && !['www', 'localhost'].includes(subdomainPiece)
+  const subdomain = isSub ? subdomainPiece : ""
+
   // --- 2. SUPABASE SESSION SYNC ---
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,7 +36,6 @@ export async function middleware(request: NextRequest) {
         setAll: (cookiesToSet) => {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           cookiesToSet.forEach(({ name, value, options }) => {
-             // Universal Cookie Sync
              const sharedOptions = { ...options, domain: cookieDomain }
              response.cookies.set(name, value, sharedOptions)
           })
@@ -42,17 +46,51 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // --- 3. PATH & ROLE PROTECTION ---
+  // --- 3. SUBDOMAIN ROUTING & ROLE PROTECTION ---
+  const allowedSubdomains = ["admin", "merchant", "driver"]
+  
+  if (subdomain && allowedSubdomains.includes(subdomain)) {
+    // 1. Rewrite to the internal folder silently
+    if (!path.startsWith(`/${subdomain}`)) {
+      const rewriteUrl = new URL(`/${subdomain}${path}${url.search}`, request.url)
+      const rewriteResponse = NextResponse.rewrite(rewriteUrl)
+      
+      // Transfer cookies/headers
+      response.cookies.getAll().forEach(cookie => rewriteResponse.cookies.set(cookie.name, cookie.value))
+      response.headers.forEach((v, k) => rewriteResponse.headers.set(k, v))
+      
+      // Add a security check ONLY if it's the admin subdomain
+      if (subdomain === 'admin') {
+         if (!user) return NextResponse.redirect(new URL('/login', request.url))
+         
+         const roleResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
+            {
+                headers: {
+                    'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+                    'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+                }
+            }
+         )
+         const roles = await roleResponse.json()
+         const role = roles?.[0]?.role || 'CUSTOMER'
+         if (!['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
+            return NextResponse.redirect(new URL('/', request.url))
+         }
+      }
+      
+      return rewriteResponse
+    }
+  }
+
+  // --- 4. PATH-BASED PROTECTION (Fallback) ---
   const portals = ['/admin', '/merchant', '/driver']
   const matchedPortal = portals.find(p => path.startsWith(p))
 
   if (matchedPortal) {
-    if (!user) {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
+    if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-    // Edge-compatible Role Verification (Native Fetch)
-    const roleResponse = await fetch(
+    const roleRes = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
         {
             headers: {
@@ -61,11 +99,9 @@ export async function middleware(request: NextRequest) {
             }
         }
     )
-
-    const roles = await roleResponse.json()
+    const roles = await roleRes.json()
     const role = roles?.[0]?.role || 'CUSTOMER'
 
-    // Portal Access Enforcement
     if (path.startsWith('/admin') && !['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
       return NextResponse.redirect(new URL('/', request.url))
     }
