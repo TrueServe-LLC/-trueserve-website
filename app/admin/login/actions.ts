@@ -2,8 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 
 export async function login(formData: FormData) {
     const email = formData.get("email") as string;
@@ -13,10 +12,7 @@ export async function login(formData: FormData) {
 
     // Strategy 1: Database Auth (IAM)
     try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-        // Create a fresh client for this request context
-        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        const supabase = await createClient();
 
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
             email,
@@ -31,13 +27,25 @@ export async function login(formData: FormData) {
                 .eq('id', authData.user.id)
                 .single();
 
-            if (userData && userData.role === 'ADMIN') {
-                // Success - Set Session
-                (await cookies()).set("admin_session", "true", {
+            if (userData && ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(userData.role)) {
+                // Success - Set System-wide Cookies manually as fallback
+                const cookieStore = await cookies();
+                const isProd = process.env.NODE_ENV === "production";
+                
+                cookieStore.set("admin_session", "true", {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
+                    secure: isProd,
                     path: "/",
+                    domain: isProd ? '.trueserve.delivery' : undefined
                 });
+                
+                cookieStore.set("userId", authData.user.id, {
+                    httpOnly: true,
+                    secure: isProd,
+                    path: "/",
+                    domain: isProd ? '.trueserve.delivery' : undefined
+                });
+
                 shouldRedirect = true;
             } else if (userData) {
                 return { error: "Access denied. Admin privileges required." };
@@ -57,10 +65,14 @@ export async function login(formData: FormData) {
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
     if (ADMIN_EMAIL && ADMIN_PASSWORD && email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        (await cookies()).set("admin_session", "true", {
+        const cookieStore = await cookies();
+        const isProd = process.env.NODE_ENV === "production";
+        
+        cookieStore.set("admin_session", "true", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: isProd,
             path: "/",
+            domain: isProd ? '.trueserve.delivery' : undefined
         });
         redirect("/admin/dashboard");
     }
