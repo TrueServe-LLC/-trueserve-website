@@ -144,6 +144,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         <Link href="/admin/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Control Center</Link>
                         <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>
                         <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>
+                        <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
                         <Link href="/admin/support" className="hidden xs:block text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Support</Link>
                         <form action={async () => {
                             "use server";
