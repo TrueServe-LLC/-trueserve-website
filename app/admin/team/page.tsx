@@ -85,7 +85,7 @@ export default async function TeamManagementPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-slate-400">
-                                            {new Date(member.createdAt).toLocaleDateString()}
+                                            N/A
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex gap-2 justify-end">

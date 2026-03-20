@@ -13,16 +13,15 @@ export async function getTeamMembers() {
 
     const { data: teamMembers, error } = await supabaseAdmin
         .from('User')
-        .select('id, name, email, role, createdAt')
-        .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'])
-        .order('createdAt', { ascending: false });
+        .select('id, name, email, role')
+        .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE']);
 
     if (error) {
         console.error("Error fetching team members:", error);
         return [];
     }
 
-    return teamMembers;
+    return teamMembers || [];
 }
 
 // 2. Invite a missing Admin user that has an Auth account but no Public User account,

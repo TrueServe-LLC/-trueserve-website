@@ -326,8 +326,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 <div key={driver.id} className="card p-6 border-slate-700/50 group hover:border-white/20 transition-all">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
-                                            <h3 className="font-bold text-lg">{driver.user.name}</h3>
-                                            <p className="text-sm text-slate-400 font-medium">{driver.user.email}</p>
+                                            <h3 className="font-bold text-lg">{driver.user?.name || driver.name || "Unknown"}</h3>
+                                            <p className="text-sm text-slate-400 font-medium">{driver.user?.email || driver.email || "No Email"}</p>
                                             <div className="flex items-center gap-2 mt-2">
                                                 <span className="text-[10px] text-slate-500 font-mono tracking-tight">{driver.backgroundCheckId || "ID_PENDING"}</span>
                                                 <span className="text-slate-700 text-[10px]">•</span>
