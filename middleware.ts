@@ -27,6 +27,7 @@ export async function middleware(request: NextRequest) {
   if (!isLocal && !isVercel && pieces.length >= 2) {
     cookieDomain = `.${pieces.slice(-2).join('.')}`
   }
+  
   // For trueserve.delivery, pieces.length is 2. Subdomain exists if length > 2.
   // For sub.trueserve-website.vercel.app, pieces.length is 4. Subdomain exists if length > 3.
   const isSub = isVercel 
@@ -62,25 +63,28 @@ export async function middleware(request: NextRequest) {
   if (subdomain && allowedSubdomains.includes(subdomain)) {
     // SECURITY GATE: Only allow internal staff on admin subdomain
     if (subdomain === 'admin') {
-       if (!user) return NextResponse.redirect(new URL('/login', request.url))
-       
-       const roleResponse = await fetch(
+      const isLoginPage = path === '/login' || path.startsWith('/admin/login')
+      if (!user && !isLoginPage) return NextResponse.redirect(new URL('/login', request.url))
+      
+      if (user && !isLoginPage) {
+        const roleResponse = await fetch(
           `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
           {
-              headers: {
-                  'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-                  'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-              }
+            headers: {
+              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+            }
           }
-       )
-       const roles = await roleResponse.json()
-       const role = roles?.[0]?.role || 'CUSTOMER'
-       if (!['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
+        )
+        const roles = await roleResponse.json()
+        const role = roles?.[0]?.role || 'CUSTOMER'
+        if (!['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
           return NextResponse.redirect(new URL('/', request.url))
-       }
+        }
+      }
     }
 
-    // 1. Rewrite to the internal folder silently
+    // Rewrite to the internal folder silently
     if (!path.startsWith(`/${subdomain}`)) {
       const rewriteUrl = new URL(`/${subdomain}${path}${url.search}`, request.url)
       const rewriteResponse = NextResponse.rewrite(rewriteUrl)
@@ -101,13 +105,13 @@ export async function middleware(request: NextRequest) {
     if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
     const roleRes = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
-        {
-            headers: {
-                'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-                'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-            }
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?id=eq.${user.id}&select=role`,
+      {
+        headers: {
+          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
         }
+      }
     )
     const roles = await roleRes.json()
     const role = roles?.[0]?.role || 'CUSTOMER'
@@ -120,12 +124,12 @@ export async function middleware(request: NextRequest) {
   // SYNC: Universal UserID Cookie
   if (user && !request.cookies.get('userId')) {
     response.cookies.set('userId', user.id, {
-        path: '/',
-        domain: cookieDomain,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7 
+      path: '/',
+      domain: cookieDomain,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 
     })
   }
 
