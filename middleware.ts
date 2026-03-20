@@ -79,7 +79,11 @@ export async function middleware(request: NextRequest) {
         const roles = await roleResponse.json()
         const role = roles?.[0]?.role || 'CUSTOMER'
         if (!['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(role)) {
-          return NextResponse.redirect(new URL('/', request.url))
+          let rootHost = host;
+          if (subdomain) {
+            rootHost = host.replace(`${subdomain}.`, '');
+          }
+          return NextResponse.redirect(new URL('/', `${url.protocol}//${rootHost}`))
         }
       }
     }
