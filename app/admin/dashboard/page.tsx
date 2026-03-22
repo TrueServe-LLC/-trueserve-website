@@ -138,7 +138,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     const restaurants = await getAllRestaurants();
     const auditLogs = await getAuditLogs();
 
-    const isStripeConnected = searchParams.stripe_connected === "true";
+    const isStripeConnected = (await searchParams).stripe_connected === "true";
 
     return (
         <div className="min-h-screen">

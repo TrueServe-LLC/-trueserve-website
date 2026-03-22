@@ -49,17 +49,17 @@ export async function approveAllPendingDrivers() {
         const { data: drivers, error: fetchError } = await supabaseAdmin
             .from('Driver')
             .select('id, userId')
-            .eq('status', 'PENDING');
+            .in('status', ['OFFLINE', 'INACTIVE']); // DB Enum doesn't expect PENDING for Drivers in some contexts
 
         if (fetchError) throw fetchError;
         if (!drivers || drivers.length === 0) return { success: true, count: 0 };
 
-        const { error: updateError } = await supabaseAdmin
+        const { error: statusError } = await supabaseAdmin
             .from('Driver')
-            .update({ status: 'OFFLINE', vehicleVerified: true, updatedAt: new Date().toISOString() })
+            .update({ status: "OFFLINE", vehicleVerified: false, updatedAt: new Date().toISOString() })
             .in('id', drivers.map(d => d.id));
 
-        if (updateError) throw updateError;
+        if (statusError) throw statusError;
 
         await logAuditAction({
             action: "QA_APPROVE_ALL_DRIVERS",
