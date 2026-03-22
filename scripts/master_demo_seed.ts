@@ -14,6 +14,22 @@ if (!supabaseUrl || !supabaseServiceKey) {
     process.exit(1)
 }
 
+/**
+ * QA TEST SCRIPT: master_demo_seed.ts
+ * 
+ * PURPOSE: 
+ * The main "Big Bang" seed script for the pilot. It creates a complete 
+ * service location (Mount Airy, NC) with multiple verified restaurants, 
+ * menu items, and owner accounts. 
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/master_demo_seed.ts`
+ * 
+ * VERIFICATION:
+ * 1. Visit the customer app: confirm restaurants like "13 Bones" and "Snappy Lunch" appear.
+ * 2. Verify menu items and prices match the data in the script.
+ * 3. Log in as any of the generated owners (info is logged to console).
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 })

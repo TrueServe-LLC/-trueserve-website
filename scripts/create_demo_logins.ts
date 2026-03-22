@@ -14,6 +14,21 @@ if (!supabaseUrl || !supabaseServiceKey) {
     process.exit(1)
 }
 
+/**
+ * QA TEST SCRIPT: create_demo_logins.ts
+ * 
+ * PURPOSE: 
+ * Generates valid Auth and Public user records for the Mount Airy 
+ * pilot merchants. Use this if the demo accounts were deleted or 
+ * if you need to reset merchant accessibility.
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/create_demo_logins.ts`
+ * 
+ * VERIFICATION:
+ * 1. Check the 'User' table in Supabase for merchant role accounts.
+ * 2. Attempt login on the admin/merchant portal with: owner_13bones@trueserve.test / MountAiry2026!
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
         autoRefreshToken: false,
