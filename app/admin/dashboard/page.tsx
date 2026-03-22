@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
 import { getAuthSession } from "@/app/auth/actions";
 import KPIDashboard from "@/components/admin/KPIDashboard";
+import QAToolbox from "@/components/admin/QAToolbox";
 
 async function getPendingItems() {
     try {
@@ -203,6 +204,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                 {/* KPI Dashboard (V1) */}
                 <KPIDashboard orders={allOrders} drivers={drivers} restaurants={restaurants} />
+
+                {/* QA TOOLBOX (Pilot Testing Only) */}
+                <div className="my-16">
+                    <QAToolbox restaurants={restaurants} />
+                </div>
 
                 {/* Active Deliveries Map / List */}
                 <section className="mb-16">
