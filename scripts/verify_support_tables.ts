@@ -12,6 +12,19 @@ if (!supabaseUrl || !supabaseServiceKey) {
     process.exit(1)
 }
 
+/**
+ * QA TEST SCRIPT: verify_support_tables.ts
+ * 
+ * PURPOSE: 
+ * Sanity check for the customer/merchant support system. Verifies 
+ * that 'SupportTicket' and 'TicketMessage' tables exist and are accessible.
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/verify_support_tables.ts`
+ * 
+ * VERIFICATION:
+ * 1. Output must show "EXISTS ✅" for both SupportTicket and TicketMessage tables.
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function verifySupportTables() {

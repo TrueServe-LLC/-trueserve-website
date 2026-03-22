@@ -12,6 +12,21 @@ if (!supabaseUrl || !supabaseServiceKey) {
     process.exit(1)
 }
 
+/**
+ * QA TEST SCRIPT: verify_pricing_rule.ts
+ * 
+ * PURPOSE: 
+ * Validates the 'PricingRule' schema in Supabase. Ensures the dynamic 
+ * driver payout engine has the required columns (priority, isActive, etc.) 
+ * to function.
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/verify_pricing_rule.ts`
+ * 
+ * VERIFICATION:
+ * 1. Log should print "PricingRule Columns: [id, basePay, mileageRate, ...]"
+ * 2. Ensure NO errors are thrown (missing tables/wrong keys).
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function checkPricingRuleTable() {
