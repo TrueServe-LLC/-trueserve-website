@@ -8,6 +8,21 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL) dotenv.config()
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
+/**
+ * QA TEST SCRIPT: setup_test_accounts.ts
+ * 
+ * PURPOSE: 
+ * This script initializes basic MERCHANT and DRIVER accounts to allow 
+ * QA testing of the portals without manual database entry.
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/setup_test_accounts.ts`
+ * 
+ * VERIFICATION:
+ * 1. Confirm you can login to /login as merchant@demo.test
+ * 2. Confirm you can login to /login as driver@demo.test (must be on driver.trueserve.delivery)
+ * 3. Verify driver@demo.test appears as "ONLINE" in the admin dashboard.
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
         autoRefreshToken: false,

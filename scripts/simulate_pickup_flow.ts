@@ -13,6 +13,22 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
     process.exit(1);
 }
 
+/**
+ * QA TEST SCRIPT: simulate_pickup_flow.ts
+ * 
+ * PURPOSE: 
+ * This script dry-runs a full merchant/driver order cycle using existing DB 
+ * records or creating a temporary one. This is crucial for verifying real-time 
+ * websocket updates on the live delivery dashboard without real food!
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/simulate_pickup_flow.ts`
+ * 
+ * VERIFICATION:
+ * 1. Open http://localhost:3000/admin/dashboard (or admin.trueserve.delivery)
+ * 2. Run the script and observe the "Live Delivery Monitor" UI update as transitions occur.
+ * 3. Verify order status ends in "PICKED_UP".
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 async function simulatePickupFlow() {
