@@ -117,7 +117,7 @@ async function getAllRestaurants() {
     } catch { return []; }
 }
 
-import { isInternalStaff } from "@/lib/rbac";
+import { isInternalStaff, hasPermission } from "@/lib/rbac";
 
 export default async function AdminDashboard({ searchParams }: { searchParams: { stripe_connected?: string } }) {
 
@@ -148,10 +148,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         True<span className="text-gradient">Serve</span> Admin
                     </Link>
                     <div className="flex gap-4 items-center">
-                        <Link href="/admin/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Control Center</Link>
-                        <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>
-                        <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>
+                        {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>}
+                        {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>}
                         <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
+                        {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Control Center</Link>}
                         <Link href="/admin/support" className="hidden xs:block text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Support</Link>
                         <form action={async () => {
                             "use server";
@@ -206,9 +206,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <KPIDashboard orders={allOrders} drivers={drivers} restaurants={restaurants} />
 
                 {/* QA TOOLBOX (Pilot Testing Only) */}
-                <div className="my-16">
-                    <QAToolbox restaurants={restaurants} />
-                </div>
+                {hasPermission(role, 'access_qa_toolbox') && (
+                    <div className="my-16">
+                        <QAToolbox restaurants={restaurants} />
+                    </div>
+                )}
 
                 {/* Active Deliveries Map / List */}
                 <section className="mb-16">
