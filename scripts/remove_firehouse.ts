@@ -12,6 +12,21 @@ if (!supabaseUrl || !supabaseServiceKey) {
     process.exit(1)
 }
 
+/**
+ * QA TEST SCRIPT: remove_firehouse.ts
+ * 
+ * PURPOSE: 
+ * Utility to cleanly delete the "Fayetteville Firehouse BBQ" restaurant 
+ * and its menu items. Use this to reset Fayetteville to a clean state 
+ * before testing new regional onboarding.
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/remove_firehouse.ts`
+ * 
+ * VERIFICATION:
+ * 1. Confirm script output says "Successfully removed Fayetteville Firehouse BBQ".
+ * 2. Verify restaurant no longer appears in the 'Restaurant' table in Supabase.
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function cleanup() {

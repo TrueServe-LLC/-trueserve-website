@@ -8,6 +8,21 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL) dotenv.config()
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
+/**
+ * QA TEST SCRIPT: link_test_phone.ts
+ * 
+ * PURPOSE: 
+ * Rapidly updates all regional dummy driver accounts with a single 
+ * test phone number. Useful for verifying Twilio/SMS delivery notifications 
+ * for multiple regions in one go.
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/link_test_phone.ts`
+ * 
+ * VERIFICATION:
+ * 1. Confirm success logs for each regional email (charlotte, pineville, etc.).
+ * 2. Trigger an order update and confirm the SMS arrives at the specified test phone.
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 const TEST_PHONE = '2147628569';

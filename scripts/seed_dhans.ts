@@ -13,6 +13,22 @@ if (!supabaseUrl || !supabaseServiceKey) {
     process.exit(1)
 }
 
+/**
+ * QA TEST SCRIPT: seed_dhans.ts
+ * 
+ * PURPOSE: 
+ * Seeds the authentic Fayetteville Caribbean merchant "Dhan's Kitchen". 
+ * This includes high-res menu images and specific Trinidadian 
+ * categories (Vegan, Doubles, Curry Platters).
+ * 
+ * HOW TO RUN:
+ * `npx ts-node scripts/seed_dhans.ts`
+ * 
+ * VERIFICATION:
+ * 1. Log in to the customer app and select "Fayetteville" (if location filtering active).
+ * 2. Search for "Dhan's Kitchen".
+ * 3. Verify all 23 items appear with their high-res images (e.g. Doubles, Jerk Chicken).
+ */
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function addDhansKitchen() {
