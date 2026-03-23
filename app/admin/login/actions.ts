@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -28,23 +28,35 @@ export async function login(formData: FormData) {
                 .eq('email', email)
                 .maybeSingle();
 
-            if (userData && ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE'].includes(userData.role)) {
+            if (userData && ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userData.role)) {
                 // Success - Set System-wide Cookies manually as fallback
                 const cookieStore = await cookies();
+                const headersList = await headers();
+                const host = headersList.get('host') || "";
+                const cleanHost = host.split(':')[0];
+                const isLocal = cleanHost.includes("localhost");
+                const isVercel = cleanHost.endsWith(".vercel.app");
+                
+                let cookieDomain = "";
+                const pieces = cleanHost.split('.');
+                if (!isLocal && !isVercel && pieces.length >= 2) {
+                    cookieDomain = `.${pieces.slice(-2).join('.')}`;
+                }
+
                 const isProd = process.env.NODE_ENV === "production";
                 
                 cookieStore.set("admin_session", "true", {
                     httpOnly: true,
                     secure: isProd,
                     path: "/",
-                    domain: isProd ? '.trueservedelivery.com' : undefined
+                    domain: cookieDomain ? cookieDomain : undefined
                 });
                 
                 cookieStore.set("userId", authData.user.id, {
                     httpOnly: true,
                     secure: isProd,
                     path: "/",
-                    domain: isProd ? '.trueservedelivery.com' : undefined
+                    domain: cookieDomain ? cookieDomain : undefined
                 });
 
                 shouldRedirect = true;
@@ -67,13 +79,25 @@ export async function login(formData: FormData) {
 
     if (ADMIN_EMAIL && ADMIN_PASSWORD && email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
         const cookieStore = await cookies();
+        const headersList = await headers();
+        const host = headersList.get('host') || "";
+        const cleanHost = host.split(':')[0];
+        const isLocal = cleanHost.includes("localhost");
+        const isVercel = cleanHost.endsWith(".vercel.app");
+        
+        let cookieDomain = "";
+        const pieces = cleanHost.split('.');
+        if (!isLocal && !isVercel && pieces.length >= 2) {
+            cookieDomain = `.${pieces.slice(-2).join('.')}`;
+        }
+
         const isProd = process.env.NODE_ENV === "production";
         
         cookieStore.set("admin_session", "true", {
             httpOnly: true,
             secure: isProd,
             path: "/",
-            domain: isProd ? '.trueservedelivery.com' : undefined
+            domain: cookieDomain ? cookieDomain : undefined
         });
         redirect("/admin/dashboard");
     }
