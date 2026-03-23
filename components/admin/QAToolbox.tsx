@@ -167,6 +167,21 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
                     </button>
                 </div>
 
+                {/* Test Mock Signup Flow */}
+                <div className="card p-6 border-white/5 bg-white/[0.02] hover:border-primary/30 transition-all flex flex-col justify-between">
+                    <div>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Test Driver Signup UI</h3>
+                        <p className="text-[10px] text-slate-500 font-medium mb-6">Redirects you to the public Driver application securely unlocked with the ?qa=true flag.</p>
+                    </div>
+                    <a 
+                        href="/driver?qa=true"
+                        target="_blank"
+                        className="btn bg-white/10 hover:bg-white/20 text-white w-full text-[10px] font-black uppercase tracking-widest py-3 flex items-center justify-center transition-colors"
+                    >
+                        Open QA Sign Up Form ↗
+                    </a>
+                </div>
+
                 {/* SMS Bypass check */}
                 <div className="card p-6 border-white/5 bg-white/[0.02] hover:border-primary/30 transition-all flex flex-col justify-between">
                     <div>
