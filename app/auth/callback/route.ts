@@ -60,12 +60,25 @@ export async function GET(request: Request) {
 
             const response = NextResponse.redirect(redirectUrl)
 
+            // Determine the cookie domain for universal sessions (including subdomains)
+            const host = request.headers.get('host') || "";
+            const cleanHost = host.split(':')[0]
+            const isLocal = cleanHost.includes("localhost")
+            const isVercel = cleanHost.endsWith(".vercel.app")
+            
+            const pieces = cleanHost.split('.')
+            let cookieDomain = ""
+            if (!isLocal && !isVercel && pieces.length >= 2) {
+              cookieDomain = `.${pieces.slice(-2).join('.')}`
+            }
+
             // Set userId cookie for compatibility with existing dashboard logic
             response.cookies.set('userId', data.user.id, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: 'lax',
                 path: '/',
+                domain: cookieDomain ? cookieDomain : undefined,
                 maxAge: 60 * 60 * 24 * 7 // 1 week
             })
 
