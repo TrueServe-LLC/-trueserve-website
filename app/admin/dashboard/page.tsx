@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
 import { getAuthSession } from "@/app/auth/actions";
 import KPIDashboard from "@/components/admin/KPIDashboard";
+import SystemToggle from "@/components/admin/SystemToggle";
+import FastActionBtn from "@/components/admin/FastActionBtn";
 
 async function getPendingItems() {
     try {
@@ -179,14 +181,12 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             {await (async () => {
                                 const { isOrderingEnabled } = await import('@/lib/system');
                                 const enabled = await isOrderingEnabled();
-                                const { toggleOrderingStatus } = await import('../actions');
-                                return (
-                                    <form action={async () => { "use server"; await toggleOrderingStatus(!enabled); }}>
-                                        <button className={`w-8 h-4 md:w-10 md:h-5 rounded-full p-0.5 md:p-1 transition-colors relative ${enabled ? 'bg-emerald-500' : 'bg-red-500'}`}>
-                                            <div className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white shadow-md transition-transform ${enabled ? 'translate-x-4 md:translate-x-5' : 'translate-x-0'}`} />
-                                        </button>
-                                    </form>
-                                );
+                                const toggleState = async (target: boolean) => {
+                                    "use server";
+                                    const { toggleOrderingStatus } = await import('../actions');
+                                    await toggleOrderingStatus(target);
+                                };
+                                return <SystemToggle initialEnabled={enabled} toggleAction={toggleState} />;
                             })()}
                         </div>
 
@@ -255,16 +255,20 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 </div>
 
                                 <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
-                                    <form action={async () => { "use server"; const { forceCompleteOrder } = await import('../actions'); await forceCompleteOrder(order.id); }} className="flex-1">
-                                        <button className="w-full text-[10px] font-black uppercase tracking-widest py-2 hover:bg-white/5 rounded-lg transition-colors">
-                                            Force Complete
-                                        </button>
-                                    </form>
-                                    <form action={async () => { "use server"; const { adminCancelOrder } = await import('../actions'); await adminCancelOrder(order.id); }} className="flex-1">
-                                        <button className="w-full text-[10px] font-black uppercase tracking-widest py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
-                                            Cancel
-                                        </button>
-                                    </form>
+                                    <FastActionBtn 
+                                        action={async () => { "use server"; const { forceCompleteOrder } = await import('../actions'); await forceCompleteOrder(order.id); }} 
+                                        className="flex-1 w-full text-[10px] font-black uppercase tracking-widest py-2 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/5"
+                                        loadingText="Completing..."
+                                    >
+                                        Force Complete
+                                    </FastActionBtn>
+                                    <FastActionBtn 
+                                        action={async () => { "use server"; const { adminCancelOrder } = await import('../actions'); await adminCancelOrder(order.id); }} 
+                                        className="flex-1 w-full text-[10px] font-black uppercase tracking-widest py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/10"
+                                        loadingText="Canceling..."
+                                    >
+                                        Cancel
+                                    </FastActionBtn>
                                 </div>
 
                             </div>
@@ -301,16 +305,20 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     </div>
                                     <p className="text-slate-300 text-sm mb-4">{item.description}</p>
                                     <div className="flex gap-2">
-                                        <form action={async () => { "use server"; await approveMenuItem(item.id); }}>
-                                            <button className="btn btn-primary text-[10px] font-black uppercase tracking-widest py-2 px-4 shadow-lg shadow-primary/20">
-                                                Approve
-                                            </button>
-                                        </form>
-                                        <form action={async () => { "use server"; await rejectMenuItem(item.id); }}>
-                                            <button className="btn btn-outline text-[10px] font-black uppercase tracking-widest py-2 px-4 border-red-500/50 text-red-400 hover:bg-red-500/10">
-                                                Reject
-                                            </button>
-                                        </form>
+                                        <FastActionBtn 
+                                            action={async () => { "use server"; await approveMenuItem(item.id); }}
+                                            className="btn btn-primary text-[10px] font-black uppercase tracking-widest py-2 px-4 shadow-lg shadow-primary/20"
+                                            loadingText="OK..."
+                                        >
+                                            Approve
+                                        </FastActionBtn>
+                                        <FastActionBtn 
+                                            action={async () => { "use server"; await rejectMenuItem(item.id); }}
+                                            className="btn btn-outline text-[10px] font-black uppercase tracking-widest py-2 px-4 border-red-500/50 text-red-400 hover:bg-red-500/10"
+                                            loadingText="Rejecting..."
+                                        >
+                                            Reject
+                                        </FastActionBtn>
                                     </div>
                                 </div>
                             ))}
@@ -387,27 +395,31 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     </div>
 
                                     <div className="flex flex-wrap gap-2 mt-6">
-                                        <form action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }}>
-                                            <button
-                                                disabled={driver.backgroundCheckStatus !== 'CLEARED' || !driver.hasSignedAgreement}
-                                                className="btn btn-primary text-[10px] py-1.5 px-3 shadow-none disabled:opacity-40 disabled:grayscale font-black uppercase tracking-widest"
-                                            >
-                                                Approve
-                                            </button>
-                                        </form>
-                                        <form action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }}>
-                                            <button
-                                                className="btn btn-outline text-[10px] py-1.5 px-3 border-red-500/50 text-red-400 hover:bg-red-500/10 font-black uppercase tracking-widest"
+                                        <div className="flex bg-white/5 border border-white/5 rounded-xl overflow-hidden p-1">
+                                            {driver.backgroundCheckStatus === 'CLEARED' && driver.hasSignedAgreement && (
+                                                <FastActionBtn 
+                                                    action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }}
+                                                    className="btn btn-primary text-[10px] py-1.5 px-3 shadow-none font-black uppercase tracking-widest"
+                                                    loadingText="Approving..."
+                                                >
+                                                    Approve
+                                                </FastActionBtn>
+                                            )}
+                                            <FastActionBtn 
+                                                action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }}
+                                                className="btn btn-outline bg-transparent border-transparent text-[10px] py-1.5 px-3 text-red-400 hover:bg-red-500/10 font-black uppercase tracking-widest"
+                                                loadingText="Rejecting..."
                                             >
                                                 Reject
-                                            </button>
-                                        </form>
-
-                                        <form action={async () => { "use server"; const { refreshBackgroundCheck } = await import('../actions'); await refreshBackgroundCheck(driver.id); }}>
-                                            <button type="submit" className="btn btn-outline text-[10px] py-1.5 px-2 border-white/5 text-slate-500 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
+                                            </FastActionBtn>
+                                            <FastActionBtn 
+                                                action={async () => { "use server"; const { refreshBackgroundCheck } = await import('../actions'); await refreshBackgroundCheck(driver.id); }}
+                                                className="btn btn-outline bg-transparent border-transparent text-[10px] py-1.5 px-2 text-slate-500 hover:bg-white/5 font-black uppercase tracking-widest transition-all"
+                                                loadingText="Checking..."
+                                            >
                                                 ↻ Check
-                                            </button>
-                                        </form>
+                                            </FastActionBtn>
+                                        </div>
                                         <div className="flex gap-1 ml-auto">
                                             {driver.insuranceDocumentUrl && (
                                                 <a href={driver.insuranceDocumentUrl} target="_blank" className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
