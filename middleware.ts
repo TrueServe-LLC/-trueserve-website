@@ -106,9 +106,14 @@ export async function middleware(request: NextRequest) {
   const matchedPortal = portals.find(p => path.startsWith(p))
 
   if (matchedPortal) {
+    // PUBLIC PATHS for Portals: Landing pages should NOT require login
+    const isPublicPortalPath = path === '/merchant' || path === '/driver' || path === '/admin/login' || path.startsWith('/merchant/signup')
+    
     // If it's the admin portal and they have a manual admin_session cookie, let the page-layer auth guard handle it
     if (path.startsWith('/admin') && request.cookies.has("admin_session")) {
         // Do nothing, let it pass through to the page
+    } else if (isPublicPortalPath) {
+        // Do nothing, let them see the landing page
     } else {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
