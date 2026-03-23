@@ -1,6 +1,6 @@
 "use client";
 
-import { createMockOrder, approveAllPendingDrivers, clearAllMockData, getRecentAuditLogs } from "@/app/admin/qa-actions";
+import { createMockOrder, approveAllPendingDrivers, clearAllMockData, getRecentAuditLogs, generateMockDrivers } from "@/app/admin/qa-actions";
 import { useState } from "react";
 
 export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
@@ -29,6 +29,14 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
         setLoading(null);
         if (res.success) setMessage({ text: `Approved ${res.count} drivers!`, type: 'success' });
         else setMessage({ text: res.error || "Failed to approve drivers.", type: 'error' });
+    };
+
+    const handleGenerateDrivers = async () => {
+        setLoading("generate_drivers");
+        const res = await generateMockDrivers();
+        setLoading(null);
+        if (res.success) setMessage({ text: `Generated ${res.count} mock drivers!`, type: 'success' });
+        else setMessage({ text: res.error || "Failed to generate drivers.", type: 'error' });
     };
 
     const handleClearMock = async () => {
@@ -104,6 +112,23 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
                         className="btn btn-outline w-full text-[10px] font-black uppercase tracking-widest py-3 border-red-500/20 text-red-400 hover:bg-red-500/10 disabled:opacity-50"
                     >
                         {loading === "clear_mock" ? "Purging..." : "Wipe Mock Data"}
+                    </button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {/* Mock Driver Generator Tool */}
+                <div className="card p-6 border-white/5 bg-white/[0.02] hover:border-primary/30 transition-all flex flex-col justify-between">
+                    <div>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Generate Mock Drivers</h3>
+                        <p className="text-[10px] text-slate-500 font-medium mb-6">Creates one mock driver for each pilot region (Mecklenburg, Surry, Spartanburg) ready for approval.</p>
+                    </div>
+                    <button 
+                        onClick={handleGenerateDrivers}
+                        disabled={!!loading}
+                        className="btn btn-primary w-full text-[10px] font-black uppercase tracking-widest py-3 shadow-lg shadow-primary/20 disabled:opacity-50"
+                    >
+                        {loading === "generate_drivers" ? "Generating..." : "Generate Regional Drivers"}
                     </button>
                 </div>
             </div>

@@ -116,3 +116,43 @@ export async function getRecentAuditLogs() {
         return { success: false, error: e.message };
     }
 }
+
+export async function generateMockDrivers() {
+    try {
+        let { data: user } = await supabaseAdmin.from('User').select('id, email').eq('role', 'QA_TESTER').limit(1).single();
+        if (!user) {
+            // fallback to any admin
+            const { data: fallbackUser } = await supabaseAdmin.from('User').select('id, email').in('role', ['ADMIN']).limit(1).single();
+            if (!fallbackUser) throw new Error("A user account is required to assign mock drivers to.");
+            user = fallbackUser;
+        }
+
+        const regions = ["Mecklenburg, NC", "Surry, NC", "Spartanburg, SC"];
+        const driversToInsert = regions.map((region, idx) => ({
+            id: uuidv4(),
+            userId: user.id, // Assign to the QA tester for easy testing/cleanup
+            status: 'INACTIVE', // Requires test approval
+            vehicleVerified: false,
+            firstName: `Mock Driver`,
+            lastName: `(${region})`,
+            phoneIndex: `+1555000000${idx}`,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        }));
+
+        const { error } = await supabaseAdmin.from('Driver').insert(driversToInsert);
+        if (error) throw error;
+
+        await logAuditAction({
+            action: "QA_CREATE_MOCK_DRIVERS",
+            targetId: "MULTIPLE",
+            entityType: "Driver",
+            message: `Created ${regions.length} mock drivers for regions: ${regions.join(', ')}`
+        });
+
+        revalidatePath("/admin/dashboard");
+        return { success: true, count: regions.length };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}

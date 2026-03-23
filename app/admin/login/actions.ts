@@ -80,3 +80,20 @@ export async function login(formData: FormData) {
 
     return { error: "Invalid credentials" };
 }
+
+export async function resetAdminPassword(formData: FormData) {
+    const email = formData.get("email") as string;
+    if (!email) return { error: "Email is required" };
+
+    try {
+        const supabase = await createClient();
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://admin.trueservedelivery.com'}/auth/callback?next=/admin/dashboard`
+        });
+
+        if (error) return { error: error.message };
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}

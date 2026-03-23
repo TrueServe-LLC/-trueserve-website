@@ -2,13 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { login } from "./actions";
+import { login, resetAdminPassword } from "./actions";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminLogin() {
     const [error, setError] = useState("");
+    const [msg, setMsg] = useState("");
+    const [isResetMode, setIsResetMode] = useState(false);
 
     const handleLogin = async (formData: FormData) => {
+        setError(""); setMsg("");
+        if (isResetMode) {
+            const res = await resetAdminPassword(formData);
+            if (res.error) setError(res.error);
+            else setMsg("Password reset email sent! Please check your inbox.");
+            return;
+        }
+
         const result = await login(formData);
         if (result?.error) {
             setError(result.error);
@@ -55,26 +65,48 @@ export default function AdminLogin() {
                             required
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
-                        <input
-                            name="password"
-                            type="password"
-                            placeholder="Password"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-white"
-                            required
-                        />
-                    </div>
+                    {!isResetMode && (
+                        <>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                            <input
+                                name="password"
+                                type="password"
+                                placeholder="Password"
+                                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-white"
+                                required
+                            />
+                        </div>
+                        <div className="flex justify-end">
+                            <button type="button" onClick={() => setIsResetMode(true)} className="text-xs text-primary hover:underline">
+                                Forgot password?
+                            </button>
+                        </div>
+                        </>
+                    )}
 
                     {error && (
                         <p className="text-red-400 text-sm text-center font-bold bg-red-500/10 py-2 rounded">
                             {error}
                         </p>
                     )}
+                    {msg && (
+                        <p className="text-emerald-400 text-sm text-center font-bold bg-emerald-500/10 py-2 rounded">
+                            {msg}
+                        </p>
+                    )}
 
                     <button type="submit" className="w-full btn btn-primary py-3">
-                        Sign In
+                        {isResetMode ? "Send Reset Link" : "Sign In"}
                     </button>
+
+                    {isResetMode && (
+                        <div className="text-center mt-4">
+                            <button type="button" onClick={() => setIsResetMode(false)} className="text-xs text-slate-500 hover:text-white">
+                                Back to login
+                            </button>
+                        </div>
+                    )}
                 </form>
 
                 <div className="relative my-6">
