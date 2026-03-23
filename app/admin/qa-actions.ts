@@ -156,3 +156,44 @@ export async function generateMockDrivers() {
         return { success: false, error: e.message };
     }
 }
+
+export async function advanceMockOrder() {
+    try {
+        const { data: order } = await supabaseAdmin.from('Order').select('id, status').not('status', 'in', '("DELIVERED","CANCELLED","REFUNDED")').order('createdAt', { ascending: false }).limit(1).single();
+        if (!order) throw new Error("No active orders found to advance.");
+
+        const statusProgression: Record<string, string> = {
+            'PENDING': 'ACCEPTED',
+            'ACCEPTED': 'PREPARING',
+            'PREPARING': 'READY',
+            'READY': 'PICKED_UP',
+            'PICKED_UP': 'DELIVERED'
+        };
+
+        const nextStatus = statusProgression[order.status] || 'DELIVERED';
+
+        const { error } = await supabaseAdmin.from('Order').update({ status: nextStatus, updatedAt: new Date().toISOString() }).eq('id', order.id);
+        if (error) throw error;
+
+        await logAuditAction({
+            action: "QA_ADVANCE_ORDER",
+            targetId: order.id,
+            entityType: "Order",
+            message: `Order status artificially advanced from ${order.status} to ${nextStatus}`
+        });
+
+        revalidatePath("/admin/dashboard");
+        return { success: true, nextStatus, orderId: order.id };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
+export async function checkMockSmsProvider() {
+    try {
+        // Just return dummy data for QA since Supabase uses native SMS Twilio integration that isn't logged in DB 
+        return { success: true, fakeCode: "123456", message: "SMS OTPs are currently managed exclusively by Supabase Auth (Twilio). Use one of the registered test phone numbers (+15555555555 etc) in Supabase with code 123456 to bypass real SMS gating." };
+    } catch(e: any) {
+        return { success: false, error: e.message };
+    }
+}

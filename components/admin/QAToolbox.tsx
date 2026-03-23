@@ -1,6 +1,6 @@
 "use client";
 
-import { createMockOrder, approveAllPendingDrivers, clearAllMockData, getRecentAuditLogs, generateMockDrivers } from "@/app/admin/qa-actions";
+import { createMockOrder, approveAllPendingDrivers, clearAllMockData, getRecentAuditLogs, generateMockDrivers, advanceMockOrder, checkMockSmsProvider } from "@/app/admin/qa-actions";
 import { useState } from "react";
 
 export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
@@ -37,6 +37,26 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
         setLoading(null);
         if (res.success) setMessage({ text: `Generated ${res.count} mock drivers!`, type: 'success' });
         else setMessage({ text: res.error || "Failed to generate drivers.", type: 'error' });
+    };
+
+    const handleAdvanceOrder = async () => {
+        setLoading("advance_order");
+        const res = await advanceMockOrder();
+        setLoading(null);
+        if (res.success) setMessage({ text: `Order advanced to ${res.nextStatus}!`, type: 'success' });
+        else setMessage({ text: res.error || "Failed to advance order.", type: 'error' });
+    };
+
+    const handleCheckSms = async () => {
+        setLoading("check_sms");
+        const res = await checkMockSmsProvider();
+        setLoading(null);
+        if (res.success) {
+            alert(res.message);
+            setMessage({ text: `Use Fake Code: ${res.fakeCode}`, type: 'success' });
+        } else {
+            setMessage({ text: res.error || "Failed to check SMS logic.", type: 'error' });
+        }
     };
 
     const handleClearMock = async () => {
@@ -129,6 +149,36 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
                         className="btn btn-primary w-full text-[10px] font-black uppercase tracking-widest py-3 shadow-lg shadow-primary/20 disabled:opacity-50"
                     >
                         {loading === "generate_drivers" ? "Generating..." : "Generate Regional Drivers"}
+                    </button>
+                </div>
+
+                {/* Advance Order Tool */}
+                <div className="card p-6 border-white/5 bg-white/[0.02] hover:border-primary/30 transition-all flex flex-col justify-between">
+                    <div>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Force Advance Order Status</h3>
+                        <p className="text-[10px] text-slate-500 font-medium mb-6">Finds the oldest active order and artificially bumps it to the next status (e.g. Preparing -{'>'} Ready).</p>
+                    </div>
+                    <button 
+                        onClick={handleAdvanceOrder}
+                        disabled={!!loading}
+                        className="btn bg-white/10 hover:bg-white/20 text-white w-full text-[10px] font-black uppercase tracking-widest py-3 disabled:opacity-50 transition-colors"
+                    >
+                        {loading === "advance_order" ? "Advancing..." : "Bump Next Order Status"}
+                    </button>
+                </div>
+
+                {/* SMS Bypass check */}
+                <div className="card p-6 border-white/5 bg-white/[0.02] hover:border-primary/30 transition-all flex flex-col justify-between">
+                    <div>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">SMS Bypass Info</h3>
+                        <p className="text-[10px] text-slate-500 font-medium mb-6">Need an OTP code to login a test driver but don't have their phone? Get test tokens here.</p>
+                    </div>
+                    <button 
+                        onClick={handleCheckSms}
+                        disabled={!!loading}
+                        className="btn bg-white/10 hover:bg-white/20 text-white w-full text-[10px] font-black uppercase tracking-widest py-3 disabled:opacity-50 transition-colors"
+                    >
+                        {loading === "check_sms" ? "Checking..." : "View Test OTPs"}
                     </button>
                 </div>
             </div>
