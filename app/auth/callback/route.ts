@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { isStaffEmail } from '@/lib/admin-config'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
 
             if (!profile) {
                 // Auto-assign admin conditionally
-                if (data.user.email === process.env.ADMIN_EMAIL || data.user.email?.endsWith('@trueservedelivery.com')) {
+                if (isStaffEmail(data.user.email)) {
                     role = 'ADMIN';
                 }
 
@@ -52,11 +53,31 @@ export async function GET(request: Request) {
             }
 
             // Success - continue to 'next' path
-            const redirectUrl = isLocalEnv
+            let redirectUrl = isLocalEnv
                 ? `${origin}${finalNext}`
                 : forwardedHost
                     ? `https://${forwardedHost}${finalNext}`
                     : `${origin}${finalNext}`;
+            
+            // Subdomain Redirection Logic for Production
+            if (!isLocalEnv) {
+                const host = request.headers.get('host') || "";
+                const cleanHost = host.split(':')[0];
+                const pieces = cleanHost.split('.');
+                const isSub = pieces.length > (isLocalEnv ? 1 : 2);
+                const subdomainPiece = isSub ? pieces[0] : "";
+                
+                let targetSubdomain = "";
+                if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) targetSubdomain = "admin";
+                else if (role === 'MERCHANT') targetSubdomain = "merchant";
+                else if (role === 'DRIVER') targetSubdomain = "driver";
+
+                // If user has a role but is NOT on the correct subdomain, force a move
+                if (targetSubdomain && subdomainPiece !== targetSubdomain) {
+                    const rootHost = isSub ? pieces.slice(1).join('.') : cleanHost;
+                    redirectUrl = `https://${targetSubdomain}.${rootHost}${finalNext}`;
+                }
+            }
 
             const response = NextResponse.redirect(redirectUrl)
 
