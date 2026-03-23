@@ -263,7 +263,7 @@ export default function MenuClient({
                                 Delivery Destination
                             </h3>
                             {!deliveryAddress && (
-                                <span className="text-[9px] font-black text-primary animate-pulse uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">Required</span>
+                                <span className="text-[9px] font-black text-primary animate-pulse uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full border border-primary/20">Required</span>
                             )}
                         </div>
                         <AddressInput

@@ -324,7 +324,7 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
           <div key={rule.id} className={`card p-8 group relative transition-all duration-500 hover:-translate-y-2 border-white/5 hover:border-white/20 overflow-hidden ${rule.isActive ? 'bg-white/[0.03]' : 'bg-black/40 grayscale opacity-60'}`}>
             {/* Surge Indicator */}
             {rule.boostMultiplier > 1 && (
-              <div className="absolute top-0 right-0 bg-primary/20 text-primary px-4 py-1 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest border-l border-b border-primary/30">
+              <div className="absolute top-0 right-0 bg-primary text-black px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest shadow-lg border-l border-b border-primary/20">
                 Surge Active
               </div>
             )}
@@ -352,9 +352,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
             <div className="mb-8">
               <h4 className="text-xl font-bold text-white mb-2 leading-tight">{rule.name}</h4>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest bg-white/5 px-2 py-0.5 rounded">Priority {rule.priority}</span>
-                <span className="text-slate-700">•</span>
-                <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{rule.zoneId || "Global Zone"}</span>
+                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest bg-white/10 px-3 py-1 rounded-full border border-white/5">Priority {rule.priority}</span>
+                <span className="text-slate-700 mx-1">•</span>
+                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/5">{rule.zoneId || "Global Zone"}</span>
               </div>
             </div>
 
@@ -379,8 +379,10 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
 
             <div className="flex justify-between items-center pt-6 border-t border-white/5">
               <div className="flex items-center gap-2">
-                <div className={`w-1.5 h-1.5 rounded-full ${rule.isActive ? 'bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-600'}`}></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{rule.isActive ? 'Live Engine' : 'Disabled'}</span>
+                <div className={`px-3 py-1 rounded-full border flex items-center gap-2 ${rule.isActive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-slate-500 border-white/10'}`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${rule.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`}></div>
+                  <span className="text-[9px] font-black uppercase tracking-widest">{rule.isActive ? 'Live Engine' : 'Disabled'}</span>
+                </div>
               </div>
               <button 
                 onClick={() => toggleRuleStatus(rule.id, !rule.isActive)}

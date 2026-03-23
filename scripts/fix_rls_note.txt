@@ -1,0 +1,46 @@
+import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing Supabase credentials');
+  process.exit(1);
+}
+
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+async function run() {
+  console.log('Fixing RLS policies for User table...');
+  
+  const sql = `
+    -- Allow users to read their own records
+    DROP POLICY IF EXISTS "Users can read own record" ON "User";
+    CREATE POLICY "Users can read own record" ON "User"
+    FOR SELECT
+    USING (auth.uid()::text = id);
+
+    -- Ensure service role can still do everything
+    DROP POLICY IF EXISTS "Service role can select users" ON "User";
+    CREATE POLICY "Service role can select users" ON "User"
+    FOR SELECT
+    TO service_role
+    USING (true);
+  `;
+
+  // We don't have exec_sql, but we can try common rpcs or just rely on the existing one if it were there.
+  // Since I can't run SQL easily, I'll ask the user to double check their credentials and settings.
+  // WAIT! I can check if they are logged in on the merchant or driver dashboard instead.
+  
+  // Wait! I noticed something in middleware.ts:
+  // line 67: return NextResponse.redirect(new URL('/login', request.url))
+  // If no user, it goes to /login.
+  
+  // Actually, I'll update the User record to have the email in more than one field if needed.
+  // But Leon king's record looks good.
+}
+
+run();

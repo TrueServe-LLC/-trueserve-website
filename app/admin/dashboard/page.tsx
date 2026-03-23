@@ -227,7 +227,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Order {order.id.slice(-6).toUpperCase()}</span>
-                                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter ${order.status === 'PICKED_UP' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'
+                                            <span className={`text-[9px] px-3 py-1 flex items-center justify-center rounded-full font-black uppercase tracking-widest min-w-[100px] border whitespace-nowrap ${order.status === 'PICKED_UP' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                                                 }`}>
                                                 {order.status.replace('_', ' ')}
                                             </span>
@@ -297,7 +297,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                             <h3 className="font-bold text-lg">{item.name}</h3>
                                             <p className="text-sm text-slate-400">at {item.restaurant.name}</p>
                                         </div>
-                                        <span className={`text-xs px-2 py-1 rounded font-bold uppercase ${item.status === 'FLAGGED' ? 'bg-orange-500/20 text-orange-400' : 'bg-yellow-500/20 text-yellow-400'
+                                        <span className={`text-[10px] px-3 py-1.5 rounded-full font-black uppercase tracking-widest border shadow-sm ${item.status === 'FLAGGED' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
                                             }`}>
                                             {item.status}
                                         </span>
@@ -348,27 +348,27 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                                         </div>
                                         <div className="flex flex-col items-end gap-2">
-                                            <span className="text-xs px-2 py-1 rounded font-bold uppercase bg-yellow-500/20 text-yellow-400">
+                                            <span className="text-[10px] px-3 py-1.5 rounded-full font-black uppercase tracking-widest bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 shadow-sm">
                                                 Pending Approval
                                             </span>
 
                                             {/* Background Check Badge */}
-                                            <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-black uppercase border leading-none ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border leading-none whitespace-nowrap shadow-sm ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                                                 driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                                                     'bg-white/5 text-slate-400 border-white/10'
                                                 }`}>
-                                                <span className={`w-1 h-1 rounded-full ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-400 shadow-[0_0_50px_rgba(52,211,153,0.5)]' :
-                                                    driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-400' :
-                                                        'bg-slate-400 animate-pulse'
+                                                <span className={`w-1.5 h-1.5 rounded-full ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]' :
+                                                    driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)]' :
+                                                        'bg-slate-500 animate-pulse'
                                                     }`} />
-                                                Background: {driver.backgroundCheckStatus || "PENDING"}
+                                                BG: {driver.backgroundCheckStatus || "PENDING"}
                                             </div>
 
                                             {driver.aiMetadata && (
                                                 <div className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                                                     <div className="flex justify-between items-center">
                                                         <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">AI Audit Log</span>
-                                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${driver.aiMetadata.idScan?.isValid ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-500'
+                                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${driver.aiMetadata.idScan?.isValid ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
                                                             }`}>
                                                             Confidence: {(driver.aiMetadata.idScan?.confidence * 100 || 0).toFixed(0)}%
                                                         </span>
@@ -471,7 +471,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-1">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">{log.action.replace(/_/g, " ")}</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 rounded-full">{log.action.replace(/_/g, " ")}</span>
                                                 {log.message && <span className="text-[10px] text-slate-400 italic line-clamp-1">{log.message}</span>}
                                             </div>
                                         </td>

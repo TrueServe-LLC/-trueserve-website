@@ -144,10 +144,10 @@ export default async function DriverDashboard() {
                                                 {order.distance} mi away
                                             </span>
                                             {weather.multiplier > 1 && (
-                                                <span className="bg-primary/20 text-primary px-2 py-1 rounded animate-pulse font-black">
-                                                    {(weather.multiplier - 1) * 100}% {weather.isSnowing ? 'Snow' : 'Rain'} Bonus
-                                                </span>
-                                            )}
+                                                 <span className="bg-primary/20 text-primary px-3 py-1 rounded-full animate-pulse font-black border border-primary/20 whitespace-nowrap">
+                                                     {(weather.multiplier - 1) * 100}% {weather.isSnowing ? 'Snow' : 'Rain'} Bonus
+                                                 </span>
+                                             )}
                                         </div>
                                     </div>
                                     <form action={async () => {
@@ -192,7 +192,7 @@ export default async function DriverDashboard() {
                                             <div className="flex justify-between items-start mb-2">
                                                 <h3 className="font-bold text-lg text-emerald-100">{destinationName}</h3>
                                                 <div className="flex flex-col items-end gap-1">
-                                                    <span className="text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">{statusLabel}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-full border border-emerald-500/20 whitespace-nowrap shadow-sm">{statusLabel}</span>
                                                     {Number(order.tip) > 0 && (
                                                         <span className="text-[10px] font-black text-primary animate-pulse">+$ {Number(order.tip).toFixed(2)} Tip</span>
                                                     )}
@@ -287,9 +287,9 @@ export default async function DriverDashboard() {
                                     <h2 className="text-2xl font-bold">Transparent Pay Breakdown</h2>
                                     <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mt-1">Mileage-Based Delivery Service</p>
                                 </div>
-                                <div className="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-slate-400">
-                                    Base Rate: <span className="text-emerald-400">$3.00/order</span>
-                                </div>
+                                <div className="text-[10px] bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-slate-400 font-black uppercase tracking-widest shadow-inner">
+                                     Base Rate: <span className="text-emerald-400">$3.00/order</span>
+                                 </div>
                             </div>
                             <div className="card bg-white/5 border-white/10 overflow-x-auto custom-scrollbar">
                                 <table className="w-full min-w-[600px]">
@@ -336,7 +336,7 @@ export default async function DriverDashboard() {
                             <div className="card bg-emerald-500/5 border-emerald-500/20 p-6">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-                                    <p className="text-emerald-400 text-sm font-bold uppercase">Online</p>
+                                    <p className="text-emerald-400 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/10">Online & Live</p>
                                 </div>
                                 <div className="space-y-3 mb-6">
                                     <p className="text-slate-400 text-sm flex justify-between">Zone: <span className="text-white font-semibold">Manhattan</span></p>

@@ -206,7 +206,7 @@ export default async function MerchantDashboard({
                         "use server";
                         await toggleBusyMode(restaurant.id, restaurant.isBusy);
                     }}>
-                        <button className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-all ${restaurant.isBusy ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+                        <button className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap shadow-sm ${restaurant.isBusy ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
                             {restaurant.isBusy ? 'Busy Mode: ON' : 'Busy Mode: OFF'}
                         </button>
                     </form>
@@ -221,9 +221,9 @@ export default async function MerchantDashboard({
                         True<span className="text-primary">Serve</span> <span className="text-slate-500">Merchant</span>
                     </Link>
                     <div className="flex gap-4 items-center">
-                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${restaurant.plan === 'Pro Subscription'
+                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap ${restaurant.plan === 'Pro Subscription'
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                            : 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                            : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-sm'
                             }`}>
                             {restaurant.plan === 'Pro Subscription' ? 'Pro Scale' : 'Flex Scale'}
                         </span>
@@ -234,7 +234,7 @@ export default async function MerchantDashboard({
                             "use server";
                             await toggleBusyMode(restaurant.id, restaurant.isBusy);
                         }}>
-                            <button className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${restaurant.isBusy ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+                            <button className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap shadow-lg ${restaurant.isBusy ? 'bg-red-600 text-white border-red-500 shadow-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'}`}>
                                 {restaurant.isBusy ? 'System Paused' : 'Accepting Orders'}
                             </button>
                         </form>
@@ -260,7 +260,7 @@ export default async function MerchantDashboard({
                         <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">💰</div>
                         <div className="flex justify-between items-start mb-1">
                             <h3 className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">Net Revenue</h3>
-                            <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-black uppercase tracking-widest translate-y-[-2px]">Instant</span>
+                            <span className="text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-black uppercase tracking-widest translate-y-[-2px] shadow-sm whitespace-nowrap">Instant Payout</span>
                         </div>
                         <p className="text-4xl md:text-6xl font-black text-emerald-400">${totalRevenue.toFixed(2)}</p>
                         <p className="text-[9px] text-slate-500 mt-2 flex items-center gap-1 font-bold">
@@ -367,13 +367,13 @@ export default async function MerchantDashboard({
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-xs font-mono text-slate-500">{order.id.slice(-6).toUpperCase()}</span>
-                                            <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${(order.status as any) === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                (order.status as any) === 'PREPARING' ? 'bg-blue-500/20 text-blue-400' :
-                                                    'bg-emerald-500/20 text-emerald-400'
+                                            <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border shadow-sm whitespace-nowrap ${(order.status as any) === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                                                (order.status as any) === 'PREPARING' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                    'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                                                 }`}>
-                                                {(order.status as any) === 'READY_FOR_PICKUP' ? 'PICKUP READY' : order.status}
+                                                {(order.status as any) === 'READY_FOR_PICKUP' ? 'PICKUP READY' : order.status.replace('_', ' ')}
                                             </span>
-                                            {(order as any).isRefunded && <span className="text-[10px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded font-bold uppercase">Refunded</span>}
+                                            {(order as any).isRefunded && <span className="text-[9px] bg-red-500/10 text-red-500 px-3 py-1 rounded-full border border-red-500/20 font-black uppercase tracking-widest shadow-sm whitespace-nowrap">Refunded</span>}
                                             {(() => {
                                                 const waitTime = (Date.now() - new Date(order.createdAt).getTime()) / 60000;
                                                 const isStressed = waitTime > 8 && order.status !== 'DELIVERED' && order.status !== 'CANCELLED';
@@ -480,7 +480,7 @@ export default async function MerchantDashboard({
                     <div className="card border-white/10 bg-white/5">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold flex items-center gap-2">🕒 Store Hours</h2>
-                            <span className="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full font-bold uppercase tracking-wide">Open Now</span>
+                             <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full border border-emerald-500/20 font-black uppercase tracking-widest shadow-sm">Open Now</span>
                         </div>
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between text-slate-400">

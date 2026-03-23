@@ -185,17 +185,17 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "scripts/setup_master_flow.ts",
+    "scripts/fix_rls_note.txt",
+    "scripts/check_leon_access.ts",
+    "scripts/fix_role_enum_pg_clean.ts",
+    "scripts/fix_role_enum_direct.ts",
+    "scripts/fix_role_enum_pg_manual.ts",
+    "scripts/fix_role_enum_pg.ts",
+    "scripts/fix_role_enum.ts",
+    "scripts/update_to_pm_role.ts",
+    "scripts/add_providant_admin.ts",
     "scripts/set_qa_role.js",
-    "scripts/invite_qa_member.js",
-    "scripts/invite_qa_member.ts",
-    "scripts/set_qa_role.ts",
-    "scripts/detect_enum_values.js",
-    "components/admin/QAToolbox.tsx",
-    "app/admin/qa-actions.ts",
-    "scripts/cleanup_mock_drivers.js",
-    "check_log.js",
-    "debug_pw.js",
-    "test_pw.js",
     "docs/Infrastructure/Security.md"
   ]
 }
