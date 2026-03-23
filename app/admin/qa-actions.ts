@@ -119,35 +119,64 @@ export async function getRecentAuditLogs() {
 
 export async function generateMockDrivers() {
     try {
-        let { data: user } = await supabaseAdmin.from('User').select('id, email').eq('role', 'QA_TESTER').limit(1).single();
-        if (!user) {
-            // fallback to any admin
-            const { data: fallbackUser } = await supabaseAdmin.from('User').select('id, email').in('role', ['ADMIN']).limit(1).single();
-            if (!fallbackUser) throw new Error("A user account is required to assign mock drivers to.");
-            user = fallbackUser;
+        const regions = [
+            { name: "Mecklenburg, NC", email: "driver.meck@trueserve.test" },
+            { name: "Surry, NC", email: "driver.surry@trueserve.test" },
+            { name: "Spartanburg, SC", email: "driver.spartan@trueserve.test" }
+        ];
+
+        const results = [];
+
+        for (const region of regions) {
+            // 1. Check if user already exists
+            let { data: existingUser } = await supabaseAdmin.from('User').select('id').eq('email', region.email).maybeSingle();
+            let userId = existingUser?.id;
+
+            if (!userId) {
+                userId = uuidv4();
+                await supabaseAdmin.from('User').insert({
+                    id: userId,
+                    email: region.email,
+                    name: `Pilot Driver (${region.name.split(',')[0]})`,
+                    role: 'DRIVER',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Also create Auth user so they can log in
+                await supabaseAdmin.auth.admin.createUser({
+                    email: region.email,
+                    password: 'TrueServeDriver2026!',
+                    email_confirm: true
+                });
+            }
+
+            const driverId = uuidv4();
+            await supabaseAdmin.from('Driver').upsert({
+                id: driverId,
+                userId: userId,
+                status: 'INACTIVE',
+                vehicleVerified: false,
+                firstName: 'Pilot',
+                lastName: `Driver (${region.name.split(',')[0]})`,
+                phoneIndex: `+1555${Math.floor(1000000 + Math.random() * 9000000)}`,
+                insuranceDocumentUrl: 'https://images.unsplash.com/photo-1554224155-8d04cbd22cd6?q=80&w=200', // Mock insurance doc
+                registrationDocumentUrl: 'https://images.unsplash.com/photo-1554224154-71eaa149cf8a?q=80&w=200', // Mock registration doc
+                backgroundCheckStatus: 'CLEARED',
+                backgroundCheckId: `BC-${Math.floor(100000 + Math.random() * 900000)}`,
+                hasSignedAgreement: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }, { onConflict: 'userId' });
+
+            results.push(region.email);
         }
-
-        const regions = ["Mecklenburg, NC", "Surry, NC", "Spartanburg, SC"];
-        const driversToInsert = regions.map((region, idx) => ({
-            id: uuidv4(),
-            userId: user.id, // Assign to the QA tester for easy testing/cleanup
-            status: 'INACTIVE', // Requires test approval
-            vehicleVerified: false,
-            firstName: `Mock Driver`,
-            lastName: `(${region})`,
-            phoneIndex: `+1555000000${idx}`,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        }));
-
-        const { error } = await supabaseAdmin.from('Driver').insert(driversToInsert);
-        if (error) throw error;
 
         await logAuditAction({
             action: "QA_CREATE_MOCK_DRIVERS",
             targetId: "MULTIPLE",
             entityType: "Driver",
-            message: `Created ${regions.length} mock drivers for regions: ${regions.join(', ')}`
+            message: `Created ${regions.length} unique documented mock drivers: ${results.join(', ')}`
         });
 
         revalidatePath("/admin/dashboard");

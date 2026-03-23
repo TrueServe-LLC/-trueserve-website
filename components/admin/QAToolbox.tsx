@@ -141,7 +141,7 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
                 <div className="card p-6 border-white/5 bg-white/[0.02] hover:border-primary/30 transition-all flex flex-col justify-between">
                     <div>
                         <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Generate Mock Drivers</h3>
-                        <p className="text-[10px] text-slate-500 font-medium mb-6">Creates one mock driver for each pilot region (Mecklenburg, Surry, Spartanburg) ready for approval.</p>
+                        <p className="text-[10px] text-slate-500 font-medium mb-6">Creates unique mock accounts with attached Insurance & Registration docs. Ready for manual approval testing.</p>
                     </div>
                     <button 
                         onClick={handleGenerateDrivers}
