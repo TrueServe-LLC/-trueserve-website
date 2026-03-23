@@ -34,16 +34,23 @@ export default async function Home() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             </Link>
           )}
+          {!userId && (
+            <div className="hidden lg:flex items-center gap-6 mr-6">
+              <Link href="/driver" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-emerald-400 transition-colors">Become a Driver</Link>
+              <Link href="/merchant" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-400 transition-colors">For Merchants</Link>
+            </div>
+          )}
           <Link href="/restaurants" className="btn btn-primary !py-1.5 md:!py-2 !px-3 md:!px-6 !text-[10px] md:!text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap uppercase tracking-widest font-black">
             {userId ? (
               <span className="hidden xs:inline">Browse Food</span>
             ) : (
-              <span className="xs:hidden">Join</span>
+              <span className="xs:hidden">Shop</span>
             )}
-            {userId ? (
+            {!userId && (
+              <span className="hidden xs:inline">Order Now</span>
+            )}
+            {userId && (
               <span className="xs:hidden">Browse</span>
-            ) : (
-              <span className="hidden xs:inline">Get Started</span>
             )}
           </Link>
         </div>
@@ -73,12 +80,15 @@ export default async function Home() {
             </div>
 
             {!userId && (
-              <div className="flex gap-4 w-full max-w-md justify-center md:justify-start">
-                <Link href="/login" className="flex-1 btn btn-primary !py-3 !px-6 text-sm font-black uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-center">
-                  Get Started
+              <div className="flex flex-wrap gap-4 w-full max-w-lg justify-center md:justify-start">
+                <Link href="/restaurants" className="flex-1 min-w-[140px] btn btn-primary !py-3 !px-6 text-sm font-black uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-center">
+                  Order Food
                 </Link>
-                <Link href="/login" className="flex-1 btn bg-white/5 border border-white/10 hover:bg-white/10 text-white !py-3 !px-6 text-sm font-black uppercase tracking-widest rounded-xl transition-all text-center">
-                  Sign In
+                <Link href="/driver" className="flex-1 min-w-[140px] btn bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-400 !py-3 !px-6 text-sm font-black uppercase tracking-widest rounded-xl transition-all text-center">
+                  Drive
+                </Link>
+                <Link href="/merchant" className="flex-1 min-w-[140px] btn bg-white/5 border border-white/10 hover:bg-white/10 text-white !py-3 !px-6 text-sm font-black uppercase tracking-widest rounded-xl transition-all text-center">
+                  Merchant
                 </Link>
               </div>
             )}
@@ -148,16 +158,16 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Call to Action - Hidden on Mobile since we have Top Path Selection */}
+      {/* Call to Action - Triple Path */}
       <section className="container py-24 hidden md:block">
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-3 gap-8">
           {/* Customer CTA */}
           <div className="bg-slate-900/50 rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-primary/50 transition-all shadow-2xl">
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay group-hover:opacity-20 transition-opacity"></div>
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to taste the difference?</h2>
-              <p className="text-slate-400 mb-8 max-w-md mx-auto">Get your favorite local food delivered fast with transparent pricing.</p>
-              <Link href="/restaurants" className="btn btn-primary px-8 py-3 text-lg text-black font-bold shadow-lg shadow-primary/20">
+              <h2 className="text-3xl font-bold text-white mb-6">Hungry?</h2>
+              <p className="text-slate-400 mb-8 max-w-xs mx-auto text-sm">Get your favorite local food delivered fast with transparent pricing.</p>
+              <Link href="/restaurants" className="btn btn-primary px-8 py-3 text-sm text-black font-black uppercase tracking-widest shadow-lg shadow-primary/20">
                 Order Food
               </Link>
             </div>
@@ -167,10 +177,22 @@ export default async function Home() {
           <div className="bg-slate-900/50 rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-emerald-500/50 transition-all shadow-2xl">
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay group-hover:opacity-20 transition-opacity"></div>
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Drive with specific purpose.</h2>
-              <p className="text-slate-400 mb-8 max-w-md mx-auto">Earn 25-40% more than other platforms with fair, distance-based pay.</p>
-              <Link href="/driver" className="btn bg-white/10 text-white hover:bg-white/20 border border-white/10 px-8 py-3 text-lg font-bold backdrop-blur-md transition-all">
-                Become a Driver
+              <h2 className="text-3xl font-bold text-white mb-6">Drive.</h2>
+              <p className="text-slate-400 mb-8 max-w-xs mx-auto text-sm">Earn 25-40% more than other platforms with fair, distance-based pay.</p>
+              <Link href="/driver" className="btn bg-emerald-500 text-black hover:scale-105 border-none px-8 py-3 text-sm font-black uppercase tracking-widest transition-all">
+                Join Fleet
+              </Link>
+            </div>
+          </div>
+
+          {/* Merchant CTA */}
+          <div className="bg-slate-900/50 rounded-[3rem] p-12 text-center relative overflow-hidden border border-white/10 group hover:border-blue-500/50 transition-all shadow-2xl">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay group-hover:opacity-20 transition-opacity"></div>
+            <div className="relative z-10">
+              <h2 className="text-3xl font-bold text-white mb-6">Grow.</h2>
+              <p className="text-slate-400 mb-8 max-w-xs mx-auto text-sm">Zero hidden fees and a digital storefront that respects your local margins.</p>
+              <Link href="/merchant" className="btn bg-blue-600 text-white hover:scale-105 border-none px-8 py-3 text-sm font-black uppercase tracking-widest transition-all">
+                Partner Up
               </Link>
             </div>
           </div>
