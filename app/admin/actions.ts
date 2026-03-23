@@ -196,8 +196,8 @@ export async function connectStripe(_formData?: FormData) {
 }
 
 export async function logout() {
-    (await cookies()).delete("admin_session");
-    redirect("/");
+    const { logout: unifiedLogout } = await import("@/app/auth/actions");
+    await unifiedLogout();
 }
 
 export async function toggleOrderingStatus(enabled: boolean) {

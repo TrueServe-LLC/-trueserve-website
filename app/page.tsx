@@ -27,7 +27,7 @@ export default async function Home() {
             </span>
           </Link>
         <div className="flex items-center gap-1.5 md:gap-4">
-          {userId && <div className="hidden sm:block"><LogoutButton /></div>}
+          {userId && <LogoutButton />}
           {userId && <NotificationBell userId={userId} />}
           {userId && (
             <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">

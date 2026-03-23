@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
@@ -196,10 +196,55 @@ export async function resetPassword(formData: FormData): Promise<AuthState> {
 }
 
 export async function logout() {
+    console.log("[AUTH] Standard Logout Initiated...");
     const cookieStore = await cookies();
     const supabase = await createClient();
+    
+    // 1. Sign out of Supabase Auth (clears server-side session)
     await supabase.auth.signOut();
-    cookieStore.delete("userId");
+    
+    // 2. Identify Domain for cross-subdomain cookie clearing
+    const headersList = await headers();
+    const host = headersList.get('host') || "";
+    const cleanHost = host.split(':')[0];
+    const isLocal = cleanHost.includes("localhost");
+    const isVercel = cleanHost.endsWith(".vercel.app");
+    
+    let cookieDomain = "";
+    const pieces = cleanHost.split('.');
+    if (!isLocal && !isVercel && pieces.length >= 2) {
+        cookieDomain = `.${pieces.slice(-2).join('.')}`;
+    }
+
+    // 3. Define all possible auth cookies to clear
+    const allCookies = cookieStore.getAll();
+    const authCookiesToClear = ["userId", "admin_session"];
+    
+    // Add any and all supabase tokens (they start with sb-)
+    allCookies.forEach(c => {
+        if (c.name.startsWith("sb-")) {
+            authCookiesToClear.push(c.name);
+        }
+    });
+    
+    authCookiesToClear.forEach(name => {
+        // Clear host-only
+        cookieStore.delete(name as any);
+        
+        // Clear root domain if in production
+        if (cookieDomain) {
+            cookieStore.set(name as any, "", { 
+                domain: cookieDomain, 
+                path: '/', 
+                maxAge: 0,
+                secure: process.env.NODE_ENV === "production",
+                httpOnly: true,
+                sameSite: 'lax'
+            });
+        }
+    });
+
+    console.log("[AUTH] All tokens and cookies scanned and cleared. Redirecting to home.");
     redirect("/");
 }
 
