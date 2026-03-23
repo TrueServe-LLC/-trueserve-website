@@ -22,7 +22,7 @@ export default function DriverApplicationForm() {
 
 function DriverApplicationFormInner() {
     const searchParams = useSearchParams();
-    const isMockMode = process.env.NODE_ENV === 'development' || searchParams.get('mock') === 'true';
+    const isMockMode = searchParams.get('qa') === 'true';
 
     const [state, formAction, isPending] = useActionState(submitDriverApplication, initialState);
 
