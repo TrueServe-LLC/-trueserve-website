@@ -185,17 +185,17 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "scripts/count_drivers.ts",
+    "scripts/simulate_marketplace.ts",
+    "lib/launchdarkly.ts",
+    "pnpm-lock.yaml.1913045640",
+    "node_modules/@launchdarkly",
+    "scripts/purge_all.ts",
     "scripts/clear_mocks_direct.ts",
     "scripts/clear_mocks.ts",
     "components/admin/FastActionBtn.tsx",
     "components/admin/SystemToggle.tsx",
     "components/admin/TeamManagerUI.tsx",
-    "lib/admin-config.ts",
-    "scripts/setup_master_flow.ts",
-    "scripts/fix_rls_note.txt",
-    "scripts/check_leon_access.ts",
-    "scripts/fix_role_enum_pg_clean.ts",
-    "scripts/fix_role_enum_direct.ts",
     "docs/Infrastructure/Security.md"
   ]
 }
