@@ -1,6 +1,6 @@
-export type AppRole = 'ADMIN' | 'OPS' | 'SUPPORT' | 'FINANCE' | 'READONLY' | 'QA_TESTER' | 'MERCHANT' | 'DRIVER' | 'CUSTOMER';
+export type AppRole = 'ADMIN' | 'PM' | 'OPS' | 'SUPPORT' | 'FINANCE' | 'READONLY' | 'QA_TESTER' | 'MERCHANT' | 'DRIVER' | 'CUSTOMER';
 
-export const ADMIN_ROLES: AppRole[] = ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'READONLY', 'QA_TESTER'];
+export const ADMIN_ROLES: AppRole[] = ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'READONLY', 'QA_TESTER'];
 
 export type Permission = 
     | 'view_dashboard'
@@ -17,6 +17,12 @@ export type Permission =
 
 export const ROLE_PERMISSIONS: Record<AppRole, Permission[]> = {
     'ADMIN': [
+        'view_dashboard', 'approve_restaurants', 'manage_menu', 
+        'view_orders', 'intervene_orders', 'approve_drivers', 
+        'manage_payouts', 'manage_pricing', 'view_audit_logs', 
+        'manage_system_settings'
+    ],
+    'PM': [
         'view_dashboard', 'approve_restaurants', 'manage_menu', 
         'view_orders', 'intervene_orders', 'approve_drivers', 
         'manage_payouts', 'manage_pricing', 'view_audit_logs', 

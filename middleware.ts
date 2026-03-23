@@ -78,7 +78,7 @@ export async function middleware(request: NextRequest) {
         )
         const roles = await roleResponse.json()
         const role = roles?.[0]?.role || 'CUSTOMER'
-        if (!['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+        if (!['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
           let rootHost = host;
           if (subdomain) {
             rootHost = host.replace(`${subdomain}.`, '');
@@ -124,7 +124,7 @@ export async function middleware(request: NextRequest) {
         const roles = await roleRes.json()
         const role = roles?.[0]?.role || 'CUSTOMER'
 
-        if (path.startsWith('/admin') && !['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+        if (path.startsWith('/admin') && !['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
           return NextResponse.redirect(new URL('/', request.url))
         }
     }

@@ -28,7 +28,7 @@ export async function login(formData: FormData) {
                 .eq('email', email)
                 .maybeSingle();
 
-            if (userData && ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userData.role)) {
+            if (userData && ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userData.role)) {
                 // Success - Set System-wide Cookies manually as fallback
                 const cookieStore = await cookies();
                 const headersList = await headers();
