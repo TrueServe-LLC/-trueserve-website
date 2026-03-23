@@ -101,3 +101,18 @@ export async function clearAllMockData() {
         return { success: false, error: e.message };
     }
 }
+
+export async function getRecentAuditLogs() {
+    try {
+        const { data: logs, error } = await supabaseAdmin
+            .from('AuditLog')
+            .select('*')
+            .order('createdAt', { ascending: false })
+            .limit(20);
+
+        if (error) throw error;
+        return { success: true, logs };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}

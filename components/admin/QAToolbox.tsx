@@ -1,11 +1,19 @@
 "use client";
 
-import { createMockOrder, approveAllPendingDrivers, clearAllMockData } from "@/app/admin/qa-actions";
+import { createMockOrder, approveAllPendingDrivers, clearAllMockData, getRecentAuditLogs } from "@/app/admin/qa-actions";
 import { useState } from "react";
 
 export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
     const [loading, setLoading] = useState<string | null>(null);
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+    const [logs, setLogs] = useState<any[]>([]);
+
+    const fetchLogs = async () => {
+        setLoading("fetch_logs");
+        const res = await getRecentAuditLogs();
+        setLoading(null);
+        if (res.success) setLogs(res.logs || []);
+    };
 
     const handleCreateOrder = async (restaurantId: string) => {
         setLoading("create_order");
@@ -33,6 +41,7 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
     };
 
     return (
+        <>
         <section className="mb-16 animate-fade-in">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-black flex items-center gap-2">
@@ -99,5 +108,53 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
                 </div>
             </div>
         </section>
+
+        {/* Story Card Generator Section */}
+        <section className="mb-16 animate-fade-in">
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black flex items-center gap-2">
+                    📋 QA Story Card Generator
+                </h3>
+                <button 
+                    onClick={fetchLogs}
+                    disabled={loading === 'fetch_logs'}
+                    className="btn btn-outline text-[10px] font-black uppercase tracking-widest px-4 py-2 disabled:opacity-50"
+                >
+                    {loading === 'fetch_logs' ? 'Fetching...' : 'Fetch Recent Logs'}
+                </button>
+            </div>
+            
+            {logs.length > 0 && (
+                <div className="bg-black/40 border border-white/5 rounded-2xl p-6 mb-8 max-h-[400px] overflow-y-auto">
+                    {logs.map((log: any) => (
+                        <div key={log.id} className="mb-4 pb-4 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
+                            <div className="flex justify-between items-start mb-2">
+                                <div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary mr-2">{log.action}</span>
+                                    <span className="text-sm font-medium text-slate-300">{log.message}</span>
+                                </div>
+                                <span className="text-xs text-slate-500">{new Date(log.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center mt-2">
+                                <code className="text-[10px] bg-white/5 px-2 py-1 rounded text-slate-400">
+                                    Target: {log.targetId} | Entity: {log.entityType}
+                                </code>
+                                <button
+                                    onClick={() => {
+                                        const markdown = `### 🐛 QA Bug Report / Story Card\n**Action Traced:** \`${log.action}\`\n**Timestamp:** ${new Date(log.createdAt).toLocaleString()}\n**Target ID:** \`${log.targetId}\`\n**Entity:** \`${log.entityType}\`\n\n**Log Message:**\n> ${log.message}\n\n**Steps to Reproduce:**\n1. \n2. \n3. \n\n**Expected Result:**\n\n**Actual Result:**\n\n**Environment / Device Info:**\n- Device/Browser: \n- Network status: `;
+                                        navigator.clipboard.writeText(markdown);
+                                        setMessage({ text: 'Story Card copied to clipboard!', type: 'success' });
+                                    }}
+                                    className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-white transition-colors bg-primary/10 px-3 py-1 rounded border border-primary/20 hover:bg-primary/20"
+                                >
+                                    📋 Copy to Story Card
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </section>
+        </>
     );
 }
