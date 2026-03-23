@@ -20,7 +20,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
  * 
  * VERIFICATION:
  * 1. Confirm you can login to /login as merchant@demo.test
- * 2. Confirm you can login to /login as driver@demo.test (must be on driver.trueserve.delivery)
+ * 2. Confirm you can login to /login as driver@demo.test (must be on driver.trueservedelivery.com)
  * 3. Verify driver@demo.test appears as "ONLINE" in the admin dashboard.
  */
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {

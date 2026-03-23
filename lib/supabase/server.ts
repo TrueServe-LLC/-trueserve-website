@@ -18,7 +18,7 @@ export async function createClient() {
                         cookiesToSet.forEach(({ name, value, options }) =>
                             cookieStore.set(name, value, {
                                 ...options,
-                                domain: isProd ? '.trueserve.delivery' : undefined
+                                domain: isProd ? '.trueservedelivery.com' : undefined
                             })
                         )
                     } catch {

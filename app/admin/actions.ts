@@ -133,12 +133,12 @@ export async function approveDriver(id: string) {
         await sendEmail(
             email,
             "Your TrueServe Driver Application - APPROVED",
-            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in using your phone number to receive a secure SMS code.\n\nPlease go to driver.trueserve.delivery/login to start accepting orders!\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
+            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in using your phone number to receive a secure SMS code.\n\nPlease go to driver.trueservedelivery.com/login to start accepting orders!\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
         );
 
         await sendSMS(
             phone,
-            `TrueServe: Your driver application is approved! You can now log in using this phone number at driver.trueserve.delivery/login`
+            `TrueServe: Your driver application is approved! You can now log in using this phone number at driver.trueservedelivery.com/login`
         );
 
         revalidatePath("/admin/dashboard");
@@ -253,7 +253,7 @@ export async function refreshBackgroundCheck(driverId: string) {
             await sendEmail(
                 (driver.user as any).email,
                 "Action Required: Driver Background Check",
-                `Hi ${(driver.user as any).name},\n\nDuring our routine background screening, some items were flagged on your report. \n\nPlease contact our trust & safety team at safety@trueserve.delivery if you would like to provide additional context or dispute these findings.\n\nBest,\nThe TrueServe Team`
+                `Hi ${(driver.user as any).name},\n\nDuring our routine background screening, some items were flagged on your report. \n\nPlease contact our trust & safety team at safety@trueservedelivery.com if you would like to provide additional context or dispute these findings.\n\nBest,\nThe TrueServe Team`
             );
         }
 

@@ -25,7 +25,7 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
  * `npx ts-node scripts/simulate_pickup_flow.ts`
  * 
  * VERIFICATION:
- * 1. Open http://localhost:3000/admin/dashboard (or admin.trueserve.delivery)
+ * 1. Open http://localhost:3000/admin/dashboard (or admin.trueservedelivery.com)
  * 2. Run the script and observe the "Live Delivery Monitor" UI update as transitions occur.
  * 3. Verify order status ends in "PICKED_UP".
  */

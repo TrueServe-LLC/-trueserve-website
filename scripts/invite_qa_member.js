@@ -75,7 +75,7 @@ async function inviteQAMember() {
     console.log(`NAME:     ${name}`);
     console.log(`EMAIL:    ${email}`);
     console.log(`TEMP PW:  ${tempPassword}`);
-    console.log(`ADMIN PORTAL: https://admin.trueserve.delivery/login`);
+    console.log(`ADMIN PORTAL: https://admin.trueservedelivery.com/login`);
     console.log('---------------------------------');
     console.log('\n✅ Invitation Successful! Share these credentials with the tester.');
     process.exit(0);

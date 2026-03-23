@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
     cookieDomain = `.${pieces.slice(-2).join('.')}`
   }
   
-  // For trueserve.delivery, pieces.length is 2. Subdomain exists if length > 2.
+  // For trueservedelivery.com, pieces.length is 2. Subdomain exists if length > 2.
   // For sub.trueserve-website.vercel.app, pieces.length is 4. Subdomain exists if length > 3.
   const isSub = isVercel 
     ? pieces.length > 3 

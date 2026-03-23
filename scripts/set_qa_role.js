@@ -87,7 +87,7 @@ async function setQARole() {
                             <li>📋 Menu Item & Driver Review tools</li>
                         </ul>
                     </div>
-                    <p><strong>Log in here:</strong> <a href="https://admin.trueserve.delivery/admin/dashboard" style="color: #007bff; font-weight: bold;">https://admin.trueserve.delivery/admin/dashboard</a></p>
+                    <p><strong>Log in here:</strong> <a href="https://admin.trueservedelivery.com/admin/dashboard" style="color: #007bff; font-weight: bold;">https://admin.trueservedelivery.com/admin/dashboard</a></p>
                     <p>Use your existing account credentials to get started.</p>
                     <p>Best regards,<br>The TrueServe Engineering Team</p>
                 </div>

@@ -37,14 +37,14 @@ export async function login(formData: FormData) {
                     httpOnly: true,
                     secure: isProd,
                     path: "/",
-                    domain: isProd ? '.trueserve.delivery' : undefined
+                    domain: isProd ? '.trueservedelivery.com' : undefined
                 });
                 
                 cookieStore.set("userId", authData.user.id, {
                     httpOnly: true,
                     secure: isProd,
                     path: "/",
-                    domain: isProd ? '.trueserve.delivery' : undefined
+                    domain: isProd ? '.trueservedelivery.com' : undefined
                 });
 
                 shouldRedirect = true;
@@ -73,7 +73,7 @@ export async function login(formData: FormData) {
             httpOnly: true,
             secure: isProd,
             path: "/",
-            domain: isProd ? '.trueserve.delivery' : undefined
+            domain: isProd ? '.trueservedelivery.com' : undefined
         });
         redirect("/admin/dashboard");
     }

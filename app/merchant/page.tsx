@@ -320,7 +320,7 @@ export default function MerchantPortal() {
                         <div className="space-y-4">
                             <h4 className="text-white text-xs font-bold uppercase tracking-widest">Support</h4>
                             <ul className="text-slate-500 text-sm space-y-2 font-medium">
-                                <li><Link href="mailto:support@trueserve.delivery" className="hover:text-primary transition-colors">Help Center</Link></li>
+                                <li><Link href="mailto:support@trueservedelivery.com" className="hover:text-primary transition-colors">Help Center</Link></li>
                                 <li><Link href="/legal#terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                                 <li><Link href="/legal#privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
                             </ul>

@@ -20,7 +20,7 @@ You need to switch from Test credentials to Live credentials.
 
 | Variable | Action | Description |
 | :--- | :--- | :--- |
-| `NEXT_PUBLIC_APP_URL` | **Update** | Change `http://localhost:3000` to your production domain (e.g., `https://trueserve.delivery`). |
+| `NEXT_PUBLIC_APP_URL` | **Update** | Change `http://localhost:3000` to your production domain (e.g., `https://trueservedelivery.com`). |
 | `STRIPE_SECRET_KEY` | **Update** | Replace `sk_test_...` with your **Live** Secret Key (`sk_live_...`). |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | **Update** | Replace `pk_test_...` with your **Live** Publishable Key (`pk_live_...`). |
 | `TWILIO_PHONE_NUMBER` | **Update** | Ensure this is a purchased, active Twilio number (not a trial number). |

@@ -280,7 +280,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         notificationPromises.push(
             sendEmail(
-                "admin@trueserve.delivery",
+                "admin@trueservedelivery.com",
                 `New Driver Application: ${name} (${driveStatus})`,
                 `<h1>New Driver Application</h1>
                 <p><strong>Name:</strong> ${name}</p>

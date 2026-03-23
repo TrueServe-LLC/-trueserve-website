@@ -14,7 +14,7 @@ export async function GET() {
         await supabaseAdmin.from('User').insert({
             id: DEMO_DRIVER_ID,
             name: "Demo Driver",
-            email: "demo-driver@trueserve.delivery",
+            email: "demo-driver@trueservedelivery.com",
             role: "DRIVER",
             phone: "+15550001234"
         });

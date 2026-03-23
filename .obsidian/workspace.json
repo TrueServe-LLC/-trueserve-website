@@ -185,17 +185,17 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "scripts/set_qa_role.js",
+    "scripts/invite_qa_member.js",
+    "scripts/invite_qa_member.ts",
+    "scripts/set_qa_role.ts",
+    "scripts/detect_enum_values.js",
+    "components/admin/QAToolbox.tsx",
+    "app/admin/qa-actions.ts",
+    "scripts/cleanup_mock_drivers.js",
+    "check_log.js",
+    "debug_pw.js",
     "test_pw.js",
-    "app/admin/team/page.tsx",
-    "app/admin/team/actions.ts",
-    "app/admin/team",
-    "reset_pw.js",
-    "app/admin/settings/page.tsx",
-    "app/admin/settings",
-    "lib/rbac.ts",
-    "lib/audit.ts",
-    "app/admin/support/page.tsx",
-    "components/admin/SupportCenter.tsx",
     "docs/Infrastructure/Security.md"
   ]
 }

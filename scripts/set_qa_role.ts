@@ -20,7 +20,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
  * `npx ts-node scripts/set_qa_role.ts your_email@test.com`
  * 
  * VERIFICATION:
- * 1. Log in as that user on admin.trueserve.delivery.
+ * 1. Log in as that user on admin.trueservedelivery.com.
  * 2. Confirm the 🛠️ QA Toolbox is visible but 'Pricing' and 'Settings' are hidden.
  */
 

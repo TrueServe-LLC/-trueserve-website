@@ -473,7 +473,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         // Stripe
         if (plan === 'Pro Subscription') {
-            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://trueserve.delivery";
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://trueservedelivery.com";
             const session = await getStripe().checkout.sessions.create({
                 payment_method_types: ['card'],
                 line_items: [{
@@ -525,7 +525,7 @@ export async function createStripeAccount(providedId?: string | FormData) {
         if (!restaurant) throw new Error("Restaurant not found");
 
         let stripeAccountId = restaurant.stripeAccountId;
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://trueserve.delivery";
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://trueservedelivery.com";
 
         if (!stripeAccountId) {
             const { data: user } = await supabaseAdmin.from('User').select('email').eq('id', userId).single();

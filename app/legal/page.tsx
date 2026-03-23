@@ -22,7 +22,7 @@ export default function TermsAndPrivacy() {
                     <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized use.</p>
 
                     <h3 className="font-bold text-white">3. Payments & Refunds</h3>
-                    <p>All payments are processed securely via Stripe. In the event of a dispute or service failure during the pilot, please contact support@trueserve.delivery for a full refund.</p>
+                    <p>All payments are processed securely via Stripe. In the event of a dispute or service failure during the pilot, please contact support@trueservedelivery.com for a full refund.</p>
                 </div>
             </section>
 
@@ -46,7 +46,7 @@ export default function TermsAndPrivacy() {
 
             <div className="text-center pt-8 border-t border-white/10">
                 <p className="text-xs text-slate-500">
-                    For questions, contact <a href="mailto:support@trueserve.delivery" className="text-primary hover:underline">support@trueserve.delivery</a>
+                    For questions, contact <a href="mailto:support@trueservedelivery.com" className="text-primary hover:underline">support@trueservedelivery.com</a>
                 </p>
             </div>
         </div>
