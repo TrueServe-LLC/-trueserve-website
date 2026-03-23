@@ -96,15 +96,15 @@ export default function KPIDashboard({ orders, drivers, restaurants }: KPIDashbo
 
     return (
         <section className="mb-16">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">KPI Dashboard (V1)</h2>
-                <div className="flex items-center gap-4">
-                    <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+            <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-8">
+                <h2 className="text-2xl font-bold">Registry <span className="text-gradient">Statistics</span></h2>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
+                    <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 w-full sm:w-auto overflow-x-auto no-scrollbar">
                         {(['24h', '7d', '30d', 'all'] as const).map((r) => (
                             <button
                                 key={r}
                                 onClick={() => setTimeRange(r)}
-                                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
                                     timeRange === r ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-500 hover:text-white'
                                 }`}
                             >
@@ -114,14 +114,14 @@ export default function KPIDashboard({ orders, drivers, restaurants }: KPIDashbo
                     </div>
                     <button 
                         onClick={exportToCSV}
-                        className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                        className="w-full sm:w-auto px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-center"
                     >
                         Export CSV
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <KPICard title="Order Volume" value={stats.total} subtext="Total Orders" color="primary" />
                 <KPICard title="Platform Revenue" value={`$${stats.totalRevenue}`} subtext="Total Order Volume" color="emerald" />
                 <KPICard title="Cancel Rate" value={`${stats.cancelRate.toFixed(1)}%`} subtext="Refunds/Cancellations" color="red" />

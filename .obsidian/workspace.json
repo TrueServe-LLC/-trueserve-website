@@ -185,6 +185,7 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "components/admin/TeamManagerUI.tsx",
     "lib/admin-config.ts",
     "scripts/setup_master_flow.ts",
     "scripts/fix_rls_note.txt",
@@ -195,7 +196,6 @@
     "scripts/fix_role_enum_pg.ts",
     "scripts/fix_role_enum.ts",
     "scripts/update_to_pm_role.ts",
-    "scripts/add_providant_admin.ts",
     "docs/Infrastructure/Security.md"
   ]
 }

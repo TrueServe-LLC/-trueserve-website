@@ -71,13 +71,13 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
     return (
         <>
         <section className="mb-16 animate-fade-in">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-black flex items-center gap-2">
-                    🛠️ QA Toolbox
-                    <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border border-primary/20">Pilot Debugging Ready</span>
+            <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 mb-6">
+                <h2 className="text-xl md:text-2xl font-black flex flex-wrap items-center gap-2">
+                    🛠️ QA <span className="text-gradient">Toolbox</span>
+                    <span className="bg-primary/10 text-primary text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border border-primary/20 whitespace-nowrap">Pilot Ready</span>
                 </h2>
                 {message && (
-                    <div className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border ${
+                    <div className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border w-full lg:w-auto text-center ${
                         message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'
                     }`}>
                         {message.text}

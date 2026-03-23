@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
 import { getAuthSession } from "@/app/auth/actions";
 import KPIDashboard from "@/components/admin/KPIDashboard";
-import QAToolbox from "@/components/admin/QAToolbox";
 
 async function getPendingItems() {
     try {
@@ -142,22 +141,25 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
     return (
         <div className="min-h-screen">
-            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
+            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-4 md:px-6 py-4">
                 <div className="container flex justify-between items-center">
-                    <Link href="/" className="text-2xl font-bold tracking-tighter">
-                        True<span className="text-gradient">Serve</span> Admin
+                    <Link href="/" className="text-xl md:text-2xl font-bold tracking-tighter shrink-0">
+                        True<span className="text-gradient">Serve</span><span className="hidden xs:inline"> Admin</span>
                     </Link>
-                    <div className="flex gap-4 items-center">
-                        {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>}
-                        {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>}
-                        <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
-                        {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Control Center</Link>}
-                        <Link href="/admin/support" className="hidden xs:block text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Support</Link>
+                    <div className="flex gap-3 md:gap-4 items-center">
+                        <div className="hidden lg:flex gap-4 items-center mr-4 pr-4 border-r border-white/10">
+                            {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>}
+                            {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>}
+                            <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
+                        </div>
+                        
+                        {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Dashboard</Link>}
+                        
                         <form action={async () => {
                             "use server";
                             await logout();
                         }}>
-                            <button className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors">Log Out</button>
+                            <button className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors">Log Out</button>
                         </form>
                     </div>
                 </div>
@@ -165,23 +167,23 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
             <main className="container py-12 animate-fade-in">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 w-full border-b border-white/10 pb-6">
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter">Admin <span className="text-gradient">Registry</span></h1>
-                        <p className="text-slate-400 text-sm mt-1 uppercase tracking-widest font-bold">Control Center configuration</p>
+                    <div className="w-full lg:w-auto">
+                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter">Admin <span className="text-gradient">Registry</span></h1>
+                        <p className="text-slate-400 text-[10px] md:text-sm mt-1 uppercase tracking-widest font-bold">Control Center configuration</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4">
                         {/* System Status Toggle */}
-                        <div className="px-4 py-2 border border-white/10 rounded-full flex items-center gap-3 bg-white/5">
-                            <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Ordering System</span>
+                        <div className="px-3 md:px-4 py-2 border border-white/10 rounded-full flex items-center gap-2 md:gap-3 bg-white/5">
+                            <span className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 tracking-wider">System Status</span>
                             {await (async () => {
                                 const { isOrderingEnabled } = await import('@/lib/system');
                                 const enabled = await isOrderingEnabled();
                                 const { toggleOrderingStatus } = await import('../actions');
                                 return (
                                     <form action={async () => { "use server"; await toggleOrderingStatus(!enabled); }}>
-                                        <button className={`w-10 h-5 rounded-full p-1 transition-colors relative ${enabled ? 'bg-emerald-500' : 'bg-red-500'}`}>
-                                            <div className={`w-3 h-3 rounded-full bg-white shadow-md transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                                        <button className={`w-8 h-4 md:w-10 md:h-5 rounded-full p-0.5 md:p-1 transition-colors relative ${enabled ? 'bg-emerald-500' : 'bg-red-500'}`}>
+                                            <div className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white shadow-md transition-transform ${enabled ? 'translate-x-4 md:translate-x-5' : 'translate-x-0'}`} />
                                         </button>
                                     </form>
                                 );
@@ -205,19 +207,14 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 {/* KPI Dashboard (V1) */}
                 <KPIDashboard orders={allOrders} drivers={drivers} restaurants={restaurants} />
 
-                {/* QA TOOLBOX (Pilot Testing Only) */}
-                {hasPermission(role, 'access_qa_toolbox') && (
-                    <div className="my-16">
-                        <QAToolbox restaurants={restaurants} />
-                    </div>
-                )}
+
 
                 {/* Active Deliveries Map / List */}
                 <section className="mb-16">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            🛰️ Live Delivery Monitor
-                            <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full">{activeOrders.length} Active</span>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                            🛰️ Live Monitor
+                            <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-1 rounded-full uppercase font-black">{activeOrders.length} Active</span>
                         </h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -448,17 +445,17 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Actor</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Action</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Target</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Time</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Details</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Actor</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Action</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Target</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Time</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Details</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {auditLogs.map((log) => (
                                     <tr key={log.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-6 h-6 rounded-full bg-primary/20 text-[10px] flex items-center justify-center font-bold text-primary">
                                                     {log.actor?.name?.[0] || 'S'}
@@ -469,13 +466,13 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-4">
                                             <div className="flex flex-col gap-1">
                                                 <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 rounded-full">{log.action.replace(/_/g, " ")}</span>
                                                 {log.message && <span className="text-[10px] text-slate-400 italic line-clamp-1">{log.message}</span>}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-4">
                                             <div className="flex flex-col">
                                                 <span className="text-[10px] font-black uppercase text-slate-500 tracking-tighter">{log.entityType}</span>
                                                 <span className="text-[9px] font-mono text-slate-600 truncate max-w-[100px]">{log.targetId}</span>

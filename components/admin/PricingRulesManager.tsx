@@ -75,6 +75,19 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
     });
   };
 
+  const handleToggle = async (id: string, currentStatus: boolean) => {
+    // Optimistic UI update
+    setRules(prev => prev.map(r => r.id === id ? { ...r, isActive: !currentStatus } : r));
+    startTransition(async () => {
+        try {
+            await toggleRuleStatus(id, !currentStatus);
+        } catch (e) {
+            // Revert on failure
+            setRules(prev => prev.map(r => r.id === id ? { ...r, isActive: currentStatus } : r));
+        }
+    });
+  };
+
   const calculatePreview = () => {
     // Find highest priority active rule that matches "now"
     const now = new Date();
@@ -385,7 +398,7 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                 </div>
               </div>
               <button 
-                onClick={() => toggleRuleStatus(rule.id, !rule.isActive)}
+                onClick={() => handleToggle(rule.id, rule.isActive)}
                 className={`text-[9px] font-black uppercase tracking-[0.2em] py-2 px-4 rounded-xl transition-all ${
                   rule.isActive ? 'hover:bg-red-500/10 text-slate-500 hover:text-red-400' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
                 }`}
