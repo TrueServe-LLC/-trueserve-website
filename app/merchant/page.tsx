@@ -119,10 +119,14 @@ export default function MerchantPortal() {
                                     <span className="text-gradient">FLEX SCALE</span>
                                 </h3>
 
-                                {/* Description Paragraph */}
-                                <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed mb-8 flex-grow">
-                                    Experience on-demand growth with zero upfront setup. Gain full engine access and a standard local badge. Cancel anytime.
-                                </p>
+                                <div className="space-y-4 mb-8 flex-grow">
+                                    <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed">
+                                        Experience on-demand growth with zero upfront setup. Gain full engine access and a standard local badge.
+                                    </p>
+                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-emerald-400">
+                                        <span className="text-sm">✓</span> Free Professional Storefront
+                                    </div>
+                                </div>
 
                                 {/* CTA Button */}
                                 <div>
@@ -140,10 +144,14 @@ export default function MerchantPortal() {
                                     <span className="text-gradient">PRO SCALE</span>
                                 </h3>
 
-                                {/* Description Paragraph */}
-                                <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed mb-8 flex-grow">
-                                    $199 / MO. High-volume optimized performance. Unlock VIP merchant status, 0% split, custom dispatch logic, and advanced analytics.
-                                </p>
+                                <div className="space-y-4 mb-8 flex-grow">
+                                    <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed">
+                                        $199 / MO. High-volume optimized performance. Unlock VIP merchant status, 0% split, and custom dispatch logic.
+                                    </p>
+                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-emerald-400">
+                                        <span className="text-sm">✓</span> Free Professional Storefront
+                                    </div>
+                                </div>
 
                                 {/* CTA Button */}
                                 <div>
@@ -163,15 +171,16 @@ export default function MerchantPortal() {
                             <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">Why partner with TrueServe?</h2>
                             <p className="text-slate-400 font-medium italic">Engineered for the modern merchant ecosystem.</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                             {[
                                 { title: "Reach more customers", desc: "Instantly connect with hungry diners in your immediate neighborhood and beyond.", icon: "🎯" },
                                 { title: "Deliver with ease", desc: "Our high-velocity dispatch engine ensures your food stays hot and delivery stays fast.", icon: "⚡" },
+                                { title: "Instant Storefront", desc: "Zero coding. Get a professional, high-res digital storefront for your business—absolutely free.", icon: "🌐" },
                                 { title: "Keep your margin", desc: "TrueScale protocols mean no hidden fees and a split that respects your bottom line.", icon: "💰" }
                             ].map((prop, i) => (
-                                <div key={i} className="space-y-4">
+                                <div key={i} className="space-y-4 p-6 bg-white/[0.02] border border-white/5 rounded-3xl hover:bg-white/[0.04] transition-all">
                                     <div className="text-4xl mb-6">{prop.icon}</div>
-                                    <h3 className="text-xl font-bold text-white">{prop.title}</h3>
+                                    <h3 className="text-xl font-bold text-white tracking-tight">{prop.title}</h3>
                                     <p className="text-slate-400 text-sm leading-relaxed font-medium">{prop.desc}</p>
                                 </div>
                             ))}
