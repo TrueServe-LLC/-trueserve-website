@@ -60,11 +60,13 @@ export async function GET(request: Request) {
                     : `${origin}${finalNext}`;
             
             // Subdomain Redirection Logic for Production
-            if (!isLocalEnv) {
-                const host = request.headers.get('host') || "";
-                const cleanHost = host.split(':')[0];
+            const host = request.headers.get('host') || "";
+            const cleanHost = host.split(':')[0];
+            const isProdDomain = cleanHost.endsWith("trueservedelivery.com");
+
+            if (isProdDomain) {
                 const pieces = cleanHost.split('.');
-                const isSub = pieces.length > (isLocalEnv ? 1 : 2);
+                const isSub = pieces.length > 2;
                 const subdomainPiece = isSub ? pieces[0] : "";
                 
                 let targetSubdomain = "";
@@ -82,15 +84,13 @@ export async function GET(request: Request) {
             const response = NextResponse.redirect(redirectUrl)
 
             // Determine the cookie domain for universal sessions (including subdomains)
-            const host = request.headers.get('host') || "";
-            const cleanHost = host.split(':')[0]
             const isLocal = cleanHost.includes("localhost")
             const isVercel = cleanHost.endsWith(".vercel.app")
             
-            const pieces = cleanHost.split('.')
+            const piecesForCookie = cleanHost.split('.')
             let cookieDomain = ""
-            if (!isLocal && !isVercel && pieces.length >= 2) {
-              cookieDomain = `.${pieces.slice(-2).join('.')}`
+            if (!isLocal && !isVercel && piecesForCookie.length >= 2) {
+              cookieDomain = `.${piecesForCookie.slice(-2).join('.')}`
             }
 
             // Set userId cookie for compatibility with existing dashboard logic

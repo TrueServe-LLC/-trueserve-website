@@ -3,6 +3,7 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isStaffEmail } from "@/lib/admin-config";
 
 export async function login(formData: FormData) {
     const email = formData.get("email") as string;
@@ -28,7 +29,21 @@ export async function login(formData: FormData) {
                 .eq('email', email)
                 .maybeSingle();
 
-            if (userData && ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userData.role)) {
+            let userRole = userData?.role;
+
+            // AUTO-GRANT: If user is in whitelist but role is missing/customer, upgrade them
+            if ((!userRole || userRole === 'CUSTOMER') && isStaffEmail(email)) {
+                userRole = 'ADMIN';
+                const { supabaseAdmin } = await import("@/lib/supabase-admin");
+                await supabaseAdmin.from('User').upsert({
+                    id: authData.user.id,
+                    email: email,
+                    role: 'ADMIN',
+                    updatedAt: new Date().toISOString()
+                });
+            }
+
+            if (userRole && ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userRole)) {
                 // Success - Set System-wide Cookies manually as fallback
                 const cookieStore = await cookies();
                 const headersList = await headers();
@@ -70,7 +85,23 @@ export async function login(formData: FormData) {
     }
 
     if (shouldRedirect) {
-        redirect("/admin/dashboard");
+        const headersList = await headers();
+        const host = headersList.get('host') || "";
+        const cleanHost = host.split(':')[0];
+        const pieces = cleanHost.split('.');
+        const isLocal = cleanHost.includes("localhost");
+        const isVercel = cleanHost.endsWith(".vercel.app");
+        const isProdDomain = cleanHost.endsWith("trueservedelivery.com");
+        const isSub = isVercel ? pieces.length > 3 : pieces.length > (isLocal ? 1 : 2);
+        const protocol = isLocal ? "http" : "https";
+
+        // Always force redirect to the admin subdomain for admins ONLY ON LIVE PROD
+        if (isProdDomain && !cleanHost.startsWith("admin.")) {
+            const rootHost = isSub ? pieces.slice(1).join('.') : cleanHost;
+            redirect(`https://admin.${rootHost}/admin/dashboard`);
+        } else {
+            redirect("/admin/dashboard");
+        }
     }
 
     // Strategy 2: Legacy Env Fallback (Safety Net)
@@ -111,8 +142,12 @@ export async function resetAdminPassword(formData: FormData) {
 
     try {
         const supabase = await createClient();
+        const headersList = await headers();
+        const host = headersList.get('host') || "";
+        const protocol = host.includes('localhost') ? 'http' : 'https';
+        
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://admin.trueservedelivery.com'}/auth/callback?next=/admin/dashboard`
+            redirectTo: `${protocol}://${host}/auth/callback?next=/admin/dashboard`
         });
 
         if (error) return { error: error.message };
