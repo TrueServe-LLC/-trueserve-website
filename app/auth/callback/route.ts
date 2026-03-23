@@ -48,7 +48,7 @@ export async function GET(request: Request) {
             if (next === '/') {
                 if (role === 'MERCHANT') finalNext = '/merchant/dashboard';
                 else if (role === 'DRIVER') finalNext = '/driver/dashboard';
-                else if (role === 'ADMIN' || role === 'QA_TESTER') finalNext = '/admin/dashboard';
+                else if (role === 'PM' || role === 'ADMIN' || role === 'QA_TESTER') finalNext = '/admin/dashboard';
             }
 
             // Success - continue to 'next' path
