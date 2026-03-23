@@ -496,6 +496,29 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         // Standard logic for Flex
         await createStripeAccount(userId);
         
+        // Notify Team of NEW MERCHANT
+        const { data: staffMembers } = await supabaseAdmin
+            .from('User')
+            .select('email')
+            .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'PM']);
+        
+        const staffEmails = staffMembers?.map(s => s.email).filter(Boolean) as string[] || ["admin@trueservedelivery.com"];
+
+        for (const staffEmail of staffEmails) {
+            await sendEmail(
+                staffEmail,
+                `🚨 NEW MERCHANT SIGNUP: ${restaurantName}`,
+                `<h1>New Merchant Application</h1>
+                <p><strong>Restaurant:</strong> ${restaurantName}</p>
+                <p><strong>Contact:</strong> ${contactName}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Address:</strong> ${address}, ${city}, ${state} ${zip}</p>
+                <p><strong>Selected Plan:</strong> ${plan || 'Flex'}</p>
+                <hr />
+                <p>Please review and approve the merchant in the Admin Registry.</p>`
+            );
+        }
+        
         return { success: true, message: "Signup complete!" };
 
     } catch (e: any) {

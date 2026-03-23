@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import MobileNavWrapper from "@/components/MobileNavWrapper";
+import LaunchDarklyClientProvider from "@/components/LaunchDarklyClientProvider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -33,8 +34,10 @@ export default function RootLayout({
         className={`${outfit.variable} ${playfair.variable} bg-black text-slate-200 antialiased pb-24 md:pb-0 font-sans overflow-x-hidden`}
         suppressHydrationWarning
       >
-        {children}
-        <MobileNavWrapper />
+        <LaunchDarklyClientProvider>
+          {children}
+          <MobileNavWrapper />
+        </LaunchDarklyClientProvider>
       </body>
     </html>
   );

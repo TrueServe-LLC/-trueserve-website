@@ -246,6 +246,14 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         // Send Communications in Parallel
         const notificationPromises = [];
 
+        // 1. Get ALL internal staff emails to notify
+        const { data: staffMembers } = await supabaseAdmin
+            .from('User')
+            .select('email')
+            .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'PM']);
+        
+        const staffEmails = staffMembers?.map(s => s.email).filter(Boolean) as string[] || ["admin@trueservedelivery.com"];
+
         if (isAutoApproved) {
             notificationPromises.push(
                 sendEmail(
@@ -278,25 +286,28 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             );
         }
 
-        notificationPromises.push(
-            sendEmail(
-                "admin@trueservedelivery.com",
-                `New Driver Application: ${name} (${driveStatus})`,
-                `<h1>New Driver Application</h1>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Phone:</strong> ${phone}</p>
-                <p><strong>Vehicle:</strong> ${vehicleColor} ${vehicleMake} ${vehicleModel} (${vehicleType})</p>
-                <p><strong>License Plate:</strong> ${licensePlate}</p>
-                <p><strong>Status:</strong> <span style="color: ${isAutoApproved ? 'green' : 'orange'}">${driveStatus}</span></p>
-                ${isAutoApproved ? `<p><em>This application was automatically approved by the AI Scanner because all 3 documents were verified.</em></p>` : `<p><em>This application requires manual review. AI confidence or document verification failed.</em></p>`}
-                <hr />
-                <p><strong>ID Document:</strong> <a href="${idDocumentUrl || '#'}">${idDocumentUrl ? 'View License' : 'Not Provided'}</a></p>
-                <p><strong>Insurance:</strong> <a href="${insuranceUrl || '#'}">${insuranceUrl ? 'View Insurance' : 'Not Provided'}</a></p>
-                <p><strong>Registration:</strong> <a href="${registrationUrl || '#'}">${registrationUrl ? 'View Registration' : 'Not Provided'}</a></p>
-                <p>Please review explicitly in Supabase dashboard.</p>`
-            )
-        );
+        // Notify entire Admin/Ops Team
+        for (const staffEmail of staffEmails) {
+            notificationPromises.push(
+                sendEmail(
+                    staffEmail,
+                    `🚗 NEW DRIVER APPLICATION: ${name}`,
+                    `<h1>New Driver Application</h1>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Phone:</strong> ${phone}</p>
+                    <p><strong>Vehicle:</strong> ${vehicleColor} ${vehicleMake} ${vehicleModel} (${vehicleType})</p>
+                    <p><strong>License Plate:</strong> ${licensePlate}</p>
+                    <p><strong>Status:</strong> <span style="color: ${isAutoApproved ? 'green' : 'orange'}">${isAutoApproved ? 'AUTO-APPROVED' : 'PENDING REVIEW'}</span></p>
+                    ${isAutoApproved ? `<p><em>This application was automatically approved by the AI Scanner because all 3 documents were verified.</em></p>` : `<p><em>This application requires manual review. AI confidence or document verification failed.</em></p>`}
+                    <hr />
+                    <p><strong>ID Document:</strong> <a href="${idDocumentUrl || '#'}">${idDocumentUrl ? 'View License' : 'Not Provided'}</a></p>
+                    <p><strong>Insurance:</strong> <a href="${insuranceUrl || '#'}">${insuranceUrl ? 'View Insurance' : 'Not Provided'}</a></p>
+                    <p><strong>Registration:</strong> <a href="${registrationUrl || '#'}">${registrationUrl ? 'View Registration' : 'Not Provided'}</a></p>
+                    <p>Please review explicitly in the Admin Registry Dashboard.</p>`
+                )
+            );
+        }
 
         await Promise.allSettled(notificationPromises);
 

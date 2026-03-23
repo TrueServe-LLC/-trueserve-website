@@ -4,6 +4,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
 const supabase = createClient(supabaseUrl, serviceKey);
 
+import { getFeatureFlag } from './launchdarkly';
+
 export type ConfigKey = 
     | 'MAX_DELIVERY_RADIUS_MILES'
     | 'BASE_SERVICE_FEE_PERCENT'
@@ -56,7 +58,13 @@ export async function getManyConfigs(keys: ConfigKey[]): Promise<Record<string, 
 }
 
 export async function isOrderingEnabled(): Promise<boolean> {
-    return await getSystemConfig('ORDERING_SYSTEM_ENABLED', true);
+    // Priority 1: LaunchDarkly Remote Flag
+    const ldFlag = await getFeatureFlag('ordering-system-enabled', true);
+    
+    // Priority 2: Database Override (fallback)
+    const dbFlag = await getSystemConfig('ORDERING_SYSTEM_ENABLED', true);
+    
+    return ldFlag && dbFlag;
 }
 
 export async function updateSystemConfig(key: ConfigKey, value: any, actorId?: string) {
