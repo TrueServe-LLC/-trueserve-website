@@ -145,8 +145,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
         <div className="min-h-screen">
             <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-4 md:px-6 py-4">
                 <div className="container flex justify-between items-center">
-                    <Link href="/" className="text-xl md:text-2xl font-bold tracking-tighter shrink-0">
-                        True<span className="text-gradient">Serve</span><span className="hidden xs:inline"> Admin</span>
+                    <Link href="/" className="text-xl md:text-2xl font-black tracking-tighter shrink-0 font-serif italic text-white flex items-center gap-3">
+                        <img src="/logo.png" className="w-8 h-8 rounded-lg border border-primary/20" alt="Logo" />
+                        True<span className="text-primary not-italic font-sans uppercase tracking-widest text-lg">Serve</span><span className="hidden xs:inline not-italic text-slate-500 ml-2 font-sans text-xs tracking-[0.3em] font-black uppercase">Admin</span>
                     </Link>
                     <div className="flex gap-3 md:gap-4 items-center">
                         <div className="hidden lg:flex gap-4 items-center mr-4 pr-4 border-r border-white/10">
@@ -180,8 +181,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             <main className="container py-12 animate-fade-in">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 w-full border-b border-white/10 pb-6">
                     <div className="w-full lg:w-auto">
-                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter">Admin <span className="text-gradient">Registry</span></h1>
-                        <p className="text-slate-400 text-[10px] md:text-sm mt-1 uppercase tracking-widest font-bold">Control Center configuration</p>
+                        <h1 className="text-2xl md:text-4xl font-serif font-bold italic tracking-tighter text-white">Admin <span className="text-primary not-italic font-sans uppercase tracking-widest text-xl ml-2">Registry</span></h1>
+                        <p className="text-slate-400 text-[10px] md:text-xs mt-2 uppercase tracking-[0.4em] font-black flex items-center gap-2">
+                            <span className="w-4 h-px bg-primary/30" />
+                            Control Center configuration
+                        </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4">

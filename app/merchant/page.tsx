@@ -202,16 +202,18 @@ export default function MerchantPortal() {
                         ))}
                     </div>
 
-                    {/* Bottom Feature Stack Simplified */}
-                    <div className="py-24 text-center space-y-12">
-                        <h2 className="text-5xl md:text-7xl text-white font-serif italic leading-tight tracking-tighter">
-                            A Marketplace <br />
-                            <span className="text-primary not-italic font-sans font-black uppercase tracking-widest text-4xl md:text-6xl">Revolution.</span>
-                        </h2>
-                        <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-                            <span className="text-primary">TrueServe</span> isn&apos;t just an app. We&apos;re a delivery standard designed to help local gems flourish without sacrificing margins.
-                        </p>
-                        <div className="pt-12">
+                    {/* Bottom Feature Stack Simplified - Fixed Center Alignment */}
+                    <div className="py-24 text-center max-w-4xl mx-auto px-6 space-y-12">
+                        <div className="flex flex-col items-center justify-center space-y-6">
+                            <h2 className="text-5xl md:text-7xl text-white font-serif font-bold italic leading-tight tracking-tighter">
+                                A Marketplace <br />
+                                <span className="text-primary not-italic font-sans font-black uppercase tracking-widest text-4xl md:text-6xl">Revolution.</span>
+                            </h2>
+                            <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed text-center max-w-2xl mx-auto">
+                                <span className="text-primary">TrueServe</span> isn&apos;t just an app. We&apos;re a delivery standard designed to help local gems flourish without sacrificing margins.
+                            </p>
+                        </div>
+                        <div className="pt-8">
                              <Link href="/merchant-signup" className="badge-solid-primary !px-16 !py-6">
                                 Join the Network
                              </Link>
