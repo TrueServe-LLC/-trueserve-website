@@ -18,19 +18,17 @@ export default async function Home() {
       {/* ── NAV ─────────────────────────────────────────────────────────── */}
       <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
         <div className="container mx-auto flex justify-between items-center max-w-7xl">
-          <Link href="/" className="flex items-center gap-3 group">
-            <img 
-              src="/logo.png" 
-              alt="TrueServe Logo" 
-              className="w-10 h-10 rounded-xl border border-primary/20 group-hover:border-primary transition-all shadow-lg group-hover:scale-110" 
-            />
-            <span className="text-xl md:text-2xl font-black tracking-widest text-white uppercase italic">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
+          <Link href="/" className="flex items-center gap-4 group">
+            <div className="w-12 h-12 rounded-full border-2 border-slate-600 bg-black/60 flex items-center justify-center p-1.5 overflow-hidden shadow-2xl group-hover:scale-110 transition-transform">
+              <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-xl md:text-2xl font-black tracking-widest text-white uppercase italic">True<span className="text-primary not-italic tracking-[0.02em] font-black">SERVE</span></span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 italic">
-            <Link href="/restaurants" className="hover:text-primary transition-colors">Deliveries</Link>
-            <Link href="/merchant" className="hover:text-primary transition-colors">Partners</Link>
-            <Link href="/driver" className="hover:text-primary transition-colors">Fleet</Link>
+          <div className="hidden lg:flex items-center gap-12 text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">
+            <Link href="/restaurants" className="hover:text-primary transition-colors">ORDER FOOD</Link>
+            <Link href="/merchant" className="hover:text-primary transition-colors whitespace-nowrap">FOR MERCHANTS</Link>
+            <Link href="/driver" className="hover:text-primary transition-colors whitespace-nowrap">DRIVER HUB</Link>
           </div>
 
           <div className="flex items-center gap-6">
@@ -68,9 +66,9 @@ export default async function Home() {
 
           <div className="relative z-10 max-w-6xl space-y-12 animate-fade-in text-center flex flex-col items-center justify-center glow-blur-primary">
             
-            <h1 className="text-6xl md:text-[110px] leading-[0.9] text-white font-black tracking-tighter italic animate-slide-up">
+            <h1 className="text-6xl md:text-[140px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none">
               Cravings meet <br />
-              <span className="text-primary not-italic tracking-[0.05em] uppercase">Lightning Speed.</span>
+              <span className="text-primary not-italic tracking-[-0.03em] drop-shadow-[5px_5px_0px_rgba(255,255,255,0.1)] uppercase">Lightning Speed.</span>
             </h1>
 
             <div className="w-full max-w-3xl pt-8 relative group">
@@ -79,8 +77,8 @@ export default async function Home() {
                 <LandingSearch />
             </div>
 
-            <p className="max-w-2xl mx-auto text-lg md:text-2xl text-slate-500 font-bold leading-relaxed italic">
-              Experience the TrueServe standard. Zero fees, fair splits, and real flavor delivered fast.
+            <p className="max-w-3xl mx-auto text-lg md:text-2xl text-slate-400 font-bold leading-relaxed italic animate-fade-in delay-200">
+              Experience the future of local food delivery. Zero platform fees, fair driver pay, and the best local flavors delivered to your door.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-12">
