@@ -221,20 +221,43 @@ export default async function RestaurantFinder({
     const showLanding = !effectiveAddress && (!lat || !lng);
 
     if (showLanding) {
-        return (
-            <div className="min-h-screen bg-black text-white flex flex-col relative">
-                <nav className="absolute top-0 w-full z-50 p-6 flex justify-between items-center">
+            <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden">
+                <nav className="sticky top-0 w-full z-50 p-6 px-10 flex justify-between items-center backdrop-blur-3xl bg-black/60 border-b border-white/5">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <img src="/logo.png" className="w-10 h-10 rounded-xl border border-white/10 group-hover:scale-110 transition-transform" alt="TrueServe Logo" />
-                        <span className="text-2xl font-black tracking-widest text-white italic uppercase">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
+                        <img src="/logo.png" className="w-10 h-10 rounded-xl border border-white/10 group-hover:scale-110 transition-transform shadow-lg" alt="TrueServe Logo" />
+                        <span className="text-2xl font-black text-white tracking-widest italic uppercase">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
                     </Link>
+                    <Link href="/login" className="badge-outline-white !py-2.5 !px-8 !text-[10px]">Sign In</Link>
                 </nav>
-                <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10">
-                    <h1 className="text-5xl md:text-7xl font-black mb-8">Cravings, meet <span className="text-primary">Speed.</span></h1>
-                    <LandingSearch locations={[]} />
+                
+                <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 space-y-16 relative">
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            src="/hero_food_delivery.png"
+                            alt="Fine Dining"
+                            className="w-full h-full object-cover opacity-20 brightness-30 blur-3xl scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
+                    </div>
+
+                    <div className="relative z-10 space-y-12 glow-blur-primary animate-fade-in flex flex-col items-center">
+                        <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.6em] text-[10px] italic">
+                            <div className="w-12 h-px bg-primary/40" />
+                            Discovery Protocols
+                            <div className="w-12 h-px bg-primary/40" />
+                        </div>
+                        
+                        <h1 className="text-6xl md:text-[120px] leading-[0.85] text-white font-black tracking-tighter italic animate-slide-up">
+                            Cravings, meet <br />
+                            <span className="text-primary not-italic text-glow-orange uppercase">Speed.</span>
+                        </h1>
+                        
+                        <div className="w-full max-w-2xl pt-8">
+                           <LandingSearch locations={[]} />
+                        </div>
+                    </div>
                 </main>
             </div>
-        );
     }
 
     return (
@@ -268,10 +291,19 @@ export default async function RestaurantFinder({
                 </div>
             </nav>
 
-            <main className="container py-12 md:py-24 px-4 md:px-8 pb-40">
-                <div className="mb-16 md:mb-24">
-                    <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-2">Discovery Hub</h1>
-                    <p className="text-slate-500 font-medium italic">Synchronizing local flavors in {locationMeta.name || "your area"}.</p>
+            <main className="container py-12 md:py-24 px-4 md:px-8 pb-40 relative z-10">
+                <div className="mb-24 text-center max-w-4xl mx-auto space-y-8 animate-fade-in">
+                    <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.6em] text-[10px] italic">
+                        <div className="w-12 h-px bg-primary/40" />
+                        Local Marketplace
+                        <div className="w-12 h-px bg-primary/40" />
+                    </div>
+                    <h1 className="text-5xl md:text-8xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
+                        Discovery <span className="text-primary not-italic">Hub.</span>
+                    </h1>
+                    <p className="text-slate-500 font-bold italic text-lg leading-relaxed">
+                        Synchronizing the best local flavors in {locationMeta.name || "your area"}.
+                    </p>
                 </div>
 
                 {activeOrders.length > 0 && (

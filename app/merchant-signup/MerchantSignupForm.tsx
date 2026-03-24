@@ -33,6 +33,7 @@ function MerchantSignupFormInner() {
         city: "",
         state: "",
         zip: "",
+        posSystem: "Toast POS",
     });
 
     const updateForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -67,6 +68,7 @@ function MerchantSignupFormInner() {
         fd.append("state", formData.state);
         fd.append("zip", formData.zip);
         fd.append("plan", selectedPlan);
+        fd.append("posSystem", formData.posSystem);
 
         startTransition(() => {
             formAction(fd);
@@ -158,6 +160,21 @@ function MerchantSignupFormInner() {
                                 <input name="city" type="text" required value={formData.city} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase" placeholder="City" />
                                 <input name="state" type="text" required maxLength={2} value={formData.state} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase text-center" placeholder="ST" />
                                 <input name="zip" type="text" required value={formData.zip} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase" placeholder="ZIP" />
+                            </div>
+                            <div className="space-y-4 pt-4">
+                                <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Current POS System</label>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    {['Toast POS', 'Clover', 'Other'].map((pos) => (
+                                        <button
+                                            key={pos}
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, posSystem: pos }))}
+                                            className={`px-6 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.posSystem === pos ? 'bg-primary border-primary text-black shadow-lg shadow-primary/20 scale-[1.02]' : 'bg-white/[0.03] border-white/10 text-slate-500 hover:border-white/20'}`}
+                                        >
+                                            {pos}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

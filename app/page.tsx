@@ -68,9 +68,9 @@ export default async function Home() {
 
           <div className="relative z-10 max-w-6xl space-y-12 animate-fade-in text-center flex flex-col items-center justify-center glow-blur-primary">
             
-            <h1 className="text-6xl md:text-[120px] leading-[0.85] text-white font-black tracking-tighter italic animate-slide-up">
-              Cravings, meet <br />
-              <span className="text-primary not-italic text-glow-orange uppercase">Speed.</span>
+            <h1 className="text-6xl md:text-[110px] leading-[0.9] text-white font-black tracking-tighter italic animate-slide-up">
+              Cravings meet <br />
+              <span className="text-primary not-italic tracking-[0.05em] uppercase">Lightning Speed.</span>
             </h1>
 
             <div className="w-full max-w-3xl pt-8 relative group">

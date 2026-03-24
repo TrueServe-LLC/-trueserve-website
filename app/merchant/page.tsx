@@ -114,14 +114,14 @@ export default function MerchantPortal() {
                                 amount: "15%",
                                 sub: "per order",
                                 desc: "No monthly commitment. Pay as you go.",
-                                features: ["Live Tracking", "Local Priority", "POS Integration"]
+                                features: ["Live Tracking", "Local Priority", "Toast & Clover Ready"]
                             },
                             {
                                 name: "Pro Plan",
                                 amount: "0%",
                                 sub: "+ $199/mo",
                                 desc: "Best for high volume kitchens. Keep it all.",
-                                features: ["Priority Support", "Dedicated Manager", "Premium Design"]
+                                features: ["Priority Support", "Toast POS Integration", "Dedicated Manager"]
                             }
                         ].map((plan, i) => (
                             <div key={i} className="flex flex-col p-14 rounded-[3.5rem] border border-white/5 bg-black/40 space-y-10 hover:border-primary/40 hover:bg-white/[0.02] transition-all backdrop-blur-2xl group active:scale-[0.98]">
