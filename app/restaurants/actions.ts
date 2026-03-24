@@ -89,7 +89,7 @@ export async function placeOrder(
     try {
         const { data: restaurant } = await supabase
             .from('Restaurant')
-            .select('lat, lng, openTime, closeTime, isMock, city')
+            .select('lat, lng, openTime, closeTime, isMock, city, phone')
             .eq('id', restaurantId)
             .single();
 
@@ -278,6 +278,17 @@ export async function placeOrder(
                 console.error(`Inventory decrement failed for ${item.id}:`, error.message);
             }
         }));
+
+        // 7. Phase 1: SMS Alert (Strategic Fallback)
+        try {
+            const { data: restData } = await supabase.from('Restaurant').select('phone').eq('id', restaurantId).single();
+            if (restData?.phone) {
+                const { sendSMS } = await import('@/lib/sms');
+                await sendSMS(restData.phone, `[TrueServe] New Order! ID: ${posRef}. Total: $${total.toFixed(2)}. Check your Orders Dashboard to accept.`);
+            }
+        } catch (smsErr) {
+            console.error("SMS Alert Failed - Continuing order", smsErr);
+        }
 
         // logToFile(`SUCCESS: Order ${newOrderId} created.`);
 

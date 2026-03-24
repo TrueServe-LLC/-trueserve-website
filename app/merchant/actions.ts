@@ -394,6 +394,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     const posSystem = formData.get("posSystem") as string || "None";
     const posClientId = formData.get("posClientId") as string || "";
     const posClientSecret = formData.get("posClientSecret") as string || "";
+    const phone = formData.get("phone") as string || "";
 
     if (!restaurantName || !contactName || !email || !password || !address || !city || !state) {
         return { message: "Please fill in all required fields.", error: true };
@@ -466,6 +467,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             posSystem,
             posClientId,
             posClientSecret,
+            phone,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });

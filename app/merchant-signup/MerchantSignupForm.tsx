@@ -33,6 +33,7 @@ function MerchantSignupFormInner() {
         city: "",
         state: "",
         zip: "",
+        phone: "",
         posSystem: "None",
         posClientId: "",
         posClientSecret: "",
@@ -69,6 +70,7 @@ function MerchantSignupFormInner() {
         fd.append("city", formData.city);
         fd.append("state", formData.state);
         fd.append("zip", formData.zip);
+        fd.append("phone", formData.phone);
         fd.append("plan", selectedPlan);
         fd.append("posSystem", formData.posSystem);
         fd.append("posClientId", formData.posClientId);
@@ -141,9 +143,15 @@ function MerchantSignupFormInner() {
                                     <input name="password" type="password" required value={formData.password} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-black" placeholder="••••••••" />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Email Address</label>
-                                <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-black uppercase tracking-tight" placeholder="your@email.com" />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Email Address</label>
+                                    <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-black uppercase tracking-tight" placeholder="your@email.com" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Phone Number (for SMS Order Alerts)</label>
+                                    <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-black uppercase tracking-tight" placeholder="(864) 555-0312" />
+                                </div>
                             </div>
                         </div>
                     </div>
