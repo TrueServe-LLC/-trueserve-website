@@ -49,7 +49,7 @@ export default function DriverPortal() {
                     
                     <h1 className="text-5xl md:text-[110px] font-serif text-white tracking-tight leading-[1.05] animate-slide-up max-w-5xl">
                         Earn on your own <br />
-                        <span className="italic">schedule with <br />TrueServe LLC</span>
+                        <span className="italic">schedule with <br />TrueServe</span>
                     </h1>
                     
                     <p className="text-white/90 text-lg md:text-2xl font-medium leading-relaxed max-w-3xl">

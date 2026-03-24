@@ -32,6 +32,30 @@ export default async function Home() {
           </div>
 
           <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            <Link 
+              href="https://www.instagram.com/trueserve.deliveryllc/" 
+              target="_blank" 
+              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
+              title="Instagram"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </Link>
+            <Link 
+              href="https://www.facebook.com/profile.php?id=61578548473742" 
+              target="_blank" 
+              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
+              title="Facebook"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+              </svg>
+            </Link>
+          </div>
             {userId ? (
               <div className="flex items-center gap-4">
                 <NotificationBell userId={userId} />
@@ -137,7 +161,7 @@ export default async function Home() {
       </main>
 
       {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer className="py-32 bg-black border-t border-white/10 px-10">
+       <footer className="py-32 bg-black border-t border-white/10 px-10">
         <div className="container mx-auto max-w-7xl text-center space-y-20">
           <div className="flex flex-col items-center gap-10">
             <Link href="/" className="flex items-center gap-4 group">
@@ -149,12 +173,31 @@ export default async function Home() {
               <Link href="/privacy" className="hover:text-white transition-colors">Safety</Link>
               <Link href="/merchant" className="hover:text-primary transition-colors">Merchant Help</Link>
               <Link href="/driver" className="hover:text-primary transition-colors">Driver Guide</Link>
-              <Link href="/admin" className="hover:text-primary transition-colors text-slate-800">Internal Login</Link>
+              <Link 
+                href="https://www.instagram.com/trueserve.deliveryllc/" 
+                target="_blank" 
+                className="text-slate-500 hover:text-primary flex items-center gap-2 group/insta transition-all"
+              >
+                <svg className="w-5 h-5 group-hover/insta:scale-125 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </Link>
+              <Link 
+                href="https://www.facebook.com/profile.php?id=61578548473742" 
+                target="_blank" 
+                className="text-slate-500 hover:text-primary flex items-center gap-2 group/fb transition-all"
+              >
+                <svg className="w-5 h-5 group-hover/fb:scale-125 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.248h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+                </svg>
+              </Link>
             </div>
           </div>
           
           <div className="pt-16 border-t border-white/5 text-slate-700 text-[11px] font-black uppercase tracking-[0.4em] italic">
-            © {new Date().getFullYear()} TrueServe LLC. Empowering local communities across South Carolina.
+            © {new Date().getFullYear()} TrueServe. Empowering local businesses through strategic logistics and elite partnerships.
           </div>
         </div>
       </footer>
