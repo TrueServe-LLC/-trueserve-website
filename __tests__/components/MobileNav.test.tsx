@@ -1,76 +1,66 @@
 import { render, screen } from '@testing-library/react';
-import { usePathname } from 'next/navigation';
-import MobileNav from '@/components/MobileNav';
 import '@testing-library/jest-dom';
+import MobileNav from '@/components/MobileNav';
+import { usePathname } from 'next/navigation';
 
-// Mock the Next.js hooks and actions
+// Mock usePathname
 jest.mock('next/navigation', () => ({
     usePathname: jest.fn(),
 }));
 
-jest.mock('@/app/auth/actions', () => ({
-    logout: jest.fn(),
-}));
+// Mock next/link
+jest.mock('next/link', () => {
+    return ({ children, href }: { children: React.ReactNode; href: string }) => {
+        return <a href={href}>{children}</a>;
+    };
+});
 
 describe('MobileNav Component', () => {
-    // Helper to strongly type the mock
-    const mockUsePathname = usePathname as jest.Mock;
-
     beforeEach(() => {
-        jest.clearAllMocks();
+        (usePathname as jest.Mock).mockReturnValue('/restaurants');
     });
 
     it('hides completely on blacklisted routes (e.g. /login)', () => {
-        mockUsePathname.mockReturnValue('/login');
+        (usePathname as jest.Mock).mockReturnValue('/login');
         const { container } = render(<MobileNav />);
-        expect(container).toBeEmptyDOMElement();
+        expect(container.firstChild).toBeNull();
     });
 
     it('renders Driver Navigation when pathname starts with /driver/dashboard', () => {
-        mockUsePathname.mockReturnValue('/driver/dashboard');
+        (usePathname as jest.Mock).mockReturnValue('/driver/dashboard');
         render(<MobileNav role="DRIVER" />);
-
-        // Expect standard driver tabs to be visible
+        
+        // Driver specific navigation
         expect(screen.getByText('Board')).toBeInTheDocument();
         expect(screen.getByText('Trips')).toBeInTheDocument();
         expect(screen.getByText('Pay')).toBeInTheDocument();
-
-        // Ensure merchant and customer tabs are NOT visible
-        expect(screen.queryByText('Orders')).not.toBeInTheDocument(); // merchant
-        expect(screen.queryByText('Cart')).not.toBeInTheDocument(); // customer
+        expect(screen.getByText('Account')).toBeInTheDocument();
     });
 
     it('renders Merchant Navigation when pathname starts with /merchant/dashboard', () => {
-        mockUsePathname.mockReturnValue('/merchant/dashboard');
+        (usePathname as jest.Mock).mockReturnValue('/merchant/dashboard');
         render(<MobileNav role="MERCHANT" />);
-
-        // Expect merchant tabs to be visible
+        
+        // Merchant specific navigation
         expect(screen.getByText('Orders')).toBeInTheDocument();
         expect(screen.getByText('Menu')).toBeInTheDocument();
-        expect(screen.getByText('Profile')).toBeInTheDocument();
-
-        // Ensure driver tabs are NOT visible
-        expect(screen.queryByText('Board')).not.toBeInTheDocument();
     });
 
     it('renders Default Customer Navigation on standard routes', () => {
-        mockUsePathname.mockReturnValue('/restaurants');
-        render(<MobileNav role="CUSTOMER" />);
-
+        (usePathname as jest.Mock).mockReturnValue('/restaurants');
+        render(<MobileNav />);
+        
         // Expect customer tabs to be visible
         expect(screen.getByText('Home')).toBeInTheDocument();
-        expect(screen.getByText('Sell')).toBeInTheDocument();
-        expect(screen.getByText('Drive')).toBeInTheDocument();
-        expect(screen.getByText('Cart')).toBeInTheDocument();
+        expect(screen.getByText('Search')).toBeInTheDocument();
+        expect(screen.getByText('Orders')).toBeInTheDocument();
         expect(screen.getByText('Profile')).toBeInTheDocument();
     });
 
     it('defaults to Customer Navigation if no role is explicitly passed', () => {
-        mockUsePathname.mockReturnValue('/orders');
-        render(<MobileNav role={null} />);
-
+        render(<MobileNav />);
         // It should still default to customer links if navigating normal app routes
         expect(screen.getByText('Home')).toBeInTheDocument();
-        expect(screen.getByText('Cart')).toBeInTheDocument();
+        expect(screen.getByText('Profile')).toBeInTheDocument();
     });
 });

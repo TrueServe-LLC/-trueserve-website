@@ -1,0 +1,567 @@
+
+> entropic-omega@0.1.0 test
+> jest --verbose --no-cache
+
+  console.log
+    [dotenv@17.3.1] injecting env (25) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+
+      at _log (node_modules/.pnpm/dotenv@17.3.1/node_modules/dotenv/lib/main.js:139:11)
+
+  console.log
+    [dotenv@17.3.1] injecting env (25) from .env.local -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+      at _log (node_modules/.pnpm/dotenv@17.3.1/node_modules/dotenv/lib/main.js:139:11)
+
+  console.log
+    [dotenv@17.3.1] injecting env (25) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+
+      at _log (node_modules/.pnpm/dotenv@17.3.1/node_modules/dotenv/lib/main.js:139:11)
+
+PASS __tests__/lib/payEngine.test.ts
+  Driver Pay Engine - Business Logic Validation
+    ✓ 1.1 Standard Order - Under 2 miles, No wait (2 ms)
+    ✓ 1.2 Standard Order - Over 2 Miles
+    ✓ 1.3 Wait Time Calculation (1 ms)
+    ✓ 1.4 Batched Order Logic
+    ✓ 1.5 Peak Boost Multiplier
+    ✓ 1.6 Combined Real-World Scenario
+
+PASS __tests__/onboarding_tester_examples.test.ts
+  TrueServe Platform - Core Logic Onboarding Tests
+    1. The "Golden Payout" Rule
+      ✓ Golden Ratio: 4.2 miles, 12 minutes wait equals $8.94 total (pre-tip) (2 ms)
+    2. Geography Accuracy (The Haversine Test)
+      ✓ Statue of Liberty to Empire State correctly calculates ~5.1-5.2 miles
+      ✓ Same point returns 0.0 miles
+    3. Edge Cases & Resilience (The "Chaos" Test)
+      ✓ Handles fractional distances with high precision (0.17 miles) (1 ms)
+      ✓ Massive wait time (120 minutes) calculates correctly without overflow
+      ✓ Multiplier only effects Base and Distance (Fair Wait Logic)
+    4. Floating Point Precision Sanity
+      ✓ Rounding ensures two decimal places for financial safety
+
+PASS __tests__/order_logic.test.ts
+  Order Lifecycle - State Transition Rules (TDD)
+    ✓ Valid: PENDING -> ACCEPTED (Standard start) (3 ms)
+    ✓ Valid: ACCEPTED -> PREPARING (Merchant starts cooking) (1 ms)
+    ✓ Valid: PREPARING -> READY (Merchant finished cooking)
+    ✓ Valid: READY -> PICKED_UP (Driver picks up) (1 ms)
+    ✓ Valid: PICKED_UP -> DELIVERED (Final dropoff) (1 ms)
+    ✓ Invalid: PENDING -> DELIVERED (Cannot skip preparation and pickup)
+    ✓ Invalid: DELIVERED -> PENDING (Cannot un-deliver an order)
+    ✓ Valid: Any pre-delivery state -> CANCELLED
+    ✓ Invalid: DELIVERED -> CANCELLED (No cancelling after proof of delivery) (1 ms)
+
+  console.error
+    Gemini Translate Error: { error: { message: 'Invalid Key' } }
+
+      32 |         if (!response.ok) {
+      33 |             const errorData = await response.json();
+    > 34 |             console.error("Gemini Translate Error:", errorData);
+         |                     ^
+      35 |             return { error: "AI translation rejected the request." };
+      36 |         }
+      37 |
+
+      at error (app/actions/translate.ts:34:21)
+      at Object.<anonymous> (__tests__/actions/translate.test.ts:46:24)
+
+PASS __tests__/actions/translate.test.ts
+  translateText
+    ✓ successfully translates text via Gemini (3 ms)
+    ✓ handles Gemini API error (21 ms)
+
+PASS __tests__/phone_utils.test.ts
+  Phone Utility - Normalization (TDD)
+    ✓ Converts standard 10-digit number to E.164 (+1) (2 ms)
+    ✓ Handles dots, dashes, and parentheses
+    ✓ Preserves existing +1 prefix (1 ms)
+    ✓ Handles 1 prefix without plus
+    ✓ Returns empty string for invalid garbage input
+
+PASS __tests__/components/GoogleMapsMap.test.tsx
+  GoogleMapsMap Component
+    ✓ renders markers for restaurants (21 ms)
+    ✓ renders rotated overlay for driver (7 ms)
+
+  console.warn
+    LAUNCHDARKLY_SDK_KEY is not set. LaunchDarkly feature flags will run in offline mode.
+
+       8 |     const sdkKey = process.env.LAUNCHDARKLY_SDK_KEY;
+       9 |     if (!sdkKey) {
+    > 10 |         console.warn("LAUNCHDARKLY_SDK_KEY is not set. LaunchDarkly feature flags will run in offline mode.");
+         |                 ^
+      11 |     }
+      12 |
+      13 |     // Initialize client. Run in offline mode if there's no SDK key, yielding safe default values.
+
+      at warn (lib/launchdarkly.ts:10:17)
+      at getLDClient (lib/launchdarkly.ts:32:26)
+      at isOrderingEnabled (lib/system.ts:63:40)
+      at isOrderingEnabled (app/restaurants/actions.ts:36:17)
+      at Object.<anonymous> (__tests__/actions/orderActions.test.ts:76:24)
+
+  console.error
+    info: [LaunchDarkly] Variation called in offline mode. Returning default value.
+
+      31 | export async function getFeatureFlag(flagKey: string, defaultValue: boolean = false, contextKey: string = 'system'): Promise<boolean> {
+      32 |     const client = await getLDClient();
+    > 33 |     return await client.variation(flagKey, { kind: 'user', key: contextKey }, defaultValue);
+         |                         ^
+      34 | }
+      35 |
+
+      at BasicLogger._tryWrite (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:79:7)
+      at BasicLogger._log (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:92:16)
+      at BasicLogger.info (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:116:10)
+      at LDClientNode._variationInternal (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1174:21)
+      at LDClientNode._evaluateIfPossible (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1278:10)
+      at node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:712:18
+      at _hookRunner.withEvaluationSeries._a (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:711:11)
+      at HookRunner.withEvaluationSeries (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/hooks/HookRunner.ts:30:14)
+      at LDClientNode.variation (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:705:8)
+      at variation (lib/launchdarkly.ts:33:25)
+      at isOrderingEnabled (lib/system.ts:63:20)
+      at placeOrder (app/restaurants/actions.ts:36:11)
+      at Object.<anonymous> (__tests__/actions/orderActions.test.ts:76:24)
+
+  console.error
+    info: [LaunchDarkly] Variation called in offline mode. Returning default value.
+
+      31 | export async function getFeatureFlag(flagKey: string, defaultValue: boolean = false, contextKey: string = 'system'): Promise<boolean> {
+      32 |     const client = await getLDClient();
+    > 33 |     return await client.variation(flagKey, { kind: 'user', key: contextKey }, defaultValue);
+         |                         ^
+      34 | }
+      35 |
+
+      at BasicLogger._tryWrite (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:79:7)
+      at BasicLogger._log (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:92:16)
+      at BasicLogger.info (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:116:10)
+      at LDClientNode._variationInternal (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1174:21)
+      at LDClientNode._evaluateIfPossible (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1278:10)
+      at node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:712:18
+      at _hookRunner.withEvaluationSeries._a (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:711:11)
+      at HookRunner.withEvaluationSeries (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/hooks/HookRunner.ts:30:14)
+      at LDClientNode.variation (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:705:8)
+      at variation (lib/launchdarkly.ts:33:25)
+      at isOrderingEnabled (lib/system.ts:63:20)
+      at placeOrder (app/restaurants/actions.ts:36:11)
+      at Object.<anonymous> (__tests__/actions/orderActions.test.ts:95:24)
+
+  console.error
+    info: [LaunchDarkly] Variation called in offline mode. Returning default value.
+
+      31 | export async function getFeatureFlag(flagKey: string, defaultValue: boolean = false, contextKey: string = 'system'): Promise<boolean> {
+      32 |     const client = await getLDClient();
+    > 33 |     return await client.variation(flagKey, { kind: 'user', key: contextKey }, defaultValue);
+         |                         ^
+      34 | }
+      35 |
+
+      at BasicLogger._tryWrite (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:79:7)
+      at BasicLogger._log (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:92:16)
+      at BasicLogger.info (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:116:10)
+      at LDClientNode._variationInternal (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1174:21)
+      at LDClientNode._evaluateIfPossible (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1278:10)
+      at node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:712:18
+      at _hookRunner.withEvaluationSeries._a (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:711:11)
+      at HookRunner.withEvaluationSeries (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/hooks/HookRunner.ts:30:14)
+      at LDClientNode.variation (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:705:8)
+      at variation (lib/launchdarkly.ts:33:25)
+      at isOrderingEnabled (lib/system.ts:63:20)
+      at placeOrder (app/restaurants/actions.ts:36:11)
+      at Object.<anonymous> (__tests__/actions/orderActions.test.ts:108:24)
+
+  console.error
+    info: [LaunchDarkly] Variation called in offline mode. Returning default value.
+
+      31 | export async function getFeatureFlag(flagKey: string, defaultValue: boolean = false, contextKey: string = 'system'): Promise<boolean> {
+      32 |     const client = await getLDClient();
+    > 33 |     return await client.variation(flagKey, { kind: 'user', key: contextKey }, defaultValue);
+         |                         ^
+      34 | }
+      35 |
+
+      at BasicLogger._tryWrite (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:79:7)
+      at BasicLogger._log (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:92:16)
+      at BasicLogger.info (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:116:10)
+      at LDClientNode._variationInternal (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1174:21)
+      at LDClientNode._evaluateIfPossible (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1278:10)
+      at node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:712:18
+      at _hookRunner.withEvaluationSeries._a (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:711:11)
+      at HookRunner.withEvaluationSeries (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/hooks/HookRunner.ts:30:14)
+      at LDClientNode.variation (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:705:8)
+      at variation (lib/launchdarkly.ts:33:25)
+      at isOrderingEnabled (lib/system.ts:63:20)
+      at placeOrder (app/restaurants/actions.ts:36:11)
+      at Object.<anonymous> (__tests__/actions/orderActions.test.ts:126:24)
+
+  console.error
+    info: [LaunchDarkly] Variation called in offline mode. Returning default value.
+
+      31 | export async function getFeatureFlag(flagKey: string, defaultValue: boolean = false, contextKey: string = 'system'): Promise<boolean> {
+      32 |     const client = await getLDClient();
+    > 33 |     return await client.variation(flagKey, { kind: 'user', key: contextKey }, defaultValue);
+         |                         ^
+      34 | }
+      35 |
+
+      at BasicLogger._tryWrite (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:79:7)
+      at BasicLogger._log (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:92:16)
+      at BasicLogger.info (node_modules/.pnpm/@launchdarkly+js-sdk-common@2.24.0/node_modules/@launchdarkly/js-sdk-common/src/logging/BasicLogger.ts:116:10)
+      at LDClientNode._variationInternal (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1174:21)
+      at LDClientNode._evaluateIfPossible (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:1278:10)
+      at node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:712:18
+      at _hookRunner.withEvaluationSeries._a (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:711:11)
+      at HookRunner.withEvaluationSeries (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/hooks/HookRunner.ts:30:14)
+      at LDClientNode.variation (node_modules/.pnpm/@launchdarkly+js-server-sdk-common@2.18.3/node_modules/@launchdarkly/js-server-sdk-common/src/LDClientImpl.ts:705:8)
+      at variation (lib/launchdarkly.ts:33:25)
+      at isOrderingEnabled (lib/system.ts:63:20)
+      at placeOrder (app/restaurants/actions.ts:36:11)
+      at Object.<anonymous> (__tests__/actions/orderActions.test.ts:132:24)
+
+PASS __tests__/actions/orderActions.test.ts
+  Order Actions - Business Logic Scenarios
+    ✓ Scenario 1.2: Restaurant Closed Check (134 ms)
+    ✓ Scenario 1.3: Menu Price Change Mid-Session (2 ms)
+    ✓ Scenario 1.4: Delivery Zone Restriction (1 ms)
+    ✓ Scenario 1.5: Inventory Conflict (Out of Stock) (1 ms)
+    ✓ Scenario 1.6: Idempotency (Duplicate Request After Success) (4 ms)
+    ✓ Scenario 1.8: Address Change Restriction (Driver Assigned) (13 ms)
+    ✓ Scenario 1.8: Address Change Allowed (Preparing Order) (3 ms)
+    ✓ Scenario 1.10: Driver Cancellation (Reassignment) (1 ms)
+    ✓ Scenario 1.11.3: Cancellation Below Minimum Basket (4 ms)
+    ✓ Scenario 1.11.1: Cancellation After Driver Pickup (6 ms)
+
+FAIL __tests__/components/MobileNav.test.tsx
+  MobileNav Component
+    ✓ hides completely on blacklisted routes (e.g. /login) (11 ms)
+    ✓ renders Driver Navigation when pathname starts with /driver/dashboard (21 ms)
+    ✓ renders Merchant Navigation when pathname starts with /merchant/dashboard (5 ms)
+    ✕ renders Default Customer Navigation on standard routes (10 ms)
+    ✕ defaults to Customer Navigation if no role is explicitly passed (4 ms)
+
+  ● MobileNav Component › renders Default Customer Navigation on standard routes
+
+    TestingLibraryElementError: Unable to find an element with the text: Sell. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"md:hidden fixed bottom-0 left-0 right-0 z-[100] pb-safe"[39m
+        [36m>[39m
+          [36m<nav[39m
+            [33mclass[39m=[32m"w-full bg-slate-950/80 backdrop-blur-2xl border-t border-white/5 pt-3 pb-6 px-6 flex justify-between items-center text-slate-500 relative"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"[39m
+            [36m/>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 text-white scale-105"[39m
+              [33mhref[39m=[32m"/restaurants"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"1.5"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mHome[0m
+              [36m</span>[39m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 hover:text-slate-300 active:scale-95"[39m
+              [33mhref[39m=[32m"/restaurants#search"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mSearch[0m
+              [36m</span>[39m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 hover:text-slate-300 active:scale-95"[39m
+              [33mhref[39m=[32m"/orders"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mOrders[0m
+              [36m</span>[39m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 hover:text-slate-300 active:scale-95"[39m
+              [33mhref[39m=[32m"/user/settings"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mProfile[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</nav>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      60 |         // Expect customer tabs to be visible
+      61 |         expect(screen.getByText('Home')).toBeInTheDocument();
+    > 62 |         expect(screen.getByText('Sell')).toBeInTheDocument();
+         |                       ^
+      63 |         expect(screen.getByText('Drive')).toBeInTheDocument();
+      64 |         expect(screen.getByText('Cart')).toBeInTheDocument();
+      65 |         expect(screen.getByText('Profile')).toBeInTheDocument();
+
+      at Object.getElementError (node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (__tests__/components/MobileNav.test.tsx:62:23)
+
+  ● MobileNav Component › defaults to Customer Navigation if no role is explicitly passed
+
+    TestingLibraryElementError: Unable to find an element with the text: Cart. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"md:hidden fixed bottom-0 left-0 right-0 z-[100] pb-safe"[39m
+        [36m>[39m
+          [36m<nav[39m
+            [33mclass[39m=[32m"w-full bg-slate-950/80 backdrop-blur-2xl border-t border-white/5 pt-3 pb-6 px-6 flex justify-between items-center text-slate-500 relative"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"[39m
+            [36m/>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 hover:text-slate-300 active:scale-95"[39m
+              [33mhref[39m=[32m"/restaurants"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mHome[0m
+              [36m</span>[39m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 hover:text-slate-300 active:scale-95"[39m
+              [33mhref[39m=[32m"/restaurants#search"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mSearch[0m
+              [36m</span>[39m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 text-white scale-105"[39m
+              [33mhref[39m=[32m"/orders"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"1.5"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mOrders[0m
+              [36m</span>[39m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex flex-col items-center gap-1.5 transition-all w-16 hover:text-slate-300 active:scale-95"[39m
+              [33mhref[39m=[32m"/user/settings"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-semibold tracking-wide"[39m
+              [36m>[39m
+                [0mProfile[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</nav>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      72 |         // It should still default to customer links if navigating normal app routes
+      73 |         expect(screen.getByText('Home')).toBeInTheDocument();
+    > 74 |         expect(screen.getByText('Cart')).toBeInTheDocument();
+         |                       ^
+      75 |     });
+      76 | });
+      77 |
+
+      at Object.getElementError (node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (__tests__/components/MobileNav.test.tsx:74:23)
+
+PASS __tests__/integration/payout.test.ts
+  Driver Payout Integration
+    ✓ Payout reduces balance to zero (395 ms)
+
+  console.log
+    [2.8] email_confirmed_at for unconfirmed user: null ✓
+
+      at Object.log (__tests__/security/auth.test.ts:224:17)
+
+PASS __tests__/integration/order_flow.test.ts
+  Order Flow Integration Test
+    ✓ Full Order Lifecycle: Customer -> Merchant -> Driver (1120 ms)
+
+  console.log
+    [2.11] After 5 attempts: rate limit not yet triggered
+
+      at Object.log (__tests__/security/auth.test.ts:283:17)
+
+  console.log
+    [2.12] Token expires at: 2026-03-24T20:08:31.000Z
+
+      at Object.log (__tests__/security/auth.test.ts:313:17)
+
+  console.log
+    [2.12] User sessions revoked via admin signOut ✓
+
+      at Object.log (__tests__/security/auth.test.ts:323:17)
+
+  console.log
+    [2.13] Restaurant insert blocked: new row violates row-level security policy for table "Restaurant" ✓
+
+      at Object.log (__tests__/security/auth.test.ts:338:17)
+
+  console.log
+    [2.13] Driver insert blocked: new row violates row-level security policy for table "Driver" ✓
+
+      at Object.log (__tests__/security/auth.test.ts:347:17)
+
+  console.log
+    [2.13] User table RLS: only own record visible ✓
+
+      at Object.log (__tests__/security/auth.test.ts:356:21)
+
+  console.log
+    [2.14] Brute force: ⚠️  Not rate-limited after 10 attempts — consider tightening Supabase auth rate limits
+
+      at Object.log (__tests__/security/auth.test.ts:382:17)
+
+PASS __tests__/security/auth.test.ts (9.916 s)
+  Auth & Security Tests
+    ✓ 2.1 Valid Registration: Strong password + unique email creates account (453 ms)
+    ✓ 2.2 Duplicate Email: Cannot register same email twice (312 ms)
+    ✓ 2.3 Weak Password: Password below complexity is rejected (262 ms)
+    ✓ 2.4 Missing Required Fields: Missing email or password is rejected (453 ms)
+    ✓ 2.5 Successful Login: Verified user gets a session token (440 ms)
+    ✓ 2.6 Incorrect Password: Wrong password returns auth error (403 ms)
+    ✓ 2.7 Non-existent Email: Login with unknown email returns error (119 ms)
+    ✓ 2.8 Email Verification: Unconfirmed user has no confirmed_at timestamp (319 ms)
+    ✓ 2.10 Password Strength Enforcement: Common/simple passwords are rejected (1277 ms)
+    ✓ 2.11 Multiple Failed Logins: Repeated bad passwords accumulate errors (1192 ms)
+    ✓ 2.12 Session & Token: Valid token allows access; logout invalidates session (830 ms)
+    ✓ 2.13 Cross-Role Access: Customer cannot write to Restaurant or Driver tables (839 ms)
+    ✓ 2.14 Brute Force: Rapid repeated logins trigger rate limiting (2251 ms)
+
+Test Suites: 1 failed, 10 passed, 11 total
+Tests:       2 failed, 59 passed, 61 total
+Snapshots:   0 total
+Time:        10.283 s
+Ran all test suites.
