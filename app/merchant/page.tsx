@@ -82,8 +82,8 @@ export default function MerchantPortal() {
                              </h2>
                         </div>
 
-                        {/* Pricing Cards: Screenshot 3 Style */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                        {/* Pricing Cards: Screenshot 2 Reference Style */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
                             {[
                                 {
                                     name: "Starter",
@@ -104,36 +104,36 @@ export default function MerchantPortal() {
                                     isHighlighted: true
                                 }
                             ].map((plan, i) => (
-                                <div key={i} className={`flex flex-col p-12 md:p-16 rounded-[2.5rem] border ${plan.isHighlighted ? 'border-primary bg-primary/5 shadow-[0_30px_60px_-12px_rgba(245,158,11,0.2)]' : 'border-white/10 bg-white/[0.02]'} space-y-12 transition-all hover:scale-[1.01]`}>
-                                    <div className="space-y-8">
-                                        <h3 className="text-4xl font-serif text-white font-bold tracking-tight italic">{plan.name}</h3>
+                                <div key={i} className={`flex flex-col p-10 md:p-14 rounded-[2rem] border ${plan.isHighlighted ? 'border-primary/50 bg-[#151517] shadow-2xl' : 'border-white/10 bg-[#151517]'} space-y-10 transition-all`}>
+                                    <div className="space-y-6 flex-grow">
+                                        <h3 className="text-4xl font-sans text-white font-bold tracking-tight">{plan.name}</h3>
                                         <div>
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-6xl md:text-8xl font-bold text-white tracking-tighter">{plan.amount}</span>
-                                                <span className="text-xl md:text-2xl text-slate-400 font-medium font-serif italic">{plan.sub}</span>
+                                                <span className="text-6xl md:text-7xl font-bold text-white tracking-tighter">{plan.amount}</span>
+                                                <span className="text-lg text-slate-400 font-medium">{plan.sub}</span>
                                             </div>
                                         </div>
-                                        <p className="text-slate-400 text-lg font-medium leading-relaxed">
+                                        <p className="text-slate-400 text-base md:text-lg leading-relaxed">
                                             {plan.desc}
                                         </p>
+                                        
+                                        <div className="pt-6">
+                                            <Link 
+                                                onClick={() => scrollToForm(plan.name)} 
+                                                href="/merchant-signup" 
+                                                className={`w-full inline-flex justify-center items-center py-5 rounded-xl text-xs font-bold transition-all border ${plan.isHighlighted ? 'bg-primary border-primary text-black' : 'bg-transparent border-white/20 text-white hover:bg-white/5'}`}
+                                            >
+                                                {plan.cta}
+                                            </Link>
+                                        </div>
                                     </div>
 
-                                    <div className="pt-4">
-                                        <Link 
-                                            onClick={() => scrollToForm(plan.name)} 
-                                            href="/merchant-signup" 
-                                            className={`w-full inline-flex justify-center items-center py-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all border-2 ${plan.isHighlighted ? 'bg-primary border-primary text-black shadow-2xl shadow-primary/30' : 'bg-transparent border-white/20 text-white hover:bg-white/10'}`}
-                                        >
-                                            {plan.cta}
-                                        </Link>
-                                    </div>
-
-                                    <div className="space-y-8 pt-8">
-                                        <h4 className="text-white text-2xl font-serif font-black italic">Features:</h4>
+                                    <div className="space-y-8 border-t border-white/5 pt-10">
+                                        <h4 className="text-white text-3xl font-serif italic font-black">Features:</h4>
                                         <ul className="space-y-6">
                                             {plan.features.map((f, j) => (
-                                                <li key={j} className="flex items-start gap-4 text-slate-300 text-base font-medium font-sans">
-                                                    <span className="text-primary mt-1">✓</span>
+                                                <li key={j} className="flex items-center gap-4 text-slate-400 text-sm font-medium">
+                                                    <span className="text-white text-lg">✓</span>
                                                     <span>{f}</span>
                                                 </li>
                                             ))}
