@@ -113,7 +113,7 @@ function DriverApplicationFormInner() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-32 max-w-5xl mx-auto font-sans text-left px-4">
+        <form onSubmit={handleSubmit} className="space-y-20 max-w-5xl mx-auto font-sans text-left px-4">
             {isMockMode && (
                 <div className="text-right">
                     <button type="button" onClick={fillDemoData} className="px-6 py-2 bg-primary/10 border border-primary/20 rounded-full text-[9px] font-black text-primary hover:text-white hover:bg-primary transition-all uppercase tracking-[0.3em] italic">
@@ -128,7 +128,7 @@ function DriverApplicationFormInner() {
                 </div>
             )}
 
-            <div className="space-y-40">
+            <div className="space-y-24">
                 {/* SECTION 1: IDENTITY */}
                 <div className="space-y-16">
                     <div className="flex flex-col gap-6">
@@ -228,8 +228,8 @@ function DriverApplicationFormInner() {
                 </div>
             </div>
             
-            <div className="pt-32 flex flex-col items-center">
-                <button disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary h-[90px] w-full max-w-2xl text-sm font-black uppercase tracking-[0.8em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+            <div className="pt-20 flex flex-col items-center">
+                <button disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary h-[70px] w-full max-w-xl text-sm font-black uppercase tracking-[0.6em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)]">
                     {isPending ? "Syncing Grid..." : "Join the Fleet →"}
                 </button>
                 <p className="mt-20 text-center text-[11px] text-slate-700 font-black uppercase tracking-[1em] italic leading-relaxed opacity-40">

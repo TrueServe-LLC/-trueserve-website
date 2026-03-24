@@ -39,30 +39,71 @@ export default function DriverPortal() {
                 </div>
             </nav>
 
-            <main className="container mx-auto py-32 space-y-56 animate-fade-in relative z-10 px-8 max-w-7xl">
+            <main className="container mx-auto py-32 space-y-32 animate-fade-in relative z-10 px-8 max-w-7xl">
                 {/* ── HERO ────────────────────────────────────────────────────────── */}
-                <div className="flex flex-col items-start text-left space-y-12 max-w-6xl mx-auto px-4 relative z-10 py-24 md:py-44">
-                    <div className="flex items-center gap-4 text-white/80 font-medium text-sm tracking-wide">
-                        <div className="w-8 h-[1px] bg-white/40" />
-                        Driver Opportunities
+                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4 relative z-10 py-24 md:py-44">
+                    <div className="flex items-center gap-4 text-white/50 font-black uppercase tracking-[0.6em] text-[11px] italic">
+                        <div className="w-12 h-px bg-white/20" />
+                        Fleet Expansion
+                        <div className="w-12 h-px bg-white/20" />
                     </div>
                     
-                    <h1 className="text-5xl md:text-[110px] font-serif text-white tracking-tight leading-[1.05] animate-slide-up max-w-5xl">
+                    <h1 className="text-5xl md:text-[75px] font-serif text-white tracking-tight leading-[0.95] animate-slide-up max-w-[1400px]">
                         Earn on your own <br />
-                        <span className="italic">schedule with <br />TrueServe</span>
+                        <span className="italic text-primary">schedule with TrueServe</span>
                     </h1>
                     
-                    <p className="text-white/90 text-lg md:text-2xl font-medium leading-relaxed max-w-3xl">
-                        Join South Carolina drivers delivering food in your area. Simple signup, real-time orders, and weekly payouts waiting for you.
+                    <p className="text-slate-400 text-lg md:text-2xl font-bold leading-relaxed max-w-2xl italic mx-auto">
+                        A dedicated platform to help local drivers grow. Fair splits, real support, and local delivery routes.
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row items-center gap-6 pt-10">
-                        <Link href="#signup" className="badge-solid-primary !px-12 !py-6 !text-sm !font-bold !rounded-xl !bg-[#f59e0b] !text-black hover:scale-105 transition-transform shadow-2xl">
-                            Sign up as a driver
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
+                        <Link href="#signup" className="badge-solid-primary !px-16 !py-8 !text-sm !font-black !uppercase !tracking-[0.4em] !rounded-2xl !bg-[#f59e0b] !text-black hover:scale-105 transition-all shadow-[0_0_50px_rgba(245,158,11,0.3)] min-w-[300px] text-center">
+                            Join Fleet →
                         </Link>
-                        <Link href="tel:+18645550312" className="badge-solid-primary !px-12 !py-6 !text-sm !font-bold !rounded-xl !bg-[#f59e0b] !text-black hover:scale-105 transition-transform shadow-2xl">
-                            Call with questions
+                        <Link href="tel:+18645550312" className="badge-outline-white !px-16 !py-8 !text-sm !font-black !uppercase !tracking-[0.4em] !rounded-2xl hover:bg-white/5 transition-all min-w-[300px] text-center border-white/20">
+                            Support: (864) 555-0312
                         </Link>
+                    </div>
+                </div>
+
+                {/* ── PEOPLE & COMMUNITY ─────────────────────────────────────────── */}
+                <div className="max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                        <div className="rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl relative group">
+                            <img 
+                                src="/diverse_welcoming_drivers_hero_1774378336060.png" 
+                                alt="Driver Community" 
+                                className="w-full h-[600px] object-cover group-hover:scale-105 transition-transform duration-[3s]"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                            <div className="absolute bottom-10 left-10 space-y-2">
+                                <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px] italic">Join the movement</p>
+                                <h3 className="text-3xl text-white font-serif tracking-tight leading-none uppercase">The faces of <span className="italic text-primary">TrueServe.</span></h3>
+                            </div>
+                        </div>
+                        <div className="space-y-12 p-10 md:p-20 bg-white/[0.01] border border-white/5 rounded-[2.5rem] backdrop-blur-3xl shadow-3xl">
+                             <div className="inline-flex px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary italic">
+                                Built for Drivers
+                             </div>
+                             <h2 className="text-4xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
+                                Powering <br />
+                                <span className="text-primary not-italic">Local Livelihoods.</span>
+                             </h2>
+                             <p className="text-slate-400 text-lg font-bold italic leading-relaxed">
+                                TrueServe isn't just an app—it's a partnership. We provide the tools, support, and fair earnings to keep you moving.
+                             </p>
+                             <div className="grid grid-cols-2 gap-8 pt-6">
+                                <div>
+                                    <h4 className="text-[11px] font-black text-white italic tracking-widest uppercase mb-2">Weekly Payouts</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold italic leading-relaxed">Get your hard-earned money direct to your bank.</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-[11px] font-black text-white italic tracking-widest uppercase mb-2">Live Support</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold italic leading-relaxed">24/7 access to our local driver support team.</p>
+                                </div>
+                             </div>
+                        </div>
                     </div>
                 </div>
 
@@ -73,10 +114,10 @@ export default function DriverPortal() {
                         { icon: '📅', title: 'Flex Hours', desc: 'Drive when you want. You are your own boss.' },
                         { icon: '🏠', title: 'Local Pride', desc: 'Deliver for the best neighborhood restaurants.' }
                     ].map((feat, i) => (
-                        <div key={i} className="p-12 rounded-[3.5rem] bg-white/[0.01] border border-white/5 space-y-8 hover:border-emerald-500/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl">
-                            <div className="text-6xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{feat.icon}</div>
-                            <h3 className="text-2xl text-white font-black italic uppercase tracking-widest">{feat.title}</h3>
-                            <p className="text-slate-500 text-sm font-bold italic leading-relaxed">{feat.desc}</p>
+                        <div key={i} className="p-10 rounded-[2.5rem] bg-white/[0.01] border border-white/5 space-y-6 hover:border-primary/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl">
+                            <div className="text-5xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{feat.icon}</div>
+                            <h3 className="text-xl text-white font-black italic uppercase tracking-widest">{feat.title}</h3>
+                            <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed">{feat.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -89,7 +130,7 @@ export default function DriverPortal() {
                             Enrollment Portal
                             <div className="w-12 h-px bg-emerald-500/10" />
                         </div>
-                        <h2 className="text-5xl md:text-[130px] text-white font-black tracking-tighter leading-none uppercase h-glow">
+                        <h2 className="text-5xl md:text-[75px] text-white font-black tracking-tighter leading-none uppercase h-glow">
                              Join The <span className="text-primary italic">Team.</span>
                         </h2>
                     </div>

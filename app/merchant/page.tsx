@@ -41,10 +41,11 @@ export default function MerchantPortal() {
 
             <main className="container mx-auto py-32 space-y-32 animate-fade-in relative z-10 px-8 max-w-7xl">
                 {/* ── HERO ────────────────────────────────────────────────────────── */}
-                <div className="flex flex-col items-start text-left space-y-12 max-w-6xl mx-auto px-4 relative z-10 py-24 md:py-44">
+                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4 relative z-10 py-24 md:py-44">
                     <div className="flex items-center gap-4 text-white/50 font-black uppercase tracking-[0.6em] text-[11px] italic">
                         <div className="w-12 h-px bg-white/20" />
                         Merchant Expansion
+                        <div className="w-12 h-px bg-white/20" />
                     </div>
                     
                     <h1 className="text-5xl md:text-[80px] font-serif text-white tracking-tight leading-[0.95] animate-slide-up max-w-[1400px]">
@@ -52,11 +53,11 @@ export default function MerchantPortal() {
                         <span className="italic">profits with TrueServe</span>
                     </h1>
                     
-                    <p className="text-slate-400 text-lg md:text-2xl font-bold leading-relaxed max-w-2xl italic">
+                    <p className="text-slate-400 text-lg md:text-2xl font-bold leading-relaxed max-w-2xl italic mx-auto">
                         A dedicated platform to help local restaurants grow. Zero commission options, real support, and fair splits for every order.
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row items-center gap-6 pt-10">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
                         <Link href="#signup" className="badge-solid-primary !px-16 !py-8 !text-sm !font-black !uppercase !tracking-[0.4em] !rounded-2xl !bg-[#f59e0b] !text-black hover:scale-105 transition-all shadow-[0_0_50px_rgba(245,158,11,0.3)] min-w-[300px] text-center">
                             Join Network →
                         </Link>
