@@ -49,18 +49,18 @@ export default function DriverPortal() {
                     </div>
 
                     <div className="relative z-10 max-w-5xl space-y-10">
-                        <h1 className="text-6xl md:text-[110px] leading-[0.85] text-white font-serif font-bold tracking-tight italic">
+                        <h1 className="text-5xl md:text-8xl leading-[0.9] text-white font-serif font-bold tracking-tight italic">
                             Delivering with <br />
                             <span className="text-primary not-italic">TrueServe</span>
                         </h1>
-                        <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-300 font-medium leading-relaxed">
+                        <p className="max-w-2xl mx-auto text-base md:text-lg text-slate-300 font-medium leading-relaxed">
                             Join South Carolina drivers delivering food in your area. Simple signup, real-time orders, and weekly payouts waiting for you.
                         </p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                            <Link href="/driver-signup" className="badge-solid-primary px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl">
-                                Sign up as a driver
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
+                            <Link href="/driver-signup" className="badge-solid-primary px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl">
+                                Become a driver
                             </Link>
-                            <Link href="tel:+10000000000" className="badge-solid-primary !bg-primary/10 !text-primary border border-primary/20 hover:!bg-primary/20 px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full backdrop-blur-md">
+                            <Link href="tel:+10000000000" className="badge-solid-primary !bg-primary/10 !text-primary border border-primary/20 hover:!bg-primary/20 px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-full backdrop-blur-md">
                                 Call with questions
                             </Link>
                         </div>
@@ -68,99 +68,89 @@ export default function DriverPortal() {
                 </section>
 
                 {/* ── FEATURES ────────────────────────────────────────────────────── */}
-                <section className="py-32 bg-[#0a0a0b]">
-                    <div className="container mx-auto px-6 max-w-7xl space-y-32">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
-                            <div className="space-y-10">
+                <section className="py-24 bg-[#0a0a0b]">
+                    <div className="container mx-auto px-6 max-w-7xl space-y-24">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+                            <div className="space-y-8">
                                 <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
                                     <div className="w-8 h-px bg-slate-800" />
                                     Driver Portal
                                 </div>
-                                <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tight leading-[0.9]">
+                                <h2 className="text-4xl md:text-6xl text-white font-serif font-bold italic tracking-tight leading-[1]">
                                     Everything you need to deliver <span className="text-primary not-italic">efficiently.</span>
                                 </h2>
-                                <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
+                                <p className="text-slate-400 text-base md:text-lg font-medium leading-relaxed max-w-xl">
                                     TrueServe LLC&apos;s driver portal gives you real-time orders, smart routing, and clear earnings in one place. Start earning today.
                                 </p>
-                                <div className="flex flex-col sm:flex-row items-center gap-6 pt-6">
-                                    <Link href="/driver-signup" className="badge-solid-primary px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full">
-                                        Sign up as a driver
-                                    </Link>
-                                    <Link href="tel:+10000000000" className="badge-solid-primary !bg-primary/10 !text-primary border border-primary/20 hover:!bg-primary/20 px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full">
-                                        Call us with questions
-                                    </Link>
-                                </div>
                             </div>
 
-                            <div className="relative aspect-square rounded-[3rem] overflow-hidden border border-white/5 shadow-3xl group">
+                            <div className="relative aspect-video rounded-[2rem] overflow-hidden border border-white/5 shadow-3xl group">
                                 <img 
                                     src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop" 
                                     className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-1000" 
                                     alt="Logistics"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                         </div>
 
                         {/* ── DRIVER ONBOARDING: Single Block Design ─────────────────────── */}
-                        <div className="flex justify-center w-full border-t border-white/5 pt-32">
-                             <div className="flex flex-col md:flex-row gap-16 max-w-6xl w-full items-center bg-white/[0.03] p-12 md:p-20 rounded-[3rem] border border-white/10 shadow-3xl">
-                                <div className="flex-1 space-y-10">
+                        <div className="flex justify-center w-full border-t border-white/5 pt-24">
+                             <div className="flex flex-col md:flex-row gap-12 max-w-5xl w-full items-center bg-white/[0.02] p-10 md:p-16 rounded-[2.5rem] border border-white/5 shadow-3xl">
+                                <div className="flex-1 space-y-8">
                                     <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
                                         <div className="w-8 h-px bg-slate-800" />
                                         Fleet Enrollment
                                     </div>
-                                    <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tight leading-[0.9]">
+                                    <h2 className="text-4xl md:text-6xl text-white font-serif font-bold italic tracking-tight leading-[1]">
                                         Earn on <br />
                                         <span className="text-primary not-italic">Your terms.</span>
                                     </h2>
-                                    <div className="space-y-8">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl border border-primary/20">1</div>
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-lg border border-primary/20">1</div>
                                             <div>
-                                                <h4 className="text-white font-bold text-lg">Apply Online</h4>
-                                                <p className="text-slate-400 text-sm">Submit your documents in under 5 minutes.</p>
+                                                <h4 className="text-white font-bold text-base">Apply Online</h4>
+                                                <p className="text-slate-400 text-xs">Submit documents in minutes.</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl border border-primary/20">2</div>
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-lg border border-primary/20">2</div>
                                             <div>
-                                                <h4 className="text-white font-bold text-lg">Verification</h4>
-                                                <p className="text-slate-400 text-sm">Background check and driver vetting.</p>
+                                                <h4 className="text-white font-bold text-base">Verification</h4>
+                                                <p className="text-slate-400 text-xs">Vetting and protocols.</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl border border-primary/20">3</div>
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-lg border border-primary/20">3</div>
                                             <div>
-                                                <h4 className="text-white font-bold text-lg">Start Earning</h4>
-                                                <p className="text-slate-400 text-sm">Accept orders and get paid same-week.</p>
+                                                <h4 className="text-white font-bold text-base">Deliver</h4>
+                                                <p className="text-slate-400 text-xs">Accept orders same-week.</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="pt-8">
-                                        <Link href="/driver-signup" className="badge-solid-primary !px-16 !py-6 !text-[12px]">
+                                    <div className="pt-4">
+                                        <Link href="/driver-signup" className="badge-solid-primary !px-12 !py-4 !text-[10px]">
                                             Start Application <span>→</span>
                                         </Link>
                                     </div>
                                 </div>
-                                <div className="flex-1 relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-3xl">
+                                <div className="flex-1 relative aspect-[4/3] rounded-[2rem] overflow-hidden border border-white/10 shadow-3xl">
                                     <img 
                                         src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop" 
                                         className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-1000" 
                                         alt="Delivery Driver"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                                 </div>
                              </div>
                         </div>
 
                         {/* ── REQUIREMENTS ─────────────────────────────────────────────── */}
-                        <div className="p-16 md:p-32 bg-primary/[0.02] border border-primary/10 rounded-[5rem] shadow-2xl space-y-16">
-                            <div className="text-center space-y-6">
-                                <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tighter leading-none">Fleet Entry <br />Requirements.</h2>
-                                <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Apply in minutes. Most protocols are synchronized instantly.</p>
+                        <div className="p-12 md:p-24 bg-primary/[0.01] border border-primary/5 rounded-[4rem] shadow-2xl space-y-12">
+                            <div className="text-center space-y-4">
+                                <h2 className="text-4xl md:text-6xl text-white font-serif font-bold italic tracking-tighter leading-none">Fleet Entry <br />Requirements.</h2>
+                                <p className="text-slate-400 text-base md:text-lg font-medium max-w-2xl mx-auto">Apply in minutes. Most protocols are synchronized instantly.</p>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[
                                     "18+ years of age & State ID",
                                     "Valid driver's license",
@@ -169,9 +159,9 @@ export default function DriverPortal() {
                                     "iOS / Android Device",
                                     "Clean Driving Protocol"
                                 ].map((req, i) => (
-                                    <div key={i} className="flex items-center gap-6 p-8 bg-black/40 border border-white/5 rounded-full group hover:border-primary/50 transition-all">
-                                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-xs font-sans not-italic">✓</div>
-                                        <span className="text-slate-300 text-[11px] md:text-xs font-black uppercase tracking-widest truncate">{req}</span>
+                                    <div key={i} className="flex items-center gap-6 p-6 bg-black/40 border border-white/5 rounded-full group hover:border-primary/50 transition-all">
+                                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-[10px] font-sans not-italic">✓</div>
+                                        <span className="text-slate-300 text-[10px] font-black uppercase tracking-widest truncate">{req}</span>
                                     </div>
                                 ))}
                             </div>
@@ -180,17 +170,13 @@ export default function DriverPortal() {
                 </section>
             </main>
 
-            <footer className="py-32 bg-[#080c14] border-t border-white/5">
+            <footer className="py-24 bg-[#080c14] border-t border-white/5">
                 <div className="container px-8 flex flex-col md:flex-row justify-between items-center gap-12 relative">
                     <div className="flex items-center gap-4">
-                        <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl" />
-                        <span className="font-serif text-slate-500 tracking-tight text-2xl italic uppercase">TrueServe Fleet &copy; {new Date().getFullYear()}</span>
+                        <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl" />
+                        <span className="font-serif text-slate-500 tracking-tight text-xl italic uppercase">TrueServe Fleet &copy; {new Date().getFullYear()}</span>
                     </div>
                     
-                    <div className="absolute top-0 right-8 md:-top-16 md:right-8">
-                         <div className="badge-subtle-white !text-[9px] !px-4 !py-1.5 shadow-2xl">Built with TrueServe</div>
-                    </div>
-
                     <div className="flex flex-wrap justify-center md:justify-end gap-x-12 gap-y-6 text-[11px] font-bold uppercase tracking-[0.4em] text-slate-600">
                         <Link href="/legal" className="hover:text-white transition-colors">Safety Standard</Link>
                         <Link href="/legal" className="hover:text-white transition-colors">Fleet Terms</Link>
