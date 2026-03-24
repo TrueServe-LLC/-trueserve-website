@@ -154,10 +154,14 @@ export default function MerchantPortal() {
                                     Onboarding
                                     <div className="w-8 h-px bg-slate-800" />
                                 </div>
-                                <h3 className="text-4xl md:text-7xl text-white font-serif italic font-bold">Apply to Join <br />the Network</h3>
-                                <div className="max-w-xl mx-auto space-y-8">
-                                    <Link href="/merchant-signup" className="badge-solid-primary w-full py-8 text-xs font-black shadow-primary/40 uppercase tracking-[0.2em]">Start Merchant Application →</Link>
-                                    <div className="flex justify-center gap-12 border-t border-white/5 pt-8">
+                                 <h3 className="text-4xl md:text-8xl text-white font-serif italic font-black leading-[0.9]">Apply to Join <br />the Network</h3>
+                                 <div className="max-w-xl mx-auto space-y-12">
+                                     <div className="flex justify-center pt-8">
+                                         <Link href="/merchant-signup" className="badge-solid-primary !px-16 !py-6 !text-[11px]">
+                                             Start Merchant Application <span>→</span>
+                                         </Link>
+                                     </div>
+                                     <div className="flex justify-center gap-16 border-t border-white/5 pt-12">
                                         <div>
                                             <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Response Time</p>
                                             <p className="text-white text-xs font-bold font-serif italic">24 Hours</p>

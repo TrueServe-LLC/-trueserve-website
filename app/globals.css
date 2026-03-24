@@ -186,15 +186,15 @@ section {
 }
 
 @utility badge-solid-primary {
-  @apply rounded-full bg-primary text-black px-6 py-2 text-[9px] font-black uppercase tracking-[0.3em] shadow-xl transition-all;
+  @apply rounded-2xl bg-primary text-black px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl transition-all;
   
   &:hover {
-    @apply scale-[1.05] brightness-110;
+    @apply scale-[1.02] brightness-110;
   }
 }
 
 @utility badge-outline-white {
-  @apply rounded-full bg-black border border-white/40 text-white px-6 py-2 text-[9px] font-black uppercase tracking-[0.3em] transition-all;
+  @apply rounded-2xl bg-black border border-white/20 text-white px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all;
   
   &:hover {
     @apply bg-white/10 border-white;
