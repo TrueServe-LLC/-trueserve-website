@@ -100,31 +100,31 @@ export default async function Home() {
                     <div className="px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full inline-block mb-6 backdrop-blur-md">
                         <p className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400">OPERATIONAL UPDATE</p>
                     </div>
-                    <h3 className="text-4xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-6 px-2">Live in the <br />South Corridor.</h3>
-                    <p className="text-slate-400 font-bold italic text-lg leading-relaxed max-w-md px-2">Connecting Charlotte, Greenville, and Spartanburg with elite logistics.</p>
+                    <h3 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none mb-6 px-2">The New Standard <br />in Delivery.</h3>
+                    <p className="text-slate-400 font-bold italic text-lg leading-relaxed max-w-md px-2">Synchronizing local excellence with elite logistics infrastructure globally.</p>
                 </div>
              </div>
         </section>
 
         {/* Path Selection Grid */}
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 mb-64">
-             <Link href="/driver" className="group relative aspect-square md:aspect-auto md:h-[600px] overflow-hidden rounded-[4rem] border border-white/10 shadow-3xl">
-                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200" className="w-full h-full object-cover grayscale opacity-20 group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" />
+             <Link href="/driver" className="group relative aspect-square md:aspect-auto md:h-[500px] overflow-hidden rounded-[4rem] border border-white/10 shadow-3xl">
+                <img src="https://images.unsplash.com/photo-1585011664466-b7bbe92f34f9?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-20 group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-                <div className="absolute bottom-16 left-16 right-16 text-left">
-                    <h3 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-6 px-2 lowercase leading-none">fleet entry hub.</h3>
-                    <p className="text-slate-400 font-bold italic text-lg mb-10 max-w-sm px-2">Earn more with fair splits and high-velocity routing.</p>
-                    <div className="inline-flex items-center gap-3 badge-emerald py-4 px-10 text-[10px] tracking-widest !rounded-full">Apply to Hub →</div>
+                <div className="absolute bottom-12 left-12 right-12 text-left">
+                    <h3 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter mb-4 px-2 lowercase leading-none">fleet entry hub.</h3>
+                    <p className="text-slate-400 font-bold italic text-base mb-8 max-w-sm px-2">Earn more with fair splits and high-velocity routing.</p>
+                    <div className="inline-flex items-center gap-3 badge-emerald py-3.5 px-10 text-[10px] tracking-widest !rounded-full">Apply to Hub →</div>
                 </div>
              </Link>
 
-             <Link href="/merchant" className="group relative aspect-square md:aspect-auto md:h-[600px] overflow-hidden rounded-[4rem] border border-white/10 shadow-3xl">
+             <Link href="/merchant" className="group relative aspect-square md:aspect-auto md:h-[500px] overflow-hidden rounded-[4rem] border border-white/10 shadow-3xl">
                 <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200" className="w-full h-full object-cover grayscale opacity-20 group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
                 <div className="absolute bottom-16 left-16 right-16 text-left">
-                    <h3 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-6 px-2 lowercase leading-none">partner architect.</h3>
-                    <p className="text-slate-400 font-bold italic text-lg mb-10 max-w-sm px-2">Reclaim your margin. Zero commission marketplace protocols.</p>
-                    <div className="inline-flex items-center gap-3 badge-outline-white py-4 px-10 text-[10px] tracking-widest !rounded-full">Join Network →</div>
+                    <h3 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter mb-4 px-2 lowercase leading-none">partner architect.</h3>
+                    <p className="text-slate-400 font-bold italic text-base mb-8 max-w-sm px-2">Reclaim your margin. Zero commission marketplace protocols.</p>
+                    <div className="inline-flex items-center gap-3 badge-outline-white py-3.5 px-10 text-[10px] tracking-widest !rounded-full">Join Network →</div>
                 </div>
              </Link>
         </div>
