@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 import { calculateDistance } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import ModeToggle from "@/components/ModeToggle";
+import LandingSearch from "@/components/LandingSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -33,16 +34,11 @@ interface Restaurant {
     isBusy?: boolean;
 }
 
-
-// ... (in getRestaurants function)
-
-
 interface LocationMeta {
     name: string;
     center: [number, number];
 }
 
-// Enhanced getRestaurants to handle coordinates and string search
 async function getRestaurants(
     query: {
         term?: string;
@@ -53,16 +49,8 @@ async function getRestaurants(
     }
 ): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
     const { term, lat, lng, address, category } = query;
+    const DEFAULT_CENTER: [number, number] = [35.2271, -80.8431]; 
 
-    // Default Fallback ID
-    const DEFAULT_CENTER: [number, number] = [35.2271, -80.8431]; // Charlotte Uptown
-
-    // 1. If we have precise coordinates, use them to find the closest service city
-    let matchedLocation: any = null;
-    let searchCity = "";
-
-    // Define fallbacks (mocks) for demo/offline
-    // State-of-the-art service locations expansion
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
         { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], lat: 35.0833, lng: -80.8872 },
@@ -72,7 +60,7 @@ async function getRestaurants(
         { city: 'Simpsonville', state: 'SC', zipPrefixes: ['29680', '29681'], lat: 34.7371, lng: -82.2537 },
         { city: 'Spartanburg', state: 'SC', zipPrefixes: ['29301', '29302', '29303', '29306', '29307'], lat: 34.9496, lng: -81.9320 },
         { city: 'Clemson', state: 'SC', zipPrefixes: ['29631', '29634'], lat: 34.6834, lng: -82.8374 },
-        { city: 'Greer', state: 'SC', zipPrefixes: ['29650', '29651'], lat: 34.8956, lng: -82.2189 }, // GSP Airport area
+        { city: 'Greer', state: 'SC', zipPrefixes: ['29650', '29651'], lat: 34.8956, lng: -82.2189 },
         { city: 'Athens', state: 'GA', zipPrefixes: ['30601', '30605', '30606', '30607'], lat: 33.9519, lng: -83.3576 },
         { city: 'Marietta', state: 'GA', zipPrefixes: ['30008', '30060', '30062', '30064', '30066', '30067', '30068'], lat: 33.9526, lng: -84.5499 },
         { city: 'Evans', state: 'GA', zipPrefixes: ['30809'], lat: 33.5335, lng: -82.1307 },
@@ -83,7 +71,6 @@ async function getRestaurants(
 
     let validLocations: any[] = fallbackMocks;
 
-    // Try fetching from DB and ensure lat/lng are populated
     try {
         const { data: dbLocations } = await supabase.from('ServiceLocation').select('*').eq('isActive', true);
         if (dbLocations && dbLocations.length > 0) {
@@ -96,25 +83,20 @@ async function getRestaurants(
                     ...mockMatch,
                     ...dbLoc
                 };
-            }).filter(l => l.lat && l.lng); // Filter out any that STILL don't have coords
+            }).filter(l => l.lat && l.lng); 
             
-            // Merge mocks if not present (for demo continuity)
             for (const mock of fallbackMocks) {
                 const exists = validLocations.find(l => l.city === mock.city && l.state === mock.state);
                 if (!exists) validLocations.push(mock);
             }
         }
-    } catch (e) {
-        console.log("Running in Offline/Demo Mode (Database not reachable).");
-    }
+    } catch (e) {}
 
-    // Logic to determine "matchedLocation" based on inputs
+    let matchedLocation: any = null;
     if (address) {
-        // Try to extract city from address string if possible
         const lowerAddr = address.toLowerCase();
         matchedLocation = validLocations.find(loc => lowerAddr.includes(loc.city.toLowerCase()));
     }
-
     if (!matchedLocation && term) {
         const termClean = term.trim().toLowerCase();
         matchedLocation = validLocations.find(loc => {
@@ -124,8 +106,6 @@ async function getRestaurants(
                 loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix));
         });
     }
-
-    // If still no match but we have coords, find closest (simple euclidean for now)
     if (!matchedLocation && lat && lng) {
         let minDist = 10000;
         validLocations.forEach(loc => {
@@ -135,13 +115,9 @@ async function getRestaurants(
                 matchedLocation = loc;
             }
         });
-        // If distance is too far (approx > 0.5 degrees ~ 30 miles), maybe don't match?
-        // For constraints of this app, we'll be generous.
     }
 
     if (!matchedLocation) {
-        // Default to Charlotte if nothing matches but we need to show something (or return empty)
-        // Returning empty allows the UI to show "No restaurants found"
         return {
             restaurants: [],
             locationMeta: {
@@ -159,9 +135,6 @@ async function getRestaurants(
     };
 
     try {
-        const cityFilter = matchedLocation.city;
-        const stateFilter = matchedLocation.state;
-
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
             .select(`
@@ -171,152 +144,53 @@ async function getRestaurants(
                 schedules:MerchantSchedule(*),
                 orders:Order(id, status)
             `)
-            .match({ city: cityFilter, state: stateFilter })
+            .match({ city: matchedLocation.city, state: matchedLocation.state })
             .eq('visibility', 'VISIBLE')
             .neq('name', 'Test Restaurant');
 
+        if (error || !restaurants || restaurants.length === 0) return { restaurants: [], locationMeta };
 
-        if (error || !restaurants || restaurants.length === 0) {
-            // No mock fallback for pilot launch
-            return { restaurants: [], locationMeta };
-        }
-
-        // Logic to transition to production: Filter out mock restaurants from DB
-        const realRestaurants = restaurants; // Include mocks for testing/staging visibility
-
-        const mappedRestaurants = realRestaurants.map((r: any, index: number) => {
+        const mappedRestaurants = restaurants.map((r: any, index: number) => {
             const seed = r.name.length + index;
-
-            // Data-Driven Ratings (Aggregate from Reviews)
             const realRatings = (r.Review || []).map((rev: any) => rev.rating);
             const avgRating = realRatings.length > 0
                 ? (realRatings.reduce((a: number, b: number) => a + b, 0) / realRatings.length).toFixed(1)
                 : (4.0 + (seed % 10) / 10).toFixed(1);
 
-            // Smart Tag Inference - Check name, description, and menu items
-            const rName = r.name.toLowerCase();
-            const rDesc = (r.description || "").toLowerCase();
-            const menuNames = (r.MenuItem || []).map((m: any) => m.name.toLowerCase()).join(" ");
-
-            const context = `${rName} ${rDesc} ${menuNames}`;
-
             let tags: string[] = ["Local"];
-
-            if (context.includes("pizza") || context.includes("italian") || context.includes("pasta")) tags.push("Italian", "Pizza");
-            if (context.includes("burger") || context.includes("grill") || context.includes("shake") || context.includes("fry")) tags.push("American", "Burgers");
-            if (context.includes("asian") || context.includes("thai") || context.includes("sushi") || context.includes("ramen") || context.includes("chinese") || context.includes("🥢")) tags.push("Asian");
-            if (context.includes("mexican") || context.includes("taco") || context.includes("burrito") || context.includes("cantina") || context.includes("quesadilla")) tags.push("Mexican", "Tacos");
-            if (context.includes("coffee") || context.includes("cafe") || context.includes("espresso") || context.includes("latte") || context.includes("breakfast")) tags.push("Coffee", "Breakfast");
-            if (context.includes("dessert") || context.includes("cake") || context.includes("ice cream") || context.includes("sweet") || context.includes("bakery") || context.includes("cookie")) tags.push("Dessert", "Sweet");
-            if (context.includes("steak") || context.includes("chophouse") || context.includes("ribeye")) tags.push("Steak", "Premium");
-            if (context.includes("bbq") || context.includes("barbecue") || context.includes("smokehouse") || context.includes("brisket")) tags.push("BBQ", "American");
-            if (context.includes("salad") || context.includes("bowl") || context.includes("healthy") || context.includes("vegan") || context.includes("fresh")) tags.push("Healthy", "Fresh");
-
-            // Dynamic 'Late Night' tag
-            const closeTime = r.closeTime || '22:00:00';
-            const closeHour = parseInt(closeTime.split(':')[0]);
-            if (closeHour >= 22 || closeHour < 4) tags.push("Late Night");
-
-            // Deduplicate and fallback
-            const finalTags = Array.from(new Set(tags));
-            if (finalTags.length === 1) finalTags.push("Great Service");
-
-            // Smart Image Selection
-            let displayImage = r.imageUrl || "/restaurant1.jpg";
-            if (!r.imageUrl) {
-                if (finalTags.includes("Pizza")) displayImage = "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Burgers")) displayImage = "https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Asian")) displayImage = "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Mexican")) displayImage = "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Italian")) displayImage = "https://images.unsplash.com/photo-1473093226795-af9932fe5856?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Steak")) displayImage = "https://images.unsplash.com/photo-1546241072-48010ad28c2c?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Coffee")) displayImage = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Dessert")) displayImage = "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=800&auto=format&fit=crop";
-                else if (finalTags.includes("Healthy")) displayImage = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop";
-                else {
-                    // Random premium food image if no tag match
-                    displayImage = `https://images.unsplash.com/photo-${1504674900247 + (seed % 1000)}?q=80&w=800&auto=format&fit=crop`;
-                }
-            }
+            const context = `${r.name} ${r.description} ${(r.MenuItem || []).map((m: any) => m.name).join(" ")}`.toLowerCase();
+            if (context.includes("pizza")) tags.push("Pizza", "Italian");
+            if (context.includes("burger")) tags.push("Burgers", "American");
+            if (context.includes("asian") || context.includes("sushi")) tags.push("Asian");
+            if (context.includes("mexican") || context.includes("taco")) tags.push("Mexican");
+            if (context.includes("coffee") || context.includes("breakfast")) tags.push("Coffee", "Breakfast");
+            if (context.includes("dessert") || context.includes("cake")) tags.push("Dessert");
 
             return {
                 id: r.id,
                 name: r.name,
                 rating: Number(avgRating),
-                reviewCount: realRatings.length,
-                image: displayImage,
-                tags: finalTags,
+                image: r.imageUrl || `https://images.unsplash.com/photo-${1504674900247 + (seed % 1000)}?q=80&w=800&auto=format&fit=crop`,
+                tags: Array.from(new Set(tags)),
                 description: r.description,
                 coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
-                city: r.city,
-                state: r.state,
-                address: r.address || `${r.city}, ${r.state}`,
-                deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
-                // Smart Prep Time and Busy Logic
-                ...(() => {
-                    const now = new Date();
-                    const currentDay = now.getDay();
-                    const currentTime = now.toTimeString().slice(0, 8);
-                    
-                    let isBusy = !!r.isBusy;
-                    let extraBuffer = 0;
-                    
-                    // 1. Temporary Busy State
-                    if (r.busyUntil && new Date(r.busyUntil) > now) isBusy = true;
-                    
-                    // 2. Automated Schedules
-                    if (r.schedules && Array.isArray(r.schedules)) {
-                        for (const s of r.schedules) {
-                            if (s.isEnabled && s.dayOfWeek === currentDay && currentTime >= s.startTime && currentTime <= s.endTime) {
-                                if (s.action === 'PAUSE') isBusy = true;
-                                if (s.action === 'BUFFER') extraBuffer += (s.extraPrepTime || 0);
-                            }
-                        }
-                    }
-
-                    // 3. Auto-Pilot Load Check
-                    const pendingOrders = (r.orders || []).filter((o: any) => o.status === 'PENDING' || o.status === 'PREPARING').length;
-                    if (r.autoPilotEnabled && pendingOrders >= (r.capacityThreshold || 10)) isBusy = true;
-
-                    // 4. Prep Time Calculation
-                    let basePrep = r.manualPrepTime || (15 + (seed % 10));
-                    if (!r.manualPrepTime) basePrep += Math.floor(pendingOrders * 1.5);
-                    const totalPrep = basePrep + extraBuffer;
-
-                    return {
-                        isBusy,
-                        prepTime: `${totalPrep}-${totalPrep + 10} min`
-                    };
-                })(),
                 priceLevel: "$".repeat((seed % 3) + 1),
-                openTime: r.openTime,
-                closeTime: r.closeTime,
-                deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: seed % 2 === 0 ? 'Spend $20, Save $5' : 'Buy 1 Get 1 Free' } : undefined
-
+                deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
+                prepTime: `${15 + (seed % 15)}-${25 + (seed % 15)} min`,
+                deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: 'Spend $20, Save $5' } : undefined,
+                isBusy: !!r.isBusy
             };
-
         });
 
-        let finalRestaurants = mappedRestaurants;
-        if (category) {
-            const catLower = category.toLowerCase();
-            finalRestaurants = mappedRestaurants.filter((r: any) =>
-                r.tags.some((t: string) => t.toLowerCase() === catLower)
-            );
-        }
+        const finalRestaurants = category 
+            ? mappedRestaurants.filter((r: any) => r.tags.some((t: string) => t.toLowerCase() === category.toLowerCase()))
+            : mappedRestaurants;
 
         return { restaurants: finalRestaurants, locationMeta };
-
     } catch (error) {
-        console.error("getRestaurants DB Error:", error);
-        return {
-            restaurants: [],
-            locationMeta
-        };
+        return { restaurants: [], locationMeta };
     }
 }
-
-import LandingSearch from "@/components/LandingSearch";
 
 export default async function RestaurantFinder({
     searchParams
@@ -325,689 +199,147 @@ export default async function RestaurantFinder({
 }) {
     const params = await searchParams;
     const mode = params.mode || "delivery";
-    const location = params.location || params.search || params.address;
-    const address = params.address || location;
+    const effectiveAddress = params.address || params.location || params.search;
     const lat = params.lat ? parseFloat(params.lat) : undefined;
     const lng = params.lng ? parseFloat(params.lng) : undefined;
     const category = params.category;
 
-    // View State: Landing if no inputs provided
-    // If ANY input is provided (location, search, or coords), we show results
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
-
-    let userSavedAddress = "";
-    let userName = "";
-
-    if (userId) {
-        const { data: userData } = await supabase.from('User').select('address, name').eq('id', userId).maybeSingle();
-        if (userData?.address && !address && !location) {
-            userSavedAddress = userData.address;
-        }
-        if (userData?.name) {
-            userName = userData.name.split(" ")[0];
-        }
-    }
-
-    const effectiveAddress = address || location || userSavedAddress;
-
-    // View State: Landing if no inputs AND no saved address provided
-    const showLanding = !effectiveAddress && (!lat || !lng);
-
-    const { restaurants: fetchedRest, locationMeta: meta } = await getRestaurants({
-        term: effectiveAddress, // Use effectiveAddress as the primary search term
-        address: effectiveAddress, // Also pass as address for more specific matching if needed
-        lat,
-        lng,
-        category
-    });
-
-    let restaurants: Restaurant[] = fetchedRest;
-    let locationMeta: LocationMeta = meta;
-    let activeOrders: any[] = [];
-    let pastRestaurants: any[] = [];
     let favorites: string[] = [];
+    let activeOrders: any[] = [];
 
     if (userId) {
         favorites = await getFavorites();
-
-        // Fetch Order Again data
-        const { data: pastOrders } = await supabase
-            .from('Order')
-            .select('restaurantId, restaurant:Restaurant(id, name, imageUrl, rating)')
-            .eq('userId', userId)
-            .eq('status', 'DELIVERED')
-            .order('createdAt', { ascending: false })
-            .limit(20);
-
-        if (pastOrders) {
-            const seen = new Set();
-            pastRestaurants = pastOrders
-                .map((o: any) => o.restaurant)
-                .filter((r: any) => {
-                    if (!r || seen.has(r.id)) return false;
-                    seen.add(r.id);
-                    return true;
-                })
-                .slice(0, 5);
-        }
+        const { data } = await supabase.from('Order').select('*, restaurant:Restaurant(name)').eq('userId', userId).in('status', ['PENDING', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY']);
+        if (data) activeOrders = data;
     }
 
-    const serviceLocations = await (async () => {
-        const fallbackMocks = [
-            { city: 'Charlotte', state: 'NC', lat: 35.2271, lng: -80.8431 },
-            { city: 'Pineville', state: 'NC', lat: 35.0833, lng: -80.8872 },
-            { city: 'Rock Hill', state: 'SC', lat: 34.9249, lng: -81.0251 },
-            { city: 'Mount Airy', state: 'NC', lat: 36.4993, lng: -80.6073 },
-            { city: 'Greenville', state: 'SC', lat: 34.8526, lng: -82.3940 },
-            { city: 'Simpsonville', state: 'SC', lat: 34.7371, lng: -82.2537 },
-            { city: 'Spartanburg', state: 'SC', lat: 34.9496, lng: -81.9320 },
-            { city: 'Clemson', state: 'SC', lat: 34.6834, lng: -82.8374 },
-            { city: 'Greer', state: 'SC', lat: 34.8956, lng: -82.2189 },
-            { city: 'Athens', state: 'GA', lat: 33.9519, lng: -83.3576 },
-            { city: 'Marietta', state: 'GA', lat: 33.9526, lng: -84.5499 },
-            { city: 'Evans', state: 'GA', lat: 33.5335, lng: -82.1307 },
-            { city: 'Davidson', state: 'NC', lat: 35.4993, lng: -80.8487 },
-            { city: 'Brevard', state: 'NC', lat: 35.2334, lng: -82.7343 },
-            { city: 'Fayetteville', state: 'NC', lat: 35.0527, lng: -78.8784 }
-        ];
-        try {
-            const { data: dbLocs } = await supabase.from('ServiceLocation').select('city, state, lat, lng').eq('isActive', true);
-            return dbLocs && dbLocs.length > 0 ? dbLocs : fallbackMocks;
-        } catch {
-            return fallbackMocks;
-        }
-    })();
+    const { restaurants, locationMeta } = await getRestaurants({ term: effectiveAddress, address: effectiveAddress, lat, lng, category });
 
-    if (!showLanding) {
-        const data = await getRestaurants({
-            term: location,
-            address,
-            lat,
-            lng,
-            category
-        });
-        restaurants = data.restaurants;
-        locationMeta = data.locationMeta;
+    const showLanding = !effectiveAddress && (!lat || !lng);
 
-        if (userId) {
-            const { data } = await supabase
-                .from('Order')
-                .select('*, restaurant:Restaurant(name)')
-                .eq('userId', userId)
-                .in('status', ['PENDING', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY'])
-                .order('createdAt', { ascending: false });
-
-            if (data) activeOrders = data;
-        }
-    }
-
-    const mapCenter = locationMeta.center;
-
-    // --- LANDING VIEW ---
     if (showLanding) {
         return (
-            <div className="min-h-screen relative overflow-hidden bg-black text-white flex flex-col">
+            <div className="min-h-screen bg-black text-white flex flex-col relative">
                 <nav className="absolute top-0 w-full z-50 p-6 flex justify-between items-center">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                        <span className="text-2xl font-black tracking-tighter">
-                            True<span className="text-gradient">Serve</span>
-                        </span>
+                    <Link href="/" className="flex items-center gap-2">
+                        <img src="/logo.png" className="w-10 h-10 rounded-full" alt="TrueServe Logo" />
+                        <span className="text-2xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
                     </Link>
-                    <div className="flex items-center gap-4">
-                        <Link href="/login" className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Sign In</Link>
-                    </div>
                 </nav>
-
-                <main className="flex-1 flex flex-col items-center justify-center relative z-10 p-6 text-center">
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 filter blur-sm -z-10" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent -z-10" />
-
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500 leading-relaxed py-4">
-                        Cravings, meet <span className="text-primary">Speed.</span>
-                    </h1>
-                    <p className="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl">
-                        The fastest delivery around. Zero hidden fees, precise tracking, and purely local.
-                    </p>
-
-                    <LandingSearch locations={serviceLocations} />
+                <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10">
+                    <h1 className="text-5xl md:text-7xl font-black mb-8">Cravings, meet <span className="text-primary">Speed.</span></h1>
+                    <LandingSearch locations={[]} />
                 </main>
             </div>
         );
     }
 
-    // --- RESULTS VIEW ---
     return (
-        <div className="min-h-screen">
-            <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-4 md:px-6 py-3 md:py-4">
-                <div className="container flex justify-between items-center gap-4">
-                    {/* Mobile Branding (Minimized) */}
-                    <Link href="/" className="md:hidden flex items-center gap-2 group shrink-0">
-                         <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                         <span className="text-sm font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
+        <div className="min-h-screen bg-black">
+            <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                    <Link href="/" className="flex items-center gap-2">
+                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full" />
+                        <span className="text-xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
                     </Link>
-
-                    {/* Mode Toggle (Hidden on Mobile Nav to reduce clutter, moved to main) */}
-                    <div className="hidden md:flex flex-1 flex-col items-center justify-center gap-2">
-                        <ModeToggle />
-                    </div>
-
-                    {/* Desktop Search & Mode Toggle */}
-                    <div className="hidden md:flex flex-1 items-center gap-4 max-w-2xl mx-8">
-                        <ModeToggle />
-                        <div className="flex-1">
-                            <LandingSearch
-                                locations={serviceLocations}
-                                initialValue={location}
-                                isCompact={true}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 md:gap-6">
-                        <div className="hidden lg:block">
-                            <Link href="/" className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Home</Link>
-                        </div>
-                        <div className="flex items-center gap-2 md:gap-4">
-                            {userId && <NotificationBell userId={userId} />}
-                            <div className="flex items-center gap-3">
-                                {!userId ? (
-                                    <Link href="/login" className="btn btn-primary text-[10px] md:text-xs py-1.5 px-4 md:px-6 rounded-full font-black uppercase tracking-widest">Sign In</Link>
-                                ) : (
-                                    <Link href="/user/settings" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                    </Link>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    <div className="h-6 w-px bg-white/10 mx-2"></div>
+                    <nav className="flex items-center gap-1">
+                        <Link href="/restaurants" className="badge-subtle-primary text-[10px] py-1.5 border-none">🍴 Order Food</Link>
+                        <Link href="/user/dashboard" className="text-slate-500 hover:text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5">📋 Dashboard</Link>
+                    </nav>
                 </div>
-                {/* Mobile Search -> Moved to Main Content */}
+                <div className="flex items-center gap-3">
+                    {userId && <NotificationBell userId={userId} />}
+                    <ModeToggle />
+                    {!userId ? (
+                        <Link href="/login" className="badge-solid-primary text-[10px] py-2">Sign In</Link>
+                    ) : (
+                        <Link href="/user/settings" className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </Link>
+                    )}
+                </div>
             </nav>
 
-            <main className="container py-6 md:py-8 px-4 animate-fade-in pb-40">
-                {/* Mobile Header: Pure Pill Focus */}
-                <div className="md:hidden flex flex-col gap-8 mb-12">
-                    {/* Big Location Pill */}
-                    <Link href="/restaurants" className="badge-subtle-white justify-between px-8 py-5 border-white/20 active:scale-95 transition-all shadow-2xl">
-                         <div className="flex items-center gap-4">
-                            <span className="text-xl">📍</span>
-                            <div className="flex flex-col items-start translate-y-[-1px]">
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-0.5">Location</span>
-                                <span className="text-sm font-black text-white italic">{locationMeta.name || "Set Location"}</span>
-                            </div>
-                         </div>
-                         <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
-                    </Link>
-
-                    {/* All-In-One Search Pill */}
-                    <LandingSearch
-                        locations={serviceLocations}
-                        initialValue={location}
-                        isCompact={true}
-                    />
-
-                    {/* Massive Service Pills Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                        {[
-                            { name: "Popular", icon: "🔥", color: "bg-orange-500/10", iconColor: "text-orange-500" },
-                            { name: "Drop Off", icon: "📦", color: "bg-emerald-500/10", iconColor: "text-emerald-500" },
-                            { name: "Catering", icon: "🍽️", color: "bg-blue-500/10", iconColor: "text-blue-500" },
-                            { name: "Hospital", icon: "🏥", color: "bg-red-500/10", iconColor: "text-red-500" },
-                            { name: "Pharmacy", icon: "💊", color: "bg-purple-500/10", iconColor: "text-purple-500" },
-                            { name: "Voucher", icon: "🏷️", color: "bg-yellow-500/10", iconColor: "text-yellow-500" },
-                        ].map((svc) => (
-                            <button key={svc.name} className="flex flex-col items-center justify-center p-8 badge-subtle-white group active:scale-95 transition-all border-white/5 hover:border-white/20">
-                                <span className="text-4xl mb-4 grayscale group-hover:grayscale-0 transition-all">{svc.icon}</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white">{svc.name}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    <ModeToggle />
+            <main className="container py-8 md:py-16 px-4 pb-40">
+                <div className="mb-12">
+                    <h1 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter mb-2">Order Dashboard</h1>
+                    <p className="text-slate-500 font-medium">Browse flavors in {locationMeta.name || "your area"}.</p>
                 </div>
 
-                {/* Active Tracking Banner */}
                 {activeOrders.length > 0 && (
-                    <div className="mb-6 md:mb-8 p-5 md:p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-4 opacity-5 text-7xl md:text-9xl group-hover:scale-110 transition-transform">🚚</div>
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <h2 className="text-emerald-400 font-black uppercase tracking-[0.2em] text-[10px]">Active Order</h2>
+                    <div className="mb-12 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] flex items-center justify-between">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span className="text-emerald-400 font-black uppercase tracking-widest text-[9px]">Live Order</span>
                             </div>
-                            <h3 className="text-xl md:text-2xl font-black mb-1 text-white">
-                                {activeOrders[0].restaurant?.name || 'Restaurant'} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}
-                            </h3>
-                            <Link href={`/orders/${activeOrders[0].id}`} className="btn btn-sm md:btn-md bg-emerald-500 text-black font-black uppercase tracking-widest border-none shadow-lg shadow-emerald-500/20 mt-3 rounded-xl px-6">
-                                Track Live
-                            </Link>
+                            <h3 className="text-xl font-black text-white">{activeOrders[0].restaurant?.name} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}</h3>
                         </div>
+                        <Link href={`/orders/${activeOrders[0].id}`} className="badge-solid-primary py-3 px-8">Track Live</Link>
                     </div>
                 )}
 
-                {/* Order Again Carousel */}
-                {userId && pastRestaurants.length > 0 && (
-                    <div className="mb-16 md:mb-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        <div className="flex items-center justify-between mb-4 px-1">
-                            <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.25em] text-slate-500">Order Again</h2>
-                            <Link href="/orders" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest flex items-center gap-1">
-                                Past Orders <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
-                            </Link>
-                        </div>
-                        <div className="flex gap-6 md:gap-8 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 scroll-smooth">
-                            {pastRestaurants.map((res: any) => (
-                                <Link
-                                    key={res.id}
-                                    href={`/restaurants/${res.id}`}
-                                    className="flex flex-col gap-2 min-w-[140px] md:min-w-[180px] group"
-                                >
-                                    <div className="aspect-[4/3] w-full rounded-2xl overflow-hidden relative border border-white/5 shadow-lg group-hover:shadow-primary/5 group-hover:border-primary/20 transition-all duration-300">
-                                        <img
-                                            src={res.imageUrl || "/restaurant1.jpg"}
-                                            loading="lazy"
-                                            decoding="async"
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                                            alt={res.name}
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-6 md:p-12 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50"></div>
+                    
+                    <div className="flex items-center gap-3 overflow-x-auto pb-8 no-scrollbar scroll-smooth">
+                        <Link href="/restaurants" className={`px-8 py-3 badge font-black text-[11px] ${!category ? "badge-solid-primary" : "text-slate-500"}`}>All</Link>
+                        {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches"].map((cat) => (
+                            <Link key={cat} href={`/restaurants?category=${cat}`} className={`px-8 py-3 badge font-black text-[11px] ${category === cat ? "badge-solid-primary" : "text-slate-500"}`}>{cat}</Link>
+                        ))}
+                    </div>
 
-                                        <div className="absolute inset-0 p-3 flex flex-col justify-end">
-                                            <div className="flex justify-between items-end gap-2 w-full">
-                                                <div className="min-w-0 flex-1">
-                                                    <h3 className="text-white text-[11px] md:text-xs font-black truncate drop-shadow-md w-full">{res.name}</h3>
-                                                </div>
-
-                                            </div>
+                    {restaurants.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                            {restaurants.map((rest: any) => (
+                                <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group flex flex-col active:scale-[0.98] transition-transform">
+                                    <div className="h-52 md:h-64 rounded-[2rem] overflow-hidden mb-5 relative border border-white/5 shadow-2xl">
+                                        <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                        <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                            <div className="bg-black/40 backdrop-blur-xl text-white text-[9px] font-black px-4 py-2 rounded-xl border border-white/10 uppercase tracking-widest">{rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}</div>
+                                            {rest.deal && <div className="bg-emerald-500 text-black text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-2xl">DEAL</div>}
+                                        </div>
+                                    </div>
+                                    <div className="px-1">
+                                        <h3 className="text-xl font-black text-white group-hover:text-primary transition-colors mb-2 tracking-tight">{rest.name}</h3>
+                                        <div className="flex items-center gap-3 text-[12px] text-slate-500 font-bold uppercase tracking-widest">
+                                            <span className="text-emerald-400">{rest.deliveryFee === "Free" ? "Free Delivery" : rest.deliveryFee}</span>
+                                            <span className="opacity-30">•</span>
+                                            <span>{rest.prepTime}</span>
+                                            <span className="opacity-30">•</span>
+                                            <span>{rest.priceLevel}</span>
                                         </div>
                                     </div>
                                 </Link>
                             ))}
                         </div>
-                    </div>
-                )}
-
-                <div className="flex flex-col gap-6 md:gap-10 mb-20 md:mb-32">
-                    <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 py-2">
-                        <div>
-                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.3em] mb-1">{mode === "pickup" ? "Picking up from" : "Delivering to"}</p>
-                            <h1 className="text-2xl md:text-4xl font-black tracking-tighter text-white flex items-baseline gap-3">
-                                {locationMeta.name}
-                                <span className="text-sm text-slate-500 font-bold">({restaurants.length} {mode === "pickup" ? "pickup spots" : "delivery spots"})</span>
-                            </h1>
-                        </div>
-
-                        {/* TrueServe+ Promo Banner */}
-                        <Link href="/benefits" className="flex-1 lg:max-w-md w-full bg-gradient-to-r from-primary/10 to-secondary/5 border border-white/5 p-3 md:p-4 rounded-2xl flex items-center justify-between group hover:border-primary/30 transition-all backdrop-blur-sm">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-xl shadow-inner border border-primary/20">💎</div>
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Member Benefits</p>
-                                    <h4 className="font-bold text-xs md:text-sm text-white">Join TrueServe+</h4>
-                                    <p className="text-[10px] text-slate-500">Free delivery & 5% member savings.</p>
-                                </div>
-                            </div>
-                            <div className="bg-primary/10 text-primary p-2 rounded-lg group-hover:bg-primary group-hover:text-black transition-all">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path></svg>
-                            </div>
-                        </Link>
-                    </div>
-
-                    {/* Google Maps Embed - Responsive Height */}
-                    <div className="w-full h-[250px] md:h-[400px] rounded-3xl overflow-hidden border border-white/5 shadow-2xl relative z-0 bg-slate-900/50 flex items-center justify-center">
-                        <GoogleMapsMap
-                            center={mapCenter}
-                            zoom={13}
-                            restaurants={restaurants.map(r => ({ id: r.id, name: r.name, coords: r.coords, image: r.image, tags: r.tags }))}
-                        />
-                    </div>
-                </div>
-
-                {/* Section Divider */}
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent mb-16 md:mb-24"></div>
-
-                {/* Food Categories / Tags Selection */}
-                <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <div className="flex items-center gap-4 md:gap-3 overflow-x-auto pb-4 px-1 no-scrollbar scroll-smooth">
-                        {/* Show All Option */}
-                        <Link
-                            href={`/restaurants?${new URLSearchParams({
-                                ...(params.address ? { address: params.address } : {}),
-                                ...(params.lat ? { lat: params.lat } : {}),
-                                ...(params.lng ? { lng: params.lng } : {}),
-                                ...(params.location ? { location: params.location } : {}),
-                                ...(params.search ? { search: params.search } : {})
-                            }).toString()}`}
-                            className={`px-6 py-2.5 badge transition-all whitespace-nowrap font-black text-sm shrink-0
-                                ${!category
-                                    ? "badge-solid-primary scale-105"
-                                    : "badge-subtle-white"}`}
-                        >
-                            <span className="text-lg">✨</span>
-                            <span>All</span>
-                        </Link>
-
-                        {[
-                            { name: "Fast Food", icon: "🍟" },
-                            { name: "Burgers", icon: "🍔" },
-                            { name: "Chicken", icon: "🍗" },
-                            { name: "Pizza", icon: "🍕" },
-                            { name: "Sushi", icon: "🍣" },
-                            { name: "Sandwiches", icon: "🥪" },
-                            { name: "Deals", icon: "🉐" },
-                            { name: "Breakfast", icon: "🍳" },
-                            { name: "Desserts", icon: "🍮" },
-                            { name: "Mexican", icon: "🌮" },
-                            { name: "Asian", icon: "🥢" },
-                            { name: "Italian", icon: "🍝" },
-                            { name: "Coffee", icon: "☕" },
-                            ...(mode === "delivery" ? [{ name: "Low Delivery", icon: "💰" }] : []),
-                            { name: "Seafood", icon: "🦐" }
-                        ].map((cat: any) => (
-                            <Link
-                                key={cat.name}
-                                href={`/restaurants?${new URLSearchParams({
-                                    ...(params.address ? { address: params.address } : {}),
-                                    ...(params.lat ? { lat: params.lat } : {}),
-                                    ...(params.lng ? { lng: params.lng } : {}),
-                                    ...(params.location ? { location: params.location } : {}),
-                                    ...(params.search ? { search: params.search } : {}),
-                                    category: cat.name
-                                }).toString()}`}
-                                className={`px-6 py-2.5 badge transition-all whitespace-nowrap font-black text-sm shrink-0
-                                    ${category === cat.name
-                                        ? "badge-solid-primary scale-105"
-                                        : "badge-subtle-white"}`}
-                            >
-                                <span className="text-lg leading-none">{cat.icon}</span>
-                                <span>{cat.name}</span>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Membership Welcome Banner */}
-                {params.welcome === 'member' && (
-                    <div className="mb-12 p-8 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border border-primary/30 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-8 animate-in zoom-in-95 duration-700 shadow-[0_0_50px_rgba(var(--primary-rgb),0.1)]">
-                        <div className="flex items-center gap-8 text-center md:text-left">
-                            <div className="w-20 h-20 bg-primary/20 rounded-[2rem] flex items-center justify-center text-5xl shadow-2xl animate-pulse">✨</div>
-                            <div>
-                                <h2 className="text-3xl font-black text-white mb-2 tracking-tight italic">Welcome to the Inner Circle.</h2>
-                                <p className="text-slate-400 max-w-md font-medium text-lg leading-relaxed">Your TrueServe Membership is now active. Enjoy priority dispatch and exclusive community discounts.</p>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-2 shrink-0">
-                            <div className="px-6 py-3 bg-white/5 text-primary border border-primary/20 rounded-2xl text-xs font-black uppercase tracking-[0.2em] text-center backdrop-blur-md">Membership: Active</div>
-                        </div>
-                    </div>
-                )}
-
-                <div className="h-6"></div>
-
-                {/* Dynamic Filters Bar - DoorDash Style */}
-                <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar mb-14 border-b border-white/5 pt-4">
-                    {[
-                        { label: 'Deals', icon: '🏷️' },
-                        { label: 'Under 30 min', icon: '🕒' }
-                    ].map((filter: any) => (
-                        <button key={filter.label} className="badge badge-subtle-white px-6 py-2.5 text-[13px] font-black transition-all shrink-0">
-                            {filter.icon && <span>{filter.icon}</span>}
-                            <span>{filter.label}</span>
-                            {filter.hasArrow && (
-                                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            )}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Featured Collections Style Carousels (DoorDash Style) */}
-                {restaurants.length > 0 && !category && (
-                    <div className="space-y-24 mb-24">
-                        {/* Deals Carousel */}
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <div className="flex items-end justify-between mb-8 px-1">
-                                <div className="flex flex-col gap-1">
-                                    <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Offers for You</h2>
-                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Local deals and priority discounts</p>
-                                </div>
-                                <Link href="#" className="bg-white/5 hover:bg-white/10 text-primary px-5 py-2 rounded-full text-xs font-black uppercase tracking-[0.15em] border border-primary/20 transition-all">
-                                    Find Deals
-                                </Link>
-                            </div>
-                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 font-black">
-                                {restaurants.filter(r => r.deal).slice(0, 8).map((rest) => (
-                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[300px] md:min-w-[350px] group">
-                                        <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-4 relative border border-white/5">
-                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                                            {rest.isBusy && (
-                                                <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-xl animate-pulse">
-                                                    Busy
-                                                </div>
-                                            )}
-                                            <div className="absolute bottom-4 left-4 right-4">
-
-                                                <div className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-black shadow-2xl inline-block mb-2 max-w-full truncate">
-                                                    {rest.deal?.description}
-                                                </div>
-                                                <h3 className="text-white text-[15px] md:text-lg font-black truncate w-full">{rest.name}</h3>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Fastest Carousel */}
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <div className="flex flex-col gap-1 mb-8 px-1">
-                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Fastest</h2>
-                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Speedy delivery from nearby gems</p>
-                            </div>
-                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
-                                {restaurants.filter(r => parseInt(r.prepTime || "30") <= 25).slice(0, 6).map((rest) => (
-                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col">
-                                        <div className="h-40 md:h-44 w-full rounded-2xl overflow-hidden mb-3 relative shrink-0">
-                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            {rest.isBusy && (
-                                                <div className="absolute top-2 left-2 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
-                                                    Busy
-                                                </div>
-                                            )}
-                                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black text-white border border-white/10">
-                                                {rest.prepTime}
-                                            </div>
-                                        </div>
-
-                                        <div className="px-1 w-full">
-                                            <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
-                                            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
-                                                <span className="text-slate-500 truncate">{rest.priceLevel}</span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Top Rated Carousel */}
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-                            <div className="flex flex-col gap-1 mb-8 px-1">
-                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Top Rated</h2>
-                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Highest community ratings</p>
-                            </div>
-                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 scroll-snap-x snap-mandatory">
-                                {restaurants.filter(r => r.rating >= 4.5).sort((a, b) => b.rating - a.rating).slice(0, 6).map((rest) => (
-                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[260px] md:min-w-[300px] group flex flex-col snap-center">
-                                        <div className="h-40 md:h-44 w-full rounded-[1.5rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
-                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            <div className="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded-[0.5rem] text-[11px] font-black drop-shadow-xl flex items-center gap-1 z-10">
-                                                <span>★</span> {rest.rating}
-                                            </div>
-                                            {rest.isBusy && (
-                                                <div className="absolute top-3 right-3 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
-                                                    Busy
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="px-1 w-full">
-                                            <h3 className="text-white font-black text-sm mb-1 group-hover:text-primary transition-colors truncate w-full">{rest.name}</h3>
-                                            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold w-full">
-                                                <span className="text-emerald-400">{rest.deliveryFee === "Free" ? "Free Delivery" : rest.deliveryFee}</span>
-                                                <span>•</span>
-                                                <span className="text-slate-500 truncate">{rest.tags.slice(0, 2).join(" • ")}</span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Local Gems Carousel */}
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-                            <div className="flex flex-col gap-1 mb-8 px-1">
-                                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Local Gems</h2>
-                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Support your neighborhood</p>
-                            </div>
-                            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 scroll-snap-x snap-mandatory">
-                                {restaurants.filter(r => r.tags.includes("Local")).slice(0, 6).map((rest) => (
-                                    <Link key={rest.id} href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`} className="min-w-[280px] md:min-w-[320px] group flex flex-col snap-center">
-                                        <div className="h-44 md:h-48 w-full rounded-[2rem] overflow-hidden mb-3 relative shrink-0 border border-white/5">
-                                            <img src={rest.image} alt={rest.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            {rest.isBusy && (
-                                                <div className="absolute top-3 left-3 z-20 px-2.5 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded-lg shadow-xl animate-pulse">
-                                                    Busy
-                                                </div>
-                                            )}
-                                            <div className="absolute bottom-3 right-3 bg-secondary text-black px-3 py-1.5 rounded-[0.75rem] text-[10px] font-black uppercase tracking-widest drop-shadow-xl">
-                                                Local Favorite
-                                            </div>
-                                        </div>
-
-                                        <div className="px-1 w-full">
-                                            <h3 className="text-white font-black text-base mb-1 group-hover:text-secondary transition-colors truncate w-full">{rest.name}</h3>
-                                            <div className="flex items-center gap-2 text-[12px] text-slate-400 font-bold w-full">
-                                                <span className="text-slate-500 truncate">{rest.prepTime}</span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                <div className="h-16"></div>
-
-                <div className="mb-12 px-1 border-t border-white/5 pt-16 flex items-center justify-between">
-                    <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">All Spots</h2>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10">
-                    {restaurants.length === 0 ? (
-                        <div className="col-span-full text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
-                            <div className="text-4xl mb-4">🔍</div>
-                            <p className="text-xl font-bold text-white">No spots found in {location?.toString()}.</p>
-                            <Link href="/restaurants" className="btn btn-primary btn-sm mt-6 rounded-full px-8 uppercase font-black tracking-widest text-[10px] inline-flex items-center">
-                                Show All Cities
-                            </Link>
-                        </div>
                     ) : (
-                        restaurants.map((rest) => (
-                            <Link
-                                href={`/restaurants/${rest.id}?lat=${lat || locationMeta.center[0]}&lng=${lng || locationMeta.center[1]}&address=${encodeURIComponent(address || '')}`}
-                                key={rest.id}
-                                className="group flex flex-col transition-all duration-300 active:scale-[0.98]"
-                            >
-                                <div className="h-48 md:h-56 w-full relative overflow-hidden rounded-2xl mb-4">
-                                    <img
-                                        src={rest.image || "/restaurant1.jpg"}
-                                        alt={rest.name}
-                                        loading="lazy"
-                                        decoding="async"
-                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                                    />
-
-                                    {/* Glass Overlay Badges */}
-                                    <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-                                        <div className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-white/10 shadow-xl">
-                                            {rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}
-                                        </div>
-                                        {rest.deal && (
-                                            <div className="bg-primary backdrop-blur-md text-black text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-primary/20 shadow-xl">
-                                                Deal
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="absolute top-3 right-3 flex flex-col gap-1.5">
-                                        {userId && (
-                                            <FavoriteButton
-                                                restaurantId={rest.id}
-                                                initialIsFavorited={favorites.includes(rest.id)}
-                                            />
-                                        )}
-                                        {rest.isBusy && (
-                                            <div className="bg-red-600 text-white text-[9px] font-black px-2 py-1.5 rounded-lg uppercase tracking-widest shadow-xl animate-pulse text-center">
-                                                System Busy
-                                            </div>
-                                        )}
-                                    </div>
-
-
-                                </div>
-
-                                <div className="px-1">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <h3 className="text-base font-black text-white group-hover:text-primary transition-colors leading-tight tracking-wide">
-                                            {rest.name}
-                                        </h3>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 text-[12px] text-slate-400 font-bold mb-1">
-                                        <span className="text-emerald-400">{rest.deliveryFee === "Free" ? "Free Delivery" : rest.deliveryFee}</span>
-                                        <span>•</span>
-                                        <span>{rest.prepTime}</span>
-                                    </div>
-
-                                    <p className="text-[11px] text-slate-500 font-medium line-clamp-1">
-                                        {rest.priceLevel} • {rest.tags.join(" • ")}
-                                    </p>
-                                </div>
-                            </Link>
-                        ))
+                        <div className="py-32 flex flex-col items-center text-center">
+                            <div className="text-5xl mb-8 opacity-20">🍽️</div>
+                            <h3 className="text-2xl font-black text-white mb-2 italic">No local gems found</h3>
+                            <p className="text-slate-500 font-medium">Try adjusting your filters or area.</p>
+                        </div>
                     )}
                 </div>
 
-                <section className="w-full flex justify-center mt-20">
-                    <div className="p-8 md:p-16 bg-white/5 border border-white/10 rounded-[2.5rem] md:rounded-[4rem] flex flex-col items-center text-center max-w-5xl w-full relative overflow-hidden">
-                        <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
-                        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -z-10" />
-
-                        <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tighter text-white text-center">Built for the Community.</h2>
-                        <p className="text-sm md:text-lg text-slate-400 leading-relaxed mb-10 max-w-2xl text-center font-medium mx-auto">
-                            TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve. Experience the difference of a fair marketplace.
-                        </p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2 w-full max-w-3xl mx-auto">
-                            {[
-                                { icon: '📊', label: 'Fair Split' },
-                                { icon: '⚡', label: 'Priority' },
-                                { icon: '🏷️', label: '5% Saved' },
-                                { icon: '🎂', label: 'Gifts' }
-                            ].map((item, i) => (
-                                <div key={i} className="p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-primary/30 transition-colors flex flex-col items-center">
-                                    <div className="text-2xl mb-2">{item.icon}</div>
-                                    <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest">{item.label}</p>
+                <section className="mt-20 w-full flex justify-center">
+                    <div className="p-12 md:p-20 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-[3rem] md:rounded-[5rem] flex flex-col items-center text-center max-w-5xl w-full shadow-2xl">
+                        <h2 className="text-3xl md:text-5xl font-black mb-6 text-white italic tracking-tighter">Built for the Community.</h2>
+                        <p className="text-slate-500 text-base md:text-lg mb-12 max-w-3xl">TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve.</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
+                            {[{ icon: '📊', label: 'Fair Split' }, { icon: '⚡', label: 'Priority' }, { icon: '🏷️', label: '5% Saved' }, { icon: '🎂', label: 'Gifts' }].map((item) => (
+                                <div key={item.label} className="p-6 rounded-3xl bg-black/60 border border-white/5 flex flex-col items-center">
+                                    <div className="text-3xl mb-4">{item.icon}</div>
+                                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{item.label}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
-            </main >
-        </div >
+            </main>
+        </div>
     );
 }
