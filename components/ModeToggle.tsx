@@ -23,25 +23,27 @@ export default function ModeToggle() {
     };
 
     return (
-        <div className="flex items-center gap-1 p-1 bg-white/[0.03] backdrop-blur-2xl rounded-full border border-white/10 shadow-2xl">
+        <div className="flex items-center gap-2 p-1 bg-white/[0.03] rounded-full border border-white/10 shadow-lg">
             <button 
                 onClick={() => handleToggle("delivery")}
-                className={`px-6 py-2 glass-pill text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 ${
+                className={`badge px-6 py-2 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                     mode === "delivery" 
-                    ? "bg-white text-black shadow-primary/20" 
-                    : "bg-transparent text-slate-400 hover:text-white border-transparent"
+                    ? "badge-solid-primary" 
+                    : "text-slate-500 hover:text-white"
                 }`}
             >
+                <div className={`w-1.5 h-1.5 rounded-full ${mode === 'delivery' ? 'bg-white' : 'bg-slate-700'}`}></div>
                 Delivery
             </button>
             <button 
                 onClick={() => handleToggle("pickup")}
-                className={`px-6 py-2 glass-pill text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 ${
+                className={`badge px-6 py-2 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                     mode === "pickup" 
-                    ? "bg-white text-black shadow-primary/20" 
-                    : "bg-transparent text-slate-400 hover:text-white border-transparent"
+                    ? "badge-solid-primary" 
+                    : "text-slate-500 hover:text-white"
                 }`}
             >
+                <div className={`w-1.5 h-1.5 rounded-full ${mode === 'pickup' ? 'bg-white' : 'bg-slate-700'}`}></div>
                 Pickup
             </button>
         </div>

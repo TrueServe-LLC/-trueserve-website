@@ -680,10 +680,10 @@ export default async function RestaurantFinder({
                                 ...(params.location ? { location: params.location } : {}),
                                 ...(params.search ? { search: params.search } : {})
                             }).toString()}`}
-                            className={`flex flex-row items-center justify-center gap-2 px-6 py-2.5 glass-pill transition-all whitespace-nowrap font-black text-sm shrink-0 border-white/10
+                            className={`px-6 py-2.5 badge transition-all whitespace-nowrap font-black text-sm shrink-0
                                 ${!category
-                                    ? "bg-white text-black shadow-primary/20 scale-105"
-                                    : "text-white hover:bg-white/10"}`}
+                                    ? "badge-solid-primary scale-105"
+                                    : "badge-subtle-white"}`}
                         >
                             <span className="text-lg">✨</span>
                             <span>All</span>
@@ -716,10 +716,10 @@ export default async function RestaurantFinder({
                                     ...(params.search ? { search: params.search } : {}),
                                     category: cat.name
                                 }).toString()}`}
-                                className={`flex flex-row items-center justify-center gap-2 px-6 py-2.5 glass-pill transition-all whitespace-nowrap font-black text-sm shrink-0 border-white/10
+                                className={`px-6 py-2.5 badge transition-all whitespace-nowrap font-black text-sm shrink-0
                                     ${category === cat.name
-                                        ? "bg-white text-black shadow-primary/20 scale-105"
-                                        : "text-white hover:bg-white/10"}`}
+                                        ? "badge-solid-primary scale-105"
+                                        : "badge-subtle-white"}`}
                             >
                                 <span className="text-lg leading-none">{cat.icon}</span>
                                 <span>{cat.name}</span>
@@ -752,7 +752,7 @@ export default async function RestaurantFinder({
                         { label: 'Deals', icon: '🏷️' },
                         { label: 'Under 30 min', icon: '🕒' }
                     ].map((filter: any) => (
-                        <button key={filter.label} className="flex items-center gap-2 whitespace-nowrap px-6 py-2.5 glass-pill border-white/10 hover:border-primary/40 text-[13px] font-black text-white hover:bg-white/10 transition-all shrink-0">
+                        <button key={filter.label} className="badge badge-subtle-white px-6 py-2.5 text-[13px] font-black transition-all shrink-0">
                             {filter.icon && <span>{filter.icon}</span>}
                             <span>{filter.label}</span>
                             {filter.hasArrow && (
