@@ -39,7 +39,7 @@ export default function MerchantPortal() {
                 </div>
             </nav>
 
-            <main className="container mx-auto py-32 space-y-56 animate-fade-in relative z-10 px-8 max-w-7xl">
+            <main className="container mx-auto py-32 space-y-32 animate-fade-in relative z-10 px-8 max-w-7xl">
                 {/* ── HERO ────────────────────────────────────────────────────────── */}
                 <div className="flex flex-col items-start text-left space-y-12 max-w-6xl mx-auto px-4 relative z-10 py-24 md:py-44">
                     <div className="flex items-center gap-4 text-white/50 font-black uppercase tracking-[0.6em] text-[11px] italic">
@@ -47,9 +47,9 @@ export default function MerchantPortal() {
                         Merchant Expansion
                     </div>
                     
-                    <h1 className="text-5xl md:text-[120px] font-serif text-white tracking-tight leading-[0.95] animate-slide-up max-w-[1400px]">
+                    <h1 className="text-5xl md:text-[80px] font-serif text-white tracking-tight leading-[0.95] animate-slide-up max-w-[1400px]">
                         Recapture your <br />
-                        <span className="italic">profits with <br />TrueServe</span>
+                        <span className="italic">profits with TrueServe</span>
                     </h1>
                     
                     <p className="text-slate-400 text-lg md:text-2xl font-bold leading-relaxed max-w-2xl italic">
@@ -118,20 +118,20 @@ export default function MerchantPortal() {
                     </div>
                 </div>
 
-                {/* ── SIGNUP FORM ─────────────────────────────────────────────── */}
+                {/* ── PRICING & SIGNUP ─────────────────────────────────────────────── */}
                 <div id="signup" className="scroll-mt-48 pt-32 pb-44 px-4 flex flex-col items-center">
-                    <div className="space-y-4 mb-32 text-center">
-                         <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.8em] text-[11px] italic mb-12">
+                    <div className="space-y-8 mb-24 text-center">
+                         <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.8em] text-[11px] italic mb-8">
                             <div className="w-12 h-px bg-primary/20" />
-                            Partner Onboarding
+                            Pricing & Onboarding
                             <div className="w-12 h-px bg-primary/20" />
                         </div>
-                        <h2 className="text-6xl md:text-[140px] font-serif text-white tracking-tight leading-[0.8] mb-12">
-                            Grow Your <br />
-                            <span className="italic text-primary">Partnership.</span>
+                        <h2 className="text-5xl md:text-[70px] font-serif text-white tracking-tight leading-[0.9] mb-8">
+                            Flexible Plans for <br />
+                            <span className="italic text-primary">Local Growth.</span>
                         </h2>
-                        <p className="text-slate-500 text-lg font-black uppercase tracking-[1em] italic opacity-40">
-                             The Movement For Local Business Partnership
+                        <p className="text-slate-500 text-[10px] md:text-[12px] font-black uppercase tracking-[0.6em] italic opacity-60">
+                             Select your protocol below and join the movement.
                         </p>
                     </div>
 
@@ -141,62 +141,7 @@ export default function MerchantPortal() {
                     </div>
                 </div>
 
-                {/* ── PLANS ────────────────────────────────────── */}
-                <div className="space-y-32 max-w-6xl mx-auto pt-32">
-                    <div className="text-center space-y-8">
-                        <div className="inline-flex px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-[0.4em] text-white italic mb-6">
-                             Pricing Strategy
-                        </div>
-                        <h3 className="text-5xl md:text-[90px] font-serif text-white tracking-tight leading-none">
-                            Plans that <span className="italic">Fit.</span>
-                        </h3>
-                        <p className="text-slate-500 text-lg font-black uppercase tracking-[0.6em] italic opacity-60">No hidden fees. Total transparency.</p>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
-                        {[
-                            {
-                                name: "Starter",
-                                amount: "15%",
-                                sub: "per order",
-                                desc: "Perfect for restaurants just getting started with TrueServe delivery.",
-                                features: ["Commission per delivery", "Basic order management", "Real-time tracking", "Email support", "Mobile-friendly portal"]
-                            },
-                            {
-                                name: "Growth",
-                                amount: "12%",
-                                sub: "per order",
-                                desc: "For restaurants scaling their delivery business with TrueServe.",
-                                features: ["Reduced commission rate", "Advanced analytics dashboard", "Priority support", "Custom menu uploads", "Marketing materials included"]
-                            }
-                        ].map((plan, i) => (
-                            <div key={i} className="flex flex-col p-12 rounded-2xl border border-white/5 bg-white/[0.02] space-y-12 hover:border-primary/20 transition-all backdrop-blur-3xl group">
-                                <div className="space-y-6 flex-grow">
-                                    <h4 className="text-3xl font-black text-white italic">{plan.name}</h4>
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-5xl font-black text-white italic tracking-tight">{plan.amount}</span>
-                                        <span className="text-slate-500 text-sm font-bold lowercase italic">{plan.sub}</span>
-                                    </div>
-                                    <p className="text-slate-500 text-sm font-bold italic leading-relaxed max-w-xs">{plan.desc}</p>
-                                    <button className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${i === 1 ? "bg-primary text-black shadow-lg shadow-primary/20" : "bg-transparent border border-white/20 text-white hover:bg-white/10"}`}>
-                                        {i === 0 ? "Get Started" : "Schedule Demo"}
-                                    </button>
-                                </div>
-                                <div className="space-y-6">
-                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic">Features:</h5>
-                                    <ul className="grid grid-cols-1 gap-4">
-                                        {plan.features.map((f, j) => (
-                                            <li key={j} className="flex items-center gap-3 text-slate-400 text-[10px] font-black uppercase tracking-widest italic">
-                                                <span className="text-primary text-base">✓</span>
-                                                {f}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
 
                 {/* ── FOOTER CTA ────────────────────────────────────────────────── */}
                 <div className="py-44 text-center max-w-5xl mx-auto space-y-16">

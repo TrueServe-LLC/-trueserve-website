@@ -97,14 +97,14 @@ function MerchantSignupFormInner() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-40 max-w-5xl mx-auto font-sans px-4">
+        <form onSubmit={handleSubmit} className="space-y-24 max-w-5xl mx-auto font-sans px-4">
             {state.error && (
                 <div className="p-8 bg-black/60 border border-red-500/20 rounded-2xl text-red-200 text-[10px] font-black uppercase tracking-[0.4em] animate-shake italic text-center shadow-2xl backdrop-blur-3xl">
                     ⚠️ {state.message}
                 </div>
             )}
 
-            <div className="space-y-40">
+            <div className="space-y-24">
                 {/* SECTION 1: Identity */}
                 <div className="space-y-16">
                     <div className="flex flex-col gap-6">
@@ -156,30 +156,36 @@ function MerchantSignupFormInner() {
                 </div>
 
                 {/* SECTION 3: Tiers */}
-                <div className="space-y-16">
+                <div className="space-y-10">
                     <div className="flex flex-col gap-6">
                         <span className="text-[11px] font-black text-primary bg-primary/10 self-start px-5 py-2 rounded-full uppercase tracking-[0.5em] italic border border-primary/20">Protocol Selection</span>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="flex flex-col gap-4">
                             {[
-                                { id: "Flex Options", title: "Flex Plan", desc: "15% per order.", sub: "Zero monthly overhead.", icon: "🌱" },
-                                { id: "Pro Subscription", title: "Pro Plan", desc: "0% commission. $199/mo.", sub: "Ideal for high volume.", icon: "⚡" }
+                                { id: "Flex Options", title: "FLEX PLAN", desc: "15% PER ORDER.", sub: "ZERO MONTHLY OVERHEAD.", icon: "🌱" },
+                                { id: "Pro Subscription", title: "PRO PLAN", desc: "0% COMMISSION. $199/MO.", sub: "IDEAL FOR HIGH VOLUME.", icon: "⚡" }
                             ].map((plan) => (
                                 <div 
                                     key={plan.id}
                                     onClick={() => setSelectedPlan(plan.id)}
-                                    className={`p-10 rounded-2xl border transition-all duration-700 cursor-pointer group flex items-start gap-8 ${selectedPlan === plan.id ? 'bg-primary/20 border-primary text-white shadow-2xl scale-105' : 'bg-white/[0.01] border-white/5 text-slate-500 hover:border-white/20'}`}
+                                    className={`relative flex items-center justify-between p-1.5 pr-8 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden group ${selectedPlan === plan.id ? 'bg-primary border-primary shadow-[0_0_30px_rgba(245,158,11,0.2)]' : 'bg-white/[0.02] border-white/5 hover:border-white/10'}`}
                                 >
-                                    <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-3xl group-hover:scale-110 transition-transform ${selectedPlan === plan.id ? 'bg-primary/20 text-primary' : 'bg-white/5 text-slate-800'}`}>
-                                        {plan.icon}
+                                    <div className="flex items-center gap-6">
+                                        <div className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all ${selectedPlan === plan.id ? 'bg-black/20 text-white' : 'bg-white/5 text-slate-800'}`}>
+                                            <span className="text-xl filter grayscale group-hover:grayscale-0 transition-all">{plan.icon}</span>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <h4 className={`text-[12px] font-black italic tracking-[0.2em] leading-none ${selectedPlan === plan.id ? 'text-black' : 'text-white'}`}>{plan.title}</h4>
+                                            <div className="flex items-center gap-2 mt-1.5">
+                                                <span className={`text-[10px] font-black tracking-widest ${selectedPlan === plan.id ? 'text-black/80' : 'text-slate-500'}`}>{plan.desc}</span>
+                                                <div className={`w-1 h-1 rounded-full ${selectedPlan === plan.id ? 'bg-black/20' : 'bg-white/10'}`} />
+                                                <span className={`text-[9px] font-bold italic tracking-widest ${selectedPlan === plan.id ? 'text-black/60' : 'text-slate-700 font-sans'}`}>{plan.sub}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <h4 className={`text-sm font-black uppercase tracking-[0.4em] mb-2 italic ${selectedPlan === plan.id ? 'text-white' : ''}`}>{plan.title}</h4>
-                                        <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5 leading-relaxed italic">{plan.desc}</p>
-                                        <p className="text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em] italic">{plan.sub}</p>
+                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedPlan === plan.id ? 'border-white bg-white' : 'border-white/10'}`}>
+                                        {selectedPlan === plan.id && <div className="w-2.5 h-2.5 bg-primary rounded-full"></div>}
                                     </div>
-                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedPlan === plan.id ? 'border-primary bg-primary' : 'border-white/10'}`}>
-                                        {selectedPlan === plan.id && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
-                                    </div>
+                                    {selectedPlan === plan.id && <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent pointer-events-none" />}
                                 </div>
                             ))}
                         </div>
@@ -187,8 +193,8 @@ function MerchantSignupFormInner() {
                 </div>
             </div>
 
-            <div className="pt-32 flex flex-col items-center">
-                <button disabled={isPending} className="badge-solid-primary h-[90px] w-full max-w-2xl text-sm font-black uppercase tracking-[0.8em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+            <div className="pt-20 flex flex-col items-center">
+                <button disabled={isPending} className="badge-solid-primary h-[70px] w-full max-w-xl text-sm font-black uppercase tracking-[0.6em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)]">
                     {isPending ? "Configuring Access..." : "Submit Application →"}
                 </button>
                 <p className="mt-20 text-center text-[11px] text-slate-700 font-black uppercase tracking-[1em] italic leading-relaxed opacity-40">

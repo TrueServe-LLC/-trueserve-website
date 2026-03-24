@@ -118,14 +118,14 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
     };
 
     if (!isLoaded) {
-        return <div className="h-12 w-full max-w-xl bg-slate-800 animate-pulse rounded-full"></div>;
+        return <div className="h-12 w-full max-w-xl bg-slate-800 animate-pulse rounded-2xl"></div>;
     }
 
     return (
         <div className="w-full max-w-xl relative group z-50">
-            <div className="absolute -inset-4 bg-primary/10 rounded-full blur-[80px] opacity-0 group-hover:opacity-40 transition duration-1000"></div>
+            <div className="absolute -inset-4 bg-primary/10 rounded-2xl blur-[80px] opacity-0 group-hover:opacity-40 transition duration-1000"></div>
 
-            <form onSubmit={handleManualSearch} className={`relative flex ${isCompact ? 'flex-row items-center' : 'flex-col sm:flex-row items-stretch sm:items-center'} bg-black/80 backdrop-blur-3xl border border-white/10 ${isCompact ? 'rounded-full p-1' : 'rounded-2xl sm:rounded-full p-2 sm:p-2.5'} gap-2 shadow-3xl z-20`}>
+            <form onSubmit={handleManualSearch} className={`relative flex ${isCompact ? 'flex-row items-center' : 'flex-col sm:flex-row items-stretch sm:items-center'} bg-black/80 backdrop-blur-3xl border border-white/10 ${isCompact ? 'rounded-2xl p-1' : 'rounded-2xl p-2 sm:p-2.5'} gap-2 shadow-3xl z-20`}>
                 <div className="flex items-center flex-1 px-4">
                     <span className={`pl-1 pr-3 ${isCompact ? 'text-lg' : 'text-xl md:text-2xl'} filter drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]`}>📍</span>
                     <input
@@ -143,7 +143,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                     />
                 </div>
 
-                <button type="submit" className={`badge-solid-primary ${isCompact ? 'rounded-full px-6 py-2 text-[10px] whitespace-nowrap' : 'rounded-full px-10 md:px-14 py-4 md:py-4.5 text-sm md:text-xl h-glow'} !bg-primary !text-black font-black hover:scale-[1.05] transition-all`}>
+                <button type="submit" className={`badge-solid-primary ${isCompact ? 'rounded-2xl px-6 py-2 text-[10px] whitespace-nowrap' : 'rounded-2xl px-10 md:px-14 py-4 md:py-4.5 text-sm md:text-xl h-glow'} !bg-primary !text-black font-black hover:scale-[1.05] transition-all`}>
                     {isCompact ? 'Search' : 'Find Food'}
                 </button>
             </form>
