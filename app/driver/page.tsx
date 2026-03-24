@@ -18,8 +18,8 @@ export default function DriverPortal() {
             <nav className="sticky top-0 z-50 backdrop-blur-xl bg-[#080c14]/80 border-b border-white/5 px-8 py-5 flex justify-between items-center">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-3">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-xl" />
-                        <span className="text-2xl font-black text-white tracking-tight font-serif italic text-white">TrueServe</span>
+                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-xl border border-primary/20" />
+                        <span className="text-2xl font-black text-white tracking-tight font-serif italic text-white">True<span className="text-primary not-italic uppercase tracking-widest text-lg font-sans">Serve</span></span>
                     </Link>
                     <div className="h-6 w-px bg-white/10 mx-2 hidden lg:block"></div>
                     <nav className="hidden lg:flex items-center gap-8">
@@ -72,8 +72,8 @@ export default function DriverPortal() {
                     <div className="container mx-auto px-6 max-w-6xl space-y-20">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                             <div className="space-y-6">
-                                <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
-                                    <div className="w-8 h-px bg-slate-800" />
+                                <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px]">
+                                    <div className="w-8 h-px bg-primary/30" />
                                     Driver Portal
                                 </div>
                                 <h2 className="text-3xl md:text-5xl text-white font-serif font-bold italic tracking-tight leading-[1]">
@@ -97,8 +97,8 @@ export default function DriverPortal() {
                         <div className="border-t border-white/5 pt-32">
                              <div className="flex flex-col md:flex-row gap-16 max-w-7xl mx-auto w-full items-center py-12">
                                 <div className="flex-1 space-y-8">
-                                    <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
-                                        <div className="w-8 h-px bg-slate-800" />
+                                    <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px]">
+                                        <div className="w-8 h-px bg-primary/30" />
                                         Fleet Enrollment
                                     </div>
                                     <h2 className="text-3xl md:text-6xl text-white font-serif font-bold italic tracking-tight leading-none uppercase">
@@ -142,8 +142,8 @@ export default function DriverPortal() {
                         {/* ── REQUIREMENTS ─────────────────────────────────────────────── */}
                         <div className="p-10 md:p-16 border-t border-white/5 space-y-12">
                             <div className="text-center space-y-4">
-                                <h2 className="text-3xl md:text-5xl text-white font-serif font-bold italic tracking-tighter leading-none uppercase">Fleet Entry <br />Requirements.</h2>
-                                <p className="text-slate-500 text-sm md:text-base font-medium max-w-xl mx-auto">Apply in minutes. Most protocols are synchronized instantly.</p>
+                                <h2 className="text-3xl md:text-5xl text-white font-serif font-bold italic tracking-tighter leading-none uppercase">Fleet Entry <br /><span className="text-primary not-italic">Requirements.</span></h2>
+                                <p className="text-slate-500 text-sm md:text-base font-medium max-w-xl mx-auto">Apply in minutes. Most protocols are <span className="text-primary italic">synchronized instantly.</span></p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[

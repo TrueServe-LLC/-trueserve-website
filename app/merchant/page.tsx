@@ -18,12 +18,11 @@ export default function MerchantPortal() {
 
     return (
         <div className="min-h-screen bg-[#080c14] text-slate-300 selection:bg-primary/30 font-sans">
-            {/* Standardized Sticky Nav */}
-            <nav className="sticky top-0 z-50 backdrop-blur-xl bg-[#080c14]/80 border-b border-white/5 px-8 py-5 flex justify-between items-center">
+            <nav className="sticky top-0 z-50 backdrop-blur-xl bg-[#080c14]/80 border-b border-primary/10 px-8 py-5 flex justify-between items-center">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-3">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-xl" />
-                        <span className="text-2xl font-black text-white tracking-tight font-serif italic text-white">TrueServe</span>
+                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-xl border border-primary/20" />
+                        <span className="text-2xl font-black text-white tracking-tight font-serif italic text-white">True<span className="text-primary not-italic uppercase tracking-widest text-lg font-sans">Serve</span></span>
                     </Link>
                     <div className="h-6 w-px bg-white/10 mx-2 hidden lg:block"></div>
                     <nav className="hidden lg:flex items-center gap-8">
@@ -43,13 +42,13 @@ export default function MerchantPortal() {
                   {/* Premium Header Title Stack: Screenshot 2 Style */}
                   <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 max-w-7xl">
                     <div className="space-y-10">
-                        <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
-                            <div className="w-8 h-px bg-slate-800" />
+                        <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px]">
+                            <div className="w-8 h-px bg-primary/30" />
                             Merchant Tools
                         </div>
                         <h1 className="text-5xl md:text-[110px] font-serif text-white tracking-tight leading-[0.85] font-bold italic">
-                            Manage orders and <br />
-                            <span className="text-primary not-italic">track deliveries</span> in real time.
+                            Manage <span className="text-primary not-italic">orders</span> and <br />
+                            track deliveries in <span className="text-primary not-italic">real time.</span>
                         </h1>
                         <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-2xl mt-8">
                             Everything you need to run your food business efficiently. Real-time order visibility, delivery tracking, and merchant controls built into one intuitive dashboard.
@@ -71,14 +70,14 @@ export default function MerchantPortal() {
                     {/* ── PRICING PLANS ─────────────────────────────────────────────── */}
                     <div className="space-y-32">
                         <div className="text-center space-y-8">
-                             <div className="flex items-center justify-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
-                                <div className="w-8 h-px bg-slate-800" />
+                             <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px]">
+                                <div className="w-8 h-px bg-primary/30" />
                                 Growth Protocols
-                                <div className="w-8 h-px bg-slate-800" />
+                                <div className="w-8 h-px bg-primary/30" />
                              </div>
                              <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tight leading-none">
-                                Your Margin. <br />
-                                <span className="text-primary not-italic">Our Mission.</span>
+                                Your <span className="text-primary not-italic">Margin.</span> <br />
+                                Our <span className="text-primary not-italic">Mission.</span>
                              </h2>
                         </div>
 
@@ -179,10 +178,10 @@ export default function MerchantPortal() {
                     </div>
 
                     {/* Value Props Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12 px-4 border-t border-white/5 pt-24">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 px-4 border-t border-white/5 pt-32">
                         <div className="col-span-full mb-8">
-                            <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
-                                <div className="w-8 h-px bg-slate-800" />
+                            <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px]">
+                                <div className="w-8 h-px bg-primary/30" />
                                 Operational Standards
                             </div>
                         </div>
@@ -190,32 +189,32 @@ export default function MerchantPortal() {
                             { icon: '🎯', title: 'Customer Hub', desc: 'Instantly connect with hungry diners in your neighborhood grid.' },
                             { icon: '⚡', title: 'Elite Dispatch', desc: 'High-velocity engine that ensures food stays hot and fresh.' },
                             { icon: '🌐', title: 'Digital Base', desc: 'Free professional storefront for your business operations.' },
-                            { icon: '💎', title: 'Direct Margin', desc: 'Zero hidden fees and a split that respects your bottom line.' }
+                            { icon: '💎', title: 'Direct Margin', desc: 'Zero hidden fees and a split that respects your bottom line.' },
+                            { icon: '📍', title: "Local Priority", desc: "We prioritize local brands over global chains." },
+                            { icon: '🤝', title: "Fair Splits", desc: "Drivers earn more, restaurants keep more." },
+                            { icon: '🔄', title: "Rapid Sync", desc: "Integration with your POS in minutes." }
                         ].map((row, i) => (
-                            <div key={i} className="space-y-8 group">
-                                <div className="text-5xl group-hover:scale-110 transition-transform opacity-30">{row.icon}</div>
-                                <h3 className="text-2xl text-white font-serif italic">{row.title}</h3>
-                                <p className="text-slate-500 text-sm font-medium leading-relaxed">{row.desc}</p>
+                            <div key={i} className="space-y-6 group">
+                                <div className="text-4xl group-hover:scale-110 transition-transform opacity-40">{row.icon}</div>
+                                <h3 className="text-xl text-white font-serif italic group-hover:text-primary transition-colors">{row.title}</h3>
+                                <p className="text-slate-500 text-xs font-medium leading-relaxed">{row.desc}</p>
                             </div>
                         ))}
                     </div>
 
-                    {/* Bottom Feature Stack */}
-                    <div className="p-16 md:p-32 bg-primary/[0.02] border border-primary/10 rounded-[5rem] text-center shadow-2xl space-y-12">
-                        <h2 className="text-5xl md:text-8xl text-white font-serif italic leading-none tracking-tighter">Marketplace <br />Revolution.</h2>
-                        <p className="text-slate-400 text-lg md:text-2xl mb-16 max-w-3xl mx-auto font-medium leading-relaxed">TrueServe isn&apos;t just an app. We&apos;re a delivery standard designed to help local gems flourish without sacrificing their hard-earned margins.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl mx-auto pt-12">
-                            {[
-                                { label: "Local Priority", icon: "📍", desc: "We prioritize local brands over global chains." },
-                                { label: "Fair Splits", icon: "🤝", desc: "Drivers earn more, restaurants keep more." },
-                                { label: "Rapid Sync", icon: "🔄", desc: "Integration with your POS in minutes." }
-                            ].map((item) => (
-                                <div key={item.label} className="p-12 rounded-[3.5rem] bg-[#080c14] border border-white/5 flex flex-col items-center group cursor-pointer hover:border-primary/30 transition-all shadow-xl">
-                                    <div className="text-5xl mb-6 group-hover:scale-110 transition-transform opacity-40">{item.icon}</div>
-                                    <h4 className="text-[12px] font-bold uppercase text-white tracking-[0.2em] mb-4">{item.label}</h4>
-                                    <p className="text-xs text-slate-500 font-medium leading-relaxed">{item.desc}</p>
-                                </div>
-                            ))}
+                    {/* Bottom Feature Stack Simplified */}
+                    <div className="py-24 text-center space-y-12">
+                        <h2 className="text-5xl md:text-7xl text-white font-serif italic leading-tight tracking-tighter">
+                            A Marketplace <br />
+                            <span className="text-primary not-italic font-sans font-black uppercase tracking-widest text-4xl md:text-6xl">Revolution.</span>
+                        </h2>
+                        <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+                            <span className="text-primary">TrueServe</span> isn&apos;t just an app. We&apos;re a delivery standard designed to help local gems flourish without sacrificing margins.
+                        </p>
+                        <div className="pt-12">
+                             <Link href="/merchant-signup" className="badge-solid-primary !px-16 !py-6">
+                                Join the Network
+                             </Link>
                         </div>
                     </div>
                 </div>

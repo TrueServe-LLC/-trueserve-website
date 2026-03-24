@@ -22,9 +22,9 @@ export default async function Home() {
             <img 
               src="/logo.png" 
               alt="TrueServe Logo" 
-              className="w-10 h-10 rounded-xl border border-white/10 group-hover:border-primary transition-all shadow-lg grayscale focus:grayscale-0 group-hover:grayscale-0" 
+              className="w-10 h-10 rounded-xl border border-primary/20 group-hover:border-primary transition-all shadow-lg grayscale focus:grayscale-0 group-hover:grayscale-0" 
             />
-            <span className="text-xl md:text-2xl font-black tracking-tight text-white font-serif">TrueServe</span>
+            <span className="text-xl md:text-2xl font-black tracking-tight text-white font-serif">True<span className="text-primary not-italic font-sans uppercase tracking-widest text-lg">Serve</span></span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
@@ -89,10 +89,10 @@ export default async function Home() {
         </section>
 
         {/* ── MISSION ─────────────────────────────────────────────────────── */}
-        <section className="py-32 bg-gradient-to-b from-[#0a0a0b] to-[#121214]">
+        <section className="py-48 bg-gradient-to-b from-[#0a0a0b] to-[#121214]">
           <div className="container mx-auto px-6 max-w-4xl text-center">
-            <h2 className="text-2xl md:text-3xl font-serif italic text-white leading-relaxed font-medium">
-              &quot;TrueServe is a driver-first delivery marketplace that pays couriers 25–40% more than competitors while lowering restaurant commissions and simplifying customer pricing.&quot;
+            <h2 className="text-2xl md:text-4xl font-serif italic text-white leading-relaxed font-medium">
+              &quot;<span className="text-primary">TrueServe</span> is a driver-first marketplace that pays couriers <span className="text-primary">25–40%</span> more while lowering commissions and simplifying costs.&quot;
             </h2>
           </div>
         </section>
@@ -100,8 +100,8 @@ export default async function Home() {
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
         <section className="py-32 bg-[#0a0a0b]">
           <div className="container mx-auto px-6 max-w-7xl">
-            <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px] mb-12">
-                <div className="w-8 h-px bg-slate-800" />
+            <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-12">
+                <div className="w-8 h-px bg-primary/30" />
                 Platform Features
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
