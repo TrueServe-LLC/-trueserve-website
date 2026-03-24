@@ -170,8 +170,13 @@ h6 {
 }
 
 /* Glass Pill Design System */
-.glass-pill {
-  @apply rounded-full flex items-center justify-center transition-all duration-300;
+@utility glass-pill {
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-property: all;
+  transition-duration: 300ms;
   backdrop-filter: blur(16px);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -180,7 +185,7 @@ h6 {
   overflow: hidden;
 }
 
-.glass-pill::before {
+@utility glass-pill-before {
   content: "";
   position: absolute;
   top: 0;
@@ -191,30 +196,30 @@ h6 {
   pointer-events: none;
 }
 
-.glass-pill-primary {
+@utility glass-pill-primary {
   @apply glass-pill;
   background: rgba(68, 140, 137, 0.1);
   border: 1px solid rgba(68, 140, 137, 0.3);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 15px rgba(68, 140, 137, 0.2);
+
+  &:hover {
+    background: rgba(68, 140, 137, 0.2);
+    border-color: rgba(68, 140, 137, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(68, 140, 137, 0.3);
+  }
 }
 
-.glass-pill-primary:hover {
-  background: rgba(68, 140, 137, 0.2);
-  border-color: rgba(68, 140, 137, 0.5);
-  transform: translateY(-1px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(68, 140, 137, 0.3);
-}
-
-.glass-pill-secondary {
+@utility glass-pill-secondary {
   @apply glass-pill;
   background: rgba(241, 161, 55, 0.1);
   border: 1px solid rgba(241, 161, 55, 0.3);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 15px rgba(241, 161, 55, 0.2);
-}
 
-.glass-pill-secondary:hover {
-  background: rgba(241, 161, 55, 0.2);
-  border-color: rgba(241, 161, 55, 0.5);
-  transform: translateY(-1px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(241, 161, 55, 0.3);
+  &:hover {
+    background: rgba(241, 161, 55, 0.2);
+    border-color: rgba(241, 161, 55, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(241, 161, 55, 0.3);
+  }
 }
