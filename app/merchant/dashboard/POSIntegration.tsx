@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { generateApiKey } from "../actions";
+import { generateApiKey, savePosCredentials } from "../actions";
 
 interface POSIntegrationProps {
     currentApiKey?: string;
@@ -11,6 +11,7 @@ interface POSIntegrationProps {
 export default function POSIntegration({ currentApiKey, posType = "None" }: POSIntegrationProps) {
     const [apiKey, setApiKey] = useState(currentApiKey || "");
     const [loading, setLoading] = useState(false);
+    const [syncing, setSyncing] = useState(false);
     const [showKey, setShowKey] = useState(false);
     const [copied, setCopied] = useState(false);
     
@@ -31,6 +32,21 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
             alert("Failed to generate key: " + res.error);
         }
         setLoading(false);
+    };
+
+    const handleSync = async () => {
+        if (!clientId || !clientSecret) {
+            alert("Please provide both Client ID and Secret to sync.");
+            return;
+        }
+        setSyncing(true);
+        const res = await savePosCredentials(externalPos, clientId, clientSecret);
+        if (res.success) {
+            alert(`${externalPos} integration configured and synced!`);
+        } else {
+            alert("Failed to sync: " + res.error);
+        }
+        setSyncing(false);
     };
 
     const copyToClipboard = () => {
@@ -61,7 +77,7 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                                  <button 
                                     key={sys}
                                     onClick={() => setExternalPos(sys)}
-                                    className={`px-6 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${externalPos === sys ? 'bg-primary border-primary text-black' : 'bg-white/5 border-white/10 text-slate-500'}`}
+                                    className={`px-6 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${externalPos === sys ? 'bg-primary border-primary text-black shadow-lg shadow-primary/20' : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20'}`}
                                  >
                                     {sys}
                                  </button>
@@ -91,8 +107,12 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                                     className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-primary focus:outline-none font-mono"
                                 />
                             </div>
-                            <button className="badge-solid-primary !py-4 !w-full !text-[10px] h-glow">
-                                Sync {externalPos} System
+                            <button 
+                                onClick={handleSync}
+                                disabled={syncing}
+                                className="badge-solid-primary !py-4 !w-full !text-[10px] h-glow disabled:opacity-50"
+                            >
+                                {syncing ? "Syncing Protocols..." : `Sync ${externalPos} System`}
                             </button>
                         </div>
                     )}

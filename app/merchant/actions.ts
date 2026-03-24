@@ -392,6 +392,8 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     const zip = formData.get("zip") as string;
     const plan = formData.get("plan") as string;
     const posSystem = formData.get("posSystem") as string || "None";
+    const posClientId = formData.get("posClientId") as string || "";
+    const posClientSecret = formData.get("posClientSecret") as string || "";
 
     if (!restaurantName || !contactName || !email || !password || !address || !city || !state) {
         return { message: "Please fill in all required fields.", error: true };
@@ -462,6 +464,8 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             imageUrl: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200',
             plan: plan || 'Flex Options',
             posSystem,
+            posClientId,
+            posClientSecret,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
@@ -786,6 +790,38 @@ export async function updateAutoPilotSettings(restaurantId: string, enabled: boo
 }
 
 import { analyzeMerchantSentiment } from "@/lib/customerPulse";
+
+export async function savePosCredentials(posSystem: string, clientId: string, clientSecret: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({ 
+                posSystem, 
+                posClientId: clientId, 
+                posClientSecret: clientSecret,
+                updatedAt: new Date().toISOString() 
+            })
+            .eq('ownerId', user.id);
+
+        if (error) throw error;
+        
+        await logAuditAction({ 
+            action: "UPDATE_POS_CREDENTIALS", 
+            targetId: user.id, 
+            entityType: "Restaurant", 
+            message: `Updated integration for ${posSystem}` 
+        });
+        
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
 
 export async function getMerchantSentiment(restaurantId: string) {
     const supabase = await createClient();

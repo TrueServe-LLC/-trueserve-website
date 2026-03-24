@@ -33,7 +33,9 @@ function MerchantSignupFormInner() {
         city: "",
         state: "",
         zip: "",
-        posSystem: "Toast POS",
+        posSystem: "None",
+        posClientId: "",
+        posClientSecret: "",
     });
 
     const updateForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -69,6 +71,8 @@ function MerchantSignupFormInner() {
         fd.append("zip", formData.zip);
         fd.append("plan", selectedPlan);
         fd.append("posSystem", formData.posSystem);
+        fd.append("posClientId", formData.posClientId);
+        fd.append("posClientSecret", formData.posClientSecret);
 
         startTransition(() => {
             formAction(fd);
@@ -161,21 +165,24 @@ function MerchantSignupFormInner() {
                                 <input name="state" type="text" required maxLength={2} value={formData.state} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase text-center" placeholder="ST" />
                                 <input name="zip" type="text" required value={formData.zip} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase" placeholder="ZIP" />
                             </div>
-                            <div className="space-y-4 pt-4">
-                                <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Current POS System</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                    {['Toast', 'Square', 'Clover', 'Revel', 'Lightspeed', 'Other'].map((pos) => (
-                                        <button
-                                            key={pos}
-                                            type="button"
-                                            onClick={() => setFormData(prev => ({ ...prev, posSystem: pos }))}
-                                            className={`px-4 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.posSystem === pos ? 'bg-primary border-primary text-black shadow-lg shadow-primary/20 scale-[1.02]' : 'bg-white/[0.03] border-white/10 text-slate-500 hover:border-white/20'}`}
-                                        >
-                                            {pos}
-                                        </button>
-                                    ))}
+                            {formData.posSystem !== 'None' && (
+                                <div className="space-y-6 pt-6 animate-fade-in">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-widest italic border border-primary/20">Fast-Track Setup (Optional)</span>
+                                    </div>
+                                    <p className="text-[10px] text-slate-500 font-bold italic">Providing your {formData.posSystem} keys now allows us to pre-sync your menu before we even call you.</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">{formData.posSystem} Client ID</label>
+                                            <input name="posClientId" type="text" value={formData.posClientId || ""} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-mono" placeholder="ID..." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">{formData.posSystem} Client Secret</label>
+                                            <input name="posClientSecret" type="password" value={formData.posClientSecret || ""} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-mono" placeholder="••••••••" />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
 
