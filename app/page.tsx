@@ -113,9 +113,10 @@ export default async function Home() {
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
         <section className="py-32 bg-[#0a0a0b]">
           <div className="container mx-auto px-6 max-w-7xl">
-            <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-12 italic">
-                <div className="w-8 h-px bg-primary/30" />
+            <div className="flex items-center justify-center gap-6 text-primary font-black uppercase tracking-[0.6em] text-[10px] mb-20 italic">
+                <div className="w-12 h-px bg-primary/30" />
                 Platform Features
+                <div className="w-12 h-px bg-primary/30" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {[
