@@ -31,7 +31,7 @@
 
   --radius: 24px;
 
-  --font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-family: var(--font-mulish), system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -58,9 +58,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  font-family: var(--font-serif), serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
   color: #fff;
   /* White Headings */
 }
@@ -126,9 +127,13 @@ h6 {
 /* Utilities */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
+}
+
+section {
+  padding: 100px 0;
 }
 
 .animate-fade-in {

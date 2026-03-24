@@ -1,7 +1,6 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import HeroCarousel from "@/components/HeroCarousel";
 import LandingSearch from "@/components/LandingSearch";
 import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
@@ -14,148 +13,166 @@ export default async function Home() {
   const userId = cookieStore.get("userId")?.value;
 
   return (
-    <div className="min-h-screen relative overflow-hidden font-sans text-slate-200 bg-black">
+    <div className="min-h-screen relative overflow-hidden font-sans text-slate-300 bg-[#080c14]">
       <EmergencyBanner />
       
-      {/* Background Decor */}
-      <div className="blob bg-secondary w-[500px] h-[500px] top-[-200px] right-[-100px] opacity-10" />
-      <div className="blob bg-primary w-[300px] h-[300px] bottom-[10%] left-[-100px] opacity-10" />
-
-      {/* Standardized Linear Top-Nav */}
-      <nav className="sticky top-0 z-50 bg-black/60 backdrop-blur-2xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full border border-white/10 shadow-lg" />
-            <span className="text-xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
+      {/* Premium Header Sticky */}
+      <nav className="sticky top-0 z-50 bg-[#080c14]/80 backdrop-blur-xl border-b border-white/5 px-8 py-5 flex justify-between items-center">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-3">
+            <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-xl" />
+            <span className="text-2xl font-black text-white tracking-tight font-serif italic">TrueServe</span>
           </Link>
-          <div className="hidden md:block h-6 w-px bg-white/10 mx-2"></div>
-          <nav className="hidden md:flex items-center gap-1">
-            <Link href="/restaurants" className="badge-subtle-primary text-[10px] py-1.5 border-none">🍴 Order Food</Link>
-            <Link href="/driver" className="text-slate-500 hover:text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 transition-colors">🛵 Drive</Link>
-            <Link href="/merchant" className="text-slate-500 hover:text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 transition-colors">📊 Partner</Link>
-          </nav>
+          <div className="hidden lg:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+            <Link href="/restaurants" className="hover:text-primary transition-colors">Marketplace</Link>
+            <Link href="/merchant" className="hover:text-primary transition-colors">Restaurants</Link>
+            <Link href="/driver" className="hover:text-primary transition-colors">Drivers</Link>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
+        
+        <div className="flex items-center gap-4">
           {userId ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <NotificationBell userId={userId} />
               <ModeToggle />
-              <Link href="/user/settings" className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              <Link href="/user/settings" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
               </Link>
               <LogoutButton />
             </div>
           ) : (
-            <div className="flex items-center gap-4">
-               <Link href="/login" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Sign In</Link>
+            <div className="flex items-center gap-6">
+               <Link href="/login" className="text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Sign In</Link>
                <ModeToggle />
-               <Link href="/restaurants" className="badge-solid-primary py-2 px-6 text-[10px] font-black shadow-lg shadow-primary/10">Start Order</Link>
+               <Link href="/restaurants" className="badge-solid-primary py-3 px-8 text-[10px] font-bold">Order Now</Link>
             </div>
           )}
         </div>
       </nav>
 
-      <main className="container py-12 md:py-32 px-4 md:px-8 pb-48 text-center flex flex-col items-center">
-        {/* Centered High-Impact Hero Section */}
-        <section className="max-w-5xl w-full flex flex-col items-center gap-12 mb-32 md:mb-56">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl leading-relaxed backdrop-blur-sm animate-fade-in mb-4">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Join the TrueServe Network
+      {/* Hero Section - Full Visual Impact */}
+      <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 overflow-hidden pt-0 pb-0">
+          <div className="absolute inset-0 z-0">
+            <img 
+              src="/Users/lcking992/.gemini/antigravity/brain/6ab4212f-1910-4d39-a07f-8099fe107ea1/trueserve_hero_premium_delivery_1774363809773.png" 
+              alt="Premium Delivery" 
+              className="w-full h-full object-cover opacity-40"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#080c14] via-[#080c14]/40 to-transparent"></div>
+          </div>
+          
+          <div className="relative z-10 max-w-5xl text-center space-y-12">
+            <div className="inline-block px-4 py-1.5 bg-primary/20 border border-primary/30 rounded-full text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
+              Now Serving West Village, SC
             </div>
-            
-            <h1 className="text-6xl md:text-[140px] font-black text-white italic tracking-tighter leading-[0.85] animate-fade-in stagger-1 px-4 text-center">
-              Find <span className="text-primary italic">Foods.</span> <br />
-              <span className="text-[0.6em] md:text-[0.5em] text-white/90">Your way.</span>
+            <h1 className="text-6xl md:text-[100px] leading-[0.95] text-white font-serif max-w-4xl mx-auto drop-shadow-2xl">
+              Elevated Delivery. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Local Soul.</span>
             </h1>
-            
-            <p className="text-lg md:text-2xl text-slate-400 font-medium italic leading-relaxed max-w-2xl animate-fade-in stagger-2 mt-8 text-center">
-              Hyper-efficient routing that keeps food hot and fees low. <br />
-              Grow with us. Engineered for the neighborhood gems.
+            <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-300 font-medium leading-relaxed italic border-l-2 border-primary/40 pl-8 text-left">
+              Transparent earnings for drivers. Better margins for restaurants. 
+              Higher standards for every single order. TrueServe is logistics for the community.
             </p>
-            
-            <div className="w-full max-w-2xl animate-fade-in stagger-3 mt-16 flex flex-col items-center">
-               <LandingSearch />
-               
-               <div className="flex flex-col sm:flex-row items-center justify-center gap-12 mt-20">
-                    <Link href="/driver-signup" className="group flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all">
-                        <span>Become a Driver</span>
-                        <div className="w-8 h-px bg-white/10 group-hover:w-16 group-hover:bg-emerald-500 transition-all duration-500"></div>
-                    </Link>
-                    <Link href="/merchant-signup" className="group flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all">
-                        <span>Partner Merchant</span>
-                        <div className="w-8 h-px bg-white/10 group-hover:w-16 group-hover:bg-primary transition-all duration-500"></div>
-                    </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
+               <div className="w-full max-w-xl">
+                 <LandingSearch />
                </div>
             </div>
-        </section>
+          </div>
+      </section>
 
-        {/* Feature UI Mockup Section */}
-        <section className="w-full max-w-7xl mb-64 animate-fade-in stagger-5 px-4">
-             <div className="relative rounded-[4rem] overflow-hidden border border-white/10 shadow-3xl transition-all duration-1000 group bg-white/[0.02]">
-                <div className="md:h-[600px] w-full overflow-hidden">
-                    <HeroCarousel />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
-                <div className="absolute bottom-12 left-12 md:bottom-24 md:left-24 text-left max-w-2xl z-10 px-2">
-                    <div className="px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full inline-block mb-6 backdrop-blur-md">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400">OPERATIONAL UPDATE</p>
-                    </div>
-                    <h3 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none mb-6 px-2">The New Standard <br />in Delivery.</h3>
-                    <p className="text-slate-400 font-bold italic text-lg leading-relaxed max-w-md px-2">Synchronizing local excellence with elite logistics infrastructure globally.</p>
-                </div>
-             </div>
-        </section>
-
-        {/* Path Selection Grid */}
-        <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 mb-64">
-             <Link href="/driver" className="group relative aspect-square md:aspect-auto md:h-[500px] overflow-hidden rounded-[4rem] border border-white/10 shadow-3xl">
-                <img src="https://images.unsplash.com/photo-1585011664466-b7bbe92f34f9?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-20 group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-                <div className="absolute bottom-12 left-12 right-12 text-left">
-                    <h3 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter mb-4 px-2 lowercase leading-none">fleet entry hub.</h3>
-                    <p className="text-slate-400 font-bold italic text-base mb-8 max-w-sm px-2">Earn more with fair splits and high-velocity routing.</p>
-                    <div className="inline-flex items-center gap-3 badge-emerald py-3.5 px-10 text-[10px] tracking-widest !rounded-full">Apply to Hub →</div>
-                </div>
-             </Link>
-
-             <Link href="/merchant" className="group relative aspect-square md:aspect-auto md:h-[500px] overflow-hidden rounded-[4rem] border border-white/10 shadow-3xl">
-                <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200" className="w-full h-full object-cover grayscale opacity-20 group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-                <div className="absolute bottom-16 left-16 right-16 text-left">
-                    <h3 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter mb-4 px-2 lowercase leading-none">partner architect.</h3>
-                    <p className="text-slate-400 font-bold italic text-base mb-8 max-w-sm px-2">Reclaim your margin. Zero commission marketplace protocols.</p>
-                    <div className="inline-flex items-center gap-3 badge-outline-white py-3.5 px-10 text-[10px] tracking-widest !rounded-full">Join Network →</div>
-                </div>
-             </Link>
-        </div>
-
-        {/* Value Prop Ecosystem */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-32 px-8 max-w-7xl w-full text-left pt-32 border-t border-white/5">
+      {/* Features Grid - Services Section */}
+      <section className="container py-32">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-              { icon: '💰', title: 'Transparent Splits', desc: 'No hidden fees. We show exactly what the driver keeps on every order.' },
-              { icon: '🧭', title: 'Elite Dispatch', desc: 'Hyper-efficient routing that keeps food hot and delivery fees low.' },
-              { icon: '💎', title: 'Purely Local', desc: 'Built for the neighborhood gems, not just the global chains.' }
-          ].map((row, i) => (
-             <div key={i} className="space-y-8 group">
-                <div className="w-20 h-20 bg-white/[0.03] border border-white/5 rounded-[2rem] flex items-center justify-center text-4xl shadow-xl group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-500 group-hover:scale-110">{row.icon}</div>
-                <h3 className="text-3xl font-black text-white italic tracking-tight px-1">{row.title}</h3>
-                <p className="text-slate-500 text-lg font-medium leading-relaxed italic">{row.desc}</p>
-             </div>
+            {
+              title: "Restaurants",
+              desc: "Reclaim your margins with our zero-commission protocols and elite local dispatch.",
+              link: "/merchant",
+              img: "/Users/lcking992/.gemini/antigravity/brain/6ab4212f-1910-4d39-a07f-8099fe107ea1/trueserve_restaurant_partner_tech_1774363830507.png"
+            },
+            {
+              title: "Drivers",
+              desc: "Earn 20-40% more with fair splits and high-velocity routing engineered for efficiency.",
+              link: "/driver",
+              img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200"
+            },
+            {
+              title: "Community",
+              desc: "Experience the best food in your city delivered by a network that cares about the outcome.",
+              link: "/restaurants",
+              img: "/Users/lcking992/.gemini/antigravity/brain/6ab4212f-1910-4d39-a07f-8099fe107ea1/trueserve_local_community_food_1774363850535.png"
+            }
+          ].map((item, i) => (
+            <div key={i} className="group flex flex-col bg-white/[0.03] border border-white/5 rounded-[2.5rem] overflow-hidden hover:bg-white/[0.05] transition-all duration-500 shadow-2xl">
+              <div className="h-64 overflow-hidden">
+                <img src={item.img} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" />
+              </div>
+              <div className="p-12 space-y-6 flex-grow flex flex-col justify-between">
+                <div>
+                  <h3 className="text-3xl text-white font-serif mb-4">{item.title}</h3>
+                  <p className="text-slate-400 text-base font-medium leading-relaxed">{item.desc}</p>
+                </div>
+                <Link href={item.link} className="inline-flex items-center gap-3 text-primary text-[11px] font-bold uppercase tracking-widest group-hover:gap-5 transition-all">
+                  Access Portal <span className="text-xl">→</span>
+                </Link>
+              </div>
+            </div>
           ))}
-        </section>
-      </main>
+        </div>
+      </section>
 
-      <footer className="py-24 bg-black border-t border-white/5 text-center px-4">
-        <div className="container max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-           <div className="flex items-center gap-4">
-             <img src="/logo.png" alt="Logo" className="w-12 h-12 border border-white/10 rounded-full shadow-2xl" />
-             <span className="font-black text-slate-500 tracking-tighter text-2xl italic uppercase">TrueServe Hub &copy; {new Date().getFullYear()}</span>
+      {/* Narrative Section - About Our Mission */}
+      <section className="bg-white/[0.02] border-y border-white/5 py-32">
+        <div className="container grid grid-cols-1 lg:grid-cols-2 gap-24 items-center px-8">
+           <div className="space-y-12">
+              <h2 className="text-5xl md:text-7xl text-white font-serif leading-none italic">A different kind <br />of logistics.</h2>
+              <div className="h-1 w-24 bg-primary rounded-full"></div>
+              <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-xl">
+                Founded with a mission to bridge the gap between high-velocity tech and neighborhood grit. 
+                TrueServe prioritizes the direct relationship between the gem on the corner and the driver down the street.
+              </p>
+              <div className="grid grid-cols-2 gap-12">
+                 <div className="space-y-4">
+                    <p className="text-4xl text-white font-serif">100%</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">Local Driver Profitability Targeting</p>
+                 </div>
+                 <div className="space-y-4">
+                    <p className="text-4xl text-white font-serif">0%</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">Hidden Restaurant Commission fees</p>
+                 </div>
+              </div>
            </div>
-           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 text-[11px] font-black uppercase tracking-[0.4em] text-slate-600">
-             <Link href="/restaurants" className="hover:text-primary transition-colors italic">Find Food</Link>
-             <Link href="/driver" className="hover:text-emerald-400 transition-colors italic">Drive</Link>
-             <Link href="/merchant" className="hover:text-primary transition-colors italic">Merchant</Link>
-             <Link href="/admin" className="hover:text-white transition-colors italic">Internal</Link>
+           <div className="relative rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl aspect-[4/5] lg:aspect-auto lg:h-[700px]">
+              <img src="/Users/lcking992/.gemini/antigravity/brain/6ab4212f-1910-4d39-a07f-8099fe107ea1/trueserve_local_community_food_1774363850535.png" alt="Local Food" className="w-full h-full object-cover opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#080c14] via-transparent to-transparent"></div>
+           </div>
+        </div>
+      </section>
+
+      {/* CTA / Partnership Section */}
+      <section className="container text-center py-48">
+          <div className="max-w-4xl mx-auto space-y-12 bg-white/[0.03] border border-white/10 p-24 rounded-[4rem] shadow-3xl">
+              <h2 className="text-5xl md:text-7xl text-white font-serif italic mb-8">Join the TrueServe Network.</h2>
+              <p className="text-xl text-slate-400 font-semibold mb-12 max-w-2xl mx-auto uppercase tracking-tighter">Accelerate your growth. Reclaim your time. Support your neighborhood.</p>
+              <div className="flex flex-wrap justify-center gap-8">
+                <Link href="/merchant-signup" className="badge-solid-primary py-5 px-12 text-xs font-black shadow-primary/20">Become a Partner</Link>
+                <Link href="/driver-signup" className="badge-solid-secondary py-5 px-12 text-xs font-black shadow-secondary/20">Sign up to Drive</Link>
+              </div>
+          </div>
+      </section>
+
+      <footer className="py-24 bg-[#080c14] border-t border-white/5 px-8">
+        <div className="container flex flex-col md:flex-row justify-between items-center gap-12">
+           <div className="flex items-center gap-4">
+             <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl" />
+             <span className="font-serif text-slate-500 tracking-tight text-2xl uppercase italic">TrueServe LLC &copy; {new Date().getFullYear()}</span>
+           </div>
+           <div className="flex flex-wrap justify-center gap-x-16 gap-y-6 text-[11px] font-bold uppercase tracking-[0.4em] text-slate-600">
+             <Link href="/restaurants" className="hover:text-primary transition-colors">Marketplace</Link>
+             <Link href="/driver" className="hover:text-primary transition-colors">Driver Hub</Link>
+             <Link href="/merchant" className="hover:text-primary transition-colors">Partner Portal</Link>
+             <Link href="/admin" className="hover:text-white transition-colors">Internal Systems</Link>
            </div>
         </div>
       </footer>
