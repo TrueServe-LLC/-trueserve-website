@@ -44,8 +44,8 @@ export default async function Home() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
               </Link>
             )}
-            <Link href="/restaurants" className="btn btn-primary !py-1.5 md:!py-2 !px-3 md:!px-6 !text-[10px] md:!text-sm shadow-none hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap uppercase tracking-widest font-black">
-              Order Food Now
+            <Link href="/restaurants" className="btn btn-primary !py-2 !px-5 !text-sm shadow-none hover:shadow-lg transition-all hover:bg-emerald-500 hover:text-white rounded-xl font-bold">
+              Order Food
             </Link>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default async function Home() {
         {/* Hero Section */}
         <section className="container py-8 md:py-24 flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="flex-1 text-center md:text-left space-y-6 animate-fade-in w-full px-2">
-            <h1 className="text-5xl md:text-[5.5rem] font-serif font-black text-white leading-[1.05] tracking-tighter py-4">
+            <h1 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tight py-4">
               Cravings meet <br className="hidden md:block" />
               <span className="text-gradient">Lightning Speed.</span>
             </h1>
@@ -77,7 +77,7 @@ export default async function Home() {
               </div>
 
               {/* Seamless Address Bar */}
-              <div className="relative group w-full">
+              <div className="relative group w-full mt-2">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
                 <LandingSearch />
               </div>
@@ -95,21 +95,19 @@ export default async function Home() {
         <section className="container py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
              {/* Driver Card */}
-             <div className="bg-[#0a0a0a] border border-white/5 rounded-[3rem] p-12 relative overflow-hidden group hover:border-emerald-500/30 transition-all shadow-2xl">
-                <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none group-hover:scale-110 transition-transform grayscale">🛵</div>
-                <h2 className="text-4xl font-black text-white mb-6 italic tracking-tighter">Drive Your Income.</h2>
-                <p className="text-slate-400 mb-10 max-w-sm font-medium leading-relaxed">Earn more with fair splits and clear payouts on every delivery.</p>
-                <Link href="/driver" className="btn bg-emerald-500 text-black px-10 py-4 font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-emerald-500/20">
+             <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-10 relative overflow-hidden group hover:border-primary/50 transition-all shadow-xl">
+                <h2 className="text-3xl font-bold text-white mb-4">Drive Your Income.</h2>
+                <p className="text-slate-400 mb-8 max-w-sm font-medium leading-relaxed">Earn more with fair splits and clear payouts on every delivery.</p>
+                <Link href="/driver" className="inline-block bg-primary text-black px-8 py-3 font-bold text-sm rounded-xl hover:bg-emerald-500 transition-colors">
                   Become a Driver
                 </Link>
              </div>
 
              {/* Merchant Card */}
-             <div className="bg-[#0a0a0a] border border-white/5 rounded-[3rem] p-12 relative overflow-hidden group hover:border-blue-500/30 transition-all shadow-2xl">
-                <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none group-hover:scale-110 transition-transform grayscale">🏬</div>
-                <h2 className="text-4xl font-black text-white mb-6 italic tracking-tighter">Scale Your Kitchen.</h2>
-                <p className="text-slate-400 mb-10 max-w-sm font-medium leading-relaxed">Lower fees, better visibility, and a loyal local customer base.</p>
-                <Link href="/merchant" className="btn bg-blue-600 text-white px-10 py-4 font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-blue-600/20">
+             <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-10 relative overflow-hidden group hover:border-primary/50 transition-all shadow-xl">
+                <h2 className="text-3xl font-bold text-white mb-4">Scale Your Kitchen.</h2>
+                <p className="text-slate-400 mb-8 max-w-sm font-medium leading-relaxed">Lower fees, better visibility, and a loyal local customer base.</p>
+                <Link href="/merchant" className="inline-block bg-white text-black px-8 py-3 font-bold text-sm rounded-xl hover:bg-slate-200 transition-colors">
                   Become a Merchant
                 </Link>
              </div>
@@ -122,17 +120,17 @@ export default async function Home() {
             <div className="grid md:grid-cols-3 gap-12">
               <div className="space-y-4">
                 <div className="text-3xl">💰</div>
-                <h3 className="text-xl font-bold text-white italic">Transparent Splits</h3>
+                <h3 className="text-xl font-bold text-white">Transparent Splits</h3>
                 <p className="text-slate-500 text-sm font-medium">No hidden fees. We show exactly what the driver keeps on every order.</p>
               </div>
               <div className="space-y-4">
                 <div className="text-3xl">🧭</div>
-                <h3 className="text-xl font-bold text-white italic">Elite Dispatch</h3>
+                <h3 className="text-xl font-bold text-white">Elite Dispatch</h3>
                 <p className="text-slate-500 text-sm font-medium">Hyper-efficient routing that keeps food hot and delivery fees low.</p>
               </div>
               <div className="space-y-4">
                 <div className="text-3xl">🌱</div>
-                <h3 className="text-xl font-bold text-white italic">Purely Local</h3>
+                <h3 className="text-xl font-bold text-white">Purely Local</h3>
                 <p className="text-slate-500 text-sm font-medium">TrueServe is built for the neighborhood gems, not just the global chains.</p>
               </div>
             </div>

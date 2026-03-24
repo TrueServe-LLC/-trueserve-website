@@ -74,19 +74,19 @@ export default function MerchantPortal() {
                                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-2">
                                     <span>Empowering Local Restaurants</span>
                                 </div>
-                                <h1 className="text-4xl md:text-7xl font-serif font-bold tracking-tight text-white leading-[1.1]">
+                                <h1 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tight">
                                     Unlock new <br className="hidden xs:block" />
                                     revenue with <br className="hidden xs:block" />
-                                    <span className="font-sans font-black tracking-tighter"><span className="text-white">True</span><span className="text-primary">Serve</span></span>
+                                    <span className="text-primary">TrueServe</span>
                                 </h1>
                                 <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed font-medium">
                                     The delivery platform built for the local margin. Zero hidden fees, fair dispatch, and a marketplace that prioritizes your brand.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                    <button onClick={() => scrollToForm("")} className="btn btn-primary py-4 px-10 rounded-xl text-sm font-bold uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">
+                                    <button onClick={() => scrollToForm("")} className="inline-block bg-primary text-black px-8 py-3 font-bold text-sm rounded-xl hover:bg-emerald-500 transition-colors shadow-lg">
                                         Get Started Now
                                     </button>
-                                    <button onClick={() => scrollToForm("")} className="px-10 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl text-sm font-bold uppercase tracking-widest transition-all">
+                                    <button onClick={() => scrollToForm("")} className="inline-block bg-white/5 border border-white/10 text-white px-8 py-3 font-bold text-sm rounded-xl hover:bg-white/10 transition-colors">
                                         View Pricing
                                     </button>
                                 </div>
@@ -231,9 +231,9 @@ export default function MerchantPortal() {
                                     {state.success ? (
                                         <div className="text-center py-12 animate-fade-in flex flex-col items-center">
                                             <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center text-5xl mb-8 border border-primary/20 shadow-[0_0_50px_rgba(var(--primary-rgb),0.1)]">🛡️</div>
-                                            <h3 className="text-3xl font-black text-white mb-4 tracking-tighter italic">Enrollment Active.</h3>
-                                            <p className="text-slate-400 mb-12 text-sm font-bold leading-relaxed max-w-sm">{state.message}</p>
-                                            <Link href="/merchant/dashboard" className="btn btn-primary w-full py-6 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl">
+                                            <h3 className="text-3xl font-bold text-white mb-4">Enrollment Active.</h3>
+                                            <p className="text-slate-400 mb-10 text-sm font-medium leading-relaxed max-w-sm">{state.message}</p>
+                                            <Link href="/merchant/dashboard" className="inline-block bg-primary text-black px-8 py-3 font-bold text-sm rounded-xl hover:bg-emerald-500 transition-colors w-full shadow-lg">
                                                 Access Command Center
                                             </Link>
                                         </div>
@@ -292,10 +292,10 @@ export default function MerchantPortal() {
                                             <input type="hidden" name="plan" value={selectedPlan} />
 
                                             <div className="pt-6">
-                                                <button disabled={isPending} className="relative w-full overflow-hidden rounded-2xl bg-primary py-6 text-black font-black uppercase tracking-[0.2em] text-xs shadow-[0_20px_40px_rgba(var(--primary-rgb),0.2)] hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 mt-4">
+                                                <button disabled={isPending} className="w-full bg-primary text-black px-6 py-4 font-bold text-sm rounded-xl hover:bg-emerald-500 transition-colors disabled:opacity-50 shadow-lg">
                                                     {isPending ? "Configuring Hub..." : "Complete Enrollment"}
                                                 </button>
-                                                <p className="text-center mt-5 text-[9px] text-slate-600 font-bold uppercase tracking-widest border-t border-white/5 pt-5">By clicking, you agree to our Terms of Logistics.</p>
+                                                <p className="text-center mt-5 text-xs text-slate-500 font-medium">By clicking, you agree to our Terms of Logistics.</p>
                                             </div>
                                         </form>
                                     )}

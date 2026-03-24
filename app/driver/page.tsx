@@ -45,7 +45,7 @@ export default function DriverPortal() {
                         <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl leading-relaxed backdrop-blur-sm">
                             Join the Fleet of the Future
                         </div>
-                        <h1 className="text-5xl md:text-8xl font-serif font-bold tracking-tight leading-[1.05] py-4">
+                        <h1 className="text-4xl md:text-6xl font-black leading-tight tracking-tight py-4">
                             <span className="text-white">Your City.</span> <br />
                             <span className="text-white">Your Time.</span> <br />
                             <span className="text-gradient">Your Profit.</span>
@@ -56,13 +56,13 @@ export default function DriverPortal() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <button
                                 onClick={scrollToForm}
-                                className="btn btn-primary py-4 px-10 text-lg font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:scale-105 transition-all"
+                                className="inline-block bg-primary text-black px-8 py-3 font-bold text-sm rounded-xl hover:bg-emerald-500 transition-colors shadow-lg"
                             >
                                 Get Started
                             </button>
                             <Link
                                 href="#how-it-works"
-                                className="btn bg-white/5 border border-white/10 hover:bg-white/10 text-white py-4 px-10 text-lg font-black uppercase tracking-widest rounded-2xl transition-all"
+                                className="inline-block bg-white/5 border border-white/10 text-white px-8 py-3 font-bold text-sm rounded-xl hover:bg-white/10 transition-colors"
                             >
                                 How it Works
                             </Link>
@@ -71,17 +71,13 @@ export default function DriverPortal() {
 
                     {/* Compact Hero Form */}
                     <div ref={formRef} className="lg:max-w-md w-full mx-auto relative z-20">
-                        <div className="bg-slate-900 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] border border-white/10 rounded-[2.5rem] p-6 md:p-12 backdrop-blur-2xl relative overflow-visible">
-                            <div className="absolute top-0 right-0 p-8 opacity-5 text-9xl -mr-10 -mt-10 pointer-events-none select-none">🛵</div>
+                        <div className="bg-slate-900 border border-white/10 rounded-[2rem] p-8 md:p-10 backdrop-blur-2xl relative shadow-xl">
+                            <h2 className="text-3xl font-bold mb-4 tracking-tight px-2">
+                                <span className="text-white">Become a</span> <span className="text-gradient">Driver</span>
+                            </h2>
+                            <p className="text-slate-400 text-sm mb-8 font-medium leading-relaxed px-2">Earn money and explore your city on your own terms.</p>
 
-                            <div className="relative z-10 pt-16 md:pt-24 pb-8 md:pb-16 px-2">
-                                <h2 className="text-4xl font-black mb-6 tracking-tighter leading-relaxed px-4 py-2">
-                                    <span className="text-white">Become a</span> <span className="text-gradient">Driver</span>
-                                </h2>
-                                <p className="text-slate-400 text-base mb-12 font-medium leading-relaxed px-4">Earn money and explore your city on your own terms.</p>
-
-                                <DriverApplicationForm />
-                            </div>
+                            <DriverApplicationForm />
                         </div>
                     </div>
                 </div>
@@ -143,7 +139,7 @@ export default function DriverPortal() {
                 <div className="container max-w-7xl mx-auto px-6">
                     <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
                         <div className="flex-1 space-y-6">
-                            <h2 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.05] py-2 text-white">
+                            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight py-2 text-white">
                                 Transparent pay.<br />
                                 No guessing games.
                             </h2>
@@ -233,14 +229,13 @@ export default function DriverPortal() {
                             </ul>
                         </div>
 
-                        <div className="bg-gradient-to-br from-primary/20 to-emerald-500/10 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] text-center space-y-6 relative overflow-hidden group">
-                            <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none group-hover:scale-110 transition-transform duration-1000"></div>
-                            <h3 className="text-3xl font-black text-white relative z-10">Start today. <br />Pay out today.</h3>
-                            <p className="text-slate-400 font-medium relative z-10 mb-8 mt-2">Join thousands of drivers who are earning more with TrueServe.</p>
+                        <div className="bg-[#0a0a0a] border border-white/10 p-10 md:p-12 rounded-[2rem] text-center space-y-6 shadow-xl relative overflow-hidden">
+                            <h3 className="text-3xl font-bold text-white relative z-10">Start today. <br />Pay out today.</h3>
+                            <p className="text-slate-400 text-sm font-medium relative z-10 mb-8 mt-2">Join thousands of drivers who are earning more with TrueServe.</p>
                             <div className="relative z-10 pt-2 pb-2">
                                 <button
                                     onClick={scrollToForm}
-                                    className="btn btn-primary rounded-full w-auto px-10 md:px-14 py-4 md:py-5 text-base md:text-lg font-black uppercase tracking-widest shadow-2xl shadow-primary/30"
+                                    className="inline-block bg-primary text-black px-10 py-3 font-bold text-sm rounded-xl hover:bg-emerald-500 transition-colors shadow-lg"
                                 >
                                     Apply Now
                                 </button>
