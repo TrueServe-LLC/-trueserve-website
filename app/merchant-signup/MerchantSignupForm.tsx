@@ -104,52 +104,62 @@ function MerchantSignupFormInner() {
                 </div>
             )}
 
-            <div className="space-y-24">
+            <div className="space-y-16">
                 {/* SECTION 1: Identity */}
-                <div className="space-y-16">
-                    <div className="flex flex-col gap-6">
-                        <span className="text-[11px] font-black text-primary bg-primary/10 self-start px-5 py-2 rounded-full uppercase tracking-[0.5em] italic border border-primary/20">Business Identification</span>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                            <div className="space-y-4 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Restaurant Name</label>
-                                <input name="restaurantName" type="text" required value={formData.restaurantName} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black uppercase tracking-[0.2em]" placeholder="YOUR ESTABLISHMENT" />
-                            </div>
-                            <div className="space-y-4">
-                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Contact Name</label>
-                               <input name="contactName" type="text" required value={formData.contactName} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black uppercase tracking-[0.2em]" placeholder="LEGAL REPRESENTATIVE" />
-                            </div>
-                            <div className="space-y-4">
-                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Password</label>
-                               <input name="password" type="password" required value={formData.password} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black" placeholder="••••••••" />
-                            </div>
-                            <div className="space-y-4">
-                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Email Address</label>
-                               <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black uppercase tracking-[0.2em]" placeholder="PARTNER@EMAIL.COM" />
-                            </div>
-                            <div className="space-y-4">
-                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Phone Number</label>
-                               <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black" placeholder="(864) 555-0312" />
-                            </div>
+                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] group hover:border-white/20 transition-all">
+                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                        Business Identification
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                        <div className="space-y-4 md:col-span-2">
+                            <label className="text-[11px] font-bold text-slate-400 ml-1">Restaurant Name</label>
+                            <input name="restaurantName" type="text" required value={formData.restaurantName} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black uppercase tracking-[0.1em]" placeholder="YOUR ESTABLISHMENT" />
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-[11px] font-bold text-slate-400 ml-1">Contact Name</label>
+                            <input name="contactName" type="text" required value={formData.contactName} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black uppercase tracking-[0.1em]" placeholder="LEGAL REPRESENTATIVE" />
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-[11px] font-bold text-slate-400 ml-1">Password</label>
+                            <input name="password" type="password" required value={formData.password} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black" placeholder="••••••••" />
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-[11px] font-bold text-slate-400 ml-1">Email Address</label>
+                            <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black uppercase tracking-[0.1em]" placeholder="PARTNER@EMAIL.COM" />
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-[11px] font-bold text-slate-400 ml-1">Phone Number</label>
+                            <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black" placeholder="(864) 555-0312" />
                         </div>
                     </div>
                 </div>
 
                 {/* SECTION 2: Geography */}
-                <div className="space-y-16">
-                    <div className="flex flex-col gap-6">
-                        <span className="text-[11px] font-black text-primary bg-primary/10 self-start px-5 py-2 rounded-full uppercase tracking-[0.5em] italic border border-primary/20">Operational Domain</span>
-                        <div className="space-y-10">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Physical Address</label>
-                                <div className="[&>div>input]:!bg-white/[0.02] [&>div>input]:!border-white/10 [&>div>input]:!px-8 [&>div>input]:!py-6 [&>div>input]:!rounded-2xl [&>div>input]:!text-sm [&>div>input]:focus:!border-primary/40 [&>div>input]:!font-black [&>div>input]:!placeholder-slate-800 [&>div>input]:!uppercase [&>div>input]:!tracking-[0.2em] [&>div>input]:transition-all">
-                                   <AddressInput initialAddress={formData.address} onAddressSelect={handleAddressSelect} />
-                                </div>
+                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] group hover:border-white/20 transition-all">
+                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                        Operational Domain
+                    </div>
+                    
+                    <div className="space-y-10">
+                        <div className="space-y-4">
+                            <label className="text-[11px] font-bold text-slate-400 ml-1">Physical Address</label>
+                            <div className="[&>div>input]:!bg-white/[0.03] [&>div>input]:!border-white/10 [&>div>input]:!px-8 [&>div>input]:!py-5 [&>div>input]:!rounded-2xl [&>div>input]:!text-sm [&>div>input]:focus:!border-primary/40 [&>div>input]:!font-black [&>div>input]:!placeholder-slate-800 [&>div>input]:!uppercase [&>div>input]:transition-all">
+                                <AddressInput initialAddress={formData.address} onAddressSelect={handleAddressSelect} />
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-                                <input name="city" type="text" required value={formData.city} onChange={updateForm} className="bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase tracking-widest" placeholder="CITY" />
-                                <input name="state" type="text" required maxLength={2} value={formData.state} onChange={updateForm} className="bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase text-center tracking-widest" placeholder="ST" />
-                                <input name="zip" type="text" required value={formData.zip} onChange={updateForm} className="bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase tracking-widest" placeholder="ZIP" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <div className="space-y-4 md:col-span-2">
+                                <label className="text-[11px] font-bold text-slate-400 ml-1">City</label>
+                                <input name="city" type="text" required value={formData.city} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase tracking-widest" placeholder="CITY" />
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[11px] font-bold text-slate-400 ml-1">State</label>
+                                <input name="state" type="text" required maxLength={2} value={formData.state} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase text-center tracking-widest" placeholder="ST" />
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[11px] font-bold text-slate-400 ml-1">Zip</label>
+                                <input name="zip" type="text" required value={formData.zip} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase tracking-widest" placeholder="ZIP" />
                             </div>
                         </div>
                     </div>
