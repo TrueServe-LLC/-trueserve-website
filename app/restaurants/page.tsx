@@ -482,27 +482,14 @@ export default async function RestaurantFinder({
         <div className="min-h-screen">
             <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-4 md:px-6 py-3 md:py-4">
                 <div className="container flex justify-between items-center gap-4">
-                    <Link href="/" className="flex items-center gap-2 group shrink-0">
-                        {/* Desktop Logo */}
-                        <img src="/logo.png" alt="TrueServe Logo" className="hidden md:block w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                        <span className="hidden md:block text-lg md:text-2xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
-
-                        {/* Mobile Profile Image */}
-                        {userId ? (
-                            <div className="md:hidden w-10 h-10 rounded-full bg-slate-800 border border-white/10 shadow-lg overflow-hidden shrink-0">
-                                <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userName || 'User'}`} alt="Profile" className="w-full h-full object-cover" />
-                            </div>
-                        ) : (
-                            <img src="/logo.png" alt="TrueServe Logo" className="md:hidden w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                        )}
+                    {/* Mobile Branding (Minimized) */}
+                    <Link href="/" className="md:hidden flex items-center gap-2 group shrink-0">
+                         <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
+                         <span className="text-sm font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
                     </Link>
 
-                    {/* Mobile Location Pill & Mode Toggle */}
-                    <div className="md:hidden mt-1 flex flex-1 flex-col items-center justify-center gap-2">
-                        <Link href="/restaurants" className="flex items-center gap-1.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 shadow-lg">
-                            <svg className="w-3.5 h-3.5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span className="text-[10px] font-bold text-slate-300 truncate max-w-[120px]">{locationMeta.name || "Set Location"}</span>
-                        </Link>
+                    {/* Mode Toggle (Hidden on Mobile Nav to reduce clutter, moved to main) */}
+                    <div className="hidden md:flex flex-1 flex-col items-center justify-center gap-2">
                         <ModeToggle />
                     </div>
 
@@ -540,28 +527,71 @@ export default async function RestaurantFinder({
             </nav>
 
             <main className="container py-6 md:py-8 px-4 animate-fade-in pb-40">
-                {/* Mobile Welcome Header */}
-                <div className="md:hidden flex flex-col gap-1 mb-6">
-                    <h2 className="text-sm font-bold text-slate-400">Welcome,</h2>
-                    <h1 className="text-2xl font-black text-secondary">{userName || 'Guest'}</h1>
-                </div>
+                {/* Mobile All-In-One Header (Vibrant Grid Style) */}
+                <div className="md:hidden flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative">
+                            <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userName || 'User'}`} alt="Profile" className="w-full h-full object-cover p-1" />
+                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-black rounded-full"></div>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Welcome back,</p>
+                            <h2 className="text-lg font-black text-white">{userName || 'Guest'}</h2>
+                        </div>
+                    </div>
 
-                {/* Mobile Promotional Banner */}
-                <div className="md:hidden w-full bg-gradient-to-r from-slate-900 to-slate-800 rounded-[2rem] p-6 mb-6 relative overflow-hidden border border-white/5 shadow-2xl">
-                    <div className="relative z-10 w-3/4 md:w-2/3">
-                        <h3 className="text-xl font-black text-white leading-tight mb-5">
-                            50% Discount<br />on selected Restaurant
-                        </h3>
-                        <Link href="/restaurants" className="inline-block bg-secondary text-black text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-full shadow-lg shadow-secondary/20 hover:scale-105 transition-transform">
-                            Order Now
+                    <div className="flex flex-col items-end gap-1">
+                        <Link href="/restaurants" className="flex items-center gap-1.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 shadow-lg group active:scale-95 transition-all">
+                            <svg className="w-3 h-3 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                            <span className="text-[10px] font-black text-slate-300 truncate max-w-[100px] italic">{locationMeta.name || "Set Location"}</span>
                         </Link>
                     </div>
-                    {/* Decorative element mimicking food/image */}
-                    <div className="absolute -right-10 -top-10 bottom-0 w-48 h-48 bg-primary/30 blur-2xl rounded-full"></div>
                 </div>
 
-                {/* Mobile Search */}
-                <div className="md:hidden mb-8">
+                {/* Mobile Wallet & Quick Selection Widget */}
+                <div className="md:hidden grid grid-cols-2 gap-3 mb-8">
+                    <div className="bg-gradient-to-br from-slate-900 to-black p-5 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute -right-6 -top-6 w-20 h-20 bg-primary/20 blur-2xl rounded-full"></div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Total Balance</p>
+                        <h3 className="text-xl font-black text-white">$1,240.00</h3>
+                        <div className="mt-3 flex items-center gap-2">
+                             <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center text-[10px]">💎</div>
+                             <span className="text-[10px] font-bold text-primary">TrueServe+ VIP</span>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex-1 bg-white/[0.03] p-4 rounded-[1.5rem] border border-white/5 flex items-center justify-between group active:scale-95 transition-all">
+                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Voucher</span>
+                             <span className="text-lg">🏷️</span>
+                        </div>
+                        <div className="flex-1 bg-white/[0.03] p-4 rounded-[1.5rem] border border-white/5 flex items-center justify-between group active:scale-95 transition-all">
+                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Rewards</span>
+                             <span className="text-lg">⭐</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Service Icons Grid (Scrollable) */}
+                <div className="md:hidden flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 mb-8">
+                    {[
+                        { name: "Popular", icon: "🔥", color: "bg-orange-500/20", iconColor: "text-orange-500" },
+                        { name: "Drop Off", icon: "📦", color: "bg-emerald-500/20", iconColor: "text-emerald-500" },
+                        { name: "Catering", icon: "🍽️", color: "bg-blue-500/20", iconColor: "text-blue-500" },
+                        { name: "Hospital", icon: "🏥", color: "bg-red-500/20", iconColor: "text-red-500" },
+                        { name: "Pharmacy", icon: "💊", color: "bg-purple-500/20", iconColor: "text-purple-500" },
+                    ].map((svc) => (
+                        <button key={svc.name} className="flex flex-col items-center gap-3 shrink-0 group">
+                            <div className={`w-16 h-16 rounded-[1.5rem] ${svc.color} border border-white/5 flex items-center justify-center text-2xl shadow-xl transition-all group-active:scale-90`}>
+                                {svc.icon}
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white">{svc.name}</span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Mobile Mode Toggle & Search */}
+                <div className="md:hidden flex flex-col gap-4 mb-8">
+                    <ModeToggle />
                     <LandingSearch
                         locations={serviceLocations}
                         initialValue={location}
