@@ -49,7 +49,7 @@ export default function MerchantPortal() {
                     </div>
                     
                     <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] italic animate-slide-up">
-                        Recapture您的 <br />
+                        Recapture Your <br />
                         <span className="text-primary not-italic drop-shadow-[0_0_30px_rgba(245,158,11,0.5)]">Profits.</span>
                     </h1>
                     
@@ -84,7 +84,7 @@ export default function MerchantPortal() {
 
                 {/* ── POS HARMONY SECTION ───────────────────────────────────── */}
                 <div className="py-24 max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center bg-black/40 border border-white/5 rounded-[4rem] p-16 md:p-24 backdrop-blur-3xl relative overflow-hidden group">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center p-6 md:p-12 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 -z-10 group-hover:scale-175 transition-transform duration-[3s]">
                              <img src="/logo.png" alt="Logo Watermark" className="w-64 h-64 opacity-20" />
                         </div>
@@ -144,40 +144,46 @@ export default function MerchantPortal() {
                         <p className="text-slate-500 text-lg font-bold italic">No hidden fees. Total transparency.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
                         {[
                             {
-                                name: "Flex Plan",
+                                name: "Starter",
                                 amount: "15%",
                                 sub: "per order",
-                                desc: "No monthly commitment. Pay as you go.",
-                                features: ["Live Tracking", "Local Priority", "Toast & Clover Ready"]
+                                desc: "Perfect for restaurants just getting started with TrueServe delivery.",
+                                features: ["Commission per delivery", "Basic order management", "Real-time tracking", "Email support", "Mobile-friendly portal"]
                             },
                             {
-                                name: "Pro Plan",
-                                amount: "0%",
-                                sub: "+ $199/mo",
-                                desc: "Best for high volume kitchens. Keep it all.",
-                                features: ["Priority Support", "Toast POS Integration", "Dedicated Manager"]
+                                name: "Growth",
+                                amount: "12%",
+                                sub: "per order",
+                                desc: "For restaurants scaling their delivery business with TrueServe.",
+                                features: ["Reduced commission rate", "Advanced analytics dashboard", "Priority support", "Custom menu uploads", "Marketing materials included"]
                             }
                         ].map((plan, i) => (
-                            <div key={i} className="flex flex-col p-14 rounded-[3.5rem] border border-white/5 bg-black/40 space-y-10 hover:border-primary/40 hover:bg-white/[0.02] transition-all backdrop-blur-2xl group active:scale-[0.98]">
+                            <div key={i} className="flex flex-col p-12 rounded-2xl border border-white/5 bg-white/[0.02] space-y-12 hover:border-primary/20 transition-all backdrop-blur-3xl group">
                                 <div className="space-y-6 flex-grow">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.5em] text-primary italic">{plan.name}</h4>
-                                    <div className="flex items-baseline gap-4">
-                                        <span className="text-6xl md:text-8xl font-black text-white tracking-widest leading-none italic">{plan.amount}</span>
-                                        <span className="text-slate-600 text-sm font-black uppercase tracking-widest italic">{plan.sub}</span>
+                                    <h4 className="text-3xl font-black text-white italic">{plan.name}</h4>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-5xl font-black text-white italic tracking-tight">{plan.amount}</span>
+                                        <span className="text-slate-500 text-sm font-bold lowercase italic">{plan.sub}</span>
                                     </div>
-                                    <p className="text-slate-500 text-base font-bold italic leading-relaxed max-w-sm">{plan.desc}</p>
+                                    <p className="text-slate-500 text-sm font-bold italic leading-relaxed max-w-xs">{plan.desc}</p>
+                                    <button className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${i === 1 ? "bg-primary text-black shadow-lg shadow-primary/20" : "bg-transparent border border-white/20 text-white hover:bg-white/10"}`}>
+                                        {i === 0 ? "Get Started" : "Schedule Demo"}
+                                    </button>
                                 </div>
-                                <ul className="space-y-6 border-t border-white/10 pt-10">
-                                    {plan.features.map((f, j) => (
-                                        <li key={j} className="flex items-center gap-4 text-slate-400 text-[11px] font-black uppercase tracking-[0.4em] italic">
-                                            <span className="text-primary text-xl">✓</span>
-                                            {f}
-                                        </li>
-                                    ))}
-                                </ul>
+                                <div className="space-y-6">
+                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic">Features:</h5>
+                                    <ul className="grid grid-cols-1 gap-4">
+                                        {plan.features.map((f, j) => (
+                                            <li key={j} className="flex items-center gap-3 text-slate-400 text-[10px] font-black uppercase tracking-widest italic">
+                                                <span className="text-primary text-base">✓</span>
+                                                {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
                         ))}
                     </div>

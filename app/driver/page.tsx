@@ -41,28 +41,28 @@ export default function DriverPortal() {
 
             <main className="container mx-auto py-32 space-y-56 animate-fade-in relative z-10 px-8 max-w-7xl">
                 {/* ── HERO ────────────────────────────────────────────────────────── */}
-                <div className="flex flex-col items-center text-center space-y-12 max-w-5xl mx-auto glow-blur-primary">
-                    <div className="flex items-center gap-4 text-emerald-500 font-black uppercase tracking-[0.6em] text-[10px] italic">
-                        <div className="w-12 h-px bg-emerald-500/40" />
-                        Fleet Operations
-                        <div className="w-12 h-px bg-emerald-500/40" />
+                <div className="flex flex-col items-center text-center space-y-12 max-w-5xl mx-auto glow-blur-primary px-4">
+                    <div className="flex items-center gap-4 text-emerald-500/60 font-black uppercase tracking-[0.6em] text-[10px] italic">
+                        <div className="w-12 h-px bg-emerald-500/20" />
+                        Driver Opportunities
+                        <div className="w-12 h-px bg-emerald-500/20" />
                     </div>
                     
-                    <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] italic animate-slide-up">
-                        Earn on <br />
-                        <span className="text-primary not-italic drop-shadow-[0_0_30px_rgba(245,158,11,0.5)] uppercase tracking-tight">Your Terms.</span>
+                    <h1 className="text-4xl md:text-7xl font-serif text-white tracking-tighter leading-[1.1] animate-slide-up max-w-4xl">
+                        Earn on your own <br />
+                        <span className="italic text-primary drop-shadow-[0_0_30px_rgba(245,158,11,0.5)]">schedule with TrueServe LLC.</span>
                     </h1>
                     
-                    <p className="text-slate-400 text-lg md:text-2xl font-bold leading-relaxed max-w-3xl italic">
-                        South Carolina's friendliest delivery team. Join the local movement and start earning today with simple, fast payouts.
+                    <p className="text-slate-500 text-base md:text-xl font-bold leading-relaxed max-w-3xl italic">
+                        Join South Carolina drivers delivering food in your area. Simple signup, real-time orders, and weekly payouts waiting for you.
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row items-center gap-8 pt-6">
-                        <Link href="#signup" className="badge-solid-primary !px-16 !py-6 !text-sm">
-                            Become a Driver
+                    <div className="flex flex-col sm:flex-row items-center gap-6 pt-6">
+                        <Link href="#signup" className="badge-solid-primary !px-12 !py-5 !text-xs">
+                            Sign up as a driver
                         </Link>
-                        <Link href="tel:+18645550312" className="badge-outline-white !px-16 !py-6 !text-sm h-glow">
-                            Support: (864) 555-0312
+                        <Link href="tel:+18645550312" className="badge-outline-white !px-12 !py-5 !text-xs h-glow bg-primary/10 border-primary/20 text-white">
+                            Call with questions
                         </Link>
                     </div>
                 </div>
@@ -83,19 +83,19 @@ export default function DriverPortal() {
                 </div>
 
                 {/* ── ENROLLMENT FORM ────────────────────────────────────────── */}
-                <div id="signup" className="space-y-24 scroll-mt-48 text-center py-20">
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase tracking-[0.6em] text-[10px] italic">
-                            <div className="w-12 h-px bg-emerald-500/40" />
+                <div id="signup" className="scroll-mt-48 text-center py-24 px-4">
+                    <div className="space-y-6 mb-32">
+                        <div className="flex items-center justify-center gap-4 text-emerald-500/50 font-black uppercase tracking-[0.6em] text-[10px] italic">
+                            <div className="w-12 h-px bg-emerald-500/10" />
                             Enrollment Portal
-                            <div className="w-12 h-px bg-emerald-500/40" />
+                            <div className="w-12 h-px bg-emerald-500/10" />
                         </div>
-                        <h2 className="text-4xl md:text-7xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
-                            Join the <span className="text-emerald-500 not-italic">Team.</span>
+                        <h2 className="text-4xl md:text-6xl text-white font-serif tracking-tighter leading-none uppercase h-glow">
+                            Join the <span className="text-primary italic">Team.</span>
                         </h2>
                     </div>
 
-                    <div className="bg-white/[0.01] border border-white/10 rounded-[4rem] p-10 md:p-24 shadow-3xl mx-auto max-w-6xl relative overflow-hidden backdrop-blur-3xl glow-blur-primary">
+                    <div className="relative z-10 mx-auto max-w-4xl py-12">
                         <DriverApplicationForm />
                     </div>
                 </div>
