@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useRef, startTransition, useEffect, Suspense } from "react";
+import { useActionState, useState, startTransition, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { submitDriverApplication } from "./actions";
@@ -14,7 +14,7 @@ const initialState = {
 
 export default function DriverApplicationForm() {
     return (
-        <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading form...</div>}>
+        <Suspense fallback={<div className="p-8 text-center text-slate-500 font-bold uppercase tracking-widest text-[10px]">Syncing Onboarding Rails...</div>}>
             <DriverApplicationFormInner />
         </Suspense>
     );
@@ -25,9 +25,6 @@ function DriverApplicationFormInner() {
     const isMockMode = searchParams.get('qa') === 'true';
 
     const [state, formAction, isPending] = useActionState(submitDriverApplication, initialState);
-
-    // Multi-step Wizard State
-    const [step, setStep] = useState(1);
 
     // Form Data State
     const [formData, setFormData] = useState({
@@ -43,7 +40,6 @@ function DriverApplicationFormInner() {
         vehicleModel: "",
         vehicleColor: "",
         licensePlate: "",
-        // Consents
         consentIdentity: false,
         consentBackground: false,
         hasSignedAgreement: false,
@@ -53,7 +49,7 @@ function DriverApplicationFormInner() {
     const [insuranceFile, setInsuranceFile] = useState<File | null>(null);
     const [registrationFile, setRegistrationFile] = useState<File | null>(null);
 
-    const updateForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const updateForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         if (type === "checkbox") {
             const checked = (e.target as HTMLInputElement).checked;
@@ -67,87 +63,23 @@ function DriverApplicationFormInner() {
         setFormData(prev => ({ ...prev, address, lat, lng }));
     };
 
-    const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0]);
-        }
-    };
-
-    const handleNext = () => {
-        // Validation before next step
-        if (step === 1) {
-            if (!formData.email || !formData.phone) return;
-        }
-        if (step === 3) {
-            if (!formData.vehicleType || !formData.vehicleMake || !file) return;
-        }
-        if (step === 4) {
-            if (!formData.consentIdentity || !formData.consentBackground) return;
-        }
-        setStep(prev => prev + 1);
-    };
-
-
-    const handleBack = () => setStep(prev => prev - 1);
-
-
-
-    const fillDemoData = (hubName?: string) => {
-        const hubs = [
-            // North Carolina
-            { name: "Alex Luthor", city: "Fayetteville", state: "NC", address: "225 Hay St, Fayetteville, NC 28301", lat: 35.0527, lng: -78.8784 },
-            { name: "Bruce Wayne", city: "Charlotte", state: "NC", address: "101 N Tryon St, Charlotte, NC 28202", lat: 35.2271, lng: -80.8431 },
-            { name: "Clark Kent", city: "Mount Airy", state: "NC", address: "125 N Main St, Mount Airy, NC 27030", lat: 36.5028, lng: -80.6084 },
-            { name: "Peter Parker", city: "Davidson", state: "NC", address: "405 N Main St, Davidson, NC 28036", lat: 35.4993, lng: -80.8487 },
-            
-            // South Carolina
-            { name: "Diana Prince", city: "Greenville", state: "SC", address: "101 N Main St, Greenville, SC 29601", lat: 34.8526, lng: -82.3940 },
-            { name: "Arthur Curry", city: "Rock Hill", state: "SC", address: "155 Johnston St, Rock Hill, SC 29730", lat: 34.9249, lng: -81.0251 },
-            { name: "Barry Allen", city: "Clemson", state: "SC", address: "105 Sikes Hall, Clemson, SC 29634", lat: 34.6834, lng: -82.8374 },
-            
-            // Georgia
-            { name: "Tony Stark", city: "Marietta", state: "GA", address: "205 Lawrence St NE, Marietta, GA 30060", lat: 33.9526, lng: -84.5499 },
-            { name: "Steve Rogers", city: "Athens", state: "GA", address: "301 College Ave, Athens, GA 30601", lat: 33.9519, lng: -83.3576 },
-            { name: "Natasha Romanoff", city: "Evans", state: "GA", address: "4350 Towne Centre Blvd, Evans, GA 30809", lat: 33.5335, lng: -82.1307 }
-        ];
-        
-        const hub = hubName 
-            ? hubs.find(h => h.city === hubName) || hubs[0]
-            : hubs[Math.floor(Math.random() * hubs.length)];
-
+    const fillDemoData = () => {
         setFormData({
-            name: `${hub.name} (Demo)`,
-            email: `driver_${hub.city.toLowerCase().replace(' ', '_')}_${Math.floor(Math.random() * 1000)}@truelogistics.test`,
-            phone: "+1555" + Math.floor(Math.random() * 9000000 + 1000000),
+            ...formData,
+            name: `Alex Johnson (Demo)`,
+            email: `driver_${Math.floor(Math.random() * 1000)}@truelogistics.test`,
+            phone: "+1 555-987-6543",
             dob: "1992-05-15",
-            address: hub.address,
-            lat: hub.lat,
-            lng: hub.lng,
+            address: "101 N Tryon St, Charlotte, NC 28202",
+            lat: 35.2271,
+            lng: -80.8431,
             vehicleType: "Car",
-            vehicleMake: "Tesla",
-            vehicleModel: "Model 3",
-            vehicleColor: "Deep Blue Metallic",
-            licensePlate: `TS-${hub.city.substring(0,3).toUpperCase()}-1`,
-            consentIdentity: true,
-            consentBackground: true,
             hasSignedAgreement: true,
         });
-
-        const dummyFile = new File(
-            [new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])], 
-            "demo_license.png", 
-            { type: "image/png" }
-        );
-        
-        setFile(dummyFile);
-        setInsuranceFile(dummyFile);
-        setRegistrationFile(dummyFile);
-        setStep(5);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
         const fd = new FormData();
         fd.append("name", formData.name);
         fd.append("email", formData.email);
@@ -156,22 +88,16 @@ function DriverApplicationFormInner() {
         fd.append("address", formData.address);
         fd.append("lat", formData.lat.toString());
         fd.append("lng", formData.lng.toString());
-        fd.append("vehicleType", formData.vehicleType);
-        fd.append("vehicleMake", formData.vehicleMake);
-        fd.append("vehicleModel", formData.vehicleModel);
-        fd.append("vehicleColor", formData.vehicleColor);
-        fd.append("licensePlate", formData.licensePlate);
+        fd.append("vehicleType", formData.vehicleType || "Car");
+        fd.append("vehicleMake", formData.vehicleMake || "N/A");
+        fd.append("vehicleModel", formData.vehicleModel || "N/A");
+        fd.append("vehicleColor", formData.vehicleColor || "N/A");
+        fd.append("licensePlate", formData.licensePlate || "N/A");
         fd.append("hasSignedAgreement", formData.hasSignedAgreement.toString());
 
-        if (file) {
-            fd.append("idDocument", file);
-        }
-        if (insuranceFile) {
-            fd.append("insuranceDocument", insuranceFile);
-        }
-        if (registrationFile) {
-            fd.append("registrationDocument", registrationFile);
-        }
+        if (file) fd.append("idDocument", file);
+        if (insuranceFile) fd.append("insuranceDocument", insuranceFile);
+        if (registrationFile) fd.append("registrationDocument", registrationFile);
 
         startTransition(() => {
             formAction(fd);
@@ -180,232 +106,147 @@ function DriverApplicationFormInner() {
 
     if (state.success) {
         return (
-            <div className="p-10 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] text-center animate-in fade-in zoom-in duration-500 pb-12">
-                <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center text-5xl mx-auto mb-8 border border-emerald-500/30">✅</div>
-                <h3 className="text-2xl font-black text-emerald-400 mb-2 leading-tight py-1">Thanks for applying!</h3>
-                <p className="text-slate-300 text-sm font-medium leading-relaxed">We will get back with you soon.</p>
-                <Link href="/driver/login" className="btn btn-primary w-full mt-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px]">Log In to Portal</Link>
+            <div className="max-w-2xl mx-auto p-12 bg-white/[0.02] border border-white/10 rounded-[32px] text-center shadow-2xl">
+                <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 text-emerald-500">✓</div>
+                <h3 className="text-2xl font-black text-white italic mb-2 tracking-tighter">Application Hub Entry Complete</h3>
+                <p className="text-slate-500 font-medium mb-8">Your operational profile has been synced. We will reach out to you within 24 hours.</p>
+                <Link href="/driver/login" className="badge-solid-primary w-full py-5 text-[10px] font-black uppercase tracking-widest shadow-emerald-500/20 block text-center">Enter Portal Command</Link>
             </div>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-12 max-w-4xl mx-auto font-sans">
             {isMockMode && (
-                <div className="space-y-4 mb-8 p-6 bg-primary/5 border border-dashed border-primary/30 rounded-3xl">
-                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] text-center">⚡ Mock Driver Signup (NC / SC / GA)</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {["Charlotte", "Mount Airy", "Fayetteville", "Davidson", "Greenville", "Rock Hill", "Clemson", "Marietta", "Athens", "Evans"].map((city) => (
-                            <button 
-                                key={city}
-                                type="button" 
-                                onClick={() => fillDemoData(city)}
-                                className="py-2.5 bg-black/40 hover:bg-black/60 border border-white/5 rounded-xl text-[9px] font-black text-white hover:text-primary uppercase tracking-widest transition-all"
-                            >
-                                {city}
-                            </button>
-                        ))}
-                    </div>
+                <div className="text-right">
+                    <button type="button" onClick={fillDemoData} className="px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-black text-emerald-500 hover:text-white hover:border-emerald-500 transition-all uppercase tracking-widest">
+                        Initialize Demo Protocol
+                    </button>
                 </div>
             )}
-
+            
             {state.error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-xs font-bold animate-shake">
+                <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-200 text-xs font-black uppercase tracking-widest animate-shake">
                     ⚠️ {state.message}
                 </div>
             )}
 
+            {/* CARD 1: Personal Information */}
+            <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div className="flex items-center gap-4 mb-10">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-sm border border-emerald-500/20">1</div>
+                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">Personal Information</h2>
+                </div>
 
-
-            {/* Step Indicators */}
-            <div className="flex items-center justify-between mb-8 px-2 relative">
-                <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-white/10 -z-10 translate-y-[-50%]"></div>
-                <div className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 translate-y-[-50%] transition-all duration-300" style={{ width: `${((step - 1) / 4) * 100}%` }}></div>
-
-                {[1, 2, 3, 4, 5].map((num) => (
-
-                    <div key={num} className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black tracking-widest transition-all ${step >= num ? 'bg-primary text-black scale-110 shadow-[0_0_15px_rgba(255,215,0,0.5)]' : 'bg-slate-800 text-slate-500 border border-white/10'}`}>
-                        {num}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]">
+                            <span>👤</span> Full Legal Name
+                        </label>
+                        <input name="name" type="text" required value={formData.name} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all font-bold placeholder:text-slate-700" placeholder="Alex Johnson" />
                     </div>
-                ))}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]">
+                            <span>📧</span> Email Identity
+                        </label>
+                        <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all font-bold placeholder:text-slate-700" placeholder="alex@email.com" />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]">
+                            <span>📞</span> Mobile Terminal
+                        </label>
+                        <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all font-bold placeholder:text-slate-700" placeholder="(555) 987-6543" />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]">
+                            <span>📍</span> Dispatch / Delivery Area
+                        </label>
+                        <div className="[&>div>input]:!bg-black/40 [&>div>input]:!border-white/10 [&>div>input]:!px-6 [&>div>input]:!py-4 [&>div>input]:!rounded-xl [&>div>input]:!text-sm [&>div>input]:focus:!border-emerald-500 [&>div>input]:!font-bold [&>div>input]:!placeholder-slate-700">
+                           <AddressInput initialAddress={formData.address} onAddressSelect={handleAddressSelect} />
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div className="min-h-[350px]">
-                {/* STEP 1: Contact Info */}
-                {step === 1 && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold text-white mb-1">Get Started</h3>
-                            <p className="text-xs text-slate-400">Step 1: Contact info.</p>
-                        </div>
+            {/* CARD 2: Vehicle & Experience */}
+            <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div className="flex items-center gap-4 mb-10">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-sm border border-emerald-500/20">2</div>
+                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">Vehicle & Experience</h2>
+                </div>
 
-                        <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Email Address" />
-                        <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Mobile Phone" />
-                    </div>
-                )}
-
-                {/* STEP 2: Personal Info & Address */}
-                {step === 2 && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold text-white mb-1">Personal Info</h3>
-                            <p className="text-xs text-slate-400">Step 2: Your identity & location.</p>
-                        </div>
-
-                        <input name="name" type="text" required value={formData.name} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm mb-2" placeholder="Legal Full Name" />
-
-                        <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Home Address</label>
-                            <AddressInput
-                                initialAddress={formData.address}
-                                onAddressSelect={handleAddressSelect}
-                            />
-                        </div>
-
-                        <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Date of Birth</label>
-                            <input name="dob" type="date" required value={formData.dob} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" />
+                <div className="space-y-10">
+                    <div className="space-y-4">
+                        <label className="text-[10px] font-black text-slate-500 ml-1 uppercase tracking-[0.2em]">Vehicle Type</label>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {[
+                                { type: 'Bicycle', icon: '🚲' },
+                                { type: 'Motorcycle', icon: '🏍️' },
+                                { type: 'Car', icon: '🚗' },
+                                { type: 'Van / Cargo', icon: '🚚' }
+                            ].map(({type, icon}) => (
+                                <button
+                                    key={type}
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({...prev, vehicleType: type}))}
+                                    className={`py-8 px-4 rounded-2xl border flex flex-col items-center gap-3 transition-all ${formData.vehicleType === type ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'bg-black/40 border-white/10 text-slate-500 hover:border-white/20'}`}
+                                >
+                                    <span className="text-3xl">{icon}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest">{type}</span>
+                                </button>
+                            ))}
                         </div>
                     </div>
-                )}
 
-                {/* STEP 3: Gov ID & Vehicle */}
-                {step === 3 && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold text-white mb-1">Vehicle & ID</h3>
-                            <p className="text-xs text-slate-400">Step 3: Security & driving eligibility.</p>
-                        </div>
-
-                        <div className="relative group">
-                            <select name="vehicleType" required value={formData.vehicleType} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white appearance-none cursor-pointer font-bold text-sm">
-                                <option value="" disabled>Select Vehicle Type</option>
-                                <option value="Car">Car</option>
-                                <option value="SUV">SUV</option>
-                                <option value="Truck">Truck</option>
-                                <option value="Scooter">Scooter / Bike</option>
-                            </select>
-                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-primary transition-colors">▼</div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                            <input name="vehicleMake" type="text" required value={formData.vehicleMake} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Make (e.g. Toyota)" />
-                            <input name="vehicleModel" type="text" required value={formData.vehicleModel} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Model (e.g. Camry)" />
-                            <input name="vehicleColor" type="text" required value={formData.vehicleColor} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="Color (e.g. Silver)" />
-                            <input name="licensePlate" type="text" required value={formData.licensePlate} onChange={updateForm} className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 uppercase focus:outline-none focus:border-primary transition-all text-white placeholder:text-slate-600 font-bold text-sm" placeholder="License Plate" />
-                        </div>
-
-                        <div className="p-6 bg-black/30 border border-dashed border-white/10 hover:border-primary/50 transition-colors rounded-2xl mt-4">
-                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Upload Driver's License</label>
-                            <input name="idDocument" type="file" required accept="image/*,.pdf" onChange={handleFile} className="w-full text-xs text-slate-400 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:transition-all cursor-pointer" />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-6 bg-black/30 border border-dashed border-white/10 hover:border-primary/50 transition-colors rounded-2xl">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Proof of Insurance</label>
-                                <input name="insurance" type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && setInsuranceFile(e.target.files[0])} className="w-full text-[9px] text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[9px] file:font-black file:bg-white/5 file:text-white cursor-pointer" />
-                            </div>
-                            <div className="p-6 bg-black/30 border border-dashed border-white/10 hover:border-primary/50 transition-colors rounded-2xl">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Vehicle Registration</label>
-                                <input name="registration" type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && setRegistrationFile(e.target.files[0])} className="w-full text-[9px] text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[9px] file:font-black file:bg-white/5 file:text-white cursor-pointer" />
-                            </div>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                       <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-500 ml-1 uppercase tracking-[0.2em]">Vehicle Make</label>
+                           <input name="vehicleMake" type="text" value={formData.vehicleMake} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-emerald-500 transition-all font-bold" placeholder="e.g. Toyota" />
+                       </div>
+                       <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-500 ml-1 uppercase tracking-[0.2em]">Vehicle Model</label>
+                           <input name="vehicleModel" type="text" value={formData.vehicleModel} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-emerald-500 transition-all font-bold" placeholder="e.g. Camry" />
+                       </div>
                     </div>
-                )}
-
-                {/* STEP 4: Background Check & Final Consent */}
-                {step === 4 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold text-white mb-1">Final Consents</h3>
-                            <p className="text-xs text-slate-400">Step 4: Agreements and background checks.</p>
-                        </div>
-
-                        <label className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer transition-colors">
-                            <input type="checkbox" name="consentIdentity" required checked={formData.consentIdentity} onChange={updateForm} className="mt-1 w-5 h-5 rounded border-white/20 text-primary focus:ring-primary focus:ring-offset-black bg-black" />
-                            <div>
-                                <p className="text-sm font-bold text-white mb-1">Identity Verification Agreement</p>
-                                <p className="text-xs text-slate-500 leading-relaxed">I consent to TrueServe verifying my identity using the provided ID and personal information.</p>
-                            </div>
-                        </label>
-
-                        <label className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer transition-colors">
-                            <input type="checkbox" name="consentBackground" required checked={formData.consentBackground} onChange={updateForm} className="mt-1 w-5 h-5 rounded border-white/20 text-primary focus:ring-primary focus:ring-offset-black bg-black" />
-                            <div>
-                                <p className="text-sm font-bold text-white mb-1">Motor Vehicle & Background Check</p>
-                                <p className="text-xs text-slate-500 leading-relaxed">I authorize TrueServe to obtain consumer reports, including criminal background and MVR checks.</p>
-                            </div>
-                        </label>
-                    </div>
-                )}
-
-                {/* STEP 5: IC Agreement */}
-                {step === 5 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold text-white mb-1">Contractor Agreement</h3>
-                            <p className="text-xs text-slate-400">Step 5: Review and sign our delivery terms.</p>
-                        </div>
-
-                        <div className="bg-black/80 border border-white/10 rounded-2xl p-6 h-64 overflow-y-auto custom-scrollbar text-[11px] text-slate-400 leading-relaxed font-medium">
-                            <h4 className="text-white font-black uppercase tracking-widest mb-4">INDEPENDENT CONTRACTOR AGREEMENT</h4>
-                            <p className="mb-4">This Agreement is between <strong>TrueServe LLC</strong> ("TrueServe") and the <strong>Independent Contractor</strong> ("Contractor").</p>
-                            
-                            <p className="mb-4"><strong>1. NATURE OF SERVICE:</strong> Contractor is an independent contractor, not an employee of TrueServe. Contractor maintains the right to perform services for other companies and is not required to work exclusively for TrueServe.</p>
-                            
-                            <p className="mb-4"><strong>2. EQUIPMENT & EXPENSES:</strong> Contractor shall provide their own vehicle and equipment. All expenses incurred while performing services (fuel, maintenance, insurance, mobile data) are the sole responsibility of the Contractor.</p>
-                            
-                            <p className="mb-4"><strong>3. COMPENSATION:</strong> Contractor will be paid on a per-delivery basis. Current rates and breakdown are visible in the TrueServe Driver Dashboard. Payouts are processed via Stripe Connect.</p>
-                            
-                            <p className="mb-4"><strong>4. TAXES & COMPLIANCE:</strong> As an independent contractor, Contractor is responsible for all local, state, and federal taxes. TrueServe will issue a 1099-NEC if earnings exceed the IRS threshold.</p>
-                            
-                            <p className="mb-4"><strong>5. TERMINATION:</strong> Either party may terminate this agreement at any time, for any reason, with written notice or by stopping the use of the platform.</p>
-                            
-                            <p className="mb-4"><strong>6. CONFIDENTIALITY:</strong> Contractor agrees to protect customer data and restaurant trade secrets encountered during deliveries.</p>
-                        </div>
-
-                        <label className="flex items-center gap-4 p-5 rounded-2xl border-2 border-primary/20 bg-primary/5 cursor-pointer transition-all hover:border-primary">
-                            <input 
-                                type="checkbox" 
-                                name="hasSignedAgreement" 
-                                required 
-                                checked={formData.hasSignedAgreement} 
-                                onChange={updateForm} 
-                                className="w-6 h-6 rounded border-white/20 text-primary focus:ring-primary bg-black" 
-                            />
-                            <div>
-                                <p className="text-sm font-black text-white">I agree to the Contractor Terms</p>
-                                <p className="text-[10px] text-primary/70 font-bold uppercase tracking-widest">Sign Digitally</p>
-                            </div>
-                        </label>
-                    </div>
-                )}
+                </div>
             </div>
 
+            {/* CARD 3: Documents */}
+            <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div className="flex items-center gap-4 mb-10">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-sm border border-emerald-500/20">3</div>
+                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">Protocol Verification</h2>
+                </div>
 
-            <div className="flex gap-4 mt-8 pt-6 border-t border-white/10">
-                {step > 1 && (
-                    <button type="button" onClick={handleBack} disabled={isPending} className="px-6 py-4 rounded-2xl border border-white/10 hover:bg-white/5 text-white font-bold text-sm transition-colors opacity-70 hover:opacity-100">
-                        Back
-                    </button>
-                )}
-
-                {step < 5 ? (
-                    <button type="button" onClick={handleNext} className="flex-1 btn btn-primary py-4 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 rounded-2xl hover:scale-[1.02] transition-all">
-                        Next Step →
-                    </button>
-                ) : (
-                    <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="flex-1 btn btn-primary py-4 text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-50 disabled:hover:scale-100 rounded-2xl hover:scale-[1.02] transition-all">
-                        {isPending ? "Finish & Submit" : "Sign & Submit Application"}
-                    </button>
-                )}
+                <div className="space-y-8">
+                    <div className="relative border border-dashed border-white/10 rounded-2xl p-10 text-center hover:bg-white/[0.02] transition-colors cursor-pointer group">
+                        <input name="idDocument" type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && setFile(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+                        <div className="text-31 mb-4 group-hover:scale-110 transition-transform">📄</div>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
+                            {file ? <span className="text-emerald-400">{file.name}</span> : "Upload Driver's License or Legal ID"}
+                        </p>
+                        <p className="text-[9px] text-slate-700 font-bold italic">Verification required for high-margin tiers</p>
+                    </div>
+                    
+                    <label className="flex items-start gap-4 p-6 rounded-2xl bg-black/40 border border-white/10 hover:border-emerald-500/20 cursor-pointer transition-all">
+                        <input type="checkbox" name="hasSignedAgreement" required checked={formData.hasSignedAgreement} onChange={updateForm} className="mt-1 w-5 h-5 rounded border-white/10 bg-black/60 text-emerald-500 focus:ring-emerald-500/20" />
+                        <div>
+                            <p className="text-xs font-black text-white uppercase tracking-widest">Acknowledge Fleet Terms</p>
+                            <p className="text-[10px] text-slate-500 font-medium italic mt-1">I authorize TrueServe to perform standard screening and background checks.</p>
+                        </div>
+                    </label>
+                </div>
             </div>
-            {step === 5 && (
-
-                <p className="text-[10px] text-slate-500 text-center px-4 font-medium leading-relaxed mt-4">
-                    By clicking submit, you acknowledge all TrueServe onboarding requirements.
+            
+            <div className="pt-8">
+                <button disabled={isPending || !formData.hasSignedAgreement} className="badge-emerald w-full py-6 text-xs font-black uppercase tracking-[0.3em] shadow-emerald-500/30 active:scale-[0.98] transition-all disabled:opacity-50">
+                    {isPending ? "Syncing Onboarding Data..." : "Launch Application Hub Entry →"}
+                </button>
+                <p className="mt-6 text-center text-[10px] text-slate-600 font-black uppercase tracking-widest italic leading-relaxed">
+                    By clicking submit, you agree to become part of the TrueServe network <br />
+                    as an independent delivery specialist.
                 </p>
-            )}
+            </div>
         </form>
     );
 }

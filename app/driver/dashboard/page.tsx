@@ -1,20 +1,19 @@
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { calculateDriverPay } from "@/lib/payEngine";
-import { acceptOrder, pickupOrder, completeDelivery, unassignOrder } from "../actions";
+import { acceptOrder, pickupOrder, unassignOrder } from "../actions";
 
 import DriverMap from "@/components/DriverMap";
 import { calculateDistance, getNavigationUrl } from "@/lib/utils";
-import { revalidatePath } from "next/cache";
 import DriverRealtime from "@/components/DriverRealtime";
 import DriverChatButton from "@/components/DriverChatButton";
 import DriverCallButton from "@/components/DriverCallButton";
-import SpotCheckTrigger from "@/components/SpotCheckTrigger";
 import ActiveOrderNavigation from "@/components/ActiveOrderNavigation";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
 import { getCurrentWeather } from "@/lib/weather";
+import ModeToggle from "@/components/ModeToggle";
+import LogoutButton from "@/components/LogoutButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -73,315 +72,303 @@ export default async function DriverDashboard() {
     };
 
     return (
-        <div className="bg-[#0a0a0a] text-white">
+        <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans">
             {driver && <DriverRealtime driverId={driver.id} />}
-            <header className="hidden md:flex p-6 border-b border-white/5 justify-between items-center sticky top-0 bg-black/50 backdrop-blur-md z-50">
-                <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                    <img src="/logo.png" alt="TrueServe Driver" className="w-8 h-8 rounded-full border border-white/10 transition-all shadow-lg" />
-                    <span className="text-xl font-black tracking-tight">True<span className="text-emerald-400">Serve</span> Driver</span>
-                </Link>
-                <div className="flex gap-4 items-center">
-                    <div className="text-right flex items-center gap-3">
-                        <div className="hidden sm:block">
-                            <p className="text-[10px] text-slate-500 uppercase font-bold">Weather</p>
-                            <p className="text-slate-300 font-bold">{weather.temperature}°F {weather.description}</p>
-                        </div>
+
+            {/* Standardized Replit-Style Top-Nav */}
+            <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center text-sans">
+                <div className="flex items-center gap-4">
+                    <Link href="/" className="flex items-center gap-2">
+                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full border border-white/10 shadow-lg" />
+                        <span className="text-xl font-black tracking-tighter text-white uppercase italic">True<span className="text-primary tracking-tight">Serve</span></span>
+                    </Link>
+                    <div className="h-6 w-px bg-white/10 mx-2"></div>
+                    <nav className="flex items-center gap-1">
+                        <Link href="/restaurants" className="nav-link px-6 text-slate-400">🍴 Order Food</Link>
+                        <Link href="/driver/dashboard" className="nav-link px-6 text-emerald-500 bg-emerald-500/5 rounded-full">🛵 Dashboard</Link>
+                        <Link href="/driver" className="nav-link px-6 text-slate-400">🏁 Fleet Hub</Link>
+                    </nav>
+                </div>
+                <div className="flex items-center gap-6">
+                    <ModeToggle />
+                    <LogoutButton />
+                </div>
+            </nav>
+
+            <main className="container py-12 md:py-24 px-4 md:px-8 pb-40 font-sans">
+                {/* Replit-Style Header Title Stack */}
+                <div className="mb-16 flex flex-col md:flex-row md:items-center justify-between gap-6 max-w-7xl mx-auto px-2">
+                    <div className="flex items-center gap-5">
+                        <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-3xl shadow-xl font-sans">🏎️</div>
                         <div>
-                            <p className="text-[10px] text-slate-500 uppercase font-bold">Current Balance</p>
-                            <p className="text-emerald-400 font-bold">${stats.balance.toFixed(2)}</p>
+                            <h1 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight">
+                                Fleet Mission Hub
+                            </h1>
+                            <p className="text-slate-500 text-xs md:text-sm font-black uppercase tracking-widest mt-1">
+                                Welcome back, {driver.name.split(' ')[0]}. Grid temp: {weather.temperature}°F
+                            </p>
                         </div>
                     </div>
-                    <button className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-lg text-sm font-bold border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
-                        Withdraw
-                    </button>
-                    <SpotCheckTrigger />
                 </div>
-            </header>
 
-            <main className="container py-4 md:py-12 px-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
-                    <Link href="/driver/dashboard/earnings" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">💰</div>
-                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Total Pay</p>
-                        <p className="text-2xl md:text-4xl font-black text-white">${stats.totalEarnings.toFixed(2)}</p>
+                {/* Primary Stats Grid */}
+                <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-stats gap-4 md:gap-8 mb-16">
+                    <Link href="/driver/dashboard/earnings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-8 rounded-[2.5rem] hover:bg-white/[0.08] active:scale-[0.98] transition-all shadow-xl">
+                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-5 group-hover:scale-110 transition-transform">💰</div>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Total Earnings</p>
+                        <p className="text-3xl md:text-5xl font-black text-white tracking-tighter italic uppercase">${stats.totalEarnings.toFixed(2)}</p>
                     </Link>
-                    <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl">🛵</div>
-                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Trips Done</p>
-                        <p className="text-2xl md:text-4xl font-black text-white">{stats.trips}</p>
+                    <div className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-8 rounded-[2.5rem] shadow-xl">
+                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-5">🛵</div>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Trips</p>
+                        <p className="text-3xl md:text-5xl font-black text-white tracking-tighter italic uppercase">{stats.trips}</p>
                     </div>
-                    <Link href="/driver/dashboard/ratings" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">⭐</div>
-                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Rating</p>
-                        <p className="text-2xl md:text-4xl font-black text-yellow-400">★ {stats.rating}</p>
+                    <Link href="/driver/dashboard/ratings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-8 rounded-[2.5rem] hover:bg-white/[0.08] transition-all shadow-xl">
+                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-5 group-hover:scale-110 transition-transform">⭐</div>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Fleet Rating</p>
+                        <p className="text-3xl md:text-5xl font-black text-yellow-500 tracking-tighter italic uppercase">★ {stats.rating}</p>
                     </Link>
-                    <Link href="/driver/dashboard/account" className="group relative overflow-hidden bg-white/5 border border-white/5 p-5 rounded-2xl md:rounded-3xl hover:bg-white/10 active:scale-95 transition-all text-xs">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 text-4xl group-hover:scale-110 transition-transform">🏆</div>
-                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1">Level</p>
-                        <p className="text-xl md:text-3xl lg:text-4xl font-black text-primary">Gold</p>
-                    </Link>
+                    <div className="group relative overflow-hidden bg-emerald-500/5 border border-emerald-500/10 p-8 rounded-[2.5rem] shadow-xl">
+                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-10 font-sans">🏆</div>
+                        <p className="text-emerald-500/50 text-[10px] font-black uppercase tracking-[0.2em] mb-3 font-sans">Tier Status</p>
+                        <p className="text-3xl md:text-5xl font-black text-emerald-400 tracking-tighter italic uppercase">GOLD</p>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            🔔 Recommended for You
-                        </h2>
-                        {availableOrders && availableOrders.length > 0 ? (
-                            availableOrders.map((order: any, index: number) => (
-                                <div key={order.id} className={`card p-5 flex justify-between items-center group transition-all relative overflow-hidden ${index === 0 ? 'bg-gradient-to-r from-emerald-900/40 to-black border-emerald-500/50 shadow-emerald-900/20 shadow-lg' : 'bg-white/5 border-white/10 hover:border-primary/50'}`}>
-                                    {index === 0 && (
-                                        <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[10px] uppercase font-bold px-2 py-1 rounded-bl">Best Match</div>
-                                    )}
-                                    <div>
-                                        <p className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</p>
-                                        <p className="text-sm text-slate-400">{order.restaurant?.address || "Location Hidden"}</p>
-                                        <div className="flex flex-wrap gap-3 mt-2 text-xs font-mono uppercase">
-                                            <span className="bg-white/10 px-2 py-1 rounded text-slate-300">
-                                                {calculateDriverPay(order.distance || 0, 0, false, weather.multiplier).totalPay.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} est. pay
-                                            </span>
-                                            <span className={`px-2 py-1 rounded ${order.distance < 3 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-slate-300'}`}>
-                                                {order.distance} mi away
-                                            </span>
-                                            {weather.multiplier > 1 && (
-                                                 <span className="bg-primary/20 text-primary px-3 py-1 rounded-full animate-pulse font-black border border-primary/20 whitespace-nowrap">
-                                                     {(weather.multiplier - 1) * 100}% {weather.isSnowing ? 'Snow' : 'Rain'} Bonus
-                                                 </span>
-                                             )}
-                                        </div>
-                                    </div>
-                                    <form action={async () => {
-                                        "use server";
-                                        await acceptOrder(order.id);
-                                    }}>
-                                        <button type="submit" className="btn btn-primary px-6 py-2 shadow-lg shadow-primary/20">Accept</button>
-                                    </form>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="p-8 text-center border dashed border-white/10 rounded-xl text-slate-500">
-                                No orders available nearby.
+                {/* Main Content Enclosure (Replit-Style Card) */}
+                <div className="max-w-7xl mx-auto bg-white/[0.02] border border-white/5 rounded-[3rem] p-8 md:p-16 shadow-2xl space-y-32">
+                    
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 md:gap-24">
+                        {/* Feed Column */}
+                        <div className="space-y-12">
+                            <div>
+                                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase mb-2">Localized Feed</h2>
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest italic">Optimized for your current operational sector</p>
                             </div>
-                        )}
-                    </div>
 
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            🚀 My Active Deliveries
-                        </h2>
-                        {myOrders && myOrders.length > 0 ? (
-                            myOrders.map((order: any) => {
-                                const isPickedUp = order.status === 'PICKED_UP';
-                                const customerName = order.user?.name || "Customer";
-                                const destinationName = isPickedUp ? customerName : order.restaurant?.name;
-                                const destinationAddress = isPickedUp ? (order.deliveryAddress || "Customer Address") : order.restaurant?.address;
-                                const destLat = isPickedUp ? order.deliveryLat : order.restaurant?.lat;
-                                const destLng = isPickedUp ? order.deliveryLng : order.restaurant?.lng;
-                                const statusLabel = isPickedUp ? "Delivering" : "Pickup";
+                            {availableOrders && availableOrders.length > 0 ? (
+                                <div className="space-y-6">
+                                    {availableOrders.map((order: any, index: number) => (
+                                        <div key={order.id} className={`p-8 border rounded-[2.5rem] flex justify-between items-center group transition-all relative overflow-hidden ${index === 0 ? 'bg-emerald-500/[0.03] border-emerald-500/20 shadow-lg' : 'bg-black/40 border-white/10 hover:border-emerald-500/20'}`}>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                     <h3 className="font-black text-xl italic text-white group-hover:text-emerald-500 transition-colors tracking-tight uppercase">{order.restaurant?.name || "Restaurant"}</h3>
+                                                     {index === 0 && <span className="bg-emerald-500 text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">Priority link</span>}
+                                                </div>
+                                                <p className="text-[11px] text-slate-500 font-bold mb-6 italic uppercase">{order.restaurant?.address || "Location Hidden"}</p>
+                                                <div className="flex flex-wrap gap-3 text-[10px] uppercase font-black">
+                                                    <span className="bg-black/40 px-4 py-2 rounded-xl text-emerald-400 border border-white/5 tracking-widest">
+                                                        {calculateDriverPay(order.distance || 0, 0, false, weather.multiplier).totalPay.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} yield
+                                                    </span>
+                                                    <span className={`px-4 py-2 rounded-xl tracking-widest ${order.distance < 3 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-black/40 text-slate-500 border border-white/5'}`}>
+                                                        {order.distance} mi
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <form action={async () => {
+                                                "use server";
+                                                await acceptOrder(order.id);
+                                            }} className="ml-6">
+                                                <button type="submit" className="badge-emerald py-4 px-10 text-[10px] group-hover:scale-105 transition-transform">Accept</button>
+                                            </form>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="py-24 flex flex-col items-center text-center bg-black/20 border border-dashed border-white/10 rounded-[2.5rem]">
+                                    <div className="text-6xl mb-8 opacity-10">📡</div>
+                                    <h3 className="text-2xl font-black text-white italic mb-2 tracking-tight uppercase">Scanning Mesh...</h3>
+                                    <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest italic">No operational links found in this sector</p>
+                                </div>
+                            )}
+                        </div>
 
-                                return (
-                                    <div key={order.id} className="space-y-4">
-                                        {(order.status === 'READY_FOR_PICKUP' || order.status === 'PICKED_UP') && (
-                                            <ActiveOrderNavigation
-                                                order={order}
-                                                driverLat={driver?.currentLat || 35.2271}
-                                                driverLng={driver?.currentLng || -80.8431}
-                                            />
-                                        )}
-                                        <div className="card bg-emerald-500/10 border-emerald-500/20 p-5 shadow-lg">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h3 className="font-bold text-lg text-emerald-100">{destinationName}</h3>
-                                                <div className="flex flex-col items-end gap-1">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-full border border-emerald-500/20 whitespace-nowrap shadow-sm">{statusLabel}</span>
-                                                    {Number(order.tip) > 0 && (
-                                                        <span className="text-[10px] font-black text-primary animate-pulse">+$ {Number(order.tip).toFixed(2)} Tip</span>
+                        {/* Assignments Column */}
+                        <div className="space-y-12">
+                            <div>
+                                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase mb-2">Active Missions</h2>
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest italic">Your assigned operational payloads</p>
+                            </div>
+
+                            {myOrders && myOrders.length > 0 ? (
+                                <div className="space-y-8">
+                                    {myOrders.map((order: any) => {
+                                        const isPickedUp = order.status === 'PICKED_UP';
+                                        const destinationName = isPickedUp ? order.user?.name : order.restaurant?.name;
+                                        const destinationAddress = isPickedUp ? (order.deliveryAddress || "Customer Address") : order.restaurant?.address;
+                                        const destLat = isPickedUp ? order.deliveryLat : order.restaurant?.lat;
+                                        const destLng = isPickedUp ? order.deliveryLng : order.restaurant?.lng;
+                                        const statusLabel = isPickedUp ? "Delivery" : "Pickup";
+
+                                        return (
+                                            <div key={order.id} className="space-y-6">
+                                                {(order.status === 'READY_FOR_PICKUP' || order.status === 'PICKED_UP') && (
+                                                    <ActiveOrderNavigation
+                                                        order={order}
+                                                        driverLat={driver?.currentLat || 35.2271}
+                                                        driverLng={driver?.currentLng || -80.8431}
+                                                    />
+                                                )}
+                                                <div className="p-10 bg-emerald-500/[0.03] border border-emerald-500/20 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                                                    <div className="absolute top-0 right-0 p-10 text-8xl opacity-5 pointer-events-none group-hover:scale-110 transition-transform font-sans">🎯</div>
+                                                    
+                                                    <div className="flex justify-between items-start mb-8 relative z-10">
+                                                        <div>
+                                                            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-500 mb-2">{statusLabel} MISSION</p>
+                                                            <h3 className="text-3xl font-black text-white italic tracking-tight uppercase">{destinationName}</h3>
+                                                            <p className="text-[11px] text-slate-500 font-medium mt-3 italic uppercase leading-relaxed max-w-xs">{destinationAddress}</p>
+                                                        </div>
+                                                        <div className="flex flex-col items-end gap-3">
+                                                            <span className="bg-emerald-500 text-black text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-tighter animate-pulse">Mesh Active</span>
+                                                            {Number(order.tip) > 0 && (
+                                                                <span className="text-[10px] font-black text-primary bg-primary/10 px-4 py-2 rounded-xl border border-primary/20 tracking-widest uppercase italic">${Number(order.tip).toFixed(2)} Tip Entry</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {isPickedUp && order.deliveryInstructions && (
+                                                        <div className="mb-8 p-6 rounded-[1.8rem] bg-orange-500/10 border border-orange-500/20 flex items-start gap-4 transition-all">
+                                                            <span className="text-2xl mt-1">📝</span>
+                                                            <div>
+                                                                <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-2">Customer Briefing</p>
+                                                                <p className="text-sm text-orange-100 font-medium leading-relaxed italic">{order.deliveryInstructions}</p>
+                                                            </div>
+                                                        </div>
                                                     )}
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-emerald-200/60 mb-4">{destinationAddress}</p>
 
-                                            {/* Delivery Instructions Badge */}
-                                            {isPickedUp && order.deliveryInstructions && (
-                                                <div className="mb-4 p-3 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-start gap-3">
-                                                    <span className="text-base shrink-0">📝</span>
-                                                    <div>
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">Customer Instruction</p>
-                                                        <p className="text-xs text-orange-100 font-medium leading-snug">{order.deliveryInstructions}</p>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            <div className="flex flex-col gap-2 mt-4">
-                                                <div className="flex flex-wrap gap-2">
-                                                    <a
-                                                        href={getNavigationUrl(destinationAddress || "", (driver as any)?.navigationApp || 'google', destLat, destLng)}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex-1 min-w-[140px] btn bg-emerald-500 text-black font-bold text-[10px] py-3 flex items-center justify-center uppercase tracking-wider"
-                                                    >
-                                                        {isPickedUp ? "Navigate to Hub" : "Navigate to Store"}
-                                                    </a>
-
-                                                    <div className="flex gap-2 flex-grow">
-                                                        {isPickedUp && order.user?.phone && (
-                                                            <DriverCallButton orderId={order.id} />
-                                                        )}
-                                                        <DriverChatButton orderId={order.id} />
-                                                    </div>
-                                                </div>
-
-                                                {['PENDING', 'PREPARING'].includes(order.status) && (
-                                                    <div className="w-full py-3 text-center border dashed border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] rounded">
-                                                        Waiting for Restaurant Prep...
-                                                    </div>
-                                                )}
-
-                                                {order.status === 'READY_FOR_PICKUP' && (
-                                                    <form action={async () => {
-                                                        "use server";
-                                                        await pickupOrder(order.id);
-                                                    }}>
-                                                        <button type="submit" className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
-                                                            Confirm Pickup
-                                                        </button>
-                                                    </form>
-                                                )}
-
-                                                {order.status === 'PICKED_UP' && (
-                                                    <CompleteDeliveryForm orderId={order.id} />
-                                                )}
-
-                                                {!isPickedUp && (
-                                                    <form action={async () => {
-                                                        "use server";
-                                                        await unassignOrder(order.id, "Emergency/Vehicle Trouble");
-                                                    }}>
-                                                        <button 
-                                                            type="submit" 
-                                                            className="w-full text-red-400 text-[9px] font-black uppercase tracking-widest py-2 hover:bg-red-500/10 rounded transition-colors"
-                                                            onClick={() => !confirm("Are you sure you want to drop this order? This will affect your reliability rating.") && event?.preventDefault()}
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                                                        <a
+                                                            href={getNavigationUrl(destinationAddress || "", (driver as any)?.navigationApp || 'google', destLat, destLng)}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="badge-solid-primary py-5 text-[10px] font-black flex items-center justify-center tracking-widest uppercase italic shadow-lg shadow-primary/20"
                                                         >
-                                                            Drop Order
-                                                        </button>
-                                                    </form>
-                                                )}
-                                            </div>
+                                                            {isPickedUp ? "Nav → Terminal" : "Nav → Sector"}
+                                                        </a>
 
+                                                        <div className="flex gap-2">
+                                                            {isPickedUp && order.user?.phone && (
+                                                                <DriverCallButton orderId={order.id} />
+                                                            )}
+                                                            <DriverChatButton orderId={order.id} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-8 pt-8 border-t border-emerald-500/10 relative z-10">
+                                                        {order.status === 'READY_FOR_PICKUP' && (
+                                                            <form action={async () => {
+                                                                "use server";
+                                                                await pickupOrder(order.id);
+                                                            }}>
+                                                                <button type="submit" className="badge-emerald w-full py-5 text-[10px]">Confirm Payload Sync</button>
+                                                            </form>
+                                                        )}
+
+                                                        {order.status === 'PICKED_UP' && (
+                                                            <CompleteDeliveryForm orderId={order.id} />
+                                                        )}
+
+                                                        <form action={async () => {
+                                                            "use server";
+                                                            await unassignOrder(order.id, "Emergency/Vehicle Trouble");
+                                                        }} className="mt-6 flex justify-center">
+                                                            <button 
+                                                                type="submit" 
+                                                                className="text-slate-600 text-[9px] font-black uppercase tracking-widest hover:text-red-500 transition-colors italic"
+                                                                onClick={() => !confirm("Abort Mission?") && event?.preventDefault()}
+                                                            >
+                                                                Terminate Mission Connection
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="py-24 flex flex-col items-center text-center bg-black/20 border border-dashed border-white/10 rounded-[3rem]">
+                                    <div className="text-7xl mb-10 grayscale opacity-10">🏎️</div>
+                                    <h3 className="text-2xl font-black text-white italic mb-3 tracking-tight uppercase">Base Protocol Ready</h3>
+                                    <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest max-w-[240px] leading-relaxed italic">Accept an active order from the sector feed to begin sync.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Secondary Systems Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 md:gap-20">
+                        <section className="lg:col-span-2 space-y-12">
+                             <div>
+                                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase mb-2">Ledger & Mesh</h2>
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest italic">Historical yield and sector forecasting</p>
+                            </div>
+                            <div className="bg-black/40 border border-white/5 rounded-[3rem] overflow-hidden shadow-2xl">
+                                <div className="overflow-x-auto font-sans">
+                                    <table className="w-full min-w-[600px]">
+                                        <thead className="bg-white/5 text-left text-[10px] text-slate-500 uppercase font-black tracking-[0.2em] italic">
+                                            <tr>
+                                                <th className="p-8">Timeline</th>
+                                                <th className="p-8">Dispatch</th>
+                                                <th className="p-8">Yield</th>
+                                                <th className="p-8 text-right">Settlement</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="text-xs">
+                                            {[1, 2, 3].map((i) => {
+                                                const miles = 2.5 * i;
+                                                const wait = 12 + i;
+                                                const pay = calculateDriverPay(miles, wait, i === 2, 1.2);
+                                                return (
+                                                    <tr key={i} className="border-t border-white/5 hover:bg-white/[0.03] transition-colors group">
+                                                        <td className="p-8 text-slate-500 font-black uppercase italic tracking-widest uppercase tracking-tighter">Sync Log {27 - i}</td>
+                                                        <td className="p-8 text-white font-black italic uppercase">{miles} mi link</td>
+                                                        <td className="p-8 text-slate-400 font-bold italic uppercase">${pay.timePay.toFixed(2)}</td>
+                                                        <td className="p-8 text-right font-black text-emerald-400 group-hover:scale-105 transition-transform origin-right italic uppercase">${pay.totalPay.toFixed(2)}</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div className="rounded-[4rem] overflow-hidden border border-white/5 shadow-2xl relative h-[400px]">
+                                <DriverMap />
+                            </div>
+                        </section>
+
+                        <div className="space-y-12">
+                            <section>
+                                <h2 className="text-xl font-black text-white italic tracking-tighter mb-8 uppercase px-4">Mission Control</h2>
+                                <div className="bg-emerald-500/10 border border-emerald-500/20 p-12 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                                    <div className="flex items-center gap-5 mb-10">
+                                        <div className="w-4 h-4 bg-emerald-400 rounded-full animate-ping" />
+                                        <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 rounded-full bg-emerald-500/10 border border-emerald-500/10">Sector Active</p>
+                                    </div>
+                                    <div className="space-y-5 mb-10">
+                                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest flex justify-between italic">Main Sector: <span className="text-white">Downtown Grid</span></p>
+                                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest flex justify-between italic">Hourly Yield: <span className="text-emerald-400">$24.50 est.</span></p>
+                                    </div>
+                                    <button className="btn-standard w-full py-5 text-[10px] bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white transition-all">Go Offline</button>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h2 className="text-xl font-black text-white italic tracking-tighter mb-8 uppercase px-4">Rapid Liquidity</h2>
+                                <div className="bg-primary/5 border border-primary/20 p-12 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary opacity-5 blur-[100px] group-hover:opacity-20 transition-opacity"></div>
+                                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-10 italic">T+0 SETTLEMENT READY</p>
+                                    <div className="flex justify-between items-end mb-12">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase text-primary mb-2 italic">Liquid Balance</p>
+                                            <p className="text-5xl font-black text-white tracking-tighter italic uppercase underline decoration-primary/20 underline-offset-8">${stats.balance.toFixed(2)}</p>
                                         </div>
                                     </div>
-                                );
-                            })
-                        ) : (
-                            <div className="p-8 text-center border dashed border-white/10 rounded-xl text-slate-500">
-                                You have no active deliveries.
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 space-y-8">
-                        <section>
-                            <div className="flex justify-between items-end mb-6">
-                                <div>
-                                    <h2 className="text-2xl font-bold">Transparent Pay Breakdown</h2>
-                                    <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mt-1">Mileage-Based Delivery Service</p>
+                                    <Link href="/driver/dashboard/earnings" className="badge-solid-primary w-full py-6 text-center block text-[10px] shadow-primary/30 uppercase tracking-[0.2em]">Cash Out Funds</Link>
+                                    <p className="mt-8 text-[9px] text-slate-600 font-black uppercase tracking-[0.3em] text-center italic">Processing Protocol: $0.50</p>
                                 </div>
-                                <div className="text-[10px] bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-slate-400 font-black uppercase tracking-widest shadow-inner">
-                                     Base Rate: <span className="text-emerald-400">$3.00/order</span>
-                                 </div>
-                            </div>
-                            <div className="card bg-white/5 border-white/10 overflow-x-auto custom-scrollbar">
-                                <table className="w-full min-w-[600px]">
-                                    <thead className="bg-white/5 text-left text-xs text-slate-500 uppercase font-bold">
-                                        <tr>
-                                            <th className="p-4">Date</th>
-                                            <th className="p-4">Miles</th>
-                                            <th className="p-4">Time</th>
-                                            <th className="p-4">Batch</th>
-                                            <th className="p-4">Peak</th>
-                                            <th className="p-4 text-right">Payout</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="text-sm">
-                                        {[1, 2, 3].map((i) => {
-                                            const miles = 2.5 * i;
-                                            const wait = 12 + i;
-                                            const pay = calculateDriverPay(miles, wait, i === 2, 1.2);
-                                            return (
-                                                <tr key={i} className="border-t border-white/5 hover:bg-white/5 transition-colors">
-                                                    <td className="p-4 text-slate-400">Jan {27 - i}</td>
-                                                    <td className="p-4 font-semibold">{miles} mi</td>
-                                                    <td className="p-4">${pay.timePay.toFixed(2)}</td>
-                                                    <td className="p-4 text-blue-400">${pay.batchBonus.toFixed(2)}</td>
-                                                    <td className="p-4 text-primary">{pay.peakMultiplier}x</td>
-                                                    <td className="p-4 text-right font-bold text-emerald-400">${pay.totalPay.toFixed(2)}</td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-bold mb-4">Earnings Forecast Heatmap</h2>
-                            <DriverMap />
-                        </section>
-                    </div>
-
-                    <div className="space-y-8">
-                        <section>
-                            <h2 className="text-xl font-bold mb-4">Live Activity</h2>
-                            <div className="card bg-emerald-500/5 border-emerald-500/20 p-6">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-                                    <p className="text-emerald-400 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/10">Online & Live</p>
-                                </div>
-                                <div className="space-y-3 mb-6">
-                                    <p className="text-slate-400 text-sm flex justify-between">Zone: <span className="text-white font-semibold">Manhattan</span></p>
-                                    <p className="text-slate-400 text-sm flex justify-between">Guarantee: <span className="text-emerald-400 font-bold">estimated</span></p>
-                                </div>
-                                <button className="w-full btn bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20">Go Offline</button>
-                            </div>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-bold mb-4">Safety & Tools</h2>
-                            <div className="card bg-white/5 border-white/10 p-6 space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-bold flex items-center gap-2">📍 Share Location</p>
-                                        <p className="text-xs text-slate-400 mt-1">Send live trip status to contacts.</p>
-                                    </div>
-                                    <button className="btn btn-sm btn-outline border-white/20 hover:bg-white/10">Share</button>
-                                </div>
-                                <div className="h-px bg-white/5"></div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-bold text-red-400 flex items-center gap-2">🛡️ Emergency</p>
-                                        <p className="text-xs text-slate-400 mt-1">Connect with 911 immediately.</p>
-                                    </div>
-                                    <button className="btn btn-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20 font-bold">SOS</button>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-bold mb-4">Instant Payouts</h2>
-                            <div className="card bg-primary/5 border-primary/20 p-6">
-                                <p className="text-sm text-slate-400 mb-4">Get your earnings delivered to your debit card instantly.</p>
-                                <div className="flex justify-between items-center mb-6">
-                                    <p className="text-xs font-bold uppercase text-slate-500 tracking-widest">Available</p>
-                                    <p className="text-3xl font-bold text-white">${stats.balance.toFixed(2)}</p>
-                                </div>
-                                <Link href="/driver/dashboard/earnings" className="w-full btn btn-primary py-3 text-center block">Cash Out (T+0)</Link>
-                                <div className="mt-4 flex justify-between items-center text-[10px] text-slate-500 font-mono">
-                                    <span>Fixed Processing Fee</span>
-                                    <span>$0.50</span>
-                                </div>
-                            </div>
-                        </section>
+                            </section>
+                        </div>
                     </div>
                 </div>
             </main>

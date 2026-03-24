@@ -245,18 +245,19 @@ export default async function RestaurantFinder({
                         <span className="text-xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
                     </Link>
                     <div className="h-6 w-px bg-white/10 mx-2"></div>
-                    <nav className="flex items-center gap-1">
-                        <Link href="/restaurants" className="badge-subtle-primary text-[10px] py-1.5 border-none">🍴 Order Food</Link>
-                        <Link href="/user/dashboard" className="text-slate-500 hover:text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5">📋 Dashboard</Link>
-                    </nav>
+                    <div className="flex items-center gap-8">
+                        <Link href="/driver/login" className="nav-link text-primary border-b border-primary/20 hover:border-primary transition-all pb-1">Sign In</Link>
+                        <Link href="/driver" className="btn-standard py-3 px-8 text-[9px]">
+                            Fleet Home
+                        </Link>
+                    </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-6">
                     {userId && <NotificationBell userId={userId} />}
-                    <ModeToggle />
                     {!userId ? (
-                        <Link href="/login" className="badge-solid-primary text-[10px] py-2">Sign In</Link>
+                         <Link href="/login" className="btn-standard py-3 px-8 text-[9px]">Sign In</Link>
                     ) : (
-                        <Link href="/user/settings" className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10">
+                        <Link href="/user/settings" className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:border-primary transition-all">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         </Link>
                     )}
@@ -265,30 +266,30 @@ export default async function RestaurantFinder({
 
             <main className="container py-12 md:py-24 px-4 md:px-8 pb-40">
                 <div className="mb-16 md:mb-24">
-                    <h1 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter mb-2">Order Dashboard</h1>
-                    <p className="text-slate-500 font-medium">Browse flavors in {locationMeta.name || "your area"}.</p>
+                    <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-2">Discovery Hub</h1>
+                    <p className="text-slate-500 font-medium italic">Synchronizing local flavors in {locationMeta.name || "your area"}.</p>
                 </div>
 
                 {activeOrders.length > 0 && (
-                    <div className="mb-12 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] flex items-center justify-between">
+                    <div className="mb-12 p-8 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-[3rem] flex items-center justify-between shadow-2xl">
                         <div>
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="flex items-center gap-2 mb-2">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span className="text-emerald-400 font-black uppercase tracking-widest text-[9px]">Live Order</span>
+                                <span className="text-emerald-500 font-black uppercase tracking-widest text-[10px]">Active Protocol</span>
                             </div>
-                            <h3 className="text-xl font-black text-white">{activeOrders[0].restaurant?.name} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}</h3>
+                            <h3 className="text-2xl font-black text-white italic">{activeOrders[0].restaurant?.name} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}</h3>
                         </div>
-                        <Link href={`/orders/${activeOrders[0].id}`} className="badge-solid-primary py-3 px-8">Track Live</Link>
+                        <Link href={`/orders/${activeOrders[0].id}`} className="btn-standard !bg-emerald-500 py-4 px-10 text-[10px]">Track Protocol →</Link>
                     </div>
                 )}
 
-                <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-6 md:p-12 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50"></div>
+                <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-6 md:p-12 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/50 to-emerald-500/0"></div>
                     
-                    <div className="flex items-center gap-3 overflow-x-auto pb-8 no-scrollbar scroll-smooth">
-                        <Link href="/restaurants" className={`px-8 py-3 badge font-black text-[11px] ${!category ? "badge-solid-primary" : "text-slate-500"}`}>All</Link>
+                    <div className="flex items-center gap-4 overflow-x-auto pb-12 no-scrollbar scroll-smooth">
+                        <Link href="/restaurants" className={`px-8 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all border ${!category ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"}`}>All</Link>
                         {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches"].map((cat) => (
-                            <Link key={cat} href={`/restaurants?category=${cat}`} className={`px-8 py-3 badge font-black text-[11px] ${category === cat ? "badge-solid-primary" : "text-slate-500"}`}>{cat}</Link>
+                            <Link key={cat} href={`/restaurants?category=${cat}`} className={`px-8 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all border ${category === cat ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"}`}>{cat}</Link>
                         ))}
                     </div>
 
