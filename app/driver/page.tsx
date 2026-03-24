@@ -57,9 +57,10 @@ export default function DriverPortal() {
                         A dedicated platform to help local drivers grow. Fair splits, real support, and local delivery routes.
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row items-center justify-center pt-10">
-                        <Link href="#signup" className="badge-solid-primary !px-20 !py-8 !text-sm !font-black !uppercase !tracking-[0.4em] !rounded-2xl !bg-[#f59e0b] !text-black hover:scale-105 transition-all shadow-[0_0_50px_rgba(245,158,11,0.3)] min-w-[350px] text-center">
-                            Join Fleet →
+                    <div className="flex flex-col items-center justify-center pt-12">
+                        <Link href="#signup" className="group relative flex items-center justify-center gap-4 px-12 py-5 bg-primary text-black text-[12px] font-black uppercase tracking-[0.4em] rounded-2xl hover:scale-105 active:scale-[0.98] transition-all duration-500 shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+                            Join Fleet
+                            <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
                         </Link>
                     </div>
                 </div>
