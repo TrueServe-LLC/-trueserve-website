@@ -163,13 +163,13 @@ function MerchantSignupFormInner() {
                             </div>
                             <div className="space-y-4 pt-4">
                                 <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Current POS System</label>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {['Toast POS', 'Clover', 'Other'].map((pos) => (
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                    {['Toast', 'Square', 'Clover', 'Revel', 'Lightspeed', 'Other'].map((pos) => (
                                         <button
                                             key={pos}
                                             type="button"
                                             onClick={() => setFormData(prev => ({ ...prev, posSystem: pos }))}
-                                            className={`px-6 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.posSystem === pos ? 'bg-primary border-primary text-black shadow-lg shadow-primary/20 scale-[1.02]' : 'bg-white/[0.03] border-white/10 text-slate-500 hover:border-white/20'}`}
+                                            className={`px-4 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.posSystem === pos ? 'bg-primary border-primary text-black shadow-lg shadow-primary/20 scale-[1.02]' : 'bg-white/[0.03] border-white/10 text-slate-500 hover:border-white/20'}`}
                                         >
                                             {pos}
                                         </button>

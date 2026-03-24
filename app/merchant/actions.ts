@@ -391,6 +391,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     const state = formData.get("state") as string;
     const zip = formData.get("zip") as string;
     const plan = formData.get("plan") as string;
+    const posSystem = formData.get("posSystem") as string || "None";
 
     if (!restaurantName || !contactName || !email || !password || !address || !city || !state) {
         return { message: "Please fill in all required fields.", error: true };
@@ -460,6 +461,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             lng,
             imageUrl: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200',
             plan: plan || 'Flex Options',
+            posSystem,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
@@ -514,6 +516,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
                 <p><strong>Email:</strong> ${email}</p>
                 <p><strong>Address:</strong> ${address}, ${city}, ${state} ${zip}</p>
                 <p><strong>Selected Plan:</strong> ${plan || 'Flex'}</p>
+                <p><strong>POS System:</strong> ${posSystem}</p>
                 <hr />
                 <p>Please review and approve the merchant in the Admin Registry.</p>`
             );
