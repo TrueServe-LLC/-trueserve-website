@@ -32,8 +32,8 @@ export default function DriverPortal() {
                     </nav>
                 </div>
                 <div className="flex items-center gap-6">
-                    <Link href="/driver/login" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all italic border-b-2 border-transparent hover:border-primary pb-1">Fleet Login</Link>
-                    <Link href="#signup" className="badge-solid-primary !py-3.5 !px-10 !text-[11px] h-glow">
+                    <Link href="/driver/login" className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all italic border-b-2 border-transparent hover:border-primary pb-1">Fleet Login</Link>
+                    <Link href="#signup" className="badge-solid-primary !py-2.5 !px-7 !text-[9px] !rounded-full h-glow">
                         Join Fleet
                     </Link>
                 </div>
@@ -48,7 +48,7 @@ export default function DriverPortal() {
                         <div className="w-12 h-px bg-white/20" />
                     </div>
                     
-                    <h1 className="text-5xl md:text-[75px] font-serif text-white tracking-tight leading-[0.95] animate-slide-up max-w-[1400px]">
+                    <h1 className="text-5xl md:text-[85px] font-serif text-white tracking-tight leading-[0.9] animate-slide-up w-full">
                         Earn on your own <br />
                         <span className="italic text-primary">schedule with TrueServe</span>
                     </h1>
@@ -57,10 +57,10 @@ export default function DriverPortal() {
                         A dedicated platform to help local drivers grow. Fair splits, real support, and local delivery routes.
                     </p>
                     
-                    <div className="flex flex-col items-center justify-center pt-12">
-                        <Link href="#signup" className="group relative flex items-center justify-center gap-4 px-12 py-5 bg-primary text-black text-[12px] font-black uppercase tracking-[0.4em] rounded-2xl hover:scale-105 active:scale-[0.98] transition-all duration-500 shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+                    <div className="flex flex-col items-center justify-center pt-8">
+                        <Link href="#signup" className="group relative flex items-center justify-center gap-3 px-7 py-3 bg-primary text-black text-[10px] font-black uppercase tracking-[0.4em] rounded-full hover:scale-105 active:scale-[0.98] transition-all duration-500 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
                             Join Fleet
-                            <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
+                            <span className="group-hover:translate-x-1 transition-transform duration-500">→</span>
                         </Link>
                     </div>
                 </div>
@@ -129,15 +129,15 @@ export default function DriverPortal() {
 
                 {/* ── REQUIREMENTS ────────────────────────────────────────────── */}
                 <section className="py-32 mb-20 mx-auto max-w-6xl">
-                    <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-[4rem] p-14 md:p-24 space-y-16 overflow-hidden relative group backdrop-blur-2xl">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
+                    <div className="bg-white/[0.02] border border-white/5 rounded-[4rem] p-14 md:p-24 space-y-16 overflow-hidden relative group backdrop-blur-3xl">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
                         
                         <div className="space-y-6 relative z-10 text-center">
-                            <label className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.6em] italic mb-6 block">Ready to go?</label>
-                            <h3 className="text-4xl md:text-6xl text-white font-black italic tracking-tighter leading-tight uppercase h-glow">Requirements.</h3>
+                            <label className="text-[10px] font-black text-primary uppercase tracking-[0.6em] italic mb-6 block">Ready to go?</label>
+                            <h3 className="text-5xl md:text-8xl text-white font-serif italic tracking-tighter leading-tight uppercase">Requirements.</h3>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                             {[
                                 "18+ & South Carolina ID",
                                 "License & Insurance",
@@ -146,9 +146,9 @@ export default function DriverPortal() {
                                 "Smart Phone (iOS/Android)",
                                 "Professional Attitude"
                             ].map((req, i) => (
-                                <div key={i} className="flex items-center gap-8 p-10 bg-black/60 border border-white/5 rounded-3xl group transition-all hover:border-emerald-500/40">
-                                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 border border-emerald-500/30 text-xl">✓</div>
-                                    <span className="text-slate-300 text-sm font-black uppercase tracking-widest italic">{req}</span>
+                                <div key={i} className="flex items-center gap-6 p-6 bg-black/40 border border-white/5 rounded-full group transition-all hover:border-primary/20">
+                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-sm">✓</div>
+                                    <span className="text-slate-300 text-[11px] font-black uppercase tracking-widest italic">{req}</span>
                                 </div>
                             ))}
                         </div>
