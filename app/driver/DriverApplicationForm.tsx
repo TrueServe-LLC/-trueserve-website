@@ -130,8 +130,8 @@ function DriverApplicationFormInner() {
 
             <div className="space-y-16">
                 {/* SECTION 1: IDENTITY */}
-                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] group hover:border-white/20 transition-all">
-                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                <div className="relative pt-20 pb-12 px-8 md:px-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] group hover:border-white/20 transition-all">
+                    <div className="absolute -top-4 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-20 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                         About You
                     </div>
                     
@@ -152,8 +152,8 @@ function DriverApplicationFormInner() {
                 </div>
 
                 {/* SECTION 2: DISPATCH Area */}
-                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] mt-12 group hover:border-white/20 transition-all">
-                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                <div className="relative pt-20 pb-12 px-8 md:px-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] mt-24 group hover:border-white/20 transition-all">
+                    <div className="absolute -top-4 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-20 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                         Dispatch Logistics
                     </div>
                     
@@ -166,8 +166,8 @@ function DriverApplicationFormInner() {
                 </div>
 
                 {/* SECTION 3: Vehicle */}
-                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] mt-12 group hover:border-white/20 transition-all">
-                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                <div className="relative pt-20 pb-12 px-8 md:px-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] mt-24 group hover:border-white/20 transition-all">
+                    <div className="absolute -top-4 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-20 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                         Vehicle Fleet Selection
                     </div>
                     
@@ -214,8 +214,8 @@ function DriverApplicationFormInner() {
                 </div>
 
                 {/* SECTION 4: Documents */}
-                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] mt-12 group hover:border-white/20 transition-all">
-                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                <div className="relative pt-20 pb-12 px-8 md:px-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] mt-24 group hover:border-white/20 transition-all">
+                    <div className="absolute -top-4 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-20 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                         Strategic Verification
                     </div>
 
@@ -240,9 +240,9 @@ function DriverApplicationFormInner() {
                 </div>
             </div>
             
-            <div className="pt-20 flex flex-col items-center">
-                <button disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary h-[70px] w-full max-w-xl text-sm font-black uppercase tracking-[0.6em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)]">
-                    {isPending ? "Syncing Grid..." : "Join the Fleet →"}
+            <div className="pt-24 flex flex-col items-center">
+                <button disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary h-[65px] w-full max-w-xl text-[12px] font-black uppercase tracking-[0.4em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)] !bg-primary !text-black">
+                    {isPending ? "Configuring Access..." : "Join The Fleet →"}
                 </button>
                 <p className="mt-20 text-center text-[11px] text-slate-700 font-black uppercase tracking-[1em] italic leading-relaxed opacity-40">
                     TrueServe Global Logsitics <br />

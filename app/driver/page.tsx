@@ -121,7 +121,7 @@ export default function DriverPortal() {
                 </div>
 
                 {/* ── ENROLLMENT FORM ────────────────────────────────────────── */}
-                <div id="signup" className="scroll-mt-48 pt-32 pb-44 px-4 flex flex-col items-center">
+                <div id="signup" className="scroll-mt-48 pt-44 pb-44 px-4 flex flex-col items-center">
                     <div className="space-y-8 mb-24 text-center">
                          <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.8em] text-[11px] italic mb-8">
                             <div className="w-12 h-px bg-primary/20" />
