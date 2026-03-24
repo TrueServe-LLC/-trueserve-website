@@ -128,14 +128,14 @@ export default async function Home() {
                   link: "/driver"
                 }
               ].map((card, i) => (
-                <Link key={i} href={card.link} className="group relative aspect-[4/5] bg-secondary rounded-[3rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-12 hover:scale-[1.02]">
-                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-50 group-hover:opacity-70" />
-                  <div className="relative z-20 space-y-6">
-                    <p className="text-primary font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em]">Platform Excellence</p>
-                    <h3 className="text-4xl md:text-5xl font-serif font-black text-white leading-[0.9]">{card.title}</h3>
-                    <div className="pt-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      <div className="badge-outline-white inline-flex !text-[9px] !px-5 !py-3">
+                <Link key={i} href={card.link} className="group relative min-h-[550px] bg-secondary rounded-[3.5rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-12 pb-20 hover:scale-[1.02]">
+                  <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black via-black/90 to-transparent z-10" />
+                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-40 group-hover:opacity-60" />
+                  <div className="relative z-20 space-y-8">
+                    <p className="text-primary font-black text-[10px] uppercase tracking-[0.4em]">Platform Excellence</p>
+                    <h3 className="text-5xl md:text-6xl font-serif font-black text-white leading-[0.85] tracking-tighter italic">{card.title}</h3>
+                    <div className="pt-6">
+                      <div className="badge-outline-white inline-flex !text-[9px] !px-8 !py-4 !bg-black/50 backdrop-blur-md border-white/20 group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all">
                          {card.cta} <span className="ml-2">→</span>
                       </div>
                     </div>
