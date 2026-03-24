@@ -1,13 +1,14 @@
 import { supabaseAdmin } from "./supabase-admin";
 import { getAuthSession } from "@/app/auth/actions";
 
-export async function logAuditAction({
+export async function logAudit({
     action,
     targetId,
     entityType,
     before = null,
     after = null,
-    message = ""
+    message = "",
+    metadata = null
 }: {
     action: string;
     targetId: string;
@@ -15,6 +16,7 @@ export async function logAuditAction({
     before?: any;
     after?: any;
     message?: string;
+    metadata?: any;
 }) {
     try {
         const { isAuth, userId } = await getAuthSession();
@@ -22,13 +24,17 @@ export async function logAuditAction({
         // but for now we follow the existing pattern.
         const actorId = isAuth ? userId : null;
 
+        // In the database, we use 'before' and 'after' JSONB columns.
+        // If the caller provides 'metadata' but not 'after', we use 'metadata' as 'after'.
+        const finalAfter = after || metadata;
+
         const { error } = await supabaseAdmin.from('AuditLog').insert({
             actorId,
             action,
             targetId,
             entityType,
             before,
-            after,
+            after: finalAfter,
             message,
             createdAt: new Date().toISOString()
         });
@@ -40,3 +46,7 @@ export async function logAuditAction({
         console.error("Critical: Failed to log audit action:", e);
     }
 }
+
+// Keep logAuditAction for backward compatibility with existing code
+export const logAuditAction = logAudit;
+

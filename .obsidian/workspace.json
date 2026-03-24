@@ -185,17 +185,17 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "app/status/page.tsx",
+    "app/status",
+    "scripts/test_jira_circuit_breaker.ts",
+    "components/EmergencyBanner.tsx",
+    "lib/jira.ts",
+    "app/api/webhook/jira/route.ts",
+    "app/api/webhook/jira",
+    "scripts/test_ld.ts",
+    "lib/triage.ts",
     "components/LaunchDarklyClientProvider.tsx",
     "pnpm-lock.yaml.93832240",
-    "scripts/count_drivers.ts",
-    "scripts/simulate_marketplace.ts",
-    "lib/launchdarkly.ts",
-    "pnpm-lock.yaml.1913045640",
-    "node_modules/@launchdarkly",
-    "scripts/purge_all.ts",
-    "scripts/clear_mocks_direct.ts",
-    "scripts/clear_mocks.ts",
-    "components/admin/FastActionBtn.tsx",
     "docs/Infrastructure/Security.md"
   ]
 }

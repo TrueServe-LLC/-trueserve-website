@@ -16,6 +16,7 @@ export type ConfigKey =
     | 'DRIVER_TIME_RATE_MIN'
     | 'STRIPE_SERVICE_FEE_PERCENT'
     | 'DELIVERY_COMPLETION_RADIUS_MILES'
+    | 'MARKETPLACE_EMERGENCY_LOCK'
     | 'IS_ALPHA_TESTING';
 
 export async function getSystemConfig(key: ConfigKey, defaultValue?: any): Promise<any> {
@@ -61,7 +62,11 @@ export async function isOrderingEnabled(): Promise<boolean> {
     // Priority 1: LaunchDarkly Remote Flag
     const ldFlag = await getFeatureFlag('ordering-system-enabled', true);
     
-    // Priority 2: Database Override (fallback)
+    // Priority 2: Emergency Lock (Trip-wire from Support/Jira)
+    const emergencyLock = await getSystemConfig('MARKETPLACE_EMERGENCY_LOCK', false);
+    if (emergencyLock === true || emergencyLock === 'true') return false;
+
+    // Priority 3: Database Override (fallback)
     const dbFlag = await getSystemConfig('ORDERING_SYSTEM_ENABLED', true);
     
     return ldFlag && dbFlag;

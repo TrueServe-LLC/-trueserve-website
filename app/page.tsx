@@ -6,6 +6,7 @@ import LandingSearch from "@/components/LandingSearch";
 import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
 import { cookies } from "next/headers";
+import EmergencyBanner from "@/components/EmergencyBanner";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -13,6 +14,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden font-sans text-slate-200 bg-black">
+      <EmergencyBanner />
       {/* Background Decor */}
       <div className="blob bg-secondary w-[500px] h-[500px] top-[-200px] right-[-100px] opacity-10" />
       <div className="blob bg-primary w-[300px] h-[300px] bottom-[10%] left-[-100px] opacity-10" />

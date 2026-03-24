@@ -238,6 +238,14 @@ export default async function MerchantDashboard({
                                 {restaurant.isBusy ? 'System Paused' : 'Accepting Orders'}
                             </button>
                         </form>
+                        <a 
+                            href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="px-4 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/20 transition-all shadow-[0_0_10px_rgba(16,185,129,0.1)]"
+                        >
+                            Support Center
+                        </a>
                         <LogoutButton />
                     </div>
 

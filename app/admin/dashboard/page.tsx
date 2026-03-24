@@ -157,11 +157,21 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         
                         {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Dashboard</Link>}
                         
+                        <a 
+                            href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/5 rounded-full border border-emerald-500/10"
+                        >
+                            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_#34d399]"></span>
+                            Triage center
+                        </a>
+                        
                         <form action={async () => {
                             "use server";
                             await logout();
                         }}>
-                            <button className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors">Log Out</button>
+                            <button className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors ml-2">Log Out</button>
                         </form>
                     </div>
                 </div>
@@ -216,6 +226,14 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             🛰️ Live Monitor
                             <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-1 rounded-full uppercase font-black">{activeOrders.length} Active</span>
                         </h2>
+                        <a 
+                            href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-white/5 border border-white/10 hover:bg-white/10 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all flex items-center gap-2"
+                        >
+                            <span>🛠️</span> Report Incident
+                        </a>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {activeOrders.map((order) => (
