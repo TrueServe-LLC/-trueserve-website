@@ -82,65 +82,67 @@ export default function MerchantPortal() {
                              </h2>
                         </div>
 
-                        {/* Pricing Cards: Screenshot 2 Reference Style */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
-                            {[
-                                {
-                                    name: "Starter",
-                                    amount: "15%",
-                                    sub: "per order",
-                                    desc: "Perfect for restaurants just getting started with TrueServe LLC delivery.",
-                                    features: ["Commission per delivery", "Basic order management", "Real-time tracking", "Email support", "Mobile-friendly portal", "Local South Carolina coverage"],
-                                    cta: "Get started",
-                                    isHighlighted: false
-                                },
-                                {
-                                    name: "Growth",
-                                    amount: "12%",
-                                    sub: "per order",
-                                    desc: "For restaurants scaling their delivery business with TrueServe LLC.",
-                                    features: ["Reduced commission rate", "Advanced analytics dashboard", "Priority support", "Custom menu uploads", "Marketing materials included", "Dedicated onboarding"],
-                                    cta: "Schedule demo",
-                                    isHighlighted: true
-                                }
-                            ].map((plan, i) => (
-                                <div key={i} className={`flex flex-col p-10 md:p-14 rounded-[2rem] border ${plan.isHighlighted ? 'border-primary/50 bg-[#151517] shadow-2xl' : 'border-white/10 bg-[#151517]'} space-y-10 transition-all`}>
-                                    <div className="space-y-6 flex-grow">
-                                        <h3 className="text-4xl font-sans text-white font-bold tracking-tight">{plan.name}</h3>
-                                        <div>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className="text-6xl md:text-7xl font-bold text-white tracking-tighter">{plan.amount}</span>
-                                                <span className="text-lg text-slate-400 font-medium">{plan.sub}</span>
+                        {/* Pricing Cards: Refined Block Design */}
+                        <div className="flex justify-center w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl w-full items-stretch">
+                                {[
+                                    {
+                                        name: "Flex Plan",
+                                        amount: "15%",
+                                        sub: "per order",
+                                        desc: "Perfect for restaurants just getting started with TrueServe LLC delivery.",
+                                        features: ["Commission per delivery", "Basic order management", "Real-time tracking", "Email support", "Mobile-friendly portal", "Local South Carolina coverage"],
+                                        cta: "Choose plan",
+                                        isHighlighted: true
+                                    },
+                                    {
+                                        name: "Pro Plan",
+                                        amount: "12%",
+                                        sub: "per order",
+                                        desc: "For restaurants scaling their delivery business with TrueServe LLC.",
+                                        features: ["Reduced commission rate", "Advanced analytics dashboard", "Priority support", "Custom menu uploads", "Marketing materials included", "Dedicated onboarding"],
+                                        cta: "Choose plan",
+                                        isHighlighted: true
+                                    }
+                                ].map((plan, i) => (
+                                    <div key={i} className="flex flex-col p-12 md:p-16 rounded-[2.5rem] border border-primary/30 bg-white/[0.03] shadow-2xl space-y-12 transition-all hover:scale-[1.01]">
+                                        <div className="space-y-8 flex-grow">
+                                            <h3 className="text-4xl font-sans text-white font-black tracking-tight">{plan.name}</h3>
+                                            <div>
+                                                <div className="flex items-baseline gap-2">
+                                                    <span className="text-7xl md:text-8xl font-black text-white tracking-tighter">{plan.amount}</span>
+                                                    <span className="text-xl text-slate-400 font-medium">{plan.sub}</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-slate-400 text-lg leading-relaxed">
+                                                {plan.desc}
+                                            </p>
+                                            
+                                            <div className="pt-8">
+                                                <Link 
+                                                    onClick={() => scrollToForm(plan.name)} 
+                                                    href="/merchant-signup" 
+                                                    className="w-full inline-flex justify-center items-center py-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all bg-primary border border-primary text-black shadow-xl shadow-primary/20 hover:brightness-110"
+                                                >
+                                                    {plan.cta}
+                                                </Link>
                                             </div>
                                         </div>
-                                        <p className="text-slate-400 text-base md:text-lg leading-relaxed">
-                                            {plan.desc}
-                                        </p>
-                                        
-                                        <div className="pt-6">
-                                            <Link 
-                                                onClick={() => scrollToForm(plan.name)} 
-                                                href="/merchant-signup" 
-                                                className={`w-full inline-flex justify-center items-center py-5 rounded-xl text-xs font-bold transition-all border ${plan.isHighlighted ? 'bg-primary border-primary text-black' : 'bg-transparent border-white/20 text-white hover:bg-white/5'}`}
-                                            >
-                                                {plan.cta}
-                                            </Link>
+
+                                        <div className="space-y-8 border-t border-white/5 pt-12">
+                                            <h4 className="text-white text-2xl font-serif italic font-black">Features:</h4>
+                                            <ul className="space-y-6">
+                                                {plan.features.map((f, j) => (
+                                                    <li key={j} className="flex items-center gap-5 text-slate-300 text-base font-medium">
+                                                        <span className="text-primary text-xl">✓</span>
+                                                        <span>{f}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
                                         </div>
                                     </div>
-
-                                    <div className="space-y-8 border-t border-white/5 pt-10">
-                                        <h4 className="text-white text-3xl font-serif italic font-black">Features:</h4>
-                                        <ul className="space-y-6">
-                                            {plan.features.map((f, j) => (
-                                                <li key={j} className="flex items-center gap-4 text-slate-400 text-sm font-medium">
-                                                    <span className="text-white text-lg">✓</span>
-                                                    <span>{f}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
 
                         {/* ── PARTNER INQUIRY ─────────────────────────────────────────── */}
