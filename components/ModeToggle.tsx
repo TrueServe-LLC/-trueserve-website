@@ -23,23 +23,23 @@ export default function ModeToggle() {
     };
 
     return (
-        <div className="flex items-center gap-1 p-1 bg-black/40 backdrop-blur-md rounded-full border border-white/10 shadow-lg">
+        <div className="flex items-center gap-1 p-1 bg-white/[0.03] backdrop-blur-2xl rounded-full border border-white/10 shadow-2xl">
             <button 
                 onClick={() => handleToggle("delivery")}
-                className={`px-5 py-1.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                className={`px-6 py-2 glass-pill text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 ${
                     mode === "delivery" 
-                    ? "bg-white text-black shadow-xl scale-105" 
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-white text-black shadow-primary/20" 
+                    : "bg-transparent text-slate-400 hover:text-white border-transparent"
                 }`}
             >
                 Delivery
             </button>
             <button 
                 onClick={() => handleToggle("pickup")}
-                className={`px-5 py-1.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                className={`px-6 py-2 glass-pill text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 ${
                     mode === "pickup" 
-                    ? "bg-white text-black shadow-xl scale-105" 
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-white text-black shadow-primary/20" 
+                    : "bg-transparent text-slate-400 hover:text-white border-transparent"
                 }`}
             >
                 Pickup
