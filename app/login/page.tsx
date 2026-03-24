@@ -5,10 +5,11 @@ import { loginWithPassword, signupWithPassword, resetPassword, getAuthSession } 
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+        <Suspense fallback={<div className="min-h-screen bg-[#080c14] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
             <LoginWithParams />
         </Suspense>
     );
@@ -33,27 +34,19 @@ function LoginWithParams() {
             const session = await getAuthSession();
 
             if (session.isAuth) {
-                // Determine destination
                 let dest = redirectUrl;
                 if (session.role === 'MERCHANT') dest = "/merchant/dashboard";
                 else if (session.role === 'DRIVER') dest = "/driver/dashboard";
                 else if (session.role === 'ADMIN') dest = "/admin/dashboard";
-                
-                // Only push if we're not already planning to go there
                 router.push(dest);
             } else {
-                // If the user's cookie was lost/cleared but Supabase local storage remembers something,
-                // we should try to restore the session rather than just signing them out.
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
-                    console.log("Restoring session for user:", user.id);
-                    // We can't set cookies directly here easily, but we can call a sync action
                     const { syncUserSession } = await import("../auth/actions");
                     const res = await syncUserSession();
                     if (res.success) {
-                        router.refresh(); // Refresh to pick up the new cookie
+                        router.refresh();
                     } else {
-                        // If sync failed (e.g. user not in DB), then sign out
                         await supabase.auth.signOut();
                     }
                 }
@@ -71,13 +64,12 @@ function LoginWithParams() {
         data.append("password", formData.password);
         data.append("name", formData.name);
         data.append("address", formData.address);
-        data.append("plan", requestedPlan); // Passthrough the plan
+        data.append("plan", requestedPlan);
 
         let res;
         if (mode === 'login') {
             const res = await loginWithPassword(data);
             if (res.success) {
-                // Role-based Redirect (Override if it's a customer with a specific redirect URL)
                 if (res.role === 'MERCHANT') router.push("/merchant/dashboard");
                 else if (res.role === 'DRIVER') router.push("/driver/dashboard");
                 else if (res.role === 'ADMIN') router.push("/admin/dashboard");
@@ -88,8 +80,6 @@ function LoginWithParams() {
         } else if (mode === 'signup') {
             res = await signupWithPassword(data);
             if (res.success) {
-                // After signup success, user is automatically logged in via cookie in server action
-                // Redirect them to the requested page or default
                 router.push(redirectUrl);
             }
         } else if (mode === 'reset') {
@@ -106,170 +96,154 @@ function LoginWithParams() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-8 md:py-0">
-            <div className="w-full max-w-md md:p-8 animate-fade-in md:border md:border-white/10 md:shadow-2xl md:bg-slate-900/90 md:backdrop-blur md:rounded-[2rem]">
-                <h1 className="text-4xl md:text-3xl font-black md:text-center mb-2">
-                    True<span className="text-gradient">Serve</span>
-                </h1>
-                <h2 className="text-xl text-slate-400 font-bold md:text-center mb-10 text-slate-300 md:font-semibold">
-                    {mode === 'login' && "Sign in to your account"}
-                    {mode === 'signup' && (
-                        <div className="flex flex-col items-center">
-                            <span>Create Account</span>
-                            {(isPlus || isPremium) && (
-                                <span className={`mt-2 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${isPremium ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-primary/10 text-primary border-primary/20'
-                                    }`}>
-                                    TrueServe {requestedPlan} Membership
-                                </span>
+        <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-[#080c14] px-4 py-8 md:py-0">
+             {/* Background Layer with heavy blur */}
+             <div className="absolute inset-0 z-0">
+                <img 
+                    src="/hero_food_delivery.png" 
+                    alt="Background" 
+                    className="w-full h-full object-cover grayscale opacity-20 scale-105"
+                />
+                <div className="absolute inset-0 bg-[#080c14]/90 backdrop-blur-[120px]" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/5" />
+            </div>
+
+            <div className="relative z-10 w-full max-w-md p-1 px-1 bg-gradient-to-b from-white/10 to-transparent rounded-[2.5rem] shadow-2xl">
+                <div className="bg-[#0a0a0b]/90 backdrop-blur-3xl rounded-[2.3rem] p-10 md:p-12 border border-white/5 space-y-8">
+                    <div className="text-center space-y-4">
+                        <div className="flex justify-center mb-6">
+                            <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl border border-primary/20 shadow-lg" />
+                        </div>
+                        <h1 className="text-3xl font-serif font-bold italic text-white tracking-tight">
+                            True<span className="text-primary not-italic font-sans uppercase tracking-widest text-xl ml-1">Serve</span>
+                        </h1>
+                        <h2 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.4em]">
+                            {mode === 'login' && "Sign in to your account"}
+                            {mode === 'signup' && (
+                                <div className="flex flex-col items-center">
+                                    <span>Create Account</span>
+                                    {(isPlus || isPremium) && (
+                                        <span className={`mt-2 px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${isPremium ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-primary/10 text-primary border-primary/20'}`}>
+                                            {requestedPlan} Membership
+                                        </span>
+                                    )}
+                                </div>
                             )}
+                            {mode === 'reset' && "Reset Password"}
+                        </h2>
+                    </div>
+
+                    {message && (
+                        <div className={`p-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-center animate-shake ${message.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                            {message.text}
                         </div>
                     )}
-                    {mode === 'reset' && "Reset Password"}
-                </h2>
 
-                {message && (
-                    <div className={`p-3 rounded-2xl mb-6 text-sm text-center font-bold ${message.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
-                        {message.text}
-                        {message.text.includes("Email logins are disabled") && (
-                            <div className="mt-2 text-xs opacity-80 font-medium">
-                                Hint: Use an email ending in <span className="text-primary">.test</span> or <span className="text-primary">.live</span> for the demo bypass.
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <div className="space-y-4">
-                    {mode === 'signup' && (
-                        <>
-                            <div>
-                                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Full Name</label>
-                                <div className="relative">
-                                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">👤</span>
+                    <div className="space-y-4">
+                        {mode === 'signup' && (
+                            <>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Full Name</label>
                                     <input
                                         type="text"
-                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 focus:bg-slate-800 focus:border-primary outline-none transition-all"
-                                        style={{ paddingLeft: '3.5rem' }}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
                                         placeholder="John Doe"
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     />
                                 </div>
-                            </div>
-                            <div>
-                                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Delivery Address</label>
-                                <div className="relative">
-                                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">📍</span>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Delivery Address</label>
                                     <input
                                         type="text"
-                                        className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 focus:bg-slate-800 focus:border-primary outline-none transition-all"
-                                        style={{ paddingLeft: '3.5rem' }}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
                                         placeholder="123 Main St, Charlotte, NC"
                                         value={formData.address}
                                         onChange={e => setFormData({ ...formData, address: e.target.value })}
                                     />
                                 </div>
-                            </div>
-                        </>
-                    )}
+                            </>
+                        )}
 
-                    <div>
-                        <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Email Address</label>
-                        <div className="relative">
-                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">✉️</span>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Email Address</label>
                             <input
                                 type="email"
-                                className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 focus:bg-slate-800 focus:border-primary outline-none transition-all"
-                                style={{ paddingLeft: '3.5rem' }}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
                                 placeholder="you@example.com"
                                 value={formData.email}
                                 onChange={e => setFormData({ ...formData, email: e.target.value })}
                             />
                         </div>
-                    </div>
 
-                    {mode !== 'reset' && (
-                        <div>
-                            <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Password</label>
-                            <div className="relative">
-                                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">🔒</span>
+                        {mode !== 'reset' && (
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Password</label>
                                 <input
                                     type="password"
-                                    className="w-full bg-slate-800/50 border border-white/5 rounded-2xl py-4 pr-4 focus:bg-slate-800 focus:border-primary outline-none transition-all"
-                                    style={{ paddingLeft: '3.5rem' }}
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
                                     placeholder="••••••••"
                                     value={formData.password}
                                     onChange={e => setFormData({ ...formData, password: e.target.value })}
                                 />
                             </div>
+                        )}
+
+                        <button
+                            onClick={handleSubmit}
+                            disabled={isLoading || !formData.email || (mode !== 'reset' && !formData.password)}
+                            className="w-full badge-solid-primary !py-5 !text-[11px] uppercase tracking-widest shadow-xl disabled:opacity-50 mt-4 active:scale-95 transition-all font-black"
+                        >
+                            {isLoading ? "Processing..." : (mode === 'login' ? "Login" : mode === 'signup' ? "Create Account" : "Send Reset Link")}
+                        </button>
+
+                        <div className="relative my-8">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-white/5" />
+                            </div>
+                            <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
+                                <span className="bg-[#0a0a0b] px-4 text-slate-600">Universal Login</span>
+                            </div>
                         </div>
-                    )}
 
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isLoading || !formData.email || (mode !== 'reset' && !formData.password)}
-                        className="w-full bg-secondary text-black py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-[0_10px_20px_rgba(241,161,55,0.2)] disabled:opacity-50 mt-6 md:mt-4 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                    >
-                        {isLoading ? "Processing..." : (mode === 'login' ? "Login" : mode === 'signup' ? "Create Account" : "Send Reset Link")}
-                    </button>
-
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-white/10" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-slate-900 px-2 text-slate-500">Or continue with</span>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={async () => {
-                            try {
-                                setIsLoading(true);
-                                const supabase = createClient();
-                                const { error } = await supabase.auth.signInWithOAuth({
-                                    provider: 'google',
-                                    options: {
-                                        redirectTo: `${window.location.origin}/auth/callback`,
-                                        queryParams: {
-                                            access_type: 'offline',
-                                            // Removing 'prompt: consent' as it often causes Google's GeneralOAuthFlow error
-                                            // and forces users to re-authorize unnecessarily.
-                                        },
-                                    },
-                                });
-
-                                if (error) {
-                                    setMessage({ text: error.message, type: 'error' });
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                try {
+                                    setIsLoading(true);
+                                    const supabase = createClient();
+                                    await supabase.auth.signInWithOAuth({
+                                        provider: 'google',
+                                        options: { redirectTo: `${window.location.origin}/auth/callback` }
+                                    });
+                                } catch (err: any) {
+                                    setMessage({ text: "Failed to start Google login.", type: 'error' });
                                     setIsLoading(false);
                                 }
-                            } catch (err: any) {
-                                setMessage({ text: "Failed to start Google login.", type: 'error' });
-                                setIsLoading(false);
-                            }
-                        }}
-                        disabled={isLoading}
-                        className="w-full flex items-center justify-center gap-2 bg-white text-black font-semibold py-3 rounded-xl hover:bg-gray-100 transition-colors disabled:opacity-50"
-                    >
-                        <svg className="w-5 h-5" viewBox="0 0 24 24">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                        </svg>
-                        Google
-                    </button>
+                            }}
+                            disabled={isLoading}
+                            className="w-full flex items-center justify-center gap-3 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] py-4 rounded-xl hover:bg-slate-200 transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                        >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                            </svg>
+                            Google Access
+                        </button>
 
-                    <div className="flex justify-between items-center text-xs text-slate-400 mt-6 pt-4 border-t border-white/5">
-                        {mode === 'login' && (
-                            <>
-                                <button onClick={() => setMode('signup')} className="hover:text-white transition-colors">Create Account</button>
-                                <button onClick={() => setMode('reset')} className="hover:text-white transition-colors">Forgot Password?</button>
-                            </>
-                        )}
-                        {mode !== 'login' && (
-                            <button onClick={() => setMode('login')} className="hover:text-white transition-colors w-full text-center">Back to Login</button>
-                        )}
+                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500 mt-8 pt-4 border-t border-white/5">
+                            {mode === 'login' && (
+                                <>
+                                    <button onClick={() => setMode('signup')} className="hover:text-primary transition-colors">Join</button>
+                                    <button onClick={() => setMode('reset')} className="hover:text-primary transition-colors">Lost Key</button>
+                                </>
+                            )}
+                            {mode !== 'login' && (
+                                <button onClick={() => setMode('login')} className="hover:text-primary transition-colors w-full text-center">Identity Terminal</button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

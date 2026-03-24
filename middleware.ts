@@ -27,15 +27,19 @@ export async function middleware(request: NextRequest) {
   if (!isLocal && !isVercel && pieces.length >= 2) {
     cookieDomain = `.${pieces.slice(-2).join('.')}`
   }
-  
-  // For trueservedelivery.com, pieces.length is 2. Subdomain exists if length > 2.
-  // For sub.trueserve-website.vercel.app, pieces.length is 4. Subdomain exists if length > 3.
-  const isSub = isVercel 
+
+  let isSub = isVercel 
     ? pieces.length > 3 
     : pieces.length > (isLocal ? 1 : 2)
   
-  const subdomainPiece = pieces[0].toLowerCase()
-  const subdomain = isSub && !['www', 'localhost'].includes(subdomainPiece) ? subdomainPiece : ""
+  let subdomainPiece = pieces[0].toLowerCase()
+  // Handle www prefix for subdomains (e.g., www.admin.domain.com)
+  if (subdomainPiece === 'www' && pieces.length > (isLocal ? 2 : 3)) {
+    subdomainPiece = pieces[1].toLowerCase()
+    isSub = true
+  }
+  
+  const subdomain = isSub && !['www', 'localhost', 'trueserve'].includes(subdomainPiece) ? subdomainPiece : ""
 
   // --- 2. SUPABASE SESSION SYNC ---
   const supabase = createServerClient(
@@ -82,6 +86,7 @@ export async function middleware(request: NextRequest) {
           let rootHost = host;
           if (subdomain) {
             rootHost = host.replace(`${subdomain}.`, '');
+            rootHost = rootHost.replace('www.', ''); // clean up www if it stayed
           }
           return NextResponse.redirect(new URL('/', `${url.protocol}//${rootHost}`))
         }

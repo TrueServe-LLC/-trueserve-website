@@ -30,7 +30,7 @@ export default async function Home() {
           <div className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
             <Link href="/restaurants" className="hover:text-primary transition-colors">Order Food</Link>
             <Link href="/merchant" className="hover:text-primary transition-colors">For Merchants</Link>
-            <Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link>
+            <Link href="/driver" className="hover:text-primary transition-colors">Driver Hub</Link>
           </div>
 
           <div className="flex items-center gap-6">
@@ -78,24 +78,17 @@ export default async function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-              <Link href="/restaurants" className="badge-solid-primary w-full sm:w-auto">
+              <Link href="/restaurants" className="badge-solid-primary !px-12 !py-5">
                 Browse Restaurants
               </Link>
-              <Link href="/driver-signup" className="badge-outline-white w-full sm:w-auto">
-                Become a Driver
+              <Link href="/merchant" className="badge-outline-white !px-12 !py-5">
+                For Businesses
               </Link>
             </div>
           </div>
         </section>
 
-        {/* ── MISSION ─────────────────────────────────────────────────────── */}
-        <section className="py-48 bg-gradient-to-b from-[#0a0a0b] to-[#121214]">
-          <div className="container mx-auto px-6 max-w-4xl text-center">
-            <h2 className="text-2xl md:text-4xl font-serif italic text-white leading-relaxed font-medium">
-              &quot;<span className="text-primary">TrueServe</span> is a driver-first marketplace that pays couriers <span className="text-primary">25–40%</span> more while lowering commissions and simplifying costs.&quot;
-            </h2>
-          </div>
-        </section>
+
 
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
         <section className="py-32 bg-[#0a0a0b]">
@@ -122,7 +115,7 @@ export default async function Home() {
                 },
                 {
                   title: "Become a Driver",
-                  img: "https://images.unsplash.com/photo-1624513101683-162235c6de64?q=80&w=2070&auto=format&fit=crop",
+                  img: "/diverse_drivers.png",
                   desc: "Earn 20-40% more with fair splits and high-velocity routing engineered for efficiency.",
                   cta: "Start Application",
                   link: "/driver"
@@ -154,8 +147,8 @@ export default async function Home() {
         <div className="container mx-auto max-w-7xl text-center">
           <div className="flex flex-col items-center gap-8 mb-12">
             <Link href="/" className="flex items-center gap-3">
-              <img src="/logo.png" alt="TrueServe Logo" className="w-12 h-12 rounded-xl grayscale hover:grayscale-0 transition-all" />
-              <span className="font-serif text-white text-2xl font-bold tracking-tight">TrueServe</span>
+              <img src="/logo.png" alt="TrueServe Logo" className="w-12 h-12 rounded-xl border border-primary/20" />
+              <span className="text-2xl font-black text-white tracking-tight font-serif italic">True<span className="text-primary not-italic uppercase tracking-widest text-lg font-sans ml-1">Serve</span></span>
             </Link>
             
             <div className="flex gap-10 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
