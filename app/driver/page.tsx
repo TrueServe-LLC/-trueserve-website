@@ -12,9 +12,9 @@ export default function DriverPortal() {
             {/* ── BACKGROUND CORE ────────────────────────────────────────────── */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <img
-                    src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=2070&auto=format&fit=crop"
+                    src="/diverse_welcoming_drivers_hero_1774378336060.png"
                     alt="Driver Background"
-                    className="w-full h-full object-cover opacity-10 blur-3xl scale-110 grayscale"
+                    className="w-full h-full object-cover opacity-20 blur-2xl scale-110 grayscale-0"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black" />
             </div>

@@ -64,24 +64,28 @@ body {
 
 /* Standardized Pill & Button System: Block Pill Refinement */
 @utility badge-solid-primary {
-  @apply rounded-xl bg-[#f59e0b] text-black px-10 py-4 text-sm font-bold transition-all inline-flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.2)] tracking-widest uppercase italic;
+  @apply rounded-2xl bg-[#f59e0b] text-black px-12 py-5 text-base font-bold transition-all inline-flex items-center justify-center active:scale-[0.98] shadow-lg italic tracking-widest uppercase;
   
   &:hover {
-    @apply -translate-y-[2px] brightness-110 shadow-[0_0_30px_rgba(245,158,11,0.4)];
+    @apply -translate-y-[3px] brightness-110 shadow-primary/20;
   }
 }
 
 @utility badge-outline-white {
-  @apply rounded-xl bg-black/40 border border-white/20 text-white px-10 py-4 text-sm font-bold transition-all inline-flex items-center justify-center backdrop-blur-md italic tracking-widest uppercase;
+  @apply rounded-2xl bg-transparent border border-white/20 text-white px-10 py-4 text-base font-bold transition-all inline-flex items-center justify-center backdrop-blur-md italic tracking-widest uppercase;
   
   &:hover {
-    @apply bg-white/10 border-white scale-[1.01] shadow-[0_0_20px_rgba(255,255,255,0.1)];
+    @apply bg-white/10 border-white scale-[1.01];
   }
 }
 
 /* Legacy & Component Unification */
 @utility btn-standard {
-  @apply badge-solid-primary !px-8 !py-3 !text-[11px];
+  @apply rounded-2xl bg-[#f59e0b] text-black px-12 py-5 text-base font-bold active:scale-[0.98] transition-all inline-flex items-center justify-center shadow-lg uppercase italic tracking-widest;
+  
+  &:hover {
+    @apply -translate-y-[3px] brightness-110 shadow-primary/20;
+  }
 }
 
 @utility filter-pill {

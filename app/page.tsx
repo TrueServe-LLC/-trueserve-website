@@ -93,47 +93,45 @@ export default async function Home() {
         </section>
 
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
-        <section className="py-48 bg-black relative">
-          <div className="container mx-auto px-8 max-w-7xl">
-            <div className="flex items-center gap-6 text-primary font-black uppercase tracking-[0.6em] text-[10px] mb-20 italic">
-                <div className="w-12 h-px bg-primary/40" />
-                Network Excellence
+        <section className="py-32 bg-[#0a0a0b]">
+          <div className="container mx-auto px-6 max-w-7xl">
+            <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-12 italic">
+                <div className="w-8 h-px bg-primary/30" />
+                Platform Features
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {[
-                {
-                  title: "Order Locally.",
+                { 
+                  title: "Order Locally.", 
                   img: "/community_section.png",
-                  desc: "Support independent gems. Zero commission options ensure local restaurants stay in business.",
+                  desc: "Support independent gems. Zero platform fees ensure local restaurants stay in business.",
                   cta: "Explore Menus",
                   link: "/restaurants"
                 },
-                {
-                  title: "Grow Partners.",
+                { 
+                  title: "Grow Partners.", 
                   img: "/merchant_section.png",
-                  desc: "Stop losing margins to big apps. Fair pricing and elite dispatch protocols built for you.",
+                  desc: "Stop losing margins to big apps. Fair pricing and elite dispatch built for you.",
                   cta: "Partner Hub",
                   link: "/merchant"
                 },
-                {
-                  title: "Drive More.",
+                { 
+                  title: "Drive More.", 
                   img: "/diverse_drivers.png",
                   desc: "Join our fleet and earn 20-30% more with optimized routing and reliable local payouts.",
                   cta: "Start Driving",
                   link: "/driver"
                 }
               ].map((card, i) => (
-                <Link key={i} href={card.link} className="group relative min-h-[550px] bg-[#0a0a0b] rounded-[3.5rem] overflow-hidden border border-white/5 hover:border-primary/40 transition-all flex flex-col justify-end p-12 pb-20 hover:scale-[1.02] active:scale-[0.98] shadow-2xl backdrop-blur-3xl">
-                  <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black via-black/90 to-transparent z-10" />
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] opacity-20 group-hover:opacity-40 grayscale group-hover:grayscale-0" />
-                  <div className="relative z-20 space-y-8">
-                    <p className="text-primary font-black text-[10px] uppercase tracking-[0.4em] italic mb-2">Service Node {i+1}</p>
-                    <h3 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tight italic uppercase h-glow">{card.title}</h3>
-                    <p className="text-slate-500 text-sm font-bold italic leading-relaxed max-w-xs">{card.desc}</p>
-                    <div className="pt-6">
-                      <div className="badge-outline-white inline-flex !text-[10px] !px-8 !py-4 !bg-black/50 backdrop-blur-xl border-white/10 group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all h-glow">
-                         {card.cta} <span className="ml-3 group-hover:translate-x-1 transition-transform">→</span>
+                <Link key={i} href={card.link} className="group relative min-h-[500px] bg-black rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/40 transition-all flex flex-col justify-end p-10 hover:scale-[1.02] active:scale-[0.98] shadow-2xl">
+                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-30 group-hover:opacity-60" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                  <div className="relative z-10 space-y-6">
+                    <h3 className="text-4xl font-black text-white leading-tight italic uppercase">{card.title}</h3>
+                    <p className="text-slate-500 text-sm font-bold italic leading-relaxed">{card.desc}</p>
+                    <div className="pt-4">
+                      <div className="badge-outline-white !text-[10px] !px-8 !py-4">
+                         {card.cta} <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </div>
                   </div>
