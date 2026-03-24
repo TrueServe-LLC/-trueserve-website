@@ -98,7 +98,7 @@ export default async function Home() {
         </section>
 
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
-        <section className="py-32 bg-[#121214]">
+        <section className="py-32 bg-[#0a0a0b]">
           <div className="container mx-auto px-6 max-w-7xl">
             <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px] mb-12">
                 <div className="w-8 h-px bg-slate-800" />
@@ -118,25 +118,26 @@ export default async function Home() {
                   img: "/merchant_section.png",
                   desc: "Reclaim your margins with zero-commission protocols and elite local dispatch.",
                   cta: "Join as Partner",
-                  link: "/merchant-signup"
+                  link: "/merchant"
                 },
                 {
                   title: "Driver Sign Up",
                   img: "/driver_section.png",
                   desc: "Earn 20-40% more with fair splits and high-velocity routing engineered for efficiency.",
                   cta: "Apply Now",
-                  link: "/driver-signup"
+                  link: "/driver"
                 }
               ].map((card, i) => (
-                <Link key={i} href={card.link} className="group relative aspect-[4/5] bg-secondary rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-10 hover:scale-[1.02]">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-60 group-hover:opacity-80" />
-                  <div className="relative z-20 space-y-4">
-                    <p className="text-primary font-black text-[10px] md:text-[11px] uppercase tracking-[0.2em]">Platform Excellence</p>
-                    <h3 className="text-3xl md:text-4xl font-serif font-bold text-white">{card.title}</h3>
-                    <p className="text-slate-300 text-sm md:text-base leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-3">{card.desc}</p>
-                    <div className="pt-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/50 group-hover:text-primary transition-colors flex items-center gap-2">
-                       {card.cta} <span>→</span>
+                <Link key={i} href={card.link} className="group relative aspect-[4/5] bg-secondary rounded-[3rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-12 hover:scale-[1.02]">
+                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
+                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-50 group-hover:opacity-70" />
+                  <div className="relative z-20 space-y-6">
+                    <p className="text-primary font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em]">Platform Excellence</p>
+                    <h3 className="text-4xl md:text-5xl font-serif font-black text-white leading-[0.9]">{card.title}</h3>
+                    <div className="pt-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="badge-outline-white inline-flex !text-[9px] !px-5 !py-3">
+                         {card.cta} <span className="ml-2">→</span>
+                      </div>
                     </div>
                   </div>
                 </Link>
@@ -183,36 +184,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
-        <section className="py-32 px-6">
-          <div className="container mx-auto max-w-7xl">
-            <div className="relative bg-[#121214] border border-white/10 rounded-[4rem] p-16 md:p-32 text-center overflow-hidden">
-               <div className="absolute inset-0 z-0">
-                <img
-                  src="https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop"
-                  alt="Background"
-                  className="w-full h-full object-cover opacity-10 grayscale"
-                />
-              </div>
-              <div className="relative z-10 space-y-10">
-                <h2 className="text-4xl md:text-[70px] font-serif font-bold text-white leading-none tracking-tight">
-                  Ready to experience <br />the new standard?
-                </h2>
-                <p className="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed font-medium">
-                  Join thousands of local partners and customers who have already upgraded their delivery experience.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <Link href="/restaurants" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-black text-[11px] font-black uppercase tracking-[0.2em] py-5 px-14 rounded-full transition-all shadow-2xl">
-                    Order Food Now
-                  </Link>
-                  <Link href="/merchant-signup" className="w-full sm:w-auto bg-white/5 border border-white/10 hover:bg-white/10 text-white text-[11px] font-black uppercase tracking-[0.2em] py-5 px-14 rounded-full transition-all">
-                    Partner With Us
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+
       </main>
 
       {/* ── FOOTER ──────────────────────────────────────────────────────── */}

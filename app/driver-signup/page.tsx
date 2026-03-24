@@ -16,16 +16,16 @@ export default function DriverSignupPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
                 
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-                    <Link href="/driver" className="mb-8 w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white/10 hover:border-emerald-500 transition-all text-emerald-500 shadow-2xl backdrop-blur-md">
+                    <Link href="/driver" className="mb-8 w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white/10 hover:border-primary transition-all text-primary shadow-2xl backdrop-blur-md">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
                     </Link>
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-2 mb-6 backdrop-blur-md">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400">Join the Elite Fleet</p>
+                    <div className="bg-primary/10 border border-primary/20 rounded-full px-6 py-2 mb-6 backdrop-blur-md">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Join the Elite Fleet</p>
                     </div>
-                    <h1 className="text-4xl md:text-7xl font-black text-white italic tracking-tighter uppercase leading-none mb-4 px-2">
-                        Strategic <span className="text-emerald-500 italic">Delivery.</span>
+                    <h1 className="text-4xl md:text-[100px] font-black text-white italic tracking-tighter uppercase leading-[0.85] mb-4 px-2">
+                        Strategic <span className="text-primary italic">Delivery.</span>
                     </h1>
-                    <p className="text-slate-400 text-sm md:text-lg font-medium max-w-2xl italic">
+                    <p className="text-slate-400 text-sm md:text-lg font-medium max-w-2xl italic mt-6">
                         The most efficient mileage-based engine in the South East corridor. <br className="hidden md:block" />
                         Synchronize your schedule, maximize your net earnings.
                     </p>
@@ -48,7 +48,7 @@ export default function DriverSignupPage() {
                              { icon: '🗺️', label: 'Smart Grid', desc: 'Optimized high-velocity routing.' },
                              { icon: '🛡️', label: 'Safety Sync', desc: 'Premium logistics protection.' }
                            ].map((item, i) => (
-                             <div key={i} className="flex gap-6 items-center p-6 bg-white/[0.03] border border-white/5 rounded-[2rem] group hover:border-emerald-500/20 transition-all">
+                             <div key={i} className="flex gap-6 items-center p-6 bg-white/[0.03] border border-white/5 rounded-[2rem] group hover:border-primary/20 transition-all">
                                 <div className="text-3xl group-hover:scale-110 transition-transform">{item.icon}</div>
                                 <div>
                                     <h4 className="text-[11px] font-black uppercase tracking-widest text-white mb-1 italic">{item.label}</h4>
@@ -88,7 +88,7 @@ export default function DriverSignupPage() {
                     <div className="flex flex-wrap justify-center md:justify-end gap-x-12 gap-y-6 text-[11px] font-black uppercase tracking-[0.3em] text-slate-600">
                         <Link href="/legal" className="hover:text-white transition-colors">Safety Standard</Link>
                         <Link href="/legal" className="hover:text-white transition-colors">Fleet Terms</Link>
-                        <Link href="/driver/login" className="hover:text-emerald-500 transition-colors text-emerald-500 italic">Fleet Entry</Link>
+                        <Link href="/driver/login" className="hover:text-primary transition-colors text-primary italic">Fleet Entry</Link>
                     </div>
                 </div>
             </footer>

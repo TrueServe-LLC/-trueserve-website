@@ -82,35 +82,39 @@ export default function MerchantPortal() {
                              </h2>
                         </div>
 
-                        {/* Pricing Cards: Screenshot 1 Style */}
+                        {/* Pricing Cards: Screenshot 3 Style */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
                             {[
                                 {
-                                    name: "Flex Scale",
-                                    split: "15%",
-                                    subtext: "Per-delivery commission rate for all orders you complete through TrueServe LLC.",
-                                    features: ["Real-time order notifications", "GPS navigation included", "Weekly payouts", "24/7 support access"],
+                                    name: "Starter",
+                                    amount: "15%",
+                                    sub: "per order",
+                                    desc: "Perfect for restaurants just getting started with TrueServe LLC delivery.",
+                                    features: ["Commission per delivery", "Basic order management", "Real-time tracking", "Email support", "Mobile-friendly portal", "Local South Carolina coverage"],
+                                    cta: "Get started",
                                     isHighlighted: false
                                 },
                                 {
-                                    name: "Pro Scale",
-                                    split: "0%",
-                                    subtext: "High-velocity total margin protocol for elite neighborhood partners.",
-                                    features: ["Real-time order notifications", "Custom Digital Operations Base", "Daily Instant Settlements", "Dedicated Account Analyst", "POS Terminal Integration"],
+                                    name: "Growth",
+                                    amount: "12%",
+                                    sub: "per order",
+                                    desc: "For restaurants scaling their delivery business with TrueServe LLC.",
+                                    features: ["Reduced commission rate", "Advanced analytics dashboard", "Priority support", "Custom menu uploads", "Marketing materials included", "Dedicated onboarding"],
+                                    cta: "Schedule demo",
                                     isHighlighted: true
                                 }
                             ].map((plan, i) => (
-                                <div key={i} className={`flex flex-col p-12 md:p-16 rounded-[4rem] border ${plan.isHighlighted ? 'border-primary bg-primary/5 shadow-[0_30px_60px_-12px_rgba(245,158,11,0.2)]' : 'border-white/5 bg-white/[0.02]'} space-y-12 transition-all hover:scale-[1.02]`}>
-                                    <div className="space-y-6">
-                                        <h3 className="text-4xl font-serif text-white font-bold tracking-tight">{plan.name}</h3>
+                                <div key={i} className={`flex flex-col p-12 md:p-16 rounded-[2.5rem] border ${plan.isHighlighted ? 'border-primary bg-primary/5 shadow-[0_30px_60px_-12px_rgba(245,158,11,0.2)]' : 'border-white/10 bg-white/[0.02]'} space-y-12 transition-all hover:scale-[1.01]`}>
+                                    <div className="space-y-8">
+                                        <h3 className="text-4xl font-serif text-white font-bold tracking-tight italic">{plan.name}</h3>
                                         <div>
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-6xl md:text-8xl font-bold text-white tracking-tighter">{plan.split}</span>
-                                                <span className="text-xl md:text-2xl text-slate-500 font-medium font-serif italic">commission</span>
+                                                <span className="text-6xl md:text-8xl font-bold text-white tracking-tighter">{plan.amount}</span>
+                                                <span className="text-xl md:text-2xl text-slate-400 font-medium font-serif italic">{plan.sub}</span>
                                             </div>
                                         </div>
-                                        <p className="text-slate-400 text-base md:text-lg font-medium leading-relaxed">
-                                            {plan.subtext}
+                                        <p className="text-slate-400 text-lg font-medium leading-relaxed">
+                                            {plan.desc}
                                         </p>
                                     </div>
 
@@ -118,29 +122,23 @@ export default function MerchantPortal() {
                                         <Link 
                                             onClick={() => scrollToForm(plan.name)} 
                                             href="/merchant-signup" 
-                                            className={`w-full inline-flex justify-center items-center py-6 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all ${plan.isHighlighted ? 'bg-primary text-black shadow-2xl shadow-primary/30 hover:scale-[1.02]' : 'bg-transparent border-2 border-white/20 text-white hover:bg-white/10'}`}
+                                            className={`w-full inline-flex justify-center items-center py-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all border-2 ${plan.isHighlighted ? 'bg-primary border-primary text-black shadow-2xl shadow-primary/30' : 'bg-transparent border-white/20 text-white hover:bg-white/10'}`}
                                         >
-                                            Get started
+                                            {plan.cta}
                                         </Link>
                                     </div>
 
-                                    <div className="space-y-8 pt-8 border-t border-white/5">
-                                        <h4 className="text-white text-lg font-bold font-serif italic">Features:</h4>
+                                    <div className="space-y-8 pt-8">
+                                        <h4 className="text-white text-2xl font-serif font-black italic">Features:</h4>
                                         <ul className="space-y-6">
                                             {plan.features.map((f, j) => (
-                                                <li key={j} className="flex items-start gap-4 text-slate-300 text-sm font-medium">
+                                                <li key={j} className="flex items-start gap-4 text-slate-300 text-base font-medium font-sans">
                                                     <span className="text-primary mt-1">✓</span>
                                                     <span>{f}</span>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
-                                    
-                                    {plan.isHighlighted && (
-                                        <div className="pt-4 flex justify-end">
-                                             <div className="badge-subtle-white !text-[8px] !px-4 !py-1.5 opacity-50">Standard Protocol</div>
-                                        </div>
-                                    )}
                                 </div>
                             ))}
                         </div>

@@ -186,27 +186,18 @@ section {
 }
 
 @utility badge-solid-primary {
-  @apply badge;
-  background-color: var(--primary);
-  color: black;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-
+  @apply rounded-full bg-primary text-black px-6 py-2 text-[9px] font-black uppercase tracking-[0.3em] shadow-xl transition-all;
+  
   &:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+    @apply scale-[1.05] brightness-110;
   }
 }
 
-@utility badge-subtle-primary {
-  @apply badge;
-  background-color: rgba(245, 158, 11, 0.1);
-  color: var(--primary);
-  border: 1px solid rgba(245, 158, 11, 0.1);
-
+@utility badge-outline-white {
+  @apply rounded-full bg-black border border-white/40 text-white px-6 py-2 text-[9px] font-black uppercase tracking-[0.3em] transition-all;
+  
   &:hover {
-    background-color: rgba(245, 158, 11, 0.15);
-    border-color: rgba(245, 158, 11, 0.2);
+    @apply bg-white/10 border-white;
   }
 }
 
@@ -240,17 +231,11 @@ section {
   }
 }
 
-@utility badge-emerald {
-  @apply badge;
-  background-color: #10b981;
-  color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-  border: none;
-
+@utility badge-amber {
+  @apply rounded-full bg-primary text-black px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all;
+  
   &:hover {
-    background-color: #059669;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    @apply scale-[1.05] brightness-110;
   }
 }
 
