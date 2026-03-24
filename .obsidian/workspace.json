@@ -185,6 +185,12 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "lib/posWebhooks.ts",
+    "app/api/webhook/pos/square/route.ts",
+    "app/api/webhook/pos/square",
+    "app/api/webhook/pos/toast/route.ts",
+    "app/api/webhook/pos/toast",
+    "app/api/webhook/pos",
     "test_results.txt",
     "public/admin_bg.png",
     "public/diverse_drivers.png",
@@ -197,12 +203,6 @@
     "app/driver-signup/DriverSignupForm.tsx",
     "app/join/page.tsx",
     "app/join",
-    "app/merchant-signup/page.tsx",
-    "app/merchant-signup/MerchantSignupForm.tsx",
-    "app/merchant-signup",
-    "app/driver-signup/page.tsx",
-    "app/driver-signup",
-    "app/merchant/dashboard/layout.tsx",
     "docs/Infrastructure/Security.md"
   ]
 }
