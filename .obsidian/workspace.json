@@ -185,17 +185,20 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "public/community_section.png",
+    "public/driver_section.png",
+    "public/merchant_section.png",
+    "public/hero_food_delivery.png",
+    "app/driver-signup/DriverApplicationForm.tsx",
+    "app/driver-signup/DriverSignupForm.tsx",
+    "app/join/page.tsx",
+    "app/join",
     "app/merchant-signup/page.tsx",
     "app/merchant-signup/MerchantSignupForm.tsx",
     "app/merchant-signup",
     "app/driver-signup/page.tsx",
     "app/driver-signup",
     "app/merchant/dashboard/layout.tsx",
-    "components/ModeToggle.tsx",
-    "app/status/page.tsx",
-    "app/status",
-    "scripts/test_jira_circuit_breaker.ts",
-    "components/EmergencyBanner.tsx",
     "docs/Infrastructure/Security.md"
   ]
 }
