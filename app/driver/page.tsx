@@ -102,64 +102,56 @@ export default function DriverPortal() {
                             </div>
                         </div>
 
-                        {/* ── DRIVER TIERS: Screenshot 3 Style ────────────────────────────── */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto border-t border-white/5 pt-32">
-                             {[
-                                 {
-                                     name: "Independent",
-                                     amount: "100%",
-                                     sub: "of tips",
-                                     desc: "Perfect for drivers looking for total schedule flexibility and transparent earnings.",
-                                     features: ["Standard base pay ($3.00+)", "Mileage-based synchronization", "Weekly direct settlements", "Standard support protocols", "Flexible neighborhood roaming"],
-                                     cta: "Start Application",
-                                     isHighlighted: false
-                                 },
-                                 {
-                                     name: "Elite Fleet",
-                                     amount: "25%",
-                                     sub: "bonus pay",
-                                     desc: "For high-velocity partners maintaining 4.8+ ratings and consistent performance.",
-                                     features: ["Premium performance multipliers", "Instant T+0 settlements", "Priority SOS support link", "Exclusive route optimization", "Monthly volume rewards", "Advanced logistics tools"],
-                                     cta: "Join Elite Fleet",
-                                     isHighlighted: true
-                                 }
-                             ].map((plan, i) => (
-                                <div key={i} className={`flex flex-col p-12 md:p-16 rounded-[2.5rem] border ${plan.isHighlighted ? 'border-primary bg-primary/5 shadow-[0_30px_60px_-12px_rgba(245,158,11,0.2)]' : 'border-white/10 bg-white/[0.02]'} space-y-12 transition-all hover:scale-[1.01]`}>
+                        {/* ── DRIVER ONBOARDING: Single Block Design ─────────────────────── */}
+                        <div className="flex justify-center w-full border-t border-white/5 pt-32">
+                             <div className="flex flex-col md:flex-row gap-16 max-w-6xl w-full items-center bg-white/[0.03] p-12 md:p-20 rounded-[3rem] border border-white/10 shadow-3xl">
+                                <div className="flex-1 space-y-10">
+                                    <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
+                                        <div className="w-8 h-px bg-slate-800" />
+                                        Fleet Enrollment
+                                    </div>
+                                    <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tight leading-[0.9]">
+                                        Earn on <br />
+                                        <span className="text-primary not-italic">Your terms.</span>
+                                    </h2>
                                     <div className="space-y-8">
-                                        <h3 className="text-4xl font-serif text-white font-bold tracking-tight italic">{plan.name}</h3>
-                                        <div>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className="text-6xl md:text-8xl font-bold text-white tracking-tighter">{plan.amount}</span>
-                                                <span className="text-xl md:text-2xl text-slate-400 font-medium font-serif italic">{plan.sub}</span>
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl border border-primary/20">1</div>
+                                            <div>
+                                                <h4 className="text-white font-bold text-lg">Apply Online</h4>
+                                                <p className="text-slate-400 text-sm">Submit your documents in under 5 minutes.</p>
                                             </div>
                                         </div>
-                                        <p className="text-slate-400 text-lg font-medium leading-relaxed">
-                                            {plan.desc}
-                                        </p>
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl border border-primary/20">2</div>
+                                            <div>
+                                                <h4 className="text-white font-bold text-lg">Verification</h4>
+                                                <p className="text-slate-400 text-sm">Background check and driver vetting.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl border border-primary/20">3</div>
+                                            <div>
+                                                <h4 className="text-white font-bold text-lg">Start Earning</h4>
+                                                <p className="text-slate-400 text-sm">Accept orders and get paid same-week.</p>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <div className="pt-4">
-                                        <Link 
-                                            href="/driver-signup" 
-                                            className={`w-full inline-flex justify-center items-center py-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all border-2 ${plan.isHighlighted ? 'bg-primary border-primary text-black shadow-2xl shadow-primary/30' : 'bg-transparent border-white/20 text-white hover:bg-white/10'}`}
-                                        >
-                                            {plan.cta}
+                                    <div className="pt-8">
+                                        <Link href="/driver-signup" className="badge-solid-primary !px-16 !py-6 !text-[12px]">
+                                            Start Application <span>→</span>
                                         </Link>
                                     </div>
-
-                                    <div className="space-y-8 pt-8">
-                                        <h4 className="text-white text-2xl font-serif font-black italic">Benefits:</h4>
-                                        <ul className="space-y-6">
-                                            {plan.features.map((f, j) => (
-                                                <li key={j} className="flex items-start gap-4 text-slate-300 text-base font-medium font-sans">
-                                                    <span className="text-primary mt-1">✓</span>
-                                                    <span>{f}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
                                 </div>
-                             ))}
+                                <div className="flex-1 relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-3xl">
+                                    <img 
+                                        src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop" 
+                                        className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-1000" 
+                                        alt="Delivery Driver"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                                </div>
+                             </div>
                         </div>
 
                         {/* ── REQUIREMENTS ─────────────────────────────────────────────── */}
