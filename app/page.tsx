@@ -34,7 +34,7 @@ export default async function Home() {
           <div className="flex items-center gap-6">
           <div className="flex items-center gap-4">
             <Link 
-              href="https://www.instagram.com/trueserve.deliveryllc/" 
+              href="https://www.instagram.com/trueserve_delivery/" 
               target="_blank" 
               className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
               title="Instagram"
@@ -174,7 +174,7 @@ export default async function Home() {
               <Link href="/merchant" className="hover:text-primary transition-colors">Merchant Help</Link>
               <Link href="/driver" className="hover:text-primary transition-colors">Driver Guide</Link>
               <Link 
-                href="https://www.instagram.com/trueserve.deliveryllc/" 
+                href="https://www.instagram.com/trueserve_delivery/" 
                 target="_blank" 
                 className="text-slate-500 hover:text-primary flex items-center gap-2 group/insta transition-all"
               >
