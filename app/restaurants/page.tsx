@@ -9,6 +9,7 @@ import { getFavorites } from "@/app/user/favorite-actions";
 import { cookies } from "next/headers";
 import { calculateDistance } from "@/lib/utils";
 import { redirect } from "next/navigation";
+import ModeToggle from "@/components/ModeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -320,9 +321,10 @@ import LandingSearch from "@/components/LandingSearch";
 export default async function RestaurantFinder({
     searchParams
 }: {
-    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string; welcome?: string }>
+    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string; welcome?: string; mode?: string }>
 }) {
     const params = await searchParams;
+    const mode = params.mode || "delivery";
     const location = params.location || params.search || params.address;
     const address = params.address || location;
     const lat = params.lat ? parseFloat(params.lat) : undefined;
@@ -495,21 +497,25 @@ export default async function RestaurantFinder({
                         )}
                     </Link>
 
-                    {/* Mobile Location Pill */}
-                    <div className="md:hidden mt-1 flex flex-1 items-center justify-center">
+                    {/* Mobile Location Pill & Mode Toggle */}
+                    <div className="md:hidden mt-1 flex flex-1 flex-col items-center justify-center gap-2">
                         <Link href="/restaurants" className="flex items-center gap-1.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 shadow-lg">
                             <svg className="w-3.5 h-3.5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span className="text-xs font-bold text-slate-300 truncate max-w-[120px]">{locationMeta.name || "Set Location"}</span>
+                            <span className="text-[10px] font-bold text-slate-300 truncate max-w-[120px]">{locationMeta.name || "Set Location"}</span>
                         </Link>
+                        <ModeToggle />
                     </div>
 
-                    {/* Desktop Search */}
-                    <div className="hidden md:flex flex-1 max-w-xl mx-8">
-                        <LandingSearch
-                            locations={serviceLocations}
-                            initialValue={location}
-                            isCompact={true}
-                        />
+                    {/* Desktop Search & Mode Toggle */}
+                    <div className="hidden md:flex flex-1 items-center gap-4 max-w-2xl mx-8">
+                        <ModeToggle />
+                        <div className="flex-1">
+                            <LandingSearch
+                                locations={serviceLocations}
+                                initialValue={location}
+                                isCompact={true}
+                            />
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-3 md:gap-6">
@@ -626,10 +632,10 @@ export default async function RestaurantFinder({
                 <div className="flex flex-col gap-6 md:gap-10 mb-20 md:mb-32">
                     <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 py-2">
                         <div>
-                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.3em] mb-1">Delivering to</p>
+                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.3em] mb-1">{mode === "pickup" ? "Picking up from" : "Delivering to"}</p>
                             <h1 className="text-2xl md:text-4xl font-black tracking-tighter text-white flex items-baseline gap-3">
                                 {locationMeta.name}
-                                <span className="text-sm text-slate-500 font-bold">({restaurants.length} spots)</span>
+                                <span className="text-sm text-slate-500 font-bold">({restaurants.length} {mode === "pickup" ? "pickup spots" : "delivery spots"})</span>
                             </h1>
                         </div>
 
@@ -697,9 +703,9 @@ export default async function RestaurantFinder({
                             { name: "Asian", icon: "🥢" },
                             { name: "Italian", icon: "🍝" },
                             { name: "Coffee", icon: "☕" },
-                            { name: "Low Delivery", icon: "💰" },
+                            ...(mode === "delivery" ? [{ name: "Low Delivery", icon: "💰" }] : []),
                             { name: "Seafood", icon: "🦐" }
-                        ].map((cat) => (
+                        ].map((cat: any) => (
                             <Link
                                 key={cat.name}
                                 href={`/restaurants?${new URLSearchParams({

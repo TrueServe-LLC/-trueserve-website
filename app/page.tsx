@@ -66,15 +66,7 @@ export default async function Home() {
             
             <div className="flex flex-col gap-6 justify-center md:justify-start w-full transition-all bg-white/[0.03] p-4 md:p-6 rounded-[2rem] border border-white/10 shadow-2xl max-w-2xl mx-auto md:mx-0">
               
-              {/* Delivery / Pickup Toggle - DoorDash/UberEats Style */}
-              <div className="flex items-center gap-2 p-1 bg-black/50 rounded-full w-fit mb-2 border border-white/5">
-                <button className="px-6 py-2 bg-white text-black font-black uppercase tracking-widest text-[10px] md:text-xs rounded-full shadow-lg">
-                  Delivery
-                </button>
-                <button className="px-6 py-2 text-slate-400 hover:text-white font-bold uppercase tracking-widest text-[10px] md:text-xs rounded-full transition-colors">
-                  Pickup
-                </button>
-              </div>
+
 
               {/* Seamless Address Bar */}
               <div className="relative group w-full mt-2">

@@ -185,6 +185,7 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "components/ModeToggle.tsx",
     "app/status/page.tsx",
     "app/status",
     "scripts/test_jira_circuit_breaker.ts",
@@ -195,7 +196,6 @@
     "scripts/test_ld.ts",
     "lib/triage.ts",
     "components/LaunchDarklyClientProvider.tsx",
-    "pnpm-lock.yaml.93832240",
     "docs/Infrastructure/Security.md"
   ]
 }
