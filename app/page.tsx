@@ -64,7 +64,7 @@ export default async function Home() {
                 Join the TrueServe Network
             </div>
             
-            <h1 className="text-6xl md:text-[140px] font-black text-white italic tracking-tighter leading-[0.85] animate-fade-in stagger-1">
+            <h1 className="text-6xl md:text-[140px] font-black text-white italic tracking-tighter leading-[0.85] animate-fade-in stagger-1 px-4">
               Find <span className="text-primary italic">Foods.</span> <br />
               <span className="text-[0.6em] md:text-[0.5em] text-white/90">Your way.</span>
             </h1>
@@ -113,7 +113,7 @@ export default async function Home() {
                 <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-20 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-1000" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
                 <div className="absolute bottom-12 left-12 right-12 text-left">
-                    <h3 className="text-4xl font-black text-white italic tracking-tighter mb-4">Drive with TrueServe.</h3>
+                    <h3 className="text-4xl font-black text-white italic tracking-tighter mb-4 px-2">Drive with TrueServe.</h3>
                     <p className="text-slate-400 font-medium mb-8">Earn more with fair splits and efficient routing.</p>
                     <div className="badge-emerald py-3 px-8 text-[11px]">Get Started</div>
                 </div>
@@ -123,7 +123,7 @@ export default async function Home() {
                 <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-20 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-1000" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
                 <div className="absolute bottom-12 left-12 right-12 text-left">
-                    <h3 className="text-4xl font-black text-white italic tracking-tighter mb-4">Partner Your Brand.</h3>
+                    <h3 className="text-4xl font-black text-white italic tracking-tighter mb-4 px-2">Partner Your Brand.</h3>
                     <p className="text-slate-500 font-medium mb-8">Reclaim your margin. zero commission protocols.</p>
                     <div className="badge-outline-white py-3 px-8 text-[11px]">Partner Hub</div>
                 </div>

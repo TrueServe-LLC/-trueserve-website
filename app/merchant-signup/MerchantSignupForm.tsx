@@ -13,7 +13,7 @@ const initialState = {
 
 export default function MerchantSignupForm() {
     return (
-        <Suspense fallback={<div className="p-8 text-center text-slate-500 font-bold uppercase tracking-widest text-[10px]">Initializing Partner Rails...</div>}>
+        <Suspense fallback={<div className="p-20 text-center text-slate-500 font-bold uppercase tracking-widest text-[10px] bg-white/[0.02] rounded-[32px] border border-white/5 animate-pulse italic">Initializing Partner Rails...</div>}>
             <MerchantSignupFormInner />
         </Suspense>
     );
@@ -75,128 +75,134 @@ function MerchantSignupFormInner() {
 
     if (state.success) {
         return (
-            <div className="max-w-2xl mx-auto p-12 bg-white/[0.02] border border-white/10 rounded-[32px] text-center shadow-2xl font-sans">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 text-primary">✓</div>
-                <h3 className="text-2xl font-black text-white italic mb-2 tracking-tighter uppercase">Partner Protocol Entry Complete</h3>
-                <p className="text-slate-500 font-medium mb-8">Your brand has been registered for synchronization. We will be in touch shortly.</p>
-                <Link href="/login?role=merchant" className="btn-standard w-full py-5 text-[10px] bg-primary text-white border-none shadow-primary/20 font-black uppercase tracking-widest block text-center">Enter Merchant Dashboard</Link>
+            <div className="max-w-2xl mx-auto p-12 md:p-24 bg-white/[0.02] border border-white/10 rounded-[3rem] text-center shadow-3xl font-sans relative overflow-hidden group transition-all duration-1000">
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-50"></div>
+                <div className="w-20 h-20 bg-primary/20 rounded-[2rem] flex items-center justify-center text-4xl mx-auto mb-10 text-primary animate-bounce shadow-2xl">✓</div>
+                <h3 className="text-3xl md:text-5xl font-black text-white italic mb-6 tracking-tighter uppercase leading-none">Protocol Entry Complete.</h3>
+                <p className="text-slate-500 font-bold mb-12 italic text-lg leading-relaxed max-w-md mx-auto">Your brand has been synchronized with the TrueServe network. Welcome to the elite tier.</p>
+                <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                    <Link href="/login?role=merchant" className="btn-premium-solid py-6 px-12 text-[10px] tracking-widest !rounded-[2rem]">Enter Dashboard →</Link>
+                    <Link href="/" className="px-10 py-6 text-[10px] font-black uppercase text-slate-500 hover:text-white transition-all border-b border-transparent hover:border-white/20 italic">Exit Hub</Link>
+                </div>
             </div>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-12 max-w-4xl mx-auto font-sans">
+        <form onSubmit={handleSubmit} className="space-y-24 max-w-4xl mx-auto font-sans">
             {state.error && (
-                <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-200 text-xs font-black uppercase tracking-widest animate-shake">
+                <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-[2rem] text-red-200 text-xs font-black uppercase tracking-widest animate-shake">
                     ⚠️ {state.message}
                 </div>
             )}
 
-            {/* CARD 1: Business Profile */}
-            <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                <div className="flex items-center gap-4 mb-10">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">1</div>
-                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">Business Profile</h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]"> <span>🏢</span> Restaurant / Brand Name</label>
-                        <input name="restaurantName" type="text" required value={formData.restaurantName} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-bold" placeholder="High-Margin Eats" />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]"> <span>🔑</span> Access Credentials (Password)</label>
-                        <input name="password" type="password" required value={formData.password} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-bold" placeholder="••••••••" />
-                    </div>
-                </div>
-            </div>
-
-            {/* CARD 2: Point of Contact */}
-            <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                <div className="flex items-center gap-4 mb-10">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">2</div>
-                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">Point of Contact</h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-2 text-sans">
-                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]"> <span>👤</span> Full Legal Name</label>
-                        <input name="contactName" type="text" required value={formData.contactName} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-bold" placeholder="John Doe" />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]"> <span>📧</span> Admin Email</label>
-                        <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-bold" placeholder="partner@domain.com" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
+                <div className="space-y-8 md:sticky md:top-32 h-fit">
+                    <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase leading-none mb-10">Scale Your <br />Business Hub.</h2>
+                    <p className="text-slate-500 text-lg font-medium leading-relaxed italic max-w-sm mb-12">Reclaim your margin. Zero commission protocols. Engineered for the neighborhood gems.</p>
+                    
+                    <div className="space-y-6 pt-10 border-t border-white/5">
+                        {[{ icon: '🎯', label: 'Local Access', desc: 'Direct link to neighborhood diners.' }, { icon: '🤝', label: 'Zero Fees', desc: 'Pro Scale subscribers pay 0% split.' }].map((feat, i) => (
+                           <div key={i} className="flex gap-6 group">
+                                <div className="w-14 h-14 bg-white/[0.03] border border-white/5 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">{feat.icon}</div>
+                                <div>
+                                    <h4 className="text-[11px] font-black uppercase tracking-widest text-white mb-1 italic">{feat.label}</h4>
+                                    <p className="text-[10px] text-slate-600 font-medium uppercase tracking-wider italic">{feat.desc}</p>
+                                </div>
+                           </div>
+                        ))}
                     </div>
                 </div>
-            </div>
 
-            {/* CARD 3: Physical Domain */}
-            <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                <div className="flex items-center gap-4 mb-10">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">3</div>
-                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">Location Rails</h2>
-                </div>
-
-                <div className="space-y-8">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 ml-1 flex items-center gap-2 uppercase tracking-[0.2em]"> <span>📍</span> Physical Street Address</label>
-                        <div className="[&>div>input]:!bg-black/40 [&>div>input]:!border-white/10 [&>div>input]:!px-6 [&>div>input]:!py-4 [&>div>input]:!rounded-xl [&>div>input]:!text-sm [&>div>input]:!font-bold [&>div>input]:!placeholder-slate-700 [&>div>input]:focus:!border-primary">
-                            <AddressInput initialAddress={formData.address} onAddressSelect={handleAddressSelect} />
+                <div className="space-y-12">
+                    {/* SECTION 1: Identity */}
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-4 mb-2">
+                            <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-widest italic">Identity Protocols</span>
                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-500 ml-1 uppercase tracking-[0.2em]">City</label>
-                            <input name="city" type="text" required value={formData.city} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary transition-all font-bold" placeholder="City" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-500 ml-1 uppercase tracking-[0.2em]">State</label>
-                            <input name="state" type="text" required maxLength={2} value={formData.state} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary transition-all font-bold uppercase" placeholder="ST" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-500 ml-1 uppercase tracking-[0.2em]">Zip Code</label>
-                            <input name="zip" type="text" required value={formData.zip} onChange={updateForm} className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary transition-all font-bold" placeholder="ZIP Code" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* CARD 4: Plan */}
-            <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                <div className="flex items-center gap-4 mb-10">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">4</div>
-                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">Service Tier</h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                        { id: "Flex Options", title: "Flex Scale", desc: "15% Split per transaction.", icon: "🌱" },
-                        { id: "Pro Subscription", title: "Pro Subscription", desc: "0% Split. $199/mo.", icon: "⚡" }
-                    ].map((plan) => (
-                        <div 
-                            key={plan.id}
-                            onClick={() => setSelectedPlan(plan.id)}
-                            className={`p-8 rounded-[24px] border transition-all cursor-pointer group ${selectedPlan === plan.id ? 'bg-primary/10 border-primary text-primary shadow-[0_0_20px_rgba(42,91,89,0.1)]' : 'bg-black/40 border-white/10 text-slate-500 hover:border-white/20'}`}
-                        >
-                            <div className="flex items-center gap-4">
-                                <span className="text-3xl group-hover:scale-110 transition-transform">{plan.icon}</span>
-                                <h4 className="text-xs font-black uppercase tracking-widest leading-none">{plan.title}</h4>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic font-sans">Restaurant / Brand Name</label>
+                                <input name="restaurantName" type="text" required value={formData.restaurantName} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-black uppercase tracking-tight" placeholder="Brand Hub Name" />
                             </div>
-                            <p className="mt-4 text-[11px] font-medium italic opacity-80 leading-relaxed">{plan.desc}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Legal Point of Contact</label>
+                                    <input name="contactName" type="text" required value={formData.contactName} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-black uppercase tracking-tight" placeholder="Legal Name" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Access Control (Password)</label>
+                                    <input name="password" type="password" required value={formData.password} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-black" placeholder="••••••••" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Partner Communication Email</label>
+                                <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary transition-all font-black uppercase tracking-tight" placeholder="ADMIN@HUB.COM" />
+                            </div>
                         </div>
-                    ))}
-                </div>
-            </div>
+                    </div>
 
-            <div className="pt-8">
-                <button disabled={isPending} className="btn-premium-solid w-full py-6 text-xs font-black uppercase tracking-[0.3em] active:scale-[0.98] transition-all disabled:opacity-50">
-                    {isPending ? "Syncing Partner Data..." : "Apply to Marketplace Network →"}
-                </button>
-                 <p className="mt-6 text-center text-[10px] text-slate-600 font-black uppercase tracking-widest italic leading-relaxed">
-                    By submitting, you agree to the TrueServe merchant agreement <br />
-                    and technical synchronization protocols.
-                </p>
+                    {/* SECTION 2: Geography */}
+                    <div className="space-y-8 pt-12 border-t border-white/5">
+                        <div className="flex items-center gap-4 mb-2">
+                            <span className="text-[10px] font-black text-orange-500 bg-orange-500/10 px-3 py-1 rounded-full uppercase tracking-widest italic">Operational Geography</span>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[9px] font-black text-slate-600 ml-1 uppercase tracking-widest italic">Physical Address Hub</label>
+                                <div className="[&>div>input]:!bg-white/[0.03] [&>div>input]:!border-white/10 [&>div>input]:!px-8 [&>div>input]:!py-5 [&>div>input]:!rounded-2xl [&>div>input]:!text-sm [&>div>input]:!font-black [&>div>input]:!placeholder-slate-800 [&>div>input]:!uppercase [&>div>input]:!tracking-tight [&>div>input]:focus:!border-orange-500">
+                                    <AddressInput initialAddress={formData.address} onAddressSelect={handleAddressSelect} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                <input name="city" type="text" required value={formData.city} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase" placeholder="City" />
+                                <input name="state" type="text" required maxLength={2} value={formData.state} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase text-center" placeholder="ST" />
+                                <input name="zip" type="text" required value={formData.zip} onChange={updateForm} className="bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-orange-500 font-black uppercase" placeholder="ZIP" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* SECTION 3: Tiers */}
+                    <div className="space-y-8 pt-12 border-t border-white/5">
+                        <div className="flex items-center gap-4 mb-2">
+                            <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase tracking-widest italic">Service Scale Options</span>
+                        </div>
+                        <div className="grid grid-cols-1 gap-6">
+                            {[
+                                { id: "Flex Options", title: "Flex Scale", desc: "15% Split per transaction.", sub: "Ideal for growth stages.", icon: "🌱" },
+                                { id: "Pro Subscription", title: "Pro Scale", desc: "0% Split. $199/mo.", sub: "High-volume elite scaling.", icon: "⚡" }
+                            ].map((plan) => (
+                                <div 
+                                    key={plan.id}
+                                    onClick={() => setSelectedPlan(plan.id)}
+                                    className={`p-10 rounded-[2rem] border transition-all cursor-pointer group flex items-start gap-8 ${selectedPlan === plan.id ? 'bg-white/[0.05] border-white/20 text-white shadow-3xl' : 'bg-black/60 border-white/5 text-slate-500 hover:border-white/10'}`}
+                                >
+                                    <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-2xl group-hover:scale-110 transition-transform ${selectedPlan === plan.id ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-slate-600'}`}>
+                                        {plan.icon}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className={`text-sm font-black uppercase tracking-widest mb-2 italic ${selectedPlan === plan.id ? 'text-white' : ''}`}>{plan.title}</h4>
+                                        <p className="text-[11px] font-bold uppercase tracking-wider mb-1 leading-relaxed italic">{plan.desc}</p>
+                                        <p className="text-[10px] text-slate-600 font-medium uppercase tracking-widest italic">{plan.sub}</p>
+                                    </div>
+                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedPlan === plan.id ? 'border-primary bg-primary' : 'border-white/10'}`}>
+                                        {selectedPlan === plan.id && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-12">
+                        <button disabled={isPending} className="badge-emerald h-[80px] w-full text-xs font-black uppercase tracking-[0.4em] active:scale-[0.98] transition-all disabled:opacity-50 shadow-emerald-500/10">
+                            {isPending ? "Syncing Integration Protocols..." : "Launch Operation →"}
+                        </button>
+                        <p className="mt-8 text-center text-[10px] text-slate-600 font-black uppercase tracking-[0.3em] italic leading-relaxed opacity-60">
+                            Agreement Protocol <br />
+                            Secured Sync End-to-End
+                        </p>
+                    </div>
+                </div>
             </div>
         </form>
     );

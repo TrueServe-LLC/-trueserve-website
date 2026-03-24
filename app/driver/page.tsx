@@ -125,7 +125,7 @@ export default function DriverPortal() {
                         <div className="flex flex-col justify-center">
                             <div className="p-12 md:p-16 bg-white/[0.03] border border-white/5 rounded-[3rem] relative overflow-hidden group">
                                <div className="absolute top-0 right-0 p-12 text-8xl opacity-5 group-hover:scale-110 transition-transform">💸</div>
-                               <h3 className="text-3xl font-black text-white italic mb-6 tracking-tight uppercase">Instant Settlement.</h3>
+                               <h3 className="text-3xl font-black text-white italic mb-6 tracking-tight uppercase px-2">Instant Settlement.</h3>
                                <p className="text-slate-400 text-base font-medium leading-relaxed mb-10 italic">Withdraw your earnings to any supported debit card instantly after your shift concludes. Zero lag.</p>
                                <Link href="/driver-signup" className="btn-standard py-4 px-12 text-[10px] shadow-emerald-500/20">Sign Up Instantly</Link>
                             </div>
