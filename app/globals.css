@@ -169,33 +169,33 @@ section {
   /* Firefox */
 }
 
-/* Standardized Pill & Button System: Squircle Style */
+/* Standardized Pill & Button System: Screenshot Exact Match */
 @utility badge-solid-primary {
-  @apply rounded-2xl bg-[#f59e0b] text-black px-10 py-5 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] shadow-xl transition-all inline-flex items-center justify-center;
+  @apply rounded-xl bg-[#f59e0b] text-black px-10 py-4 text-base font-semibold transition-all inline-flex items-center justify-center shadow-lg;
   
   &:hover {
-    @apply scale-[1.02] brightness-110 shadow-primary/40;
+    @apply -translate-y-[2px] brightness-110 shadow-xl;
   }
 }
 
 @utility badge-outline-white {
-  @apply rounded-2xl bg-transparent border-2 border-white/20 text-white px-10 py-5 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all inline-flex items-center justify-center;
+  @apply rounded-xl bg-transparent border border-white/20 text-white px-10 py-4 text-base font-semibold transition-all inline-flex items-center justify-center;
   
   &:hover {
-    @apply bg-white/10 border-white scale-[1.02];
+    @apply bg-white/10 border-white scale-[1.01];
   }
 }
 
 @utility btn-standard {
-  @apply rounded-2xl bg-[#f59e0b] text-black px-12 py-6 text-[11px] font-black uppercase tracking-[0.2em] shadow-xl active:scale-[0.98] transition-all inline-flex items-center justify-center;
+  @apply rounded-xl bg-[#f59e0b] text-black px-12 py-5 text-base font-semibold active:scale-[0.98] transition-all inline-flex items-center justify-center shadow-lg;
   
   &:hover {
-    @apply -translate-y-[2px] shadow-primary/30 brightness-110;
+    @apply -translate-y-[3px] brightness-110 shadow-primary/20;
   }
 }
 
 @utility badge-subtle-white {
-  @apply rounded-2xl bg-white text-black px-6 py-2 text-[9px] font-black uppercase tracking-widest shadow-lg transition-all inline-flex items-center justify-center;
+  @apply rounded-lg bg-white text-black px-6 py-2 text-sm font-semibold shadow-md transition-all inline-flex items-center justify-center;
   
   &:hover {
     @apply scale-[1.02] brightness-105;

@@ -45,7 +45,7 @@ export default async function Home() {
             ) : (
               <div className="flex items-center gap-6">
                 <Link href="/login" className="hidden md:block text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Sign In</Link>
-                <Link href="/restaurants" className="badge-solid-primary !px-6 !py-2.5 !text-[11px] !rounded-xl">
+                <Link href="/restaurants" className="badge-solid-primary !px-6 !py-2.5 !text-sm">
                   Get Started
                 </Link>
               </div>
@@ -78,10 +78,10 @@ export default async function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-              <Link href="/restaurants" className="badge-solid-primary w-full sm:w-auto !rounded-xl">
+              <Link href="/restaurants" className="badge-solid-primary w-full sm:w-auto">
                 Browse Restaurants
               </Link>
-              <Link href="/driver-signup" className="badge-outline-white w-full sm:w-auto !rounded-xl">
+              <Link href="/driver-signup" className="badge-outline-white w-full sm:w-auto">
                 Become a Driver
               </Link>
             </div>
@@ -135,7 +135,7 @@ export default async function Home() {
                     <p className="text-primary font-black text-[10px] uppercase tracking-[0.4em]">Platform Excellence</p>
                     <h3 className="text-4xl md:text-5xl font-serif font-black text-white leading-tight tracking-tight italic">{card.title}</h3>
                     <div className="pt-4">
-                      <div className="badge-outline-white inline-flex !text-[9px] !px-6 !py-3 !bg-black/50 backdrop-blur-md border-white/20 group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all">
+                      <div className="badge-outline-white inline-flex !text-xs !px-6 !py-3 !bg-black/50 backdrop-blur-md border-white/20 group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all">
                          {card.cta} <span className="ml-2">→</span>
                       </div>
                     </div>

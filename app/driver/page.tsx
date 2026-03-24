@@ -29,7 +29,7 @@ export default function DriverPortal() {
                 </div>
                 <div className="flex items-center gap-6">
                     <Link href="/driver/login" className="text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-white border-b-2 border-transparent hover:border-primary transition-all pb-1">Fleet Login</Link>
-                    <Link href="/driver-signup" className="badge-solid-primary py-3 px-8 text-[10px] font-bold">
+                    <Link href="/driver-signup" className="badge-solid-primary !py-3 !px-8 !text-sm">
                         Driver Sign Up
                     </Link>
                 </div>
@@ -57,10 +57,10 @@ export default function DriverPortal() {
                             Join South Carolina drivers delivering food in your area. Simple signup, real-time orders, and weekly payouts waiting for you.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-                            <Link href="/driver-signup" className="badge-solid-primary !rounded-xl">
+                            <Link href="/driver-signup" className="badge-solid-primary">
                                 Become a driver
                             </Link>
-                            <Link href="tel:+10000000000" className="badge-outline-white !rounded-xl">
+                            <Link href="tel:+10000000000" className="badge-outline-white">
                                 Call with questions
                             </Link>
                         </div>
@@ -123,7 +123,7 @@ export default function DriverPortal() {
                                         ))}
                                     </div>
                                     <div className="pt-8">
-                                        <Link href="/driver-signup" className="badge-solid-primary !px-12 !py-5 !text-[11px] !rounded-xl">
+                                        <Link href="/driver-signup" className="badge-solid-primary">
                                             Start Application <span>→</span>
                                         </Link>
                                     </div>

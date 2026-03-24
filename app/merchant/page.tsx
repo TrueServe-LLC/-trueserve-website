@@ -33,7 +33,7 @@ export default function MerchantPortal() {
                 </div>
                 <div className="flex items-center gap-6">
                     <Link href="/login?role=merchant" className="text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-white border-b-2 border-transparent hover:border-primary transition-all pb-1">Sign In</Link>
-                    <Link href="/merchant-signup" className="badge-solid-primary py-3 px-8 text-[10px] font-bold">
+                    <Link href="/merchant-signup" className="badge-solid-primary !py-3 !px-8 !text-sm">
                         Partner Sign Up
                     </Link>
                 </div>
@@ -55,10 +55,10 @@ export default function MerchantPortal() {
                             Everything you need to run your food business efficiently. Real-time order visibility, delivery tracking, and merchant controls built into one intuitive dashboard.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center gap-6 pt-10">
-                            <Link href="/merchant-signup" className="badge-solid-primary !rounded-xl">
+                            <Link href="/merchant-signup" className="badge-solid-primary">
                                 Partner Sign Up
                             </Link>
-                            <Link href="#inquiry-form" className="badge-outline-white !rounded-xl">
+                            <Link href="#inquiry-form" className="badge-outline-white">
                                 Learn more
                             </Link>
                         </div>
@@ -122,7 +122,7 @@ export default function MerchantPortal() {
                                                 <Link 
                                                     onClick={() => scrollToForm(plan.name)} 
                                                     href="/merchant-signup" 
-                                                    className="w-full inline-flex justify-center items-center py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all bg-primary border border-primary text-black shadow-xl shadow-primary/20 hover:brightness-110"
+                                                    className="w-full badge-solid-primary"
                                                 >
                                                     {plan.cta}
                                                 </Link>
@@ -159,7 +159,7 @@ export default function MerchantPortal() {
                                 <h3 className="text-2xl md:text-5xl text-white font-serif italic font-black leading-[1.1] text-center max-w-xl uppercase">Apply to Join <br />the Network</h3>
                                 <div className="w-full max-w-xl flex flex-col items-center space-y-8">
                                     <div className="pt-2">
-                                        <Link href="/merchant-signup" className="badge-solid-primary !px-10 !py-4 !text-[9px] !rounded-xl inline-flex items-center">
+                                        <Link href="/merchant-signup" className="badge-solid-primary inline-flex items-center">
                                             Start Merchant Application <span className="ml-2">→</span>
                                         </Link>
                                     </div>
