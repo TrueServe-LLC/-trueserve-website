@@ -83,10 +83,10 @@ function MerchantSignupFormInner() {
                     ⚠️ {state.message}
                 </div>
             )}
-            <div className="flex flex-col items-center mb-24 text-center">
-                 <h3 className="text-[11px] font-black uppercase text-primary italic tracking-[1em] mb-6">The Future</h3>
-                 <h2 className="text-4xl md:text-6xl font-black text-white italic h-glow uppercase leading-none">Is Yours.</h2>
-                 <div className="w-16 h-px bg-primary/20 mt-8" />
+            <div className="flex flex-col items-center mb-32 text-center">
+                 <h3 className="text-[10px] font-black uppercase text-primary italic tracking-[1.5em] mb-8 opacity-80">The Future</h3>
+                 <h2 className="text-6xl md:text-[100px] font-serif font-black text-white italic uppercase leading-none tracking-tighter">Is Yours.</h2>
+                 <div className="w-24 h-px bg-primary/20 mt-12 mb-12" />
             </div>
 
             <div className="space-y-24">
@@ -94,7 +94,7 @@ function MerchantSignupFormInner() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 group">
                     <div className="col-span-1 md:col-span-2 flex items-center gap-4 mb-4">
                         <span className="text-[10px] font-black text-primary px-3 py-1 border border-primary/20 rounded-full italic tracking-widest bg-primary/5">01</span>
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-0">Establishment Identity</span>
+                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-0">Identity & Credentials</span>
                         <div className="h-px flex-1 bg-white/10" />
                     </div>
                     
@@ -232,18 +232,20 @@ function MerchantSignupFormInner() {
                                 key={p.id}
                                 type="button"
                                 onClick={() => setFormData(d => ({ ...d, plan: p.id }))}
-                                className={`flex flex-col items-start p-10 rounded-2xl border transition-all duration-500 text-left relative overflow-hidden group ${
+                                className={`flex items-center justify-between px-12 py-8 rounded-full border transition-all duration-500 text-left relative overflow-hidden group ${
                                     formData.plan === p.id 
                                     ? 'bg-primary/10 border-primary shadow-[0_0_40px_rgba(245,158,11,0.1)]' 
                                     : 'bg-white/[0.02] border-white/10 hover:border-white/20'
                                 }`}
                             >
-                                <div className={`text-[12px] font-black uppercase tracking-[0.2em] italic mb-2 ${formData.plan === p.id ? 'text-primary' : 'text-white'}`}>{p.name}</div>
-                                <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest italic">{p.desc}</div>
-                                <div className={`absolute top-6 right-6 w-5 h-5 rounded-full border-2 transition-all ${
+                                <div className="flex flex-col">
+                                    <div className={`text-[12px] font-black uppercase tracking-[0.2em] italic ${formData.plan === p.id ? 'text-primary' : 'text-white'}`}>{p.name}</div>
+                                    <div className={`text-[9px] font-bold uppercase tracking-widest italic mt-1 ${formData.plan === p.id ? 'text-white/60' : 'text-slate-600'}`}>{p.desc}</div>
+                                </div>
+                                <div className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center ${
                                     formData.plan === p.id ? 'border-primary bg-primary' : 'border-white/10 bg-transparent'
                                 }`}>
-                                    {formData.plan === p.id && <div className="w-full h-full flex items-center justify-center text-[10px] text-black">✓</div>}
+                                    {formData.plan === p.id && <div className="text-[14px] text-black">✓</div>}
                                 </div>
                             </button>
                         ))}
@@ -253,12 +255,8 @@ function MerchantSignupFormInner() {
             
             <div className="pt-24 flex flex-col items-center">
                 <button disabled={isPending} className="badge-solid-primary h-16 w-full max-w-xl text-[12px] font-black uppercase tracking-[0.4em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)] !bg-primary !text-black">
-                    {isPending ? "Syncing Grid..." : "Submit Application →"}
+                    {isPending ? "Configuring Access..." : "Submit Application →"}
                 </button>
-                <p className="mt-20 text-center text-[11px] text-slate-700 font-black uppercase tracking-[1em] italic leading-relaxed opacity-40">
-                    TrueServe Global Logistics <br />
-                    Supporting Network Integration
-                </p>
             </div>
         </form>
     );

@@ -137,10 +137,10 @@ function DriverApplicationFormInner() {
                 </div>
             )}
 
-            <div className="flex flex-col items-center mb-24 text-center">
-                 <h3 className="text-[11px] font-black uppercase text-primary italic tracking-[1em] mb-6">The Future</h3>
-                 <h2 className="text-4xl md:text-6xl font-black text-white italic h-glow uppercase leading-none">Is Yours.</h2>
-                 <div className="w-16 h-px bg-primary/20 mt-8" />
+            <div className="flex flex-col items-center mb-32 text-center">
+                 <h3 className="text-[10px] font-black uppercase text-primary italic tracking-[1.5em] mb-8 opacity-80">The Future</h3>
+                 <h2 className="text-6xl md:text-[100px] font-serif font-black text-white italic uppercase leading-none tracking-tighter">Is Yours.</h2>
+                 <div className="w-24 h-px bg-primary/20 mt-12 mb-12" />
             </div>
 
             <div className="space-y-24">
@@ -286,10 +286,6 @@ function DriverApplicationFormInner() {
                 <button disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary h-16 w-full max-w-xl text-[12px] font-black uppercase tracking-[0.4em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)] !bg-primary !text-black">
                     {isPending ? "Configuring Access..." : "Join The Fleet →"}
                 </button>
-                <p className="mt-20 text-center text-[11px] text-slate-700 font-black uppercase tracking-[1em] italic leading-relaxed opacity-40">
-                    TrueServe Global Logistics <br />
-                    Supporting Network Integration
-                </p>
             </div>
         </form>
     );
