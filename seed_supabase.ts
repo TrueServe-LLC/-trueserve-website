@@ -3,20 +3,20 @@ import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
 import { v4 as uuidv4 } from 'uuid'
 
-dotenv.config({ path: '.env.local' })
+dotenv.config({ path: process.env.ENV_FILE || '.env.local' })
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!supabaseUrl || !supabaseServiceRoleKey) {
-    console.error('Missing Supabase environment variables')
+    console.error('Missing Supabase environment variables in:', process.env.ENV_FILE || '.env.local')
     process.exit(1)
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
 
 async function seed() {
-    console.log('Starting seed...')
+    console.log(`Starting seed on: ${supabaseUrl}...`)
     const now = new Date().toISOString();
 
     // 1. Create Merchant User
@@ -41,22 +41,25 @@ async function seed() {
     }
     console.log('Merchant User created:', merchantUser.id)
 
-    // 2. Create Restaurant
-    console.log('Creating Restaurant...')
+    // 2. Create Restaurant with POS Defaults
+    console.log('Creating Restaurant (Toast Integration)...')
     const restaurantId = uuidv4();
     const { data: restaurant, error: restaurantError } = await supabase
         .from('Restaurant')
         .insert({
             id: restaurantId,
-            name: 'Test Restaurant',
-            address: '123 Test St',
+            name: 'Test Toast Kitchen',
+            address: '123 Tech Ave',
             ownerId: merchantUser.id,
-            imageUrl: '/restaurant1.jpg',
-            description: 'Best test food in town',
+            imageUrl: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200',
+            description: 'Integrated Toast Kiosk Partner',
             city: 'Charlotte',
             state: 'NC',
             lat: 35.2271,
             lng: -80.8431,
+            posSystem: 'Toast',
+            posClientId: 'ts_test_id_' + Date.now(),
+            posClientSecret: 'ts_test_secret_abc123',
             updatedAt: now,
             createdAt: now
         })
