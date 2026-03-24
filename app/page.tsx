@@ -66,7 +66,7 @@ export default async function Home() {
 
           <div className="relative z-10 max-w-6xl space-y-12 animate-fade-in text-center flex flex-col items-center justify-center glow-blur-primary">
             
-            <h1 className="text-6xl md:text-[140px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none">
+            <h1 className="text-5xl md:text-[115px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none">
               Cravings meet <br />
               <span className="text-primary not-italic tracking-[-0.03em] drop-shadow-[5px_5px_0px_rgba(255,255,255,0.1)] uppercase italic">Lightning Speed.</span>
             </h1>
@@ -83,14 +83,6 @@ export default async function Home() {
                 For Businesses
               </Link>
             </div>
-          </div>
-        </section>
-
-        {/* ── SEARCH SECTION ─────────────────────────────────────────────── */}
-        <section className="relative -mt-32 pb-32 z-20 flex justify-center px-6">
-          <div className="w-full max-w-4xl relative group">
-             <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full opacity-30 -z-10" />
-             <LandingSearch />
           </div>
         </section>
 
