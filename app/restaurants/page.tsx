@@ -263,8 +263,8 @@ export default async function RestaurantFinder({
                 </div>
             </nav>
 
-            <main className="container py-8 md:py-16 px-4 pb-40">
-                <div className="mb-12">
+            <main className="container py-12 md:py-24 px-4 md:px-8 pb-40">
+                <div className="mb-16 md:mb-24">
                     <h1 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter mb-2">Order Dashboard</h1>
                     <p className="text-slate-500 font-medium">Browse flavors in {locationMeta.name || "your area"}.</p>
                 </div>
