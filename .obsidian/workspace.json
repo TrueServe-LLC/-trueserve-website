@@ -185,17 +185,17 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "app/merchant-signup/page.tsx",
+    "app/merchant-signup/MerchantSignupForm.tsx",
+    "app/merchant-signup",
+    "app/driver-signup/page.tsx",
+    "app/driver-signup",
+    "app/merchant/dashboard/layout.tsx",
     "components/ModeToggle.tsx",
     "app/status/page.tsx",
     "app/status",
     "scripts/test_jira_circuit_breaker.ts",
     "components/EmergencyBanner.tsx",
-    "lib/jira.ts",
-    "app/api/webhook/jira/route.ts",
-    "app/api/webhook/jira",
-    "scripts/test_ld.ts",
-    "lib/triage.ts",
-    "components/LaunchDarklyClientProvider.tsx",
     "docs/Infrastructure/Security.md"
   ]
 }

@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import ModeToggle from "@/components/ModeToggle";
+
+export const dynamic = "force-dynamic";
 
 export default function DriverPortal() {
     const formRef = useRef<HTMLDivElement>(null);
@@ -28,7 +30,9 @@ export default function DriverPortal() {
                 </div>
                 <div className="flex items-center gap-6">
                     <Link href="/driver/login" className="nav-link text-emerald-500 border-b border-emerald-500/20 hover:border-emerald-500 transition-all pb-0.5">Fleet Entry</Link>
-                    <ModeToggle />
+                    <Suspense fallback={<div className="w-10 h-10 bg-white/5 rounded-full animate-pulse"></div>}>
+                        <ModeToggle />
+                    </Suspense>
                     <Link href="/driver-signup" className="btn-standard py-3 px-8 text-[9px] shadow-emerald-500/10">
                         Apply Now
                     </Link>
@@ -84,12 +88,16 @@ export default function DriverPortal() {
                         {/* CTA Visual Block */}
                         <div className="relative group">
                             <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500 to-primary rounded-[3.5rem] blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                            <div className="relative bg-black/60 border border-white/10 rounded-[3rem] p-12 md:p-20 shadow-2xl text-center overflow-hidden">
-                                <div className="absolute top-0 right-0 p-8 text-8xl opacity-5">🏎️</div>
-                                <h3 className="text-4xl md:text-5xl font-black text-white italic tracking-tight mb-6">Operational <br />Start</h3>
-                                <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-12 pb-8 border-b border-white/5 leading-relaxed">Join the most efficient delivery matrix in the South East.</p>
-                                <Link href="/driver-signup" className="badge-emerald w-full py-6 text-xs shadow-emerald-500/30">Join Fleet Protocols →</Link>
-                                <p className="mt-8 text-[10px] text-slate-600 font-bold uppercase tracking-widest italic">Est. Sync Time: <span className="text-slate-500">4 Minutes</span></p>
+                            <div className="relative bg-black/60 border border-white/10 rounded-[3rem] p-12 md:p-20 shadow-2xl text-center overflow-hidden h-full flex flex-col justify-center min-h-[400px]">
+                                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                                <div className="relative z-10">
+                                    <div className="absolute -top-12 -right-12 p-8 text-8xl opacity-10 pointer-events-none group-hover:rotate-12 transition-transform">🏎️</div>
+                                    <h3 className="text-4xl md:text-5xl font-black text-white italic tracking-tight mb-6 uppercase">Operational <br />Start</h3>
+                                    <p className="text-slate-300 text-[10px] font-black uppercase tracking-widest mb-12 pb-8 border-b border-white/10 leading-relaxed italic">Join the most efficient delivery matrix in the South East.</p>
+                                    <Link href="/driver-signup" className="badge-emerald w-full py-6 text-xs shadow-emerald-500/30">Join Fleet Protocols →</Link>
+                                    <p className="mt-8 text-[10px] text-slate-400 font-bold uppercase tracking-widest italic">Est. Sync Time: <span className="text-slate-300">4 Minutes</span></p>
+                                </div>
                             </div>
                         </div>
                     </div>
