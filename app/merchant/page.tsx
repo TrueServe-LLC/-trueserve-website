@@ -144,31 +144,31 @@ export default function MerchantPortal() {
                         </div>
 
                         {/* ── PARTNER INQUIRY ─────────────────────────────────────────── */}
-                        <div id="inquiry-form" className="relative p-12 md:p-24 bg-white/[0.02] border border-white/5 rounded-[4rem] text-center overflow-hidden">
+                        <div id="inquiry-form" className="relative p-12 md:p-32 bg-white/[0.02] border border-white/5 rounded-[4rem] flex flex-col items-center text-center overflow-hidden">
                              <div className="absolute inset-0 opacity-10 grayscale scroll-reveal">
                                 <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop" className="w-full h-full object-cover" />
                              </div>
-                             <div className="relative z-10 space-y-10">
+                             <div className="relative z-10 flex flex-col items-center space-y-12">
                                 <div className="flex items-center justify-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
                                     <div className="w-8 h-px bg-slate-800" />
                                     Onboarding
                                     <div className="w-8 h-px bg-slate-800" />
                                 </div>
-                                 <h3 className="text-4xl md:text-8xl text-white font-serif italic font-black leading-[0.9]">Apply to Join <br />the Network</h3>
-                                 <div className="max-w-xl mx-auto space-y-12">
-                                     <div className="flex justify-center pt-8">
-                                         <Link href="/merchant-signup" className="badge-solid-primary !px-16 !py-6 !text-[11px]">
-                                             Start Merchant Application <span>→</span>
-                                         </Link>
-                                     </div>
-                                     <div className="flex justify-center gap-16 border-t border-white/5 pt-12">
+                                <h3 className="text-4xl md:text-8xl text-white font-serif italic font-black leading-[0.9] text-center max-w-4xl">Apply to Join <br />the Network</h3>
+                                <div className="w-full max-w-xl flex flex-col items-center space-y-12">
+                                    <div className="pt-4">
+                                        <Link href="/merchant-signup" className="badge-solid-primary !px-16 !py-6 !text-[11px] inline-flex items-center">
+                                            Start Merchant Application <span className="ml-2">→</span>
+                                        </Link>
+                                    </div>
+                                    <div className="flex justify-center gap-20 border-t border-white/5 pt-12 w-full">
                                         <div>
                                             <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Response Time</p>
-                                            <p className="text-white text-xs font-bold font-serif italic">24 Hours</p>
+                                            <p className="text-white text-base font-bold font-serif italic">24 Hours</p>
                                         </div>
                                         <div>
                                             <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Setup Cost</p>
-                                            <p className="text-white text-xs font-bold font-serif italic">$0.00 USD</p>
+                                            <p className="text-white text-base font-bold font-serif italic">$0.00 USD</p>
                                         </div>
                                     </div>
                                 </div>
