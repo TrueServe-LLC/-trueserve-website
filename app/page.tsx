@@ -128,57 +128,19 @@ export default async function Home() {
                   link: "/driver"
                 }
               ].map((card, i) => (
-                <Link key={i} href={card.link} className="group relative min-h-[550px] bg-secondary rounded-[3.5rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-12 pb-20 hover:scale-[1.02]">
-                  <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black via-black/90 to-transparent z-10" />
+                <Link key={i} href={card.link} className="group relative min-h-[500px] bg-secondary rounded-[3rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-10 pb-16 hover:scale-[1.02]">
+                  <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black via-black/95 to-transparent z-10" />
                   <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-40 group-hover:opacity-60" />
-                  <div className="relative z-20 space-y-8">
+                  <div className="relative z-20 space-y-6">
                     <p className="text-primary font-black text-[10px] uppercase tracking-[0.4em]">Platform Excellence</p>
-                    <h3 className="text-5xl md:text-6xl font-serif font-black text-white leading-[0.85] tracking-tighter italic">{card.title}</h3>
-                    <div className="pt-6">
-                      <div className="badge-outline-white inline-flex !text-[9px] !px-8 !py-4 !bg-black/50 backdrop-blur-md border-white/20 group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all">
+                    <h3 className="text-4xl md:text-5xl font-serif font-black text-white leading-tight tracking-tight italic">{card.title}</h3>
+                    <div className="pt-4">
+                      <div className="badge-outline-white inline-flex !text-[9px] !px-6 !py-3 !bg-black/50 backdrop-blur-md border-white/20 group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all">
                          {card.cta} <span className="ml-2">→</span>
                       </div>
                     </div>
                   </div>
                 </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── VOICES (TESTIMONIALS) ────────────────────────────────────────── */}
-        <section className="py-32 px-6">
-          <div className="container mx-auto max-w-7xl">
-            <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px] mb-12">
-                <div className="w-8 h-px bg-slate-800" />
-                Partner Voices
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  quote: "TrueServe changed the game for our restaurant. Finally, a platform that respects the kitchen's margins.",
-                  author: "Chef Marcus R.",
-                  role: "Owner, The Hearth"
-                },
-                {
-                  quote: "As a driver, the transparency is refreshing. I know exactly what I'm making before I accept a trip.",
-                  author: "Sarah L.",
-                  role: "Partner Driver"
-                },
-                {
-                  quote: "The only app I use for delivery. The food stays hot and the service is always professional.",
-                  author: "David K.",
-                  role: "Premium Member"
-                }
-              ].map((t, i) => (
-                <div key={i} className="bg-white/[0.03] border border-white/10 p-10 rounded-[2.5rem] space-y-6 hover:bg-white/[0.05] transition-all">
-                  <div className="text-primary text-4xl font-serif">&quot;</div>
-                  <p className="text-lg text-white font-medium leading-relaxed italic">{t.quote}</p>
-                  <div>
-                    <h4 className="text-white font-bold">{t.author}</h4>
-                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest">{t.role}</p>
-                  </div>
-                </div>
               ))}
             </div>
           </div>
