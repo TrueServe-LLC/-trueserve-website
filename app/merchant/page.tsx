@@ -112,25 +112,25 @@ export default function MerchantPortal() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                             {/* Flex Scale Card */}
-                            <div className={`p-6 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
+                             <div className={`p-6 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Flex Options' ? 'bg-[#151515] ring-2 ring-orange-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Flex Options")}>
                                 {/* Large Bold Headline */}
-                                <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words">
-                                    <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest">15% SPLIT</span>
+                                <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words pl-1">
+                                    <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest pl-1">15% SPLIT</span>
                                     <span className="text-gradient">FLEX SCALE</span>
                                 </h3>
 
                                 <div className="space-y-4 mb-8 flex-grow">
-                                    <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed">
+                                    <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed pl-1">
                                         Experience on-demand growth with zero upfront setup. Gain full engine access and a standard local badge.
                                     </p>
-                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-emerald-400">
+                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-emerald-400 pl-1">
                                         <span className="text-sm">✓</span> Free Professional Storefront
                                     </div>
                                 </div>
 
-                                {/* CTA Button */}
+                                 {/* CTA Button */}
                                 <div>
-                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-orange-500 text-black' : 'bg-orange-500 hover:bg-orange-400 text-black'} px-6 py-2.5 rounded-full font-bold text-xs md:text-sm transition-all shadow-lg`}>
+                                    <button className={`${selectedPlan === 'Flex Options' ? 'bg-orange-500 text-black' : 'bg-orange-500 hover:bg-orange-400 text-black'} px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-lg`}>
                                         Choose Flex
                                     </button>
                                 </div>
@@ -139,23 +139,23 @@ export default function MerchantPortal() {
                             {/* Pro Scale Card */}
                             <div className={`p-6 md:p-14 cursor-pointer transition-all duration-300 ${selectedPlan === 'Pro Subscription' ? 'bg-[#151515] ring-2 ring-emerald-500 shadow-2xl scale-[1.02]' : 'bg-[#0f0f0f] border border-white/10 shadow-xl'} rounded-[2rem] flex flex-col`} onClick={() => scrollToForm("Pro Subscription")}>
                                 {/* Large Bold Headline */}
-                                <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words">
-                                    <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest">0% SPLIT</span>
+                                <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase mb-4 leading-none break-words pl-1">
+                                    <span className="text-white block mb-1 text-sm md:text-base font-bold tracking-widest pl-1">0% SPLIT</span>
                                     <span className="text-gradient">PRO SCALE</span>
                                 </h3>
 
                                 <div className="space-y-4 mb-8 flex-grow">
-                                    <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed">
+                                    <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed pl-1">
                                         $199 / MO. High-volume optimized performance. Unlock VIP merchant status, 0% split, and custom dispatch logic.
                                     </p>
-                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-emerald-400">
+                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-emerald-400 pl-1">
                                         <span className="text-sm">✓</span> Free Professional Storefront
                                     </div>
                                 </div>
 
                                 {/* CTA Button */}
                                 <div>
-                                    <button className={`${selectedPlan === 'Pro Subscription' ? 'bg-emerald-500 text-black' : 'bg-emerald-500 hover:bg-emerald-400 text-black'} px-6 py-2.5 rounded-full font-bold text-xs md:text-sm transition-all shadow-lg`}>
+                                    <button className={`${selectedPlan === 'Pro Subscription' ? 'bg-emerald-500 text-black' : 'bg-emerald-500 hover:bg-emerald-400 text-black'} px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-lg`}>
                                         Choose Pro
                                     </button>
                                 </div>
@@ -198,7 +198,7 @@ export default function MerchantPortal() {
                                 <div className="flex flex-col justify-start items-start pt-8">
                                     <div className="space-y-8">
                                         <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-3xl shadow-2xl">🤝</div>
-                                        <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-[1.1] tracking-tighter italic">
+                                        <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-[1.1] tracking-tighter italic pl-1">
                                             Be a part <br className="hidden md:block" /> of the <br />
                                             <span className="text-primary inline-block mt-2">TrueServe</span> <br />
                                             network.
@@ -222,7 +222,7 @@ export default function MerchantPortal() {
                                 {/* Right Side - Form */}
                                 <div>
                                     <div className="mb-10">
-                                        <h3 className="text-3xl font-bold text-white tracking-tight italic">Partner Inquiry</h3>
+                                        <h3 className="text-3xl font-bold text-white tracking-tight italic pl-1">Partner Inquiry</h3>
                                         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-2 block w-full border-b border-white/5 pb-4">
                                             Selection: <span className="text-white">{selectedPlan ? selectedPlan : "Standard Protocol"}</span>
                                         </p>

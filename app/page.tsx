@@ -95,19 +95,21 @@ export default async function Home() {
         <section className="container py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
              {/* Driver Card */}
-             <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-10 relative overflow-hidden group hover:border-primary/50 transition-all shadow-xl">
-                <h2 className="text-3xl font-bold text-white mb-4">Drive Your Income.</h2>
-                <p className="text-slate-400 mb-8 max-w-sm font-medium leading-relaxed">Earn more with fair splits and clear payouts on every delivery.</p>
-                <Link href="/driver" className="inline-block bg-primary text-black px-8 py-3 font-bold text-sm rounded-xl hover:bg-emerald-500 transition-colors">
+             <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-10 relative group hover:border-primary/50 transition-all shadow-xl">
+                <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none group-hover:scale-110 transition-transform grayscale">🛵</div>
+                <h2 className="text-4xl font-black text-white mb-6 italic tracking-tighter pl-1">Drive Your Income.</h2>
+                <p className="text-slate-400 mb-10 max-w-sm font-medium leading-relaxed pl-1">Earn more with fair splits and clear payouts on every delivery.</p>
+                <Link href="/driver" className="inline-block bg-primary text-black px-10 py-4 font-black uppercase tracking-widest text-xs rounded-xl shadow-xl hover:bg-emerald-500 transition-colors">
                   Become a Driver
                 </Link>
              </div>
 
              {/* Merchant Card */}
-             <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-10 relative overflow-hidden group hover:border-primary/50 transition-all shadow-xl">
-                <h2 className="text-3xl font-bold text-white mb-4">Scale Your Kitchen.</h2>
-                <p className="text-slate-400 mb-8 max-w-sm font-medium leading-relaxed">Lower fees, better visibility, and a loyal local customer base.</p>
-                <Link href="/merchant" className="inline-block bg-white text-black px-8 py-3 font-bold text-sm rounded-xl hover:bg-slate-200 transition-colors">
+             <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-10 relative group hover:border-primary/50 transition-all shadow-xl">
+                <div className="absolute top-0 right-0 p-8 text-8xl opacity-5 pointer-events-none group-hover:scale-110 transition-transform grayscale">🏬</div>
+                <h2 className="text-4xl font-black text-white mb-6 italic tracking-tighter pl-1">Scale Your Kitchen.</h2>
+                <p className="text-slate-400 mb-10 max-w-sm font-medium leading-relaxed pl-1">Lower fees, better visibility, and a loyal local customer base.</p>
+                <Link href="/merchant" className="inline-block bg-white text-black px-10 py-4 font-black uppercase tracking-widest text-xs rounded-xl shadow-xl hover:bg-slate-200 transition-colors">
                   Become a Merchant
                 </Link>
              </div>

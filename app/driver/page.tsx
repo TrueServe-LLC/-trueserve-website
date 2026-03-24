@@ -229,7 +229,7 @@ export default function DriverPortal() {
                             </ul>
                         </div>
 
-                        <div className="bg-[#0a0a0a] border border-white/10 p-10 md:p-12 rounded-[2rem] text-center space-y-6 shadow-xl relative overflow-hidden">
+                        <div className="bg-[#0a0a0a] border border-white/10 p-10 md:p-12 rounded-[2rem] text-center space-y-6 shadow-xl relative mt-12 md:mt-0">
                             <h3 className="text-3xl font-bold text-white relative z-10">Start today. <br />Pay out today.</h3>
                             <p className="text-slate-400 text-sm font-medium relative z-10 mb-8 mt-2">Join thousands of drivers who are earning more with TrueServe.</p>
                             <div className="relative z-10 pt-2 pb-2">
