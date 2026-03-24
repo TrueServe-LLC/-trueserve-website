@@ -54,37 +54,32 @@ export default async function Home() {
       <main>
         {/* Hero Section */}
         <section className="container py-8 md:py-24 flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          <div className="flex-1 text-center md:text-left space-y-6 md:space-y-8 animate-fade-in w-full px-2">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-2xl backdrop-blur-sm mb-4">
-              <span>Premium Delivery Service</span>
-            </div>
-            <h1 className="text-4xl md:text-7xl font-serif font-bold text-white leading-relaxed tracking-tight py-4">
+          <div className="flex-1 text-center md:text-left space-y-6 animate-fade-in w-full px-2">
+            <h1 className="text-5xl md:text-[5.5rem] font-serif font-black text-white leading-[1.05] tracking-tighter py-4">
               Cravings meet <br className="hidden md:block" />
               <span className="text-gradient">Lightning Speed.</span>
             </h1>
             
-            <div className="flex flex-col gap-8 justify-center md:justify-start w-full transition-all">
-              <div className="relative group w-full max-w-2xl mx-auto md:mx-0">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl md:rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                <LandingSearch />
+            <p className="text-lg md:text-xl text-slate-400 font-medium max-w-lg mx-auto md:mx-0 pb-6">
+              Get the best local food delivered fast. Or pickup and skip the line.
+            </p>
+            
+            <div className="flex flex-col gap-6 justify-center md:justify-start w-full transition-all bg-white/[0.03] p-4 md:p-6 rounded-[2rem] border border-white/10 shadow-2xl max-w-2xl mx-auto md:mx-0">
+              
+              {/* Delivery / Pickup Toggle - DoorDash/UberEats Style */}
+              <div className="flex items-center gap-2 p-1 bg-black/50 rounded-full w-fit mb-2 border border-white/5">
+                <button className="px-6 py-2 bg-white text-black font-black uppercase tracking-widest text-[10px] md:text-xs rounded-full shadow-lg">
+                  Delivery
+                </button>
+                <button className="px-6 py-2 text-slate-400 hover:text-white font-bold uppercase tracking-widest text-[10px] md:text-xs rounded-full transition-colors">
+                  Pickup
+                </button>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-w-2xl">
-                <Link href="/restaurants" className="p-4 md:p-6 bg-primary/10 border border-primary/20 rounded-3xl hover:bg-primary/20 transition-all group overflow-hidden relative">
-                   <div className="absolute -right-4 -bottom-4 text-4xl opacity-10 group-hover:scale-110 transition-transform">🍔</div>
-                   <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-primary mb-1">Customer</h3>
-                   <p className="text-slate-400 text-[10px]">Order Food</p>
-                </Link>
-                <Link href="/driver" className="p-4 md:p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl hover:bg-emerald-500/20 transition-all group overflow-hidden relative">
-                   <div className="absolute -right-4 -bottom-4 text-4xl opacity-10 group-hover:scale-110 transition-transform">🛵</div>
-                   <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-emerald-400 mb-1">Driver</h3>
-                   <p className="text-slate-400 text-[10px]">Earn with Us</p>
-                </Link>
-                <Link href="/merchant" className="p-4 md:p-6 bg-blue-500/10 border border-blue-500/20 rounded-3xl hover:bg-blue-500/20 transition-all group overflow-hidden relative col-span-2 lg:col-span-1">
-                   <div className="absolute -right-4 -bottom-4 text-4xl opacity-10 group-hover:scale-110 transition-transform">🏢</div>
-                   <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-blue-400 mb-1">Merchant</h3>
-                   <p className="text-slate-400 text-[10px]">Grow Your Business</p>
-                </Link>
+              {/* Seamless Address Bar */}
+              <div className="relative group w-full">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+                <LandingSearch />
               </div>
             </div>
           </div>
