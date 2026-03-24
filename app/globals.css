@@ -187,26 +187,26 @@ section {
 
 @utility badge-solid-primary {
   @apply badge;
-  background-color: #448c89;
-  color: white;
-  box-shadow: 0 4px 12px rgba(68, 140, 137, 0.3);
+  background-color: var(--primary);
+  color: black;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 
   &:hover {
-    background-color: #3b7a77;
+    background-color: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(68, 140, 137, 0.4);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
   }
 }
 
 @utility badge-subtle-primary {
   @apply badge;
-  background-color: rgba(68, 140, 137, 0.1);
-  color: #448c89;
-  border: 1px solid rgba(68, 140, 137, 0.1);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(245, 158, 11, 0.1);
 
   &:hover {
-    background-color: rgba(68, 140, 137, 0.15);
-    border-color: rgba(68, 140, 137, 0.2);
+    background-color: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.2);
   }
 }
 
@@ -225,13 +225,18 @@ section {
 
 @utility badge-subtle-white {
   @apply badge;
-  background-color: rgba(255, 255, 255, 0.05);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: white;
+  color: black;
+  padding: 0.5rem 1.25rem;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background-color: #f8fafc;
+    transform: translateY(-1px);
   }
 }
 
@@ -264,19 +269,19 @@ section {
 }
 
 @utility btn-premium-solid {
-  @apply rounded-[2.5rem] bg-[#448c89] text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] shadow-emerald-500/20 active:scale-[0.98] transition-all;
+  @apply rounded-full bg-primary text-black px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] shadow-primary/20 active:scale-[0.98] transition-all;
   
   &:hover {
-    @apply -translate-y-[2px] shadow-emerald-500/40 brightness-110;
+    @apply -translate-y-[2px] shadow-primary/40 brightness-110;
   }
 }
 
 
 @utility btn-standard {
-  @apply rounded-[2rem] bg-[#448c89] text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] shadow-emerald-500/20 active:scale-[0.98] transition-all;
+  @apply rounded-full bg-primary text-black px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] shadow-primary/20 active:scale-[0.98] transition-all;
   
   &:hover {
-    @apply -translate-y-[2px] shadow-emerald-500/30 brightness-110;
+    @apply -translate-y-[2px] shadow-primary/30 brightness-110;
   }
 }
 

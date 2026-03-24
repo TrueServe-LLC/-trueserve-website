@@ -35,117 +35,147 @@ export default function DriverPortal() {
                 </div>
             </nav>
 
-            <main className="container py-24 space-y-48 animate-fade-in">
-                {/* Premium Header Title Stack */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 max-w-6xl">
-                    <div className="space-y-6">
-                        <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center text-4xl shadow-2xl">🛵</div>
-                        <h1 className="text-5xl md:text-8xl font-serif text-white tracking-tight leading-none italic">
-                            The Fleet Hub.
-                        </h1>
-                        <p className="text-slate-500 text-sm md:text-lg font-bold uppercase tracking-[0.2em] mt-4">
-                            Logistics for the neighborhood, engineered for drivers.
-                        </p>
+            <main className="animate-fade-in">
+                {/* ── HERO ────────────────────────────────────────────────────────── */}
+                <section className="relative min-h-[85vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=2070&auto=format&fit=crop"
+                            alt="Driver Hero"
+                            className="w-full h-full object-cover grayscale opacity-30 scale-105 group-hover:scale-110 transition-transform duration-1000"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0b]/80 via-[#0a0a0b]/40 to-[#0a0a0b]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/5" />
                     </div>
-                </div>
 
-                {/* Main Content Enclosure */}
-                <div className="bg-white/[0.02] border border-white/5 rounded-[4rem] p-12 md:p-24 shadow-3xl space-y-48">
-                    
-                    {/* Hero Section inside Card */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-                        <div className="space-y-12">
-                            <h2 className="text-4xl md:text-6xl text-white font-serif leading-tight italic">Your City. <br /><span className="text-primary not-italic">Your Schedule.</span></h2>
-                            <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-lg mb-8">
-                                Become your own boss. TrueServe pays 25-40% more by prioritizing mileage-based earnings and fair driver splits. 
-                                Join the network that values your time and impact.
-                            </p>
-                            <Link href="/driver-signup" className="badge-solid-primary px-16 py-6 text-xs font-black shadow-primary/20">Apply Instantly →</Link>
+                    <div className="relative z-10 max-w-5xl space-y-10">
+                        <h1 className="text-6xl md:text-[110px] leading-[0.85] text-white font-serif font-bold tracking-tight italic">
+                            Delivering with <br />
+                            <span className="text-primary not-italic">TrueServe</span>
+                        </h1>
+                        <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-300 font-medium leading-relaxed">
+                            Join South Carolina drivers delivering food in your area. Simple signup, real-time orders, and weekly payouts waiting for you.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
+                            <Link href="/driver-signup" className="badge-solid-primary px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl">
+                                Sign up as a driver
+                            </Link>
+                            <Link href="tel:+10000000000" className="badge-solid-primary !bg-primary/10 !text-primary border border-primary/20 hover:!bg-primary/20 px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full backdrop-blur-md">
+                                Call with questions
+                            </Link>
+                        </div>
+                    </div>
+                </section>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-12">
+                {/* ── FEATURES ────────────────────────────────────────────────────── */}
+                <section className="py-32 bg-[#0a0a0b]">
+                    <div className="container mx-auto px-6 max-w-7xl space-y-32">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+                            <div className="space-y-10">
+                                <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
+                                    <div className="w-8 h-px bg-slate-800" />
+                                    Driver Portal
+                                </div>
+                                <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tight leading-[0.9]">
+                                    Everything you need to deliver <span className="text-primary not-italic">efficiently.</span>
+                                </h2>
+                                <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
+                                    TrueServe LLC&apos;s driver portal gives you real-time orders, smart routing, and clear earnings in one place. Start earning today.
+                                </p>
+                                <div className="flex flex-col sm:flex-row items-center gap-6 pt-6">
+                                    <Link href="/driver-signup" className="badge-solid-primary px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full">
+                                        Sign up as a driver
+                                    </Link>
+                                    <Link href="tel:+10000000000" className="badge-solid-primary !bg-primary/10 !text-primary border border-primary/20 hover:!bg-primary/20 px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full">
+                                        Call us with questions
+                                    </Link>
+                                </div>
+                            </div>
+
+                            <div className="relative aspect-square rounded-[3rem] overflow-hidden border border-white/5 shadow-3xl group">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop" 
+                                    className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-1000" 
+                                    alt="Logistics"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                        </div>
+
+                        {/* ── TRUST SECTION ──────────────────────────────────────────────── */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center border-t border-white/5 pt-32">
+                             <div className="space-y-10">
+                                <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
+                                    <div className="w-8 h-px bg-slate-800" />
+                                    Real Drivers
+                                </div>
+                                <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tight leading-[0.9]">
+                                    Drivers trust <br />
+                                    <span className="text-primary not-italic">TrueServe</span> for flexible earnings.
+                                </h2>
+                                <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
+                                    See why drivers in South Carolina choose TrueServe LLC to earn on their own schedule with straightforward payouts.
+                                </p>
+                                <div className="pt-6">
+                                    <Link href="/driver-signup" className="badge-outline-white inline-flex !border-white/20 hover:!border-primary !bg-white/5 hover:!bg-primary/10 !text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full">
+                                        Start driving today
+                                    </Link>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 {[
                                     { label: "Base Pay", value: "$3.00+", icon: "💰" },
                                     { label: "Mileage", value: "$0.70/mi", icon: "📍" },
                                     { label: "Wait Pay", value: "$0.25/min", icon: "⏰" },
                                     { label: "Tips", value: "100%", icon: "✨" }
                                 ].map((row, i) => (
-                                    <div key={i} className="flex flex-col p-10 bg-white/[0.03] border border-white/5 rounded-[2.5rem] hover:bg-white/[0.06] transition-all shadow-xl group cursor-pointer">
-                                        <div className="text-3xl mb-6 group-hover:scale-110 transition-transform opacity-60">{row.icon}</div>
-                                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">{row.label}</p>
-                                        <p className="text-2xl font-serif text-white group-hover:text-primary transition-colors italic">{row.value}</p>
+                                    <div key={i} className="flex flex-col p-10 bg-white/[0.03] border border-white/5 rounded-[2.5rem] hover:bg-white/[0.06] transition-all shadow-xl group">
+                                        <div className="text-3xl mb-6 group-hover:scale-110 transition-transform opacity-60 font-sans">{row.icon}</div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2 font-sans">{row.label}</p>
+                                        <h4 className="text-3xl font-serif text-white group-hover:text-primary transition-colors italic leading-none">{row.value}</h4>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Visual Block */}
-                        <div className="relative group aspect-square lg:aspect-auto lg:h-full">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/10 rounded-[4rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                            <div className="relative bg-[#080c14] border border-white/10 rounded-[4rem] p-16 md:p-24 shadow-3xl text-center overflow-hidden h-full flex flex-col justify-center min-h-[500px]">
-                                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#080c14] via-[#080c14]/60 to-transparent"></div>
-                                <div className="relative z-10 space-y-8">
-                                    <h3 className="text-4xl md:text-5xl text-white font-serif italic tracking-tight uppercase">Driver <br />Onboarding</h3>
-                                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest pb-8 border-b border-white/10 italic">Join the most efficient delivery network in the Southeast.</p>
-                                    <Link href="/driver-signup" className="badge-solid-primary w-full py-8 text-xs font-black shadow-primary/40 uppercase tracking-[0.2em]">Start Application →</Link>
-                                    <p className="mt-8 text-[10px] text-slate-500 font-bold uppercase tracking-widest">Est. Setup Time: <span className="text-slate-300 whitespace-nowrap">4 Minutes</span></p>
-                                </div>
+                        {/* ── REQUIREMENTS ─────────────────────────────────────────────── */}
+                        <div className="p-16 md:p-32 bg-primary/[0.02] border border-primary/10 rounded-[5rem] shadow-2xl space-y-16">
+                            <div className="text-center space-y-6">
+                                <h2 className="text-5xl md:text-8xl text-white font-serif font-bold italic tracking-tighter leading-none">Fleet Entry <br />Requirements.</h2>
+                                <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Apply in minutes. Most protocols are synchronized instantly.</p>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Requirements / Values Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
-                        <div className="space-y-12">
-                            <h2 className="text-4xl md:text-7xl text-white font-serif italic leading-none lg:text-8xl">Requirements.</h2>
-                            <ul className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {[
                                     "18+ years of age & State ID",
                                     "Valid driver's license",
-                                    "Personal vehicle (Car/Scooter/Bike)",
-                                    "SSN Verification",
-                                    "iOS / Android Device"
+                                    "Personal Car/Scooter/Bike",
+                                    "Social Security Verification",
+                                    "iOS / Android Device",
+                                    "Clean Driving Protocol"
                                 ].map((req, i) => (
-                                    <li key={i} className="flex items-center gap-6 text-slate-300 text-base md:text-lg font-bold italic tracking-tight uppercase leading-none">
-                                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-lg font-sans not-italic text-sm">✓</div>
-                                        <span className="truncate">{req}</span>
-                                    </li>
+                                    <div key={i} className="flex items-center gap-6 p-8 bg-black/40 border border-white/5 rounded-full group hover:border-primary/50 transition-all">
+                                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-xs font-sans not-italic">✓</div>
+                                        <span className="text-slate-300 text-[11px] md:text-xs font-black uppercase tracking-widest truncate">{req}</span>
+                                    </div>
                                 ))}
-                            </ul>
-                        </div>
-
-                        <div className="bg-white/[0.03] border border-white/5 rounded-[3rem] p-16 space-y-8 relative overflow-hidden group">
-                           <div className="absolute top-0 right-0 p-12 text-8xl opacity-10 group-hover:scale-110 transition-transform">💸</div>
-                           <h3 className="text-4xl text-white font-serif italic">Instant Settlement.</h3>
-                           <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-sm">
-                             Withdraw your earnings to any supported debit card instantly after your shift concludes. Zero lag.
-                           </p>
-                           <Link href="/driver-signup" className="badge-solid-primary py-4 px-12 text-[10px] font-black">Sign Up Instantly</Link>
+                            </div>
                         </div>
                     </div>
-
-                    {/* Bottom Feature Stack */}
-                    <div className="p-16 md:p-32 bg-primary/[0.02] border border-primary/10 rounded-[5rem] text-center shadow-2xl space-y-12">
-                        <h2 className="text-5xl md:text-8xl text-white font-serif italic leading-none tracking-tighter">Fleet First <br />Economy.</h2>
-                        <p className="text-slate-400 text-lg md:text-2xl mb-16 max-w-3xl mx-auto font-medium leading-relaxed">We&apos;re a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve.</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full text-white">
-                            {[{ icon: '🛵', label: 'Fair Miles' }, { icon: '🛡️', label: 'SOS Link' }, { icon: '💸', label: 'T+0 Pay' }, { icon: '💎', label: 'Fleet Tier' }].map((item) => (
-                                <div key={item.label} className="p-10 rounded-[2.5rem] bg-[#080c14] border border-white/5 flex flex-col items-center group cursor-pointer hover:border-primary/30 transition-all shadow-xl">
-                                    <div className="text-5xl mb-6 group-hover:scale-110 transition-transform opacity-30">{item.icon}</div>
-                                    <p className="text-[11px] font-black uppercase text-slate-500 tracking-[0.2em] group-hover:text-primary transition-colors whitespace-nowrap">{item.label}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                </section>
             </main>
 
             <footer className="py-32 bg-[#080c14] border-t border-white/5">
-                <div className="container px-8 flex flex-col md:flex-row justify-between items-center gap-12">
+                <div className="container px-8 flex flex-col md:flex-row justify-between items-center gap-12 relative">
                     <div className="flex items-center gap-4">
                         <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl" />
                         <span className="font-serif text-slate-500 tracking-tight text-2xl italic uppercase">TrueServe Fleet &copy; {new Date().getFullYear()}</span>
                     </div>
+                    
+                    <div className="absolute top-0 right-8 md:-top-16 md:right-8">
+                         <div className="badge-subtle-white !text-[9px] !px-4 !py-1.5 shadow-2xl">Built with TrueServe</div>
+                    </div>
+
                     <div className="flex flex-wrap justify-center md:justify-end gap-x-12 gap-y-6 text-[11px] font-bold uppercase tracking-[0.4em] text-slate-600">
                         <Link href="/legal" className="hover:text-white transition-colors">Safety Standard</Link>
                         <Link href="/legal" className="hover:text-white transition-colors">Fleet Terms</Link>

@@ -58,7 +58,12 @@ export default function MerchantPortal() {
                     
                     <div className="space-y-24">
                         <div className="text-center space-y-8">
-                             <h2 className="text-4xl md:text-7xl text-white font-serif italic leading-tight">Scale Without <span className="text-primary not-italic">the Split.</span></h2>
+                             <div className="flex items-center justify-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
+                                <div className="w-8 h-px bg-slate-800" />
+                                Growth Protocols
+                                <div className="w-8 h-px bg-slate-800" />
+                             </div>
+                             <h2 className="text-4xl md:text-8xl text-white font-serif italic leading-tight">Scale Without <br /><span className="text-primary not-italic">the Split.</span></h2>
                              <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
                                 Zero hidden fees. Fair dispatch algorithms. A marketplace that prioritizes your direct relationship with customers.
                              </p>
@@ -101,7 +106,7 @@ export default function MerchantPortal() {
                                             ))}
                                         </ul>
                                     </div>
-                                    <Link onClick={() => scrollToForm(plan.name)} href="/merchant-signup" className={`w-full py-6 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${plan.name === 'Pro Scale' ? 'bg-primary text-black shadow-xl shadow-primary/20' : 'bg-white/5 text-white hover:bg-white/10'}`}>
+                                    <Link onClick={() => scrollToForm(plan.name)} href="/merchant-signup" className={`w-full py-6 text-center text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all ${plan.name === 'Pro Scale' ? 'bg-primary text-black shadow-xl shadow-primary/20' : 'bg-white/5 text-white hover:bg-white/10'}`}>
                                         Choose This Plan →
                                     </Link>
                                 </div>
@@ -134,7 +139,13 @@ export default function MerchantPortal() {
                     </div>
 
                     {/* Value Props Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-16 px-4 border-t border-white/5 pt-24">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12 px-4 border-t border-white/5 pt-24">
+                        <div className="col-span-full mb-8">
+                            <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
+                                <div className="w-8 h-px bg-slate-800" />
+                                Operational Standards
+                            </div>
+                        </div>
                         {[
                             { icon: '🎯', title: 'Customer Hub', desc: 'Instantly connect with hungry diners in your neighborhood grid.' },
                             { icon: '⚡', title: 'Elite Dispatch', desc: 'High-velocity engine that ensures food stays hot and fresh.' },

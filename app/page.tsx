@@ -78,10 +78,10 @@ export default async function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-              <Link href="/restaurants" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-black text-xs font-black uppercase tracking-[0.2em] py-5 px-12 rounded-[2rem] transition-all hover:-translate-y-1 shadow-[0_20px_40px_rgba(245,158,11,0.3)]">
+              <Link href="/restaurants" className="badge-solid-primary w-full sm:w-auto px-12 py-5 text-black text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-2xl">
                 Browse Restaurants
               </Link>
-              <Link href="/driver-signup" className="w-full sm:w-auto bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-black uppercase tracking-[0.2em] py-5 px-12 rounded-[2rem] transition-all backdrop-blur-md">
+              <Link href="/driver-signup" className="badge-outline-white !bg-white/5 border border-white/10 hover:!bg-white/10 text-white text-xs font-black uppercase tracking-[0.2em] py-5 px-12 rounded-full transition-all backdrop-blur-md">
                 Become a Driver
               </Link>
             </div>
@@ -100,6 +100,10 @@ export default async function Home() {
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
         <section className="py-32 bg-[#121214]">
           <div className="container mx-auto px-6 max-w-7xl">
+            <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px] mb-12">
+                <div className="w-8 h-px bg-slate-800" />
+                Platform Features
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {[
                 {
@@ -144,6 +148,10 @@ export default async function Home() {
         {/* ── VOICES (TESTIMONIALS) ────────────────────────────────────────── */}
         <section className="py-32 px-6">
           <div className="container mx-auto max-w-7xl">
+            <div className="flex items-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px] mb-12">
+                <div className="w-8 h-px bg-slate-800" />
+                Partner Voices
+            </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
