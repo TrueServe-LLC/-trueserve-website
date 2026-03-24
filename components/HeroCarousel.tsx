@@ -21,7 +21,7 @@ export default function HeroCarousel() {
     }, []);
 
     return (
-        <div className="relative w-full aspect-square md:aspect-auto md:h-[600px] overflow-hidden rounded-[3rem] shadow-2xl border border-white/5 rotate-2 hover:rotate-0 transition-all duration-700 group">
+        <div className="relative w-full aspect-square md:aspect-auto md:h-full overflow-hidden transition-all duration-700 group">
             {images.map((src, i) => (
                 <img
                     key={src}

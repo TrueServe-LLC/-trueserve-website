@@ -83,24 +83,26 @@ export default async function Home() {
               </div>
               
               {/* High-Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-                        <Link href="/driver-signup" className="btn-standard py-5 min-w-[240px]">Become a Driver →</Link>
-                        <Link href="/merchant-signup" className="px-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] border-b border-white/20 hover:border-white transition-all text-white">Become a Merchant</Link>
-                    </div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 mt-16">
+                  <Link href="/driver-signup" className="btn-standard py-5 min-w-[240px]">Become a Driver →</Link>
+                  <Link href="/merchant-signup" className="px-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] border-b border-white/20 hover:border-white transition-all text-white">Become a Merchant</Link>
+              </div>
             </div>
         </section>
 
         {/* Feature UI Mockup Section */}
-        <section className="w-full max-w-6xl mb-48 animate-fade-in stagger-5">
-             <div className="relative rounded-[4rem] overflow-hidden border border-white/10 shadow-3xl group transition-all duration-1000 scale-[1.02] hover:scale-100">
-                <HeroCarousel />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                <div className="absolute bottom-16 left-16 text-left max-w-md">
-                    <div className="px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full inline-block mb-6 backdrop-blur-md">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400">NOW LIVE</p>
+        <section className="w-full max-w-5xl mb-48 animate-fade-in stagger-5 px-4">
+             <div className="relative rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl transition-all duration-1000 group bg-white/[0.02]">
+                <div className="md:h-[500px] w-full overflow-hidden">
+                    <HeroCarousel />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
+                <div className="absolute bottom-10 left-10 md:bottom-16 md:left-16 text-left max-w-lg z-10">
+                    <div className="px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full inline-block mb-4 backdrop-blur-md">
+                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400">OPERATIONAL UPDATE</p>
                     </div>
-                    <h3 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none mb-6">Operational in the <br />South Corridor.</h3>
-                    <p className="text-slate-400 font-bold italic text-lg leading-relaxed">Connecting Charlotte, Greenville, and Spartanburg with elite logistics.</p>
+                    <h3 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter leading-none mb-4">Live in the <br />South Corridor.</h3>
+                    <p className="text-slate-400 font-bold italic text-base leading-relaxed">Connecting Charlotte, Greenville, and Spartanburg with elite logistics.</p>
                 </div>
              </div>
         </section>
