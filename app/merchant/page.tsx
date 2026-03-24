@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, Suspense } from "react";
-import ModeToggle from "@/components/ModeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -34,11 +33,8 @@ export default function MerchantPortal() {
                 </div>
                 <div className="flex items-center gap-6">
                     <Link href="/login?role=merchant" className="text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-white border-b-2 border-transparent hover:border-primary transition-all pb-1">Sign In</Link>
-                    <Suspense fallback={<div className="w-10 h-10 bg-white/5 rounded-full animate-pulse"></div>}>
-                        <ModeToggle />
-                    </Suspense>
                     <Link href="/merchant-signup" className="badge-solid-primary py-3 px-8 text-[10px] font-bold">
-                        Join Network
+                        Partner Sign Up
                     </Link>
                 </div>
             </nav>
@@ -60,45 +56,80 @@ export default function MerchantPortal() {
                 {/* Main Content Enclosure */}
                 <div className="bg-white/[0.02] border border-white/5 rounded-[4rem] p-12 md:p-24 shadow-3xl space-y-48">
                     
-                    {/* Hero Section inside Card */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-                        <div className="space-y-12">
-                            <h2 className="text-4xl md:text-6xl text-white font-serif leading-tight italic">Scale Without <br /><span className="text-primary not-italic">the Split.</span></h2>
-                            <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-lg mb-8">
-                                Zero hidden fees. Fair dispatch algorithms. A marketplace that prioritizes your direct relationship with customers. 
-                                We don&apos;t just deliver food; we deliver sustainability for your business.
-                            </p>
-                            <Link href="/merchant-signup" className="badge-solid-primary px-16 py-6 text-xs font-black shadow-primary/20">Begin Onboarding →</Link>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-12">
-                                {[
-                                    { label: "Flex Scale", value: "15% Split", icon: "🌱" },
-                                    { label: "Pro Scale", value: "0% Split", icon: "🚀" },
-                                    { label: "Setup Fee", value: "$0 USD", icon: "✨" },
-                                    { label: "Storefront", icon: "🌐", value: "Included" }
-                                ].map((row, i) => (
-                                    <div key={i} className="flex flex-col p-10 bg-white/[0.03] border border-white/5 rounded-[2.5rem] hover:bg-white/[0.06] transition-all shadow-xl group cursor-pointer" onClick={() => scrollToForm(row.label)}>
-                                        <div className="text-3xl mb-6 group-hover:scale-110 transition-transform opacity-60">{row.icon}</div>
-                                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">{row.label}</p>
-                                        <p className="text-2xl font-serif text-white group-hover:text-primary transition-colors italic">{row.value}</p>
-                                    </div>
-                                ))}
-                            </div>
+                    <div className="space-y-24">
+                        <div className="text-center space-y-8">
+                             <h2 className="text-4xl md:text-7xl text-white font-serif italic leading-tight">Scale Without <span className="text-primary not-italic">the Split.</span></h2>
+                             <p className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
+                                Zero hidden fees. Fair dispatch algorithms. A marketplace that prioritizes your direct relationship with customers.
+                             </p>
                         </div>
 
-                        {/* CTA Visual Block */}
-                        <div id="inquiry-form" className="relative group aspect-square lg:aspect-auto lg:h-full">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/10 rounded-[4rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                            <div className="relative bg-[#080c14] border border-white/10 rounded-[4rem] p-16 md:p-24 shadow-3xl text-center overflow-hidden h-full flex flex-col justify-center min-h-[500px]">
-                                <img src="/Users/lcking992/.gemini/antigravity/brain/6ab4212f-1910-4d39-a07f-8099fe107ea1/trueserve_restaurant_partner_tech_1774363830507.png" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#080c14] via-[#080c14]/60 to-transparent"></div>
-                                <div className="relative z-10 space-y-8">
-                                    <h3 className="text-4xl md:text-5xl text-white font-serif italic tracking-tight uppercase">Partner <br />Entry</h3>
-                                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest pb-8 border-b border-white/10">Selection: {selectedPlan || "Standard Synchronization"}</p>
-                                    <Link href="/merchant-signup" className="badge-solid-primary w-full py-8 text-xs font-black shadow-primary/40 uppercase tracking-[0.2em]">Begin Operational Link →</Link>
-                                    <p className="mt-8 text-[10px] text-slate-500 font-bold uppercase tracking-widest">Est. Review: <span className="text-slate-300">24 Business Hours</span></p>
+                        {/* Pricing Plans Section */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                            {[
+                                {
+                                    name: "Flex Scale",
+                                    split: "15% Split",
+                                    icon: "🌱",
+                                    desc: "Perfect for growing restaurants looking for maximum exposure.",
+                                    features: ["Priority Neighborhood Placement", "Standard Dispatch Engine", "Basic Digital Storefront", "Weekly Settlements"]
+                                },
+                                {
+                                    name: "Pro Scale",
+                                    split: "0% Split",
+                                    icon: "🚀",
+                                    desc: "High-volume elite partners who want total margin control.",
+                                    features: ["Elite Network Routing", "Custom Digital Operations Base", "POS Terminal Integration", "Daily Instant Settlements", "Dedicated Account Analyst"]
+                                }
+                            ].map((plan, i) => (
+                                <div key={i} className={`relative p-12 rounded-[3.5rem] border ${plan.name === 'Pro Scale' ? 'border-primary/50 bg-primary/5 shadow-[0_0_50px_rgba(245,158,11,0.1)]' : 'border-white/10 bg-white/[0.02]'} space-y-8 flex flex-col justify-between group hover:scale-[1.02] transition-all`}>
+                                    <div className="space-y-6">
+                                        <div className="flex justify-between items-start">
+                                            <div className="text-5xl">{plan.icon}</div>
+                                            {plan.name === 'Pro Scale' && <span className="badge-solid-primary text-[9px] px-4 py-1.5">Most Recommended</span>}
+                                        </div>
+                                        <div>
+                                            <h3 className="text-3xl font-serif text-white italic">{plan.name}</h3>
+                                            <p className="text-primary text-4xl font-serif font-black italic mt-2">{plan.split}</p>
+                                        </div>
+                                        <p className="text-slate-400 text-sm leading-relaxed">{plan.desc}</p>
+                                        <ul className="space-y-4 pt-6 border-t border-white/5">
+                                            {plan.features.map((f, j) => (
+                                                <li key={j} className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-widest text-slate-500">
+                                                    <span className="text-primary">✓</span> {f}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <Link onClick={() => scrollToForm(plan.name)} href="/merchant-signup" className={`w-full py-6 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${plan.name === 'Pro Scale' ? 'bg-primary text-black shadow-xl shadow-primary/20' : 'bg-white/5 text-white hover:bg-white/10'}`}>
+                                        Choose This Plan →
+                                    </Link>
                                 </div>
-                            </div>
+                            ))}
+                        </div>
+
+                        {/* Partner Inquiry Section */}
+                        <div id="inquiry-form" className="relative p-12 md:p-24 bg-white/[0.02] border border-white/5 rounded-[4rem] text-center overflow-hidden">
+                             <div className="absolute inset-0 opacity-10 grayscale scroll-reveal">
+                                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop" className="w-full h-full object-cover" />
+                             </div>
+                             <div className="relative z-10 space-y-10">
+                                <h3 className="text-4xl md:text-6xl text-white font-serif italic">Apply to Join <br />the Network</h3>
+                                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-2">Registration Status: {selectedPlan ? `Ready for ${selectedPlan} Sync` : "Awaiting Selection"}</p>
+                                <div className="max-w-xl mx-auto space-y-8">
+                                    <Link href="/merchant-signup" className="badge-solid-primary w-full py-8 text-xs font-black shadow-primary/40 uppercase tracking-[0.2em]">Start Merchant Application →</Link>
+                                    <div className="flex justify-center gap-12 border-t border-white/5 pt-8">
+                                        <div>
+                                            <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Response Time</p>
+                                            <p className="text-white text-xs font-bold font-serif italic">24 Hours</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Setup Cost</p>
+                                            <p className="text-white text-xs font-bold font-serif italic">$0.00 USD</p>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
                         </div>
                     </div>
 

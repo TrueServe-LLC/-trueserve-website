@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import LocationButton from "@/components/LocationButton";
@@ -254,6 +255,9 @@ export default async function RestaurantFinder({
                 </div>
                 <div className="flex items-center gap-6">
                     {userId && <NotificationBell userId={userId} />}
+                    <Suspense fallback={<div className="w-10 h-10 bg-white/5 rounded-full animate-pulse"></div>}>
+                        <ModeToggle />
+                    </Suspense>
                     {!userId ? (
                          <Link href="/login" className="btn-standard py-3 px-8 text-[9px]">Sign In</Link>
                     ) : (

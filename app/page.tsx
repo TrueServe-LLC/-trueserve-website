@@ -6,7 +6,6 @@ import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
 import { cookies } from "next/headers";
 import EmergencyBanner from "@/components/EmergencyBanner";
-import ModeToggle from "@/components/ModeToggle";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -38,7 +37,6 @@ export default async function Home() {
             {userId ? (
               <div className="flex items-center gap-4">
                 <NotificationBell userId={userId} />
-                <ModeToggle />
                 <Link href="/user/settings" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                 </Link>
@@ -68,11 +66,7 @@ export default async function Home() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/60 to-[#0a0a0b]/20" />
           </div>
 
-          <div className="relative z-10 max-w-5xl space-y-8 animate-fade-in">
-            <div className="inline-flex items-center gap-3 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-[0.3em] backdrop-blur-md shadow-2xl mx-auto">
-              <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
-              The Standard of Premium Delivery
-            </div>
+          <div className="relative z-10 max-w-5xl space-y-8 animate-fade-in text-center flex flex-col items-center justify-center">
             
             <h1 className="text-5xl md:text-[100px] leading-[0.9] text-white font-serif font-bold tracking-tight drop-shadow-2xl">
               Cravings meet <br />
@@ -109,36 +103,36 @@ export default async function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {[
                 {
-                  title: "Local Favorites",
+                  title: "Order Food",
                   img: "/community_section.png",
-                  desc: "Order from the finest local gems in your neighborhood. Support local business with every bite.",
-                  cta: "Discover More",
+                  desc: "Browse local gems and get the best food in your city delivered by a network that cares.",
+                  cta: "Browse Menus",
                   link: "/restaurants"
                 },
                 {
-                  title: "Merchant Portal",
+                  title: "Merchant Sign Up",
                   img: "/merchant_section.png",
-                  desc: "Powerful tools for restaurants. Manage your digital storefront with zero hidden commissions.",
+                  desc: "Reclaim your margins with zero-commission protocols and elite local dispatch.",
                   cta: "Join as Partner",
-                  link: "/merchant"
+                  link: "/merchant-signup"
                 },
                 {
-                  title: "The Fleet",
+                  title: "Driver Sign Up",
                   img: "/driver_section.png",
-                  desc: "Our couriers are professionals. We ensure fair pay and smart routes for every delivery.",
-                  cta: "Start Driving",
-                  link: "/driver"
+                  desc: "Earn 20-40% more with fair splits and high-velocity routing engineered for efficiency.",
+                  cta: "Apply Now",
+                  link: "/driver-signup"
                 }
               ].map((card, i) => (
                 <Link key={i} href={card.link} className="group relative aspect-[4/5] bg-secondary rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all flex flex-col justify-end p-10 hover:scale-[1.02]">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
                   <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-60 group-hover:opacity-80" />
-                  <div className="relative z-20 space-y-3">
-                    <p className="text-primary font-black text-[10px] uppercase tracking-[0.2em]">Platform Excellence</p>
-                    <h3 className="text-3xl font-serif font-bold text-white">{card.title}</h3>
-                    <p className="text-slate-300 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500">{card.desc}</p>
+                  <div className="relative z-20 space-y-4">
+                    <p className="text-primary font-black text-[10px] md:text-[11px] uppercase tracking-[0.2em]">Platform Excellence</p>
+                    <h3 className="text-3xl md:text-4xl font-serif font-bold text-white">{card.title}</h3>
+                    <p className="text-slate-300 text-sm md:text-base leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-3">{card.desc}</p>
                     <div className="pt-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/50 group-hover:text-primary transition-colors flex items-center gap-2">
-                      {card.cta} <span>→</span>
+                       {card.cta} <span>→</span>
                     </div>
                   </div>
                 </Link>
