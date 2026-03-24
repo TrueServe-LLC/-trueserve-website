@@ -57,12 +57,9 @@ export default function DriverPortal() {
                         A dedicated platform to help local drivers grow. Fair splits, real support, and local delivery routes.
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-                        <Link href="#signup" className="badge-solid-primary !px-16 !py-8 !text-sm !font-black !uppercase !tracking-[0.4em] !rounded-2xl !bg-[#f59e0b] !text-black hover:scale-105 transition-all shadow-[0_0_50px_rgba(245,158,11,0.3)] min-w-[300px] text-center">
+                    <div className="flex flex-col sm:flex-row items-center justify-center pt-10">
+                        <Link href="#signup" className="badge-solid-primary !px-20 !py-8 !text-sm !font-black !uppercase !tracking-[0.4em] !rounded-2xl !bg-[#f59e0b] !text-black hover:scale-105 transition-all shadow-[0_0_50px_rgba(245,158,11,0.3)] min-w-[350px] text-center">
                             Join Fleet →
-                        </Link>
-                        <Link href="tel:+18645550312" className="badge-outline-white !px-16 !py-8 !text-sm !font-black !uppercase !tracking-[0.4em] !rounded-2xl hover:bg-white/5 transition-all min-w-[300px] text-center border-white/20">
-                            Support: (864) 555-0312
                         </Link>
                     </div>
                 </div>
