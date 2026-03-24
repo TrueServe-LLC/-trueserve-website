@@ -11,11 +11,11 @@ export default function DriverPortal() {
         <div className="min-h-screen bg-black text-slate-300 font-sans overflow-x-hidden selection:bg-primary/20">
             {/* ── BACKGROUND CORE ────────────────────────────────────────────── */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <img
-                    src="/diverse_welcoming_drivers_hero_1774378336060.png"
-                    alt="Driver Background"
-                    className="w-full h-full object-cover opacity-20 blur-2xl scale-110 grayscale-0"
-                />
+                    <img
+                        src="/diverse_drivers.png"
+                        alt="Driver Background"
+                        className="w-full h-full object-cover opacity-20 blur-2xl scale-110 grayscale-0"
+                    />
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black" />
             </div>
 
@@ -72,7 +72,7 @@ export default function DriverPortal() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
                         <div className="rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl relative group">
                             <img 
-                                src="/diverse_welcoming_drivers_hero_1774378336060.png" 
+                                src="/diverse_drivers.png" 
                                 alt="Driver Community" 
                                 className="w-full h-[600px] object-cover group-hover:scale-105 transition-transform duration-[3s]"
                             />
@@ -123,16 +123,19 @@ export default function DriverPortal() {
                 </div>
 
                 {/* ── ENROLLMENT FORM ────────────────────────────────────────── */}
-                <div id="signup" className="scroll-mt-48 py-32 px-4 flex flex-col items-center">
-                    <div className="space-y-4 mb-24 text-center">
-                         <div className="flex items-center justify-center gap-4 text-emerald-500/40 font-black uppercase tracking-[0.6em] text-[10px] italic">
-                            <div className="w-12 h-px bg-emerald-500/10" />
-                            Enrollment Portal
-                            <div className="w-12 h-px bg-emerald-500/10" />
+                <div id="signup" className="scroll-mt-48 pt-32 pb-44 px-4 flex flex-col items-center">
+                    <div className="space-y-8 mb-24 text-center">
+                         <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.8em] text-[11px] italic mb-8">
+                            <div className="w-12 h-px bg-primary/20" />
+                            Enrollment & Logistics
+                            <div className="w-12 h-px bg-primary/20" />
                         </div>
                         <h2 className="text-5xl md:text-[75px] text-white font-black tracking-tighter leading-none uppercase h-glow">
                              Join The <span className="text-primary italic">Team.</span>
                         </h2>
+                        <p className="text-slate-500 text-[10px] md:text-[12px] font-black uppercase tracking-[0.6em] italic opacity-60">
+                             Select your logistics platform below and join the fleet.
+                        </p>
                     </div>
 
                     <div className="w-full max-w-5xl mx-auto">
