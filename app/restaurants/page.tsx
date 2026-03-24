@@ -527,76 +527,45 @@ export default async function RestaurantFinder({
             </nav>
 
             <main className="container py-6 md:py-8 px-4 animate-fade-in pb-40">
-                {/* Mobile All-In-One Header (Vibrant Grid Style) */}
-                <div className="md:hidden flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative">
-                            <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userName || 'User'}`} alt="Profile" className="w-full h-full object-cover p-1" />
-                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-black rounded-full"></div>
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Welcome back,</p>
-                            <h2 className="text-lg font-black text-white">{userName || 'Guest'}</h2>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-1">
-                        <Link href="/restaurants" className="flex items-center gap-1.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 shadow-lg group active:scale-95 transition-all">
-                            <svg className="w-3 h-3 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                            <span className="text-[10px] font-black text-slate-300 truncate max-w-[100px] italic">{locationMeta.name || "Set Location"}</span>
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Mobile Wallet & Quick Selection Widget */}
-                <div className="md:hidden grid grid-cols-2 gap-3 mb-8">
-                    <div className="bg-gradient-to-br from-slate-900 to-black p-5 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute -right-6 -top-6 w-20 h-20 bg-primary/20 blur-2xl rounded-full"></div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Total Balance</p>
-                        <h3 className="text-xl font-black text-white">$1,240.00</h3>
-                        <div className="mt-3 flex items-center gap-2">
-                             <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center text-[10px]">💎</div>
-                             <span className="text-[10px] font-bold text-primary">TrueServe+ VIP</span>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                        <div className="flex-1 bg-white/[0.03] p-4 rounded-[1.5rem] border border-white/5 flex items-center justify-between group active:scale-95 transition-all">
-                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Voucher</span>
-                             <span className="text-lg">🏷️</span>
-                        </div>
-                        <div className="flex-1 bg-white/[0.03] p-4 rounded-[1.5rem] border border-white/5 flex items-center justify-between group active:scale-95 transition-all">
-                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Rewards</span>
-                             <span className="text-lg">⭐</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Service Icons Grid (Scrollable) */}
-                <div className="md:hidden flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 mb-8">
-                    {[
-                        { name: "Popular", icon: "🔥", color: "bg-orange-500/20", iconColor: "text-orange-500" },
-                        { name: "Drop Off", icon: "📦", color: "bg-emerald-500/20", iconColor: "text-emerald-500" },
-                        { name: "Catering", icon: "🍽️", color: "bg-blue-500/20", iconColor: "text-blue-500" },
-                        { name: "Hospital", icon: "🏥", color: "bg-red-500/20", iconColor: "text-red-500" },
-                        { name: "Pharmacy", icon: "💊", color: "bg-purple-500/20", iconColor: "text-purple-500" },
-                    ].map((svc) => (
-                        <button key={svc.name} className="flex flex-col items-center gap-3 shrink-0 group">
-                            <div className={`w-16 h-16 rounded-[1.5rem] ${svc.color} border border-white/5 flex items-center justify-center text-2xl shadow-xl transition-all group-active:scale-90`}>
-                                {svc.icon}
+                {/* Mobile Header: Pure Pill Focus */}
+                <div className="md:hidden flex flex-col gap-8 mb-12">
+                    {/* Big Location Pill */}
+                    <Link href="/restaurants" className="badge-subtle-white justify-between px-8 py-5 border-white/20 active:scale-95 transition-all shadow-2xl">
+                         <div className="flex items-center gap-4">
+                            <span className="text-xl">📍</span>
+                            <div className="flex flex-col items-start translate-y-[-1px]">
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-0.5">Location</span>
+                                <span className="text-sm font-black text-white italic">{locationMeta.name || "Set Location"}</span>
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white">{svc.name}</span>
-                        </button>
-                    ))}
-                </div>
+                         </div>
+                         <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                    </Link>
 
-                {/* Mobile Mode Toggle & Search */}
-                <div className="md:hidden flex flex-col gap-4 mb-8">
-                    <ModeToggle />
+                    {/* All-In-One Search Pill */}
                     <LandingSearch
                         locations={serviceLocations}
                         initialValue={location}
                         isCompact={true}
                     />
+
+                    {/* Massive Service Pills Grid */}
+                    <div className="grid grid-cols-2 gap-4">
+                        {[
+                            { name: "Popular", icon: "🔥", color: "bg-orange-500/10", iconColor: "text-orange-500" },
+                            { name: "Drop Off", icon: "📦", color: "bg-emerald-500/10", iconColor: "text-emerald-500" },
+                            { name: "Catering", icon: "🍽️", color: "bg-blue-500/10", iconColor: "text-blue-500" },
+                            { name: "Hospital", icon: "🏥", color: "bg-red-500/10", iconColor: "text-red-500" },
+                            { name: "Pharmacy", icon: "💊", color: "bg-purple-500/10", iconColor: "text-purple-500" },
+                            { name: "Voucher", icon: "🏷️", color: "bg-yellow-500/10", iconColor: "text-yellow-500" },
+                        ].map((svc) => (
+                            <button key={svc.name} className="flex flex-col items-center justify-center p-8 badge-subtle-white group active:scale-95 transition-all border-white/5 hover:border-white/20">
+                                <span className="text-4xl mb-4 grayscale group-hover:grayscale-0 transition-all">{svc.icon}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white">{svc.name}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <ModeToggle />
                 </div>
 
                 {/* Active Tracking Banner */}

@@ -87,35 +87,17 @@ export default async function Home() {
         <section className="container py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
              {/* Driver Path */}
-             <div className="relative group transition-all duration-500">
-                <div className="absolute -inset-4 bg-primary/5 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Protocol: Active</span>
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-white mb-6 italic tracking-tighter pl-1">Drive Your Income.</h2>
-                    <p className="text-slate-400 mb-10 max-w-sm font-medium leading-relaxed pl-1">Earn more with fair splits and clear payouts on every delivery.</p>
-                    <Link href="/driver" className="badge-solid-primary px-10 py-4 text-xs font-black uppercase tracking-widest">
-                        Become a Driver
-                    </Link>
-                </div>
+             <div className="flex flex-col items-center md:items-start text-center md:text-left group cursor-pointer active:scale-95 transition-transform duration-300">
+                <Link href="/driver" className="badge-solid-primary">
+                    Become a Driver
+                </Link>
              </div>
 
              {/* Merchant Path */}
-             <div className="relative group transition-all duration-500">
-                <div className="absolute -inset-4 bg-white/5 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Partner: Scale</span>
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-white mb-6 italic tracking-tighter pl-1">Scale Your Kitchen.</h2>
-                    <p className="text-slate-400 mb-10 max-w-sm font-medium leading-relaxed pl-1">Lower fees, better visibility, and a loyal local customer base.</p>
-                    <Link href="/merchant" className="badge-subtle-white px-10 py-4 text-xs font-black uppercase tracking-widest text-white">
-                        Become a Merchant
-                    </Link>
-                </div>
+             <div className="flex flex-col items-center md:items-start text-center md:text-left group cursor-pointer active:scale-95 transition-transform duration-300">
+                <Link href="/merchant" className="badge-subtle-white">
+                    Become a Merchant
+                </Link>
              </div>
           </div>
         </section>
