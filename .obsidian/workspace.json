@@ -185,13 +185,17 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "app/api/webhook/pos/lightspeed/route.ts",
+    "app/api/webhook/pos/lightspeed",
+    "app/api/webhook/pos/revel/route.ts",
+    "app/api/webhook/pos/revel",
+    "app/api/webhook/pos/clover/route.ts",
+    "app/api/webhook/pos/clover",
     "lib/posWebhooks.ts",
     "app/api/webhook/pos/square/route.ts",
     "app/api/webhook/pos/square",
     "app/api/webhook/pos/toast/route.ts",
     "app/api/webhook/pos/toast",
-    "app/api/webhook/pos",
-    "test_results.txt",
     "public/admin_bg.png",
     "public/diverse_drivers.png",
     "public/driver_hero.png",
@@ -199,10 +203,6 @@
     "public/driver_section.png",
     "public/merchant_section.png",
     "public/hero_food_delivery.png",
-    "app/driver-signup/DriverApplicationForm.tsx",
-    "app/driver-signup/DriverSignupForm.tsx",
-    "app/join/page.tsx",
-    "app/join",
     "docs/Infrastructure/Security.md"
   ]
 }

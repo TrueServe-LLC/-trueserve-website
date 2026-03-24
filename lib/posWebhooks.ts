@@ -46,3 +46,27 @@ export function validateCloverSignature(body: string, signature: string | null, 
 
   return hash === signature;
 }
+
+/**
+ * Validate Revel Signature
+ */
+export function validateRevelSignature(body: string, signature: string | null, secret?: string): boolean {
+  if (!signature || !secret) return false;
+
+  const hmac = crypto.createHmac('sha256', secret);
+  const hash = hmac.update(body).digest('hex');
+
+  return hash === signature;
+}
+
+/**
+ * Validate Lightspeed Signature
+ */
+export function validateLightspeedSignature(body: string, signature: string | null, secret?: string): boolean {
+  if (!signature || !secret) return false;
+
+  const hmac = crypto.createHmac('sha256', secret);
+  const hash = hmac.update(body).digest('hex');
+
+  return hash === signature;
+}
