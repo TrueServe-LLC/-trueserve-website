@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Mulish, Playfair_Display } from "next/font/google";
+import { Kalam, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import MobileNavWrapper from "@/components/MobileNavWrapper";
 import LaunchDarklyClientProvider from "@/components/LaunchDarklyClientProvider";
 
-const mulish = Mulish({
-  variable: "--font-mulish",
+const kalam = Kalam({
+  variable: "--font-kalam",
+  weight: ["300", "400", "700"],
   subsets: ["latin"],
 });
 
@@ -31,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${mulish.variable} ${playfair.variable} bg-black text-slate-200 antialiased pb-24 md:pb-0 font-sans overflow-x-hidden`}
+        className={`${kalam.variable} ${playfair.variable} bg-black text-slate-200 antialiased pb-24 md:pb-0 font-sans overflow-x-hidden`}
         suppressHydrationWarning
       >
         <LaunchDarklyClientProvider>

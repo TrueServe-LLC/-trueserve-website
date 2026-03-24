@@ -12,16 +12,15 @@ test.describe('Mobile Navigation End-to-End Tests', () => {
         await page.waitForLoadState('networkidle');
 
         // Locate the main container of the customer navigation
-        const navContainer = page.locator('.md\\:hidden.fixed.bottom-6');
+        const navContainer = page.locator('.md\\:hidden.fixed.bottom-0');
 
         // 1. Assert Visibility on Mobile
         await expect(navContainer).toBeVisible();
 
         // 2. Assert all Customer Tabs exist
         await expect(navContainer.getByText('Home')).toBeVisible();
-        await expect(navContainer.getByText('Sell')).toBeVisible();
-        await expect(navContainer.getByText('Drive')).toBeVisible();
-        await expect(navContainer.getByText('Cart')).toBeVisible();
+        await expect(navContainer.getByText('Search')).toBeVisible();
+        await expect(navContainer.getByText('Orders')).toBeVisible();
         await expect(navContainer.getByText('Profile')).toBeVisible();
 
         // 3. Test z-index and fixed positioning
@@ -55,7 +54,7 @@ test.describe('Mobile Navigation End-to-End Tests', () => {
         await page.waitForLoadState('networkidle');
 
         // Locate the main container of the driver navigation
-        const navContainer = page.locator('.md\\:hidden.fixed.bottom-4');
+        const navContainer = page.locator('.md\\:hidden.fixed.bottom-6');
 
         // 1. Assert Visibility on Mobile
         await expect(navContainer).toBeVisible();
@@ -64,10 +63,9 @@ test.describe('Mobile Navigation End-to-End Tests', () => {
         await expect(navContainer.getByText('Board')).toBeVisible();
         await expect(navContainer.getByText('Trips')).toBeVisible();
         await expect(navContainer.getByText('Pay')).toBeVisible();
-        await expect(navContainer.getByText('Exit')).toBeVisible();
+        await expect(navContainer.getByText('Account')).toBeVisible();
 
         // 3. Ensure no overlapping buttons
-        // Let's assert that the active class for Board was applied
         const boardLink = navContainer.locator('a:has-text("Board")');
         await expect(boardLink).toHaveClass(/text-emerald-400/);
     });

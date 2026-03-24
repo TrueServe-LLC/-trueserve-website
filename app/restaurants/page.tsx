@@ -224,9 +224,9 @@ export default async function RestaurantFinder({
         return (
             <div className="min-h-screen bg-black text-white flex flex-col relative">
                 <nav className="absolute top-0 w-full z-50 p-6 flex justify-between items-center">
-                    <Link href="/" className="flex items-center gap-2">
-                        <img src="/logo.png" className="w-10 h-10 rounded-full" alt="TrueServe Logo" />
-                        <span className="text-2xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <img src="/logo.png" className="w-10 h-10 rounded-xl border border-white/10 group-hover:scale-110 transition-transform" alt="TrueServe Logo" />
+                        <span className="text-2xl font-black tracking-widest text-white italic uppercase">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
                     </Link>
                 </nav>
                 <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10">
@@ -241,9 +241,9 @@ export default async function RestaurantFinder({
         <div className="min-h-screen bg-black">
             <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <Link href="/" className="flex items-center gap-2">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full" />
-                        <span className="text-xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-xl border border-white/10 group-hover:scale-110 transition-transform shadow-lg" />
+                        <span className="text-xl font-black text-white tracking-widest italic uppercase">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
                     </Link>
                     <div className="h-6 w-px bg-white/10 mx-2"></div>
                     <div className="flex items-center gap-8">
@@ -291,9 +291,9 @@ export default async function RestaurantFinder({
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/50 to-emerald-500/0"></div>
                     
                     <div className="flex items-center gap-4 overflow-x-auto pb-12 no-scrollbar scroll-smooth">
-                        <Link href="/restaurants" className={`px-8 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all border ${!category ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"}`}>All</Link>
+                        <Link href="/restaurants" className={`${!category ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"} filter-pill`}>All</Link>
                         {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches"].map((cat) => (
-                            <Link key={cat} href={`/restaurants?category=${cat}`} className={`px-8 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all border ${category === cat ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"}`}>{cat}</Link>
+                            <Link key={cat} href={`` + `/restaurants?category=${cat}`} className={`${category === cat ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"} filter-pill`}>{cat}</Link>
                         ))}
                     </div>
 
