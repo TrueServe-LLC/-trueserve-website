@@ -113,38 +113,39 @@ function DriverApplicationFormInner() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-32 max-w-5xl mx-auto font-sans text-left">
+        <form onSubmit={handleSubmit} className="space-y-32 max-w-5xl mx-auto font-sans text-left px-4">
             {isMockMode && (
                 <div className="text-right">
-                    <button type="button" onClick={fillDemoData} className="px-6 py-2 bg-primary/10 border border-primary/20 rounded-full text-[9px] font-black text-primary hover:text-white hover:bg-primary transition-all uppercase tracking-widest italic">
+                    <button type="button" onClick={fillDemoData} className="px-6 py-2 bg-primary/10 border border-primary/20 rounded-full text-[9px] font-black text-primary hover:text-white hover:bg-primary transition-all uppercase tracking-[0.3em] italic">
                         Auto-fill for testing
                     </button>
                 </div>
             )}
             
             {state.error && (
-                <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-200 text-[10px] font-black uppercase tracking-widest animate-shake italic text-center">
+                <div className="p-8 bg-black/60 border border-red-500/20 rounded-2xl text-red-200 text-[10px] font-black uppercase tracking-[0.4em] animate-shake italic text-center shadow-2xl backdrop-blur-3xl">
                     ⚠️ {state.message}
                 </div>
             )}
 
-            <div className="space-y-32">
+            <div className="space-y-40">
                 {/* SECTION 1: IDENTITY */}
                 <div className="space-y-16">
-                    <div className="flex flex-col gap-2">
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic mb-4">01. Identity Protocols</span>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                    <div className="flex flex-col gap-6">
+                        <span className="text-[11px] font-black text-primary bg-primary/10 self-start px-5 py-2 rounded-full uppercase tracking-[0.5em] italic border border-primary/20">About You</span>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
                             <div className="space-y-4 md:col-span-2">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic ml-1">Full Name</label>
-                                <input name="name" type="text" required value={formData.name} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 transition-all font-black uppercase tracking-widest" placeholder="LEGAL NAME" />
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Full Name</label>
+                                <input name="name" type="text" required value={formData.name} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black uppercase tracking-[0.2em]" placeholder="LEGAL NAME" />
                             </div>
                             <div className="space-y-4">
-                               <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic ml-1">Email Address</label>
-                               <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-5 text-sm text-white focus:outline-none focus:border-primary/40 transition-all font-black uppercase tracking-widest" placeholder="YOUR@EMAIL.COM" />
+                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Email Address</label>
+                               <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black uppercase tracking-[0.2em]" placeholder="YOUR@EMAIL.COM" />
                             </div>
                             <div className="space-y-4">
-                               <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic ml-1">Phone Number</label>
-                               <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-5 text-sm text-white focus:outline-none focus:border-primary/40 transition-all font-black" placeholder="(555) 000-0000" />
+                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Phone Number</label>
+                               <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black" placeholder="(555) 000-0000" />
                             </div>
                         </div>
                     </div>
@@ -152,11 +153,11 @@ function DriverApplicationFormInner() {
 
                 {/* SECTION 2: DISPATCH Area */}
                 <div className="space-y-16">
-                    <div className="flex flex-col gap-2">
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic mb-4">02. Operational Zone</span>
+                    <div className="flex flex-col gap-6">
+                        <span className="text-[11px] font-black text-primary bg-primary/10 self-start px-5 py-2 rounded-full uppercase tracking-[0.5em] italic border border-primary/20">Where will you be driving?</span>
                         <div className="space-y-4">
-                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic ml-1">Home Address</label>
-                            <div className="[&>div>input]:!bg-white/[0.02] [&>div>input]:!border-white/5 [&>div>input]:!px-6 [&>div>input]:!py-5 [&>div>input]:!rounded-2xl [&>div>input]:!text-sm [&>div>input]:focus:!border-primary/40 [&>div>input]:!font-black [&>div>input]:!placeholder-slate-800 [&>div>input]:!uppercase [&>div>input]:!tracking-widest">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Home Address</label>
+                            <div className="[&>div>input]:!bg-white/[0.02] [&>div>input]:!border-white/10 [&>div>input]:!px-8 [&>div>input]:!py-6 [&>div>input]:!rounded-2xl [&>div>input]:!text-sm [&>div>input]:focus:!border-primary/40 [&>div>input]:!font-black [&>div>input]:!placeholder-slate-800 [&>div>input]:!uppercase [&>div>input]:!tracking-[0.2em] [&>div>input]:transition-all">
                                <AddressInput initialAddress={formData.address} onAddressSelect={handleAddressSelect} />
                             </div>
                         </div>
@@ -165,10 +166,10 @@ function DriverApplicationFormInner() {
 
                 {/* SECTION 3: Vehicle */}
                 <div className="space-y-16">
-                    <div className="flex flex-col gap-2">
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic mb-4">03. Gear Selection</span>
+                    <div className="flex flex-col gap-6">
+                        <span className="text-[11px] font-black text-primary bg-primary/10 self-start px-5 py-2 rounded-full uppercase tracking-[0.5em] italic border border-primary/20">How will you deliver?</span>
                         
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                             {[
                                 { type: 'Bicycle', icon: '🚲' },
                                 { type: 'Motorcycle', icon: '🏍️' },
@@ -179,22 +180,22 @@ function DriverApplicationFormInner() {
                                     key={type}
                                     type="button"
                                     onClick={() => setFormData(prev => ({...prev, vehicleType: type}))}
-                                    className={`py-8 px-4 rounded-2xl border flex flex-col items-center gap-4 transition-all duration-500 group relative overflow-hidden ${formData.vehicleType === type ? 'bg-primary/10 border-primary text-primary' : 'bg-white/[0.01] border-white/5 text-slate-500 hover:border-white/10'}`}
+                                    className={`py-10 px-6 rounded-2xl border flex flex-col items-center gap-6 transition-all duration-700 group relative overflow-hidden ${formData.vehicleType === type ? 'bg-primary/20 border-primary text-primary shadow-2xl scale-105' : 'bg-white/[0.01] border-white/5 text-slate-500 hover:border-white/20'}`}
                                 >
-                                    <span className={`text-4xl transition-transform duration-500 ${formData.vehicleType === type ? 'scale-110' : 'group-hover:scale-110'}`}>{icon}</span>
-                                    <span className="text-[9px] font-black uppercase tracking-widest italic">{type}</span>
+                                    <span className={`text-5xl transition-transform duration-700 ${formData.vehicleType === type ? 'scale-110' : 'group-hover:scale-110'}`}>{icon}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">{type}</span>
                                 </button>
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                            <div className="space-y-4">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic ml-1">Vehicle Make</label>
-                                <input name="vehicleMake" type="text" value={formData.vehicleMake} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 transition-all font-black uppercase italic tracking-widest" placeholder="VEHICLE MAKE" />
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Vehicle Make</label>
+                                <input name="vehicleMake" type="text" value={formData.vehicleMake} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black uppercase italic tracking-[0.2em]" placeholder="VEHICLE MAKE" />
                            </div>
                            <div className="space-y-4">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic ml-1">Vehicle Model</label>
-                                <input name="vehicleModel" type="text" value={formData.vehicleModel} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 transition-all font-black uppercase italic tracking-widest" placeholder="VEHICLE MODEL" />
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic ml-1">Vehicle Model</label>
+                                <input name="vehicleModel" type="text" value={formData.vehicleModel} onChange={updateForm} className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-8 py-6 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all font-black uppercase italic tracking-[0.2em]" placeholder="VEHICLE MODEL" />
                            </div>
                         </div>
                     </div>
@@ -202,23 +203,24 @@ function DriverApplicationFormInner() {
 
                 {/* SECTION 4: Documents */}
                 <div className="space-y-16">
-                    <div className="flex flex-col gap-2">
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic mb-4">04. Verification</span>
+                    <div className="flex flex-col gap-6">
+                        <span className="text-[11px] font-black text-primary bg-primary/10 self-start px-5 py-2 rounded-full uppercase tracking-[0.5em] italic border border-primary/20">Next Steps</span>
 
-                        <div className="space-y-10">
-                             <div className="relative border border-dashed border-white/10 rounded-2xl p-16 text-center hover:bg-white/[0.02] transition-all cursor-pointer group active:scale-[0.99] backdrop-blur-xl">
+                        <div className="space-y-12">
+                             <div className="relative border border-dashed border-white/10 rounded-2xl p-20 text-center hover:bg-white/[0.03] transition-all cursor-pointer group active:scale-[0.99] backdrop-blur-3xl glow-blur-primary">
                                 <input name="idDocument" type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && setFile(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
-                                <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl">🛡️</div>
-                                <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] mb-2 italic">
+                                <div className="text-5xl mb-8 group-hover:scale-110 transition-transform duration-700 drop-shadow-2xl">🛡️</div>
+                                <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.6em] mb-2 italic">
                                     {file ? <span className="text-primary">{file.name}</span> : "Upload ID or License"}
                                 </p>
+                                <p className="text-[9px] text-slate-700 font-bold uppercase tracking-[0.4em] italic">Secure SSL Upload Protocol</p>
                             </div>
                             
-                            <label className="flex items-start gap-8 p-10 rounded-2xl bg-white/[0.01] border border-white/5 hover:border-primary/20 cursor-pointer transition-all group">
-                                <input type="checkbox" name="hasSignedAgreement" required checked={formData.hasSignedAgreement} onChange={updateForm} className="mt-1 w-6 h-6 rounded-lg border-white/10 bg-white/5 text-primary focus:ring-primary/20 transition-all cursor-pointer" />
+                            <label className="flex items-start gap-8 p-12 rounded-2xl bg-white/[0.01] border border-white/5 hover:border-primary/30 cursor-pointer transition-all group shadow-2xl backdrop-blur-3xl">
+                                <input type="checkbox" name="hasSignedAgreement" required checked={formData.hasSignedAgreement} onChange={updateForm} className="mt-1 w-7 h-7 rounded-lg border-white/10 bg-white/5 text-primary focus:ring-primary/20 transition-all cursor-pointer" />
                                 <div>
-                                    <p className="text-[11px] font-black text-white uppercase tracking-[0.5em] italic group-hover:text-primary transition-colors">I agree to the terms</p>
-                                    <p className="text-[10px] text-slate-600 font-bold italic mt-4 leading-relaxed max-w-2xl">I authorize TrueServe to perform a standard background check to keep our community safe.</p>
+                                    <p className="text-[12px] font-black text-white uppercase tracking-[0.6em] italic group-hover:text-primary transition-colors">I agree to the terms</p>
+                                    <p className="text-[10px] text-slate-500 font-bold italic mt-5 leading-relaxed max-w-2xl">I authorize TrueServe to perform a standard background check to keep our community safe.</p>
                                 </div>
                             </label>
                         </div>
@@ -226,13 +228,13 @@ function DriverApplicationFormInner() {
                 </div>
             </div>
             
-            <div className="pt-24 flex flex-col items-center">
-                <button disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary h-[80px] w-full max-w-2xl text-xs font-black uppercase tracking-[0.6em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl">
-                    {isPending ? "Syncing Grid..." : "Send Application →"}
+            <div className="pt-32 flex flex-col items-center">
+                <button disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary h-[90px] w-full max-w-2xl text-sm font-black uppercase tracking-[0.8em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+                    {isPending ? "Syncing Grid..." : "Join the Fleet →"}
                 </button>
-                <p className="mt-16 text-center text-[10px] text-slate-700 font-black uppercase tracking-[0.8em] italic leading-relaxed opacity-30">
-                    TrueServe Local Fleet <br />
-                    Supporting Corporate Protocols
+                <p className="mt-20 text-center text-[11px] text-slate-700 font-black uppercase tracking-[1em] italic leading-relaxed opacity-40">
+                    TrueServe Global Logsitics <br />
+                    Supporting Corporate Expansion
                 </p>
             </div>
         </form>
