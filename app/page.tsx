@@ -122,7 +122,7 @@ export default async function Home() {
                 },
                 {
                   title: "Become a Driver",
-                  img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop",
+                  img: "https://images.unsplash.com/photo-1624513101683-162235c6de64?q=80&w=2070&auto=format&fit=crop",
                   desc: "Earn 20-40% more with fair splits and high-velocity routing engineered for efficiency.",
                   cta: "Start Application",
                   link: "/driver"

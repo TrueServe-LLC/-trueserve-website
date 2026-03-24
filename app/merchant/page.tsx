@@ -105,36 +105,36 @@ export default function MerchantPortal() {
                                         isHighlighted: true
                                     }
                                 ].map((plan, i) => (
-                                    <div key={i} className="flex flex-col p-10 md:p-12 rounded-[2.5rem] border border-primary/20 bg-white/[0.03] shadow-2xl space-y-10 transition-all hover:scale-[1.01]">
-                                        <div className="space-y-6 flex-grow">
-                                            <h3 className="text-2xl md:text-3xl font-sans text-white font-black tracking-tight">{plan.name}</h3>
+                                    <div key={i} className="flex flex-col p-8 md:p-10 rounded-[2.5rem] border border-primary/20 bg-white/[0.03] shadow-2xl space-y-8 transition-all hover:scale-[1.01]">
+                                        <div className="space-y-4 flex-grow">
+                                            <h3 className="text-xl md:text-2xl font-sans text-white font-black tracking-tight uppercase">{plan.name}</h3>
                                             <div>
                                                 <div className="flex items-baseline gap-2">
-                                                    <span className="text-5xl md:text-6xl font-black text-white tracking-tighter">{plan.amount}</span>
-                                                    <span className="text-base text-slate-400 font-medium">{plan.sub}</span>
+                                                    <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">{plan.amount}</span>
+                                                    <span className="text-sm text-slate-500 font-medium">{plan.sub}</span>
                                                 </div>
                                             </div>
-                                            <p className="text-slate-400 text-base leading-relaxed">
+                                            <p className="text-slate-500 text-sm leading-relaxed">
                                                 {plan.desc}
                                             </p>
                                             
-                                            <div className="pt-6">
+                                            <div className="pt-4">
                                                 <Link 
                                                     onClick={() => scrollToForm(plan.name)} 
                                                     href="/merchant-signup" 
-                                                    className="w-full inline-flex justify-center items-center py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all bg-primary border border-primary text-black shadow-xl shadow-primary/20 hover:brightness-110"
+                                                    className="w-full inline-flex justify-center items-center py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all bg-primary border border-primary text-black shadow-xl shadow-primary/20 hover:brightness-110"
                                                 >
                                                     {plan.cta}
                                                 </Link>
                                             </div>
                                         </div>
 
-                                        <div className="space-y-6 border-t border-white/5 pt-10">
-                                            <h4 className="text-white text-xl font-serif italic font-semibold">Features:</h4>
-                                            <ul className="space-y-4">
+                                        <div className="space-y-4 border-t border-white/5 pt-8">
+                                            <h4 className="text-white text-lg font-serif italic font-semibold">Features:</h4>
+                                            <ul className="space-y-3">
                                                 {plan.features.map((f, j) => (
-                                                    <li key={j} className="flex items-center gap-4 text-slate-400 text-sm font-medium">
-                                                        <span className="text-primary text-base">✓</span>
+                                                    <li key={j} className="flex items-center gap-3 text-slate-500 text-[13px] font-medium">
+                                                        <span className="text-primary text-sm">✓</span>
                                                         <span>{f}</span>
                                                     </li>
                                                 ))}
@@ -146,31 +146,31 @@ export default function MerchantPortal() {
                         </div>
 
                         {/* ── PARTNER INQUIRY ─────────────────────────────────────────── */}
-                        <div id="inquiry-form" className="relative p-12 md:p-20 bg-white/[0.02] border border-white/5 rounded-[3rem] flex flex-col items-center text-center overflow-hidden">
+                        <div id="inquiry-form" className="relative p-12 md:p-16 bg-white/[0.02] border border-white/5 rounded-[3rem] flex flex-col items-center text-center overflow-hidden">
                              <div className="absolute inset-0 opacity-10 grayscale scroll-reveal">
                                 <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop" className="w-full h-full object-cover" />
                              </div>
-                             <div className="relative z-10 flex flex-col items-center space-y-10">
-                                <div className="flex items-center justify-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">
+                             <div className="relative z-10 flex flex-col items-center space-y-8">
+                                <div className="flex items-center justify-center gap-4 text-slate-500 font-black uppercase tracking-[0.4em] text-[9px]">
                                     <div className="w-8 h-px bg-slate-800" />
                                     Onboarding
                                     <div className="w-8 h-px bg-slate-800" />
                                 </div>
-                                <h3 className="text-3xl md:text-6xl text-white font-serif italic font-black leading-[1] text-center max-w-2xl">Apply to Join <br />the Network</h3>
-                                <div className="w-full max-w-xl flex flex-col items-center space-y-10">
+                                <h3 className="text-2xl md:text-5xl text-white font-serif italic font-black leading-[1.1] text-center max-w-xl uppercase">Apply to Join <br />the Network</h3>
+                                <div className="w-full max-w-xl flex flex-col items-center space-y-8">
                                     <div className="pt-2">
-                                        <Link href="/merchant-signup" className="badge-solid-primary !px-12 !py-5 !text-[10px] inline-flex items-center">
+                                        <Link href="/merchant-signup" className="badge-solid-primary !px-10 !py-4 !text-[9px] !rounded-xl inline-flex items-center">
                                             Start Merchant Application <span className="ml-2">→</span>
                                         </Link>
                                     </div>
-                                    <div className="flex justify-center gap-12 border-t border-white/5 pt-10 w-full opacity-60">
+                                    <div className="flex justify-center gap-10 border-t border-white/5 pt-8 w-full opacity-60">
                                         <div>
-                                            <p className="text-slate-500 text-[8px] font-black uppercase tracking-widest mb-1">Response Time</p>
-                                            <p className="text-white text-sm font-bold font-serif italic">24 Hours</p>
+                                            <p className="text-slate-500 text-[7px] font-black uppercase tracking-widest mb-1">Response Time</p>
+                                            <p className="text-white text-xs font-bold font-serif italic uppercase">24 Hours</p>
                                         </div>
                                         <div>
-                                            <p className="text-slate-500 text-[8px] font-black uppercase tracking-widest mb-1">Setup Cost</p>
-                                            <p className="text-white text-sm font-bold font-serif italic">$0.00 USD</p>
+                                            <p className="text-slate-500 text-[7px] font-black uppercase tracking-widest mb-1">Setup Cost</p>
+                                            <p className="text-white text-xs font-bold font-serif italic uppercase">$0.00 USD</p>
                                         </div>
                                     </div>
                                 </div>
