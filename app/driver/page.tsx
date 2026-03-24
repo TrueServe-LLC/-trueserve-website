@@ -122,20 +122,6 @@ export default function DriverPortal() {
 
                 {/* ── ENROLLMENT FORM ────────────────────────────────────────── */}
                 <div id="signup" className="scroll-mt-48 pt-44 pb-44 px-4 flex flex-col items-center">
-                    <div className="space-y-8 mb-24 text-center">
-                         <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.8em] text-[11px] italic mb-8">
-                            <div className="w-12 h-px bg-primary/20" />
-                            Enrollment & Logistics
-                            <div className="w-12 h-px bg-primary/20" />
-                        </div>
-                        <h2 className="text-5xl md:text-[75px] text-white font-black tracking-tighter leading-none uppercase h-glow">
-                             Join The <span className="text-primary italic">Team.</span>
-                        </h2>
-                        <p className="text-slate-500 text-[10px] md:text-[12px] font-black uppercase tracking-[0.6em] italic opacity-60">
-                             Select your logistics platform below and join the fleet.
-                        </p>
-                    </div>
-
                     <div className="w-full max-w-5xl mx-auto">
                         <DriverApplicationForm />
                     </div>

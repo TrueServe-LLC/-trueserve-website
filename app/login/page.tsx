@@ -100,7 +100,7 @@ function LoginWithParams() {
              {/* Background Layer with heavy blur */}
              <div className="absolute inset-0 z-0">
                 <img 
-                    src="/hero_food_delivery.png" 
+                    src="/admin_login_bg_cinematic_1774378543203.png" 
                     alt="Background" 
                     className="w-full h-full object-cover grayscale opacity-20 scale-105"
                 />

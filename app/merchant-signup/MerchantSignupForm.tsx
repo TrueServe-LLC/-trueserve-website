@@ -13,7 +13,7 @@ const initialState = {
 
 export default function MerchantSignupForm() {
     return (
-        <Suspense fallback={<div className="p-20 text-center text-slate-500 font-bold uppercase tracking-widest text-[10px] bg-white/[0.02] rounded-[32px] border border-white/5 animate-pulse italic">Initializing Partner Rails...</div>}>
+        <Suspense fallback={<div className="p-20 text-center text-slate-500 font-bold uppercase tracking-widest text-[10px] bg-white/[0.02] rounded-[32px] border border-white/5 animate-pulse italic">Connecting to Logistics Grid...</div>}>
             <MerchantSignupFormInner />
         </Suspense>
     );
@@ -21,11 +21,10 @@ export default function MerchantSignupForm() {
 
 function MerchantSignupFormInner() {
     const [state, formAction, isPending] = useActionState(submitMerchantInquiry, initialState);
-    const [selectedPlan, setSelectedPlan] = useState<string>("Flex Options");
     
     // Form Data State
     const [formData, setFormData] = useState({
-        restaurantName: "",
+        businessName: "",
         contactName: "",
         email: "",
         password: "",
@@ -34,47 +33,28 @@ function MerchantSignupFormInner() {
         state: "",
         zip: "",
         phone: "",
+        category: "RESTAURANT",
+        plan: "PRO",
         posSystem: "None",
         posClientId: "",
         posClientSecret: "",
     });
 
-    const updateForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleAddressSelect = (address: string, lat: number, lng: number) => {
-        const parts = address.split(', ');
-        if (parts.length >= 3) {
-            setFormData(prev => ({
-                ...prev,
-                address: parts[0],
-                city: parts[1],
-                state: parts[2].split(' ')[0] || "",
-                zip: parts[2].split(' ')[1] || ""
-            }));
-        } else {
-            setFormData(prev => ({ ...prev, address }));
-        }
-    };
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const fd = new FormData();
-        fd.append("restaurantName", formData.restaurantName);
+        fd.append("businessName", formData.businessName);
         fd.append("contactName", formData.contactName);
         fd.append("email", formData.email);
         fd.append("password", formData.password);
+        fd.append("phone", formData.phone);
         fd.append("address", formData.address);
         fd.append("city", formData.city);
         fd.append("state", formData.state);
         fd.append("zip", formData.zip);
-        fd.append("phone", formData.phone);
-        fd.append("plan", selectedPlan);
+        fd.append("category", formData.category);
+        fd.append("plan", formData.plan);
         fd.append("posSystem", formData.posSystem);
-        fd.append("posClientId", formData.posClientId);
-        fd.append("posClientSecret", formData.posClientSecret);
 
         startTransition(() => {
             formAction(fd);
@@ -97,83 +77,186 @@ function MerchantSignupFormInner() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-24 max-w-5xl mx-auto font-sans px-4">
+        <form onSubmit={handleSubmit} className="space-y-16 max-w-5xl mx-auto font-sans px-4">
             {state.error && (
                 <div className="p-8 bg-black/60 border border-red-500/20 rounded-2xl text-red-200 text-[10px] font-black uppercase tracking-[0.4em] animate-shake italic text-center shadow-2xl backdrop-blur-3xl">
                     ⚠️ {state.message}
                 </div>
             )}
-
-            <div className="space-y-16">
-                {/* SECTION 1: Identity */}
-                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] group hover:border-white/20 transition-all">
-                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-                        Business Identification
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                        <div className="space-y-4 md:col-span-2">
-                            <label className="text-[11px] font-bold text-slate-400 ml-1">Restaurant Name</label>
-                            <input name="restaurantName" type="text" required value={formData.restaurantName} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-800 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black uppercase tracking-[0.1em]" placeholder="YOUR ESTABLISHMENT" />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[11px] font-bold text-slate-400 ml-1">Contact Name</label>
-                            <input name="contactName" type="text" required value={formData.contactName} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black uppercase tracking-[0.1em]" placeholder="LEGAL REPRESENTATIVE" />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[11px] font-bold text-slate-400 ml-1">Password</label>
-                            <input name="password" type="password" required value={formData.password} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black" placeholder="••••••••" />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[11px] font-bold text-slate-400 ml-1">Email Address</label>
-                            <input name="email" type="email" required value={formData.email} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black uppercase tracking-[0.1em]" placeholder="PARTNER@EMAIL.COM" />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[11px] font-bold text-slate-400 ml-1">Phone Number</label>
-                            <input name="phone" type="tel" required value={formData.phone} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all font-black" placeholder="(864) 555-0312" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* SECTION 2: Geography */}
-                <div className="relative p-10 md:p-14 border border-white/10 bg-white/[0.02] rounded-[2.5rem] group hover:border-white/20 transition-all">
-                    <div className="absolute -top-5 left-8 px-6 py-2 bg-black border border-primary text-primary text-[10px] font-black uppercase italic tracking-[0.4em] rounded-full z-10 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-                        Operational Domain
-                    </div>
-                    
-                    <div className="space-y-10">
-                        <div className="space-y-4">
-                            <label className="text-[11px] font-bold text-slate-400 ml-1">Physical Address</label>
-                            <div className="[&>div>input]:!bg-white/[0.03] [&>div>input]:!border-white/10 [&>div>input]:!px-8 [&>div>input]:!py-5 [&>div>input]:!rounded-2xl [&>div>input]:!text-sm [&>div>input]:focus:!border-primary/40 [&>div>input]:!font-black [&>div>input]:!placeholder-slate-800 [&>div>input]:!uppercase [&>div>input]:transition-all">
-                                <AddressInput initialAddress={formData.address} onAddressSelect={handleAddressSelect} />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                            <div className="space-y-4 md:col-span-2">
-                                <label className="text-[11px] font-bold text-slate-400 ml-1">City</label>
-                                <input name="city" type="text" required value={formData.city} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase tracking-widest" placeholder="CITY" />
-                            </div>
-                            <div className="space-y-4">
-                                <label className="text-[11px] font-bold text-slate-400 ml-1">State</label>
-                                <input name="state" type="text" required maxLength={2} value={formData.state} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase text-center tracking-widest" placeholder="ST" />
-                            </div>
-                            <div className="space-y-4">
-                                <label className="text-[11px] font-bold text-slate-400 ml-1">Zip</label>
-                                <input name="zip" type="text" required value={formData.zip} onChange={updateForm} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white focus:outline-none focus:border-primary/40 font-black uppercase tracking-widest" placeholder="ZIP" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
+            <div className="flex flex-col items-center mb-24 text-center">
+                 <h3 className="text-[11px] font-black uppercase text-primary italic tracking-[1em] mb-6">The Future</h3>
+                 <h2 className="text-4xl md:text-6xl font-black text-white italic h-glow uppercase leading-none">Is Yours.</h2>
+                 <div className="w-16 h-px bg-primary/20 mt-8" />
             </div>
 
-            <div className="pt-20 flex flex-col items-center">
-                <button disabled={isPending} className="badge-solid-primary h-[70px] w-full max-w-xl text-sm font-black uppercase tracking-[0.6em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)]">
-                    {isPending ? "Configuring Access..." : "Submit Application →"}
+            <div className="space-y-24">
+                {/* SECTION 1: IDENTITY */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 group">
+                    <div className="col-span-1 md:col-span-2 flex items-center gap-4 mb-4">
+                        <span className="text-[10px] font-black text-primary px-3 py-1 border border-primary/20 rounded-full italic tracking-widest bg-primary/5">01</span>
+                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-0">Establishment Identity</span>
+                        <div className="h-px flex-1 bg-white/10" />
+                    </div>
+                    
+                    <div className="space-y-3 md:col-span-2">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">Business Name</label>
+                        <input
+                            required
+                            placeholder="OPERATIONAL IDENTITY"
+                            value={formData.businessName}
+                            onChange={(e) => setFormData(d => ({ ...d, businessName: e.target.value.toUpperCase() }))}
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">Contact Name</label>
+                        <input
+                            required
+                            placeholder="LEGAL REPRESENTATIVE"
+                            value={formData.contactName}
+                            onChange={(e) => setFormData(d => ({ ...d, contactName: e.target.value.toUpperCase() }))}
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">Password</label>
+                        <input
+                            required
+                            type="password"
+                            placeholder="••••••••"
+                            value={formData.password}
+                            onChange={(e) => setFormData(d => ({ ...d, password: e.target.value }))}
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">Email Address</label>
+                        <input
+                            required
+                            type="email"
+                            placeholder="PARTNER@ESTABLISHMENT.COM"
+                            value={formData.email}
+                            onChange={(e) => setFormData(d => ({ ...d, email: e.target.value.toUpperCase() }))}
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">Phone Number</label>
+                        <input
+                            required
+                            type="tel"
+                            placeholder="(555) 000-0000"
+                            value={formData.phone}
+                            onChange={(e) => setFormData(d => ({ ...d, phone: e.target.value }))}
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                        />
+                    </div>
+                </div>
+
+                {/* SECTION 2: GEOGRAPHY */}
+                <div className="space-y-10">
+                    <div className="flex items-center gap-4 mb-4">
+                        <span className="text-[10px] font-black text-primary px-3 py-1 border border-primary/20 rounded-full italic tracking-widest bg-primary/5">02</span>
+                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-0">Operational Domain</span>
+                        <div className="h-px flex-1 bg-white/10" />
+                    </div>
+
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">Physical Address</label>
+                        <AddressInput initialAddress={formData.address} onAddressSelect={(address, lat, lng) => {
+                            const parts = address.split(', ');
+                            if (parts.length >= 3) {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    address: parts[0],
+                                    city: parts[1],
+                                    state: parts[2].split(' ')[0] || "",
+                                    zip: parts[2].split(' ')[1] || ""
+                                }));
+                            } else {
+                                setFormData(prev => ({ ...prev, address }));
+                            }
+                        }} />
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-6">
+                        <div className="col-span-4 md:col-span-2 space-y-3">
+                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">City</label>
+                             <input
+                                placeholder="CITY"
+                                value={formData.city}
+                                onChange={(e) => setFormData(d => ({ ...d, city: e.target.value.toUpperCase() }))}
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                             />
+                        </div>
+                        <div className="col-span-2 md:col-span-1 space-y-3">
+                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">State</label>
+                             <input
+                                maxLength={2}
+                                placeholder="ST"
+                                value={formData.state}
+                                onChange={(e) => setFormData(d => ({ ...d, state: e.target.value.toUpperCase() }))}
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white text-center placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                             />
+                        </div>
+                        <div className="col-span-2 md:col-span-1 space-y-3">
+                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic ml-1">Zip</label>
+                             <input
+                                placeholder="ZIP"
+                                value={formData.zip}
+                                onChange={(e) => setFormData(d => ({ ...d, zip: e.target.value.toUpperCase() }))}
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-5 text-sm text-white text-center placeholder:text-slate-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.05] transition-all"
+                             />
+                        </div>
+                    </div>
+                </div>
+
+                {/* SECTION 3: PARTNERSHIP PLAN */}
+                <div className="space-y-10">
+                    <div className="flex items-center gap-4 mb-4">
+                        <span className="text-[10px] font-black text-primary px-3 py-1 border border-primary/20 rounded-full italic tracking-widest bg-primary/5">03</span>
+                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-0">Partnership Plan</span>
+                        <div className="h-px flex-1 bg-white/10" />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {[
+                            { id: 'FLEX', name: 'Flex Plan', desc: 'No Monthly Fee • 20% Commission' },
+                            { id: 'PRO', name: 'Pro Plan', desc: '$49/Mo • 15% Commission' }
+                        ].map((p) => (
+                            <button
+                                key={p.id}
+                                type="button"
+                                onClick={() => setFormData(d => ({ ...d, plan: p.id }))}
+                                className={`flex flex-col items-start p-10 rounded-2xl border transition-all duration-500 text-left relative overflow-hidden group ${
+                                    formData.plan === p.id 
+                                    ? 'bg-primary/10 border-primary shadow-[0_0_40px_rgba(245,158,11,0.1)]' 
+                                    : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                                }`}
+                            >
+                                <div className={`text-[12px] font-black uppercase tracking-[0.2em] italic mb-2 ${formData.plan === p.id ? 'text-primary' : 'text-white'}`}>{p.name}</div>
+                                <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest italic">{p.desc}</div>
+                                <div className={`absolute top-6 right-6 w-5 h-5 rounded-full border-2 transition-all ${
+                                    formData.plan === p.id ? 'border-primary bg-primary' : 'border-white/10 bg-transparent'
+                                }`}>
+                                    {formData.plan === p.id && <div className="w-full h-full flex items-center justify-center text-[10px] text-black">✓</div>}
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            
+            <div className="pt-24 flex flex-col items-center">
+                <button disabled={isPending} className="badge-solid-primary h-16 w-full max-w-xl text-[12px] font-black uppercase tracking-[0.4em] active:scale-[0.98] transition-all disabled:opacity-50 !rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.2)] !bg-primary !text-black">
+                    {isPending ? "Syncing Grid..." : "Submit Application →"}
                 </button>
                 <p className="mt-20 text-center text-[11px] text-slate-700 font-black uppercase tracking-[1em] italic leading-relaxed opacity-40">
-                    TrueServe Global Logsitics <br />
+                    TrueServe Global Logistics <br />
                     Supporting Network Integration
                 </p>
             </div>

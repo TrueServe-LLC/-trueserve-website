@@ -120,40 +120,10 @@ export default function MerchantPortal() {
                 </div>
 
                 {/* ── PRICING & SIGNUP ─────────────────────────────────────────────── */}
-                <div id="signup" className="scroll-mt-48 pt-32 pb-44 px-4 flex flex-col items-center">
-                    <div className="space-y-8 mb-24 text-center">
-                         <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.8em] text-[11px] italic mb-8">
-                            <div className="w-12 h-px bg-primary/20" />
-                            Pricing & Onboarding
-                            <div className="w-12 h-px bg-primary/20" />
-                        </div>
-                        <h2 className="text-5xl md:text-[70px] font-serif text-white tracking-tight leading-[0.9] mb-8">
-                            Flexible Plans for <br />
-                            <span className="italic text-primary">Local Growth.</span>
-                        </h2>
-                        <p className="text-slate-500 text-[10px] md:text-[12px] font-black uppercase tracking-[0.6em] italic opacity-60">
-                             Select your protocol below and join the movement.
-                        </p>
-                    </div>
-
+                <div id="signup" className="scroll-mt-48 pt-44 pb-44 px-4 flex flex-col items-center">
                     <div className="w-full max-w-5xl mx-auto relative group">
                         <div className="absolute -inset-20 bg-primary/5 rounded-full blur-[150px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10" />
                         <MerchantSignupForm />
-                    </div>
-                </div>
-
-
-
-                {/* ── FOOTER CTA ────────────────────────────────────────────────── */}
-                <div className="py-44 text-center max-w-5xl mx-auto space-y-16">
-                     <h2 className="text-5xl md:text-8xl text-white font-black italic leading-[0.95] tracking-tighter h-glow uppercase">
-                        The Future <br />
-                        <span className="text-primary not-italic">Is Yours.</span>
-                    </h2>
-                    <div className="pt-10">
-                         <Link href="#signup" className="badge-solid-primary !px-24 !py-8 !text-lg">
-                            Apply Today
-                         </Link>
                     </div>
                 </div>
             </main>
