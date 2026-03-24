@@ -16,8 +16,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "TrueServe | Premium Food Delivery",
-  description: "Experience the true standard of food delivery.",
+  title: "TrueServe | Next-Gen Delivery Infrastructure",
+  description: "Empowering independent restaurants through fair logistics, elite driver fleets, and seamless Toast POS integrations.",
   manifest: '/manifest.json',
   icons: {
     icon: '/logo.png',

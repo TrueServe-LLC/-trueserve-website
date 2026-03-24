@@ -82,6 +82,43 @@ export default function MerchantPortal() {
                     ))}
                 </div>
 
+                {/* ── POS HARMONY SECTION ───────────────────────────────────── */}
+                <div className="py-24 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center bg-black/40 border border-white/5 rounded-[4rem] p-16 md:p-24 backdrop-blur-3xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 -z-10 group-hover:scale-175 transition-transform duration-[3s]">
+                             <img src="/logo.png" alt="Logo Watermark" className="w-64 h-64 opacity-20" />
+                        </div>
+                        
+                        <div className="space-y-8">
+                             <div className="inline-flex px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary italic">
+                                Built for Ecosystems
+                             </div>
+                             <h2 className="text-4xl md:text-6xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
+                                Seamless <br />
+                                <span className="text-primary not-italic">POS Harmony.</span>
+                             </h2>
+                             <p className="text-slate-400 text-lg font-bold italic leading-relaxed max-w-sm">
+                                TrueServe isn't just a delivery app—it's an extension of your tech stack. Our infrastructure is built for API-first operators.
+                             </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-10">
+                             {[
+                                { name: "Toast Ready", desc: "Automated menu sync & real-time order injection via Toast Partner API." },
+                                { name: "Direct Hooks", desc: "Native protocol support for high-volume kitchen printers and displays." },
+                                { name: "Hub Aware", desc: "Smart inventory management that talks back to your POS automatically." },
+                                { name: "Pro Splits", desc: "Automated daily payouts tied directly to your digital register history." }
+                             ].map((item, i) => (
+                                 <div key={i} className="space-y-3">
+                                     <h4 className="text-[11px] font-black uppercase text-white italic tracking-widest">{item.name}</h4>
+                                     <div className="w-8 h-1 bg-primary/30 rounded-full" />
+                                     <p className="text-[10px] font-bold text-slate-500 italic leading-relaxed">{item.desc}</p>
+                                 </div>
+                             ))}
+                        </div>
+                    </div>
+                </div>
+
                 {/* ── SIGNUP FORM ─────────────────────────────────────────────── */}
                 <div id="signup" className="space-y-24 scroll-mt-48 text-center py-20">
                     <div className="space-y-6">
