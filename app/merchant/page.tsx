@@ -55,10 +55,10 @@ export default function MerchantPortal() {
                             Everything you need to run your food business efficiently. Real-time order visibility, delivery tracking, and merchant controls built into one intuitive dashboard.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center gap-6 pt-10">
-                            <Link href="/merchant-signup" className="badge-solid-primary px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl">
+                            <Link href="/merchant-signup" className="badge-solid-primary !rounded-xl">
                                 Partner Sign Up
                             </Link>
-                            <Link href="#inquiry-form" className="badge-outline-white !bg-white/5 border border-white/10 hover:!bg-white/10 text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-full backdrop-blur-md transition-all">
+                            <Link href="#inquiry-form" className="badge-outline-white !rounded-xl">
                                 Learn more
                             </Link>
                         </div>

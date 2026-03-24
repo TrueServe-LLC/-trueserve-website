@@ -57,10 +57,10 @@ export default function DriverPortal() {
                             Join South Carolina drivers delivering food in your area. Simple signup, real-time orders, and weekly payouts waiting for you.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-                            <Link href="/driver-signup" className="badge-solid-primary px-10 py-4 text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl">
+                            <Link href="/driver-signup" className="badge-solid-primary !rounded-xl">
                                 Become a driver
                             </Link>
-                            <Link href="tel:+10000000000" className="badge-solid-primary !bg-primary/5 !text-primary border border-primary/20 hover:!bg-primary/20 px-10 py-4 text-[9px] font-black uppercase tracking-[0.2em] rounded-full backdrop-blur-md">
+                            <Link href="tel:+10000000000" className="badge-outline-white !rounded-xl">
                                 Call with questions
                             </Link>
                         </div>
@@ -154,8 +154,8 @@ export default function DriverPortal() {
                                     "iOS / Android Device",
                                     "Clean Driving Protocol"
                                 ].map((req, i) => (
-                                    <div key={i} className="flex items-center gap-6 p-5 bg-black/40 border border-white/5 rounded-full group hover:border-primary/50 transition-all">
-                                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-[10px] font-sans not-italic">✓</div>
+                                    <div key={i} className="flex items-center gap-6 p-5 bg-black/40 border border-white/5 rounded-2xl group hover:border-primary/50 transition-all">
+                                        <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-[10px] font-sans not-italic">✓</div>
                                         <span className="text-slate-300 text-[10px] font-black uppercase tracking-widest truncate">{req}</span>
                                     </div>
                                 ))}

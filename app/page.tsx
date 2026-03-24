@@ -22,7 +22,7 @@ export default async function Home() {
             <img 
               src="/logo.png" 
               alt="TrueServe Logo" 
-              className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg grayscale focus:grayscale-0 group-hover:grayscale-0" 
+              className="w-10 h-10 rounded-xl border border-white/10 group-hover:border-primary transition-all shadow-lg grayscale focus:grayscale-0 group-hover:grayscale-0" 
             />
             <span className="text-xl md:text-2xl font-black tracking-tight text-white font-serif">TrueServe</span>
           </Link>
@@ -37,7 +37,7 @@ export default async function Home() {
             {userId ? (
               <div className="flex items-center gap-4">
                 <NotificationBell userId={userId} />
-                <Link href="/user/settings" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
+                <Link href="/user/settings" className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                 </Link>
                 <LogoutButton />
@@ -45,7 +45,7 @@ export default async function Home() {
             ) : (
               <div className="flex items-center gap-6">
                 <Link href="/login" className="hidden md:block text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Sign In</Link>
-                <Link href="/restaurants" className="bg-primary hover:bg-primary/90 text-black text-[11px] font-black uppercase tracking-[0.2em] py-2.5 px-6 rounded-full transition-all hover:scale-105 shadow-xl shadow-primary/20">
+                <Link href="/restaurants" className="badge-solid-primary !px-6 !py-2.5 !text-[11px] !rounded-xl">
                   Get Started
                 </Link>
               </div>
@@ -78,10 +78,10 @@ export default async function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-              <Link href="/restaurants" className="badge-solid-primary w-full sm:w-auto px-12 py-5 text-black text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-2xl">
+              <Link href="/restaurants" className="badge-solid-primary w-full sm:w-auto !rounded-xl">
                 Browse Restaurants
               </Link>
-              <Link href="/driver-signup" className="badge-outline-white !bg-white/5 border border-white/10 hover:!bg-white/10 text-white text-xs font-black uppercase tracking-[0.2em] py-5 px-12 rounded-full transition-all backdrop-blur-md">
+              <Link href="/driver-signup" className="badge-outline-white w-full sm:w-auto !rounded-xl">
                 Become a Driver
               </Link>
             </div>
@@ -154,7 +154,7 @@ export default async function Home() {
         <div className="container mx-auto max-w-7xl text-center">
           <div className="flex flex-col items-center gap-8 mb-12">
             <Link href="/" className="flex items-center gap-3">
-              <img src="/logo.png" alt="TrueServe Logo" className="w-12 h-12 rounded-full grayscale hover:grayscale-0 transition-all" />
+              <img src="/logo.png" alt="TrueServe Logo" className="w-12 h-12 rounded-xl grayscale hover:grayscale-0 transition-all" />
               <span className="font-serif text-white text-2xl font-bold tracking-tight">TrueServe</span>
             </Link>
             

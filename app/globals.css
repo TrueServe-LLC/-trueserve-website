@@ -169,104 +169,36 @@ section {
   /* Firefox */
 }
 
-/* SlothUI-Inspired Badge & Button System */
-@utility badge {
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  font-weight: 800;
-  padding: 1.25rem 3rem;
-  font-size: 0.875rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  transition-property: all;
-  transition-duration: 300ms;
-}
-
+/* Standardized Pill & Button System: Squircle Style */
 @utility badge-solid-primary {
-  @apply rounded-2xl bg-primary text-black px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl transition-all;
+  @apply rounded-2xl bg-[#f59e0b] text-black px-10 py-5 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] shadow-xl transition-all inline-flex items-center justify-center;
   
   &:hover {
-    @apply scale-[1.02] brightness-110;
+    @apply scale-[1.02] brightness-110 shadow-primary/40;
   }
 }
 
 @utility badge-outline-white {
-  @apply rounded-2xl bg-black border border-white/20 text-white px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all;
+  @apply rounded-2xl bg-transparent border-2 border-white/20 text-white px-10 py-5 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all inline-flex items-center justify-center;
   
   &:hover {
-    @apply bg-white/10 border-white;
+    @apply bg-white/10 border-white scale-[1.02];
   }
 }
 
-@utility badge-solid-secondary {
-  @apply badge;
-  background-color: #f1a137;
-  color: black;
-  box-shadow: 0 4px 12px rgba(241, 161, 55, 0.3);
-
+@utility btn-standard {
+  @apply rounded-2xl bg-[#f59e0b] text-black px-12 py-6 text-[11px] font-black uppercase tracking-[0.2em] shadow-xl active:scale-[0.98] transition-all inline-flex items-center justify-center;
+  
   &:hover {
-    background-color: #e5952d;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(241, 161, 55, 0.4);
+    @apply -translate-y-[2px] shadow-primary/30 brightness-110;
   }
 }
 
 @utility badge-subtle-white {
-  @apply badge;
-  background-color: white;
-  color: black;
-  padding: 0.5rem 1.25rem;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  border-radius: 9999px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    background-color: #f8fafc;
-    transform: translateY(-1px);
-  }
-}
-
-@utility badge-amber {
-  @apply rounded-full bg-primary text-black px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all;
+  @apply rounded-2xl bg-white text-black px-6 py-2 text-[9px] font-black uppercase tracking-widest shadow-lg transition-all inline-flex items-center justify-center;
   
   &:hover {
-    @apply scale-[1.05] brightness-110;
-  }
-}
-
-@utility badge-outline-white {
-  @apply badge;
-  background-color: black;
-  color: white;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-
-  &:hover {
-    background-color: #0c0c0c;
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2);
-  }
-}
-
-@utility btn-premium-solid {
-  @apply rounded-full bg-primary text-black px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] shadow-primary/20 active:scale-[0.98] transition-all;
-  
-  &:hover {
-    @apply -translate-y-[2px] shadow-primary/40 brightness-110;
-  }
-}
-
-
-@utility btn-standard {
-  @apply rounded-full bg-primary text-black px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] shadow-primary/20 active:scale-[0.98] transition-all;
-  
-  &:hover {
-    @apply -translate-y-[2px] shadow-primary/30 brightness-110;
+    @apply scale-[1.02] brightness-105;
   }
 }
 
