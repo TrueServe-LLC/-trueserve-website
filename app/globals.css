@@ -69,7 +69,7 @@ p, span, div, a, button, input {
 
 /* Standardized Pill & Button System: Block Pill Refinement */
 @utility badge-solid-primary {
-  @apply rounded-2xl bg-[#f59e0b] text-black px-12 py-5 text-base font-bold transition-all inline-flex items-center justify-center active:scale-[0.98] shadow-lg italic tracking-widest uppercase;
+  @apply rounded-2xl bg-[#f59e0b] text-black px-12 py-5 text-base font-bold transition-all inline-flex items-center justify-center active:scale-[0.98] shadow-lg italic tracking-widest uppercase shadow-primary/10;
   
   &:hover {
     @apply -translate-y-[3px] brightness-110 shadow-primary/20;
@@ -94,7 +94,7 @@ p, span, div, a, button, input {
 }
 
 @utility filter-pill {
-  @apply rounded-xl px-8 py-3.5 text-[10px] font-black uppercase tracking-widest transition-all border;
+  @apply rounded-2xl px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-all border shadow-lg backdrop-blur-md;
 }
 
 /* Standard Layout Containers */

@@ -219,45 +219,58 @@ export default async function RestaurantFinder({
     const { restaurants, locationMeta } = await getRestaurants({ term: effectiveAddress, address: effectiveAddress, lat, lng, category });
 
     const showLanding = !effectiveAddress && (!lat || !lng);
-
     if (showLanding) {
-            <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden">
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden selection:bg-primary/30">
                 <nav className="sticky top-0 w-full z-50 p-6 px-10 flex justify-between items-center backdrop-blur-3xl bg-black/60 border-b border-white/5">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <img src="/logo.png" className="w-10 h-10 rounded-xl border border-white/10 group-hover:scale-110 transition-transform shadow-lg" alt="TrueServe Logo" />
+                        <img src="/logo.png" className="w-12 h-12 rounded-xl border-2 border-slate-700 bg-black/60 p-1.5 shadow-2xl group-hover:scale-110 transition-transform" alt="TrueServe Logo" />
                         <span className="text-2xl font-black text-white tracking-widest italic uppercase">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
                     </Link>
-                    <Link href="/login" className="badge-outline-white !py-2.5 !px-8 !text-[10px]">Sign In</Link>
+                    <div className="flex items-center gap-8">
+                         <Link href="/login" className="hidden md:block text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-colors italic">Sign In</Link>
+                         <Link href="/login" className="badge-outline-white !py-3 !px-8 !text-[10px]">Get Started</Link>
+                    </div>
                 </nav>
                 
-                <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 space-y-16 relative">
+                <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 space-y-20 relative px-4">
                     <div className="absolute inset-0 z-0">
                         <img
                             src="/hero_food_delivery.png"
                             alt="Fine Dining"
-                            className="w-full h-full object-cover opacity-20 brightness-30 blur-3xl scale-110"
+                            className="w-full h-full object-cover opacity-30 brightness-50 blur-3xl scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black" />
                     </div>
 
-                    <div className="relative z-10 space-y-12 glow-blur-primary animate-fade-in flex flex-col items-center">
-                        <div className="flex items-center gap-4 text-primary font-black uppercase tracking-[0.6em] text-[10px] italic">
-                            <div className="w-12 h-px bg-primary/40" />
-                            Discovery Protocols
-                            <div className="w-12 h-px bg-primary/40" />
+                    <div className="relative z-10 space-y-16 animate-fade-in flex flex-col items-center max-w-5xl glow-blur-primary">
+                        <div className="flex items-center gap-5 text-primary font-black uppercase tracking-[0.6em] text-[10px] italic">
+                            <div className="w-16 h-px bg-primary/40 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                            Secure Location Protocol
+                            <div className="w-16 h-px bg-primary/40 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
                         </div>
                         
-                        <h1 className="text-6xl md:text-[120px] leading-[0.85] text-white font-black tracking-tighter italic animate-slide-up">
-                            Cravings, meet <br />
-                            <span className="text-primary not-italic text-glow-orange uppercase">Speed.</span>
+                        <h1 className="text-6xl md:text-[115px] leading-[0.85] text-white font-black tracking-tighter italic animate-slide-up text-center h-glow">
+                             Find Local <br />
+                            <span className="text-primary not-italic uppercase italic tracking-tight">Flavors.</span>
                         </h1>
                         
-                        <div className="w-full max-w-2xl pt-8">
-                           <LandingSearch locations={[]} />
+                        <div className="w-full max-w-4xl relative group">
+                           <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full opacity-20 group-hover:opacity-40 transition-opacity -z-10" />
+                           <LandingSearch />
                         </div>
+
+                         <p className="max-w-2xl text-slate-500 font-bold italic text-lg md:text-xl leading-relaxed animate-fade-in delay-200">
+                            Enter your delivery address to sync with the best independent restaurants in your community.
+                        </p>
                     </div>
                 </main>
+
+                <footer className="p-12 text-center text-[10px] font-black uppercase tracking-[0.5em] text-slate-800 z-10 italic">
+                    © {new Date().getFullYear()} TrueServe Infrastructure.
+                </footer>
             </div>
+        );
     }
 
     return (
@@ -298,7 +311,7 @@ export default async function RestaurantFinder({
                         Local Marketplace
                         <div className="w-12 h-px bg-primary/40" />
                     </div>
-                    <h1 className="text-5xl md:text-8xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
+                    <h1 className="text-5xl md:text-8xl text-white font-black italic tracking-tighter leading-none uppercase h-glow font-serif">
                         Discovery <span className="text-primary not-italic">Hub.</span>
                     </h1>
                     <p className="text-slate-500 font-bold italic text-lg leading-relaxed">
@@ -307,15 +320,15 @@ export default async function RestaurantFinder({
                 </div>
 
                 {activeOrders.length > 0 && (
-                    <div className="mb-12 p-8 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-[3rem] flex items-center justify-between shadow-2xl">
+                    <div className="mb-12 p-8 bg-black/40 border border-emerald-500/20 rounded-2xl flex items-center justify-between shadow-2xl backdrop-blur-xl">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span className="w-2 h-2 rounded-sm bg-emerald-500 animate-pulse"></span>
                                 <span className="text-emerald-500 font-black uppercase tracking-widest text-[10px]">Active Protocol</span>
                             </div>
                             <h3 className="text-2xl font-black text-white italic">{activeOrders[0].restaurant?.name} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}</h3>
                         </div>
-                        <Link href={`/orders/${activeOrders[0].id}`} className="btn-standard !bg-emerald-500 py-4 px-10 text-[10px]">Track Protocol →</Link>
+                        <Link href={`/orders/${activeOrders[0].id}`} className="badge-solid-primary !bg-emerald-500 !py-4 !px-10 !text-[10px]">Track Protocol →</Link>
                     </div>
                 )}
 
@@ -368,7 +381,7 @@ export default async function RestaurantFinder({
                         <p className="text-slate-500 text-base md:text-lg mb-12 max-w-3xl">TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve.</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
                             {[{ icon: '📊', label: 'Fair Split' }, { icon: '⚡', label: 'Priority' }, { icon: '🏷️', label: '5% Saved' }, { icon: '🎂', label: 'Gifts' }].map((item) => (
-                                <div key={item.label} className="p-6 rounded-3xl bg-black/60 border border-white/5 flex flex-col items-center">
+                                <div key={item.label} className="p-8 rounded-2xl bg-black/60 border border-white/5 flex flex-col items-center shadow-xl">
                                     <div className="text-3xl mb-4">{item.icon}</div>
                                     <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{item.label}</p>
                                 </div>

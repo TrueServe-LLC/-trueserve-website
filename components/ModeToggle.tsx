@@ -23,27 +23,25 @@ export default function ModeToggle() {
     };
 
     return (
-        <div className="flex items-center gap-2 p-1 bg-white/[0.03] rounded-full border border-white/10 shadow-lg">
+        <div className="flex items-center gap-2 p-1.5 bg-white/[0.03] rounded-2xl border border-white/5 shadow-2xl backdrop-blur-3xl">
             <button 
                 onClick={() => handleToggle("delivery")}
-                className={`badge px-6 py-2 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                className={`relative px-8 py-3 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 rounded-xl ${
                     mode === "delivery" 
-                    ? "badge-solid-primary" 
+                    ? "bg-primary text-black shadow-lg shadow-primary/20" 
                     : "text-slate-500 hover:text-white"
                 }`}
             >
-                <div className={`w-1.5 h-1.5 rounded-full ${mode === 'delivery' ? 'bg-white' : 'bg-slate-700'}`}></div>
                 Delivery
             </button>
             <button 
                 onClick={() => handleToggle("pickup")}
-                className={`badge px-6 py-2 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                className={`relative px-8 py-3 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 rounded-xl ${
                     mode === "pickup" 
-                    ? "badge-solid-primary" 
+                    ? "bg-primary text-black shadow-lg shadow-primary/20" 
                     : "text-slate-500 hover:text-white"
                 }`}
             >
-                <div className={`w-1.5 h-1.5 rounded-full ${mode === 'pickup' ? 'bg-white' : 'bg-slate-700'}`}></div>
                 Pickup
             </button>
         </div>
