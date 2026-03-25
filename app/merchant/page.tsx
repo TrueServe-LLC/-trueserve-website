@@ -105,24 +105,34 @@ export default function MerchantPortal() {
                     </div>
                 </div>
 
-                {/* ── BENEFITS ────────────────────────────────────────────────── */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-                    {[
-                        { icon: '🚀', title: 'Rapid Growth', desc: 'Expand your reach without losing control of your branding.' },
-                        { icon: '🔗', title: 'Native Protocol', desc: 'Secure web-hook integrations for seamless order management.' },
-                        { icon: '💎', title: 'Premium Fleet', desc: 'Our drivers are professionally vetted brand ambassadors.' }
-                    ].map((feat, i) => (
-                        <div key={i} className="p-10 rounded-[2.5rem] bg-white/[0.01] border border-white/5 space-y-6 hover:border-primary/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl">
-                            <div className="text-5xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{feat.icon}</div>
-                            <h3 className="text-xl text-white font-black italic uppercase tracking-widest">{feat.title}</h3>
-                            <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed">{feat.desc}</p>
-                        </div>
-                    ))}
+                {/* ── PLATFORM FEATURES ────────────────────────────────────────── */}
+                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-px bg-primary/20 mb-4" />
+                        <h2 className="text-4xl md:text-6xl font-serif text-white tracking-tight uppercase italic leading-none">
+                            Platform <span className="text-primary not-italic font-black">Features.</span>
+                        </h2>
+                        <p className="text-slate-500 text-[11px] font-black uppercase tracking-[0.5em] italic opacity-60">Engineered for Merchant Success</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full">
+                        {[
+                            { icon: '🚀', title: 'Rapid Growth', desc: 'Expand your reach without losing control of your branding.' },
+                            { icon: '🔗', title: 'Native Protocol', desc: 'Secure web-hook integrations for seamless order management.' },
+                            { icon: '💎', title: 'Premium Fleet', desc: 'Our drivers are professionally vetted brand ambassadors.' }
+                        ].map((feat, i) => (
+                            <div key={i} className="p-10 rounded-[3.5rem] bg-white/[0.01] border border-white/5 space-y-6 hover:border-primary/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl shadow-2xl">
+                                <div className="text-5xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,245,11,0.1)]">{feat.icon}</div>
+                                <h3 className="text-2xl text-white font-black italic uppercase tracking-widest leading-none">{feat.title}</h3>
+                                <p className="text-slate-500 text-[12px] font-bold italic leading-relaxed max-w-[220px] mx-auto">{feat.desc}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* ── ENROLLMENT FORM ────────────────────────────────────────── */}
-                <div id="signup" className="scroll-mt-48 pt-44 pb-44 px-4 flex flex-col items-center">
-                    <div className="w-full max-w-5xl mx-auto">
+                <div id="signup" className="scroll-mt-48 pt-32 pb-44 px-4 flex flex-col items-center relative z-10 w-full">
+                    <div className="w-full max-w-7xl mx-auto">
                         <MerchantSignupForm />
                     </div>
                 </div>
