@@ -391,3 +391,16 @@ export async function loginAsDemoDriver() {
     return { success: true };
 }
 
+export async function loginAsDemoMerchant() {
+    const cookieStore = await cookies();
+    const DEMO_MERCHANT_ID = "merchant-demo-2026";
+    cookieStore.set("userId", DEMO_MERCHANT_ID, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24
+    });
+    return { success: true };
+}
+

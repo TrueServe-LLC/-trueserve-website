@@ -335,7 +335,7 @@ export default async function RestaurantFinder({
                 <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-6 md:p-12 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/50 to-emerald-500/0"></div>
                     
-                    <div className="flex items-center gap-4 overflow-x-auto pb-12 no-scrollbar scroll-smooth">
+                    <div className="flex items-center justify-center gap-4 overflow-x-auto pb-12 no-scrollbar scroll-smooth">
                         <Link href="/restaurants" className={`${!category ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"} filter-pill`}>All</Link>
                         {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches"].map((cat) => (
                             <Link key={cat} href={`` + `/restaurants?category=${cat}`} className={`${category === cat ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"} filter-pill`}>{cat}</Link>
@@ -353,9 +353,9 @@ export default async function RestaurantFinder({
                                             {rest.deal && <div className="bg-emerald-500 text-black text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-2xl">DEAL</div>}
                                         </div>
                                     </div>
-                                    <div className="px-1">
+                                    <div className="px-1 text-center flex flex-col items-center">
                                         <h3 className="text-xl font-black text-white group-hover:text-primary transition-colors mb-2 tracking-tight">{rest.name}</h3>
-                                        <div className="flex items-center gap-3 text-[12px] text-slate-500 font-bold uppercase tracking-widest">
+                                        <div className="flex items-center justify-center gap-3 text-[12px] text-slate-500 font-bold uppercase tracking-widest">
                                             <span className="text-emerald-400">{rest.deliveryFee === "Free" ? "Free Delivery" : rest.deliveryFee}</span>
                                             <span className="opacity-30">•</span>
                                             <span>{rest.prepTime}</span>
