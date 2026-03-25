@@ -12,6 +12,7 @@ import { sendSMS } from "@/lib/sms";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createNotification } from "@/lib/notifications";
 import { logAuditAction } from "@/lib/audit";
+import { pushMenuItemToGHL } from "@/lib/ghl-sync";
 
 export type MerchantActionState = {
     message: string;
@@ -89,6 +90,15 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
 
         if (error) throw error;
 
+        // --- GoHighLevel Sync ---
+        try {
+            const { data: rest } = await supabase.from('Restaurant').select('ghlLocationId, ghlSyncEnabled').eq('id', restaurant.id).single();
+            if (rest?.ghlSyncEnabled && rest?.ghlLocationId) {
+                await pushMenuItemToGHL({ name, price, description, imageUrl }, rest.ghlLocationId);
+            }
+        } catch (ghlErr) { console.error("GHL Sync Error (Add):", ghlErr); }
+        // -------------------------
+
         await logAuditAction({ action: "ADD_MENU_ITEM", targetId: restaurant.id, entityType: "Restaurant", message: `Added item: ${name}`, after: { name, price } });
 
         revalidatePath('/merchant/dashboard');
@@ -149,6 +159,15 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
 
 
         if (error) throw error;
+
+        // --- GoHighLevel Sync ---
+        try {
+            const { data: rest } = await supabase.from('Restaurant').select('ghlLocationId, ghlSyncEnabled').eq('ownerId', user.id).single();
+            if (rest?.ghlSyncEnabled && rest?.ghlLocationId) {
+                await pushMenuItemToGHL({ name, price, description, imageUrl }, rest.ghlLocationId);
+            }
+        } catch (ghlErr) { console.error("GHL Sync Error:", ghlErr); }
+        // -------------------------
 
         await logAuditAction({ action: "UPDATE_MENU_ITEM", targetId: itemId, entityType: "MenuItem", after: { name, price } });
 

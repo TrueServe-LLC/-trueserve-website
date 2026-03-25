@@ -75,10 +75,11 @@ export default async function RestaurantMenu({
     searchParams
 }: {
     params: Promise<{ id: string }>,
-    searchParams: Promise<{ address?: string; lat?: string; lng?: string }>
+    searchParams: Promise<{ address?: string; lat?: string; lng?: string; embed?: string }>
 }) {
     const { id } = await params;
-    const { address, lat, lng } = await searchParams;
+    const { address, lat, lng, embed } = await searchParams;
+    const isEmbedded = embed === 'true';
 
     // Parallel fetch: get restaurant and system status
     const [restaurant, { isOrderingEnabled }] = await Promise.all([
@@ -108,28 +109,30 @@ export default async function RestaurantMenu({
     }
 
     return (
-        <div className="min-h-screen">
+        <div className={`min-h-screen ${isEmbedded ? 'bg-transparent' : ''}`}>
             {/* Desktop Navbar */}
-            <nav className="hidden md:flex sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
-                <div className="container flex justify-between items-center">
-                    <Link href="/restaurants" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                        <span>&larr;</span> Back to Restaurants
-                    </Link>
-                    <Link href="/" className="text-2xl font-bold tracking-tighter">
-                        True<span className="text-gradient">Serve</span>
-                    </Link>
-                    <div className="flex items-center gap-4">
-                        {userId && <NotificationBell userId={userId} />}
-                        {userId ? (
-                            <Link href="/user/settings" className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            </Link>
-                        ) : (
-                            <Link href="/login" className="text-xs font-bold text-slate-400 hover:text-white transition-colors">Login</Link>
-                        )}
+            {!isEmbedded && (
+                <nav className="hidden md:flex sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-6 py-4">
+                    <div className="container flex justify-between items-center">
+                        <Link href="/restaurants" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                            <span>&larr;</span> Back to Restaurants
+                        </Link>
+                        <Link href="/" className="text-2xl font-bold tracking-tighter">
+                            True<span className="text-gradient">Serve</span>
+                        </Link>
+                        <div className="flex items-center gap-4">
+                            {userId && <NotificationBell userId={userId} />}
+                            {userId ? (
+                                <Link href="/user/settings" className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 hover:border-primary transition-colors">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                </Link>
+                            ) : (
+                                <Link href="/login" className="text-xs font-bold text-slate-400 hover:text-white transition-colors">Login</Link>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </nav>
+                </nav>
+            )}
 
             {/* Mobile Header Over Image & Desktop Hero Content */}
             <div className={`h-64 relative overflow-hidden bg-slate-900 rounded-b-[2.5rem] md:rounded-b-none`}>

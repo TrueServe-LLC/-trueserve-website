@@ -18,6 +18,7 @@ import MerchantRejectButton from "./MerchantRejectButton";
 import MenuScanner from "./MenuScanner";
 import AddItemForm from "./AddItemForm";
 import MenuRow from "./MenuRow";
+import EmbedManager from "./EmbedManager";
 
 export const dynamic = "force-dynamic";
 
@@ -198,6 +199,8 @@ export default async function MerchantDashboard() {
                             menuItems={restaurant.menuItems || []}
                             outOfStockIngredients={restaurant.outOfStockIngredients || []}
                         />
+
+                        <EmbedManager restaurantId={restaurant.id} />
 
                         {/* Orders Section */}
                         <section>
