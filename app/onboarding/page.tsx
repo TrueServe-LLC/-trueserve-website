@@ -1,145 +1,151 @@
 "use client";
 
-import Link from "next/link";
-
 export default function OnboardingPortal() {
     return (
-        <div className="min-h-screen bg-[#02040a] text-white selection:bg-primary font-sans relative overflow-x-hidden">
-            {/* Animated Mesh Gradient Background (Consistent with Step 15) */}
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] animate-blob filter" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-primary/5 rounded-full blur-[120px] animate-blob-reverse filter delay-700" />
-            </div>
+        <div className="min-h-screen bg-[#02040a] text-white selection:bg-primary font-sans relative overflow-x-hidden p-4 md:p-8">
+            {/* Structural Background Pattern (Legitimacy Indicator) */}
+            <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" 
+                 style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-            {/* Header / Logo Section */}
-            <header className="relative z-10 w-full max-w-7xl mx-auto flex justify-between items-center p-8 md:p-12 border-b border-white/5">
-                <div className="flex items-center gap-4">
-                    <img src="/logo.png" alt="TrueServe Logo" className="w-14 h-14 rounded-2xl border border-white/10 shadow-2xl" />
-                    <div>
-                        <h1 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-none">TrueServe <span className="text-primary not-italic">Hub</span></h1>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mt-1">Onboarding Terminal — v2.0</p>
-                    </div>
-                </div>
-                <div className="hidden md:flex gap-4">
-                    <button onClick={() => window.print()} className="px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all italic">
-                        Print as PDF
-                    </button>
-                </div>
-            </header>
-
-            <main className="relative z-10 w-full max-w-5xl mx-auto py-20 px-8 text-center">
-                <div className="reveal space-y-6 mb-20">
-                    <h2 className="text-5xl md:text-7xl font-serif italic text-white tracking-tight leading-none">
-                        Welcome to the <br />
-                        <span className="text-primary not-italic uppercase font-black">Future of Delivery.</span>
-                    </h2>
-                    <p className="text-slate-400 text-lg md:text-xl font-medium italic leading-relaxed max-w-2xl mx-auto">
-                        Your partnership with TrueServe begins here. Follow this guide to link your current POS system and launch your digital storefront.
-                    </p>
-                </div>
-
-                {/* Step Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-24">
-                    <StepCard 
-                        number="01" 
-                        title="Link Your POS" 
-                        desc="Connect Toast, Square, or Clover to sync your menu instantly." 
-                        icon="🔌"
-                    />
-                    <StepCard 
-                        number="02" 
-                        title="Configure Fees" 
-                        desc="Set your custom marketplace markup and delivery radius." 
-                        icon="⚙️"
-                    />
-                    <StepCard 
-                        number="03" 
-                        title="Go Live" 
-                        desc="Switch your terminal to 'Active' and start accepting elite orders." 
-                        icon="🚀"
-                    />
-                </div>
-
-                {/* Integration Deep Dive */}
-                <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-12 text-left space-y-12 backdrop-blur-3xl shadow-2xl overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 p-12 text-9xl font-black italic text-white/5 select-none transition-transform group-hover:scale-110">POS</div>
-                    
-                    <div className="space-y-4">
-                        <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter">The Integration Protocol</h3>
-                        <p className="text-slate-500 font-bold italic max-w-2xl">Use these credentials to link your physical hardware to the TrueServe marketplace cloud.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Toast Instructions */}
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs">A</div>
-                                <h4 className="text-lg font-black text-white uppercase italic tracking-widest">Toast Setup</h4>
-                            </div>
-                            <div className="pl-11 space-y-4 text-sm text-slate-400 leading-relaxed font-medium">
-                                <p>1. Navigate to <strong>Integrations</strong> in your Toast Web Portal.</p>
-                                <p>2. Select <strong>'Custom Integration'</strong> or search for <strong>'TrueServe'</strong>.</p>
-                                <p>3. Generate your <strong>Client ID</strong> and <strong>Client Secret</strong>.</p>
-                                <p>4. Input these into your TrueServe Merchant Dashboard under <strong>Settings</strong>.</p>
-                            </div>
-                            <div className="pl-11 pt-4">
-                                <a href="mailto:support@pos.com?subject=API Access Request - TrueServe Integration" className="text-xs font-black uppercase text-primary hover:underline italic tracking-widest">Copy Email Template →</a>
-                            </div>
-                        </div>
-
-                        {/* Square Instructions */}
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs">B</div>
-                                <h4 className="text-lg font-black text-white uppercase italic tracking-widest">Square Setup</h4>
-                            </div>
-                            <div className="pl-11 space-y-4 text-sm text-slate-400 leading-relaxed font-medium">
-                                <p>1. Log in to the <strong>Square Developer Dashboard</strong>.</p>
-                                <p>2. Create a new Application called <strong>'TrueServe Marketplace'</strong>.</p>
-                                <p>3. Go to <strong>Production Dashboard</strong> and copy your <strong>Access Token</strong>.</p>
-                                <p>4. Input this into your TrueServe Merchant Dashboard instantly.</p>
-                            </div>
+            {/* Main Directive Enclosure */}
+            <div className="relative z-10 w-full max-w-5xl mx-auto bg-white/[0.02] border border-white/10 rounded-[2rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden">
+                
+                {/* Official Header Bar */}
+                <div className="bg-white/5 border-b border-white/10 p-8 md:p-12 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex items-center gap-8">
+                        <img src="/logo.png" alt="TrueServe Official Logo" className="w-20 h-20 object-contain drop-shadow-2xl" />
+                        <div className="h-16 w-px bg-white/10 hidden md:block" />
+                        <div className="text-center md:text-left">
+                            <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2">Internal Directive</h1>
+                            <p className="text-[10px] font-black uppercase tracking-[0.6em] text-primary">Pilot Fleet Operational Protocol — 2026.03</p>
                         </div>
                     </div>
+                    <div className="text-center md:text-right space-y-2">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Document Status: <span className="text-primary">AUTHORIZED</span></p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Control ID: <span className="text-white">TS-DRV-024-P</span></p>
+                    </div>
                 </div>
 
-                {/* Footer / Support */}
-                <footer className="mt-32 pt-16 border-t border-white/5 flex flex-col items-center gap-8">
-                    <p className="text-slate-600 text-xs font-black uppercase tracking-[0.5em] italic">TrueServe Operational Support</p>
+                <main className="p-8 md:p-20 space-y-24">
+                    {/* Part I: Integration Hierarchy */}
+                    <section className="space-y-12">
+                        <div className="flex items-baseline gap-4 border-b border-white/5 pb-6">
+                            <span className="text-5xl font-serif italic text-primary">I.</span>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">System Integration Registry</h2>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                            {/* Toast Section */}
+                            <div className="space-y-8 p-10 bg-white/[0.02] border border-white/5 rounded-3xl relative group transition-colors hover:border-primary/20">
+                                <div className="absolute -top-4 -left-4 bg-primary text-black text-[10px] font-black px-4 py-1 uppercase tracking-widest">Standard: TOAST</div>
+                                <h3 className="text-xl font-black text-white italic uppercase tracking-tighter pt-4">Hardware Sync</h3>
+                                <div className="space-y-4 text-xs font-bold text-slate-500 leading-relaxed italic">
+                                    <p>1. Access Authorized Partner Portal (Admin Level).</p>
+                                    <p>2. Generate Secure "Custom Integration" Credentials.</p>
+                                    <p>3. Capture Client ID & Managed Secret.</p>
+                                    <div className="mt-6 p-4 bg-black/40 border border-white/5 rounded-xl font-mono text-[10px] text-primary">
+                                        TARGET: /api/webhook/pos/toast
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Square Section */}
+                            <div className="space-y-8 p-10 bg-white/[0.02] border border-white/5 rounded-3xl relative group transition-colors hover:border-primary/20">
+                                <div className="absolute -top-4 -left-4 bg-primary text-black text-[10px] font-black px-4 py-1 uppercase tracking-widest">Standard: SQUARE</div>
+                                <h3 className="text-xl font-black text-white italic uppercase tracking-tighter pt-4">Marketplace Link</h3>
+                                <div className="space-y-4 text-xs font-bold text-slate-500 leading-relaxed italic">
+                                    <p>1. Initialize Square Developer Console Dashboard.</p>
+                                    <p>2. Provision Production Access API Environment.</p>
+                                    <p>3. Deploy Personal Access Token to TrueServe Hub.</p>
+                                    <div className="mt-6 p-4 bg-black/40 border border-white/5 rounded-xl font-mono text-[10px] text-primary">
+                                        TARGET: /api/webhook/pos/square
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Part II: Verification Checklist */}
+                    <section className="space-y-12">
+                         <div className="flex items-baseline gap-4 border-b border-white/5 pb-6">
+                            <span className="text-5xl font-serif italic text-primary">II.</span>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Compliance Checklist</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <ComplianceRow title="Financial Settlement" status="Verified Connect Path Required" />
+                            <ComplianceRow title="Operational Hours" status="Synchronized with POS Calendar" />
+                            <ComplianceRow title="Menu Pricing" status="Configured for Marketplace Margin" />
+                            <ComplianceRow title="Support Protocol" status="Email tech@trueservedelivery.com" />
+                        </div>
+                    </section>
+
+                    {/* Part III: Handover & Approval (THE "LEGIT" SECTION) */}
+                    <section className="space-y-12 pt-12 border-t border-white/10">
+                        <div className="flex items-baseline gap-4">
+                            <span className="text-5xl font-serif italic text-primary">III.</span>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Authorized Handover</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pt-8">
+                             <div className="space-y-8">
+                                 <p className="text-[10px] uppercase font-black tracking-widest text-slate-700 italic">Merchant Representative Certification</p>
+                                 <div className="h-px bg-white/20 w-full" />
+                                 <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2 italic">
+                                     <span>Signature</span>
+                                     <span>Date</span>
+                                 </div>
+                             </div>
+                             <div className="space-y-8">
+                                 <p className="text-[10px] uppercase font-black tracking-widest text-slate-700 italic">TrueServe Operational Witness</p>
+                                 <div className="h-px bg-white/20 w-full" />
+                                 <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2 italic">
+                                     <span>Verified Seal</span>
+                                     <span>Official Initials</span>
+                                 </div>
+                             </div>
+                        </div>
+                    </section>
+                </main>
+
+                {/* Footer Bar */}
+                <footer className="bg-white/5 border-t border-white/10 p-12 text-center flex flex-col items-center gap-6">
+                    <p className="text-[10px] font-black uppercase tracking-[0.8em] text-slate-600">Encrypted Deployment Pipeline • Zero Trust Protocol</p>
                     <div className="flex gap-4">
-                        <Link href="/merchant/dashboard" className="badge-solid-primary !py-4 !px-12 !text-[11px] h-glow">Launch Dashboard</Link>
-                        <Link href="/contact" className="px-10 py-4 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-primary transition-all text-slate-400 hover:text-white italic">Email Tech-Lead</Link>
+                        <button onClick={() => window.print()} className="px-10 py-4 bg-primary text-black text-[11px] font-black uppercase tracking-widest rounded-full h-glow hover:scale-105 transition-transform italic">
+                            Generate Document File (PDF)
+                        </button>
                     </div>
-                    <p className="text-[10px] text-slate-800 font-bold uppercase tracking-widest mt-8">
-                        © {new Date().getFullYear()} TrueServe Platform. Propelling local commerce through elite infrastructure.
-                    </p>
                 </footer>
-            </main>
+            </div>
 
             <style jsx>{`
                 @media print {
-                    .animate-blob, .animate-blob-reverse { display: none !important; }
-                    body { background: white !important; color: black !important; }
-                    .bg-white { background: #f8fafc !important; }
+                    body { background: white !important; padding: 0 !important; }
+                    .min-h-screen { background: white !important; padding: 0 !important; }
+                    .relative.z-10 { box-shadow: none !important; border: 1px solid #eee !important; width: 100% !important; max-width: 100% !important; }
+                    .bg-white\/5 { background: #f9f9f9 !important; }
+                    .bg-\[\#02040a\] { background: white !important; }
                     .text-white { color: black !important; }
-                    .text-slate-400, .text-slate-500 { color: #475569 !important; }
-                    .border-white\/5 { border-color: #e2e8f0 !important; }
-                    .badge-solid-primary { background: #f59e0b !important; color: white !important; }
+                    .text-slate-500, .text-slate-600, .text-slate-700 { color: #666 !important; }
+                    .border-white\/10, .border-white\/5 { border-color: #eee !important; }
+                    .bg-primary { background: #f59e0b !important; color: white !important; }
+                    .text-primary { color: #000 !important; font-weight: 900 !important; }
+                    .fixed, footer button { display: none !important; }
                 }
             `}</style>
         </div>
     );
 }
 
-function StepCard({ number, title, desc, icon }: { number: string, title: string, desc: string, icon: string }) {
+function ComplianceRow({ title, status }: { title: string, status: string }) {
     return (
-        <div className="reveal p-8 bg-white/[0.01] border border-white/5 rounded-[2rem] space-y-4 hover:border-primary/20 transition-all group">
-            <div className="flex justify-between items-start">
-                <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">{icon}</span>
-                <span className="text-4xl font-black italic text-white/5 group-hover:text-primary/10 transition-colors uppercase">{number}</span>
+        <div className="flex items-center justify-between p-6 bg-white/[0.01] border border-white/5 rounded-2xl group transition-all hover:bg-white/[0.03]">
+            <div className="flex items-center gap-4">
+                <div className="w-5 h-5 border border-white/10 rounded flex items-center justify-center text-[10px] font-black text-primary opacity-20 group-hover:opacity-100 transition-opacity">✓</div>
+                <p className="text-[11px] font-black uppercase text-white tracking-widest italic">{title}</p>
             </div>
-            <h4 className="text-xl font-black text-white italic uppercase tracking-tighter">{title}</h4>
-            <p className="text-slate-500 text-sm font-bold italic leading-relaxed">{desc}</p>
+            <p className="text-[10px] font-bold italic text-slate-700 uppercase tracking-widest">{status}</p>
         </div>
     );
 }
