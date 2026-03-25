@@ -12,17 +12,19 @@ export default function OnboardingPortal() {
                 
                 {/* Official Header Bar */}
                 <div className="bg-white/5 border-b border-white/10 p-8 md:p-12 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex items-center gap-8">
-                        <img src="/logo.png" alt="TrueServe Official Logo" className="w-20 h-20 object-contain drop-shadow-2xl" />
+                    <div className="flex items-center gap-8 text-center md:text-left">
+                        <div className="p-3 bg-white rounded-2xl shadow-2xl flex-shrink-0">
+                            <img src="/logo.png" alt="TrueServe Official Logo" className="w-16 h-16 object-contain" />
+                        </div>
                         <div className="h-16 w-px bg-white/10 hidden md:block" />
-                        <div className="text-center md:text-left">
-                            <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2">Internal Directive</h1>
-                            <p className="text-[10px] font-black uppercase tracking-[0.6em] text-primary">Pilot Fleet Operational Protocol — 2026.03</p>
+                        <div>
+                            <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2">Corporate Directive</h1>
+                            <p className="text-[10px] font-black uppercase tracking-[0.6em] text-primary">Pilot Fleet Operational Protocol — v2026.1</p>
                         </div>
                     </div>
-                    <div className="text-center md:text-right space-y-2">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Document Status: <span className="text-primary">AUTHORIZED</span></p>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Control ID: <span className="text-white">TS-DRV-024-P</span></p>
+                    <div className="text-center md:text-right space-y-2 border border-white/10 p-4 rounded-xl bg-black/40">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Status: <span className="text-primary font-black">● AUTHORIZED SYSTEM</span></p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mt-2">Control ID: <span className="text-white">TRUE-SERVE-P-001</span></p>
                     </div>
                 </div>
 
