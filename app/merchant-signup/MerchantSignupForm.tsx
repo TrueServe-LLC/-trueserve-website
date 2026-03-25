@@ -86,10 +86,11 @@ function MerchantSignupFormInner() {
                 })}
             </div>
 
-            {/* Form Card */}
-            <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] backdrop-blur-3xl shadow-2xl overflow-hidden">
+
+            {/* Form - no outer box */}
+            <div className="w-full">
                 {state.error && (
-                    <div className="px-10 pt-8">
+                    <div className="mb-6">
                         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-[10px] font-black uppercase tracking-widest text-center">
                             ⚠️ {state.message}
                         </div>
@@ -97,10 +98,10 @@ function MerchantSignupFormInner() {
                 )}
 
                 <form onSubmit={handleSubmit} key={currentStep}>
-                    <div className="p-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         
                         {/* Step label */}
-                        <div className="border-b border-white/5 pb-6">
+                        <div className="border-b border-white/5 pb-5">
                             <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">
                                 {["Identity & Credentials", "Operational Domain", "Partnership Protocol"][currentStep - 1]}
                             </h4>
@@ -206,7 +207,7 @@ function MerchantSignupFormInner() {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-10 pb-10 pt-6 border-t border-white/5 flex items-center justify-between gap-4">
+                    <div className="pt-8 mt-4 border-t border-white/5 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 opacity-40">
                             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                             <span className="text-slate-700 text-[9px] font-black uppercase tracking-widest italic">Secure · Encrypted</span>
