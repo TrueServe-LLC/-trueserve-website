@@ -3,7 +3,8 @@
 
 ALTER TABLE "Restaurant"
 ADD COLUMN IF NOT EXISTS "ghlLocationId" TEXT,
-ADD COLUMN IF NOT EXISTS "ghlSyncEnabled" BOOLEAN DEFAULT FALSE;
+ADD COLUMN IF NOT EXISTS "ghlSyncEnabled" BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS "websiteUrl" TEXT;
 
 -- Index for faster webhook lookups
 CREATE INDEX IF NOT EXISTS "idx_restaurant_ghl_location" ON "Restaurant"("ghlLocationId");

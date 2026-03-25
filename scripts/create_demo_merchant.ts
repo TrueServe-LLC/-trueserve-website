@@ -42,6 +42,7 @@ async function create() {
         plan: 'Pro Subscription',
         ghlSyncEnabled: true,
         ghlLocationId: "demo-ghl-123",
+        websiteUrl: "https://gohighlevel.com",
         updatedAt: new Date().toISOString()
     });
 

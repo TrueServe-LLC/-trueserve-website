@@ -26,6 +26,7 @@ interface Restaurant {
     city?: string;
     distance?: string;
     address?: string;
+    websiteUrl?: string; // Marketing URL (GHL, WordPress, etc.)
     deliveryFee?: string;
     prepTime?: string;
     priceLevel?: string;
@@ -179,7 +180,8 @@ async function getRestaurants(
                 deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
                 prepTime: `${15 + (seed % 15)}-${25 + (seed % 15)} min`,
                 deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: 'Spend $20, Save $5' } : undefined,
-                isBusy: !!r.isBusy
+                isBusy: !!r.isBusy,
+                websiteUrl: r.websiteUrl
             };
         });
 
@@ -351,6 +353,15 @@ export default async function RestaurantFinder({
                                         <div className="absolute top-4 left-4 flex flex-col gap-2">
                                             <div className="bg-black/40 backdrop-blur-xl text-white text-[9px] font-black px-4 py-2 rounded-xl border border-white/10 uppercase tracking-widest">{rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}</div>
                                             {rest.deal && <div className="bg-emerald-500 text-black text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-2xl">DEAL</div>}
+                                            {rest.websiteUrl && (
+                                                <div 
+                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(rest.websiteUrl, '_blank'); }}
+                                                    className="bg-black border border-emerald-500/50 text-emerald-400 text-[8px] font-black px-4 py-2 rounded-xl uppercase tracking-wider hover:bg-emerald-500 hover:text-black transition-all cursor-pointer shadow-lg active:scale-95"
+                                                    title="View Official Website"
+                                                >
+                                                    🔗 Official Hub
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="px-1 text-center flex flex-col items-center">
