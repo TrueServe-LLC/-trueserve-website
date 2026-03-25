@@ -297,11 +297,11 @@ function DriverApplicationFormInner() {
                                 </button>
                             )}
                             {currentStep < 4 ? (
-                                <button type="button" onClick={nextStep} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-xl">
+                                <button type="button" onClick={nextStep} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full h-glow">
                                     Continue →
                                 </button>
                             ) : (
-                                <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-xl disabled:opacity-30">
+                                <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full disabled:opacity-30 h-glow">
                                     {isPending ? "Submitting..." : "Submit Application ✓"}
                                 </button>
                             )}

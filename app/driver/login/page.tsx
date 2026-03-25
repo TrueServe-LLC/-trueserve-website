@@ -100,7 +100,7 @@ export default function DriverLoginPage() {
                         {/* Footer Link */}
                         <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-4">
                             <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest">New to the Fleet?</p>
-                            <Link href="/driver" className="badge-outline-white !py-3 !px-8 !text-[10px] !rounded-full opacity-60 hover:opacity-100">
+                            <Link href="/driver" className="badge-solid-primary !rounded-full !py-2.5 !px-8 !text-[10px] !opacity-100 h-glow">
                                 Apply to Drive
                             </Link>
                         </div>

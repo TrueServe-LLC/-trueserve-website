@@ -98,9 +98,9 @@ export default function DriverPortal() {
                 </p>
 
                 <div className="reveal delay-300 flex flex-col sm:flex-row gap-4 items-center">
-                    <Link href="#signup" className="group relative flex items-center gap-3 px-10 py-4 bg-primary text-black text-[11px] font-black uppercase tracking-[0.4em] rounded-2xl hover:scale-105 transition-all duration-500 shadow-[0_0_50px_rgba(245,158,11,0.25)] italic">
+                    <Link href="#signup" className="badge-solid-primary !rounded-full !py-4 !px-12 !text-[11px] h-glow">
                         Apply to Drive
-                        <span className="group-hover:translate-x-1.5 transition-transform duration-500">→</span>
+                        <span className="ml-3 group-hover:translate-x-1.5 transition-transform duration-500 text-lg leading-none">→</span>
                     </Link>
                     <Link href="#features" className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-white transition-colors italic">
                         Learn More ↓
