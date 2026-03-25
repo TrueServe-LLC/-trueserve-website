@@ -47,20 +47,24 @@ export default function AdminLogin() {
     };
 
     return (
-        <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-[#080c14]">
-            {/* Background Layer with heavy blur */}
-            <div className="absolute inset-0 z-0">
-                <img 
-                    src="/hero_food_delivery.png" 
-                    alt="Background" 
-                    className="w-full h-full object-cover grayscale opacity-30 scale-105"
-                />
-                <div className="absolute inset-0 bg-[#080c14]/80 backdrop-blur-[120px]" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/5" />
+        <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-[#02040a]">
+            {/* Animated Mesh Gradient Background */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                {/* Blobs */}
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] animate-blob filter" />
+                <div className="absolute top-[20%] right-[-10%] w-[45%] h-[45%] bg-indigo-500/20 rounded-full blur-[120px] animate-blob-reverse filter delay-700" />
+                <div className="absolute bottom-[-10%] left-[20%] w-[55%] h-[55%] bg-emerald-500/10 rounded-full blur-[120px] animate-blob-slow filter" />
+                <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] animate-blob filter delay-1000" />
+                
+                {/* Dark overlay to keep text readable */}
+                <div className="absolute inset-0 bg-[#02040a]/40 backdrop-blur-[20px]" />
+                
+                {/* Subtle Grid */}
+                <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
             </div>
 
-            <div className="relative z-10 w-full max-w-md p-1 px-1 bg-gradient-to-b from-white/10 to-transparent rounded-[2.5rem] shadow-2xl">
-                <div className="bg-[#0a0a0b]/90 backdrop-blur-3xl rounded-[2.4rem] p-10 md:p-12 border border-white/5 space-y-10">
+            <div className="relative z-10 w-full max-w-md p-1 px-1 bg-gradient-to-b from-white/10 to-transparent rounded-[2.5rem] shadow-2xl mx-4">
+                <div className="bg-[#05060b]/90 backdrop-blur-3xl rounded-[2.4rem] p-10 md:p-12 border border-white/5 space-y-10">
                     <div className="text-center space-y-4">
                         <div className="flex justify-center mb-6">
                             <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl border border-primary/20 shadow-lg" />
