@@ -144,7 +144,7 @@ export default function AdminLogin() {
                     <button
                         type="button"
                         onClick={handleGoogleLogin}
-                        className="w-full flex items-center justify-center gap-3 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] py-4 rounded-xl hover:bg-slate-200 transition-all shadow-xl active:scale-95"
+                        className="w-full flex items-center justify-center gap-3 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] py-4 rounded-full hover:bg-slate-200 transition-all shadow-xl active:scale-95 border-2 border-white"
                     >
                         <svg className="w-4 h-4" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -154,9 +154,9 @@ export default function AdminLogin() {
                         </svg>
                         Continue with Google
                     </button>
-
+ 
                     <div className="text-center pt-2">
-                        <Link href="/" className="text-[10px] font-black text-slate-600 hover:text-white uppercase tracking-widest transition-colors">
+                        <Link href="/" className="text-[10px] font-black text-slate-600 hover:text-white uppercase tracking-[0.4em] transition-colors italic">
                             Return to Homepage
                         </Link>
                     </div>
