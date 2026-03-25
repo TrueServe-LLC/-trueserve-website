@@ -185,6 +185,8 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "app/merchant/login/page.tsx",
+    "app/merchant/login",
     "app/api/webhook/pos/lightspeed/route.ts",
     "app/api/webhook/pos/lightspeed",
     "app/api/webhook/pos/revel/route.ts",
@@ -194,8 +196,6 @@
     "lib/posWebhooks.ts",
     "app/api/webhook/pos/square/route.ts",
     "app/api/webhook/pos/square",
-    "app/api/webhook/pos/toast/route.ts",
-    "app/api/webhook/pos/toast",
     "public/admin_bg.png",
     "public/diverse_drivers.png",
     "public/driver_hero.png",

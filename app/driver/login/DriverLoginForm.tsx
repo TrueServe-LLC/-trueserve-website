@@ -116,83 +116,84 @@ export default function DriverLoginForm() {
     return (
         <div className="space-y-6 animate-fade-in relative z-10 w-full">
             {message && (
-                <div className={`p-3 text-xs md:text-sm font-bold rounded-xl text-center border ${message.error ? "bg-red-500/10 text-red-400 border-red-500/20" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                    }`}>
+                <div className={`p-4 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 border animate-in fade-in slide-in-from-top-2 ${
+                    message.error ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-green-500/10 border-green-500/20 text-green-400'
+                }`}>
+                    <span>{message.error ? '⚠️' : '✅'}</span>
                     {message.text}
                 </div>
             )}
 
             {step === "phone" ? (
-                <form onSubmit={handleSendOTP} className="space-y-4">
-                    <div>
-                        <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block pl-2">
-                            Mobile Number
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">📱</span>
-                            <input
+                <form onSubmit={handleSendOTP} className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Mobile Number</label>
+                        <div className="flex gap-2">
+                            <div className="bg-[#1c1916] border border-white/5 rounded-2xl px-4 flex items-center text-slate-400 text-sm font-bold">🇺🇸 +1</div>
+                            <input 
                                 type="tel"
                                 required
+                                placeholder="555 000 0000"
+                                className="flex-1 bg-[#1c1916] border border-white/5 rounded-2xl px-6 py-4 text-sm text-white focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-slate-700"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
-                                className="w-full bg-slate-950/50 border border-white/5 rounded-2xl py-4 pr-4 focus:bg-slate-950 focus:border-primary outline-none transition-all placeholder:text-slate-600 font-mono tracking-wider"
-                                style={{ paddingLeft: '3rem' }}
-                                placeholder="(336) 555-0100"
+                                disabled={isLoading}
                             />
                         </div>
                     </div>
 
-                    <button
+                    <button 
                         type="submit"
                         disabled={isLoading || phone.length < 10}
-                        className="w-full bg-primary/20 border border-primary/50 text-primary py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] disabled:opacity-50 mt-2 hover:bg-primary hover:text-white transition-all shadow-[0_0_15px_rgba(241,161,55,0.1)] active:scale-95"
+                        className="w-full bg-primary hover:bg-primary-hover disabled:opacity-40 text-black font-black uppercase tracking-[0.3em] text-[11px] h-14 rounded-2xl italic shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
                     >
-                        {isLoading ? "Sending text..." : "Send Login Code"}
+                        {isLoading ? "Validating..." : "Request Access Code →"}
                     </button>
-                    <p className="text-[10px] text-center text-slate-500 leading-relaxed max-w-[250px] mx-auto opacity-70">
+                    
+                    <p className="text-[10px] text-center text-slate-600 leading-relaxed max-w-[280px] mx-auto opacity-70">
                         By continuing, you consent to receive automated authentication text messages from TrueServe.
                     </p>
                 </form>
             ) : (
-                <form onSubmit={handleVerifyOTP} className="space-y-4 animate-slide-up">
-                    <div className="mb-2 text-center">
-                        <p className="text-xs text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                            Sent to <span className="text-slate-200 font-mono">{phone}</span>
-                        </p>
-                        <button
-                            type="button"
-                            onClick={() => { setStep("phone"); setToken(""); setMessage(null); }}
-                            className="text-[10px] font-bold text-primary hover:underline mt-1 uppercase tracking-widest"
-                        >
-                            Change Number
-                        </button>
-                    </div>
-
-                    <div>
-                        <label className="text-[10px] text-center uppercase tracking-widest text-slate-500 font-bold mb-2 block">
-                            6-Digit Code
-                        </label>
-                        <div className="flex justify-center">
-                            <input
-                                type="text"
-                                inputMode="numeric"
-                                pattern="\d*"
-                                maxLength={6}
-                                required
-                                value={token}
-                                onChange={(e) => setToken(e.target.value)}
-                                className="w-[200px] text-center bg-slate-950/50 border border-white/10 rounded-2xl py-4 text-3xl font-black focus:bg-slate-950 focus:border-primary outline-none transition-all tracking-[0.5em] text-white shadow-inner"
-                                placeholder="••••••"
-                            />
+                <form onSubmit={handleVerifyOTP} className="space-y-6 animate-slide-up">
+                    <div className="space-y-2 text-center">
+                        <div className="mb-4">
+                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Sent to <span className="text-primary">{phone}</span></p>
+                            <button 
+                                type="button"
+                                onClick={() => { setStep("phone"); setToken(""); setMessage(null); }}
+                                className="text-[9px] font-black text-primary/60 hover:text-primary uppercase tracking-widest transition-colors mt-1"
+                            >
+                                Change Number
+                            </button>
                         </div>
+                        
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">6-Digit Activation Code</label>
+                        <input 
+                            type="text"
+                            maxLength={6}
+                            placeholder="••••••"
+                            className="w-full bg-[#1c1916] border border-white/5 rounded-2xl px-6 py-5 text-2xl font-black tracking-[1em] text-center text-primary focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-slate-800"
+                            value={token}
+                            onChange={(e) => setToken(e.target.value.replace(/\D/g, ""))}
+                            disabled={isLoading}
+                        />
                     </div>
 
-                    <button
+                    <button 
                         type="submit"
                         disabled={isLoading || token.length < 6}
-                        className="w-full bg-primary text-black py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 shadow-[0_10px_20px_rgba(241,161,55,0.2)] mt-6"
+                        className="w-full bg-primary hover:bg-primary-hover disabled:opacity-40 text-black font-black uppercase tracking-[0.3em] text-[11px] h-14 rounded-2xl italic shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
                     >
-                        {isLoading ? "Verifying..." : "Verify & Login"}
+                        {isLoading ? "Activating..." : "Authorize Terminal ✓"}
+                    </button>
+
+                    <button 
+                        type="button"
+                        onClick={() => { setStep("phone"); setMessage(null); }}
+                        className="w-full text-[9px] font-black text-slate-600 uppercase tracking-widest hover:text-white transition-colors"
+                    >
+                        Wrong number? Try again
                     </button>
                 </form>
             )}

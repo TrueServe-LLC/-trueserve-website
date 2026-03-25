@@ -32,7 +32,7 @@ export default function MerchantPortal() {
                     </nav>
                 </div>
                 <div className="flex items-center gap-6">
-                    <Link href="/login?role=merchant" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all italic border-b-2 border-transparent hover:border-primary pb-1">Portal Login</Link>
+                    <Link href="/merchant/login" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all italic border-b-2 border-transparent hover:border-primary pb-1">Portal Login</Link>
                     <Link href="#signup" className="badge-solid-primary !py-3.5 !px-10 !text-[11px] h-glow">
                         Join Network
                     </Link>
