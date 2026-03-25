@@ -46,9 +46,24 @@ export default function OrderConfirmAnimation({ restaurantName, onComplete }: Or
                     transition: "opacity 0.5s, transform 0.6s"
                 }}
             >
-                <p className="text-[10px] font-black uppercase tracking-[0.6em] text-amber-500/70 mb-3 italic">
-                    Order Confirmed
-                </p>
+                <div className="inline-flex items-center gap-2 mb-4">
+                    <span
+                        style={{
+                            background: "#f5a623",
+                            color: "#09090b",
+                            fontWeight: 900,
+                            fontSize: 11,
+                            letterSpacing: "0.18em",
+                            textTransform: "uppercase",
+                            borderRadius: 9999,
+                            padding: "6px 20px",
+                            border: "2px solid #f5a623",
+                            display: "inline-block",
+                        }}
+                    >
+                        ✓&nbsp;&nbsp;Order Confirmed
+                    </span>
+                </div>
                 <h2
                     className="text-3xl sm:text-4xl md:text-5xl font-serif italic text-white tracking-tight leading-tight"
                     style={{ textShadow: "0 0 40px rgba(245,158,11,0.2)" }}
