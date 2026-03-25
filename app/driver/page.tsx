@@ -63,7 +63,7 @@ export default function DriverPortal() {
                 <div className="flex items-center gap-6">
                     <Link href="/" className="flex items-center gap-3 group">
                         <img src="/logo.png" alt="TrueServe" className="w-9 h-9 rounded-xl border border-white/10 group-hover:scale-110 transition-transform" />
-                        <span className="text-xl font-black text-white tracking-widest italic uppercase">True<span className="text-primary not-italic">Serve</span></span>
+                        <span className="text-xl font-serif font-black text-white italic tracking-tighter uppercase leading-none">True<span className="text-primary not-italic text-sm ml-0.5">Serve</span></span>
                     </Link>
                     <div className="h-5 w-px bg-white/10 hidden lg:block" />
                     <div className="hidden lg:flex gap-8 text-[10px] font-black uppercase tracking-[0.4em] italic">
@@ -72,7 +72,7 @@ export default function DriverPortal() {
                     </div>
                 </div>
                 <div className="flex items-center gap-5">
-                    <Link href="/driver/login" className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all italic hidden sm:block">Login</Link>
+                    <Link href="/driver/login" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all border border-white/10 rounded-full px-5 py-2 hover:bg-white/5 italic hidden sm:block">Login</Link>
                     <Link href="#signup" className="badge-solid-primary !py-2.5 !px-8 !text-[10px] !rounded-full h-glow">
                         Join Fleet
                     </Link>

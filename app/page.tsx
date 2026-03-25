@@ -22,7 +22,7 @@ export default async function Home() {
             <div className="w-12 h-12 rounded-full border-2 border-slate-600 bg-black/60 flex items-center justify-center p-1.5 overflow-hidden shadow-2xl group-hover:scale-110 transition-transform">
               <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
             </div>
-            <span className="text-xl md:text-2xl font-black tracking-widest text-white uppercase italic">True<span className="text-primary not-italic tracking-[0.02em] font-black">SERVE</span></span>
+            <span className="text-2xl font-serif font-black tracking-tighter text-white uppercase italic leading-none">True<span className="text-primary not-italic tracking-tighter text-xl ml-0.5">SERVE</span></span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-12 text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">
@@ -66,7 +66,7 @@ export default async function Home() {
               </div>
             ) : (
               <div className="flex items-center gap-6">
-                <Link href="/login" className="hidden md:block text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-colors italic">Sign In</Link>
+                <Link href="/login" className="hidden md:block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all border border-white/10 rounded-full px-5 py-2 hover:bg-white/5 italic">Sign In</Link>
                 <Link href="/restaurants" className="badge-solid-primary !px-10 !py-3 !text-[11px] h-glow">
                   Get Started
                 </Link>

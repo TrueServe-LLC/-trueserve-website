@@ -114,8 +114,8 @@ function LoginWithParams() {
                         <div className="flex justify-center mb-6">
                             <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl border border-primary/20 shadow-lg" />
                         </div>
-                        <h1 className="text-3xl font-serif font-bold italic text-white tracking-tight">
-                            True<span className="text-primary not-italic font-sans uppercase tracking-widest text-xl ml-1">Serve</span>
+                        <h1 className="text-4xl font-serif font-black italic text-white tracking-tighter uppercase leading-none">
+                            True<span className="text-primary not-italic font-black text-3xl ml-1">Serve</span>
                         </h1>
                         <h2 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.4em]">
                             {mode === 'login' && "Sign in to your account"}
