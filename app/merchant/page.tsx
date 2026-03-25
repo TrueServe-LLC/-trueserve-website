@@ -113,42 +113,45 @@ export default function MerchantPortal() {
             </section>
 
             {/* ── PLATFORM FEATURES (Scroll Reveal) ────────────────────────── */}
-            <section id="features" className="relative z-10 py-32 px-8 max-w-7xl mx-auto">
-                <div className="text-center space-y-4 mb-20">
-                    <div className="reveal flex items-center justify-center gap-4 text-white/30 font-black uppercase tracking-[0.6em] text-[10px] italic">
-                        <div className="w-10 h-px bg-primary/30" />
-                        Engineered for Merchant Success
-                        <div className="w-10 h-px bg-primary/30" />
-                    </div>
-                    <h2 className="reveal delay-100 text-4xl md:text-6xl font-serif text-white tracking-tight uppercase italic leading-none">
-                        Platform <span className="text-primary not-italic font-black">Features.</span>
-                    </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                    {features.map((feat, i) => (
-                        <div key={i} className={`reveal-scale ${feat.delay} p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 space-y-5 hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-xl relative overflow-hidden text-center`}>
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                            <div className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">{feat.icon}</div>
-                            <h3 className="text-lg text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
-                            <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
+            <section id="features" className="relative z-10 w-full py-32">
+                <div className="w-full flex flex-col items-center px-8">
+                    <div className="text-center space-y-4 mb-20 w-full max-w-6xl">
+                        <div className="reveal flex items-center justify-center gap-4 text-white/30 font-black uppercase tracking-[0.6em] text-[10px] italic">
+                            <div className="w-10 h-px bg-primary/30" />
+                            Engineered for Merchant Success
+                            <div className="w-10 h-px bg-primary/30" />
                         </div>
-                    ))}
+                        <h2 className="reveal delay-100 text-4xl md:text-6xl font-serif text-white tracking-tight uppercase italic leading-none">
+                            Platform <span className="text-primary not-italic font-black">Features.</span>
+                        </h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+                        {features.map((feat, i) => (
+                            <div key={i} className={`reveal-scale ${feat.delay} p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 space-y-5 hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-xl relative overflow-hidden text-center`}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                <div className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">{feat.icon}</div>
+                                <h3 className="text-lg text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
+                                <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
             {/* ── PERKS LIST (Scroll Reveal) ────────────────────────────────── */}
-            <section className="relative z-10 py-24 px-8 max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {perks.map((p, i) => (
-                        <div key={i} className={`reveal delay-${(i + 1) * 100} flex items-center gap-6 p-6 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-primary/20 transition-all group`}>
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">{p.icon}</div>
-                            <div>
-                                <p className="text-[13px] font-black text-white italic tracking-wide">{p.title}</p>
-                                <p className="text-[11px] text-slate-500 italic font-bold leading-tight">{p.desc}</p>
+            <section className="relative z-10 w-full py-24">
+                <div className="w-full flex flex-col items-center px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+                        {perks.map((p, i) => (
+                            <div key={i} className={`reveal delay-${(i + 1) * 100} flex items-center gap-6 p-6 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-primary/20 transition-all group`}>
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">{p.icon}</div>
+                                <div>
+                                    <p className="text-[13px] font-black text-white italic tracking-wide">{p.title}</p>
+                                    <p className="text-[11px] text-slate-500 italic font-bold leading-tight">{p.desc}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </section>
 

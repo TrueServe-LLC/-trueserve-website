@@ -115,43 +115,46 @@ export default function DriverPortal() {
             </section>
 
             {/* ── PLATFORM FEATURES (Scroll Reveal) ────────────────────────── */}
-            <section id="features" className="relative z-10 py-32 px-8 max-w-7xl mx-auto">
-                <div className="text-center space-y-4 mb-20">
-                    <div className="reveal flex items-center justify-center gap-4 text-white/30 font-black uppercase tracking-[0.6em] text-[10px] italic">
-                        <div className="w-10 h-px bg-primary/30" />
-                        Engineered for Driver Success
-                        <div className="w-10 h-px bg-primary/30" />
-                    </div>
-                    <h2 className="reveal delay-100 text-4xl md:text-6xl font-serif text-white tracking-tight uppercase italic leading-none">
-                        Platform <span className="text-primary not-italic font-black">Features.</span>
-                    </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                    {features.map((feat, i) => (
-                        <div key={i} className={`reveal-scale ${feat.delay} p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 space-y-5 hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-xl relative overflow-hidden text-center`}>
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                            <div className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">{feat.icon}</div>
-                            <h3 className="text-lg text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
-                            <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
+            <section id="features" className="relative z-10 w-full py-32">
+                <div className="w-full flex flex-col items-center px-8">
+                    <div className="text-center space-y-4 mb-20 w-full max-w-6xl">
+                        <div className="reveal flex items-center justify-center gap-4 text-white/30 font-black uppercase tracking-[0.6em] text-[10px] italic">
+                            <div className="w-10 h-px bg-primary/30" />
+                            Engineered for Driver Success
+                            <div className="w-10 h-px bg-primary/30" />
                         </div>
-                    ))}
+                        <h2 className="reveal delay-100 text-4xl md:text-6xl font-serif text-white tracking-tight uppercase italic leading-none">
+                            Platform <span className="text-primary not-italic font-black">Features.</span>
+                        </h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+                        {features.map((feat, i) => (
+                            <div key={i} className={`reveal-scale ${feat.delay} p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 space-y-5 hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-xl relative overflow-hidden text-center`}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                <div className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">{feat.icon}</div>
+                                <h3 className="text-lg text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
+                                <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* ── REQUIREMENTS (Scroll Reveal) ─────────────────────────────── */}
-            <section className="relative z-10 py-24 px-8 max-w-5xl mx-auto">
-                <div className="reveal text-center mb-14 space-y-3">
-                    <h2 className="text-3xl md:text-5xl font-serif italic text-white uppercase tracking-tight">Fleet <span className="text-primary">Protocols.</span></h2>
-                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">Standard operational requirements</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {requirements.map((req, i) => (
-                        <div key={i} className={`reveal delay-${Math.min((i + 1) * 100, 600)} flex items-center gap-5 p-4 bg-white/[0.02] border border-white/5 rounded-full hover:border-primary/20 transition-all group`}>
-                            <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-[10px] font-black shrink-0">✓</div>
-                            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest italic">{req}</span>
-                        </div>
-                    ))}
+            {/* ── FLEET PROTOCOLS (Scroll Reveal) ──────────────────────────── */}
+            <section className="relative z-10 w-full py-24">
+                <div className="w-full flex flex-col items-center px-8">
+                    <div className="reveal text-center mb-14 space-y-3 w-full max-w-3xl">
+                        <h2 className="text-3xl md:text-5xl font-serif italic text-white uppercase tracking-tight">Fleet <span className="text-primary">Protocols.</span></h2>
+                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">Standard operational requirements</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
+                        {requirements.map((req, i) => (
+                            <div key={i} className={`reveal delay-${Math.min((i + 1) * 100, 600)} flex items-center gap-5 p-4 bg-white/[0.02] border border-white/5 rounded-full hover:border-primary/20 transition-all group`}>
+                                <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-[10px] font-black shrink-0">✓</div>
+                                <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest italic">{req}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
