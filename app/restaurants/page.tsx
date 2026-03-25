@@ -97,15 +97,19 @@ async function getRestaurants(
     let matchedLocation: any = null;
     if (address) {
         const lowerAddr = address.toLowerCase();
-        matchedLocation = validLocations.find(loc => lowerAddr.includes(loc.city.toLowerCase()));
+        matchedLocation = validLocations.find(loc => {
+            const city = loc.city?.toLowerCase() || "";
+            return city && lowerAddr.includes(city);
+        });
     }
     if (!matchedLocation && term) {
         const termClean = term.trim().toLowerCase();
         matchedLocation = validLocations.find(loc => {
-            const cityLower = loc.city.toLowerCase();
-            return cityLower.includes(termClean) || termClean.includes(cityLower) ||
-                (loc.state.toLowerCase() === termClean) ||
-                loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix));
+            const cityLower = loc.city?.toLowerCase() || "";
+            const stateLower = loc.state?.toLowerCase() || "";
+            return (cityLower && (cityLower.includes(termClean) || termClean.includes(cityLower))) ||
+                (stateLower && stateLower === termClean) ||
+                (loc.zipPrefixes && loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix)));
         });
     }
     if (!matchedLocation && lat && lng) {
@@ -303,7 +307,7 @@ export default async function RestaurantFinder({
                                     <span className="w-2 h-2 rounded-sm bg-emerald-500 animate-pulse"></span>
                                     <span className="text-emerald-500 font-black uppercase tracking-widest text-[10px] italic">Active Mission Protocol</span>
                                 </div>
-                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tight">Order #{activeOrders[0].id.slice(0,8)} • {activeOrders[0].status.replace('_', ' ')}</h3>
+                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tight">Order #{activeOrders[0].id.slice(0,8)} • {(activeOrders[0].status || 'PENDING').replace('_', ' ')}</h3>
                                 <p className="text-slate-500 text-sm font-bold italic mt-1">{activeOrders[0].restaurant?.name}</p>
                             </div>
                             <Link href={`/orders/${activeOrders[0].id}`} className="badge-solid-primary !bg-emerald-500 !py-4 !px-12 !text-[11px] shadow-emerald-500/20">Track Status →</Link>
