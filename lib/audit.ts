@@ -1,6 +1,16 @@
 import { supabaseAdmin } from "./supabase-admin";
 import { getAuthSession } from "@/app/auth/actions";
 
+// High-risk actions that trigger anomaly alerts
+const ANOMALY_ACTIONS = new Set([
+    'WEBHOOK_INVALID_SIGNATURE',
+    'FORCE_COMPLETE_ORDER',
+    'ADMIN_CANCEL_ORDER',
+    'APPROVE_CHANGE',
+    'REJECT_DRIVER',
+    'CONNECT_STRIPE_PORTAL',
+]);
+
 export async function logAudit({
     action,
     targetId,
@@ -20,12 +30,7 @@ export async function logAudit({
 }) {
     try {
         const { isAuth, userId } = await getAuthSession();
-        // If not authenticated via standard session, we might be in a context where userId is provided differently, 
-        // but for now we follow the existing pattern.
         const actorId = isAuth ? userId : null;
-
-        // In the database, we use 'before' and 'after' JSONB columns.
-        // If the caller provides 'metadata' but not 'after', we use 'metadata' as 'after'.
         const finalAfter = after || metadata;
 
         const { error } = await supabaseAdmin.from('AuditLog').insert({
@@ -42,6 +47,36 @@ export async function logAudit({
         if (error) {
             console.error("Audit Log Insert Error:", error);
         }
+
+        // --- Step 18: Anomaly Alerting ---
+        if (ANOMALY_ACTIONS.has(action)) {
+            try {
+                const { sendEmail } = await import("@/lib/email");
+                const alertBody = `
+🚨 Admin Action Alert
+---------------------
+Action: ${action}
+Entity: ${entityType}
+Target: ${targetId}
+Actor: ${actorId || 'SYSTEM'}
+Message: ${message}
+Time: ${new Date().toISOString()}
+
+Review the Admin Audit Log at:
+https://trueservedelivery.com/admin/dashboard
+                `.trim();
+
+                await sendEmail(
+                    "security@trueservedelivery.com",
+                    `[TrueServe Security] High-Risk Action: ${action}`,
+                    alertBody
+                );
+            } catch (alertErr) {
+                // Non-blocking — don't fail the primary action if alerting fails
+                console.error("Anomaly alert failed:", alertErr);
+            }
+        }
+
     } catch (e) {
         console.error("Critical: Failed to log audit action:", e);
     }
@@ -49,4 +84,3 @@ export async function logAudit({
 
 // Keep logAuditAction for backward compatibility with existing code
 export const logAuditAction = logAudit;
-

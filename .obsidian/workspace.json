@@ -185,6 +185,7 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "lib/rateLimiter.ts",
     "app/admin/content/page.tsx",
     "app/admin/content",
     "components/admin/PolicyCMS.tsx",
@@ -199,7 +200,6 @@
     "public/admin_login_bg_cinematic_1774378543203.png",
     "public/merchant_hero_cinematic_1774395289646.png",
     "app/merchant/login/page.tsx",
-    "app/merchant/login",
     "public/admin_bg.png",
     "public/diverse_drivers.png",
     "public/driver_hero.png",
