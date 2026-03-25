@@ -33,121 +33,80 @@ export default function MerchantPortal() {
                 </div>
                 <div className="flex items-center gap-6">
                     <Link href="/merchant/login" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all italic border-b-2 border-transparent hover:border-primary pb-1">Portal Login</Link>
-                    <Link href="#signup" className="badge-solid-primary !py-3.5 !px-10 !text-[11px] h-glow">
+                    <Link href="#signup" className="badge-solid-primary !py-3 !px-8 !text-[11px] !rounded-full h-glow">
                         Join Network
                     </Link>
                 </div>
             </nav>
 
-            <main className="container mx-auto py-32 space-y-32 animate-fade-in relative z-10 px-8 max-w-7xl">
-                {/* ── HERO ────────────────────────────────────────────────────────── */}
-                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4 relative z-10 py-24 md:py-44">
-                    <div className="flex items-center gap-4 text-white/50 font-black uppercase tracking-[0.6em] text-[11px] italic">
-                        <div className="w-12 h-px bg-white/20" />
-                        Network Integration
-                        <div className="w-12 h-px bg-white/20" />
-                    </div>
-                    
-                    <h1 className="text-5xl md:text-[75px] font-serif text-white tracking-tight leading-[0.95] animate-slide-up max-w-[1400px]">
-                        The future of <br />
-                        <span className="italic text-primary">delivery is here.</span>
-                    </h1>
-                    
-                    <p className="text-slate-400 text-lg md:text-2xl font-bold leading-relaxed max-w-2xl italic mx-auto">
-                        A dedicated platform to help local businesses grow. Fair commissions, real-time POS sync, and elite driver pools.
-                    </p>
-                    
-                    <div className="flex flex-col items-center justify-center pt-12">
-                        <Link href="#signup" className="group relative flex items-center justify-center gap-4 px-12 py-5 bg-primary text-black text-[12px] font-black uppercase tracking-[0.4em] rounded-2xl hover:scale-105 active:scale-[0.98] transition-all duration-500 shadow-[0_0_50px_rgba(245,158,11,0.2)]">
-                            Join Network
-                            <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
-                        </Link>
-                    </div>
-                </div>
-
-                {/* ── VISIONARY PARTNERSHIP ─────────────────────────────────────────── */}
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                        <div className="rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl relative group">
-                            <img 
-                                src="/merchant_hero_cinematic_1774395289646.png" 
-                                alt="Merchant Ambience" 
-                                className="w-full h-[600px] object-cover group-hover:scale-105 transition-transform duration-[3s]"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                            <div className="absolute bottom-10 left-10 space-y-2">
-                                <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px] italic">Strategic Ecosystem</p>
-                                <h3 className="text-3xl text-white font-serif tracking-tight leading-none uppercase">A higher standard of <span className="italic text-primary">Logistics.</span></h3>
-                            </div>
-                        </div>
-                        <div className="space-y-12 p-10 md:p-20 bg-white/[0.01] border border-white/5 rounded-[2.5rem] backdrop-blur-3xl shadow-3xl">
-                             <div className="inline-flex px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary italic">
-                                Built for Operators
-                             </div>
-                             <h2 className="text-4xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
-                                Powering <br />
-                                <span className="text-primary not-italic">Elite Commerce.</span>
-                             </h2>
-                             <p className="text-slate-400 text-lg font-bold italic leading-relaxed">
-                                TrueServe integrates directly with your existing POS to provide a lossless delivery experience that prioritizes your margin.
-                             </p>
-                             <div className="grid grid-cols-2 gap-8 pt-6">
-                                <div>
-                                    <h4 className="text-[11px] font-black text-white italic tracking-widest uppercase mb-2">POS Sync</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold italic leading-relaxed">Automated Toast & Clover menu injection.</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-[11px] font-black text-white italic tracking-widest uppercase mb-2">Fair Splits</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold italic leading-relaxed">Transparent 15% - 20% commission rates.</p>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ── PLATFORM FEATURES ────────────────────────────────────────── */}
-                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4">
+            <main className="container mx-auto py-20 space-y-24 animate-fade-in relative z-10 px-8 max-w-7xl">
+                
+                {/* ── PLATFORM FEATURES (NOW THE HERO) ────────────────────────── */}
+                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4 pt-10">
                     <div className="flex flex-col items-center gap-4">
                         <div className="w-12 h-px bg-primary/20 mb-4" />
-                        <h2 className="text-4xl md:text-6xl font-serif text-white tracking-tight uppercase italic leading-none">
+                        <h2 className="text-4xl md:text-5xl font-serif text-white tracking-tight uppercase italic leading-none">
                             Platform <span className="text-primary not-italic font-black">Features.</span>
                         </h2>
-                        <p className="text-slate-500 text-[11px] font-black uppercase tracking-[0.5em] italic opacity-60">Engineered for Merchant Success</p>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] italic opacity-60">Engineered for Merchant Success</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full">
                         {[
                             { icon: '🚀', title: 'Rapid Growth', desc: 'Expand your reach without losing control of your branding.' },
                             { icon: '🔗', title: 'Native Protocol', desc: 'Secure web-hook integrations for seamless order management.' },
                             { icon: '💎', title: 'Premium Fleet', desc: 'Our drivers are professionally vetted brand ambassadors.' }
                         ].map((feat, i) => (
-                            <div key={i} className="p-10 rounded-[3.5rem] bg-white/[0.01] border border-white/5 space-y-6 hover:border-primary/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl shadow-2xl">
-                                <div className="text-5xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,245,11,0.1)]">{feat.icon}</div>
-                                <h3 className="text-2xl text-white font-black italic uppercase tracking-widest leading-none">{feat.title}</h3>
-                                <p className="text-slate-500 text-[12px] font-bold italic leading-relaxed max-w-[220px] mx-auto">{feat.desc}</p>
+                            <div key={i} className="p-8 rounded-[3rem] bg-white/[0.01] border border-white/5 space-y-6 hover:border-primary/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                <div className="text-5xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,245,11,0.1)] relative z-10">{feat.icon}</div>
+                                <h3 className="text-xl text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
+                                <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* ── ENROLLMENT FORM ────────────────────────────────────────── */}
-                <div id="signup" className="scroll-mt-48 pt-32 pb-44 px-4 flex flex-col items-center relative z-10 w-full">
+                <div id="signup" className="scroll-mt-48 pb-44 px-4 flex flex-col items-center relative z-10 w-full">
                     <div className="w-full max-w-7xl mx-auto">
                         <MerchantSignupForm />
                     </div>
                 </div>
+
+                {/* ── SECONDARY VISIONARY SECTIONS ─────────────────────────── */}
+                <div className="max-w-6xl mx-auto opacity-40 hover:opacity-100 transition-opacity duration-1000">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                        <div className="rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl relative group h-[400px]">
+                            <img 
+                                src="/merchant_hero_cinematic_1774395289646.png" 
+                                alt="Merchant Ambience" 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[3s]"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                        </div>
+                        <div className="space-y-8 p-12 bg-white/[0.01] border border-white/5 rounded-[2.5rem] backdrop-blur-3xl">
+                             <h2 className="text-3xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
+                                Powering <br />
+                                <span className="text-primary not-italic">Elite Commerce.</span>
+                             </h2>
+                             <p className="text-slate-400 text-sm font-bold italic leading-relaxed">
+                                TrueServe integrates directly with your existing POS to provide a lossless delivery experience that prioritizes your margin.
+                             </p>
+                        </div>
+                    </div>
+                </div>
             </main>
 
-            <footer className="py-32 bg-black border-t border-white/10 max-w-7xl mx-auto px-10">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-16">
+            <footer className="py-24 bg-black border-t border-white/10 max-w-7xl mx-auto px-10">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-16 text-[11px] font-black uppercase tracking-[0.5em] text-slate-700 italic">
                     <div className="flex items-center gap-6">
-                        <img src="/logo.png" alt="Logo" className="w-14 h-14 rounded-2xl" />
-                        <span className="text-slate-600 tracking-[0.5em] text-sm font-black uppercase italic">TrueServe &copy; {new Date().getFullYear()}</span>
+                        <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl opacity-50" />
+                        <span>TrueServe &copy; {new Date().getFullYear()}</span>
                     </div>
-                    
-                    <div className="flex flex-wrap justify-center gap-x-16 gap-y-8 text-[11px] font-black uppercase tracking-[0.6em] text-slate-700 italic">
-                        <Link href="/terms" className="hover:text-white transition-colors">Privacy Guide</Link>
-                        <Link href="/login?role=merchant" className="hover:text-primary transition-colors text-primary font-black">Portal Login</Link>
+                    <div className="flex gap-16">
+                        <Link href="/terms" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link href="/login?role=merchant" className="hover:text-primary transition-colors text-primary uppercase">Portal</Link>
                     </div>
                 </div>
             </footer>

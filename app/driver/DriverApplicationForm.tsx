@@ -445,25 +445,25 @@ function DriverApplicationFormInner() {
                     width: 100%;
                     background: #1c1916;
                     border: 1px solid rgba(255, 255, 255, 0.05);
-                    border-radius: 1.25rem;
-                    padding: 1rem 1.75rem;
+                    border-radius: 1rem;
+                    padding: 0.85rem 1.25rem;
                     color: white;
-                    font-size: 0.95rem;
+                    font-size: 0.9rem;
                     font-weight: 700;
                     outline: none;
-                    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
                 }
                 .input-field:focus {
-                    border-color: rgba(245, 158, 11, 0.5);
-                    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.05), inset 0 2px 4px rgba(0,0,0,0.2);
-                    background: #28241d;
+                    border-color: rgba(245, 158, 11, 0.4);
+                    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.03), inset 0 1px 2px rgba(0,0,0,0.2);
+                    background: #23201a;
                 }
                 .input-field::placeholder {
-                    color: rgba(255, 255, 255, 0.06);
-                    letter-spacing: 0.2em;
+                    color: rgba(255, 255, 255, 0.05);
+                    letter-spacing: 0.15em;
                     font-style: italic;
-                    font-size: 0.75rem;
+                    font-size: 0.7rem;
                     text-transform: uppercase;
                 }
                 .custom-scrollbar::-webkit-scrollbar {

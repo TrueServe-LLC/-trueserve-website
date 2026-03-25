@@ -11,11 +11,11 @@ export default function DriverPortal() {
         <div className="min-h-screen bg-black text-slate-300 font-sans overflow-x-hidden selection:bg-primary/20">
             {/* ── BACKGROUND CORE ────────────────────────────────────────────── */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                    <img
-                        src="/diverse_drivers.png"
-                        alt="Driver Background"
-                        className="w-full h-full object-cover opacity-20 blur-2xl scale-110 grayscale-0"
-                    />
+                <img
+                    src="/diverse_drivers.png"
+                    alt="Driver Background"
+                    className="w-full h-full object-cover opacity-20 blur-2xl scale-110 grayscale-0"
+                />
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black" />
             </div>
 
@@ -33,111 +33,58 @@ export default function DriverPortal() {
                 </div>
                 <div className="flex items-center gap-6">
                     <Link href="/driver/login" className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all italic border-b-2 border-transparent hover:border-primary pb-1">Fleet Login</Link>
-                    <Link href="#signup" className="badge-solid-primary !py-2.5 !px-7 !text-[9px] !rounded-full h-glow">
+                    <Link href="#signup" className="badge-solid-primary !py-2.5 !px-8 !text-[10px] !rounded-full h-glow">
                         Join Fleet
                     </Link>
                 </div>
             </nav>
 
-            <main className="container mx-auto py-32 space-y-32 animate-fade-in relative z-10 px-8 max-w-7xl">
-                {/* ── HERO ────────────────────────────────────────────────────────── */}
-                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4 relative z-10 py-24 md:py-44">
-                    <div className="flex items-center gap-4 text-white/50 font-black uppercase tracking-[0.6em] text-[11px] italic">
-                        <div className="w-12 h-px bg-white/20" />
-                        Fleet Expansion
-                        <div className="w-12 h-px bg-white/20" />
+            <main className="container mx-auto py-20 animate-fade-in relative z-10 px-8 max-w-7xl space-y-24">
+                
+                {/* ── PLATFORM FEATURES (NOW THE HERO) ────────────────────────── */}
+                <div className="flex flex-col items-center text-center space-y-12 max-w-6xl mx-auto px-4 pt-10">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-px bg-primary/20 mb-4" />
+                        <h2 className="text-4xl md:text-5xl font-serif text-white tracking-tight uppercase italic leading-none">
+                            Platform <span className="text-primary not-italic font-black">Features.</span>
+                        </h2>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] italic opacity-60">Engineered for Driver Success</p>
                     </div>
-                    
-                    <h1 className="text-5xl md:text-[85px] font-serif text-white tracking-tight leading-[0.9] animate-slide-up w-full">
-                        Earn on your own <br />
-                        <span className="italic text-primary">schedule with TrueServe</span>
-                    </h1>
-                    
-                    <p className="text-slate-400 text-lg md:text-2xl font-bold leading-relaxed max-w-2xl italic mx-auto">
-                        A dedicated platform to help local drivers grow. Fair splits, real support, and local delivery routes.
-                    </p>
-                    
-                    <div className="flex flex-col items-center justify-center pt-8">
-                        <Link href="#signup" className="group relative flex items-center justify-center gap-3 px-7 py-3 bg-primary text-black text-[10px] font-black uppercase tracking-[0.4em] rounded-full hover:scale-105 active:scale-[0.98] transition-all duration-500 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
-                            Join Fleet
-                            <span className="group-hover:translate-x-1 transition-transform duration-500">→</span>
-                        </Link>
-                    </div>
-                </div>
 
-                {/* ── PEOPLE & COMMUNITY ─────────────────────────────────────────── */}
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                        <div className="rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl relative group">
-                            <img 
-                                src="/diverse_drivers.png" 
-                                alt="Driver Community" 
-                                className="w-full h-[600px] object-cover group-hover:scale-105 transition-transform duration-[3s]"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                            <div className="absolute bottom-10 left-10 space-y-2">
-                                <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px] italic">Join the movement</p>
-                                <h3 className="text-3xl text-white font-serif tracking-tight leading-none uppercase">The faces of <span className="italic text-primary">TrueServe.</span></h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full">
+                        {[
+                            { icon: '💸', title: 'Fair Pay', desc: 'Secure earnings deposited directly to you each week.' },
+                            { icon: '📅', title: 'Flex Hours', desc: 'Drive when you want. You are your own boss.' },
+                            { icon: '🏠', title: 'Local Pride', desc: 'Deliver for the best neighborhood restaurants.' }
+                        ].map((feat, i) => (
+                            <div key={i} className="p-8 rounded-[3rem] bg-white/[0.01] border border-white/5 space-y-6 hover:border-primary/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                <div className="text-5xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,245,11,0.1)] relative z-10">{feat.icon}</div>
+                                <h3 className="text-xl text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
+                                <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
                             </div>
-                        </div>
-                        <div className="space-y-12 p-10 md:p-20 bg-white/[0.01] border border-white/5 rounded-[2.5rem] backdrop-blur-3xl shadow-3xl">
-                             <div className="inline-flex px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary italic">
-                                Built for Drivers
-                             </div>
-                             <h2 className="text-4xl text-white font-black italic tracking-tighter leading-none uppercase h-glow">
-                                Powering <br />
-                                <span className="text-primary not-italic">Local Livelihoods.</span>
-                             </h2>
-                             <p className="text-slate-400 text-lg font-bold italic leading-relaxed">
-                                TrueServe isn't just an app—it's a partnership. We provide the tools, support, and fair earnings to keep you moving.
-                             </p>
-                             <div className="grid grid-cols-2 gap-8 pt-6">
-                                <div>
-                                    <h4 className="text-[11px] font-black text-white italic tracking-widest uppercase mb-2">Weekly Payouts</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold italic leading-relaxed">Get your hard-earned money direct to your bank.</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-[11px] font-black text-white italic tracking-widest uppercase mb-2">Live Support</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold italic leading-relaxed">24/7 access to our local driver support team.</p>
-                                </div>
-                             </div>
-                        </div>
+                        ))}
                     </div>
-                </div>
-
-                {/* ── BENEFITS ────────────────────────────────────────────────── */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-                    {[
-                        { icon: '💸', title: 'Fair Pay', desc: 'Secure earnings deposited directly to you each week.' },
-                        { icon: '📅', title: 'Flex Hours', desc: 'Drive when you want. You are your own boss.' },
-                        { icon: '🏠', title: 'Local Pride', desc: 'Deliver for the best neighborhood restaurants.' }
-                    ].map((feat, i) => (
-                        <div key={i} className="p-10 rounded-[2.5rem] bg-white/[0.01] border border-white/5 space-y-6 hover:border-primary/40 transition-all text-center hover:scale-[1.02] active:scale-95 group backdrop-blur-3xl">
-                            <div className="text-5xl group-hover:scale-110 transition-transform filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{feat.icon}</div>
-                            <h3 className="text-xl text-white font-black italic uppercase tracking-widest">{feat.title}</h3>
-                            <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed">{feat.desc}</p>
-                        </div>
-                    ))}
                 </div>
 
                 {/* ── ENROLLMENT FORM ────────────────────────────────────────── */}
-                <div id="signup" className="scroll-mt-48 pt-32 pb-44 px-4 flex flex-col items-center relative z-10 w-full">
+                <div id="signup" className="scroll-mt-48 pb-44 px-4 flex flex-col items-center relative z-10 w-full">
                     <div className="w-full max-w-7xl mx-auto">
                         <DriverApplicationForm />
                     </div>
                 </div>
 
                 {/* ── REQUIREMENTS ────────────────────────────────────────────── */}
-                <section className="py-32 mb-20 mx-auto max-w-6xl">
-                    <div className="bg-white/[0.02] border border-white/5 rounded-[4rem] p-14 md:p-24 space-y-16 overflow-hidden relative group backdrop-blur-3xl">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
+                <section className="py-20 mb-20 mx-auto max-w-6xl opacity-40 hover:opacity-100 transition-opacity duration-1000">
+                    <div className="bg-white/[0.01] border border-white/5 rounded-[4rem] p-16 space-y-12 overflow-hidden relative group backdrop-blur-3xl shadow-xl">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-[120px] rounded-full opacity-50 translate-x-1/2 -translate-y-1/2 group-hover:scale-125 transition-transform duration-[4s]" />
                         
-                        <div className="space-y-6 relative z-10 text-center">
-                            <label className="text-[10px] font-black text-primary uppercase tracking-[0.6em] italic mb-6 block">Ready to go?</label>
-                            <h3 className="text-5xl md:text-8xl text-white font-serif italic tracking-tighter leading-tight uppercase">Requirements.</h3>
+                        <div className="space-y-4 relative z-10 text-center">
+                            <h3 className="text-4xl md:text-6xl text-white font-serif italic tracking-tighter leading-tight uppercase">Fleet <span className="text-primary not-italic">Protocols.</span></h3>
+                            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">Standard operational requirements</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                             {[
                                 "18+ & South Carolina ID",
                                 "License & Insurance",
@@ -146,9 +93,9 @@ export default function DriverPortal() {
                                 "Smart Phone (iOS/Android)",
                                 "Professional Attitude"
                             ].map((req, i) => (
-                                <div key={i} className="flex items-center gap-6 p-6 bg-black/40 border border-white/5 rounded-full group transition-all hover:border-primary/20">
-                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-sm">✓</div>
-                                    <span className="text-slate-300 text-[11px] font-black uppercase tracking-widest italic">{req}</span>
+                                <div key={i} className="flex items-center gap-6 p-5 bg-black/40 border border-white/5 rounded-full group transition-all hover:border-primary/20 shadow-md">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 text-xs shadow-glow-sm">✓</div>
+                                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest italic">{req}</span>
                                 </div>
                             ))}
                         </div>
@@ -156,16 +103,16 @@ export default function DriverPortal() {
                 </section>
             </main>
 
-            <footer className="py-32 bg-black border-t border-white/10 max-w-7xl mx-auto px-10">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-16">
+            <footer className="py-24 bg-black border-t border-white/10 max-w-7xl mx-auto px-10">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-16 text-[11px] font-black uppercase tracking-[0.5em] text-slate-700 italic">
                     <div className="flex items-center gap-6">
-                        <img src="/logo.png" alt="Logo" className="w-14 h-14 rounded-2xl" />
-                        <span className="text-slate-600 tracking-[0.5em] text-sm font-black uppercase italic">TrueServe &copy; {new Date().getFullYear()}</span>
+                        <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl opacity-40" />
+                        <span>TrueServe &copy; {new Date().getFullYear()}</span>
                     </div>
                     
-                    <div className="flex flex-wrap justify-center gap-x-16 gap-y-8 text-[11px] font-black uppercase tracking-[0.6em] text-slate-700 italic">
-                        <Link href="/terms" className="hover:text-white transition-colors">Safety Guide</Link>
-                        <Link href="/driver/login" className="hover:text-primary transition-colors text-primary font-black">Fleet Login</Link>
+                    <div className="flex gap-16 text-slate-600">
+                        <Link href="/terms" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link href="/driver/login" className="hover:text-primary transition-colors text-primary font-black">Fleet</Link>
                     </div>
                 </div>
             </footer>
