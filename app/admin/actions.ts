@@ -401,3 +401,48 @@ export async function rejectRequest(requestId: string) {
         return { success: false, error: e.message };
     }
 }
+
+export async function updateInAppContent(key: string, title: string, content: string) {
+    try {
+        const { isAuth, role } = await getAuthSession();
+        if (!isAuth || role !== 'ADMIN') throw new Error("Unauthorized");
+
+        // 1. Get current version
+        const { data: current } = await supabaseAdmin
+            .from('InAppContent')
+            .select('version')
+            .eq('key', key)
+            .maybeSingle();
+
+        const newVersion = (current?.version || 0) + 1;
+
+        // 2. Insert or update the content
+        const { error } = await supabaseAdmin
+            .from('InAppContent')
+            .upsert({
+                key,
+                title,
+                content,
+                version: newVersion,
+                updatedAt: new Date().toISOString()
+            });
+
+        if (error) throw error;
+
+        await logAuditAction({ 
+            action: "UPDATE_IN_APP_CONTENT", 
+            targetId: key, 
+            entityType: "InAppContent", 
+            before: { version: current?.version || 0 }, 
+            after: { version: newVersion } 
+        });
+
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/content");
+        revalidatePath("/legal");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to update policy:", e);
+        return { success: false, error: e.message };
+    }
+}

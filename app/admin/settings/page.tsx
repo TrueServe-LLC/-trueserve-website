@@ -61,6 +61,7 @@ export default async function SettingsPage() {
                         <Link href="/admin/dashboard" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Registry</Link>
                         <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>
                         <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Settings</Link>
+                        <Link href="/admin/content" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">CMS</Link>
                         <form action={logout}>
                             <button className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-red-400 transition-colors">Log Out</button>
                         </form>

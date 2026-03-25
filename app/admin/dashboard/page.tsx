@@ -153,6 +153,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         <div className="hidden lg:flex gap-4 items-center mr-4 pr-4 border-r border-white/10">
                             {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>}
                             {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>}
+                            <Link href="/admin/content" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">CMS</Link>
                             <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
                         </div>
                         
