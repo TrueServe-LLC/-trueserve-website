@@ -122,16 +122,16 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
     }
 
     return (
-        <div className="w-full max-w-xl relative group z-50">
-            <div className="absolute -inset-4 bg-primary/10 rounded-2xl blur-[80px] opacity-0 group-hover:opacity-40 transition duration-1000"></div>
+        <div className="w-full max-w-3xl relative animate-fade-in group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000"></div>
 
-            <form onSubmit={handleManualSearch} className={`relative flex ${isCompact ? 'flex-row items-center' : 'flex-col sm:flex-row items-stretch sm:items-center'} bg-black/80 backdrop-blur-3xl border border-white/10 ${isCompact ? 'rounded-2xl p-1' : 'rounded-2xl p-2 sm:p-2.5'} gap-2 shadow-3xl z-20`}>
-                <div className="flex items-center flex-1 px-4">
-                    <span className={`pl-1 pr-3 ${isCompact ? 'text-lg' : 'text-xl md:text-2xl'} filter drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]`}>📍</span>
+            <form onSubmit={handleManualSearch} className={`relative flex items-center bg-[#0a0a0b]/80 backdrop-blur-3xl border border-white/10 rounded-full p-2 shadow-2xl z-20`}>
+                <div className="flex items-center flex-1 px-6">
+                    <span className="text-xl filter drop-shadow-[0_0_8px_rgba(239,68,68,0.4)] mr-2">📍</span>
                     <input
                         type="text"
-                        placeholder={isCompact ? "Search address or food..." : "Enter delivery address..."}
-                        className={`flex-1 min-w-[50px] bg-transparent border-none focus:outline-none text-white placeholder:text-slate-700 px-2 font-black tracking-tight ${isCompact ? 'text-xs h-8' : 'text-sm md:text-xl h-10 md:h-14'}`}
+                        placeholder="Enter delivery address..."
+                        className="flex-1 min-w-[50px] bg-transparent border-none focus:outline-none text-white placeholder:text-slate-600 px-2 font-bold tracking-tight text-lg h-14"
                         value={inputValue}
                         onChange={handleInput}
                         onFocus={() => {
@@ -143,8 +143,8 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                     />
                 </div>
 
-                <button type="submit" className={`badge-solid-primary !not-italic ${isCompact ? 'rounded-2xl px-6 py-2 text-[10px] whitespace-nowrap' : 'rounded-2xl px-10 md:px-14 py-4 md:py-4.5 text-sm md:text-xl h-glow'} !bg-primary !text-black font-black hover:scale-[1.05] transition-all`}>
-                    {isCompact ? 'Search' : 'Find Food'}
+                <button type="submit" className="bg-primary text-black font-black uppercase italic tracking-widest text-[11px] px-12 h-12 rounded-full hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95">
+                     Find Food
                 </button>
             </form>
 

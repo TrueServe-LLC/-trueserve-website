@@ -265,26 +265,29 @@ export default async function RestaurantFinder({
                 {/* ── HERO HEADER ─────────────────────────────────────────────── */}
                 <section className="w-full pt-24 pb-16 flex flex-col items-center justify-center px-6 text-center overflow-hidden border-b border-white/5 bg-[#0a0a0b]">
                     <div className="relative z-10 max-w-6xl space-y-10 animate-fade-in flex flex-col items-center glow-blur-primary">
-                        <div className="flex items-center justify-center gap-5 text-primary font-black uppercase tracking-[0.6em] text-[9px] italic">
-                            <div className="w-12 h-px bg-primary/30" />
-                            {showLanding ? "Secure Location Protocol" : "Protocol active"}
-                            <div className="w-12 h-px bg-primary/30" />
+                        <div className="flex items-center justify-center gap-5 text-primary text-[10px] font-black uppercase tracking-[0.6em] italic animate-fade-in-down">
+                            <div className="w-16 h-[1.5px] bg-gradient-to-r from-transparent via-primary/60 to-primary/80 rounded-full" />
+                            Protocol Active
+                             <div className="w-16 h-[1.5px] bg-gradient-to-l from-transparent via-primary/60 to-primary/80 rounded-full" />
                         </div>
                         
-                        <h1 className="text-6xl md:text-[100px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none h-glow uppercase font-serif pb-2">
-                             Discovery <br />
-                            <span className="text-primary not-italic tracking-[-0.03em] drop-shadow-[5px_58px_0px_rgba(255,255,255,0.1)] uppercase italic leading-none">HUB.</span>
-                        </h1>
+                        <div className="flex flex-col items-center">
+                            <h1 className="text-6xl md:text-[120px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none h-glow uppercase font-serif pb-4">
+                                Discovery
+                            </h1>
+                             <h1 className="text-6xl md:text-[120px] leading-[0.8] text-primary font-black tracking-[-0.03em] drop-shadow-[5px_58px_0px_rgba(255,255,255,0.05)] uppercase italic font-serif">
+                                HUB.
+                            </h1>
+                        </div>
 
-                        <p className="max-w-2xl mx-auto text-base md:text-xl text-slate-500 font-bold leading-relaxed italic animate-fade-in delay-200">
+                        <p className="max-w-xl mx-auto text-xs md:text-[11px] text-slate-500 font-bold uppercase tracking-[0.3em] leading-relaxed italic animate-fade-in delay-200">
                             {showLanding 
                                 ? "Enter your delivery address to sync with the best independent flavors in your community." 
                                 : `Displaying elite local menus for ${locationMeta.name || "your area"}.`}
                         </p>
 
                         {showLanding && (
-                            <div className="w-full max-w-4xl relative group pt-4">
-                                <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full opacity-10 -z-10" />
+                            <div className="w-full max-w-4xl pt-8 flex justify-center">
                                 <LandingSearch />
                             </div>
                         )}
@@ -309,67 +312,77 @@ export default async function RestaurantFinder({
 
                     {/* Filters Hub */}
                     {!showLanding && (
-                        <div className="space-y-16">
+                        <div className="space-y-12">
                             <div className="flex flex-col items-center text-center gap-10">
-                                <div className="flex items-center flex-wrap justify-center gap-4 pb-4">
-                                    <Link href="/restaurants" className={`${!category ? "bg-primary text-black border-primary shadow-lg shadow-primary/20" : "bg-white/5 border-white/10 text-slate-500 hover:text-white"} filter-pill`}>General</Link>
-                                    {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches"].map((cat) => (
-                                        <Link key={cat} href={`/restaurants?category=${cat}`} className={`${category === cat ? "bg-primary text-black border-primary shadow-lg shadow-primary/20" : "bg-white/5 border-white/10 text-slate-500 hover:text-white"} filter-pill`}>{cat}</Link>
+                                <div className="flex items-center flex-wrap justify-center gap-3">
+                                    <Link href="/restaurants" className={`${!category ? "bg-primary text-black" : "bg-white/[0.03] border border-white/10 text-slate-500 hover:text-white"} px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all`}>General</Link>
+                                    {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches", "Caribbean", "Mexican", "Korean"].map((cat) => (
+                                        <Link key={cat} href={`/restaurants?category=${cat}`} className={`${category === cat ? "bg-primary text-black" : "bg-white/[0.03] border border-white/10 text-slate-500 hover:text-white"} px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all`}>{cat}</Link>
                                     ))}
+                                </div>
+                            </div>
+
+                            {/* Results Status Bar */}
+                            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                        {restaurants.length} RESTAURANTS NEAR YOU
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-600">SORT</span>
+                                     <button className="flex items-center gap-2 bg-white/[0.05] border border-white/10 px-4 py-2 rounded-lg text-[10px] font-black text-white hover:bg-white/10 transition-all">
+                                         Top Rated
+                                         <svg className="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                                     </button>
                                 </div>
                             </div>
 
                             {/* Grid Content */}
                             {restaurants.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 animate-fade-in">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 animate-fade-in">
                                     {restaurants.map((rest: any) => (
-                                        <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group relative flex flex-col bg-white/[0.02] border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/40 transition-all duration-500 active:scale-[0.98] shadow-2xl hover:-translate-y-2">
-                                            <div className="h-64 relative overflow-hidden">
-                                                <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                                        <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group relative flex flex-col bg-[#0d0d0e] border border-white/[0.03] rounded-3xl overflow-hidden hover:border-white/10 transition-all duration-300">
+                                            <div className="aspect-[4/3] relative overflow-hidden">
+                                                <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                                 
-                                                <div className="absolute top-5 left-5 right-5 flex justify-between items-start">
-                                                    <div className="flex flex-col gap-2">
-                                                        <div className="bg-black/60 backdrop-blur-xl text-white text-[8px] font-black px-4 py-2 border border-white/10 rounded-lg uppercase tracking-[0.2em] italic">
-                                                            {rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}
-                                                        </div>
-                                                        {rest.deal && (
-                                                            <div className="bg-emerald-500 text-black text-[8px] font-black px-4 py-2 rounded-lg uppercase tracking-[0.2em] italic shadow-lg">
-                                                                PROMO
-                                                            </div>
-                                                        )}
+                                                {/* Float Badges */}
+                                                <div className="absolute top-4 left-4">
+                                                    <div className="bg-black/80 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 border border-white/10 rounded-md uppercase tracking-wider">
+                                                        {rest.deliveryFee === "Free" ? "FREE" : rest.deliveryFee} FEE
                                                     </div>
-                                                    
-                                                    {rest.websiteUrl && (
-                                                        <button 
-                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(rest.websiteUrl, '_blank'); }}
-                                                            className="w-10 h-10 bg-black/60 backdrop-blur-xl border border-emerald-500/30 rounded-lg flex items-center justify-center text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all shadow-xl active:scale-90"
-                                                            title="Official Hub"
-                                                        >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                                        </button>
-                                                    )}
+                                                </div>
+                                                <div className="absolute top-4 right-4">
+                                                    <div className="bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-3 py-1.5 border border-emerald-500/20 rounded-md uppercase tracking-wider flex items-center gap-1.5">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                        Open
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div className="p-8 text-center flex flex-col items-center space-y-4">
-                                                <h3 className="text-2xl font-black text-white group-hover:text-primary transition-colors tracking-tight italic uppercase">{rest.name}</h3>
-                                                
-                                                <div className="flex items-center justify-center gap-4 text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] italic">
-                                                    <span className="text-emerald-500">{rest.prepTime}</span>
-                                                    <span className="opacity-20">•</span>
-                                                    <span>{rest.priceLevel}</span>
-                                                    <span className="opacity-20">•</span>
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="text-primary">★</span>
-                                                        <span>{rest.rating}</span>
+                                            <div className="p-6 space-y-4">
+                                                <div className="space-y-1">
+                                                    <h3 className="text-xl font-black text-white group-hover:text-primary transition-colors tracking-tight uppercase">{rest.name}</h3>
+                                                    <div className="flex items-center gap-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest italic">
+                                                        <span className="text-emerald-500">{rest.prepTime}</span>
+                                                        <span className="opacity-20">•</span>
+                                                        <span>{rest.priceLevel}</span>
+                                                        <span className="opacity-20">•</span>
+                                                        <div className="flex items-center gap-1">
+                                                            <span className="text-primary text-[11px]">★</span>
+                                                            <span className="text-slate-300">{rest.rating}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
 
-                                                <div className="pt-2 w-full">
-                                                    <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white border border-white/10 rounded-xl px-8 py-4 w-full justify-center group-hover:border-primary/50 group-hover:text-primary transition-all bg-white/5 italic">
-                                                        Open Menu <span className="group-hover:translate-x-1 transition-transform">→</span>
+                                                <div className="pt-2 flex items-center justify-between border-t border-white/5">
+                                                    <div className="text-[9px] font-black uppercase text-white tracking-[0.3em] flex items-center gap-2 group-hover:text-primary transition-colors">
+                                                        Open Menu <span>→</span>
                                                     </div>
+                                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="w-9 h-9 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center text-slate-600 hover:text-rose-500 hover:border-rose-500/20 transition-all active:scale-90">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </Link>
@@ -389,18 +402,18 @@ export default async function RestaurantFinder({
                     )}
 
                     {!(!showLanding && restaurants.length > 0) && showLanding && (
-                        <div className="py-20 flex flex-col items-center">
-                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl text-center">
+                        <div className="w-full max-w-7xl pt-40 px-0">
+                             <div className="grid grid-cols-1 md:grid-cols-4 border-t border-b border-white/5 divide-y md:divide-y-0 md:divide-x divide-white/5">
                                 {[
                                     { icon: '🗺️', label: 'Local Only', desc: 'No global chains' },
                                     { icon: '⚡', label: 'Priority Hub', desc: 'Fastest dispatch' },
                                     { icon: '💎', label: 'Elite Menu', desc: 'Curated flavors' },
                                     { icon: '🖤', label: 'Fair Split', desc: 'Supporting local' }
                                 ].map((item) => (
-                                    <div key={item.label} className="p-10 rounded-[2rem] bg-black border border-white/5 flex flex-col items-center shadow-2xl hover:border-primary/20 transition-all">
-                                        <div className="text-4xl mb-6">{item.icon}</div>
-                                        <p className="text-[11px] font-black uppercase text-white tracking-widest mb-2 italic">{item.label}</p>
-                                        <p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{item.desc}</p>
+                                    <div key={item.label} className="p-16 flex flex-col items-center justify-center text-center group hover:bg-white/[0.01] transition-all bg-black">
+                                        <div className="text-xl mb-6 filter grayscale group-hover:grayscale-0 transition-all scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{item.icon}</div>
+                                        <p className="text-[11px] font-black uppercase text-white tracking-[0.4em] mb-3 italic">{item.label}</p>
+                                        <p className="text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em]">{item.desc}</p>
                                     </div>
                                 ))}
                             </div>
@@ -409,14 +422,12 @@ export default async function RestaurantFinder({
                 </div>
 
                 {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-                <footer className="w-full py-24 bg-black border-t border-white/10 px-10 text-center space-y-12">
-                     <div className="flex flex-col items-center gap-6">
-                         <div className="w-12 h-12 rounded-xl border border-white/10 bg-black flex items-center justify-center p-2">
-                             <img src="/logo.png" className="w-full h-full object-contain opacity-50 grayscale" alt="TrueServe Logo" />
+                <footer className="w-full py-16 bg-black px-10 text-center">
+                     <div className="flex items-center justify-center gap-4 text-[9px] font-black uppercase tracking-[0.5em] text-slate-800 italic">
+                         <div className="w-6 h-6 rounded-full border border-white/5 flex items-center justify-center grayscale opacity-30">
+                             <svg className="w-3 h-3 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                          </div>
-                         <div className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-800 italic">
-                             TrueServe Discovery Protocol • © {new Date().getFullYear()}
-                         </div>
+                         TrueServe Discovery Protocol • {new Date().getFullYear()}
                      </div>
                 </footer>
             </main>
