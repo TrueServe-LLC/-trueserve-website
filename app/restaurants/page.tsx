@@ -157,7 +157,7 @@ async function getRestaurants(
         if (error || !restaurants || restaurants.length === 0) return { restaurants: [], locationMeta };
 
         const mappedRestaurants = restaurants.map((r: any, index: number) => {
-            const seed = r.name.length + index;
+            const seed = ((r.name || "").length || 1) + index;
             const realRatings = (r.Review || []).map((rev: any) => rev.rating);
             const avgRating = realRatings.length > 0
                 ? (realRatings.reduce((a: number, b: number) => a + b, 0) / realRatings.length).toFixed(1)
@@ -384,9 +384,11 @@ export default async function RestaurantFinder({
                                                     <div className="text-[9px] font-black uppercase text-white tracking-[0.3em] flex items-center gap-2 group-hover:text-primary transition-colors">
                                                         Open Menu <span>→</span>
                                                     </div>
-                                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="w-9 h-9 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center text-slate-600 hover:text-rose-500 hover:border-rose-500/20 transition-all active:scale-90">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                                                    </button>
+                                                    <FavoriteButton 
+                                                        restaurantId={rest.id} 
+                                                        initialIsFavorited={favorites.includes(rest.id)} 
+                                                        className="w-9 h-9 !p-0 flex items-center justify-center text-slate-600 hover:text-rose-500 hover:border-rose-500/20" 
+                                                    />
                                                 </div>
                                             </div>
                                         </Link>
