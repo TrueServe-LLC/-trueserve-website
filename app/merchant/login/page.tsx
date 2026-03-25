@@ -46,9 +46,11 @@ function MerchantLoginContent() {
                 
                 <div className="relative z-10 flex flex-col h-full">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3 mb-16 hover:opacity-80 transition-opacity">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-xl shadow-lg shadow-primary/20">🏠</div>
-                        <span className="text-2xl font-black italic tracking-tighter text-white">True<span className="text-primary not-italic">Serve</span></span>
+                    <Link href="/" className="flex items-center gap-4 mb-20 hover:opacity-80 transition-opacity group">
+                        <div className="w-12 h-12 rounded-xl border border-white/10 group-hover:scale-110 transition-transform shadow-2xl p-2 bg-black/40">
+                            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                        </div>
+                        <span className="text-2xl font-black italic tracking-tighter text-white uppercase italic">True<span className="text-primary not-italic">Serve</span></span>
                     </Link>
 
                     {/* Program Badge */}
@@ -160,8 +162,8 @@ function MerchantLoginContent() {
 
                         {/* Footer Link */}
                         <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-4">
-                            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest">New to HouseEats?</p>
-                            <Link href="/merchant" className="badge-outline-white !py-3 !px-8 !text-[10px] !rounded-full opacity-60 hover:opacity-100">
+                            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest italic opacity-60">New to the Network?</p>
+                            <Link href="/merchant" className="badge-outline-white !py-3.5 !px-12 !text-[11px] !rounded-full">
                                 Apply to Partner
                             </Link>
                         </div>
