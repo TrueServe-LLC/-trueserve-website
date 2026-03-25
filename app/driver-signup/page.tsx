@@ -5,15 +5,25 @@ import DriverApplicationForm from "@/app/driver/DriverApplicationForm";
 
 export default function DriverSignupPage() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-emerald-500 font-sans">
+        <div className="min-h-screen bg-[#02040a] text-white selection:bg-emerald-500 font-sans relative overflow-x-hidden">
+            {/* Animated Mesh Gradient Background (Step 15/18 Style) */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] animate-blob filter" />
+                <div className="absolute top-[20%] right-[-10%] w-[45%] h-[45%] bg-primary/10 rounded-full blur-[120px] animate-blob-reverse filter delay-700" />
+                <div className="absolute bottom-[-10%] left-[20%] w-[55%] h-[55%] bg-indigo-500/10 rounded-full blur-[120px] animate-blob-slow filter" />
+                <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-emerald-400/10 rounded-full blur-[120px] animate-blob filter delay-1000" />
+                <div className="absolute inset-0 bg-[#02040a]/40 backdrop-blur-[20px]" />
+                <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+            </div>
+
             {/* Cinematic Hero */}
-            <div className="relative h-[40vh] md:h-[60vh] w-full overflow-hidden">
+            <div className="relative h-[40vh] md:h-[60vh] w-full overflow-hidden z-10">
                 <img 
                     src="https://images.unsplash.com/photo-1585909600100-3484f279a78a?q=80&w=2400&auto=format&fit=crop" 
                     alt="Scooter Delivery Cinematic" 
                     className="w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000 scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#02040a] via-transparent to-transparent"></div>
                 
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
                     <Link href="/driver" className="mb-8 w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white/10 hover:border-primary transition-all text-primary shadow-2xl backdrop-blur-md">

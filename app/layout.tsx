@@ -39,6 +39,39 @@ export default function RootLayout({
           {children}
           <MobileNavWrapper />
         </LaunchDarklyClientProvider>
+
+        {/* Global Scroll Reveal Script */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+          };
+
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+              }
+            });
+          }, observerOptions);
+
+          document.addEventListener('DOMContentLoaded', () => {
+             document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => observer.observe(el));
+          });
+
+          // Also handle dynamic content (SPA transitions)
+          const mutationObserver = new MutationObserver((mutations) => {
+            mutations.forEach(mutation => {
+              mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) {
+                  if (node.matches('.reveal, .reveal-left, .reveal-scale')) observer.observe(node);
+                  node.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => observer.observe(el));
+                }
+              });
+            });
+          });
+          mutationObserver.observe(document.body, { childList: true, subtree: true });
+        `}} />
       </body>
     </html>
   );

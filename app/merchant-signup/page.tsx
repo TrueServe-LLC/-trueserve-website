@@ -5,9 +5,19 @@ import MerchantSignupForm from "./MerchantSignupForm";
 
 export default function MerchantSignupPage() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-primary font-sans relative flex flex-col items-center justify-center p-4 md:p-8">
+        <div className="min-h-screen bg-[#02040a] text-white selection:bg-primary font-sans relative flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
+            {/* Animated Mesh Gradient Background */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] animate-blob filter" />
+                <div className="absolute top-[20%] right-[-10%] w-[45%] h-[45%] bg-indigo-500/10 rounded-full blur-[120px] animate-blob-reverse filter delay-700" />
+                <div className="absolute bottom-[-10%] left-[20%] w-[55%] h-[55%] bg-emerald-500/10 rounded-full blur-[120px] animate-blob-slow filter" />
+                <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] animate-blob filter delay-1000" />
+                <div className="absolute inset-0 bg-[#02040a]/40 backdrop-blur-[20px]" />
+                <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+            </div>
+
             {/* Minimal Header */}
-            <div className="w-full max-w-7xl flex justify-between items-center mb-12 px-6">
+            <div className="w-full max-w-7xl flex justify-between items-center mb-12 px-6 relative z-10">
                 <Link href="/merchant" className="flex items-center gap-3 group transition-all">
                     <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl border border-white/10 group-hover:scale-110 transition-transform" />
                     <span className="text-xl font-black text-slate-300 tracking-tighter italic uppercase group-hover:text-white transition-colors">TrueServe <span className="text-primary not-italic">Hub</span></span>
