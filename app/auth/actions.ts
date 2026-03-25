@@ -248,7 +248,7 @@ export async function logout() {
     redirect("/");
 }
 
-export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: string; role?: string }> {
+export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: string; role?: string; name?: string }> {
     try {
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
@@ -264,11 +264,11 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             if (user) {
                 const { data: publicUser } = await supabaseAdmin
                     .from('User')
-                    .select('role')
+                    .select('role, name')
                     .eq('email', user.email)
                     .maybeSingle();
 
-                return { isAuth: true, userId: user.id, role: publicUser?.role || 'CUSTOMER' };
+                return { isAuth: true, userId: user.id, role: publicUser?.role || 'CUSTOMER', name: publicUser?.name || user.email };
             }
             return { isAuth: false };
         }
@@ -276,7 +276,7 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
         // Try getting by ID first
         let { data: publicUser } = await supabaseAdmin
             .from('User')
-            .select('role')
+            .select('role, name')
             .eq('id', userId)
             .maybeSingle();
 
@@ -298,9 +298,9 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             }
         }
         
-        console.log("[AuthSession] Result:", { isAuth: true, userId, role });
+        console.log("[AuthSession] Result:", { isAuth: true, userId, role, name: publicUser?.name });
 
-        return { isAuth: true, userId, role };
+        return { isAuth: true, userId, role, name: publicUser?.name || 'User' };
     } catch (e) {
         console.error("[AuthSession] Error:", e);
         return { isAuth: false };

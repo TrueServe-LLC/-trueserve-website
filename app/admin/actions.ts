@@ -308,3 +308,96 @@ export async function adminCancelOrder(orderId: string) {
     }
 }
 
+
+export async function requestChange(data: { entityType: string; entityId: string; changeData: any; previousData: any; rollbackPlan?: string }) {
+    try {
+        const { isAuth, role, userId, name } = await getAuthSession();
+        if (!isAuth) throw new Error("Unauthorized");
+
+        const { error } = await supabaseAdmin
+            .from('ChangeRequest')
+            .insert({
+                ...data,
+                requestedBy: { name, role, userId },
+                status: 'PENDING',
+                createdAt: new Date().toISOString()
+            });
+
+        if (error) throw error;
+
+        await logAuditAction({ action: "REQUEST_CHANGE", targetId: data.entityId, entityType: data.entityType, after: { status: "PENDING" } });
+
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/settings");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to request change:", e);
+        return { success: false, error: e.message };
+    }
+}
+
+export async function approveRequest(requestId: string) {
+    try {
+        const { isAuth, role, userId } = await getAuthSession();
+        if (!isAuth || role !== 'ADMIN') throw new Error("Only admins can approve sensitive changes");
+
+        const { data: request, error: fetchError } = await supabaseAdmin
+            .from('ChangeRequest')
+            .select('*')
+            .eq('id', requestId)
+            .single();
+
+        if (fetchError || !request) throw new Error("Request not found");
+
+        const tableName = request.entityType;
+        const pkColumn = tableName === 'SystemConfig' ? 'key' : 'id';
+
+        // 1. Apply the Actual Change to the Target Table
+        const { error: applyError } = await supabaseAdmin
+            .from(tableName)
+            .update(request.changeData)
+            .eq(pkColumn, request.entityId);
+
+        if (applyError) throw applyError;
+
+        // 2. Mark Request as Approved
+        const { error: updateError } = await supabaseAdmin
+            .from('ChangeRequest')
+            .update({ status: 'APPROVED', approvedBy: userId, updatedAt: new Date().toISOString() })
+            .eq('id', requestId);
+
+        if (updateError) throw updateError;
+
+        await logAuditAction({ action: "APPROVE_CHANGE", targetId: request.entityId, entityType: request.entityType, after: { status: "APPROVED" } });
+
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/settings");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to approve change:", e);
+        return { success: false, error: e.message };
+    }
+}
+
+export async function rejectRequest(requestId: string) {
+    try {
+        const { isAuth, role, userId } = await getAuthSession();
+        if (!isAuth || role !== 'ADMIN') throw new Error("Unauthorized");
+
+        const { error } = await supabaseAdmin
+            .from('ChangeRequest')
+            .update({ status: 'REJECTED', approvedBy: userId, updatedAt: new Date().toISOString() })
+            .eq('id', requestId);
+
+        if (error) throw error;
+
+        await logAuditAction({ action: "REJECT_CHANGE", targetId: requestId, entityType: "ChangeRequest", after: { status: "REJECTED" } });
+
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/settings");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to reject change:", e);
+        return { success: false, error: e.message };
+    }
+}

@@ -4,11 +4,19 @@ import Link from "next/link";
 import { getAuthSession } from "@/app/auth/actions";
 import { isInternalStaff } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { updateConfigParam, logout } from "../actions";
+import { updateConfigParam, logout, approveRequest, rejectRequest, requestChange } from "../actions";
+import ChangeWorkflow from "@/components/admin/ChangeWorkflow";
 
 async function getConfigs() {
     const { data } = await supabaseAdmin.from('SystemConfig').select('*').order('key');
     return data || [];
+}
+
+async function getPendingRequests() {
+    try {
+        const { data } = await supabaseAdmin.from('ChangeRequest').select('*').eq('status', 'PENDING').order('createdAt', { ascending: false });
+        return data || [];
+    } catch { return []; }
 }
 
 async function getAuditLogs() {
@@ -31,6 +39,8 @@ export default async function SettingsPage() {
     if (!isAuthorized) redirect("/admin/login");
 
     const configs = await getConfigs();
+    const pendingRequests = await getPendingRequests();
+    
     // Re-check AuditLog table name. In my SQL it was "AuditLog".
     const { data: auditLogs } = await supabaseAdmin
         .from('AuditLog')
@@ -63,6 +73,21 @@ export default async function SettingsPage() {
                     <h1 className="text-4xl font-black tracking-tighter mb-2">Operational <span className="text-gradient">Parameters</span></h1>
                     <p className="text-slate-400 text-sm font-medium">Fine-tune global platform constraints and feature rollouts.</p>
                 </header>
+
+                {/* Change Request Queue (Step 16) */}
+                <section className="mb-16">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold flex items-center gap-2">
+                            🚦 Approval Queue
+                            <span className="bg-primary/20 text-primary text-[10px] px-2 py-1 rounded-full uppercase font-black">{pendingRequests.length} Pending</span>
+                        </h2>
+                    </div>
+                    <ChangeWorkflow 
+                        pendingRequests={pendingRequests} 
+                        approveAction={approveRequest}
+                        rejectAction={rejectRequest}
+                    />
+                </section>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Config Grid */}
@@ -99,6 +124,24 @@ export default async function SettingsPage() {
                                         )}
                                         <button className={`btn ${typeof config.value === 'boolean' ? (config.value ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/20' : 'bg-red-500/20 text-red-400 border-red-500/20') : 'btn-primary'} text-[10px] font-black uppercase tracking-widest px-4`}>
                                             {typeof config.value === 'boolean' ? (config.value ? 'ENABLED' : 'DISABLED') : 'UPDATE'}
+                                        </button>
+
+                                        {/* Step 16 Controlled Process Request */}
+                                        <button 
+                                            formAction={async (formData: FormData) => {
+                                                "use server";
+                                                const val = formData.get('value');
+                                                await requestChange({
+                                                    entityType: 'SystemConfig',
+                                                    entityId: config.key,
+                                                    changeData: { value: val === 'true' ? true : (val === 'false' ? false : (!isNaN(Number(val)) ? Number(val) : val)) },
+                                                    previousData: { value: config.value },
+                                                    rollbackPlan: "Manual revert of config key " + config.key
+                                                });
+                                            }}
+                                            className="btn btn-outline border-white/10 text-slate-500 hover:text-white text-[10px] font-black uppercase tracking-widest px-4"
+                                        >
+                                            REQUEST
                                         </button>
                                     </form>
                                 </div>
