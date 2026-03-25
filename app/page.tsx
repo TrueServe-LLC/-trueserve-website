@@ -112,13 +112,13 @@ export default async function Home() {
 
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
         <section className="py-32 bg-[#0a0a0b]">
-          <div className="container mx-auto px-6 max-w-7xl">
+          <div className="mx-auto px-8 md:px-16 max-w-7xl">
             <div className="flex items-center justify-center gap-6 text-primary font-black uppercase tracking-[0.6em] text-[10px] mb-20 italic">
                 <div className="w-12 h-px bg-primary/30" />
                 Platform Features
                 <div className="w-12 h-px bg-primary/30" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 { 
                   title: "Order Locally.", 
@@ -142,15 +142,15 @@ export default async function Home() {
                   link: "/driver"
                 }
               ].map((card, i) => (
-                <Link key={i} href={card.link} className="group relative min-h-[500px] bg-black rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/40 transition-all flex flex-col justify-end p-10 hover:scale-[1.02] active:scale-[0.98] shadow-2xl">
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-30 group-hover:opacity-60" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <div className="relative z-10 space-y-6">
-                    <h3 className="text-4xl font-black text-white leading-tight italic uppercase">{card.title}</h3>
-                    <p className="text-slate-500 text-sm font-bold italic leading-relaxed">{card.desc}</p>
-                    <div className="pt-4">
-                      <div className="badge-outline-white !text-[10px] !px-8 !py-4">
-                         {card.cta} <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                <Link key={i} href={card.link} className="group relative min-h-[520px] bg-black rounded-3xl overflow-hidden border border-white/5 hover:border-primary/40 transition-all duration-500 flex flex-col justify-end p-8 hover:scale-[1.015] active:scale-[0.99] shadow-xl">
+                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-30 group-hover:opacity-55" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                  <div className="relative z-10 space-y-4">
+                    <h3 className="text-3xl md:text-4xl font-black text-white leading-tight italic uppercase">{card.title}</h3>
+                    <p className="text-slate-400 text-sm font-bold italic leading-relaxed max-w-[85%]">{card.desc}</p>
+                    <div className="pt-2">
+                      <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white border border-white/20 rounded-full px-6 py-3 backdrop-blur-sm bg-black/30 group-hover:border-primary/50 group-hover:text-primary transition-all">
+                         {card.cta} <span className="group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </div>
                   </div>
