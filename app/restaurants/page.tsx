@@ -221,185 +221,204 @@ export default async function RestaurantFinder({
     const { restaurants, locationMeta } = await getRestaurants({ term: effectiveAddress, address: effectiveAddress, lat, lng, category });
 
     const showLanding = !effectiveAddress && (!lat || !lng);
-    if (showLanding) {
-        return (
-            <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden selection:bg-primary/30">
-                <nav className="sticky top-0 w-full z-50 p-6 px-10 flex justify-between items-center backdrop-blur-3xl bg-black/60 border-b border-white/5">
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <img src="/logo.png" className="w-12 h-12 rounded-xl border-2 border-slate-700 bg-black/60 p-1.5 shadow-2xl group-hover:scale-110 transition-transform" alt="TrueServe Logo" />
-                        <span className="text-2xl font-black text-white tracking-widest italic uppercase">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
-                    </Link>
-                    <div className="flex items-center gap-8">
-                         <Link href="/login" className="hidden md:block text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-colors italic">Sign In</Link>
-                         <Link href="/login" className="badge-outline-white !py-3 !px-8 !text-[10px]">Get Started</Link>
-                    </div>
-                </nav>
-                
-                <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 space-y-20 relative px-4">
-                    <div className="absolute inset-0 z-0">
-                        <img
-                            src="/hero_food_delivery.png"
-                            alt="Fine Dining"
-                            className="w-full h-full object-cover opacity-30 brightness-50 blur-3xl scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black" />
-                    </div>
-
-                    <div className="relative z-10 space-y-16 animate-fade-in flex flex-col items-center max-w-5xl glow-blur-primary">
-                        <div className="flex items-center gap-5 text-primary font-black uppercase tracking-[0.6em] text-[10px] italic">
-                            <div className="w-16 h-px bg-primary/40 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-                            Secure Location Protocol
-                            <div className="w-16 h-px bg-primary/40 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-                        </div>
-                        
-                        <h1 className="text-6xl md:text-[115px] leading-[0.85] text-white font-black tracking-tighter italic animate-slide-up text-center h-glow">
-                             Find Local <br />
-                            <span className="text-primary not-italic uppercase italic tracking-tight">Flavors.</span>
-                        </h1>
-                        
-                        <div className="w-full max-w-4xl relative group">
-                           <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full opacity-20 group-hover:opacity-40 transition-opacity -z-10" />
-                           <LandingSearch />
-                        </div>
-
-                         <p className="max-w-2xl text-slate-500 font-bold italic text-lg md:text-xl leading-relaxed animate-fade-in delay-200">
-                            Enter your delivery address to sync with the best independent restaurants in your community.
-                        </p>
-                    </div>
-                </main>
-
-                <footer className="p-12 text-center text-[10px] font-black uppercase tracking-[0.5em] text-slate-800 z-10 italic">
-                    © {new Date().getFullYear()} TrueServe Infrastructure.
-                </footer>
-            </div>
-        );
-    }
-
+    
     return (
-        <div className="min-h-screen bg-black">
-            <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-xl border border-white/10 group-hover:scale-110 transition-transform shadow-lg" />
-                        <span className="text-xl font-black text-white tracking-widest italic uppercase">True<span className="text-primary not-italic tracking-widest text-lg">Serve</span></span>
+        <div className="min-h-screen bg-black text-slate-300 selection:bg-primary/30">
+            {/* ── NAV ─────────────────────────────────────────────────────────── */}
+            <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
+                <div className="container mx-auto flex justify-between items-center max-w-7xl">
+                    <Link href="/" className="flex items-center gap-4 group">
+                        <div className="w-10 h-10 rounded-xl border border-white/10 bg-black/60 flex items-center justify-center p-1.5 overflow-hidden shadow-2xl group-hover:scale-110 transition-transform">
+                            <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
+                        </div>
+                        <span className="text-xl font-serif font-black tracking-tighter text-white uppercase italic leading-none">True<span className="text-primary not-italic tracking-tighter text-lg ml-0.5 whitespace-nowrap">SERVE</span></span>
                     </Link>
-                    <div className="h-6 w-px bg-white/10 mx-2"></div>
-                    <div className="flex items-center gap-8">
-                        <Link href="/driver/login" className="nav-link text-primary border-b border-primary/20 hover:border-primary transition-all pb-1">Sign In</Link>
-                        <Link href="/driver" className="btn-standard py-3 px-8 text-[9px]">
-                            Fleet Home
-                        </Link>
+
+                    <div className="hidden lg:flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">
+                        <Link href="/restaurants" className="text-white border-b border-primary/40 pb-1">MARKETPLACE</Link>
+                        <Link href="/merchant" className="hover:text-primary transition-colors whitespace-nowrap">FOR MERCHANTS</Link>
+                        <Link href="/driver" className="hover:text-primary transition-colors whitespace-nowrap">DRIVER HUB</Link>
                     </div>
-                </div>
-                <div className="flex items-center gap-6">
-                    {userId && <NotificationBell userId={userId} />}
-                    <Suspense fallback={<div className="w-10 h-10 bg-white/5 rounded-full animate-pulse"></div>}>
-                        <ModeToggle />
-                    </Suspense>
-                    {!userId ? (
-                         <Link href="/login" className="btn-standard py-3 px-8 text-[9px]">Sign In</Link>
-                    ) : (
-                        <Link href="/user/settings" className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:border-primary transition-all">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        </Link>
-                    )}
+
+                    <div className="flex items-center gap-6">
+                        {userId ? (
+                            <div className="flex items-center gap-4">
+                                <NotificationBell userId={userId} />
+                                <Link href="/user/settings" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                </Link>
+                                <LogoutButton />
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-4 font-black italic uppercase tracking-widest text-[10px]">
+                                <Link href="/login" className="hidden md:block text-slate-400 hover:text-white transition-all px-5 py-2">Sign In</Link>
+                                <Link href="/login" className="badge-solid-primary !px-8 !py-3 !text-[10px] h-glow">
+                                    Get Started
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
 
-            <main className="container py-12 md:py-24 px-4 md:px-8 pb-40 relative z-10">
-                <div className="mb-24 text-center max-w-4xl mx-auto space-y-8 animate-fade-in">
-                    <div className="flex items-center justify-center gap-4 text-primary font-black uppercase tracking-[0.6em] text-[10px] italic">
-                        <div className="w-12 h-px bg-primary/40" />
-                        Local Marketplace
-                        <div className="w-12 h-px bg-primary/40" />
-                    </div>
-                    <h1 className="text-5xl md:text-8xl text-white font-black italic tracking-tighter leading-none uppercase h-glow font-serif">
-                        Discovery <span className="text-primary not-italic">Hub.</span>
-                    </h1>
-                    <p className="text-slate-500 font-bold italic text-lg leading-relaxed">
-                        Synchronizing the best local flavors in {locationMeta.name || "your area"}.
-                    </p>
-                </div>
+            <main className="relative flex flex-col items-center">
+                {/* ── HERO HEADER ─────────────────────────────────────────────── */}
+                <section className="w-full pt-24 pb-16 flex flex-col items-center justify-center px-6 text-center overflow-hidden border-b border-white/5 bg-[#0a0a0b]">
+                    <div className="relative z-10 max-w-6xl space-y-10 animate-fade-in flex flex-col items-center glow-blur-primary">
+                        <div className="flex items-center justify-center gap-5 text-primary font-black uppercase tracking-[0.6em] text-[9px] italic">
+                            <div className="w-12 h-px bg-primary/30" />
+                            {showLanding ? "Secure Location Protocol" : "Protocol active"}
+                            <div className="w-12 h-px bg-primary/30" />
+                        </div>
+                        
+                        <h1 className="text-6xl md:text-[100px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none h-glow uppercase font-serif pb-2">
+                             Discovery <br />
+                            <span className="text-primary not-italic tracking-[-0.03em] drop-shadow-[5px_58px_0px_rgba(255,255,255,0.1)] uppercase italic leading-none">HUB.</span>
+                        </h1>
 
-                {activeOrders.length > 0 && (
-                    <div className="mb-12 p-8 bg-black/40 border border-emerald-500/20 rounded-2xl flex items-center justify-between shadow-2xl backdrop-blur-xl">
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="w-2 h-2 rounded-sm bg-emerald-500 animate-pulse"></span>
-                                <span className="text-emerald-500 font-black uppercase tracking-widest text-[10px]">Active Protocol</span>
+                        <p className="max-w-2xl mx-auto text-base md:text-xl text-slate-500 font-bold leading-relaxed italic animate-fade-in delay-200">
+                            {showLanding 
+                                ? "Enter your delivery address to sync with the best independent flavors in your community." 
+                                : `Displaying elite local menus for ${locationMeta.name || "your area"}.`}
+                        </p>
+
+                        {showLanding && (
+                            <div className="w-full max-w-4xl relative group pt-4">
+                                <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full opacity-10 -z-10" />
+                                <LandingSearch />
                             </div>
-                            <h3 className="text-2xl font-black text-white italic">{activeOrders[0].restaurant?.name} is {activeOrders[0].status.toLowerCase().replace('_', ' ')}</h3>
+                        )}
+                    </div>
+                </section>
+
+                <div className="w-full max-w-7xl px-4 md:px-8 py-20 space-y-24">
+                    {/* Active Order Banner */}
+                    {activeOrders.length > 0 && (
+                        <div className="p-8 bg-emerald-500/[0.03] border border-emerald-500/20 rounded-[2rem] flex flex-col md:flex-row items-center justify-between shadow-2xl backdrop-blur-3xl animate-fade-in">
+                            <div className="text-center md:text-left mb-6 md:mb-0">
+                                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                                    <span className="w-2 h-2 rounded-sm bg-emerald-500 animate-pulse"></span>
+                                    <span className="text-emerald-500 font-black uppercase tracking-widest text-[10px] italic">Active Mission Protocol</span>
+                                </div>
+                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tight">Order #{activeOrders[0].id.slice(0,8)} • {activeOrders[0].status.replace('_', ' ')}</h3>
+                                <p className="text-slate-500 text-sm font-bold italic mt-1">{activeOrders[0].restaurant?.name}</p>
+                            </div>
+                            <Link href={`/orders/${activeOrders[0].id}`} className="badge-solid-primary !bg-emerald-500 !py-4 !px-12 !text-[11px] shadow-emerald-500/20">Track Status →</Link>
                         </div>
-                        <Link href={`/orders/${activeOrders[0].id}`} className="badge-solid-primary !bg-emerald-500 !py-4 !px-10 !text-[10px]">Track Protocol →</Link>
-                    </div>
-                )}
+                    )}
 
-                <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-6 md:p-12 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/50 to-emerald-500/0"></div>
-                    
-                    <div className="flex items-center justify-center gap-4 overflow-x-auto pb-12 no-scrollbar scroll-smooth">
-                        <Link href="/restaurants" className={`${!category ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"} filter-pill`}>All</Link>
-                        {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches"].map((cat) => (
-                            <Link key={cat} href={`` + `/restaurants?category=${cat}`} className={`${category === cat ? "bg-emerald-500 border-emerald-500 text-black shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white"} filter-pill`}>{cat}</Link>
-                        ))}
-                    </div>
+                    {/* Filters Hub */}
+                    {!showLanding && (
+                        <div className="space-y-16">
+                            <div className="flex flex-col items-center text-center gap-10">
+                                <div className="flex items-center flex-wrap justify-center gap-4 pb-4">
+                                    <Link href="/restaurants" className={`${!category ? "bg-primary text-black border-primary shadow-lg shadow-primary/20" : "bg-white/5 border-white/10 text-slate-500 hover:text-white"} filter-pill`}>General</Link>
+                                    {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches"].map((cat) => (
+                                        <Link key={cat} href={`/restaurants?category=${cat}`} className={`${category === cat ? "bg-primary text-black border-primary shadow-lg shadow-primary/20" : "bg-white/5 border-white/10 text-slate-500 hover:text-white"} filter-pill`}>{cat}</Link>
+                                    ))}
+                                </div>
+                            </div>
 
-                    {restaurants.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-                            {restaurants.map((rest: any) => (
-                                <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group flex flex-col active:scale-[0.98] transition-transform">
-                                    <div className="h-52 md:h-64 rounded-[2rem] overflow-hidden mb-5 relative border border-white/5 shadow-2xl">
-                                        <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                        <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                            <div className="bg-black/40 backdrop-blur-xl text-white text-[9px] font-black px-4 py-2 rounded-xl border border-white/10 uppercase tracking-widest">{rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}</div>
-                                            {rest.deal && <div className="bg-emerald-500 text-black text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-2xl">DEAL</div>}
-                                            {rest.websiteUrl && (
-                                                <div 
-                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(rest.websiteUrl, '_blank'); }}
-                                                    className="bg-black border border-emerald-500/50 text-emerald-400 text-[8px] font-black px-4 py-2 rounded-xl uppercase tracking-wider hover:bg-emerald-500 hover:text-black transition-all cursor-pointer shadow-lg active:scale-95"
-                                                    title="View Official Website"
-                                                >
-                                                    🔗 Official Hub
+                            {/* Grid Content */}
+                            {restaurants.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 animate-fade-in">
+                                    {restaurants.map((rest: any) => (
+                                        <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group relative flex flex-col bg-white/[0.02] border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/40 transition-all duration-500 active:scale-[0.98] shadow-2xl hover:-translate-y-2">
+                                            <div className="h-64 relative overflow-hidden">
+                                                <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                                                
+                                                <div className="absolute top-5 left-5 right-5 flex justify-between items-start">
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="bg-black/60 backdrop-blur-xl text-white text-[8px] font-black px-4 py-2 border border-white/10 rounded-lg uppercase tracking-[0.2em] italic">
+                                                            {rest.deliveryFee === "Free" ? "FREE DELIVERY" : `${rest.deliveryFee} Fee`}
+                                                        </div>
+                                                        {rest.deal && (
+                                                            <div className="bg-emerald-500 text-black text-[8px] font-black px-4 py-2 rounded-lg uppercase tracking-[0.2em] italic shadow-lg">
+                                                                PROMO
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {rest.websiteUrl && (
+                                                        <button 
+                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(rest.websiteUrl, '_blank'); }}
+                                                            className="w-10 h-10 bg-black/60 backdrop-blur-xl border border-emerald-500/30 rounded-lg flex items-center justify-center text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all shadow-xl active:scale-90"
+                                                            title="Official Hub"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                                        </button>
+                                                    )}
                                                 </div>
-                                            )}
-                                        </div>
+                                            </div>
+
+                                            <div className="p-8 text-center flex flex-col items-center space-y-4">
+                                                <h3 className="text-2xl font-black text-white group-hover:text-primary transition-colors tracking-tight italic uppercase">{rest.name}</h3>
+                                                
+                                                <div className="flex items-center justify-center gap-4 text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] italic">
+                                                    <span className="text-emerald-500">{rest.prepTime}</span>
+                                                    <span className="opacity-20">•</span>
+                                                    <span>{rest.priceLevel}</span>
+                                                    <span className="opacity-20">•</span>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-primary">★</span>
+                                                        <span>{rest.rating}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-2 w-full">
+                                                    <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white border border-white/10 rounded-xl px-8 py-4 w-full justify-center group-hover:border-primary/50 group-hover:text-primary transition-all bg-white/5 italic">
+                                                        Open Menu <span className="group-hover:translate-x-1 transition-transform">→</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="py-40 flex flex-col items-center text-center space-y-6">
+                                    <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center text-5xl opacity-40 grayscale group-hover:grayscale-0 transition-all">🏗️</div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-3xl font-black text-white italic uppercase tracking-widest">Gems Pending.</h3>
+                                        <p className="text-slate-500 font-bold italic text-base">We haven't synched restaurant protocols in {locationMeta.name} yet.</p>
                                     </div>
-                                    <div className="px-1 text-center flex flex-col items-center">
-                                        <h3 className="text-xl font-black text-white group-hover:text-primary transition-colors mb-2 tracking-tight">{rest.name}</h3>
-                                        <div className="flex items-center justify-center gap-3 text-[12px] text-slate-500 font-bold uppercase tracking-widest">
-                                            <span className="text-emerald-400">{rest.deliveryFee === "Free" ? "Free Delivery" : rest.deliveryFee}</span>
-                                            <span className="opacity-30">•</span>
-                                            <span>{rest.prepTime}</span>
-                                            <span className="opacity-30">•</span>
-                                            <span>{rest.priceLevel}</span>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
+                                    <Link href="/restaurants" className="badge-outline-white !px-12 !py-4">Broaden Search</Link>
+                                </div>
+                            )}
                         </div>
-                    ) : (
-                        <div className="py-32 flex flex-col items-center text-center">
-                            <div className="text-5xl mb-8 opacity-20">🍽️</div>
-                            <h3 className="text-2xl font-black text-white mb-2 italic">No local gems found</h3>
-                            <p className="text-slate-500 font-medium">Try adjusting your filters or area.</p>
+                    )}
+
+                    {!(!showLanding && restaurants.length > 0) && showLanding && (
+                        <div className="py-20 flex flex-col items-center">
+                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl text-center">
+                                {[
+                                    { icon: '🗺️', label: 'Local Only', desc: 'No global chains' },
+                                    { icon: '⚡', label: 'Priority Hub', desc: 'Fastest dispatch' },
+                                    { icon: '💎', label: 'Elite Menu', desc: 'Curated flavors' },
+                                    { icon: '🖤', label: 'Fair Split', desc: 'Supporting local' }
+                                ].map((item) => (
+                                    <div key={item.label} className="p-10 rounded-[2rem] bg-black border border-white/5 flex flex-col items-center shadow-2xl hover:border-primary/20 transition-all">
+                                        <div className="text-4xl mb-6">{item.icon}</div>
+                                        <p className="text-[11px] font-black uppercase text-white tracking-widest mb-2 italic">{item.label}</p>
+                                        <p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{item.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
 
-                <section className="mt-20 w-full flex justify-center">
-                    <div className="p-12 md:p-20 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-[3rem] md:rounded-[5rem] flex flex-col items-center text-center max-w-5xl w-full shadow-2xl">
-                        <h2 className="text-3xl md:text-5xl font-black mb-6 text-white italic tracking-tighter">Built for the Community.</h2>
-                        <p className="text-slate-500 text-base md:text-lg mb-12 max-w-3xl">TrueServe isn't just an app. We're a delivery standard designed to help local gems thrive while ensuring our drivers earn what they deserve.</p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
-                            {[{ icon: '📊', label: 'Fair Split' }, { icon: '⚡', label: 'Priority' }, { icon: '🏷️', label: '5% Saved' }, { icon: '🎂', label: 'Gifts' }].map((item) => (
-                                <div key={item.label} className="p-8 rounded-2xl bg-black/60 border border-white/5 flex flex-col items-center shadow-xl">
-                                    <div className="text-3xl mb-4">{item.icon}</div>
-                                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{item.label}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
+                {/* ── FOOTER ──────────────────────────────────────────────────────── */}
+                <footer className="w-full py-24 bg-black border-t border-white/10 px-10 text-center space-y-12">
+                     <div className="flex flex-col items-center gap-6">
+                         <div className="w-12 h-12 rounded-xl border border-white/10 bg-black flex items-center justify-center p-2">
+                             <img src="/logo.png" className="w-full h-full object-contain opacity-50 grayscale" alt="TrueServe Logo" />
+                         </div>
+                         <div className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-800 italic">
+                             TrueServe Discovery Protocol • © {new Date().getFullYear()}
+                         </div>
+                     </div>
+                </footer>
             </main>
         </div>
     );
