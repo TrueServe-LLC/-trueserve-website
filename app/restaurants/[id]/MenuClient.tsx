@@ -11,6 +11,7 @@ import GoogleMapsMap from "@/components/GoogleMapsMap";
 import AddressInput from "@/components/AddressInput";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useEffect } from "react";
+import OrderConfirmAnimation from "@/components/OrderConfirmAnimation";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -54,6 +55,7 @@ export default function MenuClient({
     const [deliveryInstructions, setDeliveryInstructions] = useState("");
     const [deliveryOption, setDeliveryOption] = useState<"leave" | "hand">("leave");
     const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
+    const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
     
     const [redeemPoints, setRedeemPoints] = useState(false);
 
@@ -148,16 +150,23 @@ export default function MenuClient({
         if (response.success && response.orderId) {
             setCart({});
             setClientSecret(null);
-            router.push(`/orders/${response.orderId}`);
+            setPendingOrderId(response.orderId);
         } else {
             alert(response.message || "Failed to finalize order");
             setIsSubmitting(false);
         }
     };
 
-    // Success view removed in favor of redirect
+    // Success view removed in favor of animated transition
 
     return (
+        <>
+        {pendingOrderId && (
+            <OrderConfirmAnimation
+                restaurantName={restaurant.name}
+                onComplete={() => router.push(`/orders/${pendingOrderId}`)}
+            />
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start md:mt-0 -mt-6">
             {/* Busy Mode Alert */}
             {restaurant.isBusy && (
@@ -662,5 +671,6 @@ export default function MenuClient({
                 </div>
             )}
         </div>
+        </>
     );
 }
