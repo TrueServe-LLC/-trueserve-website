@@ -102,7 +102,7 @@ function DriverApplicationFormInner() {
     }
 
     return (
-        <div className="w-full max-w-3xl mx-auto relative">
+        <div className="w-full relative">
             {isMockMode && (
                 <div className="absolute top-0 right-0 z-[60]">
                     <button onClick={fillDemoData} className="text-[10px] font-black uppercase tracking-[0.3em] px-5 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary hover:bg-primary hover:text-black transition-all italic">

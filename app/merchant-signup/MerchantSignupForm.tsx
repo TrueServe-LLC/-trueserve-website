@@ -61,7 +61,7 @@ function MerchantSignupFormInner() {
     }
 
     return (
-        <div className="w-full max-w-3xl mx-auto">
+        <div className="w-full">
             {/* Step Progress */}
             <div className="flex items-center justify-center gap-4 mb-12">
                 {steps.map((label, i) => {

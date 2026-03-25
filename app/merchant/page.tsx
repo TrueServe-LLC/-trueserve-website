@@ -44,14 +44,16 @@ export default function MerchantPortal() {
         <div className="min-h-screen bg-black text-slate-300 font-sans overflow-x-hidden selection:bg-primary/20">
             {/* Background */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <img
-                    src="/merchant_hero_cinematic_1774395289646.png"
-                    alt=""
-                    className="w-full h-full object-cover opacity-40 scale-105"
-                    style={{ filter: "blur(40px) brightness(0.4) saturate(1.2)" }}
+                <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
+                    style={{
+                        backgroundImage: "url('/merchant_hero_cinematic_1774395289646.png')",
+                        filter: "blur(48px) brightness(0.3) saturate(1.3)",
+                        opacity: 0.9,
+                    }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
             </div>
 
             {/* Nav */}
@@ -151,13 +153,15 @@ export default function MerchantPortal() {
             </section>
 
             {/* ── ENROLLMENT FORM ────────────────────────────────────────────── */}
-            <section id="signup" className="relative z-10 py-16 px-6 max-w-3xl mx-auto scroll-mt-24">
-                <div className="reveal mb-14 text-center space-y-3">
-                    <h2 className="text-3xl md:text-5xl font-serif italic text-white uppercase tracking-tight">Start your <span className="text-primary">Partnership.</span></h2>
-                    <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.5em] italic">Establish your digital storefront in minutes</p>
-                </div>
-                <div className="reveal delay-100 w-full">
-                    <MerchantSignupForm />
+            <section id="signup" className="relative z-10 w-full py-16 scroll-mt-24">
+                <div className="w-full flex flex-col items-center px-6">
+                    <div className="reveal mb-14 text-center space-y-3 w-full max-w-3xl">
+                        <h2 className="text-3xl md:text-5xl font-serif italic text-white uppercase tracking-tight">Start your <span className="text-primary">Partnership.</span></h2>
+                        <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.5em] italic">Establish your digital storefront in minutes</p>
+                    </div>
+                    <div className="reveal delay-100 w-full max-w-3xl">
+                        <MerchantSignupForm />
+                    </div>
                 </div>
             </section>
 
