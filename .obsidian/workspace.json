@@ -185,6 +185,8 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "app/merchant/terminal/page.tsx",
+    "app/merchant/terminal",
     "app/onboarding/page.tsx",
     "app/onboarding",
     "docs/Merchant_QuickStart_POS.md",
@@ -196,8 +198,6 @@
     "app/admin/content/page.tsx",
     "app/admin/content",
     "components/admin/PolicyCMS.tsx",
-    "components/admin/ChangeWorkflow.tsx",
-    "app/animation-test/page.tsx",
     "public/merchant_hero.png",
     "public/driver_hero_cinematic_1774377596959.png",
     "public/admin_login_bg_cinematic_1774378543203.png",

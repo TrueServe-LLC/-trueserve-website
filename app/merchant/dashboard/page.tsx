@@ -94,6 +94,13 @@ export default async function MerchantDashboard() {
                     </div>
                     
                     <div className="flex items-center gap-3">
+                        <Link 
+                            href="/merchant/terminal" 
+                            className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 hover:border-white/20 transition-all flex items-center gap-2 group"
+                        >
+                            <span className="text-sm group-hover:scale-110 transition-transform">🍳</span>
+                            Open Kitchen Terminal
+                        </Link>
                          <span className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap ${restaurant.plan === 'Pro Subscription'
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                             : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-sm'
