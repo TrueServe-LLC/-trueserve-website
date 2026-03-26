@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import DriverLoginForm from "./DriverLoginForm";
+import Logo from "@/components/Logo";
 
 export default function DriverLoginPage() {
     return (
@@ -22,12 +23,7 @@ export default function DriverLoginPage() {
                 
                 <div className="relative z-10 flex flex-col h-full">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-4 mb-20 hover:opacity-80 transition-opacity group">
-                        <div className="w-12 h-12 rounded-xl border border-white/10 group-hover:scale-110 transition-transform shadow-2xl p-2 bg-black/40">
-                             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
-                        </div>
-                        <span className="text-2xl font-black italic tracking-tighter text-white uppercase italic">True<span className="text-primary not-italic">Serve</span></span>
-                    </Link>
+                    <Logo size="lg" />
 
                     {/* Program Badge */}
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-8 w-fit">
@@ -80,7 +76,7 @@ export default function DriverLoginPage() {
                 
                 {/* Mobile Nav Header */}
                 <div className="lg:hidden flex items-center justify-between p-6 border-b border-white/5 bg-[#0a0a0b]/80 backdrop-blur-xl">
-                    <Link href="/" className="text-xl font-black italic text-white">True<span className="text-primary">Serve</span></Link>
+                    <Logo size="sm" />
                     <div className="text-[10px] font-black uppercase tracking-widest text-primary">Fleet Login</div>
                 </div>
 

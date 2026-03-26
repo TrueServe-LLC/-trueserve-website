@@ -185,6 +185,8 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "scripts/check_locations.ts",
+    "components/Logo.tsx",
     "scripts/create_demo_merchant.ts",
     "app/merchant/dashboard/EmbedManager.tsx",
     "supabase/2026.03.25_add_ghl_support.sql",
@@ -196,8 +198,6 @@
     "docs/Merchant_QuickStart_POS.md",
     "scripts/check_readiness.ts",
     "docs/Pilot_Onboarding_Handbook.md",
-    "supabase/stability_protocol.sql",
-    "scripts/load_test.ts",
     "public/merchant_hero.png",
     "public/driver_hero_cinematic_1774377596959.png",
     "public/admin_login_bg_cinematic_1774378543203.png",

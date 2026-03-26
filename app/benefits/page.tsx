@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Logo from '@/components/Logo';
 
 export default function BenefitsPage() {
     const [selectedTier, setSelectedTier] = useState('Plus');
@@ -12,12 +13,7 @@ export default function BenefitsPage() {
             {/* Header */}
             <nav className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/5 px-6 py-4 bg-black/50">
                 <div className="container flex justify-between items-center">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                        <span className="text-2xl font-black tracking-tighter">
-                            True<span className="text-gradient">Serve</span><span className="text-primary">+</span>
-                        </span>
-                    </Link>
+                    <Logo size="md" showPlus={true} />
                     <Link href="/restaurants" className="btn btn-outline border-white/10 text-xs py-2 px-6 hover:bg-white/5 transition-all">
                         Back to Ordering
                     </Link>
@@ -168,9 +164,7 @@ export default function BenefitsPage() {
             <footer className="border-t border-white/10 py-20 px-6 bg-slate-900/20 backdrop-blur-md">
                 <div className="container max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-white">
                     <div>
-                        <Link href="/" className="text-2xl font-black tracking-tighter mb-4 block">
-                            True<span className="text-gradient">Serve</span>
-                        </Link>
+                        <Logo size="md" className="mb-4" />
                         <p className="text-sm text-slate-500 leading-relaxed font-medium">
                             Redefining the relationship between <br />
                             restaurants, drivers, and the community.

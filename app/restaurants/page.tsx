@@ -12,6 +12,7 @@ import { calculateDistance } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import ModeToggle from "@/components/ModeToggle";
 import LandingSearch from "@/components/LandingSearch";
+import Logo from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 
@@ -231,12 +232,7 @@ export default async function RestaurantFinder({
             {/* ── NAV ─────────────────────────────────────────────────────────── */}
             <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
                 <div className="container mx-auto flex justify-between items-center max-w-7xl">
-                    <Link href="/" className="flex items-center gap-4 group">
-                        <div className="w-10 h-10 rounded-xl border border-white/10 bg-black/60 flex items-center justify-center p-1.5 overflow-hidden shadow-2xl group-hover:scale-110 transition-transform">
-                            <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
-                        </div>
-                        <span className="text-xl font-serif font-black tracking-tighter text-white uppercase italic leading-none">True<span className="text-primary not-italic tracking-tighter text-lg ml-0.5 whitespace-nowrap">SERVE</span></span>
-                    </Link>
+                    <Logo size="md" />
 
                     <div className="hidden lg:flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">
                         <Link href="/restaurants" className="text-white border-b border-primary/40 pb-1">MARKETPLACE</Link>
@@ -407,25 +403,28 @@ export default async function RestaurantFinder({
                         </div>
                     )}
 
-                    {!(!showLanding && restaurants.length > 0) && showLanding && (
-                        <div className="w-full max-w-7xl pt-40 px-0">
-                             <div className="grid grid-cols-1 md:grid-cols-4 border-t border-b border-white/5 divide-y md:divide-y-0 md:divide-x divide-white/5">
-                                {[
-                                    { icon: '🗺️', label: 'Local Only', desc: 'No global chains' },
-                                    { icon: '⚡', label: 'Priority Hub', desc: 'Fastest dispatch' },
-                                    { icon: '💎', label: 'Elite Menu', desc: 'Curated flavors' },
-                                    { icon: '🖤', label: 'Fair Split', desc: 'Supporting local' }
-                                ].map((item) => (
-                                    <div key={item.label} className="p-16 flex flex-col items-center justify-center text-center group hover:bg-white/[0.01] transition-all bg-black">
-                                        <div className="text-xl mb-6 filter grayscale group-hover:grayscale-0 transition-all scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{item.icon}</div>
-                                        <p className="text-[11px] font-black uppercase text-white tracking-[0.4em] mb-3 italic">{item.label}</p>
-                                        <p className="text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em]">{item.desc}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+
                 </div>
+
+                {/* ── FEATURES PROTOCOL ─────────────────────────────────────────── */}
+                <section className="w-full border-t border-white/5 mt-20 flex flex-col items-center">
+                    <div className="w-full max-w-7xl px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5">
+                            {[
+                                { icon: '🗺️', label: 'Local Only', desc: 'No global chains' },
+                                { icon: '⚡', label: 'Priority Hub', desc: 'Fastest dispatch' },
+                                { icon: '💎', label: 'Elite Menu', desc: 'Curated flavors' },
+                                { icon: '🖤', label: 'Fair Split', desc: 'Supporting local' }
+                            ].map((item) => (
+                                <div key={item.label} className="p-16 flex flex-col items-center justify-center text-center group hover:bg-white/[0.01] transition-all bg-black">
+                                    <div className="text-xl mb-6 filter grayscale group-hover:grayscale-0 transition-all scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{item.icon}</div>
+                                    <p className="text-[11px] font-black uppercase text-white tracking-[0.4em] mb-3 italic">{item.label}</p>
+                                    <p className="text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em]">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
 
                 {/* ── FOOTER ──────────────────────────────────────────────────────── */}
                 <footer className="w-full py-16 bg-black px-10 text-center">

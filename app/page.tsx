@@ -6,6 +6,7 @@ import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
 import { cookies } from "next/headers";
 import EmergencyBanner from "@/components/EmergencyBanner";
+import Logo from "@/components/Logo";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -18,12 +19,7 @@ export default async function Home() {
       {/* ── NAV ─────────────────────────────────────────────────────────── */}
       <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
         <div className="container mx-auto flex justify-between items-center max-w-7xl">
-          <Link href="/" className="flex items-center gap-4 group">
-            <div className="w-12 h-12 rounded-full border-2 border-slate-600 bg-black/60 flex items-center justify-center p-1.5 overflow-hidden shadow-2xl group-hover:scale-110 transition-transform">
-              <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-2xl font-serif font-black tracking-tighter text-white uppercase italic leading-none">True<span className="text-primary not-italic tracking-tighter text-xl ml-0.5">SERVE</span></span>
-          </Link>
+          <Logo size="lg" />
 
           <div className="hidden lg:flex items-center gap-12 text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">
             <Link href="/restaurants" className="hover:text-primary transition-colors">ORDER FOOD</Link>
@@ -111,14 +107,14 @@ export default async function Home() {
         </section>
 
         {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
-        <section className="py-32 bg-[#0a0a0b]">
-          <div className="mx-auto px-8 md:px-16 max-w-7xl">
-            <div className="flex items-center justify-center gap-6 text-primary font-black uppercase tracking-[0.6em] text-[10px] mb-20 italic">
-                <div className="w-12 h-px bg-primary/30" />
-                Platform Features
-                <div className="w-12 h-px bg-primary/30" />
+        <section className="py-32 bg-[#0a0a0b] w-full flex flex-col items-center">
+          <div className="w-full max-w-7xl px-8 flex flex-col items-center text-center">
+            <div className="flex items-center justify-center gap-10 text-primary font-black uppercase tracking-[1em] text-[9px] mb-24 opacity-80 select-none w-full">
+                <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
+                <span className="shrink-0 px-4">Platform Features</span>
+                <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
               {[
                 { 
                   title: "Order Locally.", 
@@ -142,15 +138,19 @@ export default async function Home() {
                   link: "/driver"
                 }
               ].map((card, i) => (
-                <Link key={i} href={card.link} className="group relative min-h-[520px] bg-black rounded-3xl overflow-hidden border border-white/5 hover:border-primary/40 transition-all duration-500 flex flex-col justify-end p-8 hover:scale-[1.015] active:scale-[0.99] shadow-xl">
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-30 group-hover:opacity-55" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="relative z-10 space-y-4">
-                    <h3 className="text-3xl md:text-4xl font-black text-white leading-tight italic uppercase">{card.title}</h3>
-                    <p className="text-slate-400 text-sm font-bold italic leading-relaxed max-w-[85%]">{card.desc}</p>
-                    <div className="pt-2">
-                      <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white border border-white/20 rounded-full px-6 py-3 backdrop-blur-sm bg-black/30 group-hover:border-primary/50 group-hover:text-primary transition-all">
-                         {card.cta} <span className="group-hover:translate-x-1 transition-transform">→</span>
+                <Link key={i} href={card.link} className={`reveal-scale delay-${(i + 1) * 200} group relative min-h-[600px] bg-black overflow-hidden border border-white/5 transition-all duration-700 flex flex-col justify-end p-12 hover:bg-white/[0.02] active:scale-[0.98] shadow-2xl`}>
+                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2.5s] opacity-20 group-hover:opacity-45 brightness-50" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                  <div className="relative z-10 space-y-6 flex flex-col items-center text-center">
+                    <h3 className="text-4xl md:text-6xl font-[900] text-white leading-[0.85] italic uppercase font-serif tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                        {card.title}
+                    </h3>
+                    <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity italic">
+                        {card.desc}
+                    </p>
+                    <div className="pt-6">
+                      <div className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-white border border-white/20 rounded-md px-8 py-4 backdrop-blur-sm bg-black/40 group-hover:border-primary group-hover:text-primary transition-all duration-500 italic">
+                         {card.cta} <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
                       </div>
                     </div>
                   </div>
@@ -165,10 +165,7 @@ export default async function Home() {
        <footer className="py-32 bg-black border-t border-white/10 px-10">
         <div className="container mx-auto max-w-7xl text-center space-y-20">
           <div className="flex flex-col items-center gap-10">
-            <Link href="/" className="flex items-center gap-4 group">
-              <img src="/logo.png" alt="TrueServe Logo" className="w-16 h-16 rounded-xl border border-primary/20 group-hover:scale-110 transition-transform shadow-2xl" />
-              <span className="text-3xl font-black text-white tracking-widest uppercase italic animate-pulse">True<span className="text-primary not-italic tracking-[0.2em] text-xl ml-2">Serve</span></span>
-            </Link>
+            <Logo size="xl" className="animate-pulse" />
             
             <div className="flex flex-wrap justify-center gap-x-16 gap-y-10 text-[10px] font-black uppercase tracking-[0.5em] text-slate-600 italic">
               <Link href="/privacy" className="hover:text-white transition-colors">Safety</Link>

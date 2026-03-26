@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
     return (
@@ -111,12 +112,7 @@ function LoginWithParams() {
             <div className="relative z-10 w-full max-w-md p-1 px-1 bg-gradient-to-b from-white/10 to-transparent rounded-[2.5rem] shadow-2xl">
                 <div className="bg-[#0a0a0b]/90 backdrop-blur-3xl rounded-[2.3rem] p-10 md:p-12 border border-white/5 space-y-8">
                     <div className="text-center space-y-4">
-                        <div className="flex justify-center mb-6">
-                            <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl border border-primary/20 shadow-lg" />
-                        </div>
-                        <h1 className="text-4xl font-serif font-black italic text-white tracking-tighter uppercase leading-none">
-                            True<span className="text-primary not-italic font-black text-3xl ml-1">Serve</span>
-                        </h1>
+                        <Logo size="lg" orientation="vertical" />
                         <h2 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.4em]">
                             {mode === 'login' && "Sign in to your account"}
                             {mode === 'signup' && (

@@ -3,26 +3,11 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import DriverApplicationForm from "@/app/driver/DriverApplicationForm";
+import Logo from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 
-function useScrollReveal() {
-    useEffect(() => {
-        const elements = document.querySelectorAll(".reveal, .reveal-left, .reveal-scale");
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("visible");
-                    }
-                });
-            },
-            { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-        );
-        elements.forEach((el) => observer.observe(el));
-        return () => observer.disconnect();
-    }, []);
-}
+// Relying on global scroll reveal in layout.tsx
 
 const features = [
     { icon: "💸", title: "Fair Pay", desc: "Secure earnings deposited directly to you each week.", delay: "delay-100" },
@@ -40,7 +25,6 @@ const requirements = [
 ];
 
 export default function DriverPortal() {
-    useScrollReveal();
 
     return (
         <div className="min-h-screen bg-black text-slate-300 font-sans overflow-x-hidden selection:bg-primary/20">
@@ -61,10 +45,7 @@ export default function DriverPortal() {
             {/* Nav */}
             <nav className="sticky top-0 z-50 backdrop-blur-3xl bg-black/70 border-b border-white/8 px-8 py-4 flex justify-between items-center">
                 <div className="flex items-center gap-6">
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <img src="/logo.png" alt="TrueServe" className="w-9 h-9 rounded-xl border border-white/10 group-hover:scale-110 transition-transform" />
-                        <span className="text-xl font-serif font-black text-white italic tracking-tighter uppercase leading-none">True<span className="text-primary not-italic text-sm ml-0.5">Serve</span></span>
-                    </Link>
+                    <Logo size="md" />
                     <div className="h-5 w-px bg-white/10 hidden lg:block" />
                     <div className="hidden lg:flex gap-8 text-[10px] font-black uppercase tracking-[0.4em] italic">
                         <Link href="/restaurants" className="text-slate-500 hover:text-white transition-colors">Marketplace</Link>
@@ -127,31 +108,41 @@ export default function DriverPortal() {
                             Platform <span className="text-primary not-italic font-black">Features.</span>
                         </h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
                         {features.map((feat, i) => (
-                            <div key={i} className={`reveal-scale ${feat.delay} p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 space-y-5 hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-xl relative overflow-hidden text-center`}>
+                            <div key={i} className={`reveal-scale ${feat.delay} p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 flex flex-col items-center text-center hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-2xl relative overflow-hidden`}>
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                                <div className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">{feat.icon}</div>
-                                <h3 className="text-lg text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
-                                <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
+                                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl" />
+                                    {feat.icon}
+                                </div>
+                                <h3 className="text-2xl text-white font-[900] italic uppercase tracking-tighter leading-none relative z-10 font-serif mb-4">{feat.title}</h3>
+                                <p className="text-slate-500 text-[13px] font-bold italic leading-relaxed max-w-[220px] mx-auto relative z-10">{feat.desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── FLEET PROTOCOLS (Scroll Reveal) ──────────────────────────── */}
-            <section className="relative z-10 w-full py-24">
+            <section id="protocols" className="relative z-10 w-full py-24">
                 <div className="w-full flex flex-col items-center px-8">
-                    <div className="reveal text-center mb-14 space-y-3 w-full max-w-3xl">
-                        <h2 className="text-3xl md:text-5xl font-serif italic text-white uppercase tracking-tight">Fleet <span className="text-primary">Protocols.</span></h2>
-                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">Standard operational requirements</p>
+                    <div className="w-16 h-0.5 bg-primary/40 rounded-full mb-10 reveal" />
+                    
+                    <div className="reveal text-center mb-16 space-y-4 w-full max-w-4xl">
+                        <h2 className="text-5xl md:text-7xl font-black tracking-[calc(-0.06em)] leading-none uppercase italic">
+                            <span className="text-white mr-1">Fleet</span>
+                            <span className="text-primary not-italic">Protocols.</span>
+                        </h2>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic">Standard operational requirements</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-5xl">
                         {requirements.map((req, i) => (
-                            <div key={i} className={`reveal delay-${Math.min((i + 1) * 100, 600)} flex items-center gap-5 p-4 bg-white/[0.02] border border-white/5 rounded-full hover:border-primary/20 transition-all group`}>
-                                <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-[10px] font-black shrink-0">✓</div>
-                                <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest italic">{req}</span>
+                            <div key={i} className={`reveal delay-${Math.min((i + 1) * 100, 600)} flex items-center gap-6 p-10 bg-[#0d0d0e] border border-white/5 rounded-2xl hover:border-primary/20 transition-all group shadow-2xl`}>
+                                <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-xs font-black shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.1)] group-hover:scale-110 transition-transform">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                                </div>
+                                <span className="text-white text-[12px] font-black uppercase tracking-[0.15em] italic">{req}</span>
                             </div>
                         ))}
                     </div>
@@ -174,7 +165,7 @@ export default function DriverPortal() {
             <footer className="relative z-10 py-20 bg-black border-t border-white/5 max-w-7xl mx-auto px-10">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase tracking-[0.5em] text-slate-700 italic">
                     <div className="flex items-center gap-5">
-                        <img src="/logo.png" alt="Logo" className="w-9 h-9 rounded-xl opacity-40" />
+                        <Logo size="sm" className="opacity-40 hover:opacity-100 transition-opacity" showPlus={false} />
                         <span>TrueServe &copy; {new Date().getFullYear()}</span>
                     </div>
                     <div className="flex gap-12">

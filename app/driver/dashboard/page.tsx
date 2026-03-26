@@ -14,6 +14,7 @@ import CompleteDeliveryForm from "./CompleteDeliveryForm";
 import { getCurrentWeather } from "@/lib/weather";
 import ModeToggle from "@/components/ModeToggle";
 import LogoutButton from "@/components/LogoutButton";
+import Logo from "@/components/Logo";
 
 export const dynamic = 'force-dynamic';
 
@@ -78,10 +79,7 @@ export default async function DriverDashboard() {
             {/* Standardized Replit-Style Top-Nav */}
             <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center text-sans">
                 <div className="flex items-center gap-4">
-                    <Link href="/" className="flex items-center gap-2">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full border border-white/10 shadow-lg" />
-                        <span className="text-xl font-black tracking-tighter text-white uppercase italic">True<span className="text-primary tracking-tight">Serve</span></span>
-                    </Link>
+                    <Logo size="md" />
                     <div className="h-6 w-px bg-white/10 mx-2"></div>
                     <nav className="flex items-center gap-1">
                         <Link href="/restaurants" className="nav-link px-6 text-slate-400">🍴 Order Food</Link>

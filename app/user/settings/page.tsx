@@ -9,6 +9,7 @@ import MembershipUI from "@/components/MembershipUI";
 import ProfileNameEditor from "@/components/ProfileNameEditor";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import { getAuthSession } from "@/app/auth/actions";
+import Logo from "@/components/Logo";
 export const dynamic = "force-dynamic";
 
 export default async function UserSettings() {
@@ -45,12 +46,7 @@ export default async function UserSettings() {
         <div className="min-h-screen bg-[#080c14] text-slate-200 font-sans">
             <nav className="sticky top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/5 px-6 py-4">
                 <div className="container flex justify-between items-center">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                        <span className="text-2xl font-black tracking-tight text-white">
-                            True<span className="text-primary">Serve</span>
-                        </span>
-                    </Link>
+                    <Logo size="md" />
                     <div className="flex items-center gap-6">
                         <Link href="/" className="text-slate-400 hover:text-white transition-colors">Home</Link>
                         {userId && (

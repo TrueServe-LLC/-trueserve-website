@@ -1,5 +1,6 @@
 
 import Link from 'next/link';
+import Logo from '@/components/Logo';
 
 export default function RewardsPage() {
     return (
@@ -13,12 +14,7 @@ export default function RewardsPage() {
             {/* Navigation */}
             <nav className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/5 px-6 py-4 bg-black/50">
                 <div className="container mx-auto flex justify-between items-center">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary transition-all shadow-lg" />
-                        <span className="text-2xl font-black tracking-tighter">
-                            True<span className="text-gradient">Serve</span>
-                        </span>
-                    </Link>
+                    <Logo size="md" />
                     <div className="hidden sm:flex items-center gap-6">
                         <Link href="/restaurants" className="text-sm font-bold text-slate-400 hover:text-white transition-colors">Restaurants</Link>
                         <div className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black border border-primary/20 shadow-lg shadow-primary/5">
@@ -208,7 +204,7 @@ function PricingCard({ tier, price, subtitle, isPopular = false, features, butto
                     {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
                 </div>
 
-                <ul className="space-y-5 w-full flex-1">
+                <ul className="space-y-5 w-full flex-1 flex flex-col items-center">
                     {features.map((f: string) => (
                         <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
                             <div className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
@@ -242,18 +238,18 @@ function RewardCard({ title, points, icon, desc, accent }: { title: string, poin
     }
 
     return (
-        <div className="group bg-white/5 border border-white/10 p-10 rounded-[2.5rem] flex flex-col h-full hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative overflow-hidden">
+        <div className="group bg-white/5 border border-white/10 p-10 rounded-[2.5rem] flex flex-col h-full hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative overflow-hidden text-center items-center">
             <div className={`absolute -bottom-6 -right-6 text-8xl opacity-[0.03] group-hover:opacity-10 transition-all duration-500 transform group-hover:-rotate-12 pointer-events-none`}>
                 {icon}
             </div>
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${accents[accent]} border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform`}>
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${accents[accent]} border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform mx-auto`}>
                 {icon}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 flex flex-col items-center">
                 <h3 className="text-xl font-black text-white mb-2 leading-tight break-words">{title}</h3>
                 <p className="text-slate-400 text-sm font-medium leading-relaxed mb-6 break-words max-w-[240px]">{desc}</p>
             </div>
-            <div className="flex items-center justify-between gap-4 mt-auto pt-6 border-t border-white/5">
+            <div className="flex flex-col items-center justify-center gap-4 mt-auto pt-6 border-t border-white/5 w-full">
                 <span className="text-primary font-black text-lg tracking-tight whitespace-nowrap">{points.toLocaleString()} <span className="text-[10px] uppercase tracking-widest">PTS</span></span>
                 <button className="px-5 py-2 rounded-xl bg-white/10 hover:bg-primary hover:text-black text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap">
                     Redeem

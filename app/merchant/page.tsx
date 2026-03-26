@@ -3,26 +3,11 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import MerchantSignupForm from "@/app/merchant-signup/MerchantSignupForm";
+import Logo from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 
-function useScrollReveal() {
-    useEffect(() => {
-        const elements = document.querySelectorAll(".reveal, .reveal-left, .reveal-scale");
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("visible");
-                    }
-                });
-            },
-            { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-        );
-        elements.forEach((el) => observer.observe(el));
-        return () => observer.disconnect();
-    }, []);
-}
+// Relying on global scroll reveal in layout.tsx
 
 const features = [
     { icon: "🚀", title: "Rapid Growth", desc: "Expand your reach without losing control of your branding.", delay: "delay-100" },
@@ -38,7 +23,6 @@ const perks = [
 ];
 
 export default function MerchantPortal() {
-    useScrollReveal();
 
     return (
         <div className="min-h-screen bg-black text-slate-300 font-sans overflow-x-hidden selection:bg-primary/20">
@@ -59,10 +43,7 @@ export default function MerchantPortal() {
             {/* Nav */}
             <nav className="sticky top-0 z-50 backdrop-blur-3xl bg-black/70 border-b border-white/8 px-8 py-4 flex justify-between items-center">
                 <div className="flex items-center gap-6">
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <img src="/logo.png" alt="TrueServe" className="w-9 h-9 rounded-xl border border-white/10 group-hover:scale-110 transition-transform" />
-                        <span className="text-xl font-serif font-black text-white italic tracking-tighter uppercase leading-none">True<span className="text-primary not-italic text-sm ml-0.5">Serve</span></span>
-                    </Link>
+                    <Logo size="md" />
                     <div className="h-5 w-px bg-white/10 hidden lg:block" />
                     <div className="hidden lg:flex gap-8 text-[10px] font-black uppercase tracking-[0.4em] italic">
                         <Link href="/restaurants" className="text-slate-500 hover:text-white transition-colors">Marketplace</Link>
@@ -112,26 +93,28 @@ export default function MerchantPortal() {
                 </div>
             </section>
 
-            {/* ── PLATFORM FEATURES (Scroll Reveal) ────────────────────────── */}
-            <section id="features" className="relative z-10 w-full py-32">
+            <section id="features" className="relative z-10 w-full py-20">
                 <div className="w-full flex flex-col items-center px-8">
-                    <div className="text-center space-y-4 mb-20 w-full max-w-6xl">
-                        <div className="reveal flex items-center justify-center gap-4 text-white/30 font-black uppercase tracking-[0.6em] text-[10px] italic">
-                            <div className="w-10 h-px bg-primary/30" />
-                            Engineered for Merchant Success
-                            <div className="w-10 h-px bg-primary/30" />
-                        </div>
-                        <h2 className="reveal delay-100 text-4xl md:text-6xl font-serif text-white tracking-tight uppercase italic leading-none">
-                            Platform <span className="text-primary not-italic font-black">Features.</span>
+                    <div className="w-16 h-0.5 bg-primary/40 rounded-full mb-10 reveal" />
+                    
+                    <div className="reveal text-center mb-16 space-y-4 w-full max-w-4xl">
+                        <h2 className="text-5xl md:text-7xl font-black tracking-[calc(-0.06em)] leading-none uppercase italic">
+                            <span className="text-white mr-1">Partner</span>
+                            <span className="text-primary not-italic">PROTOCOLS.</span>
                         </h2>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic">Engineered for Merchant Success</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
                         {features.map((feat, i) => (
-                            <div key={i} className={`reveal-scale ${feat.delay} p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 space-y-5 hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-xl relative overflow-hidden text-center`}>
+                            <div key={i} className={`reveal-scale ${feat.delay} p-12 rounded-[2.5rem] bg-white/[0.02] border border-white/5 flex flex-col items-center text-center hover:border-primary/30 transition-all hover:scale-[1.02] group backdrop-blur-3xl shadow-2xl relative overflow-hidden`}>
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                                <div className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">{feat.icon}</div>
-                                <h3 className="text-lg text-white font-black italic uppercase tracking-widest leading-none relative z-10">{feat.title}</h3>
-                                <p className="text-slate-500 text-[11px] font-bold italic leading-relaxed max-w-[200px] mx-auto relative z-10">{feat.desc}</p>
+                                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl" />
+                                    {feat.icon}
+                                </div>
+                                <h3 className="text-2xl text-white font-[900] italic uppercase tracking-tighter leading-none relative z-10 font-serif mb-4">{feat.title}</h3>
+                                <p className="text-slate-500 text-[13px] font-bold italic leading-relaxed max-w-[220px] mx-auto relative z-10">{feat.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -141,13 +124,21 @@ export default function MerchantPortal() {
             {/* ── PERKS LIST (Scroll Reveal) ────────────────────────────────── */}
             <section className="relative z-10 w-full py-24">
                 <div className="w-full flex flex-col items-center px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+                    <div className="flex items-center justify-center gap-10 text-primary font-black uppercase tracking-[0.6em] text-[9px] mb-20 opacity-40 select-none w-full reveal">
+                        <div className="flex-1 h-px bg-primary/20 max-w-[100px]" />
+                        <span className="shrink-0 px-4">Platform Features</span>
+                        <div className="flex-1 h-px bg-primary/20 max-w-[100px]" />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
                         {perks.map((p, i) => (
-                            <div key={i} className={`reveal delay-${(i + 1) * 100} flex items-center gap-6 p-6 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-primary/20 transition-all group`}>
-                                <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">{p.icon}</div>
-                                <div>
-                                    <p className="text-[13px] font-black text-white italic tracking-wide">{p.title}</p>
-                                    <p className="text-[11px] text-slate-500 italic font-bold leading-tight">{p.desc}</p>
+                            <div key={i} className={`reveal delay-${(i + 1) * 100} flex items-center gap-6 p-8 bg-[#0d0d0e] border border-white/5 rounded-2xl hover:border-primary/20 transition-all group shadow-2xl`}>
+                                <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform shadow-inner">
+                                    {p.icon}
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm font-black text-white italic tracking-wide uppercase">{p.title}</p>
+                                    <p className="text-xs text-slate-500 italic font-bold leading-tight">{p.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -172,7 +163,7 @@ export default function MerchantPortal() {
             <footer className="relative z-10 py-20 bg-black border-t border-white/5 max-w-7xl mx-auto px-10">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase tracking-[0.5em] text-slate-700 italic">
                     <div className="flex items-center gap-5">
-                        <img src="/logo.png" alt="Logo" className="w-9 h-9 rounded-xl opacity-40" />
+                        <Logo size="sm" className="opacity-40 hover:opacity-100 transition-opacity" showPlus={false} />
                         <span>TrueServe &copy; {new Date().getFullYear()}</span>
                     </div>
                     <div className="flex gap-12">

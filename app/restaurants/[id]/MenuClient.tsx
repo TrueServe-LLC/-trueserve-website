@@ -197,43 +197,50 @@ export default function MenuClient({
                     </button>
                 </div>
 
-                <h2 className="hidden md:block text-xl md:text-3xl font-black mb-6 md:mb-8 tracking-tight">Menu Highlights</h2>
+                <div className="hidden md:block mb-12 animate-fade-in">
+                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mb-3 opacity-60 italic">
+                        {restaurant.name} • {restaurant.address}
+                    </p>
+                    <h2 className="text-4xl md:text-7xl font-black text-white font-serif leading-tight tracking-tighter italic drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                        Menu Highlights
+                    </h2>
+                </div>
                 <div className="grid grid-cols-1 gap-4 md:gap-6">
                     {items.map((item) => (
-                        <div key={item.id} className="group relative bg-white/5 rounded-2xl border border-white/5 overflow-hidden border-b-2 border-b-white/5 active:border-b-0 active:translate-y-0.5 transition-all">
-                            <div className="flex flex-row">
-                                <div className="w-24 sm:w-32 md:w-40 bg-slate-800 shrink-0 relative overflow-hidden">
+                        <div key={item.id} className="group relative py-10 border-b border-white/5 flex items-center justify-between gap-8 transition-all hover:bg-white/[0.01] px-4 -mx-4 rounded-3xl">
+                            <div className="flex items-center gap-8 flex-1">
+                                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-[2rem] bg-gradient-to-br from-slate-800 to-black shrink-0 relative overflow-hidden flex items-center justify-center shadow-2xl border border-white/5 group-hover:border-primary/30 transition-all duration-700 aspect-square">
                                     {item.imageUrl ? (
-                                        <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                                        <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover transform scale-110 group-hover:scale-125 transition-transform duration-1000 ease-out" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-slate-500 text-[10px] uppercase font-bold text-center p-4">No Image</div>
+                                        <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 group-hover:bg-primary/5 transition-colors">
+                                            <span className="text-4xl filter grayscale group-hover:grayscale-0 transition-all opacity-20 group-hover:opacity-100 group-hover:scale-110 duration-500">🍽️</span>
+                                        </div>
                                     )}
                                 </div>
-                                <div className="p-4 flex flex-col justify-between flex-grow">
-                                    <div className="flex justify-between items-start gap-4">
-                                        <div className="flex-grow">
-                                            <h3 className="font-black text-base md:text-xl text-white group-hover:text-primary transition-colors leading-tight mb-1">{item.name}</h3>
-                                            <p className="text-xs md:text-sm text-slate-500 line-clamp-2 leading-relaxed font-medium">{item.description}</p>
-                                        </div>
-                                        <span className="font-black text-base md:text-lg text-white shrink-0">${Number(item.price).toFixed(2)}</span>
+                                <div className="flex-grow">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="font-black text-xl md:text-2xl text-primary group-hover:text-white transition-colors leading-tight italic tracking-tight">{item.name}</h3>
+                                        <span className="font-black text-xl md:text-2xl text-white tracking-tighter whitespace-nowrap ml-4">${Number(item.price).toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-end items-center mt-3">
-                                        {cart[item.id] > 0 ? (
-                                            <div className="flex items-center gap-4 bg-black/40 rounded-full px-2 py-1 border border-white/10 shadow-inner">
-                                                <button onClick={() => removeFromCart(item.id)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors text-white font-black text-lg">-</button>
-                                                <span className="font-black w-4 text-center text-sm text-primary">{cart[item.id]}</span>
-                                                <button onClick={() => addToCart(item.id)} className="w-8 h-8 rounded-full bg-primary text-black flex items-center justify-center hover:scale-110 transition-all font-black text-lg shadow-lg shadow-primary/20">+</button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                onClick={() => addToCart(item.id)}
-                                                className="btn btn-sm md:btn-md bg-white text-black rounded-full px-6 md:px-8 py-2 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl"
-                                            >
-                                                Add to Order
-                                            </button>
-                                        )}
-                                    </div>
+                                    <p className="text-sm md:text-base text-slate-500 line-clamp-2 leading-relaxed font-medium group-hover:text-slate-400 transition-colors max-w-xl">{item.description}</p>
                                 </div>
+                            </div>
+                            <div className="shrink-0 flex items-center pl-4">
+                                {cart[item.id] > 0 ? (
+                                    <div className="flex items-center gap-4 bg-primary/10 rounded-full px-2 py-1 border border-primary/20 shadow-2xl backdrop-blur-xl">
+                                        <button onClick={() => removeFromCart(item.id)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors text-white font-black text-lg">-</button>
+                                        <span className="font-black w-4 text-center text-sm text-primary">{cart[item.id]}</span>
+                                        <button onClick={() => addToCart(item.id)} className="w-8 h-8 rounded-full bg-primary text-black flex items-center justify-center hover:scale-110 transition-all font-black text-lg shadow-lg shadow-primary/20">+</button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => addToCart(item.id)}
+                                        className="px-8 py-3 border border-white/20 rounded-xl text-[10px] text-white font-black uppercase tracking-[0.25em] hover:border-primary hover:text-primary hover:scale-105 active:scale-95 transition-all duration-300 shadow-2xl bg-black/40 backdrop-blur-sm whitespace-nowrap italic"
+                                    >
+                                        Add to Order
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -246,33 +253,32 @@ export default function MenuClient({
                 </div>
             </div>
 
-            {/* Sidebar / Checkout */}
-            <div className="space-y-6 md:sticky md:top-24">
-                <div className="card p-6 bg-slate-900/50 border-white/10 shadow-xl backdrop-blur-xl">
+            <div className="space-y-8 md:sticky md:top-24">
+                <div className="card p-8 bg-slate-900/40 border-white/5 shadow-3xl backdrop-blur-2xl rounded-[3rem]">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-10 p-10 rounded-[2rem] bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/30 hover:border-primary/60 transition-all group relative shadow-2xl text-center overflow-hidden">
-                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative z-10 flex flex-col items-center gap-5">
-                            <span className="text-4xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">💎</span>
+                    <Link href="/benefits" className="block mb-10 p-12 rounded-[2.5rem] bg-[#0a0f1a] border border-white/5 hover:border-primary/40 transition-all group relative shadow-2xl text-center overflow-hidden">
+                        <div className="absolute inset-0 bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative z-10 flex flex-col items-center gap-6">
+                            <div className="text-5xl filter transition-all group-hover:scale-110 drop-shadow-[0_0_20px_rgba(59,130,246,0.4)]">💎</div>
                             <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block mb-3">TrueServe+ Benefit</span>
-                                <p className="text-xl text-white font-black leading-tight max-w-[200px] mx-auto">
+                                <span className="text-[9px] font-black uppercase tracking-[0.5em] text-primary/70 block mb-4 italic">TrueServe+ Benefit</span>
+                                <p className="text-2xl text-white font-black font-serif leading-tight max-w-[200px] mx-auto italic">
                                     Zero delivery fees on this order.
                                 </p>
                             </div>
-                            <div className="mt-2 bg-primary text-black px-8 py-3 rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl group-hover:scale-110 transition-all duration-300">
+                            <div className="w-full border border-primary/30 text-primary py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl group-hover:bg-primary group-hover:text-black transition-all duration-500 italic">
                                 Explore Benefits &rarr;
                             </div>
                         </div>
                     </Link>
 
-                    <div className="mb-8 group">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500">
+                    <div className="mb-10 group bg-black/20 p-8 rounded-[2rem] border border-white/5">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500 italic">
                                 Delivery Destination
                             </h3>
                             {!deliveryAddress && (
-                                <span className="text-[9px] font-black text-primary animate-pulse uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full border border-primary/20">Required</span>
+                                <span className="text-[9px] font-black text-red-500 animate-pulse uppercase tracking-widest bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">Required</span>
                             )}
                         </div>
                         <AddressInput
@@ -284,54 +290,56 @@ export default function MenuClient({
                             }}
                         />
                         {deliveryAddress && (
-                            <div className="mt-6 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in anim-delay-1">
-                                <p className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.25em] mb-2 opacity-80">Confirming Address:</p>
-                                <p className="text-sm text-white font-bold leading-relaxed break-words">{deliveryAddress}</p>
+                            <div className="mt-6 p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 animate-fade-in relative overflow-hidden group/addr">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 text-2xl">📍</div>
+                                <p className="text-[9px] text-emerald-400 font-black uppercase tracking-[0.3em] mb-2 opacity-60 italic">Confirming Address:</p>
+                                <p className="text-xs text-white font-black leading-relaxed break-words italic">{deliveryAddress}</p>
                             </div>
                         )}
-                        <div className="mt-6 mb-8">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-4">
+                        <div className="mt-10 mb-10">
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-6 italic">
                                 Delivery Method
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <button
                                     type="button"
                                     onClick={() => setDeliveryOption('leave')}
-                                    className={`p-4 rounded-3xl border transition-all text-left group relative overflow-hidden ${deliveryOption === 'leave' ? 'bg-primary/10 border-primary/40 ring-1 ring-primary/20' : 'bg-white/5 border-white/10 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
+                                    className={`p-6 rounded-[2rem] border transition-all text-left relative overflow-hidden group/opt ${deliveryOption === 'leave' ? 'bg-primary/10 border-primary ring-1 ring-primary/20' : 'bg-white/[0.03] border-white/5 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
                                 >
-                                    <div className="text-2xl mb-2">🚪</div>
-                                    <h4 className={`font-black text-xs uppercase tracking-widest ${deliveryOption === 'leave' ? 'text-primary' : 'text-white'}`}>Leave at door</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold mt-1">No-contact drop off</p>
-                                    {deliveryOption === 'leave' && <div className="absolute top-2 right-2 text-primary">✓</div>}
+                                    <div className="text-3xl mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">🚪</div>
+                                    <h4 className={`font-black text-[11px] uppercase tracking-[0.2em] italic ${deliveryOption === 'leave' ? 'text-primary' : 'text-white'}`}>Leave at door</h4>
+                                    <p className="text-[9px] text-slate-500 font-bold mt-2 uppercase tracking-widest">No-contact</p>
+                                    {deliveryOption === 'leave' && <div className="absolute top-4 right-4 text-primary text-xs">✓</div>}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setDeliveryOption('hand')}
-                                    className={`p-4 rounded-3xl border transition-all text-left group relative overflow-hidden ${deliveryOption === 'hand' ? 'bg-primary/10 border-primary/40 ring-1 ring-primary/20' : 'bg-white/5 border-white/10 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
+                                    className={`p-6 rounded-[2rem] border transition-all text-left relative overflow-hidden group/opt ${deliveryOption === 'hand' ? 'bg-primary/10 border-primary ring-1 ring-primary/20' : 'bg-white/[0.03] border-white/5 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
                                 >
-                                    <div className="text-2xl mb-2">🤝</div>
-                                    <h4 className={`font-black text-xs uppercase tracking-widest ${deliveryOption === 'hand' ? 'text-primary' : 'text-white'}`}>Hand it to me</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold mt-1">Meet outside</p>
-                                    {deliveryOption === 'hand' && <div className="absolute top-2 right-2 text-primary">✓</div>}
+                                    <div className="text-3xl mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">🤝</div>
+                                    <h4 className={`font-black text-[11px] uppercase tracking-[0.2em] italic ${deliveryOption === 'hand' ? 'text-primary' : 'text-white'}`}>Hand it to me</h4>
+                                    <p className="text-[9px] text-slate-500 font-bold mt-2 uppercase tracking-widest">Meet outside</p>
+                                    {deliveryOption === 'hand' && <div className="absolute top-4 right-4 text-primary text-xs">✓</div>}
                                 </button>
                             </div>
                         </div>
 
-                        <div className="mt-6">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-4">
+                        <div className="mt-10">
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-6 italic">
                                 Delivery Instructions
                             </h3>
                             <textarea
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5 text-sm md:text-base font-medium focus:border-primary/50 focus:bg-white/10 outline-none transition-all min-h-[100px] text-white placeholder:text-slate-600 leading-relaxed"
-                                placeholder='e.g., "Leave at front door," "Gate code 1234," "Blue house with white fence"'
+                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-6 text-sm font-medium focus:border-primary/50 focus:bg-white/[0.06] outline-none transition-all min-h-[120px] text-white placeholder:text-slate-700 leading-relaxed italic"
+                                placeholder='"Leave at front door," "Gate code 1234," "Blue house with white fence"'
                                 value={deliveryInstructions}
                                 onChange={(e) => setDeliveryInstructions(e.target.value)}
                             />
                         </div>
                     </div>
 
-                    <h3 className="font-black mb-6 text-xl flex items-center gap-3 text-white border-b border-white/5 pb-4">
-                        <span className="text-2xl">🛒</span> Your Cart
+                    <h3 className="font-black mb-8 text-2xl flex items-center justify-between text-white border-b border-white/5 pb-6 italic">
+                        <span className="flex items-center gap-4"><span className="text-3xl drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">🛒</span> Your Order</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{cartTotalItems} Items</span>
                     </h3>
 
                     {cartTotalItems === 0 ? (
@@ -340,17 +348,17 @@ export default function MenuClient({
                             <p className="text-xs">Add items to get started</p>
                         </div>
                     ) : (
-                        <div className="space-y-4 mb-6 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-4 mb-8 max-h-80 overflow-y-auto pr-3 custom-scrollbar">
                             {Object.entries(cart).map(([id, quantity]) => {
                                 const item = items.find(i => i.id === id);
                                 if (!item) return null;
                                 return (
-                                    <div key={id} className="flex justify-between items-center text-sm border-b border-white/5 pb-3">
+                                    <div key={id} className="flex justify-between items-center text-sm group/cart">
                                         <div className="flex-grow">
-                                            <span className="font-semibold block">{item.name}</span>
-                                            <span className="text-slate-500 text-xs">x{quantity}</span>
+                                            <span className="font-black text-white block truncate max-w-[180px] italic">{item.name}</span>
+                                            <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Quantity: {quantity}</span>
                                         </div>
-                                        <span className="font-bold">${(Number(item.price) * quantity).toFixed(2)}</span>
+                                        <span className="font-black text-white tracking-tighter text-base italic">${(Number(item.price) * quantity).toFixed(2)}</span>
                                     </div>
                                 );
                             })}
@@ -426,9 +434,11 @@ export default function MenuClient({
                             </div>
                         )}
 
-                        <div className="flex justify-between text-xl font-bold pt-4 text-white border-t border-white/10 mt-2">
+                        <div className="flex justify-between text-4xl font-black pt-8 text-white border-t border-white/10 mt-6 font-serif italic tracking-tighter">
                             <span>Total</span>
-                            <span>${Math.max(0, totalPrice + tip - pointsDiscountAmount).toFixed(2)}</span>
+                            <span className="text-primary drop-shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                                ${Math.max(0, totalPrice + tip - pointsDiscountAmount).toFixed(2)}
+                            </span>
                         </div>
                     </div>
 

@@ -19,6 +19,7 @@ import MenuScanner from "./MenuScanner";
 import AddItemForm from "./AddItemForm";
 import MenuRow from "./MenuRow";
 import EmbedManager from "./EmbedManager";
+import Logo from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 
@@ -63,10 +64,7 @@ export default async function MerchantDashboard() {
             {/* Standardized Replit-Style Top-Nav */}
             <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <Link href="/" className="flex items-center gap-2">
-                        <img src="/logo.png" alt="TrueServe Logo" className="w-8 h-8 rounded-full border border-white/10 shadow-lg" />
-                        <span className="text-xl font-black tracking-tighter text-white">True<span className="text-primary">Serve</span></span>
-                    </Link>
+                    <Logo size="md" />
                     <div className="h-6 w-px bg-white/10 mx-2"></div>
                     <nav className="flex items-center gap-1 font-sans">
                         <Link href="/restaurants" className="nav-link px-6">🍴 Order Food</Link>
