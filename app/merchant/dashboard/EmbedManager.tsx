@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Code, ExternalLink } from "lucide-react";
 
 interface EmbedManagerProps {
     restaurantId: string;
@@ -60,7 +59,7 @@ export default function EmbedManager({ restaurantId, restaurantName }: EmbedMana
                     onClick={handleCopy}
                     className="flex-1 badge-solid-emerald py-4 flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]"
                 >
-                    {copied ? <Check size={14} /> : <Copy size={14} />}
+                    {copied ? "✓" : "📋"}
                     {copied ? "Copied" : "Copy GHL Snippet"}
                 </button>
                 <a 
@@ -68,8 +67,7 @@ export default function EmbedManager({ restaurantId, restaurantName }: EmbedMana
                     target="_blank"
                     className="px-8 py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white hover:bg-white/10 transition-all flex items-center gap-2 uppercase italic tracking-widest"
                 >
-                    <ExternalLink size={14} />
-                    Preview Menu
+                    ↗️ Preview Menu
                 </a>
             </div>
         </div>
