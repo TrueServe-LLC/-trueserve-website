@@ -69,6 +69,9 @@ export default function CheckoutForm({ onSuccess, totalAmount, disabled }: Check
         console.log("[Stripe] Confirming payment with elements...");
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
+            confirmParams: {
+                return_url: window.location.href, // Dynamic URL to keep the user inside the GHL frame
+            },
             redirect: "if_required",
         });
         console.log("[Stripe] Payment confirmation result", { status: paymentIntent?.status, error: error?.message });
