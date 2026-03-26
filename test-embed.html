@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Site Test - TrueServe Embed</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f5;
+        }
+        .navbar {
+            background: #fff;
+            padding: 20px 50px;
+            border-bottom: 1px solid #e4e4e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hero {
+            padding: 80px 50px;
+            text-align: center;
+            background: white;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .footer {
+            padding: 50px;
+            text-align: center;
+            color: #71717a;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div className="navbar">
+        <div style="font-weight: 900; font-size: 20px;">JOE'S BURGERS</div>
+        <div style="display: flex; gap: 20px; font-size: 14px; font-weight: 500;">
+            <span>Home</span>
+            <span>Locations</span>
+            <span>Contact</span>
+        </div>
+    </div>
+
+    <div className="hero">
+        <h1 style="font-size: 48px; margin-bottom: 10px;">Order Online</h1>
+        <p style="color: #71717a;">Fresh, local, and delivered straight to your door via TrueServe.</p>
+    </div>
+
+    <div className="container">
+        <!-- THE IFRAME SNIPPET -->
+        <iframe 
+            src="http://localhost:3000/restaurants/any?embed=true" 
+            width="100%" 
+            height="800px" 
+            frameborder="0" 
+            style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);"
+        ></iframe>
+    </div>
+
+    <div className="footer">
+        &copy; 2024 Joe's Burgers. Powered by TrueServe Logistics.
+    </div>
+
+</body>
+</html>

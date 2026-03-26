@@ -3,6 +3,8 @@ import { Kalam, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import MobileNavWrapper from "@/components/MobileNavWrapper";
 import LaunchDarklyClientProvider from "@/components/LaunchDarklyClientProvider";
+import { Suspense } from "react";
+import DynamicBranding from "@/components/DynamicBranding";
 
 const kalam = Kalam({
   variable: "--font-kalam",
@@ -38,6 +40,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <LaunchDarklyClientProvider>
+          <Suspense fallback={null}>
+            <DynamicBranding />
+          </Suspense>
           {children}
           <MobileNavWrapper />
         </LaunchDarklyClientProvider>
