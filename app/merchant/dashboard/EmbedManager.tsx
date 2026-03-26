@@ -5,13 +5,15 @@ import { useState } from "react";
 interface EmbedManagerProps {
     restaurantId: string;
     restaurantName: string;
+    slug?: string;
 }
 
-export default function EmbedManager({ restaurantId, restaurantName }: EmbedManagerProps) {
+export default function EmbedManager({ restaurantId, restaurantName, slug }: EmbedManagerProps) {
     const [copied, setCopied] = useState(false);
     const [primaryColor, setPrimaryColor] = useState("10B981"); // Default Emerald
     
-    const embedUrl = `https://trueserve-website.vercel.app/restaurants/${restaurantId}?embed=true&primary=${primaryColor.replace('#', '')}`;
+    const embedId = slug || restaurantId;
+    const embedUrl = `https://trueserve-website.vercel.app/restaurants/${embedId}?embed=true&primary=${primaryColor.replace('#', '')}`;
     
     const snippet = `<div style="width:100%; overflow:hidden;">
   <iframe 

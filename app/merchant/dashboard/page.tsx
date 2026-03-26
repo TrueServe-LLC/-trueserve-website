@@ -198,7 +198,11 @@ export default async function MerchantDashboard() {
                             outOfStockIngredients={restaurant.outOfStockIngredients || []}
                         />
 
-                        <EmbedManager restaurantId={restaurant.id} />
+                        <EmbedManager 
+                            restaurantId={restaurant.id} 
+                            restaurantName={restaurant.name}
+                            slug={restaurant.slug}
+                        />
 
                         {/* Orders Section */}
                         <section>

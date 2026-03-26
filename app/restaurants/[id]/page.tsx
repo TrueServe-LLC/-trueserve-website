@@ -11,7 +11,8 @@ import MenuClient from "./MenuClient";
 
 async function getRestaurant(id: string) {
     try {
-        const { data: restaurant, error } = await supabase
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        const query = supabase
             .from('Restaurant')
             .select(`
                 *,
@@ -19,9 +20,11 @@ async function getRestaurant(id: string) {
                 schedules:MerchantSchedule(*),
                 orders:Order(id, status)
             `)
-            .eq('id', id)
-            .eq('visibility', 'VISIBLE')
-            .single();
+            .eq('visibility', 'VISIBLE');
+
+        const { data: restaurant, error } = isUuid 
+            ? await query.eq('id', id).single() 
+            : await query.eq('slug', id).single();
 
         if (error || !restaurant) {
             if (error) console.error("Supabase Error (getRestaurant):", error);
