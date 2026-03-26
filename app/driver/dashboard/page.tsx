@@ -22,13 +22,21 @@ export default async function DriverDashboard() {
     const driver = await getDriverOrRedirect();
     const supabase = await createClient();
 
-    // Fetch Available Orders
+    // Optimized Geo-Fenced Query: Only fetch orders within a ~0.5 degree range (approx 30-35 miles)
+    const lat = driver?.currentLat || 35.2271;
+    const lng = driver?.currentLng || -80.8431;
+    const range = 0.5; // Roughly 35 miles
+
     const { data: rawOrders } = await supabase
         .from('Order')
         .select(`*, restaurant:Restaurant(name, address, lat, lng)`)
         .is('driverId', null)
         .neq('status', 'DELIVERED')
         .neq('status', 'COMPLETED')
+        .gte('restaurant.lat', lat - range)
+        .lte('restaurant.lat', lat + range)
+        .gte('restaurant.lng', lng - range)
+        .lte('restaurant.lng', lng + range)
         .order('createdAt', { ascending: false })
         .limit(20);
 
