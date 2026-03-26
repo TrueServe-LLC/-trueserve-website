@@ -16,8 +16,13 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // --- SECURITY HEADERS (Step 18) ---
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  // --- SECURITY HEADERS (Relaxed for Embedding) ---
+  const isEmbed = url.searchParams.get('embed') === 'true';
+  
+  if (!isEmbed) {
+    response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  }
+  
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self), payment=(self)');
@@ -31,6 +36,7 @@ export async function middleware(request: NextRequest) {
       "img-src 'self' data: blob: https: http:",
       "connect-src 'self' https://*.supabase.co https://api.stripe.com https://app.launchdarkly.com https://api.launchdarkly.com wss://*.supabase.co https://sentry.io",
       "frame-src https://js.stripe.com https://hooks.stripe.com",
+      isEmbed ? "frame-ancestors *" : "frame-ancestors 'self'",
       "upgrade-insecure-requests",
     ].join('; ')
   );
