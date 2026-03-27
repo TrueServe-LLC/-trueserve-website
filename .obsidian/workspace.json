@@ -185,6 +185,8 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "components/admin/ScenarioEngine.tsx",
+    "scripts/test_driver_economics.ts",
     "scripts/fix_dhans_visibility.ts",
     "db/add_restaurant_slugs.sql",
     "components/DynamicBranding.tsx",
@@ -194,8 +196,6 @@
     "components/Logo.tsx",
     "scripts/create_demo_merchant.ts",
     "app/merchant/dashboard/EmbedManager.tsx",
-    "supabase/2026.03.25_add_ghl_support.sql",
-    "lib/ghl-sync.ts",
     "docs/Merchant_QuickStart_POS.md",
     "docs/Pilot_Onboarding_Handbook.md",
     "public/merchant_hero.png",

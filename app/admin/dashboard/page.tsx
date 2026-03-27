@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
 import { getAuthSession } from "@/app/auth/actions";
 import KPIDashboard from "@/components/admin/KPIDashboard";
+import ScenarioEngine from "@/components/admin/ScenarioEngine";
 import SystemToggle from "@/components/admin/SystemToggle";
 import FastActionBtn from "@/components/admin/FastActionBtn";
 
@@ -221,6 +222,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                 {/* KPI Dashboard (V1) */}
                 <KPIDashboard orders={allOrders} drivers={drivers} restaurants={restaurants} />
+
+                {/* Scenario Engine (v2 CORRECTED) */}
+                <ScenarioEngine />
 
 
 
