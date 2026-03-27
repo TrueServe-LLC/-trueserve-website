@@ -144,6 +144,78 @@ export default function ScenarioEngine() {
                     </div>
                 </div>
             </div>
+
+            {/* Benchmark vs DoorDash (C4:D6 Alignment) */}
+            <div className="mt-20">
+                <div className="flex items-center gap-4 mb-8">
+                    <h3 className="text-xl font-black tracking-widest uppercase text-white">Competitive Benchmark</h3>
+                    <div className="h-px flex-1 bg-white/5" />
+                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Proxy: AOV as GOV Basis</span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="card bg-black/40 border-white/5 p-0 overflow-hidden">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-white/5">
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Benchmark Metric</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-red-400">DoorDash (EST)</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-primary">TrueServe</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                <tr>
+                                    <td className="px-6 py-5">
+                                        <p className="text-xs font-bold text-white">GOV Proxy (AOV)</p>
+                                        <p className="text-[9px] text-slate-500 uppercase font-black tracking-tighter">Gross Order Value</p>
+                                    </td>
+                                    <td className="px-6 py-5 text-sm font-medium text-slate-300">$38.50</td>
+                                    <td className="px-6 py-5 text-sm font-bold text-white">${avgOrderValue.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td className="px-6 py-5">
+                                        <p className="text-xs font-bold text-white">Contribution Margin</p>
+                                        <p className="text-[9px] text-slate-500 uppercase font-black tracking-tighter">Net of Direct Variable Costs</p>
+                                    </td>
+                                    <td className="px-6 py-5 text-sm font-medium text-slate-300">~6.5%</td>
+                                    <td className="px-6 py-5 text-sm font-bold text-white">
+                                        {((avgMarginPerOrder / avgOrderValue) * 100).toFixed(1)}%
+                                    </td>
+                                </tr>
+                                <tr className="bg-primary/5">
+                                    <td className="px-6 py-5">
+                                        <p className="text-xs font-bold text-white">EBITDA (Scale Proxy)</p>
+                                        <p className="text-[9px] text-primary uppercase font-black tracking-tighter">Corrected: Fixed Cost Inc.</p>
+                                    </td>
+                                    <td className="px-6 py-5 text-sm font-medium text-slate-300">-$2.10</td>
+                                    <td className="px-6 py-5 text-sm font-bold text-primary">
+                                        {calculations.dailyProfit >= 0 ? '+' : ''}${(calculations.dailyProfit / currentDailyOrders).toFixed(2)}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                            <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                                <span className="text-primary">💡</span> The "Apples-to-Apples" Fix
+                            </h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                We've reworked the benchmark to use your actual **Average Order Value (AOV)** as the proxy for DoorDash's GOV. This ensures the denominators match exactly.
+                            </p>
+                        </div>
+                        <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                            <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                                <span className="text-primary">📈</span> EBITDA vs. Contribution
+                            </h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                Unlike previous misleading models that repeated Contribution Margin, our corrected EBITDA row now accounts for your **Inputs!B8 Fixed Monthly Costs**. This shows your true profitability at-scale.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     );
 }
