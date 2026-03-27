@@ -13,7 +13,7 @@ export default function EmbedManager({ restaurantId, restaurantName, slug }: Emb
     const [primaryColor, setPrimaryColor] = useState("10B981"); // Default Emerald
     
     const embedId = slug || restaurantId;
-    const embedUrl = `https://trueserve-website.vercel.app/restaurants/${embedId}?embed=true&primary=${primaryColor.replace('#', '')}`;
+    const embedUrl = `https://trueserve.delivery/restaurants/${embedId}?embed=true&primary=${primaryColor.replace('#', '')}`;
     
     const snippet = `<div style="width:100%; overflow:hidden;">
   <iframe 

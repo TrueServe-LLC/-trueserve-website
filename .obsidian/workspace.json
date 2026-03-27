@@ -185,6 +185,7 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "scripts/fix_dhans_visibility.ts",
     "db/add_restaurant_slugs.sql",
     "components/DynamicBranding.tsx",
     "db/add_dispatch_logic.sql",
@@ -195,7 +196,6 @@
     "app/merchant/dashboard/EmbedManager.tsx",
     "supabase/2026.03.25_add_ghl_support.sql",
     "lib/ghl-sync.ts",
-    "app/merchant/terminal/page.tsx",
     "docs/Merchant_QuickStart_POS.md",
     "docs/Pilot_Onboarding_Handbook.md",
     "public/merchant_hero.png",
