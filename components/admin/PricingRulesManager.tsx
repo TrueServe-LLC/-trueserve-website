@@ -42,8 +42,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
   const [isPending, startTransition] = useTransition();
 
   // Test Calculator State
-  const [calcMiles, setCalcMiles] = useState(5);
+  const [calcMiles, setCalcMiles] = useState(5.0);
   const [calcWait, setCalcWait] = useState(10);
+  const [calcOrdersPerHour, setCalcOrdersPerHour] = useState(2.0);
   const [previewResult, setPreviewResult] = useState<any>(null);
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -104,15 +105,26 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
     const base = Number(activeRule.basePay);
     const distance = Number(activeRule.perMileRate) * calcMiles;
     const wait = Number(activeRule.waitTimeRate) * calcWait;
-    const subtotal = (base + distance + wait) * Number(activeRule.boostMultiplier);
+    const multiplierAmount = (base + distance + wait) * (Number(activeRule.boostMultiplier) - 1);
+    const total = base + distance + multiplierAmount + wait;
+
+    // Membership Economics (Simulator!B4:B20 Fix)
+    const monthlyMembership = 9.99; // Standard TrueServe Driver Fee
+    const estMonthlyHours = 160;   // 40h/week basis
+    const membershipCostPerHour = monthlyMembership / estMonthlyHours;
     
+    const estTripHours = (calcMiles / 20) + (calcWait / 60); // Assume 20mph city avg + wait
+    const grossHourly = total / estTripHours;
+    const netHourlyBeforeGas = grossHourly - (membershipCostPerHour * (1 / calcOrdersPerHour));
+
     setPreviewResult({
-      ruleName: activeRule.name,
+      total: total.toFixed(2),
       base: base.toFixed(2),
       distance: distance.toFixed(2),
-      wait: wait.toFixed(2),
       multiplier: activeRule.boostMultiplier,
-      total: subtotal.toFixed(2)
+      ruleName: activeRule.name,
+      membershipCostPerHour: membershipCostPerHour.toFixed(2),
+      netHourlyBeforeGas: netHourlyBeforeGas.toFixed(2)
     });
   };
 
@@ -167,6 +179,10 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                   <p className="text-xs font-bold text-white mb-2">Wait Time ({calcWait} mins)</p>
                   <input type="range" min="0" max="60" value={calcWait} onChange={e => setCalcWait(Number(e.target.value))} className="w-full accent-primary" />
                 </div>
+                <div>
+                  <p className="text-xs font-bold text-white mb-2">Orders / Hour ({calcOrdersPerHour})</p>
+                  <input type="range" min="1" max="5" step="0.5" value={calcOrdersPerHour} onChange={e => setCalcOrdersPerHour(Number(e.target.value))} className="w-full accent-primary" />
+                </div>
                 <button onClick={calculatePreview} className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-widest mt-4">Run Simulation</button>
               </div>
             </div>
@@ -188,6 +204,19 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                     <span className="text-sm font-bold text-white">{previewResult.multiplier}x</span>
                   </div>
                 </div>
+
+                {/* Economics Logic Row (Simulator!B4:B20 Fix) */}
+                <div className="grid grid-cols-2 gap-8 text-left w-full max-w-md mt-6 bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/10">
+                  <div>
+                    <span className="text-[8px] font-black uppercase text-emerald-500 block">Net Hourly (Pre-Gas)</span>
+                    <span className="text-xl font-black text-emerald-400">${previewResult.netHourlyBeforeGas}</span>
+                  </div>
+                  <div>
+                    <span className="text-[8px] font-black uppercase text-slate-500 block">Membership/Trip</span>
+                    <span className="text-sm font-bold text-slate-400">${(9.99 / 160 / calcOrdersPerHour).toFixed(2)}</span>
+                  </div>
+                </div>
+
                 <p className="text-[10px] text-slate-500 mt-6 font-medium italic">Applied Rule: <span className="text-white font-bold">{previewResult.ruleName}</span></p>
               </div>
             )}
