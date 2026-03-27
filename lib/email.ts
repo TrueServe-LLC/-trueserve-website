@@ -14,8 +14,9 @@ export async function sendEmail(to: string, subject: string, htmlBody: string, a
     }
 
     try {
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'TrueServe <onboarding@trueserve.delivery>';
         const { data, error } = await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'TrueServe <onboarding@resend.dev>', // In production, set RESEND_FROM_EMAIL to a verified domain
+            from: fromEmail,
             to: [to],
             subject: subject,
             html: `
