@@ -20,18 +20,35 @@ export async function sendEmail(to: string, subject: string, htmlBody: string, a
             to: [to],
             subject: subject,
             html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="text-align: center; padding: 20px; background-color: #000;">
-                    <img src="https://raw.githubusercontent.com/lcking992/-trueserve-website/main/public/logo.png" alt="TrueServe Logo" style="max-height: 50px;" />
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    .container { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0A0A0A; border-radius: 12px; overflow: hidden; color: #FFFFFF; }
+                    .header { background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 1px solid #1A1A1A; }
+                    .content { padding: 40px 30px; line-height: 1.6; color: #E5E5E5; font-size: 16px; }
+                    .footer { text-align: center; padding: 30px; font-size: 12px; color: #666; background-color: #050505; border-top: 1px solid #1A1A1A; }
+                    .button { display: inline-block; padding: 14px 28px; background-color: #10B981; color: #000000; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
+                    .accent { color: #10B981; font-weight: bold; }
+                    h1 { font-size: 24px; color: #FFFFFF; margin-bottom: 24px; font-weight: 700; letter-spacing: -0.02em; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <img src="https://raw.githubusercontent.com/lcking992/-trueserve-website/main/public/logo.png" alt="TrueServe Logo" style="height: 48px;" />
+                    </div>
+                    <div class="content">
+                        ${htmlBody.replace(/\n/g, '<br>')}
+                    </div>
+                    <div class="footer">
+                        <p>&copy; ${new Date().getFullYear()} TrueServe | Premium Carrier Logisitics</p>
+                        <p style="margin-top: 10px; font-size: 10px;">North Carolina & East Coast Operations | Powered by TrueServe Tech</p>
+                    </div>
                 </div>
-                <div style="padding: 20px; color: #333;">
-                    ${htmlBody.replace(/\n/g, '<br>')}
-                </div>
-                <div style="text-align: center; padding: 20px; font-size: 12px; color: #888; border-top: 1px solid #eee;">
-                    &copy; ${new Date().getFullYear()} TrueServe. All rights reserved.
-                </div>
-            </div>
-            `, // Simple conversion for text emails
+            </body>
+            </html>
+            `,
             attachments: attachments
         });
 

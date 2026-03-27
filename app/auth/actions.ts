@@ -183,16 +183,41 @@ export async function resetPassword(formData: FormData): Promise<AuthState> {
     const supabase = await createClient();
 
     if (!email) return { message: "Email is required", error: true };
+    const { sendEmail } = await import("@/lib/email");
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/update-password`,
-    });
+    try {
+        // 1. Generate a secure recovery link via Supabase Admin
+        const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+            type: 'recovery',
+            email: email,
+            options: {
+                redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://trueserve.delivery'}/update-password`,
+            }
+        });
 
-    if (error) {
-        return { message: error.message, error: true };
+        if (error) throw error;
+
+        // 2. Wrap that link in our Premium Emerald Branding
+        const resetLink = data.properties.action_link;
+        
+        await sendEmail(
+            email,
+            "Secure Password Reset - TrueServe",
+            `<h1>Security Alert: Password Reset</h1>
+            <p>We received a request to reset the password for your TrueServe account.</p>
+            <p>If this was you, please click the secure button below to choose a new password. This link is valid for **1 hour**.</p>
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="${resetLink}" class="button">Reset My Password</a>
+            </div>
+            <p>If you did not request this, you can safely ignore this email. Your account remains secure.</p>
+            <p><em>Security Tip: Never share your password reset links with anyone, including TrueServe staff.</em></p>`
+        );
+
+        return { message: "Branded reset link sent! Please check your inbox.", success: true };
+    } catch (e: any) {
+        console.error("Reset Password Error:", e);
+        return { message: e.message || "Failed to send reset email.", error: true };
     }
-
-    return { message: "Password reset link sent!", success: true };
 }
 
 export async function logout() {
