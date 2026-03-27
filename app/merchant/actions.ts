@@ -487,6 +487,8 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             posClientId,
             posClientSecret,
             phone,
+            isApproved: true,
+            visibility: 'VISIBLE',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
