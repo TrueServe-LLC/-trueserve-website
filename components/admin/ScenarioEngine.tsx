@@ -44,6 +44,10 @@ export default function ScenarioEngine() {
                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mt-2">v2.1 Profitability Projection Logic</p>
                 </div>
                 <div className="flex gap-2">
+                   <div className="px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
+                       <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                       Logic Alert: Distance B13+B14 Pending Review
+                   </div>
                    <div className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">
                        Numerator: Inputs!B8 Fixed Cost
                    </div>

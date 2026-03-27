@@ -196,7 +196,10 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                     <span className="text-sm font-bold text-white">${previewResult.base}</span>
                   </div>
                   <div>
-                    <span className="text-[8px] font-black uppercase text-slate-500 block">Mileage</span>
+                    <span className="text-[8px] font-black uppercase text-slate-500 block flex items-center gap-1">
+                      Mileage 
+                      <span className="text-amber-500" title="Management Review: B13+B14 possibly overstates pay after Mile 2.">⚠</span>
+                    </span>
                     <span className="text-sm font-bold text-white">${previewResult.distance}</span>
                   </div>
                   <div>
@@ -366,9 +369,22 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
           <div key={rule.id} className={`card p-8 group relative transition-all duration-500 hover:-translate-y-2 border-white/5 hover:border-white/20 overflow-hidden ${rule.isActive ? 'bg-white/[0.03]' : 'bg-black/40 grayscale opacity-60'}`}>
             {/* Surge Indicator */}
             {rule.boostMultiplier > 1 && (
-              <div className="absolute top-0 right-0 bg-primary text-black px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest shadow-lg border-l border-b border-primary/20">
-                Surge Active
-              </div>
+              <>
+                <div className="absolute top-0 right-0 bg-primary text-black px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest shadow-lg border-l border-b border-primary/20">
+                  Surge Active
+                </div>
+                <div className="absolute top-0 left-0 p-4">
+                   <div className="flex gap-2">
+                      <div className="px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                          Logic Alert: Distance Formula (B13+B14) Pending Review
+                      </div>
+                      <div className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">
+                          Numerator: Inputs!B8 Fixed Cost
+                      </div>
+                   </div>
+                </div>
+              </>
             )}
 
             <div className="flex justify-between items-start mb-10">
