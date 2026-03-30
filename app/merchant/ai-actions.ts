@@ -36,10 +36,9 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
 
         console.log(`[AI Importer] Real Scan started for restaurant ${restaurantId}`);
 
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.ANTHROPIC_API_KEY;
         if (!apiKey) {
-            // Fallback for demo if key is missing, or return error
-            console.warn("GEMINI_API_KEY is missing. Falling back to simulated response for demo.");
+            console.warn("ANTHROPIC_API_KEY is missing. Falling back to simulated response for demo.");
             await new Promise(resolve => setTimeout(resolve, 2000));
             return {
                 success: true,
@@ -48,44 +47,58 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
                     { name: "Luxury Wagyu Burger", price: 24.99, description: "Truffle aioli, vintage cheddar.", category: "Mains" },
                     { name: "Warm Lava Cake", price: 9.50, description: "Vanilla bean gelato, berry coulis.", category: "Desserts" }
                 ],
-                message: "Demo Mode: GEMINI_API_KEY not found. Showing sample items."
+                message: "Demo Mode: ANTHROPIC_API_KEY not found. Showing sample items."
             };
         }
 
-        // Prepare context for Gemini 1.5 Flash
-        // Strip data:image/png;base64, prefix if present
+        // Prepare context for Claude 3.5 Sonnet
         const base64Data = imageBase64.includes('base64,')
             ? imageBase64.split('base64,')[1]
             : imageBase64;
+            
+        // Infer mime type from data URI or default to png
+        let mimeType = "image/png";
+        if (imageBase64.includes('data:')) {
+            mimeType = imageBase64.split(';')[0].split(':')[1];
+        }
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        { text: "Extract all food and drink items from this menu. For each item, provide the 'name', 'price' (as a number), 'description', and 'category' (e.g., Starters, Mains, Desserts, Drinks). Return the data ONLY as a valid JSON array of objects. Do not include any other text." },
+        const { default: Anthropic } = await import('@anthropic-ai/sdk');
+        const anthropic = new Anthropic({ apiKey });
+
+        const prompt = "Extract all food and drink items from this menu. For each item, provide the 'name', 'price' (as a number), 'description', and 'category' (e.g., Starters, Mains, Desserts, Drinks). Return the data ONLY as a valid JSON array of objects. Do not include any other text or markdown.";
+
+        const response = await anthropic.messages.create({
+            model: "claude-3-5-sonnet-latest",
+            max_tokens: 4096,
+            temperature: 0.1,
+            messages: [
+                {
+                    role: "user",
+                    content: [
+                        { type: "text", text: prompt },
                         {
-                            inlineData: {
-                                mimeType: "image/png",
+                            type: "image",
+                            source: {
+                                type: "base64",
+                                media_type: mimeType as any,
                                 data: base64Data
                             }
                         }
                     ]
-                }]
-            })
+                }
+            ]
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Gemini API Error: ${errorData.error?.message || response.statusText}`);
-        }
-
-        const data = await response.json();
-        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
+        const rawText = response.content[0].type === 'text' ? response.content[0].text : "[]";
 
         // Clean markdown backticks if AI returns them
-        const cleanedText = rawText.replace(/```json|```/g, "").trim();
+        let cleanedText = rawText.replace(/```json/i, "").replace(/```/i, "").trim();
+        const start = cleanedText.indexOf('[');
+        const end = cleanedText.lastIndexOf(']');
+        if (start !== -1 && end !== -1) {
+            cleanedText = cleanedText.substring(start, end + 1);
+        }
+        
         const items = JSON.parse(cleanedText);
 
         // --- SMART SYNC LOGIC ---
