@@ -8,6 +8,7 @@ import KPIDashboard from "@/components/admin/KPIDashboard";
 import ScenarioEngine from "@/components/admin/ScenarioEngine";
 import SystemToggle from "@/components/admin/SystemToggle";
 import FastActionBtn from "@/components/admin/FastActionBtn";
+import AsanaBoard from "@/components/admin/AsanaBoard";
 
 async function getPendingItems() {
     try {
@@ -156,6 +157,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>}
                             <Link href="/admin/content" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">CMS</Link>
                             <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
+                            <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                Asana
+                            </a>
                         </div>
                         
                         {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Dashboard</Link>}
@@ -164,9 +169,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/5 rounded-full border border-emerald-500/10"
+                            className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 px-3 py-1.5 bg-primary/5 rounded-full border border-primary/10"
                         >
-                            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_#34d399]"></span>
+                            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span>
                             Triage center
                         </a>
                         
@@ -208,8 +213,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                         {/* Stripe Connect Section */}
                         {isStripeConnected ? (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 font-black uppercase tracking-widest text-[10px]">
-                                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                            <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary font-black uppercase tracking-widest text-[10px]">
+                                <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                                 Stripe Connected
                             </div>
                         ) : (
@@ -226,6 +231,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 {/* Scenario Engine (v2 CORRECTED) */}
                 <ScenarioEngine />
 
+                {/* Asana Project Board */}
+                <AsanaBoard />
 
 
                 {/* Active Deliveries Map / List */}
@@ -233,7 +240,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                         <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
                             🛰️ Live Monitor
-                            <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-1 rounded-full uppercase font-black">{activeOrders.length} Active</span>
+                            <span className="bg-primary/20 text-primary text-[10px] px-3 py-1 rounded-full uppercase font-black border border-primary/20">{activeOrders.length} Active</span>
                         </h2>
                         <a 
                             href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" 
@@ -251,7 +258,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Order {order.id.slice(-6).toUpperCase()}</span>
-                                            <span className={`text-[9px] px-3 py-1 flex items-center justify-center rounded-full font-black uppercase tracking-widest min-w-[100px] border whitespace-nowrap ${order.status === 'PICKED_UP' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            <span className={`text-[9px] px-3 py-1 flex items-center justify-center rounded-full font-black uppercase tracking-widest min-w-[100px] border whitespace-nowrap ${order.status === 'PICKED_UP' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-white/5 text-slate-300 border-white/10'
                                                 }`}>
                                                 {order.status.replace('_', ' ')}
                                             </span>
@@ -373,7 +380,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                             <div className="flex items-center gap-2 mt-2">
                                                 <span className="text-[10px] text-slate-500 font-mono tracking-tight">{driver.backgroundCheckId || "ID_PENDING"}</span>
                                                 <span className="text-slate-700 text-[10px]">•</span>
-                                                <span className={`text-[10px] font-black uppercase tracking-widest ${driver.hasSignedAgreement ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                <span className={`text-[10px] font-black uppercase tracking-widest ${driver.hasSignedAgreement ? 'text-primary' : 'text-red-400'}`}>
                                                     Agreement: {driver.hasSignedAgreement ? 'SIGNED' : 'NOT SIGNED'}
                                                 </span>
                                             </div>
@@ -385,11 +392,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                             </span>
 
                                             {/* Background Check Badge */}
-                                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border leading-none whitespace-nowrap shadow-sm ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border leading-none whitespace-nowrap shadow-sm ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-primary/10 text-primary border-primary/20' :
                                                 driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                                                     'bg-white/5 text-slate-400 border-white/10'
                                                 }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]' :
+                                                <span className={`w-1.5 h-1.5 rounded-full ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-primary shadow-[0_0_10px_rgba(245,158,11,0.4)]' :
                                                     driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)]' :
                                                         'bg-slate-500 animate-pulse'
                                                     }`} />
@@ -400,7 +407,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                                 <div className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                                                     <div className="flex justify-between items-center">
                                                         <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">AI Audit Log</span>
-                                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${driver.aiMetadata.idScan?.isValid ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
+                                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${driver.aiMetadata.idScan?.isValid ? 'bg-primary/10 text-primary border-primary/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
                                                             }`}>
                                                             Confidence: {(driver.aiMetadata.idScan?.confidence * 100 || 0).toFixed(0)}%
                                                         </span>
@@ -507,7 +514,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                         </td>
                                         <td className="px-4 md:px-6 py-4">
                                             <div className="flex flex-col gap-1">
-                                                <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 rounded-full">{log.action.replace(/_/g, " ")}</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full">{log.action.replace(/_/g, " ")}</span>
                                                 {log.message && <span className="text-[10px] text-slate-400 italic line-clamp-1">{log.message}</span>}
                                             </div>
                                         </td>

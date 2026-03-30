@@ -1,23 +1,33 @@
 
-import { Resend } from 'resend';
+
+import nodemailer from 'nodemailer';
 import * as Sentry from '@sentry/nextjs';
 import { logger } from './logger';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
+const transporter = nodemailer.createTransport({
+    host: process.env.SES_SMTP_HOST || 'email-smtp.us-east-1.amazonaws.com',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: process.env.SES_SMTP_USER,
+        pass: process.env.SES_SMTP_PASS,
+    },
+});
 
 export async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: any[]) {
-    // Fallback if no API key is set or if it's a dummy key
-    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY.includes('dummy')) {
-        logger.warn("⚠️ [MOCK EMAIL] RESEND_API_KEY is missing or invalid (dummy) in .env");
+    // Fallback if no SMTP credentials are set
+    if (!process.env.SES_SMTP_USER || !process.env.SES_SMTP_PASS) {
+        logger.warn("⚠️ [MOCK EMAIL] AWS SES SMTP Credentials missing in .env");
         logger.info({ to, subject, attachments: attachments ? attachments.length : 0 }, '[MOCK EMAIL] details');
         return { success: true };
     }
 
     try {
         const fromEmail = process.env.RESEND_FROM_EMAIL || 'TrueServe <onboarding@trueserve.delivery>';
-        const { data, error } = await resend.emails.send({
+        
+        const mailOptions = {
             from: fromEmail,
-            to: [to],
+            to: to,
             subject: subject,
             html: `
             <!DOCTYPE html>
@@ -49,23 +59,20 @@ export async function sendEmail(to: string, subject: string, htmlBody: string, a
             </body>
             </html>
             `,
-            attachments: attachments
-        });
+            attachments: attachments?.map(att => ({
+                filename: att.filename,
+                content: att.content,
+                contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            }))
+        };
 
-        if (error) {
-            logger.error({ err: error, to, subject }, "Resend API Error");
-            Sentry.captureException(new Error(error.message), {
-                tags: { service: 'Resend' },
-                extra: { to, subject }
-            });
-            return { error: true, message: error.message };
-        }
+        const info = await transporter.sendMail(mailOptions);
 
-        return { success: true, data };
+        return { success: true, data: info };
     } catch (e: any) {
-        logger.error({ err: e, to, subject }, "Email Service Full Error");
+        logger.error({ err: e, to, subject }, "AWS SES SMTP Service Full Error");
         Sentry.captureException(e, {
-            tags: { service: 'Resend' },
+            tags: { service: 'AWS SES SMTP' },
             extra: { to, subject }
         });
         return { error: true, message: e.message };

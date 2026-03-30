@@ -133,7 +133,12 @@ export async function approveDriver(id: string) {
         await sendEmail(
             email,
             "Your TrueServe Driver Application - APPROVED",
-            `Hi ${name.split(' ')[0]},\n\nGreat news! Your driver application for TrueServe has been approved.\n\nYou can now log in using your phone number to receive a secure SMS code.\n\nPlease go to driver.trueservedelivery.com/login to start accepting orders!\n\nWelcome to the team!\n\nBest,\nThe TrueServe Team`
+            `<h1>Welcome to the Fleet! 🚗</h1>
+            <p>Hi <span class="accent">${name.split(' ')[0]}</span>,</p>
+            <p>Great news! Your driver application for TrueServe has been <strong>approved</strong>.</p>
+            <p>You can now log in using your phone number to receive a secure SMS code and start accepting orders immediately.</p>
+            <a href="https://www.trueserve.delivery/driver/login" class="button">Log In & Start Driving</a>
+            <p style="margin-top: 30px;">Welcome to the team!<br>The TrueServe Team</p>`
         );
 
         await sendSMS(
@@ -172,7 +177,11 @@ export async function rejectDriver(id: string) {
         await sendEmail(
             (driver.user as any).email,
             "Driver Application Update - TrueServe",
-            `Hi ${(driver.user as any).name.split(' ')[0]},\n\nWe have reviewed your application to drive with TrueServe. At this time, we are unable to move forward with your onboarding.\n\nThank you for your interest.\n\nBest,\nThe TrueServe Team`
+            `<h1>Application Update 📝</h1>
+            <p>Hi <span class="accent">${(driver.user as any).name.split(' ')[0]}</span>,</p>
+            <p>Thank you for your interest in driving with TrueServe. We have carefully reviewed your application and documents.</p>
+            <p>At this time, we are unable to move forward with your onboarding. We appreciate the time you took to apply.</p>
+            <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`
         );
 
         revalidatePath("/admin/dashboard");
@@ -253,7 +262,11 @@ export async function refreshBackgroundCheck(driverId: string) {
             await sendEmail(
                 (driver.user as any).email,
                 "Action Required: Driver Background Check",
-                `Hi ${(driver.user as any).name},\n\nDuring our routine background screening, some items were flagged on your report. \n\nPlease contact our trust & safety team at safety@trueservedelivery.com if you would like to provide additional context or dispute these findings.\n\nBest,\nThe TrueServe Team`
+                `<h1>Action Required 🛡️</h1>
+                <p>Hi <span class="accent">${(driver.user as any).name}</span>,</p>
+                <p>During our routine background screening, some items were flagged on your report that require additional attention.</p>
+                <p>Please contact our trust & safety team at <a href="mailto:safety@trueserve.delivery" style="color: #10B981;">safety@trueserve.delivery</a> if you would like to provide additional context or dispute these findings.</p>
+                <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`
             );
         }
 

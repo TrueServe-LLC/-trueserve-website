@@ -259,7 +259,13 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 sendEmail(
                     email,
                     "Welcome to TrueServe! Your Account is Approved",
-                    `Hi ${name},\n\nGreat news! Our automated integration system has verified your documents and you are approved to drive with TrueServe immediately.\n\n**Please find the attached Onboarding Process document for your review.**\n\nYou can now log in using your email to set a password and start accepting deliveries!\n\nBest,\nThe TrueServe Team`,
+                    `<h1>Welcome to the Fleet! 🚗</h1>
+                    <p>Hi <span class="accent">${name}</span>,</p>
+                    <p>Great news! Our automated integration system has verified your documents and you are <strong>approved to drive</strong> with TrueServe immediately.</p>
+                    <p>Please find the attached <strong>Onboarding Process</strong> document for your review. It contains everything you need to know about our premium service standards.</p>
+                    <p>You can now log in using your email to set a password and start accepting deliveries!</p>
+                    <a href="https://www.trueserve.delivery/driver/login" class="button">Log In & Start Driving</a>
+                    <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`,
                     attachments
                 )
             );
@@ -274,7 +280,12 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 sendEmail(
                     email,
                     "Application Received - TrueServe Driver",
-                    `Hi ${name},\n\nThanks for applying to drive with TrueServe! We have received your application and documents.\n\nOur team will manually review your application shortly.\n\n**Please find the attached Onboarding Process document for your review.**\n\nOnce approved, you will receive an email to create your account and password.\n\nBest,\nThe TrueServe Team`,
+                    `<h1>Application Received 📝</h1>
+                    <p>Hi <span class="accent">${name}</span>,</p>
+                    <p>Thanks for applying to drive with TrueServe! We have received your application and documents.</p>
+                    <p>Our team will manually review your profile shortly to ensure our premium service standards are met. You'll receive another email as soon as you're cleared to drive.</p>
+                    <p>In the meantime, <strong>please find the attached Onboarding Process document</strong> for your review.</p>
+                    <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`,
                     attachments
                 )
             );
