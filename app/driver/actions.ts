@@ -1,5 +1,7 @@
 "use server";
 
+import Anthropic from '@anthropic-ai/sdk';
+
 import { supabase } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { v4 as uuidv4 } from "uuid";
@@ -762,10 +764,28 @@ export async function completePhotoDelivery(formData: FormData) {
         if (order.driverId) {
             const earnings = (Number(order.totalPay) || 0) + (Number(order.tip) || 0);
             if (earnings > 0) {
+                // Instantly update internal balance
                 await supabase.rpc('increment_driver_balance', {
                     driver_id: order.driverId,
                     amount: earnings
                 });
+
+                // --- NEW: Stripe Connect Instant Payout ---
+                try {
+                    const { data: driverAcc } = await supabaseAdmin.from('Driver').select('stripeAccountId').eq('id', order.driverId).single();
+                    if (driverAcc && driverAcc.stripeAccountId) {
+                        const stripe = getStripe();
+                        await stripe.transfers.create({
+                            amount: Math.round(earnings * 100), // convert to cents
+                            currency: 'usd',
+                            destination: driverAcc.stripeAccountId,
+                            description: `Instant Payout for Order ${orderId}`
+                        });
+                        console.log(`🤑 Successfully transferred $${earnings} to Driver ${order.driverId}`);
+                    }
+                } catch (stripeErr) {
+                    console.error("Stripe Instant Payout Error:", stripeErr);
+                }
             }
         }
 
@@ -1033,8 +1053,9 @@ export async function getAIPredictedHeatmap() {
     const topSpots = [...heatmapPoints].sort((a, b) => b.weight - a.weight).slice(0, 20);
 
     try {
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) throw new Error("Missing GEMINI_API_KEY");
+        const apiKey = process.env.ANTHROPIC_API_KEY;
+        if (!apiKey) throw new Error("Missing ANTHROPIC_API_KEY");
+        const anthropic = new Anthropic({ apiKey });
 
         const prompt = `You are an AI trained to predict food delivery demand surges.
 I will give you the top current hotspot coordinates (latitude, longitude, and weight).
@@ -1048,26 +1069,18 @@ Example format: [{"lat": 35.227, "lng": -80.843, "weight": 45.5}]
 Current Data:
 ${JSON.stringify(topSpots.map(s => ({lat: Number(s.lat.toFixed(4)), lng: Number(s.lng.toFixed(4)), weight: Number(s.weight.toFixed(1))}))) }`;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.7, topK: 40 }
-            }),
-            next: { revalidate: 300 } // Cache predictions for 5 minutes
+        const response = await anthropic.messages.create({
+            model: "claude-3-5-sonnet-latest",
+            max_tokens: 1024,
+            messages: [{ role: "user", content: prompt }]
         });
-
-        if (!response.ok) {
-            throw new Error(`Gemini API Error: ${response.statusText}`);
-        }
-
-        const jsonResponse = await response.json();
-        const textResponse = jsonResponse.candidates?.[0]?.content?.parts?.[0]?.text || "";
         
-        // Clean up formatting if the AI ignores instructions and uses markdown
-        const cleanedText = textResponse.replace(/^```json/i, '').replace(/```$/i, '').trim();
-        
+        const textResponse = response.content[0].type === 'text' ? response.content[0].text : "";
+        let cleanedText = textResponse.replace(/```json/i, '').replace(/```/i, '').trim();
+        const start = cleanedText.indexOf('[');
+        const end = cleanedText.lastIndexOf(']');
+        if (start !== -1 && end !== -1) cleanedText = cleanedText.substring(start, end + 1);
+
         const predictedSpots: { lat: number, lng: number, weight: number }[] = JSON.parse(cleanedText);
         
         // Combine real current spots with predictive surge spots (given a 1.5x multiplier to stand out)

@@ -155,12 +155,28 @@ export default async function DriverDashboard() {
 
                             {availableOrders && availableOrders.length > 0 ? (
                                 <div className="space-y-6">
-                                    {availableOrders.map((order: any, index: number) => (
-                                        <div key={order.id} className={`p-8 border rounded-[2.5rem] flex justify-between items-center group transition-all relative overflow-hidden ${index === 0 ? 'bg-emerald-500/[0.03] border-emerald-500/20 shadow-lg' : 'bg-black/40 border-white/10 hover:border-emerald-500/20'}`}>
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                     <h3 className="font-black text-xl italic text-white group-hover:text-emerald-500 transition-colors tracking-tight uppercase">{order.restaurant?.name || "Restaurant"}</h3>
-                                                     {index === 0 && <span className="bg-emerald-500 text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">Priority link</span>}
+                                    {availableOrders.map((order: any, index: number) => {
+                                        // Check if this is a stacked opportunity
+                                        let isStackedOpportunity = false;
+                                        if (myOrders && myOrders.length > 0) {
+                                            const activeOrder = myOrders[0];
+                                            if (activeOrder.restaurant?.lat && order.restaurant?.lat) {
+                                                const distToActivePickup = Number(calculateDistance(
+                                                    activeOrder.restaurant.lat, activeOrder.restaurant.lng,
+                                                    order.restaurant.lat, order.restaurant.lng
+                                                ));
+                                                // If the restaurant is within 1 mile of their current pickup
+                                                if (distToActivePickup < 1.0) isStackedOpportunity = true;
+                                            }
+                                        }
+
+                                        return (
+                                        <div key={order.id} className={`p-8 border rounded-[2.5rem] flex justify-between items-center group transition-all relative overflow-hidden ${isStackedOpportunity ? 'bg-orange-500/[0.05] border-orange-500/30 shadow-[0_0_30px_rgba(249,115,22,0.15)] ring-1 ring-orange-500/50' : index === 0 ? 'bg-emerald-500/[0.03] border-emerald-500/20 shadow-lg' : 'bg-black/40 border-white/10 hover:border-emerald-500/20'}`}>
+                                            <div className="flex-1 text-left relative z-10">
+                                                <div className="flex items-center gap-3 mb-2 flex-wrap">
+                                                     <h3 className={`font-black text-xl italic group-hover:text-emerald-500 transition-colors tracking-tight uppercase ${isStackedOpportunity ? 'text-orange-400' : 'text-white'}`}>{order.restaurant?.name || "Restaurant"}</h3>
+                                                     {isStackedOpportunity && <span className="bg-orange-500 text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap animate-pulse flex items-center gap-1">🔥 Stacked Order Route</span>}
+                                                     {!isStackedOpportunity && index === 0 && <span className="bg-emerald-500 text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">Priority link</span>}
                                                 </div>
                                                 <p className="text-[11px] text-slate-500 font-bold mb-6 italic uppercase">{order.restaurant?.address || "Location Hidden"}</p>
                                                 <div className="flex flex-wrap gap-3 text-[10px] uppercase font-black">
@@ -179,7 +195,8 @@ export default async function DriverDashboard() {
                                                 <button type="submit" className="badge-emerald py-4 px-10 text-[10px] group-hover:scale-105 transition-transform">Accept</button>
                                             </form>
                                         </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 <div className="py-24 flex flex-col items-center text-center bg-black/20 border border-dashed border-white/10 rounded-[2.5rem]">
