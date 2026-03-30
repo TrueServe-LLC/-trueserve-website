@@ -533,21 +533,38 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         
         const staffEmails = staffMembers?.map(s => s.email).filter(Boolean) as string[] || ["admin@trueservedelivery.com"];
 
-        for (const staffEmail of staffEmails) {
-            await sendEmail(
-                staffEmail,
-                `🚨 NEW MERCHANT SIGNUP: ${restaurantName}`,
-                `<h1>New Merchant Application</h1>
-                <p><strong>Restaurant:</strong> ${restaurantName}</p>
-                <p><strong>Contact:</strong> ${contactName}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Address:</strong> ${address}, ${city}, ${state} ${zip}</p>
-                <p><strong>Selected Plan:</strong> ${plan || 'Flex'}</p>
-                <p><strong>POS System:</strong> ${posSystem}</p>
-                <hr />
-                <p>Please review and approve the merchant in the Admin Registry.</p>`
+        const notificationPromises: Promise<any>[] = [];
+
+        // SMS to Merchant (if phone provided)
+        if (phone) {
+            notificationPromises.push(
+                sendSMS(
+                    phone,
+                    `TrueServe: Welcome ${contactName}! ${restaurantName} is now live on our platform. Log in to your dashboard to add menu items and start receiving orders: trueserve.delivery/merchant/login`
+                )
             );
         }
+
+        // Email notifications to staff
+        for (const staffEmail of staffEmails) {
+            notificationPromises.push(
+                sendEmail(
+                    staffEmail,
+                    `🚨 NEW MERCHANT SIGNUP: ${restaurantName}`,
+                    `<h1>New Merchant Application</h1>
+                    <p><strong>Restaurant:</strong> ${restaurantName}</p>
+                    <p><strong>Contact:</strong> ${contactName}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Address:</strong> ${address}, ${city}, ${state} ${zip}</p>
+                    <p><strong>Selected Plan:</strong> ${plan || 'Flex'}</p>
+                    <p><strong>POS System:</strong> ${posSystem}</p>
+                    <hr />
+                    <p>Please review and approve the merchant in the Admin Registry.</p>`
+                )
+            );
+        }
+
+        await Promise.allSettled(notificationPromises);
         
         return { success: true, message: "Signup complete!" };
 
