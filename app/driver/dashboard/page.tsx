@@ -11,6 +11,7 @@ import DriverChatButton from "@/components/DriverChatButton";
 import DriverCallButton from "@/components/DriverCallButton";
 import ActiveOrderNavigation from "@/components/ActiveOrderNavigation";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
+import PickupPhotoForm from "./PickupPhotoForm";
 import { getCurrentWeather } from "@/lib/weather";
 import ModeToggle from "@/components/ModeToggle";
 import LogoutButton from "@/components/LogoutButton";
@@ -262,12 +263,7 @@ export default async function DriverDashboard() {
 
                                                     <div className="mt-8 pt-8 border-t border-emerald-500/10 relative z-10">
                                                         {order.status === 'READY_FOR_PICKUP' && (
-                                                            <form action={async () => {
-                                                                "use server";
-                                                                await pickupOrder(order.id);
-                                                            }}>
-                                                                <button type="submit" className="badge-emerald w-full py-5 text-[10px]">Confirm Payload Sync</button>
-                                                            </form>
+                                                            <PickupPhotoForm orderId={order.id} restaurantName={order.restaurant?.name} />
                                                         )}
 
                                                         {order.status === 'PICKED_UP' && (

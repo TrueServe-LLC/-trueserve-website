@@ -323,9 +323,25 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                 <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border-[3px] z-10 transition-all duration-700 ${currentStep >= 4 ? 'border-emerald-400 bg-emerald-400/20 text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.3)]' : 'border-white/10 bg-slate-900 text-slate-500'}`}>
                                     {currentStep === 4 ? <span className="animate-pulse">🛵</span> : "🛵"}
                                 </div>
-                                <div className={currentStep >= 4 ? 'opacity-100' : 'opacity-40'}>
+                                <div className={currentStep >= 4 ? 'opacity-100 flex-1' : 'opacity-40 flex-1'}>
                                     <p className={`font-bold text-lg ${currentStep === 4 ? 'text-emerald-400' : 'text-white'}`}>Out for Delivery</p>
                                     <p className="text-sm text-slate-400 mt-1">{currentStep === 4 ? "Driver heading your way!" : "Driver has picked up the order."}</p>
+                                    
+                                    {/* Pickup Photo from Restaurant */}
+                                    {currentOrder.pickupPhotoUrl && (
+                                        <div className="mt-4 bg-black border border-emerald-500/20 rounded-2xl overflow-hidden shadow-2xl animate-fade-in-up">
+                                            <div className="p-3 border-b border-white/5 bg-emerald-500/5 backdrop-blur-sm flex items-center gap-2">
+                                                <span>📸</span>
+                                                <p className="text-[10px] font-black uppercase text-emerald-300 tracking-widest">Pickup Verified</p>
+                                                <span className="ml-auto text-[9px] font-bold text-emerald-500/60 uppercase tracking-wider">Food Secured</span>
+                                            </div>
+                                            <img 
+                                                src={currentOrder.pickupPhotoUrl} 
+                                                alt="Restaurant Pickup Proof" 
+                                                className="w-full h-auto aspect-video object-cover"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

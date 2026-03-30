@@ -435,6 +435,98 @@ export async function pickupOrder(orderId: string) {
     }
 }
 
+export async function confirmPickupWithPhoto(formData: FormData) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
+
+        const orderId = formData.get("orderId") as string;
+        const photo = formData.get("photo") as File;
+
+        if (!orderId) throw new Error("Missing order ID.");
+
+        const { data: order } = await supabase
+            .from('Order')
+            .select('status, driverId')
+            .eq('id', orderId)
+            .single();
+
+        if (!order || order.status !== 'READY_FOR_PICKUP') {
+            throw new Error("Order not ready for pickup.");
+        }
+
+        let pickupPhotoUrl = null;
+
+        // Upload pickup photo to Supabase Storage
+        if (photo && photo.size > 0) {
+            const { v4: uuidv4 } = await import("uuid");
+            const fileName = `pickup_${orderId}_${uuidv4()}.jpg`;
+            const arrayBuffer = await photo.arrayBuffer();
+            const buffer = new Uint8Array(arrayBuffer);
+
+            // Auto-create bucket
+            await supabaseAdmin.storage.createBucket('pickup_proofs', { public: true }).catch(() => {});
+
+            const { error: uploadError } = await supabaseAdmin.storage
+                .from('pickup_proofs')
+                .upload(fileName, buffer, {
+                    contentType: 'image/jpeg',
+                    upsert: false,
+                });
+
+            if (!uploadError) {
+                const { data: publicData } = supabaseAdmin.storage.from('pickup_proofs').getPublicUrl(fileName);
+                pickupPhotoUrl = publicData.publicUrl;
+            } else {
+                console.error("Pickup photo upload failed:", uploadError);
+            }
+        }
+
+        // Update order: mark picked up + save pickup photo URL
+        const updateData: any = {
+            status: 'PICKED_UP',
+            updatedAt: new Date().toISOString(),
+        };
+        if (pickupPhotoUrl) {
+            updateData.pickupPhotoUrl = pickupPhotoUrl;
+        }
+
+        const { error } = await supabase
+            .from('Order')
+            .update(updateData)
+            .eq('id', orderId);
+
+        if (error) throw error;
+
+        // Notify Customer
+        try {
+            const { data: orderData } = await supabaseAdmin
+                .from('Order')
+                .select('userId, restaurant:Restaurant(name)')
+                .eq('id', orderId)
+                .single();
+
+            if (orderData) {
+                await createNotification({
+                    userId: orderData.userId,
+                    orderId: orderId,
+                    title: "Driver Picked Up! 🚗📸",
+                    message: `Your driver has picked up your order from ${(orderData.restaurant as any)?.name || "the restaurant"} — photo verified and on the way!`
+                });
+            }
+        } catch (notifErr) {
+            console.error("[Customer Notification Error]:", notifErr);
+        }
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/orders/${orderId}`);
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
 export async function unassignOrder(orderId: string, reason: string) {
     try {
         const supabase = await createClient();
