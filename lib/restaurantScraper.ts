@@ -1,8 +1,7 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { scanRestaurantMenuWithAI } from './aiScanner';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
@@ -13,7 +12,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
  * matching dish names to their actual web-stored image URLs.
  */
 export async function scrapeAndOnboardRestaurant(url: string, merchantEmail: string) {
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is required for smart scraping.");
+    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is required for smart scraping.");
 
     console.log(`[Scraper] 🚀 Starting deep scrape for: ${url}`);
 
@@ -26,8 +25,8 @@ export async function scrapeAndOnboardRestaurant(url: string, merchantEmail: str
     // but the architecture is ready for it).
     
     try {
-        // 2. Use Gemini to "Read" the page and Extract Menu + Images
-        // In a production app, we would pass the HTML or a screenshot to Gemini.
+        // 2. Use Claude to "Read" the page and Extract Menu + Images
+        // In a production app, we would pass the HTML or a screenshot to Claude 3.5 Sonnet.
         // For this tool, we'll implement the logic to handle the result.
         
         console.log(`[Scraper] 🧠 AI is analyzing the digital menu...`);

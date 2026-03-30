@@ -16,6 +16,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@launchdarkly/node-server-sdk": "^9.10.10",
     "@react-google-maps/api": "^2.20.8",
     "@sentry/nextjs": "^10.40.0",

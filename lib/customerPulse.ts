@@ -1,5 +1,7 @@
+import Anthropic from '@anthropic-ai/sdk';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const anthropic = ANTHROPIC_API_KEY ? new Anthropic({ apiKey: ANTHROPIC_API_KEY }) : null;
 
 export type SentimentAnalysis = {
     sentimentScore: number; // 0 to 100
@@ -10,13 +12,13 @@ export type SentimentAnalysis = {
 };
 
 export async function analyzeMerchantSentiment(reviews: { comment: string, rating: number }[]): Promise<SentimentAnalysis> {
-    if (!GEMINI_API_KEY) {
+    if (!anthropic) {
         return {
             sentimentScore: 0,
             summary: "AI analysis is currently unavailable.",
             strengths: [],
             weaknesses: [],
-            recommendation: "Please configure your GEMINI_API_KEY."
+            recommendation: "Please configure your ANTHROPIC_API_KEY."
         };
     }
 
@@ -39,7 +41,9 @@ export async function analyzeMerchantSentiment(reviews: { comment: string, ratin
     Reviews:
     ${reviewsText}
     
-    Respond ENTIRELY in valid JSON format.
+    Respond ENTIRELY in valid JSON format. Do not use markdown blocks.
+    Return ONLY the raw JSON object, starting with { and ending with }.
+    
     Required JSON structure:
     {
         "sentimentScore": number, // 0 to 100 (where 100 is perfect)
@@ -51,28 +55,23 @@ export async function analyzeMerchantSentiment(reviews: { comment: string, ratin
     `;
 
     try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        temperature: 0.2,
-                        responseMimeType: "application/json"
-                    }
-                })
-            }
-        );
+        const response = await anthropic.messages.create({
+            model: "claude-3-5-sonnet-latest",
+            max_tokens: 1000,
+            temperature: 0.2,
+            messages: [
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ]
+        });
 
-        if (!response.ok) throw new Error("AI analysis failed");
-
-        const data = await response.json();
-        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
         if (!responseText) throw new Error("No data returned from AI");
 
-        return JSON.parse(responseText);
+        const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(cleanJson);
     } catch (e) {
         console.error("[Sentiment AI] Error:", e);
         return {
