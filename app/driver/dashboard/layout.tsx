@@ -7,6 +7,7 @@ import Link from "next/link";
 import ModeToggle from "@/components/ModeToggle";
 import NotificationBell from "@/components/NotificationBell";
 import SpotCheckTrigger from "@/components/SpotCheckTrigger";
+import SupportWidget from "@/components/SupportWidget";
 
 export const dynamic = 'force-dynamic';
 
@@ -83,7 +84,8 @@ export default async function DriverDashboardLayout({ children }: { children: Re
                 {children}
             </main>
 
-            {/* Bottom Nav for Mobile ONLY if needed - already exists in some views but layout is enough */}
+            {/* AI Support Copilot */}
+            <SupportWidget role="DRIVER" />
         </div>
     );
 }
