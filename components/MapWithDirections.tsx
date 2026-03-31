@@ -185,15 +185,23 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
                     position={origin}
                     mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                 >
-                    <div
-                        style={{
-                            transform: `translate(-50%, -50%) rotate(${driverRotation}deg)`,
-                            fontSize: '2.5rem', // Slightly larger
-                            filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))',
-                            transition: 'transform 0.1s linear' // Smooth rotation
-                        }}
-                    >
-                        🚗
+                    <div className="relative flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2">
+                        {/* Radar Pulse Effect */}
+                        <div className="absolute w-16 h-16 bg-blue-500/20 border-2 border-blue-500/40 rounded-full animate-ping pointer-events-none"></div>
+                        <div className="absolute w-24 h-24 bg-blue-500/10 rounded-full animate-pulse blur-sm pointer-events-none"></div>
+
+                        {/* Vehicle Icon */}
+                        <div
+                            style={{
+                                transform: `rotate(${driverRotation}deg)`,
+                                fontSize: '2.5rem',
+                                filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.4))',
+                                transition: 'transform 1s ease-in-out'
+                            }}
+                            className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-2xl border-2 border-blue-500 z-10"
+                        >
+                            🚗
+                        </div>
                     </div>
                 </OverlayView>
             )}
