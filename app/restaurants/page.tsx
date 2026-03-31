@@ -177,7 +177,7 @@ async function getRestaurants(
                 id: r.id,
                 name: r.name,
                 rating: Number(avgRating),
-                image: r.imageUrl || `https://images.unsplash.com/photo-${1504674900247 + (seed % 1000)}?q=80&w=800&auto=format&fit=crop`,
+                image: r.imageUrl || null, // Remove Unsplash default
                 tags: Array.from(new Set(tags)),
                 description: r.description,
                 coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
@@ -314,12 +314,37 @@ export default async function RestaurantFinder({
                     {!showLanding && (
                         <div className="space-y-12">
                             <div className="flex flex-col items-center text-center gap-10">
-                                <div className="flex items-center flex-wrap justify-center gap-3">
-                                    <Link href="/restaurants" className={`${!category ? "bg-primary text-black" : "bg-white/[0.03] border border-white/10 text-slate-500 hover:text-white"} px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all`}>General</Link>
-                                    {["Fast Food", "Burgers", "Chicken", "Pizza", "Sushi", "Sandwiches", "Caribbean", "Mexican", "Korean"].map((cat) => (
-                                        <Link key={cat} href={`/restaurants?category=${cat}`} className={`${category === cat ? "bg-primary text-black" : "bg-white/[0.03] border border-white/10 text-slate-500 hover:text-white"} px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all`}>{cat}</Link>
-                                    ))}
+                            <div className="w-[100vw] relative left-1/2 -translate-x-1/2 overflow-x-auto no-scrollbar border-y border-white/5 py-4 px-6 md:px-8 bg-black/50 backdrop-blur-sm -mt-6">
+                                <div className="flex items-center gap-4 min-w-max mx-auto max-w-7xl">
+                                    {[
+                                        { name: "General", icon: "🍽️", value: "" },
+                                        { name: "Fast Food", icon: "🍟", value: "Fast Food" },
+                                        { name: "Burgers", icon: "🍔", value: "Burgers" },
+                                        { name: "Chicken", icon: "🍗", value: "Chicken" },
+                                        { name: "Pizza", icon: "🍕", value: "Pizza" },
+                                        { name: "Sushi", icon: "🍣", value: "Sushi" },
+                                        { name: "Sandwiches", icon: "🥪", value: "Sandwiches" },
+                                        { name: "Caribbean", icon: "🍖", value: "Caribbean" },
+                                        { name: "Mexican", icon: "🌮", value: "Mexican" },
+                                        { name: "Korean", icon: "🥢", value: "Korean" }
+                                    ].map((cat) => {
+                                        const isActive = category ? category === cat.value : cat.value === "";
+                                        return (
+                                            <Link 
+                                                key={cat.name} 
+                                                href={cat.value ? `/restaurants?category=${cat.value}` : '/restaurants'} 
+                                                className={`flex items-center gap-2 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap ${
+                                                    isActive 
+                                                    ? "bg-[#eab308] text-black shadow-[0_0_15px_rgba(234,179,8,0.2)]" 
+                                                    : "bg-transparent text-slate-500 hover:text-white"
+                                                }`}
+                                            >
+                                                <span className="text-sm">{cat.icon}</span> {cat.name}
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
+                            </div>
                             </div>
 
                             {/* Results Status Bar */}
@@ -343,19 +368,30 @@ export default async function RestaurantFinder({
                             {restaurants.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 animate-fade-in">
                                     {restaurants.map((rest: any) => (
-                                        <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group relative flex flex-col bg-[#0d0d0e] border border-white/[0.03] rounded-3xl overflow-hidden hover:border-white/10 transition-all duration-300">
-                                            <div className="aspect-[4/3] relative overflow-hidden">
-                                                <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                        <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group relative flex flex-col bg-[#111111] border border-white/[0.03] rounded-2xl overflow-hidden hover:border-white/10 transition-all duration-300 shadow-2xl">
+                                            <div className="aspect-[4/3] bg-[#0d0d0e] relative overflow-hidden flex items-center justify-center">
+                                                {rest.image ? (
+                                                    <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                                ) : (
+                                                    <span className="text-[100px] drop-shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                                                        {rest.tags.includes("Pizza") ? "🍕" : 
+                                                         rest.tags.includes("Burgers") ? "🍔" : 
+                                                         rest.tags.includes("Sushi") ? "🍣" : 
+                                                         rest.tags.includes("Mexican") ? "🌮" : 
+                                                         rest.tags.includes("Chicken") ? "🍗" :
+                                                         rest.tags.includes("Caribbean") ? "🍖" : "🍔"}
+                                                    </span>
+                                                )}
                                                 
                                                 {/* Float Badges */}
                                                 <div className="absolute top-4 left-4">
-                                                    <div className="bg-black/80 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 border border-white/10 rounded-md uppercase tracking-wider">
+                                                    <div className="bg-black text-white text-[9px] font-black px-3 py-1.5 rounded-md uppercase tracking-widest shadow-lg">
                                                         {rest.deliveryFee === "Free" ? "FREE" : rest.deliveryFee} FEE
                                                     </div>
                                                 </div>
                                                 <div className="absolute top-4 right-4">
-                                                    <div className="bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-3 py-1.5 border border-emerald-500/20 rounded-md uppercase tracking-wider flex items-center gap-1.5">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                    <div className="bg-[#042f16] text-[#4ade80] text-[9px] font-black px-3 py-1.5 rounded-md uppercase tracking-widest flex items-center gap-1.5 shadow-lg">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]"></span>
                                                         Open
                                                     </div>
                                                 </div>
@@ -363,15 +399,16 @@ export default async function RestaurantFinder({
 
                                             <div className="p-6 space-y-4">
                                                 <div className="space-y-1">
-                                                    <h3 className="text-xl font-black text-white group-hover:text-primary transition-colors tracking-tight uppercase">{rest.name}</h3>
-                                                    <div className="flex items-center gap-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest italic">
-                                                        <span className="text-emerald-500">{rest.prepTime}</span>
-                                                        <span className="opacity-20">•</span>
-                                                        <span>{rest.priceLevel}</span>
-                                                        <span className="opacity-20">•</span>
-                                                        <div className="flex items-center gap-1">
-                                                            <span className="text-primary text-[11px]">★</span>
-                                                            <span className="text-slate-300">{rest.rating}</span>
+                                                    <h3 className="text-2xl font-black text-white group-hover:text-white transition-colors tracking-tight uppercase">{rest.name}</h3>
+                                                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-[0.15em] italic">
+                                                        {rest.tags.slice(0, 3).join(" • ")}
+                                                    </div>
+                                                    <div className="flex items-center gap-3 pt-2 text-[11px] font-bold uppercase tracking-widest italic">
+                                                        <span className="text-[#4ade80]">{rest.prepTime}</span>
+                                                        <span className="text-slate-500">{rest.priceLevel}</span>
+                                                        <div className="flex items-center gap-1 text-[#fbbf24]">
+                                                            <span className="text-[12px]">★</span>
+                                                            <span className="">{rest.rating}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -411,10 +448,10 @@ export default async function RestaurantFinder({
                     <div className="w-full max-w-7xl px-8">
                         <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5">
                             {[
-                                { icon: '🗺️', label: 'Local Only', desc: 'No global chains' },
+                                { icon: '🏡', label: 'Local Only', desc: 'No global chains' },
                                 { icon: '⚡', label: 'Priority Hub', desc: 'Fastest dispatch' },
                                 { icon: '💎', label: 'Elite Menu', desc: 'Curated flavors' },
-                                { icon: '🖤', label: 'Fair Split', desc: 'Supporting local' }
+                                { icon: '🤝', label: 'Fair Split', desc: 'Supporting local' }
                             ].map((item) => (
                                 <div key={item.label} className="p-16 flex flex-col items-center justify-center text-center group hover:bg-white/[0.01] transition-all bg-black">
                                     <div className="text-xl mb-6 filter grayscale group-hover:grayscale-0 transition-all scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{item.icon}</div>
