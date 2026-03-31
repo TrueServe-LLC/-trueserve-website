@@ -256,25 +256,25 @@ export default function MenuClient({
             <div className="space-y-8 md:sticky md:top-24">
                 <div className="card p-8 bg-slate-900/40 border-white/5 shadow-3xl backdrop-blur-2xl rounded-[3rem]">
                     {/* TrueServe+ Promo */}
-                    <Link href="/benefits" className="block mb-10 p-12 rounded-[2.5rem] bg-[#0a0f1a] border border-white/5 hover:border-primary/40 transition-all group relative shadow-2xl text-center overflow-hidden">
+                    <Link href="/benefits" className="block mb-10 p-8 rounded-2xl bg-[#0a0f1a] border border-white/5 hover:border-primary/40 transition-all group relative shadow-2xl text-center overflow-hidden">
                         <div className="absolute inset-0 bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative z-10 flex flex-col items-center gap-6">
                             <div className="text-5xl filter transition-all group-hover:scale-110 drop-shadow-[0_0_20px_rgba(59,130,246,0.4)]">💎</div>
                             <div>
-                                <span className="text-[9px] font-black uppercase tracking-[0.5em] text-primary/70 block mb-4 italic">TrueServe+ Benefit</span>
-                                <p className="text-2xl text-white font-black font-serif leading-tight max-w-[200px] mx-auto italic">
-                                    Zero delivery fees on this order.
+                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary block mb-2">TrueServe+ Benefit</span>
+                                <p className="text-4xl text-white font-black leading-tight max-w-[280px] mx-auto mb-4">
+                                    Zero <span className="bg-primary/20 px-2 rounded-lg inline-block">delivery</span> fees on this order.
                                 </p>
                             </div>
-                            <div className="w-full border border-primary/30 text-primary py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl group-hover:bg-primary group-hover:text-black transition-all duration-500 italic">
+                            <div className="w-full border border-primary text-primary py-4 rounded-xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl group-hover:bg-primary group-hover:text-black transition-all duration-500">
                                 Explore Benefits &rarr;
                             </div>
                         </div>
                     </Link>
 
-                    <div className="mb-10 group bg-black/20 p-8 rounded-[2rem] border border-white/5">
+                    <div className="mb-10 text-left">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500 italic">
+                            <h3 className="font-black text-[12px] uppercase tracking-[0.2em] text-slate-300">
                                 Delivery Destination
                             </h3>
                             {!deliveryAddress && (
@@ -292,44 +292,44 @@ export default function MenuClient({
                         {deliveryAddress && (
                             <div className="mt-6 p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 animate-fade-in relative overflow-hidden group/addr">
                                 <div className="absolute top-0 right-0 p-4 opacity-5 text-2xl">📍</div>
-                                <p className="text-[9px] text-emerald-400 font-black uppercase tracking-[0.3em] mb-2 opacity-60 italic">Confirming Address:</p>
-                                <p className="text-xs text-white font-black leading-relaxed break-words italic">{deliveryAddress}</p>
+                                <p className="text-[9px] text-emerald-400 font-black uppercase tracking-[0.3em] mb-2 opacity-60">Confirming Address:</p>
+                                <p className="text-xs text-white font-black leading-relaxed break-words">{deliveryAddress}</p>
                             </div>
                         )}
-                        <div className="mt-10 mb-10">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-6 italic">
+                        <div className="mt-10 mb-10 text-left">
+                            <h3 className="font-black text-[12px] uppercase tracking-[0.2em] text-slate-300 mb-6">
                                 Delivery Method
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <button
                                     type="button"
                                     onClick={() => setDeliveryOption('leave')}
-                                    className={`p-6 rounded-[2rem] border transition-all text-left relative overflow-hidden group/opt ${deliveryOption === 'leave' ? 'bg-primary/10 border-primary ring-1 ring-primary/20' : 'bg-white/[0.03] border-white/5 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
+                                    className={`p-6 rounded-2xl border transition-all text-left relative overflow-hidden group/opt ${deliveryOption === 'leave' ? 'bg-primary/10 border-primary ring-1 ring-primary/20' : 'bg-[#151a23] border-white/5 hover:border-white/20'}`}
                                 >
                                     <div className="text-3xl mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">🚪</div>
-                                    <h4 className={`font-black text-[11px] uppercase tracking-[0.2em] italic ${deliveryOption === 'leave' ? 'text-primary' : 'text-white'}`}>Leave at door</h4>
-                                    <p className="text-[9px] text-slate-500 font-bold mt-2 uppercase tracking-widest">No-contact</p>
+                                    <h4 className={`font-black text-[11px] uppercase tracking-[0.1em] ${deliveryOption === 'leave' ? 'text-primary' : 'text-primary'}`}>Leave at door</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-wide">No-contact</p>
                                     {deliveryOption === 'leave' && <div className="absolute top-4 right-4 text-primary text-xs">✓</div>}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setDeliveryOption('hand')}
-                                    className={`p-6 rounded-[2rem] border transition-all text-left relative overflow-hidden group/opt ${deliveryOption === 'hand' ? 'bg-primary/10 border-primary ring-1 ring-primary/20' : 'bg-white/[0.03] border-white/5 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'}`}
+                                    className={`p-6 rounded-2xl border transition-all text-left relative overflow-hidden group/opt ${deliveryOption === 'hand' ? 'bg-primary/10 border-primary ring-1 ring-primary/20' : 'bg-[#151a23] border-white/5 hover:border-white/20'}`}
                                 >
                                     <div className="text-3xl mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">🤝</div>
-                                    <h4 className={`font-black text-[11px] uppercase tracking-[0.2em] italic ${deliveryOption === 'hand' ? 'text-primary' : 'text-white'}`}>Hand it to me</h4>
-                                    <p className="text-[9px] text-slate-500 font-bold mt-2 uppercase tracking-widest">Meet outside</p>
+                                    <h4 className={`font-black text-[11px] uppercase tracking-[0.1em] ${deliveryOption === 'hand' ? 'text-primary' : 'text-primary'}`}>Hand it to me</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-wide">Meet outside</p>
                                     {deliveryOption === 'hand' && <div className="absolute top-4 right-4 text-primary text-xs">✓</div>}
                                 </button>
                             </div>
                         </div>
 
-                        <div className="mt-10">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-6 italic">
+                        <div className="mt-10 text-left">
+                            <h3 className="font-black text-[12px] uppercase tracking-[0.2em] text-slate-300 mb-6">
                                 Delivery Instructions
                             </h3>
                             <textarea
-                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-6 text-sm font-medium focus:border-primary/50 focus:bg-white/[0.06] outline-none transition-all min-h-[120px] text-white placeholder:text-slate-700 leading-relaxed italic"
+                                className="w-full bg-[#151a23] border border-white/5 rounded-2xl p-6 text-sm font-medium focus:border-primary/50 focus:bg-[#1a202c] outline-none transition-all min-h-[120px] text-white placeholder:text-slate-600 leading-relaxed"
                                 placeholder='"Leave at front door," "Gate code 1234," "Blue house with white fence"'
                                 value={deliveryInstructions}
                                 onChange={(e) => setDeliveryInstructions(e.target.value)}
