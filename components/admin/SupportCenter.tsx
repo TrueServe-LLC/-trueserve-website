@@ -27,6 +27,11 @@ export default function SupportCenter({ initialTickets, currentAdminId }: { init
 
   const selectedTicket = tickets.find(t => t.id === selectedTicketId);
 
+  const loadMessages = async (id: string) => {
+    const messages = await getTicketMessages(id);
+    setActiveMessages(messages);
+  };
+
   useEffect(() => {
     if (selectedTicketId) {
       loadMessages(selectedTicketId);
@@ -37,10 +42,6 @@ export default function SupportCenter({ initialTickets, currentAdminId }: { init
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [activeMessages]);
 
-  const loadMessages = async (id: string) => {
-    const messages = await getTicketMessages(id);
-    setActiveMessages(messages);
-  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();

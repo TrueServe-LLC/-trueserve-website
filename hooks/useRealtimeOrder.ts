@@ -70,7 +70,7 @@ export function useRealtimeOrder(orderId: string) {
                 supabase.removeChannel(locationSubscription);
             }
         };
-    }, [orderId, order?.driverId]);
+    }, [orderId, order?.driverId, supabase]);
 
     return { order, driverLocation };
 }

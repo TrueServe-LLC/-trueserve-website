@@ -45,7 +45,7 @@ export default function KPIDashboard({ orders, drivers, restaurants }: KPIDashbo
             activeDrivers,
             activeMerchants,
             acceptanceRate: total > 0 ? ((completed / total) * 98).toFixed(1) : '0.0',
-            avgCSAT: (4.7 + Math.random() * 0.2).toFixed(1),
+            avgCSAT: '4.8', // Stabilized for build purity
             onTimeRate: onTimeRate.toFixed(1),
             cancelRate: total > 0 ? ((cancelled / total) * 100).toFixed(1) : '0.0',
             prepToPickup: avgPrepToPickup.toFixed(1),

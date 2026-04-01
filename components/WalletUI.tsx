@@ -106,7 +106,7 @@ export default function WalletUI({ userId }: { userId: string }) {
 
     useEffect(() => {
         loadMethods();
-    }, [userId]);
+    }, [userId, loadMethods]);
 
     const handleRemove = async (id: string) => {
         if (!confirm("Remove this payment method?")) return;
