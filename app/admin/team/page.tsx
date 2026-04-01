@@ -13,8 +13,8 @@ export default async function TeamManagementPage() {
 
     let isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
 
-    if (!isAuthorized || role !== 'ADMIN') {
-        redirect("/admin/dashboard");
+    if (!isAuthorized) {
+        redirect("/admin/login");
     }
 
     const teamMembers = await getTeamMembers();
