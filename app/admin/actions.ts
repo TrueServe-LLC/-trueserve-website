@@ -222,6 +222,42 @@ export async function toggleOrderingStatus(enabled: boolean) {
     }
 }
 
+export async function toggleAiScanner(enabled: boolean) {
+    try {
+        const { updateSystemConfig } = await import('@/lib/system');
+        await updateSystemConfig('AI_MENU_SCANNER_ENABLED', enabled);
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) { return { error: e.message }; }
+}
+
+export async function toggleGoogleRatings(enabled: boolean) {
+    try {
+        const { updateSystemConfig } = await import('@/lib/system');
+        await updateSystemConfig('GOOGLE_RATINGS_SYNC_ENABLED', enabled);
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) { return { error: e.message }; }
+}
+
+export async function toggleInstantPayouts(enabled: boolean) {
+    try {
+        const { updateSystemConfig } = await import('@/lib/system');
+        await updateSystemConfig('INSTANT_PAYOUTS_ENABLED', enabled);
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) { return { error: e.message }; }
+}
+
+export async function toggleExpressCheckout(enabled: boolean) {
+    try {
+        const { updateSystemConfig } = await import('@/lib/system');
+        await updateSystemConfig('EXPRESS_CHECKOUT_ACTIVE', enabled);
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) { return { error: e.message }; }
+}
+
 export async function updateConfigParam(key: any, value: any) {
     try {
         const { updateSystemConfig } = await import('@/lib/system');
