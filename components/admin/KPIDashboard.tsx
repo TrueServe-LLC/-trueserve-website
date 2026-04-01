@@ -48,7 +48,7 @@ export default function KPIDashboard({ orders, drivers, restaurants }: KPIDashbo
         const activeMerchants = restaurants.filter(r => r.isApproved).length;
         
         // Driver Stats
-        const activeDrivers = drivers.filter(d => d.status === 'ONLINE').length;
+        const activeDrivers = 0; // Temporarily forced to 0 as per request (no drivers assigned yet)
         const approvedDrivers = drivers.filter(d => d.backgroundCheckStatus === 'CLEARED' && d.hasSignedAgreement).length;
 
         // Advanced Stats (WBS Step 14 alignment)
