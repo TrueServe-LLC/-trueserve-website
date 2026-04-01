@@ -83,7 +83,7 @@ export default async function MerchantDashboard() {
                     <div className="flex items-center gap-5">
                         <div className="w-14 h-14 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center text-3xl shadow-xl">📊</div>
                         <div>
-                            <h1 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight">
+                            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase leading-tight">
                                 Orders Dashboard
                             </h1>
                             <p className="text-slate-500 text-xs md:text-sm font-black uppercase tracking-widest mt-1">
@@ -204,10 +204,9 @@ export default async function MerchantDashboard() {
                             slug={restaurant.slug}
                         />
 
-                        {/* Orders Section */}
                         <section>
                             <div className="flex justify-between items-end mb-10">
-                                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase flex items-center gap-4">
+                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase flex items-center gap-4">
                                     Incoming Orders
                                     {pendingOrders.length > 0 && <span className="bg-primary text-white text-[10px] px-3 py-1 rounded-full">{pendingOrders.length}</span>}
                                 </h2>
@@ -230,7 +229,7 @@ export default async function MerchantDashboard() {
                                                         {(order.status as any) === 'READY_FOR_PICKUP' ? 'PICKUP READY' : order.status.replace('_', ' ')}
                                                     </span>
                                                 </div>
-                                                <h3 className="font-black text-2xl italic tracking-tight">{order.user.name}</h3>
+                                                <h3 className="font-black text-2xl tracking-tight">{order.user.name}</h3>
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-black text-3xl text-white tracking-tighter">${Number(order.total).toFixed(2)}</p>
@@ -272,7 +271,7 @@ export default async function MerchantDashboard() {
                         {/* Menu Section */}
                         <section>
                             <div className="flex justify-between items-center mb-10">
-                                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">Your Menu</h2>
+                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Your Menu</h2>
                                 <div className="flex gap-4">
                                     <MenuScanner restaurantId={restaurant.id} />
                                     <AddItemForm />
