@@ -104,6 +104,38 @@ export default function AdminStyles() {
 .db .insight-body { font-size:12px; color:#888; line-height:1.6; }
 .db .insight-body strong { color:#e8a230; font-weight:600; }
 .db input[type=range] { width:100%; accent-color:#e8a230; height:3px; }
+
+/* NEW LOWER PART TOKENS */
+.db .page { padding: 24px; }
+.db .page-title { font-size:26px; font-weight:700; color:#fff; margin-bottom:4px; }
+.db .page-title em { font-style:italic; }
+.db .page-title span { color:#e8a230; }
+.db .page-sub { font-size:13px; color:#555; margin-bottom:20px; }
+.db .sec-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.db .sec-title { font-size:13px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#aaa; display:flex; align-items:center; gap:8px; }
+.db .badge { font-size:10px; font-weight:700; letter-spacing:0.08em; padding:3px 8px; text-transform:uppercase; border-radius: 2px; }
+.db .badge-warn { background:#3a2800; color:#e8a230; border:1px solid #5a3c00; }
+.db .badge-ok { background:#0d2a1a; color:#3dd68c; border:1px solid #1a4a2a; }
+.db .badge-gray { background:#1a1c24; color:#666; border:1px solid #2a2f3a; }
+.db .divider { height:1px; background:#1c1f28; margin:20px 0; }
+.db .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#1c1f28; border:1px solid #1c1f28; margin-bottom:20px; }
+.db .panel { background:#0f1219; padding:16px; }
+.db .panel-hd { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#666; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.db .empty-panel { font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#2a2f3a; padding:20px 0; text-align:center; }
+.db .audit-table { width:100%; border-collapse:collapse; background: #0f1219; }
+.db .audit-table th { font-size:9px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#444; padding:6px 10px; text-align:left; border-bottom:1px solid #1c1f28; }
+.db .audit-table td { font-size:11px; padding:8px 10px; border-bottom:1px solid #1a1c24; color:#666; font-family:'DM Mono',monospace; }
+.db .params-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#1c1f28; border:1px solid #1c1f28; margin-bottom:20px; }
+.db .param-row { background:#0f1219; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.db .param-name { font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#ccc; margin-bottom:2px; }
+.db .param-desc { font-size:11px; color:#444; }
+.db .param-value { font-size:16px; font-weight:700; font-family:'DM Mono',monospace; color:#fff; background:#0c0e13; border:1px solid #2a2f3a; padding:6px 14px; min-width:60px; text-align:center; }
+.db .param-value.enabled { color:#3dd68c; border-color:#1a4a2a; background:#0a1e12; font-size:11px; font-weight:700; letter-spacing:0.1em; padding:6px 12px; }
+.db .rule-card { background:#0f1219; border:1px solid #1c1f28; margin-bottom:12px; }
+.db .rule-hd { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #1c1f28; }
+.db .rule-name { font-size:16px; font-weight:700; color:#fff; }
+.db .day-block { width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; letter-spacing:0.05em; background:#1a1c24; color:#444; border:1px solid #2a2f3a; }
+.db .day-block.active { background:#e8a230; color:#000; border-color:#e8a230; }
     `}} />
   );
 }

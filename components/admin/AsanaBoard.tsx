@@ -243,86 +243,39 @@ export default function AsanaBoard() {
     return (
         <section className="mb-16">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                    <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3">
-                        <span className="inline-flex w-9 h-9 bg-gradient-to-br from-[#F06A6A] to-[#6A67CE] rounded-xl items-center justify-center text-base shadow-lg shadow-purple-500/20">📋</span>
-                        Asana Board
-                        <span className="bg-primary/20 text-primary text-[10px] px-3 py-1 rounded-full uppercase font-black border border-primary/20">
-                            {totalTasks} Tasks
-                        </span>
-                    </h2>
-                    {loading && (
-                        <span className="w-2 h-2 bg-primary rounded-full animate-ping" />
-                    )}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+                <div>
+                  <h2 className="text-3xl font-bold flex items-center gap-3 italic">
+                      Asana <span className="text-primary not-italic">Board</span>
+                  </h2>
+                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-1">Task management and operational oversight</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    {/* Stats pills */}
-                    <div className="flex gap-2">
-                        <div className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase tracking-widest text-emerald-400">
-                            ✓ {completedTasks} Done
+                    <div className="flex gap-4 mr-4">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{completedTasks} DONE</span>
                         </div>
-                        {overdueTasks > 0 && (
-                            <div className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-[9px] font-black uppercase tracking-widest text-red-400 animate-pulse">
-                                ⚠ {overdueTasks} Overdue
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-red-500 rounded-full pulse"></span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{overdueTasks} OVERDUE</span>
+                        </div>
                     </div>
 
-                    {/* Assignee filter */}
-                    {allAssignees.length > 0 && (
-                        <select
-                            value={filterAssignee}
-                            onChange={(e) => setFilterAssignee(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-[10px] font-bold text-slate-400 focus:outline-none focus:border-primary/50 appearance-none cursor-pointer"
-                        >
-                            <option value="all">All Members</option>
-                            {allAssignees.map((a) => (
-                                <option key={a.gid} value={a.gid}>{a.name}</option>
-                            ))}
-                        </select>
-                    )}
-
-                    {/* View toggles */}
-                    <div className="flex bg-white/5 border border-white/10 rounded-full p-0.5">
-                        <button
-                            onClick={() => setViewMode("board")}
-                            className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full transition-all ${viewMode === "board" ? "bg-primary/20 text-primary" : "text-slate-500 hover:text-white"}`}
-                        >
-                            Board
-                        </button>
-                        <button
-                            onClick={() => setViewMode("list")}
-                            className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full transition-all ${viewMode === "list" ? "bg-primary/20 text-primary" : "text-slate-500 hover:text-white"}`}
-                        >
-                            List
-                        </button>
+                    <div className="flex bg-white/5 border border-white/10 rounded-lg p-0.5">
+                        <button onClick={() => setViewMode("board")} className={`text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-md transition-all ${viewMode === "board" ? "bg-primary text-black" : "text-slate-500 hover:text-white"}`}>Board</button>
+                        <button onClick={() => setViewMode("list")} className={`text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-primary text-black" : "text-slate-500 hover:text-white"}`}>List</button>
                     </div>
 
-                    {/* Create Task */}
-                    <button
-                        onClick={() => setCreating(!creating)}
-                        className="bg-primary hover:bg-primary/90 text-black py-2 px-4 rounded-full font-black uppercase tracking-widest text-[10px] transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
-                    >
-                        <span className="text-sm">+</span> New Task
-                    </button>
+                    <button onClick={() => setCreating(!creating)} className="bg-primary hover:bg-primary/90 text-black py-2 px-5 rounded-lg font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-2">+ New Task</button>
 
-                    {/* External Link */}
-                    <a
-                        href={`https://app.asana.com/0/${board.sections[0]?.gid ? "1213802368265152" : ""}/board`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-primary px-3 py-2 border border-white/10 rounded-full hover:border-primary/20 transition-all flex items-center gap-1.5"
-                    >
-                        Open in Asana ↗
-                    </a>
+                    <a href={`https://app.asana.com/0/1213802368265152/board`} target="_blank" rel="noopener noreferrer" className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-white px-4 py-2 border border-white/10 rounded-lg hover:border-white/20 transition-all">Open in Asana ↗</a>
                 </div>
             </div>
 
-            {/* Create Task Form */}
             {creating && (
-                <div className="mb-6 bg-white/[0.03] border border-white/10 rounded-2xl p-6 animate-fade-in">
+                <div className="mb-8 bg-white/[0.02] border border-white/5 rounded-2xl p-6 animate-fade-in">
                     <form onSubmit={handleCreate} className="space-y-4">
                         <div className="flex flex-col md:flex-row gap-4">
                             <input
@@ -330,13 +283,13 @@ export default function AsanaBoard() {
                                 value={newTaskName}
                                 onChange={(e) => setNewTaskName(e.target.value)}
                                 placeholder="Task name..."
-                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+                                className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/50"
                                 autoFocus
                             />
                             <select
                                 value={newTaskSection}
                                 onChange={(e) => setNewTaskSection(e.target.value)}
-                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-400 focus:outline-none focus:border-primary/50 appearance-none cursor-pointer min-w-[180px]"
+                                className="bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 focus:outline-none"
                             >
                                 <option value="">Select section...</option>
                                 {board.sections.map((s) => (
@@ -344,271 +297,71 @@ export default function AsanaBoard() {
                                 ))}
                             </select>
                         </div>
-                        <textarea
-                            value={newTaskNotes}
-                            onChange={(e) => setNewTaskNotes(e.target.value)}
-                            placeholder="Add notes (optional)..."
-                            rows={2}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 resize-none"
-                        />
                         <div className="flex gap-3">
-                            <button
-                                type="submit"
-                                disabled={submitting || !newTaskName.trim()}
-                                className="bg-primary hover:bg-primary/90 text-black py-2 px-6 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {submitting ? "Creating..." : "Create Task"}
+                            <button type="submit" disabled={submitting || !newTaskName.trim()} className="bg-primary text-black py-2 px-6 rounded-lg font-black uppercase tracking-widest text-[10px] disabled:opacity-50">
+                                {submitting ? "..." : "Create Task"}
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => { setCreating(false); setNewTaskName(""); setNewTaskNotes(""); }}
-                                className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white px-4 py-2 transition-all"
-                            >
-                                Cancel
-                            </button>
+                            <button type="button" onClick={() => setCreating(false)} className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-white px-4 py-2">Cancel</button>
                         </div>
                     </form>
                 </div>
             )}
 
-            {/* Board View */}
-            {viewMode === "board" && (
-                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x snap-mandatory">
-                    {board.sections.map((section) => {
-                        const tasks = (board.tasksPerSection[section.gid] || [])
-                            .filter(t => filterAssignee === "all" || t.assignee?.gid === filterAssignee);
-                        const incompleteTasks = tasks.filter(t => !t.completed);
-                        const doneTasks = tasks.filter(t => t.completed);
+            <div className="flex gap-px overflow-x-auto pb-4 bg-white/5 border border-white/5">
+                {board.sections.map((section) => {
+                    const tasks = (board.tasksPerSection[section.gid] || [])
+                        .filter(t => filterAssignee === "all" || t.assignee?.gid === filterAssignee);
+                    const incompleteTasks = tasks.filter(t => !t.completed);
 
-                        return (
-                            <div
-                                key={section.gid}
-                                className="flex-shrink-0 w-[320px] snap-start bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-all group"
-                            >
-                                {/* Section Header */}
-                                <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-base">{getSectionIcon(section.name)}</span>
-                                        <h3 className="text-[11px] font-black uppercase tracking-widest text-white">
-                                            {section.name.replace(":", "")}
-                                        </h3>
-                                    </div>
-                                    <span className="text-[10px] font-black text-slate-600 bg-white/5 px-2 py-0.5 rounded-full">
-                                        {incompleteTasks.length}
-                                    </span>
+                    return (
+                        <div key={section.gid} className="flex-shrink-0 w-[340px] bg-[#0c0e13] min-h-[400px]">
+                            <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-primary text-[10px]">{getSectionIcon(section.name)}</span>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary italic">
+                                        {section.name.replace(":", "")}
+                                    </h3>
                                 </div>
+                                <span className="text-[9px] font-black text-slate-700">{incompleteTasks.length}</span>
+                            </div>
 
-                                {/* Tasks */}
-                                <div className="p-3 space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar">
-                                    {incompleteTasks.map((task) => {
-                                        const dueBadge = getDueBadge(task.due_on);
-                                        const isExpanded = expandedTask === task.gid;
-                                        return (
-                                            <div
-                                                key={task.gid}
-                                                className={`p-3.5 bg-white/[0.03] border border-white/5 rounded-xl hover:border-white/15 hover:bg-white/[0.05] transition-all cursor-pointer group/task ${isExpanded ? "ring-1 ring-primary/20 border-primary/10" : ""}`}
-                                                onClick={() => setExpandedTask(isExpanded ? null : task.gid)}
-                                            >
-                                                <div className="flex items-start gap-2.5">
-                                                    {/* Checkbox */}
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleComplete(task.gid, true);
-                                                        }}
-                                                        disabled={completingTask === task.gid}
-                                                        className={`mt-0.5 flex-shrink-0 w-[18px] h-[18px] rounded-full border-2 border-slate-600 hover:border-primary hover:bg-primary/10 transition-all flex items-center justify-center ${completingTask === task.gid ? "animate-spin border-primary" : ""}`}
-                                                    >
-                                                        {completingTask === task.gid && (
-                                                            <span className="w-2 h-2 bg-primary rounded-full" />
-                                                        )}
-                                                    </button>
-
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-[12px] font-semibold text-white leading-snug line-clamp-2">
-                                                            {task.name}
-                                                        </p>
-
-                                                        {/* Tags */}
-                                                        {task.tags && task.tags.length > 0 && (
-                                                            <div className="flex flex-wrap gap-1 mt-2">
-                                                                {task.tags.map((tag) => (
-                                                                    <span
-                                                                        key={tag.gid}
-                                                                        className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md border ${TAG_COLORS[tag.color] || TAG_COLORS.none}`}
-                                                                    >
-                                                                        {tag.name}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        )}
-
-                                                        {/* Meta row */}
-                                                        <div className="flex items-center gap-2 mt-2 flex-wrap">
-                                                            {task.assignee && (
-                                                                <span className="text-[9px] font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
-                                                                    {task.assignee.name.split(" ")[0]}
-                                                                </span>
-                                                            )}
-                                                            {dueBadge && (
-                                                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${dueBadge.className}`}>
-                                                                    {dueBadge.text}
-                                                                </span>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Expanded details */}
-                                                        {isExpanded && (
-                                                            <div className="mt-3 pt-3 border-t border-white/5 space-y-2 animate-fade-in">
-                                                                {task.notes && (
-                                                                    <p className="text-[11px] text-slate-400 leading-relaxed whitespace-pre-line line-clamp-5">
-                                                                        {task.notes}
-                                                                    </p>
-                                                                )}
-                                                                <div className="flex items-center gap-3">
-                                                                    <span className="text-[9px] text-slate-600">
-                                                                        Updated {getRelativeTime(task.modified_at)}
-                                                                    </span>
-                                                                    <a
-                                                                        href={task.permalink_url}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="text-[9px] font-bold text-primary hover:text-primary/80 transition-colors"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        Open in Asana ↗
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        )}
+                            <div className="p-3 space-y-1.5">
+                                {incompleteTasks.map((task) => {
+                                    const dueBadge = getDueBadge(task.due_on);
+                                    return (
+                                        <div key={task.gid} className="p-4 bg-white/[0.02] border border-white/5 rounded-lg hover:border-white/10 transition-all cursor-pointer group">
+                                            <div className="flex flex-col gap-2">
+                                                <p className="text-[12px] font-bold text-slate-200 tracking-tight leading-snug group-hover:text-white transition-colors">
+                                                    {task.name}
+                                                </p>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                      <span className="text-[9px] font-black uppercase text-slate-600">{task.assignee?.name || 'Unassigned'}</span>
+                                                      {dueBadge && (
+                                                          <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${dueBadge.className}`}>
+                                                              {dueBadge.text}
+                                                          </span>
+                                                      )}
                                                     </div>
+                                                    <button onClick={(e) => { e.stopPropagation(); handleComplete(task.gid, true); }} className="w-4 h-4 rounded border border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 flex items-center justify-center transition-all">
+                                                        <span className="text-[8px] text-white/0 group-hover:text-white/20">✓</span>
+                                                    </button>
                                                 </div>
                                             </div>
-                                        );
-                                    })}
-
-                                    {/* Completed Tasks (collapsed) */}
-                                    {doneTasks.length > 0 && (
-                                        <details className="mt-2">
-                                            <summary className="text-[9px] font-black uppercase tracking-widest text-slate-600 cursor-pointer hover:text-slate-400 transition-colors px-1 py-2 select-none">
-                                                {doneTasks.length} completed
-                                            </summary>
-                                            <div className="space-y-1.5 mt-1">
-                                                {doneTasks.map((task) => (
-                                                    <div
-                                                        key={task.gid}
-                                                        className="p-2.5 bg-white/[0.01] border border-white/[0.03] rounded-lg flex items-start gap-2 opacity-50"
-                                                    >
-                                                        <button
-                                                            onClick={() => handleComplete(task.gid, false)}
-                                                            className="mt-0.5 flex-shrink-0 w-[16px] h-[16px] rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center"
-                                                        >
-                                                            <span className="text-[8px] text-primary">✓</span>
-                                                        </button>
-                                                        <p className="text-[11px] text-slate-600 line-through line-clamp-1">
-                                                            {task.name}
-                                                        </p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </details>
-                                    )}
-
-                                    {tasks.length === 0 && (
-                                        <div className="py-8 text-center opacity-30">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-600">No tasks</p>
                                         </div>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+                                    );
+                                })}
 
-            {/* List View */}
-            {viewMode === "list" && (
-                <div className="card overflow-hidden border-white/5 bg-black/40">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b border-white/5 bg-white/5">
-                                <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 w-8" />
-                                <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Task</th>
-                                <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Section</th>
-                                <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Assignee</th>
-                                <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Due</th>
-                                <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Tags</th>
-                                <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Link</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {board.sections.flatMap((section) =>
-                                (board.tasksPerSection[section.gid] || [])
-                                    .filter(t => !t.completed)
-                                    .filter(t => filterAssignee === "all" || t.assignee?.gid === filterAssignee)
-                                    .map((task) => {
-                                        const dueBadge = getDueBadge(task.due_on);
-                                        return (
-                                            <tr key={task.gid} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                                                <td className="px-5 py-3">
-                                                    <button
-                                                        onClick={() => handleComplete(task.gid, true)}
-                                                        disabled={completingTask === task.gid}
-                                                        className={`w-4 h-4 rounded-full border-2 border-slate-600 hover:border-primary hover:bg-primary/10 transition-all ${completingTask === task.gid ? "animate-spin border-primary" : ""}`}
-                                                    />
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    <span className="text-xs font-semibold text-white">{task.name}</span>
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    <span className="text-[10px] font-bold text-slate-500 bg-white/5 px-2 py-1 rounded-full border border-white/5">
-                                                        {getSectionIcon(section.name)} {section.name.replace(":", "")}
-                                                    </span>
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    <span className="text-[10px] text-slate-500 font-bold">
-                                                        {task.assignee?.name || "—"}
-                                                    </span>
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    {dueBadge ? (
-                                                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${dueBadge.className}`}>
-                                                            {dueBadge.text}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-[10px] text-slate-600">—</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    <div className="flex gap-1 flex-wrap">
-                                                        {(task.tags || []).map((tag) => (
-                                                            <span
-                                                                key={tag.gid}
-                                                                className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md border ${TAG_COLORS[tag.color] || TAG_COLORS.none}`}
-                                                            >
-                                                                {tag.name}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                </td>
-                                                <td className="px-5 py-3 text-right">
-                                                    <a
-                                                        href={task.permalink_url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-[9px] font-bold text-primary hover:text-primary/80 transition-colors"
-                                                    >
-                                                        Open ↗
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                                {incompleteTasks.length === 0 && (
+                                    <div className="py-20 text-center opacity-20">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">NO TASKS</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </section>
     );
 }

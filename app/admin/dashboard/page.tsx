@@ -223,351 +223,195 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <AsanaBoard />
 
 
-                {/* Active Deliveries Map / List */}
-                <section className="mb-16">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                            🛰️ Live Monitor
-                            <span className="bg-primary/20 text-primary text-[10px] px-3 py-1 rounded-full uppercase font-black border border-primary/20">{activeOrders.length} Active</span>
-                        </h2>
-                        <a 
-                            href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="bg-white/5 border border-white/10 hover:bg-white/10 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all flex items-center gap-2"
-                        >
-                            <span>🛠️</span> Report Incident
-                        </a>
+            <div className="section-divider" />
+
+            <div className="page">
+                <div className="sec-hd">
+                    <div className="sec-title">🛰️ Live Monitor <span className="badge badge-gray">{activeOrders.length} Active</span></div>
+                    <a href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer" className="nav-cta" style={{ textDecoration: 'none', fontSize: '10px' }}>↗ Report Incident</a>
+                </div>
+                <div className="two-col" style={{gridTemplateColumns: '1fr', marginBottom: '20px'}}>
+                    <div className="panel" style={{padding: '0'}}>
+                   {activeOrders.length === 0 ? (
+                       <div className="empty-panel">No active deliveries at this time.</div>
+                   ) : (
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 bg-[#1c1f28]">
+                           {activeOrders.map(order => (
+                               <div key={order.id} className="panel" style={{border: 'none'}}>
+                                   <div className="panel-hd">Order {order.id.slice(-6).toUpperCase()} <span className={order.status === 'PICKED_UP' ? 'badge badge-ok' : 'badge badge-gray'}>{order.status.replace('_', ' ')}</span></div>
+                                   <div style={{fontSize: '15px', fontWeight: 700, color: '#fff'}}>{order.restaurant?.name || 'Restaurant'}</div>
+                                   <div style={{fontSize: '11px', color: '#555', margin: '4px 0 12px'}}>${Number(order.totalAmount || order.total).toFixed(2)} Revenue Impact</div>
+                                   <div style={{display: 'flex', gap: '8px'}}>
+                                       <FastActionBtn 
+                                           action={async () => { "use server"; const { forceCompleteOrder } = await import('../actions'); await forceCompleteOrder(order.id); }} 
+                                           className="nav-cta" 
+                                           loadingText="..."
+                                       >
+                                           Complete
+                                       </FastActionBtn>
+                                       <FastActionBtn 
+                                           action={async () => { "use server"; const { adminCancelOrder } = await import('../actions'); await adminCancelOrder(order.id); }} 
+                                           className="nav-cta border-red-900 text-red-400" 
+                                           loadingText="..."
+                                       >
+                                           Cancel
+                                       </FastActionBtn>
+                                   </div>
+                               </div>
+                           ))}
+                       </div>
+                   )}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {activeOrders.map((order) => (
-                            <div key={order.id} className="card p-6 bg-black/40 border-white/5 hover:border-emerald-500/30 transition-all group">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Order {order.id.slice(-6).toUpperCase()}</span>
-                                            <span className={`text-[9px] px-3 py-1 flex items-center justify-center rounded-full font-black uppercase tracking-widest min-w-[100px] border whitespace-nowrap ${order.status === 'PICKED_UP' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-white/5 text-slate-300 border-white/10'}`}>
-                                                {order.status.replace('_', ' ')}
-                                            </span>
-                                        </div>
-                                        <h3 className="font-bold text-lg">{order.restaurant?.name || "Restaurant"}</h3>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-sm font-black text-white">${Number(order.totalAmount || order.total).toFixed(2)}</p>
-                                        <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Revenue Impact</p>
-                                    </div>
-                                </div>
+                </div>
 
-                                <div className="space-y-3 mb-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-sm">👤</div>
-                                        <div>
-                                            <p className="text-xs font-bold text-white">{order.user?.name}</p>
-                                            <p className="text-[9px] text-slate-500 font-medium">{order.user?.phone}</p>
+                <div className="divider" />
+
+                <div className="two-col">
+                    <div className="panel">
+                        <div className="panel-hd">📋 Menu Approvals <span className="badge badge-gray">{pendingItems.length} Pending</span></div>
+                        {pendingItems.length === 0 ? (
+                            <div className="empty-panel">No menu items pending approval.</div>
+                        ) : (
+                            <div className="space-y-4 pt-4">
+                                {pendingItems.map(item => (
+                                    <div key={item.id} style={{background: '#0c0e13', border: '1px solid #1c1f28', padding: '12px'}}>
+                                        <div style={{fontSize: '13px', fontWeight: 700, color: '#ccc'}}>{item.name}</div>
+                                        <div style={{fontSize: '10px', color: '#555'}}>{item.restaurant.name}</div>
+                                        <div style={{display: 'flex', gap: '4px', marginTop: '8px'}}>
+                                            <FastActionBtn action={async () => { "use server"; await approveMenuItem(item.id); }} className="nav-cta" loadingText="...">Approve</FastActionBtn>
+                                            <FastActionBtn action={async () => { "use server"; await rejectMenuItem(item.id); }} className="nav-cta border-red-900 text-red-400" loadingText="...">Reject</FastActionBtn>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm">🚗</div>
-                                        <div>
-                                            <p className="text-xs font-bold text-white">{order.driver?.user?.name || "Dispatching..."}</p>
-                                            <p className="text-[9px] text-slate-500 font-medium">{order.driver?.user?.phone || "Awaiting Pickup"}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
-                                    <FastActionBtn 
-                                        action={async () => { "use server"; const { forceCompleteOrder } = await import('../actions'); await forceCompleteOrder(order.id); }} 
-                                        className="flex-1 w-full text-[10px] font-black uppercase tracking-widest py-2 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/5"
-                                        loadingText="Completing..."
-                                    >
-                                        Force Complete
-                                    </FastActionBtn>
-                                    <FastActionBtn 
-                                        action={async () => { "use server"; const { adminCancelOrder } = await import('../actions'); await adminCancelOrder(order.id); }} 
-                                        className="flex-1 w-full text-[10px] font-black uppercase tracking-widest py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/10"
-                                        loadingText="Canceling..."
-                                    >
-                                        Cancel
-                                    </FastActionBtn>
-                                </div>
-
-                            </div>
-                        ))}
-                        {activeOrders.length === 0 && (
-                            <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-[2rem]">
-                                <p className="text-4xl mb-4 opacity-20">📡</p>
-                                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No active deliveries at this time.</p>
+                                ))}
                             </div>
                         )}
                     </div>
-                </section>
-
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-                    {/* Menu Approval Section */}
-                    <section>
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            📋 Menu Approvals
-                            <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">{pendingItems.length}</span>
-                        </h2>
-                        <div className="space-y-4">
-                            {pendingItems.map((item) => (
-                                <div key={item.id} className="card p-6 border-slate-700/50">
-                                    <div className="flex justify-between items-start mb-4">
+                    <div className="panel">
+                        <div className="panel-hd">🚗 Driver Applications <span className="badge badge-warn">{drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).length} Pending</span></div>
+                        {drivers.filter(d => !d.vehicleVerified).length === 0 ? (
+                            <div className="empty-panel">No drivers pending approval.</div>
+                        ) : (
+                            drivers.filter(d => !d.vehicleVerified).map(driver => (
+                                <div key={driver.id} style={{borderBottom: '1px solid #1c1f28', paddingBottom: '12px', marginBottom: '12px'}}>
+                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                         <div>
-                                            <h3 className="font-bold text-lg">{item.name}</h3>
-                                            <p className="text-sm text-slate-400">at {item.restaurant.name}</p>
+                                            <div style={{fontSize: '15px', fontWeight: 700, color: '#fff'}}>{driver.user?.name || 'Unknown'}</div>
+                                            <div style={{fontSize: '11px', color: '#555'}}>{driver.user?.email || 'No Email'}</div>
                                         </div>
-                                        <span className={`text-[10px] px-3 py-1.5 rounded-full font-black uppercase tracking-widest border shadow-sm ${item.status === 'FLAGGED' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-                                            }`}>
-                                            {item.status}
-                                        </span>
+                                        <div style={{textAlign: 'right'}}>
+                                            <div className="badge badge-warn" style={{marginBottom: '4px'}}>Confidence: {(driver.aiMetadata?.idScan?.confidence * 100 || 0).toFixed(0)}%</div>
+                                            <div style={{fontSize: '9px', color: '#444', fontFamily: 'DM Mono'}}>BG: {driver.backgroundCheckStatus || 'PENDING'}</div>
+                                        </div>
                                     </div>
-                                    <p className="text-slate-300 text-sm mb-4">{item.description}</p>
-                                    <div className="flex gap-2">
-                                        <FastActionBtn 
-                                            action={async () => { "use server"; await approveMenuItem(item.id); }}
-                                            className="btn btn-primary text-[10px] font-black uppercase tracking-widest py-2 px-4 shadow-lg shadow-primary/20"
-                                            loadingText="OK..."
-                                        >
-                                            Approve
-                                        </FastActionBtn>
-                                        <FastActionBtn 
-                                            action={async () => { "use server"; await rejectMenuItem(item.id); }}
-                                            className="btn btn-outline text-[10px] font-black uppercase tracking-widest py-2 px-4 border-red-500/50 text-red-400 hover:bg-red-500/10"
-                                            loadingText="Rejecting..."
-                                        >
-                                            Reject
-                                        </FastActionBtn>
+                                    <div style={{display: 'flex', gap: '6px', marginTop: '12px'}}>
+                                        <FastActionBtn action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }} className="nav-cta" loadingText="...">Approve</FastActionBtn>
+                                        <FastActionBtn action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }} className="nav-cta border-red-900 text-red-400" loadingText="...">Reject</FastActionBtn>
                                     </div>
                                 </div>
-                            ))}
-                            {pendingItems.length === 0 && (
-                                <div className="p-12 text-center rounded-[2rem] border border-dashed border-white/10 opacity-50">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic">No menu items pending approval.</p>
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    {/* Driver Approval Section */}
-                    <section>
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            🚗 Driver Applications
-                            <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">{drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).length}</span>
-                        </h2>
-                        <div className="space-y-4">
-                            {drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).map((driver) => (
-                                <div key={driver.id} className="card p-6 border-slate-700/50 group hover:border-white/20 transition-all">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h3 className="font-bold text-lg">{driver.user?.name || driver.name || "Unknown"}</h3>
-                                            <p className="text-sm text-slate-400 font-medium">{driver.user?.email || driver.email || "No Email"}</p>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                <span className="text-[10px] text-slate-500 font-mono tracking-tight">{driver.backgroundCheckId || "ID_PENDING"}</span>
-                                                <span className="text-slate-700 text-[10px]">•</span>
-                                                <span className={`text-[10px] font-black uppercase tracking-widest ${driver.hasSignedAgreement ? 'text-primary' : 'text-red-400'}`}>
-                                                    Agreement: {driver.hasSignedAgreement ? 'SIGNED' : 'NOT SIGNED'}
-                                                </span>
-                                            </div>
-
-                                        </div>
-                                        <div className="flex flex-col items-end gap-2">
-                                            <span className="text-[10px] px-3 py-1.5 rounded-full font-black uppercase tracking-widest bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 shadow-sm">
-                                                Pending Approval
-                                            </span>
-
-                                            {/* Background Check Badge */}
-                                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border leading-none whitespace-nowrap shadow-sm ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-primary/10 text-primary border-primary/20' :
-                                                driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                    'bg-white/5 text-slate-400 border-white/10'
-                                                }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${driver.backgroundCheckStatus === 'CLEARED' ? 'bg-primary shadow-[0_0_10px_rgba(245,158,11,0.4)]' :
-                                                    driver.backgroundCheckStatus === 'FLAGGED' ? 'bg-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)]' :
-                                                        'bg-slate-500 animate-pulse'
-                                                    }`} />
-                                                BG: {driver.backgroundCheckStatus || "PENDING"}
-                                            </div>
-
-                                            {driver.aiMetadata && (
-                                                <div className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">AI Audit Log</span>
-                                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${driver.aiMetadata.idScan?.isValid ? 'bg-primary/10 text-primary border-primary/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
-                                                            }`}>
-                                                            Confidence: {(driver.aiMetadata.idScan?.confidence * 100 || 0).toFixed(0)}%
-                                                        </span>
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <div className="text-[9px]">
-                                                            <p className="text-slate-500 uppercase font-black tracking-tighter">Extracted Name</p>
-                                                            <p className="text-white font-bold truncate">{driver.aiMetadata.idScan?.extractedData?.name || "???"}</p>
-                                                        </div>
-                                                        <div className="text-[9px]">
-                                                            <p className="text-slate-500 uppercase font-black tracking-tighter">Doc Type</p>
-                                                            <p className="text-white font-bold">{driver.aiMetadata.idScan?.extractedData?.documentType || "???"}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-2 mt-6">
-                                        <div className="flex bg-white/5 border border-white/5 rounded-xl overflow-hidden p-1">
-                                            {driver.backgroundCheckStatus === 'CLEARED' && driver.hasSignedAgreement && (
-                                                <FastActionBtn 
-                                                    action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }}
-                                                    className="btn btn-primary text-[10px] py-1.5 px-3 shadow-none font-black uppercase tracking-widest"
-                                                    loadingText="Approving..."
-                                                >
-                                                    Approve
-                                                </FastActionBtn>
-                                            )}
-                                            <FastActionBtn 
-                                                action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }}
-                                                className="btn btn-outline bg-transparent border-transparent text-[10px] py-1.5 px-3 text-red-400 hover:bg-red-500/10 font-black uppercase tracking-widest"
-                                                loadingText="Rejecting..."
-                                            >
-                                                Reject
-                                            </FastActionBtn>
-                                            <FastActionBtn 
-                                                action={async () => { "use server"; const { refreshBackgroundCheck } = await import('../actions'); await refreshBackgroundCheck(driver.id); }}
-                                                className="btn btn-outline bg-transparent border-transparent text-[10px] py-1.5 px-2 text-slate-500 hover:bg-white/5 font-black uppercase tracking-widest transition-all"
-                                                loadingText="Checking..."
-                                            >
-                                                ↻ Check
-                                            </FastActionBtn>
-                                        </div>
-                                        <div className="flex gap-1 ml-auto">
-                                            {driver.insuranceDocumentUrl && (
-                                                <a href={driver.insuranceDocumentUrl} target="_blank" className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
-                                                    Insurance
-                                                </a>
-                                            )}
-                                            {driver.registrationDocumentUrl && (
-                                                <a href={driver.registrationDocumentUrl} target="_blank" className="text-[10px] py-1.5 px-3 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 font-black uppercase tracking-widest transition-all">
-                                                    Docs
-                                                </a>
-                                            )}
-                                        </div>
-
-                                    </div>
-                                </div>
-                            ))}
-                            {drivers.filter(d => !d.vehicleVerified && (d.insuranceDocumentUrl || d.registrationDocumentUrl)).length === 0 && (
-                                <div className="p-12 text-center rounded-[2rem] border border-dashed border-white/10 opacity-50">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic">No drivers pending approval.</p>
-                                </div>
-                            )}
-                        </div>
-                    </section>
+                            ))
+                        )}
+                    </div>
                 </div>
 
-                {/* Audit Log / Change History */}
-                <section>
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            📜 System Audit Log
-                            <span className="bg-white/5 text-slate-500 text-xs px-2 py-1 rounded-full">{auditLogs.length} Recent</span>
-                        </h2>
-                    </div>
-                    <div className="card overflow-x-auto custom-scrollbar border-white/5 bg-black/40">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Actor</th>
-                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Action</th>
-                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Target</th>
-                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Time</th>
-                                    <th className="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {auditLogs.map((log) => (
-                                    <tr key={log.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
-                                        <td className="px-4 md:px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-6 h-6 rounded-full bg-primary/20 text-[10px] flex items-center justify-center font-bold text-primary">
-                                                    {log.actor?.name?.[0] || 'S'}
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-white">{log.actor?.name || "System"}</span>
-                                                    <span className="text-[9px] text-slate-500 font-medium">{log.actor?.role || 'SYSTEM'}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 md:px-6 py-4">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full">{log.action.replace(/_/g, " ")}</span>
-                                                {log.message && <span className="text-[10px] text-slate-400 italic line-clamp-1">{log.message}</span>}
-                                            </div>
-                                        </td>
-                                        <td className="px-4 md:px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase text-slate-500 tracking-tighter">{log.entityType}</span>
-                                                <span className="text-[9px] font-mono text-slate-600 truncate max-w-[100px]">{log.targetId}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-xs text-slate-400 whitespace-nowrap">
-                                            {new Date(log.createdAt).toLocaleDateString()}
-                                            <span className="block text-[10px] text-slate-600">{new Date(log.createdAt).toLocaleTimeString()}</span>
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            {(log.before || log.after) ? (
-                                                <button className="text-[10px] font-black text-primary group-hover:underline uppercase tracking-widest border border-primary/20 px-2 py-1 rounded-md hover:bg-primary/5 transition-all">
-                                                    View Diff
-                                                </button>
-                                            ) : (
-                                                <span className="text-[9px] text-slate-700 uppercase font-bold">No Data</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                                {auditLogs.length === 0 && (
-                                    <tr>
-                                        <td colSpan={5} className="px-6 py-20 text-center">
-                                            <div className="flex flex-col items-center gap-2 opacity-20">
-                                                <span className="text-4xl text-white">📜</span>
-                                                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Audit trail is empty</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+                <div className="divider" />
 
-                {/* Marketplace Registry (WBS Step 8) */}
-                <section>
-                    <h2 className="text-2xl font-bold mb-8">Marketplace <span className="text-gradient">Registry</span></h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {restaurants.map(r => (
-                            <div key={r.id} className="card p-6 bg-white/[0.02] border-white/5 hover:border-white/10 transition-all">
-                                <div className="flex justify-between items-start mb-4">
-                                    <h3 className="font-bold text-lg">{r.name}</h3>
-                                    <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border ${r.isApproved ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/10' : 'bg-primary/10 text-primary border-primary/10'}`}>
-                                        {r.isApproved ? 'LIVE' : 'PENDING'}
-                                    </span>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between text-[10px] uppercase font-black tracking-widest text-slate-500">
-                                        <span>Payout Status</span>
-                                        <span className="text-white">NOT CONNECTED</span>
-                                    </div>
-                                    <form action={async () => { "use server"; const { generateMerchantStripeLink } = await import('../actions'); await generateMerchantStripeLink(r.id); }}>
-                                        <button className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                                            ⚡ Send Onboarding Link
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        ))}
+                {/* AUDIT LOG */}
+                <div className="sec-hd">
+                    <div className="sec-title">📜 System Audit Log <span className="badge badge-gray">{auditLogs.length} Recent</span></div>
+                </div>
+                <div style={{background:'#0f1219', border:'1px solid #1c1f28', marginBottom: '40px'}}>
+                    <table className="audit-table">
+                        <thead>
+                            <tr>
+                                <th>Actor</th><th>Action</th><th>Target</th><th>Time</th><th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {auditLogs.length === 0 ? (
+                                <tr><td colSpan={5} className="empty-panel" style={{color: '#2a2f3a'}}>No recent audit entries.</td></tr>
+                            ) : (
+                                auditLogs.map(log => (
+                                    <tr key={log.id}>
+                                        <td>{log.actor?.name || 'System'}</td>
+                                        <td style={{color: '#e8a230'}}>{log.action.replace(/_/g, ' ')}</td>
+                                        <td>{log.entityType}</td>
+                                        <td>{new Date(log.createdAt).toLocaleTimeString()}</td>
+                                        <td>{log.message || '—'}</td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* OPERATIONAL PARAMETERS */}
+                <div className="page-title">Operational <span>Parameters</span></div>
+                <div className="page-sub">Fine-tune global platform constraints and feature rollouts.</div>
+
+                <div className="params-grid">
+                    <div className="param-row">
+                        <div className="param-info">
+                            <div className="param-name">Marketplace Visibility</div>
+                            <div className="param-desc">Global switch to enable/disable all ordering features.</div>
+                        </div>
+                        <div className="param-right">
+                            <div className="param-value enabled">Enabled</div>
+                            <button className="nav-cta" style={{fontSize: '10px', background: 'transparent', border: '1px solid #2a2f3a', color: '#888'}}>Request Change</button>
+                        </div>
                     </div>
-                </section>
+                    <div className="param-row">
+                        <div className="param-info">
+                            <div className="param-name">Base Service Fee</div>
+                            <div className="param-desc">Base platform service percentage on orders.</div>
+                        </div>
+                        <div className="param-right">
+                            <div className="param-value">10%</div>
+                            <button className="nav-cta" style={{fontSize: '10px'}}>Update</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="divider" />
+
+                {/* PRICING ENGINE */}
+                <div className="page-title">Pricing <span>Engine</span></div>
+                <div className="page-sub">Dynamic base pay, mileage rates, and surge policies.</div>
+
+                <div className="rule-card">
+                    <div className="rule-hd">
+                        <div className="rule-name">Global Base Policy <span style={{color: '#e8a230', marginLeft: '8px'}}>v1.0.4-Pilot</span></div>
+                        <span className="badge badge-ok">Active</span>
+                    </div>
+                    <div style={{padding: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px'}}>
+                        <div>
+                            <div style={{fontSize: '9px', fontWeight: 700, color: '#555', textTransform: 'uppercase', marginBottom: '8px'}}>Base Pay (Per Drop)</div>
+                            <div style={{fontSize: '32px', fontWeight: 700, color: '#fff', fontFamily: 'DM Mono'}}>$3.55</div>
+                        </div>
+                        <div>
+                            <div style={{fontSize: '9px', fontWeight: 700, color: '#555', textTransform: 'uppercase', marginBottom: '8px'}}>Surge Multiplier</div>
+                            <div style={{fontSize: '32px', fontWeight: 700, color: '#e8a230', fontFamily: 'DM Mono'}}>1.2x</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="divider" />
+
+                {/* MARKETPLACE REGISTRY */}
+                <div className="sec-hd">
+                    <div className="sec-title">Marketplace Registry <span className="badge badge-gray">{restaurants.length} Total</span></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20 px-2">
+                    {restaurants.map(r => (
+                        <div key={r.id} className="panel" style={{border: '1px solid #1c1f28'}}>
+                            <div className="panel-hd">{r.name} <span className={r.isApproved ? 'badge badge-ok' : 'badge badge-warn'}>{r.isApproved ? 'LIVE' : 'PENDING'}</span></div>
+                            <div style={{fontSize: '10px', color: '#555', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.1em'}}>Payout Status: NOT CONNECTED</div>
+                            <form action={async () => { "use server"; const { generateMerchantStripeLink } = await import('../actions'); await generateMerchantStripeLink(r.id); }}>
+                                <button className="nav-cta w-full" style={{fontSize: '10px'}}>⚡ Send Onboarding Link</button>
+                            </form>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
