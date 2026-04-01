@@ -140,6 +140,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     const allOrders = await getAllOrders();
     const restaurants = await getAllRestaurants();
     const auditLogs = await getAuditLogs();
+    const { userId, stripeAccountId } = await getAuthSession();
 
     const isStripeConnected = (await searchParams).stripe_connected === "true";
 
@@ -185,8 +186,29 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 </div>
             </nav>
 
-            <main className="container py-12 animate-fade-in">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 w-full border-b border-white/10 pb-6">
+            <main className="container py-8 animate-fade-in space-y-12">
+                {!stripeAccountId && role === 'ADMIN' && (
+                    <div className="relative group overflow-hidden p-8 rounded-[2rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-primary/20 shadow-2xl">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 pointer-events-none" />
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="space-y-2 text-center md:text-left">
+                                <h3 className="text-2xl font-serif font-black italic tracking-tighter text-white uppercase leading-none">Complete Your <span className="text-primary not-italic">Infrastructure</span></h3>
+                                <p className="text-slate-400 text-[10px] font-black tracking-widest uppercase flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span>
+                                    ADMIN Action Required: Finalize Stripe Connect Link
+                                </p>
+                            </div>
+                            <form action={connectStripe}>
+                                <button className="group relative px-8 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full hover:bg-primary hover:text-white transition-all shadow-xl active:scale-95">
+                                    Continue to Stripe Connect
+                                    <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-white/10 pb-6">
                     <div className="w-full lg:w-auto">
                         <h1 className="text-2xl md:text-4xl font-serif font-bold tracking-tighter text-white">Admin <span className="text-primary not-italic font-sans uppercase tracking-widest text-xl ml-2">Registry</span></h1>
                         <p className="text-slate-400 text-[10px] md:text-xs mt-2 uppercase tracking-[0.4em] font-black flex items-center gap-2">
@@ -556,6 +578,34 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                </section>
+
+                {/* Marketplace Registry (WBS Step 8) */}
+                <section>
+                    <h2 className="text-2xl font-bold mb-8">Marketplace <span className="text-gradient">Registry</span></h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {restaurants.map(r => (
+                            <div key={r.id} className="card p-6 bg-white/[0.02] border-white/5 hover:border-white/10 transition-all">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="font-bold text-lg">{r.name}</h3>
+                                    <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border ${r.isApproved ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/10' : 'bg-primary/10 text-primary border-primary/10'}`}>
+                                        {r.isApproved ? 'LIVE' : 'PENDING'}
+                                    </span>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between text-[10px] uppercase font-black tracking-widest text-slate-500">
+                                        <span>Payout Status</span>
+                                        <span className="text-white">NOT CONNECTED</span>
+                                    </div>
+                                    <form action={async () => { "use server"; const { generateMerchantStripeLink } = await import('../actions'); await generateMerchantStripeLink(r.id); }}>
+                                        <button className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                                            ⚡ Send Onboarding Link
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </section>
             </main>

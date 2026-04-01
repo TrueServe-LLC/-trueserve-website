@@ -194,14 +194,50 @@ export async function rejectDriver(id: string) {
 
 
 export async function connectStripe(_formData?: FormData) {
-    const session = (await cookies()).get("admin_session");
-    if (!session) {
+    const { isAuth, role, userId } = await getAuthSession();
+    if (!isAuth) {
         redirect("/admin/login");
     }
 
-    await logAuditAction({ action: "CONNECT_STRIPE_PORTAL", targetId: "STRIPE", entityType: "System" });
+    await logAuditAction({ action: "CONNECT_STRIPE_PORTAL", targetId: userId!, entityType: "Admin" });
 
+    // Pre-filled Stripe Connect Onboarding for TrueServe Admins
     redirect("https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create");
+}
+
+export async function generateMerchantStripeLink(restaurantId: string) {
+    try {
+        const { isAuth, role } = await getAuthSession();
+        if (!isAuth) throw new Error("Unauthorized");
+
+        const { data: restaurant } = await supabaseAdmin
+            .from('Restaurant')
+            .select('*, owner:User(*)')
+            .eq('id', restaurantId)
+            .single();
+
+        if (!restaurant) throw new Error("Restaurant not found");
+
+        const stripeLink = `https://connect.stripe.com/setup/s/${restaurant.id}`; // Placeholder for dynamic Connect link
+
+        await sendEmail(
+            restaurant.owner.email,
+            "🚀 Action Required: Set Up Your TrueServe Payouts",
+            `<h1>Ready for Launch? 🍱</h1>
+            <p>Hi ${restaurant.owner.name.split(' ')[0]},</p>
+            <p>Your restaurant <strong>${restaurant.name}</strong> is almost ready to go live on TrueServe.</p>
+            <p>To start receiving payouts for your orders, please click the secure link below to link your bank account via Stripe Connect.</p>
+            <a href="${stripeLink}" class="button">Link Bank Account</a>
+            <p style="margin-top: 30px;">See you on the platform!<br>The TrueServe Team</p>`
+        );
+
+        await logAuditAction({ action: "GENERATE_STRIPE_LINK", targetId: restaurantId, entityType: "Restaurant" });
+
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
 }
 
 export async function logout() {

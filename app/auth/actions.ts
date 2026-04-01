@@ -273,7 +273,7 @@ export async function logout() {
     redirect("/");
 }
 
-export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: string; role?: string; name?: string }> {
+export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: string; role?: string; name?: string; stripeAccountId?: string }> {
     try {
         const cookieStore = await cookies();
         const userId = cookieStore.get("userId")?.value;
@@ -289,11 +289,11 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             if (user) {
                 const { data: publicUser } = await supabaseAdmin
                     .from('User')
-                    .select('role, name')
+                    .select('role, name, stripeAccountId')
                     .eq('email', user.email)
                     .maybeSingle();
 
-                return { isAuth: true, userId: user.id, role: publicUser?.role || 'CUSTOMER', name: publicUser?.name || user.email };
+                return { isAuth: true, userId: user.id, role: publicUser?.role || 'CUSTOMER', name: publicUser?.name || user.email, stripeAccountId: publicUser?.stripeAccountId };
             }
             return { isAuth: false };
         }
@@ -301,7 +301,7 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
         // Try getting by ID first
         let { data: publicUser } = await supabaseAdmin
             .from('User')
-            .select('role, name')
+            .select('role, name, stripeAccountId')
             .eq('id', userId)
             .maybeSingle();
 
@@ -323,9 +323,9 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             }
         }
         
-        console.log("[AuthSession] Result:", { isAuth: true, userId, role, name: publicUser?.name });
+        console.log("[AuthSession] Result:", { isAuth: true, userId, role, name: publicUser?.name, stripeAccountId: publicUser?.stripeAccountId });
 
-        return { isAuth: true, userId, role, name: publicUser?.name || 'User' };
+        return { isAuth: true, userId, role, name: publicUser?.name || 'User', stripeAccountId: publicUser?.stripeAccountId };
     } catch (e) {
         console.error("[AuthSession] Error:", e);
         return { isAuth: false };
