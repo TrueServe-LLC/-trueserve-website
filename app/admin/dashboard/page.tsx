@@ -1,5 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { cookies } from "next/headers";
+import { sendEmail } from "@/lib/email";
+import { sendSMS } from "@/lib/sms";
+import AdminStyles from "@/components/admin/AdminStyles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
@@ -145,112 +148,70 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     const isStripeConnected = (await searchParams).stripe_connected === "true";
 
     return (
-        <div className="min-h-screen">
-            <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 px-4 md:px-6 py-4">
-                <div className="container flex justify-between items-center">
-                    <Link href="/" className="text-xl md:text-2xl font-black tracking-tighter shrink-0 font-serif text-white flex items-center gap-3">
-                        <img src="/logo.png" className="w-8 h-8 rounded-lg border border-primary/20" alt="Logo" />
-                        True<span className="text-primary not-italic font-sans uppercase tracking-widest text-lg">Serve</span><span className="hidden xs:inline not-italic text-slate-500 ml-2 font-sans text-xs tracking-[0.3em] font-black uppercase">Admin</span>
-                    </Link>
-                    <div className="flex gap-3 md:gap-4 items-center">
-                        <div className="hidden lg:flex gap-4 items-center mr-4 pr-4 border-r border-white/10">
-                            {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Pricing</Link>}
-                            {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Settings</Link>}
-                            <Link href="/admin/content" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">CMS</Link>
-                            <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
-                            <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-                                Asana
-                            </a>
-                        </div>
-                        
-                        {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Dashboard</Link>}
-                        
-                        <a 
-                            href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 px-3 py-1.5 bg-primary/5 rounded-full border border-primary/10"
-                        >
-                            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span>
-                            Triage center
-                        </a>
-                        
-                        <form action={async () => {
-                            "use server";
-                            await logout();
-                        }}>
-                            <button className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors ml-2">Log Out</button>
-                        </form>
-                    </div>
+        <div className="db">
+            <AdminStyles />
+            <div className="nav">
+                <div className="nav-brand">True <span>SERVE</span></div>
+                <div className="nav-links">
+                    {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="nav-link">Pricing</Link>}
+                    {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="nav-link">Settings</Link>}
+                    <Link href="/admin/content" className="nav-link">CMS</Link>
+                    <Link href="/admin/team" className="nav-link">Team</Link>
+                    <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="nav-link alert">● Asana</a>
+                    {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="nav-link active">Dashboard</Link>}
+                    <a href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer" className="nav-link alert">● Triage Center</a>
+                    <form action={async () => { "use server"; await logout(); }}>
+                        <button className="nav-link" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>Log Out</button>
+                    </form>
                 </div>
-            </nav>
+            </div>
 
-            <main className="container py-8 animate-fade-in space-y-12">
-                {!stripeAccountId && role === 'ADMIN' && (
-                    <div className="relative group overflow-hidden p-8 rounded-[2rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-primary/20 shadow-2xl">
-                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 pointer-events-none" />
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div className="space-y-2 text-center md:text-left">
-                                <h3 className="text-2xl font-serif font-black italic tracking-tighter text-white uppercase leading-none">Complete Your <span className="text-primary not-italic">Infrastructure</span></h3>
-                                <p className="text-slate-400 text-[10px] font-black tracking-widest uppercase flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span>
-                                    ADMIN Action Required: Finalize Stripe Connect Link
-                                </p>
-                            </div>
-                            <form action={connectStripe}>
-                                <button className="group relative px-8 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full hover:bg-primary hover:text-white transition-all shadow-xl active:scale-95">
-                                    Continue to Stripe Connect
-                                    <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span>
+            {!stripeAccountId && role === 'ADMIN' && (
+                <div className="infra-banner">
+                    <div className="infra-left">
+                        <div className="infra-title">Complete Your <span>Infrastructure</span></div>
+                        <div className="infra-sub">Admin Action Required: Finalize Stripe Connect Link</div>
+                    </div>
+                    <form action={connectStripe}>
+                        <button className="infra-btn">Continue to Stripe Connect →</button>
+                    </form>
+                </div>
+            )}
+
+            <div className="registry-header">
+                <div>
+                    <div className="registry-title">Admin <span>Registry</span></div>
+                    <div className="registry-sub">Control Center Configuration</div>
+                </div>
+                <div className="toggles-row">
+                    {await (async () => {
+                        const { isOrderingEnabled, isAiScannerEnabled, isGoogleRatingSyncEnabled, isExpressCheckoutActive } = await import('@/lib/system');
+                        const { toggleOrderingStatus, toggleAiScanner, toggleGoogleRatings, toggleExpressCheckout } = await import('../actions');
+                        
+                        const flags = [
+                            { label: 'Marketplace', state: await isOrderingEnabled(), action: toggleOrderingStatus },
+                            { label: 'AI Scanner', state: await isAiScannerEnabled(), action: toggleAiScanner },
+                            { label: 'Google Sync', state: await isGoogleRatingSyncEnabled(), action: toggleGoogleRatings },
+                            { label: 'Express Checkout', state: await isExpressCheckoutActive(), action: toggleExpressCheckout }
+                        ];
+
+                        return flags.map(f => (
+                            <form key={f.label} className="toggle-block" action={async () => { "use server"; await f.action(!f.state); }}>
+                                <span className="toggle-label">{f.label}</span>
+                                <button className={`toggle-switch ${f.state ? 'on' : 'off'}`}>
+                                    <div className="toggle-knob"></div>
                                 </button>
                             </form>
-                        </div>
-                    </div>
-                )}
-
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-white/10 pb-6">
-                    <div className="w-full lg:w-auto">
-                        <h1 className="text-2xl md:text-4xl font-serif font-bold tracking-tighter text-white">Admin <span className="text-primary not-italic font-sans uppercase tracking-widest text-xl ml-2">Registry</span></h1>
-                        <p className="text-slate-400 text-[10px] md:text-xs mt-2 uppercase tracking-[0.4em] font-black flex items-center gap-2">
-                            <span className="w-4 h-px bg-primary/30" />
-                            Control Center configuration
-                        </p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-4">
-                        {/* System Status Toggles */}
-                        {await (async () => {
-                            const { isOrderingEnabled, isAiScannerEnabled, isGoogleRatingSyncEnabled, isInstantPayoutEnabled, isExpressCheckoutActive } = await import('@/lib/system');
-                            const { toggleOrderingStatus, toggleAiScanner, toggleGoogleRatings, toggleInstantPayouts, toggleExpressCheckout } = await import('../actions');
-                            
-                            const flags = [
-                                { label: 'Marketplace', state: await isOrderingEnabled(), action: toggleOrderingStatus },
-                                { label: 'AI Scanner', state: await isAiScannerEnabled(), action: toggleAiScanner },
-                                { label: 'Google Sync', state: await isGoogleRatingSyncEnabled(), action: toggleGoogleRatings },
-                                { label: 'Express Checkout', state: await isExpressCheckoutActive(), action: toggleExpressCheckout }
-                            ];
-
-                            return flags.map(f => (
-                                <div key={f.label} className="px-3 md:px-4 py-2 border border-white/5 rounded-full flex items-center gap-2 md:gap-3 bg-white/[0.02]">
-                                    <span className="text-[9px] md:text-[10px] font-black uppercase text-slate-500 tracking-wider whitespace-nowrap">{f.label}</span>
-                                    <SystemToggle initialEnabled={f.state} toggleAction={async (s) => { "use server"; await f.action(s); }} />
-                                </div>
-                            ));
-                        })()}
-
-                        {/* Stripe Connect Section */}
-                        {isStripeConnected ? (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary font-black uppercase tracking-widest text-[10px]">
-                                <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                                Stripe Connected
-                            </div>
-                        ) : (
-                            <a href="https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create" target="_blank" rel="noopener noreferrer" className="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-full font-black uppercase tracking-widest text-[10px] transition-colors shadow-lg shadow-primary/20">
-                                Connect Stripe
-                            </a>
-                        )}
-                    </div>
+                        ));
+                    })()}
+                    
+                    {!isStripeConnected && (
+                        <a href="https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create" target="_blank" rel="noopener noreferrer" className="nav-cta" style={{ textDecoration: 'none' }}>
+                            Connect Stripe
+                        </a>
+                    )}
                 </div>
+            </div>
 
                 {/* KPI Dashboard (V1) */}
                 <KPIDashboard orders={allOrders} drivers={drivers} restaurants={restaurants} />

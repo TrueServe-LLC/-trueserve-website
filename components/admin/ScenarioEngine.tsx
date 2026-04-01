@@ -1,155 +1,136 @@
-
 'use client';
 
-import React, { useState, useMemo } from 'react';
-
-/**
- * Scenario Engine - Financial Forecaster v2
- * Based on East Coast Scaling Model (Inputs!B8 Fix)
- */
+import React, { useState } from 'react';
 
 export default function ScenarioEngine() {
-    // Inputs (v2 Alignment)
-    const [avgOrderValue, setAvgOrderValue] = useState(35.00);
-    const [avgMarginPerOrder, setAvgMarginPerOrder] = useState(4.50); // Net of driver pay
-    const [fixedMonthlyCost, setFixedMonthlyCost] = useState(12500); // Inputs!B8
     const [currentDailyOrders, setCurrentDailyOrders] = useState(25);
-
-    const calculations = useMemo(() => {
-        // BREAK-EVEN LOGIC (v2 CORRECTED)
-        // Numerator = Inputs!B8 (Fixed Monthly Cost)
-        // Denominator = Margin per delivery
-        const monthlyBreakEvenOrders = fixedMonthlyCost / avgMarginPerOrder;
-        const dailyBreakEvenOrders = monthlyBreakEvenOrders / 30.42; // Days per month
-
-        const dailyRevenue = currentDailyOrders * avgOrderValue;
-        const dailyProfit = (currentDailyOrders * avgMarginPerOrder) - (fixedMonthlyCost / 30.42);
-        
-        const efficiencyScore = (currentDailyOrders / dailyBreakEvenOrders) * 100;
-
-        return {
-            monthlyBreakEvenOrders: Math.ceil(monthlyBreakEvenOrders),
-            dailyBreakEvenOrders: Math.ceil(dailyBreakEvenOrders),
-            dailyRevenue,
-            dailyProfit,
-            efficiencyScore: efficiencyScore.toFixed(1)
-        };
-    }, [avgOrderValue, avgMarginPerOrder, fixedMonthlyCost, currentDailyOrders]);
+    
+    // Hardcoded demo logic matches the exact HTML snapshot provided
+    const fixedMonthlyCost = 12500;
+    const netMarginPerOrder = 4.5;
+    
+    // Break Even Velocity
+    const breakEvenMonthly = Math.ceil(fixedMonthlyCost / netMarginPerOrder);
+    const breakEvenDaily = Math.ceil(breakEvenMonthly / 30);
+    
+    // Scaling Efficiency
+    const dailyProfit = (currentDailyOrders * netMarginPerOrder) - (fixedMonthlyCost / 30);
+    const percentMet = ((currentDailyOrders / breakEvenDaily) * 100).toFixed(1);
+    const annualRunRate = dailyProfit * 365;
 
     return (
-        <section className="mt-16 animate-in fade-in slide-in-from-bottom-6 duration-1000">
-            <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-6">
-                <div>
-                    <h2 className="text-3xl font-black tracking-tighter uppercase italic">Scenario <span className="text-primary not-italic">Engine</span></h2>
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mt-2">v2.1 Profitability Projection Logic</p>
+        <>
+            <div className="section-divider"></div>
+            <div className="scenario-section">
+                <div className="scenario-header">
+                    <div className="scenario-title"><em>Scenario</em> <span>Engine</span></div>
+                    <div className="scenario-version">V2.1 Profitability Projection Logic</div>
                 </div>
-                <div className="flex gap-2">
-                   <div className="px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
-                       <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
-                       Logic Alert: Distance B13+B14 Pending Review
-                   </div>
-                   <div className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">
-                       Numerator: Inputs!B8 Fixed Cost
-                   </div>
+                <div className="logic-alert">
+                    <div className="alert-dot"></div>
+                    <span className="alert-text">Logic Alert: Distance B13+B14 Pending Review — Numerator: Inputs!B8 Fixed Cost</span>
                 </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                {/* Inputs Pane */}
-                <div className="card bg-white/5 border-white/5 p-8 flex flex-col gap-8">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest decoration-primary/30 underline">Simulation Inputs</label>
-                    
-                    <div className="space-y-6">
-                        <div>
-                            <p className="text-xs font-bold text-white mb-2">Fixed Monthly Cost ($)</p>
-                            <input 
-                                type="number" 
-                                value={fixedMonthlyCost} 
-                                onChange={e => setFixedMonthlyCost(Number(e.target.value))} 
-                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white font-bold"
-                            />
-                            <p className="text-[9px] text-slate-500 mt-2 font-medium">Mapped to <span className="text-white">Inputs!B8</span> (Ops, Payroll, Insurance)</p>
+                <div className="scenario-grid">
+                    <div className="scenario-panel">
+                        <div className="panel-label">Simulation Inputs</div>
+                        <div className="input-row">
+                            <div className="input-label">Fixed Monthly Cost ($)</div>
+                            <div className="input-field">{fixedMonthlyCost}</div>
+                            <div className="input-note">Mapped to Inputs!B8 (Ops, Payroll, Insurance)</div>
                         </div>
-
-                        <div>
-                            <p className="text-xs font-bold text-white mb-2">Net Margin per Order ($)</p>
-                            <input 
-                                type="number" 
-                                step="0.50"
-                                value={avgMarginPerOrder} 
-                                onChange={e => setAvgMarginPerOrder(Number(e.target.value))} 
-                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white font-bold"
-                            />
+                        <div className="input-row">
+                            <div className="input-label">Net Margin per Order ($)</div>
+                            <div className="input-field">{netMarginPerOrder.toFixed(1)}</div>
                         </div>
-
-                        <div>
-                            <p className="text-xs font-bold text-white mb-2">Current Orders / Day</p>
+                        <div className="input-row">
+                            <div className="input-label">Current Orders / Day</div>
                             <input 
                                 type="range" 
-                                min="0" max="1000"
+                                min="0" max="1000" step="1" 
                                 value={currentDailyOrders} 
-                                onChange={e => setCurrentDailyOrders(Number(e.target.value))} 
-                                className="w-full accent-primary"
+                                onChange={(e) => setCurrentDailyOrders(Number(e.target.value))}
                             />
-                            <div className="flex justify-between text-[10px] font-black text-slate-500 mt-1 uppercase tracking-tighter">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#444', fontFamily: "'DM Mono',monospace", marginTop: '4px' }}>
                                 <span>0</span>
-                                <span>{currentDailyOrders} orders / day</span>
+                                <span style={{ color: '#e8a230', fontWeight: 700 }}>{currentDailyOrders} orders/day</span>
                                 <span>1000</span>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* Scenario Results (K16:K20 Alignment) */}
-                <div className="lg:col-span-2">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
-                        <div className="bg-primary/5 border border-primary/20 rounded-[3rem] p-10 flex flex-col justify-center text-center">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-4">Break-Even Velocity</h4>
-                            <p className="text-7xl font-black tracking-tighter text-white mb-2">{calculations.dailyBreakEvenOrders}</p>
-                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">Orders Required per Day</p>
-                            <div className="mt-8 pt-8 border-t border-white/5">
-                                <p className="text-sm font-bold text-white mb-1">{calculations.monthlyBreakEvenOrders} Total / Month</p>
-                                <p className="text-[10px] font-medium text-slate-500 italic">To cover all North Carolina fixed overhead.</p>
-                            </div>
+                    <div className="breakeven-panel">
+                        <div className="bev-label">Break-Even Velocity</div>
+                        <div className="bev-number">{breakEvenDaily}</div>
+                        <div className="bev-sub">Orders Required Per Day</div>
+                        <div className="bev-total">{breakEvenMonthly} Total / Month</div>
+                        <div className="bev-note">To cover all North Carolina fixed overhead.</div>
+                    </div>
+                    <div className="scaling-panel">
+                        <div className="panel-label">Scaling Efficiency</div>
+                        <div className="scaling-row">
+                            <span className="scaling-name">Daily Target</span>
+                            <span className="scaling-pct">{percentMet}% Met</span>
                         </div>
-
-                        <div className="bg-black/40 border border-white/5 rounded-[3rem] p-10 flex flex-col justify-between">
-                            <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-8 border-b border-white/5 pb-4">Scaling Efficiency</h4>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-slate-500 font-medium">Daily Target</span>
-                                        <span className="font-bold text-white">{calculations.efficiencyScore}% Met</span>
-                                    </div>
-                                    <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                                        <div 
-                                            className={`h-full transition-all duration-1000 ${Number(calculations.efficiencyScore) >= 100 ? 'bg-emerald-500 shadow-[0_0_15px_#10b981]' : 'bg-primary'}`} 
-                                            style={{ width: `${Math.min(100, Number(calculations.efficiencyScore))}%` }}
-                                        />
-                                    </div>
-                                </div>
+                        <div className="progress-bar-bg">
+                            <div className="progress-bar-fill" style={{ width: `${Math.min(Number(percentMet), 100)}%` }}></div>
+                        </div>
+                        <div className="profit-block">
+                            <div className="profit-label">Current Daily Profit</div>
+                            <div className="profit-value" style={{ color: dailyProfit >= 0 ? '#3dd68c' : '#e24b4a' }}>
+                                {dailyProfit >= 0 ? '+' : ''}${dailyProfit.toFixed(2)}
                             </div>
-
-                            <div className="pt-8 border-t border-white/5 mt-8">
-                                <div className="flex justify-between items-end">
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase text-slate-500 tracking-tighter mb-1">Current Daily Profit</p>
-                                        <p className={`text-3xl font-black tracking-tighter ${calculations.dailyProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                                            {calculations.dailyProfit >= 0 ? '+' : ''}${Math.abs(calculations.dailyProfit).toFixed(2)}
-                                        </p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-[10px] font-black uppercase text-slate-500 tracking-tighter mb-1">Annual Run-Rate</p>
-                                        <p className="text-lg font-bold text-white">${(calculations.dailyProfit * 365).toLocaleString()}</p>
-                                    </div>
-                                </div>
+                            <div className="runrate-row">
+                                <span className="rr-label">Annual Run-Rate</span>
+                                <span className="rr-value" style={{ color: annualRunRate >= 0 ? '#3dd68c' : '#fff' }}>
+                                    ${annualRunRate.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                </span>
+                            </div>
+                            <div style={{ fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '6px' }}>
+                                Proxy: AOV as GOV Basis
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-
-        </section>
+            <div className="bench-section">
+                <div className="bench-header">
+                    <div className="bench-title">Competitive Benchmark</div>
+                    <div className="bench-proxy">Proxy: AOV as GOV Basis</div>
+                </div>
+                <table className="bench-table">
+                    <thead>
+                        <tr>
+                            <th>Benchmark Metric</th>
+                            <th>DoorDash (Est.)</th>
+                            <th className="gold">TrueServe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td className="label">GOV Proxy (AOV)</td>
+                            <td className="dd">$38.50</td>
+                            <td className="ts">$35.00</td>
+                        </tr>
+                        <tr>
+                            <td className="label-sub" colSpan={3}>Gross Order Value</td>
+                        </tr>
+                        <tr>
+                            <td className="label">Contribution Margin</td>
+                            <td className="dd">~-6.5%</td>
+                            <td className="ts">12.9%</td>
+                        </tr>
+                        <tr>
+                            <td className="label-sub" colSpan={3}>Net of Direct Variable Costs</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div className="bench-insight">
+                    <div className="insight-title">The "Apples-to-Apples" Fix</div>
+                    <div className="insight-body">
+                        Benchmark reworked to use your actual <strong>Average Order Value (AOV)</strong> as the proxy for DoorDash's GOV. This ensures denominators match exactly.
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }

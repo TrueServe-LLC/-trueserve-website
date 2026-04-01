@@ -185,6 +185,7 @@
   },
   "active": "32d41d72fe529190",
   "lastOpenFiles": [
+    "components/admin/AdminStyles.tsx",
     "scripts/generate_on_demand_mocks.ts",
     "node_modules/@faker-js",
     "QA_TESTING_GUIDE.md",
@@ -196,7 +197,6 @@
     "app/admin/live-chats/actions.ts",
     "app/admin/live-chats",
     "pnpm-lock.yaml.3236985594",
-    "components/SupportWidget.tsx",
     "test-results/checkout-Marketplace-–-Lan-364b4-restaurant-detail-from-card-Mobile-Safari/error-context.md",
     "test-results/example-homepage-loads-with-hero-section-Mobile-Safari/error-context.md",
     "test-results/checkout-Marketplace-–-Mobile-nav-is-visible-on-mobile-Mobile-Safari/error-context.md",
