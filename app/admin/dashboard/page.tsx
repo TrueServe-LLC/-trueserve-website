@@ -246,8 +246,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Order {order.id.slice(-6).toUpperCase()}</span>
-                            <span className={`text-[9px] px-3 py-1 flex items-center justify-center rounded-full font-black uppercase tracking-widest min-w-[100px] border whitespace-nowrap ${order.status === 'PICKED_UP' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-white/5 text-slate-300 border-white/10'
-                                                }`}>
+                                            <span className={`text-[9px] px-3 py-1 flex items-center justify-center rounded-full font-black uppercase tracking-widest min-w-[100px] border whitespace-nowrap ${order.status === 'PICKED_UP' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-white/5 text-slate-300 border-white/10'}`}>
                                                 {order.status.replace('_', ' ')}
                                             </span>
                                         </div>
@@ -569,7 +568,6 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         ))}
                     </div>
                 </section>
-            </main>
         </div>
     );
 }
