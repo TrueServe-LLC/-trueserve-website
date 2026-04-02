@@ -6,7 +6,6 @@
   --color-accent: #f59e0b;
   --color-background: #0a0a0b;
   --color-foreground: #ffffff;
-  --color-foreground: #ffffff;
 }
 
 :root {
@@ -65,6 +64,24 @@ p, span, div, a, button, input {
 
 @utility h-glow {
   @apply text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)];
+}
+
+@utility text-balance {
+  /* Using a CSS variable to satisfy compatibility linters while maintaining functionality in modern browsers (Chrome 114+) */
+  --tw-text-wrap: balance;
+  text-wrap: var(--tw-text-wrap);
+}
+
+@utility merchant-hero-bg {
+  background-image: url('/merchant_hero_cinematic_1774395289646.png');
+  filter: blur(48px) brightness(0.3) saturate(1.3);
+  opacity: 0.9;
+}
+
+@utility driver-hero-bg {
+  background-image: url('/diverse_drivers.png');
+  filter: blur(48px) brightness(0.28) saturate(1.2);
+  opacity: 0.9;
 }
 
 /* Standardized Pill & Button System: Block Pill Refinement */
@@ -194,4 +211,118 @@ p, span, div, a, button, input {
 @keyframes slide-up {
   from { transform: translateY(30px); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ── SHARED PORTALS (ADMIN / MERCHANT / DRIVER) ────────────────────────── */
+@layer base {
+  .db { 
+    background: #0c0e13 !important; 
+    font-family: 'DM Sans', sans-serif; 
+    color: #fff !important; 
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .db-nav { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 0 24px; 
+    height: 52px; 
+    background: #0c0e13; 
+    border-bottom: 1px solid #1c1f28; 
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .db-nav-brand { 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    font-size: 16px; 
+    font-weight: 700; 
+    letter-spacing: 0.02em; 
+    text-transform: uppercase;
+  }
+
+  .db-nav-brand span { color: #e8a230; }
+
+  .db-nav-links { display: flex; align-items: center; gap: 4px; }
+
+  .db-nav-link { 
+    font-size: 11px; 
+    font-weight: 500; 
+    letter-spacing: 0.08em; 
+    color: #888; 
+    padding: 6px 10px; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    text-decoration: none; 
+    border: none; 
+    background: transparent; 
+    transition: color 0.2s;
+  }
+
+  .db-nav-link:hover, .db-nav-link.active { color: #fff; }
+  .db-nav-link.active { border-bottom: 2px solid #e8a230; color: #e8a230; }
+
+  .db-panel { 
+    background: #0f1219; 
+    padding: 16px; 
+    border: 1px solid #1c1f28;
+  }
+
+  .db-panel-hd { 
+    font-size: 10px; 
+    font-weight: 700; 
+    letter-spacing: 0.14em; 
+    text-transform: uppercase; 
+    color: #666; 
+    margin-bottom: 12px; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+  }
+
+  .db-badge { 
+    font-size: 10px; 
+    font-weight: 700; 
+    letter-spacing: 0.08em; 
+    padding: 3px 8px; 
+    text-transform: uppercase; 
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .db-badge-warn { background: #3a2800; color: #e8a230; border: 1px solid #5a3c00; }
+  .db-badge-ok { background: #0d2a1a; color: #3dd68c; border: 1px solid #1a4a2a; }
+  .db-badge-gray { background: #1a1c24; color: #666; border: 1px solid #2a2f3a; }
+
+  .db-btn-primary { 
+    background: #e8a230; 
+    color: #000; 
+    font-size: 11px; 
+    font-weight: 700; 
+    letter-spacing: 0.08em; 
+    padding: 7px 14px; 
+    text-transform: uppercase; 
+    cursor: pointer; 
+    text-decoration: none; 
+    border: none; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .db-btn-primary:hover { background: #f2ae3e; }
+  
+  .db-grid {
+    display: grid;
+    gap: 1px;
+    background: #1c1f28;
+    border: 1px solid #1c1f28;
+  }
 }

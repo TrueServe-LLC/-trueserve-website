@@ -545,6 +545,22 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             );
         }
 
+        // Email to Merchant
+        notificationPromises.push(
+            sendEmail(
+                email,
+                "Welcome to TrueServe! Your Merchant Account is Ready",
+                `<h1>Welcome to the Network, ${contactName}! 🍴</h1>
+                <p>We're excited to have <strong>${restaurantName}</strong> as a part of the TrueServe family.</p>
+                <p>Your application is approved and your store is now initialized. You can now log in to your Merchant Dashboard to upload your menu, set operational hours, and start receiving premium delivery orders.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://trueserve.delivery/merchant/login" class="button">Log In to Dashboard</a>
+                </div>
+                <p>If you're using our <strong>Pro Subscription</strong>, our concierge team will reach out shortly for your POS integration walkthrough.</p>
+                <p>Best,<br>The TrueServe Team</p>`
+            )
+        );
+
         // Email notifications to staff
         for (const staffEmail of staffEmails) {
             notificationPromises.push(

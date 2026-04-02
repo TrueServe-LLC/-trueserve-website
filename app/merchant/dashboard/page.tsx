@@ -57,87 +57,69 @@ export default async function MerchantDashboard() {
         .reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans">
+        <div className="db min-h-screen">
             <MerchantRealtime restaurantId={restaurant.id} />
             <WelcomeModal restaurantName={restaurant.name} />
 
-            {/* Standardized Replit-Style Top-Nav */}
-            <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <Logo size="md" />
-                    <div className="h-6 w-px bg-white/10 mx-2"></div>
-                    <nav className="flex items-center gap-1 font-sans">
-                        <Link href="/restaurants" className="nav-link px-6">🍴 Order Food</Link>
-                        <Link href="/merchant/dashboard" className="nav-link px-6 text-primary bg-primary/5 rounded-full">📊 Dashboard</Link>
-                        <Link href="/merchant" className="nav-link px-6 text-slate-400">🏢 Partner Hub</Link>
-                    </nav>
+            {/* Standardized Portal Nav (Matches Admin) */}
+            <div className="db-nav">
+                <div className="db-nav-brand">True <span>SERVE</span></div>
+                <div className="db-nav-links font-sans">
+                    <Link href="/restaurants" className="db-nav-link">🍴 Order Food</Link>
+                    <Link href="/merchant/dashboard" className="db-nav-link active">Dashboard</Link>
+                    <Link href="/merchant" className="db-nav-link">Partner Hub</Link>
+                    <div className="ml-4">
+                        <LogoutButton />
+                    </div>
                 </div>
-                <div className="flex items-center gap-8">
-                    <LogoutButton />
-                </div>
-            </nav>
+            </div>
 
-            <main className="container py-12 md:py-24 px-4 md:px-8 pb-40">
+            <main className="page max-w-7xl mx-auto">
                 {/* Header Title Stack */}
-                <div className="mb-16 flex flex-col md:flex-row md:items-center justify-between gap-6 max-w-7xl mx-auto px-2">
-                    <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center text-3xl shadow-xl">📊</div>
-                        <div>
-                            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase leading-tight">
-                                Orders Dashboard
-                            </h1>
-                            <p className="text-slate-500 text-xs md:text-sm font-black uppercase tracking-widest mt-1">
-                                Manage and track incoming operational links for {restaurant.name}
-                            </p>
+                <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+                    <div>
+                        <div className="page-title">Orders <span>Dashboard</span></div>
+                        <div className="page-sub uppercase tracking-widest mt-1">
+                            Operational control for {restaurant.name}
                         </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
                         <Link 
                             href="/merchant/terminal" 
-                            className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 hover:border-white/20 transition-all flex items-center gap-2 group"
+                            className="db-btn-primary !bg-white/5 !text-white border border-white/10 !px-6 !py-2.5 sm"
                         >
-                            <span className="text-sm group-hover:scale-110 transition-transform">🍳</span>
-                            Open Kitchen Terminal
+                            🍳 Kitchen Terminal
                         </Link>
-                         <span className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap ${restaurant.plan === 'Pro Subscription'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                            : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-sm'
-                            }`}>
-                            {restaurant.plan === 'Pro Subscription' ? 'Pro Scale Activated' : 'Flex Scale Active'}
+                         <span className={`db-badge ${restaurant.plan === 'Pro Subscription' ? 'db-badge-ok' : 'db-badge-gray'}`}>
+                            {restaurant.plan === 'Pro Subscription' ? 'Pro Scale' : 'Flex Scale'}
                         </span>
                         <form action={async () => {
                             "use server";
                             await toggleBusyMode(restaurant.id, restaurant.isBusy);
                         }}>
-                            <button className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap shadow-xl ${restaurant.isBusy ? 'bg-red-600 text-white border-red-500 shadow-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'}`}>
-                                {restaurant.isBusy ? 'System Paused' : 'Terminal Online'}
+                            <button className={`db-badge ${restaurant.isBusy ? 'db-badge-warn !bg-red-600 !text-white' : 'db-badge-ok'}`}>
+                                {restaurant.isBusy ? 'Paused' : 'Online'}
                             </button>
                         </form>
                     </div>
                 </div>
 
                 {/* Main Content Enclosure */}
-                <div className="max-w-7xl mx-auto bg-white/[0.02] border border-white/5 rounded-[3rem] p-8 md:p-16 shadow-2xl space-y-24">
+                <div className="space-y-16">
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
-                        <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all min-h-[140px] md:min-h-[180px] flex flex-col justify-end">
-                            <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">📋</div>
-                            <h3 className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mb-1">Incoming</h3>
-                            <p className="text-4xl md:text-6xl font-black text-white">{pendingOrders.length}</p>
+                    <div className="db-grid grid-cols-2 md:grid-cols-3">
+                        <div className="db-panel !bg-[#0f1219] !border-none flex flex-col justify-end min-h-[140px]">
+                            <h3 className="stat-name mb-2">Incoming Orders</h3>
+                            <p className="stat-value">{pendingOrders.length}</p>
                         </div>
-                        <div className="group relative overflow-hidden bg-white/5 border border-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all min-h-[140px] md:min-h-[180px] flex flex-col justify-end">
-                            <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">🍔</div>
-                            <h3 className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mb-1">Items</h3>
-                            <p className="text-4xl md:text-6xl font-black text-white">{restaurant.menuItems.length}</p>
+                        <div className="db-panel !bg-[#0f1219] !border-none flex flex-col justify-end min-h-[140px]">
+                            <h3 className="stat-name mb-2">Menu Items</h3>
+                            <p className="stat-value">{restaurant.menuItems.length}</p>
                         </div>
-                        <div className="group relative col-span-2 md:col-span-1 overflow-hidden bg-white/5 border border-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all min-h-[140px] md:min-h-[180px] flex flex-col justify-end">
-                            <div className="absolute top-2 right-2 p-3 opacity-5 text-5xl md:text-7xl group-hover:scale-110 transition-transform pointer-events-none">💰</div>
-                            <div className="flex justify-between items-start mb-1">
-                                <h3 className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">Net Revenue</h3>
-                                <span className="text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-black uppercase tracking-widest translate-y-[-2px] shadow-sm whitespace-nowrap">Instant Payout</span>
-                            </div>
-                            <p className="text-4xl md:text-6xl font-black text-emerald-400">${totalRevenue.toFixed(2)}</p>
+                        <div className="db-panel !bg-[#0f1219] !border-none flex flex-col justify-end min-h-[140px] col-span-2 md:col-span-1">
+                            <h3 className="stat-name mb-2 text-[#e8a230]">Net Revenue</h3>
+                            <p className="stat-value !text-emerald-400">${totalRevenue.toFixed(2)}</p>
                         </div>
                     </div>
 

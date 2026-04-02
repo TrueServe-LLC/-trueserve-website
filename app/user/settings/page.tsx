@@ -43,21 +43,19 @@ export default async function UserSettings() {
 
 
     return (
-        <div className="min-h-screen bg-[#080c14] text-slate-200 font-sans">
-            <nav className="sticky top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/5 px-6 py-4">
-                <div className="container flex justify-between items-center">
-                    <Logo size="md" />
-                    <div className="flex items-center gap-6">
-                        <Link href="/" className="text-slate-400 hover:text-white transition-colors">Home</Link>
-                        {userId && (
-                            <>
-                                <NotificationBell userId={userId} />
-                                <LogoutButton />
-                            </>
-                        )}
+        <div className="db min-h-screen">
+             {/* Standardized Portal Nav */}
+             <div className="db-nav">
+                <div className="db-nav-brand">True <span>SERVE</span></div>
+                <div className="db-nav-links font-sans">
+                    <Link href="/restaurants" className="db-nav-link">🍴 Order Food</Link>
+                    <Link href="/orders" className="db-nav-link">My Orders</Link>
+                    <Link href="/user/settings" className="db-nav-link active">Settings</Link>
+                    <div className="ml-4">
+                        <LogoutButton />
                     </div>
                 </div>
-            </nav>
+            </div>
 
             <main className="container py-12">
                 <h1 className="text-4xl font-bold text-white mb-2">Account Settings</h1>

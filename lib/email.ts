@@ -23,12 +23,20 @@ export async function sendEmail(to: string, subject: string, htmlBody: string, a
     }
 
     try {
+        const { isStaffEmail } = await import('./admin-config');
+        const isProd = process.env.NODE_ENV === 'production' && (process.env.NEXT_PUBLIC_APP_URL?.includes('trueserve.delivery') || process.env.NEXT_PUBLIC_APP_URL?.includes('trueservedelivery.com'));
+        const isWhitelisted = isStaffEmail(to);
+        
+        // In Production or for whitelisted staff, send to the actual recipient. Otherwise, redirect to dev inbox for testing.
+        const actualTo = (isProd || isWhitelisted) ? to : 'lcking992@gmail.com';
+        const actualSubject = isProd ? subject : `[TEST ENV - To: ${to}] ${subject}`;
+
         const fromEmail = process.env.RESEND_FROM_EMAIL || 'TrueServe <onboarding@trueserve.delivery>';
         
         const mailOptions = {
             from: fromEmail,
-            to: to,
-            subject: subject,
+            to: actualTo,
+            subject: actualSubject,
             html: `
             <!DOCTYPE html>
             <html>
