@@ -161,7 +161,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="nav-link active">Dashboard</Link>}
                     <a href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer" className="nav-link alert">● Triage Center</a>
                     <form action={async () => { "use server"; await logout(); }}>
-                        <button className="nav-link" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>Log Out</button>
+                        <button className="nav-link !bg-transparent !border-none !cursor-pointer">Log Out</button>
                     </form>
                 </div>
             </div>
@@ -198,7 +198,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         return flags.map(f => (
                             <form key={f.label} className="toggle-block" action={async () => { "use server"; await f.action(!f.state); }}>
                                 <span className="toggle-label">{f.label}</span>
-                                <button className={`toggle-switch ${f.state ? 'on' : 'off'}`}>
+                                <button 
+                                    className={`toggle-switch ${f.state ? 'on' : 'off'}`}
+                                    aria-label={`Toggle ${f.label}`}
+                                >
                                     <div className="toggle-knob"></div>
                                 </button>
                             </form>
@@ -206,7 +209,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     })()}
                     
                     {!isStripeConnected && (
-                        <a href="https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create" target="_blank" rel="noopener noreferrer" className="nav-cta" style={{ textDecoration: 'none' }}>
+                        <a href="https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create" target="_blank" rel="noopener noreferrer" className="nav-cta !no-underline">
                             Connect Stripe
                         </a>
                     )}
@@ -228,7 +231,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             <div className="page">
                 <div className="sec-hd">
                     <div className="sec-title">🛰️ Live Monitor <span className="badge badge-gray">{activeOrders.length} Active</span></div>
-                    <a href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer" className="nav-cta" style={{ textDecoration: 'none', fontSize: '10px' }}>↗ Report Incident</a>
+                    <a href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer" className="nav-cta !no-underline !text-[10px]">↗ Report Incident</a>
                 </div>
                 <div className="two-col" style={{gridTemplateColumns: '1fr', marginBottom: '20px'}}>
                     <div className="panel" style={{padding: '0'}}>
@@ -237,11 +240,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                    ) : (
                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 bg-[#1c1f28]">
                            {activeOrders.map(order => (
-                               <div key={order.id} className="panel" style={{border: 'none'}}>
+                                <div key={order.id} className="panel !border-none">
                                    <div className="panel-hd">Order {order.id.slice(-6).toUpperCase()} <span className={order.status === 'PICKED_UP' ? 'badge badge-ok' : 'badge badge-gray'}>{order.status.replace('_', ' ')}</span></div>
-                                   <div style={{fontSize: '15px', fontWeight: 700, color: '#fff'}}>{order.restaurant?.name || 'Restaurant'}</div>
-                                   <div style={{fontSize: '11px', color: '#555', margin: '4px 0 12px'}}>${Number(order.totalAmount || order.total).toFixed(2)} Revenue Impact</div>
-                                   <div style={{display: 'flex', gap: '8px'}}>
+                                   <div className="text-[15px] font-bold text-white">{order.restaurant?.name || 'Restaurant'}</div>
+                                   <div className="text-[11px] text-[#555] my-1 mb-3">${Number(order.totalAmount || order.total).toFixed(2)} Revenue Impact</div>
+                                   <div className="flex gap-2">
                                        <FastActionBtn 
                                            action={async () => { "use server"; const { forceCompleteOrder } = await import('../actions'); await forceCompleteOrder(order.id); }} 
                                            className="nav-cta" 
@@ -274,10 +277,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         ) : (
                             <div className="space-y-4 pt-4">
                                 {pendingItems.map(item => (
-                                    <div key={item.id} style={{background: '#0c0e13', border: '1px solid #1c1f28', padding: '12px'}}>
-                                        <div style={{fontSize: '13px', fontWeight: 700, color: '#ccc'}}>{item.name}</div>
-                                        <div style={{fontSize: '10px', color: '#555'}}>{item.restaurant.name}</div>
-                                        <div style={{display: 'flex', gap: '4px', marginTop: '8px'}}>
+                                    <div key={item.id} className="bg-[#0c0e13] border border-[#1c1f28] p-3">
+                                        <div className="text-[13px] font-bold text-[#ccc]">{item.name}</div>
+                                        <div className="text-[10px] text-[#555]">{item.restaurant.name}</div>
+                                        <div className="flex gap-1 mt-2">
                                             <FastActionBtn action={async () => { "use server"; await approveMenuItem(item.id); }} className="nav-cta" loadingText="...">Approve</FastActionBtn>
                                             <FastActionBtn action={async () => { "use server"; await rejectMenuItem(item.id); }} className="nav-cta border-red-900 text-red-400" loadingText="...">Reject</FastActionBtn>
                                         </div>
@@ -292,18 +295,18 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             <div className="empty-panel">No drivers pending approval.</div>
                         ) : (
                             drivers.filter(d => !d.vehicleVerified).map(driver => (
-                                <div key={driver.id} style={{borderBottom: '1px solid #1c1f28', paddingBottom: '12px', marginBottom: '12px'}}>
-                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                <div key={driver.id} className="border-b border-[#1c1f28] pb-3 mb-3">
+                                    <div className="flex justify-between">
                                         <div>
-                                            <div style={{fontSize: '15px', fontWeight: 700, color: '#fff'}}>{driver.user?.name || 'Unknown'}</div>
-                                            <div style={{fontSize: '11px', color: '#555'}}>{driver.user?.email || 'No Email'}</div>
+                                            <div className="text-[15px] font-bold text-white">{driver.user?.name || 'Unknown'}</div>
+                                            <div className="text-[11px] text-[#555]">{driver.user?.email || 'No Email'}</div>
                                         </div>
-                                        <div style={{textAlign: 'right'}}>
-                                            <div className="badge badge-warn" style={{marginBottom: '4px'}}>Confidence: {(driver.aiMetadata?.idScan?.confidence * 100 || 0).toFixed(0)}%</div>
-                                            <div style={{fontSize: '9px', color: '#444', fontFamily: 'DM Mono'}}>BG: {driver.backgroundCheckStatus || 'PENDING'}</div>
+                                        <div className="text-right">
+                                            <div className="badge badge-warn mb-1">Confidence: {(driver.aiMetadata?.idScan?.confidence * 100 || 0).toFixed(0)}%</div>
+                                            <div className="text-[9px] text-[#444] font-mono">BG: {driver.backgroundCheckStatus || 'PENDING'}</div>
                                         </div>
                                     </div>
-                                    <div style={{display: 'flex', gap: '6px', marginTop: '12px'}}>
+                                    <div className="flex gap-1.5 mt-3">
                                         <FastActionBtn action={async () => { "use server"; const { approveDriver } = await import('../actions'); await approveDriver(driver.id); }} className="nav-cta" loadingText="...">Approve</FastActionBtn>
                                         <FastActionBtn action={async () => { "use server"; const { rejectDriver } = await import('../actions'); await rejectDriver(driver.id); }} className="nav-cta border-red-900 text-red-400" loadingText="...">Reject</FastActionBtn>
                                     </div>
@@ -319,21 +322,21 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <div className="sec-hd">
                     <div className="sec-title">📜 System Audit Log <span className="badge badge-gray">{auditLogs.length} Recent</span></div>
                 </div>
-                <div style={{background:'#0f1219', border:'1px solid #1c1f28', marginBottom: '40px'}}>
-                    <table className="audit-table">
-                        <thead>
-                            <tr>
-                                <th>Actor</th><th>Action</th><th>Target</th><th>Time</th><th>Details</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {auditLogs.length === 0 ? (
-                                <tr><td colSpan={5} className="empty-panel" style={{color: '#2a2f3a'}}>No recent audit entries.</td></tr>
-                            ) : (
-                                auditLogs.map(log => (
-                                    <tr key={log.id}>
-                                        <td>{log.actor?.name || 'System'}</td>
-                                        <td style={{color: '#e8a230'}}>{log.action.replace(/_/g, ' ')}</td>
+                            <div className="bg-[#0f1219] border border-[#1c1f28] mb-10">
+                                <table className="audit-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Actor</th><th>Action</th><th>Target</th><th>Time</th><th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {auditLogs.length === 0 ? (
+                                            <tr><td colSpan={5} className="empty-panel !text-[#2a2f3a]">No recent audit entries.</td></tr>
+                                        ) : (
+                                            auditLogs.map(log => (
+                                                <tr key={log.id}>
+                                                    <td>{log.actor?.name || 'System'}</td>
+                                                    <td className="text-[#e8a230]">{log.action.replace(/_/g, ' ')}</td>
                                         <td>{log.entityType}</td>
                                         <td>{new Date(log.createdAt).toLocaleTimeString()}</td>
                                         <td>{log.message || '—'}</td>
@@ -356,7 +359,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         </div>
                         <div className="param-right">
                             <div className="param-value enabled">Enabled</div>
-                            <button className="nav-cta" style={{fontSize: '10px', background: 'transparent', border: '1px solid #2a2f3a', color: '#888'}}>Request Change</button>
+                            <button className="nav-cta !text-[10px] !bg-transparent border !border-[#2a2f3a] !text-[#888]">Request Change</button>
                         </div>
                     </div>
                     <div className="param-row">
@@ -366,7 +369,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         </div>
                         <div className="param-right">
                             <div className="param-value">10%</div>
-                            <button className="nav-cta" style={{fontSize: '10px'}}>Update</button>
+                            <button className="nav-cta !text-[10px]">Update</button>
                         </div>
                     </div>
                 </div>
@@ -379,17 +382,17 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                 <div className="rule-card">
                     <div className="rule-hd">
-                        <div className="rule-name">Global Base Policy <span style={{color: '#e8a230', marginLeft: '8px'}}>v1.0.4-Pilot</span></div>
+                        <div className="rule-name">Global Base Policy <span className="text-[#e8a230] ml-2">v1.0.4-Pilot</span></div>
                         <span className="badge badge-ok">Active</span>
                     </div>
-                    <div style={{padding: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px'}}>
+                    <div className="p-4 grid grid-cols-2 gap-6">
                         <div>
-                            <div style={{fontSize: '9px', fontWeight: 700, color: '#555', textTransform: 'uppercase', marginBottom: '8px'}}>Base Pay (Per Drop)</div>
-                            <div style={{fontSize: '32px', fontWeight: 700, color: '#fff', fontFamily: 'DM Mono'}}>$3.55</div>
+                            <div className="text-[9px] font-bold text-[#555] uppercase mb-2">Base Pay (Per Drop)</div>
+                            <div className="text-[32px] font-bold text-white font-mono">$3.55</div>
                         </div>
                         <div>
-                            <div style={{fontSize: '9px', fontWeight: 700, color: '#555', textTransform: 'uppercase', marginBottom: '8px'}}>Surge Multiplier</div>
-                            <div style={{fontSize: '32px', fontWeight: 700, color: '#e8a230', fontFamily: 'DM Mono'}}>1.2x</div>
+                            <div className="text-[9px] font-bold text-[#555] uppercase mb-2">Surge Multiplier</div>
+                            <div className="text-[32px] font-bold text-[#e8a230] font-mono">1.2x</div>
                         </div>
                     </div>
                 </div>
@@ -402,11 +405,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20 px-2">
                     {restaurants.map(r => (
-                        <div key={r.id} className="panel" style={{border: '1px solid #1c1f28'}}>
+                        <div key={r.id} className="panel !border-[#1c1f28]">
                             <div className="panel-hd">{r.name} <span className={r.isApproved ? 'badge badge-ok' : 'badge badge-warn'}>{r.isApproved ? 'LIVE' : 'PENDING'}</span></div>
-                            <div style={{fontSize: '10px', color: '#555', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.1em'}}>Payout Status: NOT CONNECTED</div>
+                            <div className="text-[10px] text-[#555] mb-3 uppercase tracking-[0.1em]">Payout Status: NOT CONNECTED</div>
                             <form action={async () => { "use server"; const { generateMerchantStripeLink } = await import('../actions'); await generateMerchantStripeLink(r.id); }}>
-                                <button className="nav-cta w-full" style={{fontSize: '10px'}}>⚡ Send Onboarding Link</button>
+                                <button className="nav-cta w-full !text-[10px]">⚡ Send Onboarding Link</button>
                             </form>
                         </div>
                     ))}

@@ -173,15 +173,15 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
               <div className="space-y-6">
                 <div>
                   <p className="text-xs font-bold text-white mb-2">Distance ({calcMiles} miles)</p>
-                  <input type="range" min="1" max="50" value={calcMiles} onChange={e => setCalcMiles(Number(e.target.value))} className="w-full accent-primary" />
+                  <input type="range" min="1" max="50" value={calcMiles} onChange={e => setCalcMiles(Number(e.target.value))} className="w-full accent-primary" aria-label="Distance in miles" />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-white mb-2">Wait Time ({calcWait} mins)</p>
-                  <input type="range" min="0" max="60" value={calcWait} onChange={e => setCalcWait(Number(e.target.value))} className="w-full accent-primary" />
+                  <input type="range" min="0" max="60" value={calcWait} onChange={e => setCalcWait(Number(e.target.value))} className="w-full accent-primary" aria-label="Wait time in minutes" />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-white mb-2">Orders / Hour ({calcOrdersPerHour})</p>
-                  <input type="range" min="1" max="5" step="0.5" value={calcOrdersPerHour} onChange={e => setCalcOrdersPerHour(Number(e.target.value))} className="w-full accent-primary" />
+                  <input type="range" min="1" max="5" step="0.5" value={calcOrdersPerHour} onChange={e => setCalcOrdersPerHour(Number(e.target.value))} className="w-full accent-primary" aria-label="Orders per hour" />
                 </div>
                 <button onClick={calculatePreview} className="w-full btn btn-primary py-3 text-[10px] font-black uppercase tracking-widest mt-4">Run Simulation</button>
               </div>
@@ -235,7 +235,7 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
       {editingRule && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
            <div className="w-full max-w-4xl bg-slate-900/90 border border-white/10 rounded-[3rem] p-12 relative shadow-2xl overflow-y-auto max-h-[90vh]">
-             <button onClick={() => setEditingRule(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors">
+             <button onClick={() => setEditingRule(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors" aria-label="Close edit dialog">
                <Icons.X />
              </button>
              
@@ -245,8 +245,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                {/* Basic Details */}
                <div className="space-y-6">
                  <div>
-                   <label className="label-text">Rule Name</label>
+                   <label htmlFor="rule-name" className="label-text">Rule Name</label>
                    <input 
+                    id="rule-name"
                     value={editingRule.name} 
                     onChange={e => setEditingRule({...editingRule, name: e.target.value})} 
                     className="input w-full bg-white/5 border-white/10 rounded-xl px-4 py-3 text-lg font-bold" 
@@ -255,8 +256,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                  
                  <div className="grid grid-cols-2 gap-4">
                    <div>
-                    <label className="label-text">Base Pay ($)</label>
+                    <label htmlFor="base-pay" className="label-text">Base Pay ($)</label>
                     <input 
+                      id="base-pay"
                       type="number" step="0.5" 
                       value={editingRule.basePay} 
                       onChange={e => setEditingRule({...editingRule, basePay: Number(e.target.value)})} 
@@ -264,8 +266,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                     />
                    </div>
                    <div>
-                    <label className="label-text">Surge Multiplier (x)</label>
+                    <label htmlFor="surge-multiplier" className="label-text">Surge Multiplier (x)</label>
                     <input 
+                      id="surge-multiplier"
                       type="number" step="0.1" 
                       value={editingRule.boostMultiplier} 
                       onChange={e => setEditingRule({...editingRule, boostMultiplier: Number(e.target.value)})} 
@@ -276,8 +279,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
 
                  <div className="grid grid-cols-2 gap-4">
                    <div>
-                    <label className="label-text">Per Mile ($)</label>
+                    <label htmlFor="per-mile" className="label-text">Per Mile ($)</label>
                     <input 
+                      id="per-mile"
                       type="number" step="0.05" 
                       value={editingRule.perMileRate} 
                       onChange={e => setEditingRule({...editingRule, perMileRate: Number(e.target.value)})} 
@@ -285,8 +289,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                     />
                    </div>
                    <div>
-                    <label className="label-text">Priority Score</label>
+                    <label htmlFor="priority-score" className="label-text">Priority Score</label>
                     <input 
+                      id="priority-score"
                       type="number" 
                       value={editingRule.priority} 
                       onChange={e => setEditingRule({...editingRule, priority: Number(e.target.value)})} 
@@ -299,8 +304,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                {/* Scheduling & Geo */}
                <div className="space-y-6">
                  <div>
-                   <label className="label-text flex items-center gap-2"><Icons.MapPin /> Target Zone (UUID)</label>
+                   <label htmlFor="target-zone" className="label-text flex items-center gap-2"><Icons.MapPin /> Target Zone (UUID)</label>
                    <input 
+                    id="target-zone"
                     placeholder="Global"
                     value={editingRule.zoneId} 
                     onChange={e => setEditingRule({...editingRule, zoneId: e.target.value})} 
@@ -334,8 +340,9 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
 
                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="label-text flex items-center gap-2"><Icons.Calendar /> Effective Date</label>
+                      <label htmlFor="effective-date" className="label-text flex items-center gap-2"><Icons.Calendar /> Effective Date</label>
                       <input 
+                        id="effective-date"
                         type="date"
                         className="input w-full bg-white/5 border-white/10 rounded-xl px-4 py-3 text-xs" 
                       />
@@ -395,12 +402,14 @@ export default function PricingRulesManager({ initialRules }: { initialRules: an
                 <button 
                   onClick={() => setEditingRule(rule)}
                   className="p-2 hover:bg-white/10 rounded-lg transition-colors text-slate-400 hover:text-white"
+                  aria-label={`Edit ${rule.name}`}
                 >
                   <Icons.Edit3 />
                 </button>
                 <button 
                   onClick={() => handleDelete(rule.id)}
                   className="p-2 hover:bg-red-500/20 rounded-lg transition-colors text-slate-500 hover:text-red-400"
+                  aria-label={`Delete ${rule.name}`}
                 >
                   <Icons.Trash2 />
                 </button>

@@ -71,11 +71,13 @@ export default function PolicyCMS({ policies, onSave }: PolicyCMSProps) {
                                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm font-bold outline-none focus:border-primary transition-all"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    aria-label="Policy Title"
                                 />
                                 <textarea 
                                     className="w-full flex-1 min-h-[200px] bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm font-medium outline-none focus:border-primary transition-all custom-scrollbar"
                                     value={formData.content}
                                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                    aria-label="Policy Content"
                                 />
                                 <div className="flex gap-2 pt-2">
                                     <button 

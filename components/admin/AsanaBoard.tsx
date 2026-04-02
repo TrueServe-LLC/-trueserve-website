@@ -290,6 +290,7 @@ export default function AsanaBoard() {
                                 value={newTaskSection}
                                 onChange={(e) => setNewTaskSection(e.target.value)}
                                 className="bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 focus:outline-none"
+                                aria-label="Select Task Section"
                             >
                                 <option value="">Select section...</option>
                                 {board.sections.map((s) => (

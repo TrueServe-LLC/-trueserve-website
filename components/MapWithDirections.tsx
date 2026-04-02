@@ -192,13 +192,12 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
 
                         {/* Vehicle Icon */}
                         <div
+                            className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-2xl border-2 border-blue-500 z-10 duration-1000 ease-in-out transition-transform"
                             style={{
-                                transform: `rotate(${driverRotation}deg)`,
-                                fontSize: '2.5rem',
+                                '--driver-rotation': `${driverRotation}deg`,
+                                transform: 'rotate(var(--driver-rotation))',
                                 filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.4))',
-                                transition: 'transform 1s ease-in-out'
-                            }}
-                            className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-2xl border-2 border-blue-500 z-10"
+                            } as React.CSSProperties}
                         >
                             🚗
                         </div>

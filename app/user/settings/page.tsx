@@ -87,7 +87,7 @@ export default async function UserSettings() {
                     <div className="lg:col-span-2 space-y-8">
                         {/* TruePoints Wallet */}
                         <section>
-                            <div className="bg-slate-900 border border-orange-500/20 rounded-3xl relative overflow-hidden shadow-2xl" style={{ padding: '28px 32px' }}>
+                            <div className="bg-slate-900 border border-orange-500/20 rounded-3xl relative overflow-hidden shadow-2xl p-7 md:p-8">
                                 <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
                                 
                                 <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
@@ -120,7 +120,7 @@ export default async function UserSettings() {
                                         <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden shadow-inner mb-3 border border-white/5">
                                             <div 
                                                 className="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full relative"
-                                                style={{ width: `${Math.min(100, ((user?.truePointsBalance || 0) / 1000) * 100)}%` }}
+                                                style={{ width: `${Math.min(100, ((user?.truePointsBalance || 0) / 1000) * 100)}%` } as React.CSSProperties}
                                             >
                                             </div>
                                         </div>

@@ -19,10 +19,27 @@
             justify-content: space-between;
             align-items: center;
         }
+        .navbar-brand {
+            font-weight: 900;
+            font-size: 20px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
         .hero {
             padding: 80px 50px;
             text-align: center;
             background: white;
+        }
+        .hero-title {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .hero-sub {
+            color: #71717a;
         }
         .container {
             max-width: 1000px;
@@ -31,6 +48,11 @@
             border-radius: 32px;
             overflow: hidden;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .embed-frame {
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: none;
         }
         .footer {
             padding: 50px;
@@ -42,32 +64,32 @@
 </head>
 <body>
 
-    <div className="navbar">
-        <div style="font-weight: 900; font-size: 20px;">JOE'S BURGERS</div>
-        <div style="display: flex; gap: 20px; font-size: 14px; font-weight: 500;">
+    <div class="navbar">
+        <div class="navbar-brand">JOE'S BURGERS</div>
+        <div class="nav-links">
             <span>Home</span>
             <span>Locations</span>
             <span>Contact</span>
         </div>
     </div>
 
-    <div className="hero">
-        <h1 style="font-size: 48px; margin-bottom: 10px;">Order Online</h1>
-        <p style="color: #71717a;">Fresh, local, and delivered straight to your door via TrueServe.</p>
+    <div class="hero">
+        <h1 class="hero-title">Order Online</h1>
+        <p class="hero-sub">Fresh, local, and delivered straight to your door via TrueServe.</p>
     </div>
 
-    <div className="container">
+    <div class="container">
         <!-- THE IFRAME SNIPPET -->
         <iframe 
             src="http://localhost:3000/restaurants/any?embed=true" 
             width="100%" 
             height="800px" 
-            frameborder="0" 
-            style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);"
+            title="TrueServe Menu Embed"
+            class="embed-frame"
         ></iframe>
     </div>
 
-    <div className="footer">
+    <div class="footer">
         &copy; 2024 Joe's Burgers. Powered by TrueServe Logistics.
     </div>
 
