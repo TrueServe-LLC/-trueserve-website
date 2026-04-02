@@ -21,124 +21,146 @@ export const dynamic = 'force-dynamic';
 
 export default async function DriverDashboard() {
     const driver = await getDriverOrRedirect();
-    const supabase = await createClient();
+    const isPreview = driver?.id === "preview-driver";
 
-    // Optimized Geo-Fenced Query: Only fetch orders within a ~0.5 degree range (approx 30-35 miles)
-    const lat = driver?.currentLat || 35.2271;
-    const lng = driver?.currentLng || -80.8431;
-    const range = 0.5; // Roughly 35 miles
+    // In preview mode, skip all DB/API calls and use mock data
+    let availableOrders: any[] = [];
+    let myOrders: any[] = [];
+    let weather = { temperature: 68, condition: "Clear", multiplier: 1.0 };
+    let stats = { totalEarnings: 0, balance: 0, trips: 0, rating: 0 };
 
-    const { data: rawOrders } = await supabase
-        .from('Order')
-        .select(`*, restaurant:Restaurant(name, address, lat, lng)`)
-        .is('driverId', null)
-        .neq('status', 'DELIVERED')
-        .neq('status', 'COMPLETED')
-        .gte('restaurant.lat', lat - range)
-        .lte('restaurant.lat', lat + range)
-        .gte('restaurant.lng', lng - range)
-        .lte('restaurant.lng', lng + range)
-        .order('createdAt', { ascending: false })
-        .limit(20);
-
-    const weather = await getCurrentWeather(driver?.currentLat || 35.2271, driver?.currentLng || -80.8431);
-
-    let availableOrders = rawOrders || [];
-
-    if (driver && driver.currentLat && driver.currentLng) {
-        availableOrders = availableOrders.map((order: any) => {
-            const dist = Number(calculateDistance(
-                driver.currentLat,
-                driver.currentLng,
-                order.restaurant?.lat || 35.2271,
-                order.restaurant?.lng || -80.8431
-            ));
-            return { ...order, distance: dist };
-        }).sort((a: any, b: any) => a.distance - b.distance);
+    if (isPreview) {
+        availableOrders = [
+            { id: "p1", restaurant: { name: "Emerald Kitchen", address: "842 Poplar Tent Rd, Concord NC", lat: 35.22, lng: -80.84 }, distance: 1.2, total: 24.50, status: "READY_FOR_PICKUP" },
+            { id: "p2", restaurant: { name: "Mount Airy BBQ", address: "1220 Rockford St, Mount Airy NC", lat: 36.50, lng: -80.61 }, distance: 0.8, total: 32.00, status: "READY_FOR_PICKUP" },
+            { id: "p3", restaurant: { name: "Pho Saigon", address: "2200 Union Rd, Charlotte NC", lat: 35.18, lng: -80.80 }, distance: 4.1, total: 18.75, status: "PENDING" },
+            { id: "p4", restaurant: { name: "Sushi Neko", address: "555 Trade St, Charlotte NC", lat: 35.23, lng: -80.85 }, distance: 5.3, total: 22.00, status: "PENDING" },
+        ];
+        myOrders = [
+            { id: "m1", status: "READY_FOR_PICKUP", total: 28.50, tip: 4.00, restaurant: { name: "Emerald Kitchen", address: "842 Poplar Tent Rd, Concord NC", lat: 35.22, lng: -80.84 }, user: { id: "u1", name: "Sarah Chen", phone: "+15559876543" }, deliveryAddress: "1500 Morehead St, Charlotte NC", deliveryInstructions: "Leave at front door, do not ring bell. Gate code: 4821.", deliveryLat: 35.21, deliveryLng: -80.86 },
+        ];
+        stats = {
+            totalEarnings: Number(driver?.totalEarnings || 248.50),
+            balance: Number(driver?.balance || 62.00),
+            trips: driver?.orders?.length || 27,
+            rating: Number(driver?.rating || 4.9),
+        };
     } else {
-        availableOrders = availableOrders.map((o: any) => ({ ...o, distance: 2.5 }));
+        const supabase = await createClient();
+
+        const lat = driver?.currentLat || 35.2271;
+        const lng = driver?.currentLng || -80.8431;
+        const range = 0.5;
+
+        const { data: rawOrders } = await supabase
+            .from('Order')
+            .select(`*, restaurant:Restaurant(name, address, lat, lng)`)
+            .is('driverId', null)
+            .neq('status', 'DELIVERED')
+            .neq('status', 'COMPLETED')
+            .gte('restaurant.lat', lat - range)
+            .lte('restaurant.lat', lat + range)
+            .gte('restaurant.lng', lng - range)
+            .lte('restaurant.lng', lng + range)
+            .order('createdAt', { ascending: false })
+            .limit(20);
+
+        weather = await getCurrentWeather(driver?.currentLat || 35.2271, driver?.currentLng || -80.8431);
+
+        availableOrders = rawOrders || [];
+
+        if (driver && driver.currentLat && driver.currentLng) {
+            availableOrders = availableOrders.map((order: any) => {
+                const dist = Number(calculateDistance(
+                    driver.currentLat,
+                    driver.currentLng,
+                    order.restaurant?.lat || 35.2271,
+                    order.restaurant?.lng || -80.8431
+                ));
+                return { ...order, distance: dist };
+            }).sort((a: any, b: any) => a.distance - b.distance);
+        } else {
+            availableOrders = availableOrders.map((o: any) => ({ ...o, distance: 2.5 }));
+        }
+
+        availableOrders = availableOrders.slice(0, 5);
+
+        const { data: activeOrders } = driver ? await supabase
+            .from('Order')
+            .select(`
+                *,
+                restaurant:Restaurant(name, address, lat, lng),
+                user:User(id, name, phone)
+            `)
+            .eq('driverId', driver?.id)
+            .neq('status', 'DELIVERED')
+            .neq('status', 'COMPLETED')
+            : { data: [] };
+
+        myOrders = activeOrders || [];
+
+        stats = {
+            totalEarnings: driver ? Number((driver as any).totalEarnings || 0) : 0,
+            balance: driver ? Number((driver as any).balance || 0) : 0,
+            trips: driver?.orders?.length || 0,
+            rating: driver ? Number((driver as any).rating || 5.0) : 5.0,
+        };
     }
-
-    availableOrders = availableOrders.slice(0, 5);
-
-    // Fetch My Active Orders (with customer info)
-    const { data: myOrders } = driver ? await supabase
-        .from('Order')
-        .select(`
-            *,
-            restaurant:Restaurant(name, address, lat, lng),
-            user:User(id, name, phone)
-        `)
-        .eq('driverId', driver?.id)
-        .neq('status', 'DELIVERED')
-        .neq('status', 'COMPLETED')
-        : { data: [] };
-
-    const stats = {
-        totalEarnings: driver ? Number((driver as any).totalEarnings || 0) : 0,
-        balance: driver ? Number((driver as any).balance || 0) : 0,
-        trips: driver?.orders?.length || 0,
-        rating: driver ? Number((driver as any).rating || 0) : 0,
-    };
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans">
             {driver && <DriverRealtime driverId={driver.id} />}
 
-            {/* Standardized Replit-Style Top-Nav */}
-            <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5 px-6 py-4 flex justify-between items-center text-sans">
-                <div className="flex items-center gap-4">
-                    <Logo size="md" />
-                    <div className="h-6 w-px bg-white/10 mx-2"></div>
-                    <nav className="flex items-center gap-1">
-                        <Link href="/restaurants" className="nav-link px-6 text-slate-400">🍴 Order Food</Link>
-                        <Link href="/driver/dashboard" className="nav-link px-6 text-emerald-500 bg-emerald-500/5 rounded-full">🛵 Dashboard</Link>
-                        <Link href="/driver" className="nav-link px-6 text-slate-400">🏁 Fleet Hub</Link>
-                    </nav>
+            {/* Standardized Portal Nav (Mirroring Layout styles) */}
+            <div className="db-nav font-sans">
+                <div className="db-nav-brand">True <span>SERVE</span></div>
+                <div className="db-nav-links">
+                    <Link href="/restaurants" className="db-nav-link text-slate-500 hover:text-white transition-colors">Order Food</Link>
+                    <Link href="/driver/dashboard" className="db-nav-link active">Dashboard</Link>
+                    <div className="flex items-center gap-3 ml-2">
+                         <ModeToggle />
+                         <LogoutButton />
+                    </div>
                 </div>
-                <div className="flex items-center gap-6">
-                    <ModeToggle />
-                    <LogoutButton />
-                </div>
-            </nav>
+            </div>
 
-            <main className="container py-12 md:py-24 px-4 md:px-8 pb-40 font-sans">
-                {/* Replit-Style Header Title Stack */}
-                <div className="mb-16 flex flex-col md:flex-row md:items-center justify-between gap-6 max-w-7xl mx-auto px-2">
+            <main className="container py-8 md:py-20 px-4 md:px-8 pb-40 font-sans">
+                {/* Header Title Stack */}
+                <div className="mb-12 md:mb-16 flex flex-col md:flex-row md:items-center justify-between gap-6 max-w-7xl mx-auto px-2">
                     <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-3xl shadow-xl font-sans">🏎️</div>
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-3xl shadow-xl font-sans">🏎️</div>
                         <div>
-                            <h1 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight">
+                            <h1 className="text-xl md:text-3xl lg:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight">
                                 Fleet Mission Hub
                             </h1>
-                            <p className="text-slate-500 text-xs md:text-sm font-black uppercase tracking-widest mt-1">
-                                Welcome back, {driver.name.split(' ')[0]}. Grid temp: {weather.temperature}°F
+                            <p className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-widest mt-1">
+                                Welcome back, {(driver?.name || driver?.user?.name || 'Driver').split(' ')[0]}. Grid temp: {weather.temperature}°F
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Primary Stats Grid */}
-                <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-stats gap-4 md:gap-8 mb-16">
-                    <Link href="/driver/dashboard/earnings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-8 rounded-[2.5rem] hover:bg-white/[0.08] active:scale-[0.98] transition-all shadow-xl">
-                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-5 group-hover:scale-110 transition-transform">💰</div>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Total Earnings</p>
-                        <p className="text-3xl md:text-5xl font-black text-white tracking-tighter italic uppercase">${stats.totalEarnings.toFixed(2)}</p>
+                {/* Primary Stats Grid - Optimized for Mobile & Production Data */}
+                <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 mb-12 md:mb-16">
+                    <Link href="/driver/dashboard/earnings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] hover:bg-white/[0.08] active:scale-[0.98] transition-all shadow-xl">
+                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-5 group-hover:scale-110 transition-transform">💰</div>
+                        <p className="text-slate-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3">Daily Yield</p>
+                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-white tracking-tighter italic uppercase">${stats.totalEarnings.toFixed(2)}</p>
                     </Link>
-                    <div className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-8 rounded-[2.5rem] shadow-xl">
-                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-5">🛵</div>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Trips</p>
-                        <p className="text-3xl md:text-5xl font-black text-white tracking-tighter italic uppercase">{stats.trips}</p>
+                    <div className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-xl">
+                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-5">🛵</div>
+                        <p className="text-slate-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3">Trips</p>
+                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-white tracking-tighter italic uppercase">{stats.trips}</p>
                     </div>
-                    <Link href="/driver/dashboard/ratings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-8 rounded-[2.5rem] hover:bg-white/[0.08] transition-all shadow-xl">
-                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-5 group-hover:scale-110 transition-transform">⭐</div>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Fleet Rating</p>
-                        <p className="text-3xl md:text-5xl font-black text-yellow-500 tracking-tighter italic uppercase">★ {stats.rating}</p>
+                    <Link href="/driver/dashboard/ratings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] hover:bg-white/[0.08] transition-all shadow-xl">
+                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-5 group-hover:scale-110 transition-transform">⭐</div>
+                        <p className="text-slate-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3">Fleet Rating</p>
+                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-yellow-500 tracking-tighter italic uppercase">★ {stats.rating.toFixed(1)}</p>
                     </Link>
-                    <div className="group relative overflow-hidden bg-emerald-500/5 border border-emerald-500/10 p-8 rounded-[2.5rem] shadow-xl">
-                        <div className="absolute top-0 right-0 p-8 text-5xl opacity-10 font-sans">🏆</div>
-                        <p className="text-emerald-500/50 text-[10px] font-black uppercase tracking-[0.2em] mb-3 font-sans">Tier Status</p>
-                        <p className="text-3xl md:text-5xl font-black text-emerald-400 tracking-tighter italic uppercase">GOLD</p>
+                    <div className="group relative overflow-hidden bg-emerald-500/5 border border-emerald-500/10 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-xl">
+                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-10 font-sans">🏆</div>
+                        <p className="text-emerald-500/50 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3 font-sans">Status</p>
+                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-emerald-400 tracking-tighter italic uppercase">{driver?.status || 'ONLINE'}</p>
                     </div>
                 </div>
 
@@ -171,8 +193,8 @@ export default async function DriverDashboard() {
                                         }
 
                                         return (
-                                        <div key={order.id} className={`p-8 border rounded-[2.5rem] flex justify-between items-center group transition-all relative overflow-hidden ${isStackedOpportunity ? 'bg-orange-500/[0.05] border-orange-500/30 shadow-[0_0_30px_rgba(249,115,22,0.15)] ring-1 ring-orange-500/50' : index === 0 ? 'bg-emerald-500/[0.03] border-emerald-500/20 shadow-lg' : 'bg-black/40 border-white/10 hover:border-emerald-500/20'}`}>
-                                            <div className="flex-1 text-left relative z-10">
+                                        <div key={order.id} className={`p-6 md:p-8 border rounded-[2.5rem] flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group transition-all relative overflow-hidden ${isStackedOpportunity ? 'bg-orange-500/[0.05] border-orange-500/30 shadow-[0_0_30px_rgba(249,115,22,0.15)] ring-1 ring-orange-500/50' : index === 0 ? 'bg-emerald-500/[0.03] border-emerald-500/20 shadow-lg' : 'bg-black/40 border-white/10 hover:border-emerald-500/20'}`}>
+                                            <div className="flex-1 text-left relative z-10 w-full">
                                                 <div className="flex items-center gap-3 mb-2 flex-wrap">
                                                      <h3 className={`font-black text-xl italic group-hover:text-emerald-500 transition-colors tracking-tight uppercase ${isStackedOpportunity ? 'text-orange-400' : 'text-white'}`}>{order.restaurant?.name || "Restaurant"}</h3>
                                                      {isStackedOpportunity && <span className="bg-orange-500 text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap animate-pulse flex items-center gap-1">🔥 Stacked Order Route</span>}
@@ -191,8 +213,8 @@ export default async function DriverDashboard() {
                                             <form action={async () => {
                                                 "use server";
                                                 await acceptOrder(order.id);
-                                            }} className="ml-6">
-                                                <button type="submit" className="badge-emerald py-4 px-10 text-[10px] group-hover:scale-105 transition-transform">Accept</button>
+                                            }} className="w-full md:w-auto">
+                                                <button type="submit" className="badge-emerald py-4 px-10 text-[10px] w-full group-hover:scale-105 transition-transform">Accept</button>
                                             </form>
                                         </div>
                                         );

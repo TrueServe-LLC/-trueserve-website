@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrueServe — Driver Portal Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,900;1,9..40,700;1,9..40,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080a0f;font-family:'DM Sans',sans-serif;color:#fff;min-height:100vh}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;background:#0c0e13;border-bottom:1px solid #1c1f28}
+.nav-brand{font-size:15px;font-weight:700;color:#fff}.nav-brand span{color:#e8a230}
+.nav-links{display:flex;gap:2px;margin-left:24px}
+.nav-link{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555;padding:6px 14px;text-decoration:none;height:52px;display:flex;align-items:center;border-bottom:2px solid transparent}
+.nav-link.active{color:#e8a230;border-bottom-color:#e8a230}
+.nl{display:flex;align-items:center}.nr{display:flex;align-items:center;gap:8px}
+.bal{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);padding:3px 10px;display:flex;flex-direction:column;align-items:flex-end}
+.bal-l{font-size:7px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#555;line-height:1}
+.bal-v{font-size:10px;font-weight:700;color:#3dd68c;line-height:1.4}
+.mt{display:flex;gap:1px}
+.mtb{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;background:#131720;border:1px solid #1c1f28;color:#555;cursor:pointer}
+.mtb.ac{background:#e8a230;color:#000;border-color:#e8a230}
+.av{width:30px;height:30px;background:#1c1f28;border:1px solid #2a2f3a;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#888;font-family:'DM Mono',monospace}
+.sn{background:#0f1219;border-bottom:1px solid #1c1f28;padding:0 24px}
+.sn-inner{display:flex;align-items:center;gap:28px;height:40px}
+.sl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#555;text-decoration:none;height:100%;display:flex;align-items:center;border-bottom:1.5px solid transparent;cursor:pointer}
+.sl.ac{color:#e8a230;border-bottom-color:#e8a230}
+.main{padding:36px 24px 80px;max-width:1280px;margin:0 auto}
+.pb{background:#1a1200;border-bottom:1px solid #3a2800;padding:5px 24px;display:flex;align-items:center;gap:8px}
+.pd{width:6px;height:6px;background:#e8a230;border-radius:50%;flex-shrink:0}
+.pt{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e8a230}
+.hero{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.hi{width:52px;height:52px;background:rgba(61,214,140,.07);border:1px solid rgba(61,214,140,.15);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.ht{font-size:36px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.03em;line-height:1}
+.hs{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#444;margin-top:5px}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:20px}
+.sc{background:#0f1219;border:1px solid #1c1f28;padding:20px 18px;position:relative;overflow:hidden}
+.sc.em{background:rgba(61,214,140,.04);border-color:rgba(61,214,140,.12)}
+.sg-i{position:absolute;top:10px;right:12px;font-size:36px;opacity:.06;pointer-events:none}
+.sg-l{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#444;margin-bottom:10px}
+.sg-v{font-size:32px;font-weight:900;font-style:italic;letter-spacing:-.03em;line-height:1;font-family:'DM Mono',monospace}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.st{font-size:22px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:3px}
+.ss{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#2a2f3a;font-style:italic;margin-bottom:16px}
+.fc{border:1px solid #1c1f28;padding:16px 18px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#0c0e13}
+.fc.pri{background:rgba(61,214,140,.03);border-color:rgba(61,214,140,.2)}
+.fc.stk{background:rgba(249,115,22,.04);border-color:rgba(249,115,22,.28)}
+.fl{flex:1}
+.fn{font-size:14px;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.fn.stk{color:#fb923c}
+.pbx{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:#3dd68c;color:#000;padding:2px 7px}
+.sbx{font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#f97316;color:#000;padding:2px 7px;animation:bk 1.5s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.65}}
+.fa{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#2a2f3a;font-style:italic;margin-bottom:10px}
+.fbg{display:flex;gap:5px;flex-wrap:wrap}
+.fb{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border:1px solid}
+.fb-p{background:rgba(61,214,140,.07);color:#3dd68c;border-color:rgba(61,214,140,.2)}
+.fb-c{background:rgba(61,214,140,.07);color:#3dd68c;border-color:rgba(61,214,140,.2)}
+.fb-f{background:rgba(255,255,255,.02);color:#444;border-color:rgba(255,255,255,.05)}
+.fb-s{background:rgba(249,115,22,.07);color:#fb923c;border-color:rgba(249,115,22,.2)}
+.ab{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 18px;background:rgba(61,214,140,.08);border:1px solid rgba(61,214,140,.22);color:#3dd68c;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif}
+.ab:hover{background:#3dd68c;color:#000}
+.ab.stk{background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.25);color:#fb923c}
+.mc{background:rgba(61,214,140,.03);border:1px solid rgba(61,214,140,.16);padding:22px}
+.mc-t{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.mc-l{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#3dd68c;margin-bottom:5px}
+.mc-n{font-size:20px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.02em;color:#fff;margin-bottom:3px}
+.mc-a{font-size:9px;font-weight:500;color:#2a2f3a;font-style:italic;text-transform:uppercase;letter-spacing:.05em}
+.mb{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:#3dd68c;color:#000;padding:3px 9px;white-space:nowrap;animation:bk 2s infinite}
+.bf{background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.18);padding:10px 12px;display:flex;gap:9px;margin-bottom:12px}
+.bf-l{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fb923c;margin-bottom:3px}
+.bf-t{font-size:10px;color:#fed7aa;font-style:italic;line-height:1.4}
+.ma{display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:10px}
+.nvb{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;background:#e8a230;color:#000;border:none;cursor:pointer;font-style:italic;font-family:'DM Sans',sans-serif}
+.cb{width:36px;background:#131720;border:1px solid #2a2f3a;color:#888;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tip{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(232,162,48,.07);border:1px solid rgba(232,162,48,.15);color:#e8a230;padding:3px 9px;font-style:italic;display:inline-block;margin-bottom:10px}
+.pr{background:#0c0e13;border:1px solid #1c1f28;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;margin-top:8px}
+.pr-l{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#444;margin-bottom:2px}
+.pr-s{font-size:10px;color:#666;font-style:italic}
+.ub{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;background:rgba(232,162,48,.08);border:1px solid rgba(232,162,48,.18);color:#e8a230;cursor:pointer;font-family:'DM Sans',sans-serif}
+.tm{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2a2f3a;font-style:italic;cursor:pointer;display:block;text-align:center;padding-top:10px;border-top:1px solid rgba(61,214,140,.06)}
+.col3{display:grid;grid-template-columns:1fr 1fr 300px;gap:14px;margin-top:16px}
+.lc{background:#0f1219;border:1px solid #1c1f28;overflow:hidden;margin-bottom:8px}
+.lt{width:100%;border-collapse:collapse}
+.lt thead th{padding:9px 14px;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#333;font-style:italic;text-align:left;background:#0c0e13;border-bottom:1px solid #1c1f28}
+.lt tbody td{padding:9px 14px;font-size:10px;border-bottom:1px solid #1a1d26}
+.lt tbody tr:last-child td{border-bottom:none}
+.ct{font-weight:700;font-style:italic;text-transform:uppercase;color:#333;letter-spacing:.07em}
+.cl{font-weight:700;font-style:italic;text-transform:uppercase;color:#bbb}
+.cy{font-weight:600;font-style:italic;text-transform:uppercase;color:#444}
+.cs{font-weight:800;font-style:italic;text-transform:uppercase;color:#3dd68c;text-align:right}
+.mp{background:#0c0e13;border:1px solid #1c1f28;height:160px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.mg{position:absolute;inset:0;background-image:linear-gradient(#1c1f2830 1px,transparent 1px),linear-gradient(90deg,#1c1f2830 1px,transparent 1px);background-size:22px 22px}
+.md{width:8px;height:8px;background:#3dd68c;border-radius:50%;z-index:1;box-shadow:0 0 14px rgba(61,214,140,.8)}
+.mr{width:36px;height:36px;border:1px solid rgba(61,214,140,.35);border-radius:50%;position:absolute;animation:rp 2s infinite}
+@keyframes rp{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.8);opacity:0}}
+.ml{position:absolute;bottom:10px;left:12px;font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#2a2f3a}
+.sst{font-size:13px;font-weight:800;font-style:italic;text-transform:uppercase;color:#ccc;margin-bottom:10px}
+.mcp{background:rgba(61,214,140,.04);border:1px solid rgba(61,214,140,.14);padding:18px;margin-bottom:8px}
+.sdl{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.sdd{width:7px;height:7px;background:#3dd68c;border-radius:50%;animation:bk 2s infinite;flex-shrink:0}
+.sdb{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(61,214,140,.08);border:1px solid rgba(61,214,140,.14);color:#3dd68c;padding:2px 8px}
+.sr{display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#333;font-style:italic;padding:2px 0}
+.sr em{font-style:normal;color:#fff}
+.sr em.g{color:#3dd68c}
+.ob{width:100%;margin-top:12px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px;background:rgba(226,75,74,.06);border:1px solid rgba(226,75,74,.2);color:#e24b4a;cursor:pointer;font-family:'DM Sans',sans-serif}
+.lqp{background:rgba(232,162,48,.04);border:1px solid rgba(232,162,48,.14);padding:18px}
+.lql{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#444;font-style:italic;margin-bottom:10px}
+.lqa{font-size:34px;font-weight:900;font-style:italic;letter-spacing:-.04em;color:#fff;margin-bottom:12px;font-family:'DM Mono',monospace}
+.cob{width:100%;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:9px;background:#e8a230;border:none;color:#000;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px}
+.lqf{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#2a2f3a;text-align:center;font-style:italic}
+</style>
+</head>
+<body>
+<div class="pb"><span class="pd"></span><span class="pt">Static Preview — Driver Portal · Fleet Mission Hub</span></div>
+<div class="nav"><div class="nl"><div class="nav-brand">True<span>SERVE</span></div><div class="nav-links"><a class="nav-link">Marketplace</a><a class="nav-link active">Fleet Dashboard</a><a class="nav-link">Fleet Hub</a></div></div><div class="nr"><div class="bal"><span class="bal-l">Balance</span><span class="bal-v">$125.50</span></div><div class="mt"><div class="mtb ac">Delivery</div><div class="mtb">Pickup</div></div><div class="av">DR</div></div></div>
+<div class="sn"><div class="sn-inner"><a class="sl ac">Home</a><a class="sl">Earnings</a><a class="sl">Ratings</a><a class="sl">Preferences</a><a class="sl">Account</a><a class="sl" style="margin-left:auto;color:#333">Exit Shift</a></div></div>
+<div class="main">
+<div class="hero"><div class="hi">🏎️</div><div><div class="ht">Fleet Mission Hub</div><div class="hs">Welcome back, Marcus. Grid temp: 68°F</div></div></div>
+<div class="sg">
+<div class="sc"><div class="sg-i">💰</div><div class="sg-l">Total Earnings</div><div class="sg-v" style="color:#fff">$248.50</div></div>
+<div class="sc"><div class="sg-i">🛵</div><div class="sg-l">Trips</div><div class="sg-v" style="color:#fff">27</div></div>
+<div class="sc"><div class="sg-i">⭐</div><div class="sg-l">Fleet Rating</div><div class="sg-v" style="color:#f59e0b">★ 4.9</div></div>
+<div class="sc em"><div class="sg-i" style="opacity:.1">🏆</div><div class="sg-l" style="color:rgba(61,214,140,.35)">Tier Status</div><div class="sg-v" style="color:#3dd68c">GOLD</div></div>
+</div>
+<div class="tc">
+<div><div class="st">Localized Feed</div><div class="ss">Optimized for your current operational sector</div>
+<div class="fc pri"><div class="fl"><div class="fn">Emerald Kitchen <span class="pbx">Priority Link</span></div><div class="fa">842 Poplar Tent Rd, Concord NC</div><div class="fbg"><span class="fb fb-p">$8.40 yield</span><span class="fb fb-c">1.2 mi</span></div></div><button class="ab">Accept</button></div>
+<div class="fc stk"><div class="fl"><div class="fn stk">Mount Airy BBQ <span class="sbx">🔥 Stacked Route</span></div><div class="fa">1220 Rockford St, Mount Airy NC</div><div class="fbg"><span class="fb fb-p">$11.20 yield</span><span class="fb fb-s">0.8 mi</span></div></div><button class="ab stk">Accept</button></div>
+<div class="fc"><div class="fl"><div class="fn">Pho Saigon</div><div class="fa">2200 Union Rd, Charlotte NC</div><div class="fbg"><span class="fb fb-p">$6.80 yield</span><span class="fb fb-f">4.1 mi</span></div></div><button class="ab">Accept</button></div>
+<div class="fc"><div class="fl"><div class="fn">Sushi Neko</div><div class="fa">555 Trade St, Charlotte NC</div><div class="fbg"><span class="fb fb-p">$7.50 yield</span><span class="fb fb-f">5.3 mi</span></div></div><button class="ab">Accept</button></div>
+</div>
+<div><div class="st">Active Missions</div><div class="ss">Your assigned operational payloads</div>
+<div class="mc"><div class="mc-t"><div><div class="mc-l">Pickup Mission</div><div class="mc-n">Emerald Kitchen</div><div class="mc-a">842 Poplar Tent Rd, Concord NC</div></div><span class="mb">Mesh Active</span></div>
+<div class="bf"><span style="font-size:15px;margin-top:1px">📝</span><div><div class="bf-l">Customer Briefing</div><div class="bf-t">Leave at front door, do not ring bell. Gate code: 4821.</div></div></div>
+<div class="ma"><button class="nvb">Nav → Sector</button><button class="cb">💬</button></div>
+<div><span class="tip">$4.00 Tip Entry</span></div>
+<div class="pr"><div><div class="pr-l">Pickup Confirmation</div><div class="pr-s">Upload photo to confirm pickup</div></div><button class="ub">Photo Upload</button></div>
+<div class="tm">Terminate Mission Connection</div>
+</div></div></div>
+<div class="col3"><div style="grid-column:span 2"><div class="st">Ledger &amp; Mesh</div><div class="ss">Historical yield and sector forecasting</div>
+<div class="lc"><table class="lt"><thead><tr><th>Timeline</th><th>Dispatch</th><th>Yield</th><th style="text-align:right">Settlement</th></tr></thead><tbody><tr><td class="ct">Sync Log 26</td><td class="cl">2.5 mi link</td><td class="cy">$4.10</td><td class="cs">$8.50</td></tr><tr><td class="ct">Sync Log 25</td><td class="cl">5.0 mi link</td><td class="cy">$5.20</td><td class="cs">$12.40</td></tr><tr><td class="ct">Sync Log 24</td><td class="cl">7.5 mi link</td><td class="cy">$6.30</td><td class="cs">$16.80</td></tr></tbody></table></div>
+<div class="mp"><div class="mg"></div><div style="position:relative;display:flex;align-items:center;justify-content:center"><div class="mr"></div><div class="md"></div></div><div class="ml">Downtown Grid · Sector Active</div></div>
+</div><div>
+<div class="sst">Mission Control</div>
+<div class="mcp"><div class="sdl"><span class="sdd"></span><span class="sdb">Sector Active</span></div><div class="sr">Main Sector: <em>Downtown Grid</em></div><div class="sr">Hourly Yield: <em class="g">$24.50 est.</em></div><button class="ob">Go Offline</button></div>
+<div class="sst" style="margin-top:16px">Rapid Liquidity</div>
+<div class="lqp"><div class="lql">T+0 Settlement Ready</div><div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e8a230;font-style:italic;margin-bottom:4px">Liquid Balance</div><div class="lqa">$62.00</div><button class="cob">Cash Out Funds</button><div class="lqf">Processing Protocol: $0.50</div></div>
+</div></div>
+</div>
+</body></html>

@@ -6,7 +6,6 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import ModeToggle from "@/components/ModeToggle";
 import NotificationBell from "@/components/NotificationBell";
-import SpotCheckTrigger from "@/components/SpotCheckTrigger";
 import SupportWidget from "@/components/SupportWidget";
 
 export const dynamic = 'force-dynamic';
@@ -14,34 +13,79 @@ export const dynamic = 'force-dynamic';
 export default async function DriverDashboardLayout({ children }: { children: React.ReactNode }) {
     const { isAuth, userId, role } = await getAuthSession();
     const cookieStore = await cookies();
+    const isPreview = cookieStore.get("preview_mode")?.value === "true";
     const cookieUserId = cookieStore.get("userId")?.value;
-    
     const activeUserId = userId || cookieUserId;
 
-    if (!activeUserId) {
+    if (!activeUserId && !isPreview) {
         redirect('/driver/login?next=/driver/dashboard');
     }
 
-    const { data: driver } = await supabaseAdmin
-        .from('Driver')
-        .select('*, user:User(*)')
-        .eq('userId', activeUserId)
-        .maybeSingle();
+    let driverData: any = null;
 
-    if (!driver) {
-        redirect('/driver');
+    if (isPreview) {
+        driverData = { 
+            id: 'preview-driver', 
+            userId: 'preview-user-id',
+            balance: 125.50,
+            user: { name: 'Preview Driver' } 
+        };
+    } else {
+        const { data } = await supabaseAdmin
+            .from('Driver')
+            .select('*, user:User(*)')
+            .eq('userId', activeUserId)
+            .maybeSingle();
+        
+        if (!data) {
+            redirect('/driver');
+        }
+        driverData = data;
     }
 
-    const driverInitials = (driver as any).user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || 'DR';
-    const balance = Number((driver as any).balance || 0);
+    const driverInitials = driverData?.user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || 'DR';
+    const balance = Number(driverData?.balance || 0);
 
     return (
-        <div className="db min-h-screen">
+        <>
+            <style>{`
+                .db { background: #0c0e13 !important; font-family: 'DM Sans', sans-serif; color: #fff !important; min-height: 100vh; }
+                
+                .db-nav { 
+                    display: flex; align-items: center; justify-content: space-between; 
+                    padding: 12px 16px; min-height: 52px; background: #0c0e13; border-bottom: 1px solid #1c1f28; 
+                    position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 12px;
+                }
+                .db-nav-brand { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.02em; }
+                .db-nav-brand span { color: #e8a230; }
+                
+                .db-nav-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+                .db-nav-link { 
+                    font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: #888; 
+                    padding: 6px 10px; cursor: pointer; text-transform: uppercase; text-decoration: none; transition: color 0.2s;
+                }
+                .db-nav-link:hover { color: #fff; }
+                .db-nav-link.active { color: #e8a230; border-bottom: 2px solid #e8a230; }
+
+                .db-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; padding: 4px 10px; text-transform: uppercase; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; }
+                .db-badge-gray { background: #1a1c24; color: #666; border: 1px solid #2a2f3a; }
+                
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+                @media (max-width: 640px) {
+                    .db-nav { padding: 12px; justify-content: center; }
+                    .db-nav-links { justify-content: center; width: 100%; }
+                    .db-nav-brand { width: 100%; justify-content: center; margin-bottom: 4px; }
+                }
+            `}</style>
+
+            <div className="db min-h-screen">
             {/* Standardized Portal Nav (Matches Admin) */}
             <div className="db-nav">
                 <div className="db-nav-brand">True <span>SERVE</span></div>
                 <div className="db-nav-links font-sans">
-                    <Link href="/restaurants" className="db-nav-link">🍴 Order Food</Link>
+                    <Link href="/restaurants" className="db-nav-link text-slate-500 hover:text-white transition-colors">Marketplace</Link>
                     <Link href="/driver/dashboard" className="db-nav-link active">Fleet Dashboard</Link>
                     <div className="flex items-center gap-3 ml-4">
                         <div className="hidden md:flex items-center gap-4 bg-white/5 px-4 py-1.5 border border-white/5 h-8">
@@ -50,7 +94,7 @@ export default async function DriverDashboardLayout({ children }: { children: Re
                                 <p className="text-emerald-400 text-[10px] font-black leading-none">${balance.toFixed(2)}</p>
                             </div>
                         </div>
-                        {driver && <NotificationBell userId={(driver as any).userId} />}
+                        {driverData && <NotificationBell userId={driverData.userId} />}
                         <ModeToggle />
                         <Link href="/driver/dashboard/account" className="db-badge db-badge-gray !px-3 font-mono">
                             {driverInitials}
@@ -80,5 +124,6 @@ export default async function DriverDashboardLayout({ children }: { children: Re
             {/* AI Support Copilot */}
             <SupportWidget role="DRIVER" />
         </div>
+        </>
     );
 }

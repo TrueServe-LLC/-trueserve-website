@@ -322,21 +322,21 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <div className="sec-hd">
                     <div className="sec-title">📜 System Audit Log <span className="badge badge-gray">{auditLogs.length} Recent</span></div>
                 </div>
-                            <div className="bg-[#0f1219] border border-[#1c1f28] mb-10">
-                                <table className="audit-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Actor</th><th>Action</th><th>Target</th><th>Time</th><th>Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {auditLogs.length === 0 ? (
-                                            <tr><td colSpan={5} className="empty-panel !text-[#2a2f3a]">No recent audit entries.</td></tr>
-                                        ) : (
-                                            auditLogs.map(log => (
-                                                <tr key={log.id}>
-                                                    <td>{log.actor?.name || 'System'}</td>
-                                                    <td className="text-[#e8a230]">{log.action.replace(/_/g, ' ')}</td>
+                <div className="bg-[#0f1219] border border-[#1c1f28] mb-10 audit-table-container">
+                    <table className="audit-table">
+                        <thead>
+                            <tr>
+                                <th>Actor</th><th>Action</th><th>Target</th><th>Time</th><th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {auditLogs.length === 0 ? (
+                                <tr><td colSpan={5} className="empty-panel !text-[#2a2f3a]">No recent audit entries.</td></tr>
+                            ) : (
+                                auditLogs.map(log => (
+                                    <tr key={log.id}>
+                                        <td>{log.actor?.name || 'System'}</td>
+                                        <td className="text-[#e8a230]">{log.action.replace(/_/g, ' ')}</td>
                                         <td>{log.entityType}</td>
                                         <td>{new Date(log.createdAt).toLocaleTimeString()}</td>
                                         <td>{log.message || '—'}</td>

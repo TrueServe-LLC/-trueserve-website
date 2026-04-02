@@ -209,13 +209,8 @@ export default function OrderConfirmAnimation({ restaurantName, onComplete }: Or
                     {[...Array(6)].map((_, i) => (
                         <div
                             key={i}
-                            className="absolute w-1 h-1 rounded-full bg-amber-400 opacity-50 spark"
-                            style={{
-                                top: `${48 + Math.sin(i * 1.3) * 8}%`,
-                                left: `${35 + i * 6}%`,
-                                animationName: `spark-${i % 3}`,
-                                animationDelay: `${i * 0.13}s`,
-                            } as React.CSSProperties}
+                            className="absolute w-1 h-1 rounded-full bg-amber-400 opacity-50 spark-particle"
+                            data-index={i}
                         />
                     ))}
                 </div>
@@ -224,10 +219,8 @@ export default function OrderConfirmAnimation({ restaurantName, onComplete }: Or
             {/* Progress bar at bottom */}
             <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5">
                 <div
-                    className="h-full bg-amber-500 transition-[width] duration-[3.5s] linear"
-                    style={{
-                        width: phase === "enter" ? "0%" : phase === "drive" ? "90%" : "100%"
-                    }}
+                    className="h-full bg-amber-500 progress-bar"
+                    data-phase={phase}
                 />
             </div>
 
@@ -262,7 +255,23 @@ export default function OrderConfirmAnimation({ restaurantName, onComplete }: Or
                 .animate-exhaust { animation: exhaust 0.7s ease-out infinite; }
                 .animate-city { animation: cityscape-scroll 4s linear infinite; }
                 .animate-speed { animation: speed-lines 0.3s linear infinite; }
-                .spark { animation: spark-0 0.8s ease-out infinite; /* default */ }
+                
+                .spark-particle {
+                    animation-duration: 0.8s;
+                    animation-timing-function: ease-out;
+                    animation-iteration-count: infinite;
+                }
+                .spark-particle[data-index="0"] { top: 48%; left: 35%; animation-name: spark-0; animation-delay: 0s; }
+                .spark-particle[data-index="1"] { top: 55%; left: 41%; animation-name: spark-1; animation-delay: 0.13s; }
+                .spark-particle[data-index="2"] { top: 42%; left: 47%; animation-name: spark-2; animation-delay: 0.26s; }
+                .spark-particle[data-index="3"] { top: 50%; left: 53%; animation-name: spark-0; animation-delay: 0.39s; }
+                .spark-particle[data-index="4"] { top: 45%; left: 59%; animation-name: spark-1; animation-delay: 0.52s; }
+                .spark-particle[data-index="5"] { top: 52%; left: 65%; animation-name: spark-2; animation-delay: 0.65s; }
+
+                .progress-bar { transition: width 3.5s linear; width: 0%; }
+                .progress-bar[data-phase="enter"] { width: 0%; }
+                .progress-bar[data-phase="drive"] { width: 90%; }
+                .progress-bar[data-phase="exit"] { width: 100%; }
 
                 @keyframes road-scroll {
                     from { transform: translateX(0); }

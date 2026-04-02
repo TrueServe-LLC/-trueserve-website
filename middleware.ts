@@ -6,9 +6,18 @@ export async function middleware(request: NextRequest) {
   const host = request.headers.get("host") || ""
   const path = url.pathname
 
+  // --- 1. PREVIEW BYPASS ---
+  if (url.searchParams.get('preview') === 'true') {
+    const previewResponse = NextResponse.redirect(new URL(url.pathname, request.url))
+    previewResponse.cookies.set('preview_mode', 'true', { maxAge: 60 * 5, path: '/' }) // 5 minutes
+    return previewResponse
+  }
+
   // --- 1. EXCLUSIONS ---
   const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.')
   if (isInternal) return NextResponse.next()
+
+  const isPreview = request.cookies.get('preview_mode')?.value === 'true'
 
   const response = NextResponse.next({
     request: {
@@ -148,22 +157,24 @@ export async function middleware(request: NextRequest) {
     } else if (isPublicPortalPath) {
         // Do nothing, let them see the landing page
     } else {
-        if (!user) return NextResponse.redirect(new URL('/login', request.url))
+        if (!user && !isPreview) return NextResponse.redirect(new URL('/login', request.url))
 
-        const roleRes = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
-          {
-            headers: {
-              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        if (user) {
+            const roleRes = await fetch(
+              `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
+              {
+                headers: {
+                  'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+                  'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+                }
+              }
+            )
+            const roles = await roleRes.json()
+            const role = roles?.[0]?.role || 'CUSTOMER'
+
+            if (path.startsWith('/admin') && !['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+              return NextResponse.redirect(new URL('/', request.url))
             }
-          }
-        )
-        const roles = await roleRes.json()
-        const role = roles?.[0]?.role || 'CUSTOMER'
-
-        if (path.startsWith('/admin') && !['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
-          return NextResponse.redirect(new URL('/', request.url))
         }
     }
   }

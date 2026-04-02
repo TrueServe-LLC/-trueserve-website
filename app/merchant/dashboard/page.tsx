@@ -1,278 +1,279 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAuthSession } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { cookies } from "next/headers";
 import MerchantRealtime from "@/components/MerchantRealtime";
 import WelcomeModal from "./WelcomeModal";
-import LogoutButton from "@/components/LogoutButton";
-import { toggleBusyMode, updateOrderStatus, createStripeAccount } from "../actions";
-import MorningBriefing from "./MorningBriefing";
-import OperationalSettings from "./OperationalSettings";
-import SmartOperations from "./SmartOperations";
-import MenuArchitect from "./MenuArchitect";
-import MerchantAnalytics from "./MerchantAnalytics";
-import CustomerPulse from "./CustomerPulse";
-import DriverPerformance from "./DriverPerformance";
-import InventoryManager from "./InventoryManager";
-import MerchantRejectButton from "./MerchantRejectButton";
-import MenuScanner from "./MenuScanner";
-import AddItemForm from "./AddItemForm";
-import MenuRow from "./MenuRow";
-import EmbedManager from "./EmbedManager";
-import Logo from "@/components/Logo";
+import { createStripeAccount } from "../actions";
+import { logout } from "@/app/auth/actions";
+import PrepTimingPanel from "./PrepTimingPanel";
+import TerminalStatusPanel from "./TerminalStatusPanel";
+import AutoPilotPanel from "./AutoPilotPanel";
+import BusyZonesPanel from "./BusyZonesPanel";
+import IssuesPanel from "./IssuesPanel";
 
 export const dynamic = "force-dynamic";
 
 export default async function MerchantDashboard() {
+    const cookieStore = await cookies();
+    const isPreview = cookieStore.get("preview_mode")?.value === "true";
+    const cookieUserId = cookieStore.get("userId")?.value;
     const { isAuth, userId } = await getAuthSession();
-    if (!isAuth || !userId) {
+    const activeUserId = userId || cookieUserId;
+
+    if (!activeUserId && !isPreview) {
         redirect("/login?role=merchant");
     }
 
-    const supabase = await createClient();
+    let restaurant: any = null;
 
-    // Fetch Restaurant with all relations
-    const { data: restaurant, error } = await supabase
-        .from("Restaurant")
-        .select(`
-            *,
-            menuItems:MenuItem(*),
-            orders:Order(*, user:User(*)),
-            schedules:MerchantSchedule(*)
-        `)
-        .eq("ownerId", userId)
-        .single();
+    if (isPreview) {
+        restaurant = {
+            id: "preview",
+            name: "Emerald Kitchen (Preview)",
+            stripeAccountId: null,
+            isBusy: false,
+            busyUntil: null,
+            manualPrepTime: null,
+            autoPilotEnabled: true,
+            capacityThreshold: 10,
+            menuItems: [{ id: "1" }],
+            orders: [{ id: "1", status: "PENDING", total: 0 }],
+            schedules: [],
+        };
+    } else {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("Restaurant")
+            .select(`
+                *,
+                menuItems:MenuItem(*),
+                orders:Order(*, user:User(*)),
+                schedules:MerchantSchedule(*)
+            `)
+            .eq("ownerId", activeUserId!)
+            .single();
 
-    if (error || !restaurant) {
-        console.error("Dashboard Fetch Error:", error);
-        redirect("/merchant-signup");
+        if (error || !data) {
+            console.error("Dashboard Fetch Error:", error);
+            redirect("/merchant-signup");
+        }
+        restaurant = data;
     }
 
-    const pendingOrders = (restaurant.orders || [])
-        .filter((o: any) => ["PENDING", "PREPARING", "READY_FOR_PICKUP"].includes(o.status))
-        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const pendingOrders = (restaurant.orders || []).filter(
+        (o: any) => o.status === "PENDING" || o.status === "PREPARING"
+    );
 
-    const totalRevenue = (restaurant.orders || [])
-        .filter((o: any) => o.status === "DELIVERED" || o.status === "COMPLETED")
+    const netRevenue = (restaurant.orders || [])
+        .filter((o: any) => o.status === "DELIVERED" || o.status === "READY_FOR_PICKUP" || o.status === "PICKED_UP")
         .reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
 
+    const hasStripe = Boolean(restaurant.stripeAccountId);
+
     return (
-        <div className="db min-h-screen">
-            <MerchantRealtime restaurantId={restaurant.id} />
-            <WelcomeModal restaurantName={restaurant.name} />
+        <>
+            {/* Google Fonts for this page */}
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&family=DM+Mono:wght@400;500&display=swap');
 
-            {/* Standardized Portal Nav (Matches Admin) */}
-            <div className="db-nav">
-                <div className="db-nav-brand">True <span>SERVE</span></div>
-                <div className="db-nav-links font-sans">
-                    <Link href="/restaurants" className="db-nav-link">🍴 Order Food</Link>
-                    <Link href="/merchant/dashboard" className="db-nav-link active">Dashboard</Link>
-                    <Link href="/merchant" className="db-nav-link">Partner Hub</Link>
-                    <div className="ml-4">
-                        <LogoutButton />
-                    </div>
-                </div>
-            </div>
+                /* ── PAGE TOKENS ── */
+                .md-body { background: #0c0e13; font-family: 'DM Sans', sans-serif; color: #fff; }
+                .md-border { border: 1px solid #1c1f28; }
+                .md-border-top { border-top: 1px solid #1c1f28; }
+                .md-border-bottom { border-bottom: 1px solid #1c1f28; }
+                .md-panel { background: #0f1219; }
+                .md-surface { background: #131720; border: 1px solid #1c1f28; }
 
-            <main className="page max-w-7xl mx-auto">
-                {/* Header Title Stack */}
-                <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+                /* ── PAGE HEADER ── */
+                .md-page-hd {
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 16px 24px; border-bottom: 1px solid #1c1f28;
+                }
+                .md-page-title { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: #ccc; }
+                .md-page-sub { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #444; margin-top: 3px; }
+                .md-hd-right { display: flex; align-items: center; gap: 8px; }
+                .md-terminal-btn {
+                    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                    padding: 8px 16px; background: #131720; border: 1px solid #2a2f3a; color: #888;
+                    cursor: pointer; display: flex; align-items: center; gap: 6px;
+                }
+                .md-terminal-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; flex-shrink: 0; }
+                .md-scale-badge {
+                    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                    padding: 7px 12px; background: #0d2a1a; border: 1px solid #1a4a2a; color: #3dd68c;
+                }
+                .md-online-badge {
+                    font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+                    padding: 7px 12px; background: #e8a230; color: #000;
+                }
+                .md-logout {
+                    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+                    color: #444; cursor: pointer; background: none; border: none;
+                }
+
+                /* ── STAT GRID ── */
+                .md-stat-grid {
+                    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 20px 24px 0;
+                }
+                .md-stat-block { background: #0f1219; padding: 18px 20px; }
+                .md-stat-name { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 10px; }
+                .md-stat-value { font-size: 32px; font-weight: 700; color: #fff; font-family: 'DM Mono', monospace; line-height: 1; }
+                .md-stat-value.gold { color: #e8a230; }
+
+                /* ── STRIPE BANNER ── */
+                .md-stripe-banner {
+                    margin: 16px 24px 0; background: #111420; border: 1px solid #2a3060;
+                    padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+                }
+                .md-stripe-left { display: flex; align-items: center; gap: 16px; }
+                .md-stripe-icon {
+                    width: 44px; height: 44px; background: #1a1e3a; border: 1px solid #2a3060;
+                    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+                }
+                .md-stripe-title { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; font-style: italic; color: #fff; margin-bottom: 3px; }
+                .md-stripe-desc { font-size: 12px; color: #555; line-height: 1.5; }
+                .md-stripe-btn {
+                    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                    padding: 10px 20px; background: transparent; border: 1.5px solid #e8a230; color: #e8a230;
+                    cursor: pointer; white-space: nowrap; flex-shrink: 0;
+                }
+                .md-stripe-btn:hover { background: #e8a23015; }
+                .md-stripe-connected { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; white-space: nowrap; flex-shrink: 0; }
+
+                /* ── TWO-COL LOWER ── */
+                .md-two-col {
+                    display: grid; grid-template-columns: 1fr 1fr;
+                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 16px 24px 0;
+                }
+
+                /* ── BOTTOM TWO-COL ── */
+                .md-bottom-grid {
+                    display: grid; grid-template-columns: 1fr 1fr;
+                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 16px 24px 24px;
+                }
+
+                /* ── PANEL SHARED ── */
+                .md-panel-inner { background: #0f1219; padding: 18px 20px; }
+                .md-panel-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+                .md-panel-title { font-size: 14px; font-weight: 700; color: #ccc; }
+
+                /* ── LIVE DOT (reuse from layout) ── */
+                .md-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: md-pulse 2s infinite; }
+                @keyframes md-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+            `}</style>
+
+            <div className="md-body">
+                {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
+                <WelcomeModal restaurantName={restaurant.name} />
+
+                {/* PAGE HEADER */}
+                <div className="md-page-hd">
                     <div>
-                        <div className="page-title">Orders <span>Dashboard</span></div>
-                        <div className="page-sub uppercase tracking-widest mt-1">
-                            Operational control for {restaurant.name}
-                        </div>
+                        <div className="md-page-title">Orders Dashboard</div>
+                        <div className="md-page-sub">Operational Control · {restaurant.name}</div>
                     </div>
-                    
-                    <div className="flex items-center gap-3">
-                        <Link 
-                            href="/merchant/terminal" 
-                            className="db-btn-primary !bg-white/5 !text-white border border-white/10 !px-6 !py-2.5 sm"
-                        >
-                            🍳 Kitchen Terminal
-                        </Link>
-                         <span className={`db-badge ${restaurant.plan === 'Pro Subscription' ? 'db-badge-ok' : 'db-badge-gray'}`}>
-                            {restaurant.plan === 'Pro Subscription' ? 'Pro Scale' : 'Flex Scale'}
-                        </span>
-                        <form action={async () => {
-                            "use server";
-                            await toggleBusyMode(restaurant.id, restaurant.isBusy);
-                        }}>
-                            <button className={`db-badge ${restaurant.isBusy ? 'db-badge-warn !bg-red-600 !text-white' : 'db-badge-ok'}`}>
-                                {restaurant.isBusy ? 'Paused' : 'Online'}
-                            </button>
+                    <div className="md-hd-right">
+                        <div className="md-terminal-btn">
+                            <span className="md-terminal-dot"></span>
+                            Kitchen Terminal
+                        </div>
+                        <div className="md-scale-badge">Pro Scale</div>
+                        <div className={`md-online-badge`} style={restaurant.isBusy ? { background: "#e24b4a" } : {}}>
+                            {restaurant.isBusy ? "Paused" : "Online"}
+                        </div>
+                        <form action={logout} style={{ display: "inline" }}>
+                            <button type="submit" className="md-logout">Log Out</button>
                         </form>
                     </div>
                 </div>
 
-                {/* Main Content Enclosure */}
-                <div className="space-y-16">
-                    {/* Stats Grid */}
-                    <div className="db-grid grid-cols-2 md:grid-cols-3">
-                        <div className="db-panel !bg-[#0f1219] !border-none flex flex-col justify-end min-h-[140px]">
-                            <h3 className="stat-name mb-2">Incoming Orders</h3>
-                            <p className="stat-value">{pendingOrders.length}</p>
-                        </div>
-                        <div className="db-panel !bg-[#0f1219] !border-none flex flex-col justify-end min-h-[140px]">
-                            <h3 className="stat-name mb-2">Menu Items</h3>
-                            <p className="stat-value">{restaurant.menuItems.length}</p>
-                        </div>
-                        <div className="db-panel !bg-[#0f1219] !border-none flex flex-col justify-end min-h-[140px] col-span-2 md:col-span-1">
-                            <h3 className="stat-name mb-2 text-[#e8a230]">Net Revenue</h3>
-                            <p className="stat-value !text-emerald-400">${totalRevenue.toFixed(2)}</p>
-                        </div>
+                {/* STAT GRID */}
+                <div className="md-stat-grid">
+                    <div className="md-stat-block">
+                        <div className="md-stat-name">Incoming Orders</div>
+                        <div className="md-stat-value">{pendingOrders.length}</div>
                     </div>
-
-                    <MorningBriefing restaurantId={restaurant.id} />
-
-                    {/* Stripe Connect Banner */}
-                    {!restaurant.stripeAccountId && (
-                        <div className="p-8 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-6">
-                                <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center text-3xl shadow-lg">💳</div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-white mb-2 font-sans italic tracking-tight">Connect Stripe to get paid.</h2>
-                                    <p className="text-slate-400 max-w-md text-sm font-medium">To start receiving payouts for your orders, you need to connect your Stripe account.</p>
-                                </div>
-                            </div>
-                            <form action={async () => {
-                                "use server";
-                                await createStripeAccount();
-                            }}>
-                                <button className="btn bg-blue-600 hover:bg-blue-700 text-white border-none px-8 py-3 shadow-lg shadow-blue-500/20 text-xs font-black uppercase tracking-widest">
-                                    Connect Stripe account
-                                </button>
-                            </form>
-                        </div>
-                    )}
-
-                    {/* Operational Sections List */}
-                    <div className="space-y-32">
-                        <OperationalSettings 
-                            restaurantId={restaurant.id}
-                            currentManualPrepTime={(restaurant as any).manualPrepTime}
-                            avgPrepTime={(restaurant as any).avgPrepTime || 15}
-                            isBusy={restaurant.isBusy}
-                            busyUntil={restaurant.busyUntil}
-                        />
-
-                        <SmartOperations
-                            restaurantId={restaurant.id}
-                            schedules={restaurant.schedules || []}
-                            autoPilotEnabled={restaurant.autoPilotEnabled || false}
-                            capacityThreshold={restaurant.capacityThreshold || 10}
-                        />
-
-                        <MenuArchitect restaurantId={restaurant.id} />
-
-                        <MerchantAnalytics 
-                            orders={restaurant.orders || []} 
-                            restaurantName={restaurant.name} 
-                        />
-
-                        <CustomerPulse restaurantId={restaurant.id} />
-
-                        <DriverPerformance orders={restaurant.orders || []} />
-
-                        <InventoryManager
-                            restaurantId={restaurant.id}
-                            menuItems={restaurant.menuItems || []}
-                            outOfStockIngredients={restaurant.outOfStockIngredients || []}
-                        />
-
-                        <EmbedManager 
-                            restaurantId={restaurant.id} 
-                            restaurantName={restaurant.name}
-                            slug={restaurant.slug}
-                        />
-
-                        <section>
-                            <div className="flex justify-between items-end mb-10">
-                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase flex items-center gap-4">
-                                    Incoming Orders
-                                    {pendingOrders.length > 0 && <span className="bg-primary text-white text-[10px] px-3 py-1 rounded-full">{pendingOrders.length}</span>}
-                                </h2>
-                                <div className="flex gap-2">
-                                    <button className="text-[10px] font-black uppercase tracking-widest bg-white/5 px-4 py-2 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">History</button>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-6">
-                                {pendingOrders.map((order: any) => (
-                                    <div key={order.id} className="bg-black/40 border border-white/5 p-8 rounded-[2rem] border-l-4 border-l-yellow-500 hover:shadow-[0_0_40px_rgba(234,179,8,0.05)] transition-all">
-                                        <div className="flex justify-between items-start mb-6">
-                                            <div>
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">{order.id.slice(-6).toUpperCase()}</span>
-                                                    <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border shadow-sm whitespace-nowrap ${(order.status as any) === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
-                                                        (order.status as any) === 'PREPARING' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                        }`}>
-                                                        {(order.status as any) === 'READY_FOR_PICKUP' ? 'PICKUP READY' : order.status.replace('_', ' ')}
-                                                    </span>
-                                                </div>
-                                                <h3 className="font-black text-2xl tracking-tight">{order.user.name}</h3>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-black text-3xl text-white tracking-tighter">${Number(order.total).toFixed(2)}</p>
-                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{new Date(order.createdAt).toLocaleTimeString()}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex flex-wrap gap-4 items-center pt-6 border-t border-white/5">
-                                            <div className="flex flex-wrap gap-2 flex-grow">
-                                                {(order.status as any) === 'PENDING' ? (
-                                                    <form action={async () => {
-                                                        "use server";
-                                                        await updateOrderStatus(order.id, 'PREPARING');
-                                                    }}>
-                                                        <button type="submit" className="badge-emerald px-6 py-3 text-[10px]">Accept & Start</button>
-                                                    </form>
-                                                ) : (
-                                                    <form action={async () => {
-                                                        "use server";
-                                                        await updateOrderStatus(order.id, 'READY_FOR_PICKUP');
-                                                    }}>
-                                                        <button type="submit" className="badge-solid-primary bg-blue-600 border-none shadow-blue-500/20 px-6 py-3 text-[10px]">Mark Ready</button>
-                                                    </form>
-                                                )}
-                                                <MerchantRejectButton orderId={order.id} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {pendingOrders.length === 0 && (
-                                    <div className="bg-black/20 border border-dashed border-white/10 rounded-[2rem] p-20 text-center">
-                                        <p className="text-slate-600 font-black uppercase tracking-[0.2em] italic">No incoming orders found in active grid</p>
-                                    </div>
-                                )}
-                            </div>
-                        </section>
-
-                        {/* Menu Section */}
-                        <section>
-                            <div className="flex justify-between items-center mb-10">
-                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Your Menu</h2>
-                                <div className="flex gap-4">
-                                    <MenuScanner restaurantId={restaurant.id} />
-                                    <AddItemForm />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-4">
-                                {restaurant.menuItems.map((item: any) => (
-                                    <MenuRow 
-                                        key={item.id} 
-                                        item={item} 
-                                        outOfStockIngredients={restaurant.outOfStockIngredients || []}
-                                    />
-                                ))}
-                            </div>
-                        </section>
+                    <div className="md-stat-block">
+                        <div className="md-stat-name">Menu Items</div>
+                        <div className="md-stat-value">{(restaurant.menuItems || []).length}</div>
+                    </div>
+                    <div className="md-stat-block">
+                        <div className="md-stat-name">Net Revenue</div>
+                        <div className="md-stat-value gold">${netRevenue.toFixed(2)}</div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                {/* STRIPE BANNER */}
+                {!hasStripe && (
+                    <div className="md-stripe-banner">
+                        <div className="md-stripe-left">
+                            <div className="md-stripe-icon">
+                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#4a5aaa" strokeWidth="1.3"/>
+                                    <path d="M1 5h18" stroke="#4a5aaa" strokeWidth="1.3"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div className="md-stripe-title">Connect Stripe to get paid.</div>
+                                <div className="md-stripe-desc">To start receiving payouts for your orders, you need to connect your Stripe account.</div>
+                            </div>
+                        </div>
+                        <form action={createStripeAccount}>
+                            <button type="submit" className="md-stripe-btn">Connect Stripe Account →</button>
+                        </form>
+                    </div>
+                )}
+
+                {hasStripe && (
+                    <div className="md-stripe-banner" style={{ borderColor: "#1a4a2a", background: "#0d1a10" }}>
+                        <div className="md-stripe-left">
+                            <div className="md-stripe-icon" style={{ borderColor: "#1a4a2a", background: "#0d2a1a" }}>
+                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#3dd68c" strokeWidth="1.3"/>
+                                    <path d="M1 5h18" stroke="#3dd68c" strokeWidth="1.3"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div className="md-stripe-title" style={{ fontStyle: "normal" }}>Stripe account connected.</div>
+                                <div className="md-stripe-desc">Your payouts are active. Funds are deposited on a rolling basis.</div>
+                            </div>
+                        </div>
+                        <div className="md-stripe-connected">✓ Payouts Active</div>
+                    </div>
+                )}
+
+                {/* PREP TIMING + TERMINAL STATUS */}
+                <div className="md-two-col">
+                    <PrepTimingPanel
+                        restaurantId={restaurant.id}
+                        manualPrepTime={restaurant.manualPrepTime}
+                        avgPrepTime={restaurant.avgPrepTime || 15}
+                    />
+                    <TerminalStatusPanel
+                        restaurantId={restaurant.id}
+                        isBusy={restaurant.isBusy}
+                        busyUntil={restaurant.busyUntil}
+                    />
+                </div>
+
+                {/* AI AUTOPILOT + BUSY ZONES */}
+                <div className="md-bottom-grid">
+                    <AutoPilotPanel
+                        restaurantId={restaurant.id}
+                        autoPilotEnabled={restaurant.autoPilotEnabled ?? true}
+                        capacityThreshold={restaurant.capacityThreshold ?? 10}
+                    />
+                    <BusyZonesPanel
+                        restaurantId={restaurant.id}
+                        schedules={restaurant.schedules || []}
+                    />
+                </div>
+
+                {/* ISSUES TOAST */}
+                <IssuesPanel pendingCount={pendingOrders.length} />
+            </div>
+        </>
     );
 }
