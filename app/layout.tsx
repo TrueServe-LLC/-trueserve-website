@@ -1,27 +1,38 @@
 import type { Metadata } from "next";
-import { Barlow, Barlow_Condensed, Bebas_Neue } from "next/font/google";
+import { Barlow_Condensed, DM_Sans, DM_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import MobileNavWrapper from "@/components/MobileNavWrapper";
 import LaunchDarklyClientProvider from "@/components/LaunchDarklyClientProvider";
 import { Suspense } from "react";
 import DynamicBranding from "@/components/DynamicBranding";
 
-const barlow = Barlow({
-  variable: "--font-barlow",
-  weight: ["300", "400", "500", "700"],
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
+  weight: ["400"],
   subsets: ["latin"],
+  display: 'swap',
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin"],
+  display: 'swap',
+});
+
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  display: 'swap',
 });
 
 const barlowCond = Barlow_Condensed({
   variable: "--font-barlow-cond",
-  weight: ["400", "600", "700"],
+  weight: ["700", "800"],
   subsets: ["latin"],
-});
-
-const bebas = Bebas_Neue({
-  variable: "--font-bebas",
-  weight: ["400"],
-  subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -39,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${barlow.variable} ${barlowCond.variable} ${bebas.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${dmMono.variable} ${barlowCond.variable} ${bebasNeue.variable}`}>
       <body
         className="bg-[#0A0A0A] text-[#F0EDE8] antialiased pb-24 md:pb-0 font-sans overflow-x-hidden"
         suppressHydrationWarning

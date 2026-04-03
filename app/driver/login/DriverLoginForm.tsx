@@ -104,7 +104,7 @@ export default function DriverLoginForm() {
         <div className="space-y-6 animate-fade-in relative z-10 w-full overflow-hidden">
             {message && (
                 <div className={`p-4 rounded-lg text-[11px] font-bold uppercase tracking-widest flex items-center gap-3 border ${
-                    message.error ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[#E8A020]/10 border-[#E8A020]/20 text-[#E8A020]'
+                    message.error ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[#3dd68c]/10 border-[#3dd68c]/20 text-[#3dd68c]'
                 }`}>
                     {message.text}
                 </div>
@@ -112,15 +112,15 @@ export default function DriverLoginForm() {
 
             {step === "phone" ? (
                 <form onSubmit={handleSendOTP} className="space-y-6">
-                    <div className="space-y-3.5">
-                        <label className="text-[11px] font-bold text-[#5A5550] uppercase tracking-[0.2em] ml-0.5">Mobile Identification</label>
-                        <div className="flex gap-[1px] bg-[#121212] border border-white/5 rounded-md overflow-hidden p-0.5">
-                            <div className="px-4 flex items-center text-[#5A5550] text-[13px] font-bold bg-[#0D0D0D] border-r border-white/5">🇺🇸 +1</div>
+                    <div>
+                        <label className="fl">Mobile Identifier (US Only)</label>
+                        <div className="flex gap-[1px] bg-[#1c1f28] border border-[#2a2f3a] rounded-[12px] overflow-hidden">
+                            <div className="px-4 flex items-center text-[#555] text-[13px] font-bold bg-[#131720] border-r border-[#1c1f28]">🇺🇸 +1</div>
                             <input 
                                 type="tel"
                                 required
                                 placeholder="555 000 0000"
-                                className="flex-1 bg-[#0D0D0D] px-6 py-4 text-[15px] font-medium text-white outline-none placeholder:text-[#222]"
+                                className="fi flex-1 !border-none !rounded-none !bg-[#0f1219]"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 disabled={isLoading}
@@ -131,43 +131,38 @@ export default function DriverLoginForm() {
                     <button 
                         type="submit"
                         disabled={isLoading || phone.length < 10}
-                        className="w-full bg-[#E8A020] hover:brightness-110 disabled:opacity-40 text-black font-bold uppercase tracking-[0.14em] text-[13px] h-[58px] rounded-md transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="btn-green h-15 !rounded-[100px] disabled:opacity-40"
                     >
-                        {isLoading ? "UPLINKING..." : "REQUEST ACCESS CODE →"}
+                        {isLoading ? "UPLINKING..." : "Request Access Code →"}
                     </button>
                     
-                    <div className="flex items-center gap-4 py-3">
-                        <div className="flex-1 h-px bg-white/5" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#222] whitespace-nowrap">PILOT ROLLOUT ACCESS</span>
-                        <div className="flex-1 h-px bg-white/5" />
+                    <div className="auth-divider">
+                        <span className="auth-divider-txt">Quick Access</span>
                     </div>
 
                     <div className="space-y-3">
                         <button 
                             type="button"
                             onClick={() => loginAsDemoDriver()}
-                            className="w-full bg-transparent border border-white/5 hover:border-[#E8A020]/40 text-[#E8A020] font-bold uppercase tracking-[0.12em] text-[12px] h-[52px] rounded-md transition-all flex items-center justify-center gap-2"
+                            className="w-full bg-transparent border border-white/5 hover:border-[#3dd68c]/40 text-[#3dd68c] font-bold uppercase tracking-[0.12em] text-[12px] h-[52px] rounded-[100px] transition-all flex items-center justify-center gap-2"
                         >
-                            ⚡ QUICK PILOT ACCESS (DRIVER)
+                            ⚡ LOGIN AS DEMO DRIVER
                         </button>
 
-                        <Link 
-                            href="/driver/apply"
-                            className="w-full bg-transparent border border-white/5 hover:border-white/20 text-[#F0EDE8]/30 hover:text-[#F0EDE8]/60 font-bold uppercase tracking-[0.12em] text-[12px] h-[52px] rounded-md transition-all flex items-center justify-center"
-                        >
-                            NEW TO THE FLEET? APPLY TO DRIVE
-                        </Link>
+                        <div className="text-center font-dm-sans text-[12px] text-[#555]">
+                            New to the fleet? <Link href="/driver/apply" className="text-[#3dd68c] font-bold">Apply to partner</Link>
+                        </div>
                     </div>
                 </form>
             ) : (
                 <form onSubmit={handleVerifyOTP} className="space-y-6">
-                    <div className="space-y-3.5 text-center">
-                        <p className="text-[11px] text-[#5A5550] font-bold uppercase tracking-widest mb-1.5">Verification code sent to <span className="text-[#E8A020]">{phone}</span></p>
+                    <div className="text-center">
+                        <p className="text-[11px] text-[#555] font-bold uppercase tracking-widest mb-3">Verification code sent to <span className="text-[#3dd68c]">{phone}</span></p>
                         <input 
                             type="text"
                             maxLength={6}
                             placeholder="••••••"
-                            className="w-full bg-[#0D0D0D] border border-white/5 rounded-md px-6 py-5 text-2xl font-bold tracking-[1em] text-center text-[#E8A020] outline-none placeholder:text-[#111]"
+                            className="fi text-2xl font-bold tracking-[1em] text-center !text-[#3dd68c] h-15"
                             value={token}
                             onChange={(e) => setToken(e.target.value.replace(/\D/g, ""))}
                             disabled={isLoading}
@@ -177,15 +172,15 @@ export default function DriverLoginForm() {
                     <button 
                         type="submit"
                         disabled={isLoading || token.length < 6}
-                        className="w-full bg-[#E8A020] hover:brightness-110 disabled:opacity-40 text-black font-bold uppercase tracking-[0.14em] text-[13px] h-[58px] rounded-md transition-all flex items-center justify-center"
+                        className="btn-green h-15 !rounded-[100px] disabled:opacity-40"
                     >
-                        {isLoading ? "AUTHORIZING..." : "AUTHORIZE TERMINAL ✓"}
+                        {isLoading ? "AUTHORIZING..." : "Authorize Terminal ✓"}
                     </button>
 
                     <button 
                         type="button"
                         onClick={() => { setStep("phone"); setMessage(null); }}
-                        className="w-full text-[10px] font-bold text-[#5A5550] uppercase tracking-widest hover:text-white transition-colors"
+                        className="w-full text-[10px] font-bold text-[#555] uppercase tracking-widest hover:text-white transition-colors"
                     >
                         Cancel and try again
                     </button>

@@ -11,6 +11,7 @@ import TerminalStatusPanel from "@/app/merchant/dashboard/TerminalStatusPanel";
 import AutoPilotPanel from "@/app/merchant/dashboard/AutoPilotPanel";
 import BusyZonesPanel from "@/app/merchant/dashboard/BusyZonesPanel";
 import IssuesPanel from "@/app/merchant/dashboard/IssuesPanel";
+import MobileMerchantDashboard from "@/components/MobileMerchantDashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -72,116 +73,19 @@ export default async function MerchantDashboard() {
     const hasStripe = Boolean(restaurant.stripeAccountId);
 
     return (
-        <>
-            {/* Google Fonts for this page */}
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@1,700;1,800&display=swap');
+        <div className="min-h-screen bg-[#0c0e13]">
+             <WelcomeModal restaurantName={restaurant.name} />
+             {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
 
-                /* ── PAGE TOKENS ── */
-                .md-body { background: #0c0e13; font-family: 'DM Sans', sans-serif; color: #fff; }
-                .md-border { border: 1px solid #1c1f28; }
-                .md-border-top { border-top: 1px solid #1c1f28; }
-                .md-border-bottom { border-bottom: 1px solid #1c1f28; }
-                .md-panel { background: #0f1219; }
-                .md-surface { background: #131720; border: 1px solid #1c1f28; }
+             {/* ── MOBILE VIEW ── */}
+             <MobileMerchantDashboard 
+                 restaurant={restaurant} 
+                 pendingOrders={pendingOrders} 
+                 netRevenue={netRevenue} 
+             />
 
-                /* ── PAGE HEADER ── */
-                .md-page-hd {
-                    display: flex; align-items: center; justify-content: space-between;
-                    padding: 16px 24px; border-bottom: 1px solid #1c1f28;
-                }
-                .md-page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; line-height: 1; }
-                .md-page-sub { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #444; margin-top: 5px; }
-                .md-hd-right { display: flex; align-items: center; gap: 8px; }
-                .md-terminal-btn {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-                    padding: 8px 16px; background: #131720; border: 1px solid #2a2f3a; color: #888;
-                    cursor: pointer; display: flex; align-items: center; gap: 6px;
-                }
-                .md-terminal-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; flex-shrink: 0; }
-                .md-scale-badge {
-                    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-                    padding: 7px 12px; background: #0d2a1a; border: 1px solid #1a4a2a; color: #3dd68c;
-                }
-                .md-online-badge {
-                    font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-                    padding: 7px 12px; background: #e8a230; color: #000;
-                }
-                .md-logout {
-                    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
-                    color: #444; cursor: pointer; background: none; border: none;
-                }
-
-                /* ── STAT GRID ── */
-                .md-stat-grid {
-                    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 20px 24px 0;
-                }
-                .md-stat-block { background: #0f1219; padding: 18px 20px; }
-                .md-stat-name { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 10px; }
-                .md-stat-value { font-size: 32px; font-weight: 700; color: #fff; font-family: 'DM Mono', monospace; line-height: 1; }
-                .md-stat-value.gold { color: #e8a230; }
-
-                /* ── STRIPE BANNER ── */
-                .md-stripe-banner {
-                    margin: 16px 24px 0; background: #111420; border: 1px solid #2a3060;
-                    padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-                }
-                .md-stripe-left { display: flex; align-items: center; gap: 16px; }
-                .md-stripe-icon {
-                    width: 44px; height: 44px; background: #1a1e3a; border: 1px solid #2a3060;
-                    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-                }
-                .md-stripe-title { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; font-style: italic; color: #fff; margin-bottom: 3px; }
-                .md-stripe-desc { font-size: 12px; color: #555; line-height: 1.5; }
-                .md-stripe-btn {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-                    padding: 10px 20px; background: transparent; border: 1.5px solid #e8a230; color: #e8a230;
-                    cursor: pointer; white-space: nowrap; flex-shrink: 0;
-                }
-                .md-stripe-btn:hover { background: #e8a23015; }
-                .md-stripe-connected { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; white-space: nowrap; flex-shrink: 0; }
-
-                /* ── TWO-COL LOWER ── */
-                .md-two-col {
-                    display: grid; grid-template-columns: 1fr 1fr;
-                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 16px 24px 0;
-                }
-
-                @media (max-width: 1024px) {
-                    .md-page-hd { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
-                    .md-hd-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
-                    .md-stat-grid { grid-template-columns: repeat(2, 1fr); margin: 16px 20px 0; }
-                    .md-two-col { grid-template-columns: 1fr; margin: 16px 20px 0; }
-                    .md-stripe-banner { flex-direction: column; align-items: flex-start; gap: 16px; margin: 16px 20px 0; }
-                    .md-stripe-left { flex-direction: column; align-items: flex-start; gap: 12px; }
-                }
-
-                @media (max-width: 640px) {
-                    .md-stat-grid { grid-template-columns: 1fr; }
-                    .md-stat-value { font-size: 26px; }
-                }
-
-                /* ── BOTTOM TWO-COL ── */
-                .md-bottom-grid {
-                    display: grid; grid-template-columns: 1fr 1fr;
-                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 16px 24px 24px;
-                }
-
-                /* ── PANEL SHARED ── */
-                .md-panel-inner { background: #0f1219; padding: 18px 20px; }
-                .md-panel-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-                .md-panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
-
-                /* ── LIVE DOT (reuse from layout) ── */
-                .md-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: md-pulse 2s infinite; }
-                @keyframes md-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-            `}</style>
-
-            <div className="md-body">
-                {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
-                <WelcomeModal restaurantName={restaurant.name} />
-
+             {/* ── DESKTOP VIEW ── */}
+             <div className="hidden lg:block md-body min-h-screen">
                 {/* PAGE HEADER */}
                 <div className="md-page-hd">
                     <div>
@@ -287,7 +191,7 @@ export default async function MerchantDashboard() {
 
                 {/* ISSUES TOAST */}
                 <IssuesPanel pendingCount={pendingOrders.length} />
-            </div>
-        </>
+             </div>
+        </div>
     );
 }

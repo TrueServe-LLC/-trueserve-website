@@ -105,7 +105,7 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
         <div className="card bg-white/5 border-white/10 p-0 flex flex-col h-96 overflow-hidden">
             <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
                 <h3 className="font-bold text-sm">Chat with {role === "CUSTOMER" ? "Driver" : "Customer"}</h3>
-                <span className="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded border border-primary/20">AI Translation Enabled</span>
+                <span className="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded border border-primary/20 font-black uppercase tracking-widest italic">Claude AI Powered</span>
             </div>
             <div className="flex-grow p-4 overflow-y-auto space-y-4 flex flex-col">
                 {messages.map(m => (

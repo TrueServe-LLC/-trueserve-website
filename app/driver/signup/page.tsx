@@ -194,6 +194,24 @@ function DriverSignupContent() {
                                 CONTINUE APPLICATION →
                             </button>
                         </form>
+                        
+                        {/* ── PILOT CONTROLS ── */}
+                        <div className="mt-10 pt-10 border-t border-white/5 animate-up [animation-delay:0.4s]">
+                            <div className="flex items-center gap-3 mb-5">
+                                <div className="w-2 h-2 rounded-full bg-[#e8a230] animate-pulse" />
+                                <span className="barlow-cond text-[10px] font-black text-[#5A5550] uppercase tracking-[0.25em]">Pilot Controls Locked</span>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                   setStep(4);
+                                   // In a real pilot bypass, we'd potentially auto-fill the form state here
+                                }}
+                                className="w-full bg-[#131720] border border-[#2a2f3a] text-[#888] hover:text-[#e8a230] hover:border-[#e8a230]/40 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 group"
+                            >
+                                <span className="text-lg opacity-40 group-hover:opacity-100 transition-opacity">⚡</span>
+                                BYPASS TO FINAL STEP (PILOT ONLY)
+                            </button>
+                        </div>
 
                         <div className="text-center pt-12">
                             <p className="barlow-cond text-[12px] font-black text-[#2a2f3a] uppercase tracking-[0.2em]">

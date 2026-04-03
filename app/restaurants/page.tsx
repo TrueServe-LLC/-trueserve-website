@@ -23,15 +23,16 @@ function RestaurantFinderContent() {
                 
                  {/* ── APP HEADER ── */}
                  <nav className="sticky top-0 z-[60] bg-[#0A0A0A]/85 backdrop-blur-2xl border-b border-white/5 px-5 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Link href="/" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                    <div className="flex items-center gap-4">
+                        <Link href="/" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-all">
                             <span className="text-sm">←</span>
                         </Link>
-                        <h1 className="font-bebas text-2xl italic tracking-widest text-white uppercase">Discovery Hub</h1>
+                        <div className="h-6 w-px bg-white/10" />
+                        <Logo size="sm" />
                     </div>
-                    <Link href="/orders" className="w-10 h-10 rounded-full bg-[#141417] border border-white/5 flex items-center justify-center relative">
+                    <Link href="/orders" className="w-10 h-10 rounded-full bg-[#141417] border border-white/5 flex items-center justify-center relative shadow-inner">
                         <span className="text-lg">🛒</span>
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#E8A020] rounded-full text-black font-barlow-cond text-[9px] font-black flex items-center justify-center">2</div>
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#E8A020] rounded-full text-black font-barlow-cond text-[9px] font-black flex items-center justify-center border-2 border-[#0A0A0A]">2</div>
                     </Link>
                 </nav>
 

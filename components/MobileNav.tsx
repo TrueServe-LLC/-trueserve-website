@@ -40,7 +40,7 @@ const Icons = {
 export default function MobileNav({ role }: { role?: string | null }) {
     const pathname = usePathname();
 
-    const hideOnRoutes = ['/login', '/signup', '/onboarding', '/merchant/login', '/driver/login'];
+    const hideOnRoutes = ['/login', '/signup', '/onboarding', '/merchant/login', '/driver/login', '/merchant/dashboard', '/driver/dashboard'];
     if (hideOnRoutes.includes(pathname)) return null;
 
     const isActive = (path: string) => {
