@@ -33,8 +33,7 @@ const Logo: React.FC<LogoProps> = ({
                 ✓
             </div>
             <span 
-                className={`${textSizes[size]} font-extrabold uppercase tracking-widest text-white leading-none whitespace-nowrap`}
-                style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+                className={`${textSizes[size]} font-extrabold uppercase tracking-widest text-white leading-none whitespace-nowrap font-barlow-cond`}
             >
                 TrueServe
             </span>

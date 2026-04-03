@@ -1,96 +1,102 @@
 "use client";
 
-import { Suspense } from "react";
-import Link from "next/link";
-import DriverLoginForm from "./DriverLoginForm";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import Link from "next/link";
+import { Activity, Clock, MapPin, ShieldCheck } from "lucide-react";
+import SignupLeftAnimation from "@/components/SignupLeftAnimation";
+import DriverLoginForm from "./DriverLoginForm";
 
-export default function DriverLoginPage() {
+function DriverLoginPageContent() {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
     return (
-        <div className="selection:bg-[#3dd68c]/30 min-h-screen bg-[#0c0e13]">
-            {/* ── MOBILE APP VIEW ── */}
-            <div className="lg:hidden flex flex-col min-h-screen">
-                <div className="auth-hero d">
-                    <div className="auth-ring bg-[#3dd68c] flex items-center justify-center">
-                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="5.5" cy="16.5" r="3" stroke="#000" strokeWidth="1.8"/><circle cx="16.5" cy="16.5" r="3" stroke="#000" strokeWidth="1.8"/><path d="M2.5 16.5V10l4-6h8l4 6v6.5" stroke="#000" strokeWidth="1.8" strokeLinecap="round"/></svg>
-                    </div>
-                    <div className="auth-badge d"><span className="auth-badge-txt">Fleet Program</span></div>
-                    <div className="auth-title">Welcome Back, <span className="text-[#3dd68c]">Driver.</span></div>
-                    <div className="auth-sub">Your mission hub is ready</div>
-                </div>
-                <div className="auth-body">
-                    <Suspense fallback={<div className="text-center text-[#5A5550] text-[10px] font-bold uppercase tracking-widest animate-pulse p-12">Uplinking Terminal...</div>}>
-                        <DriverLoginForm />
-                    </Suspense>
-                    <div className="auth-link"><Link href="/">← Back to home</Link></div>
-                </div>
-            </div>
+        <div className="min-h-screen bg-[#000] text-white font-sans selection:bg-[#3dd68c]/30 selection:text-black overflow-x-hidden relative">
+            <style dangerouslySetInnerHTML={{ __html: `
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&family=Bebas+Neue&display=swap');
+                .bebas { font-family: 'Bebas Neue', sans-serif; }
+                .barlow-cond { font-family: 'Barlow Condensed', sans-serif; }
+                .animate-up { animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                .blur-card { background: rgba(12, 14, 19, 0.4); border: 1px solid rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); transition: all 0.3s ease; }
+            ` }} />
 
-            {/* ── DESKTOP VIEW ── */}
-            <div className="hidden lg:grid grid-cols-[1.1fr_0.9fr] min-h-screen">
-                <div className="relative min-h-screen flex flex-col justify-end p-[60px_50px] overflow-hidden bg-[#070707]">
-                    <img src="/driver_login_background_v2.png" alt="Driving Background" className="absolute inset-0 z-0 w-full h-full object-cover grayscale opacity-25 contrast-[1.2] brightness-75" />
-                    <div className="absolute inset-0 bg-gradient-to-bottom from-[rgba(10,10,10,0.4)] via-[rgba(10,10,10,0.2)] to-[rgba(10,10,10,0.95)] z-[1]" />
+            {/* ── TWO COLUMN LAYOUT ── */}
+            <div className="flex flex-col lg:flex-row min-h-screen">
+                
+                {/* ── LEFT COLUMN (HERO & ANIMATION) ── */}
+                <div className="w-full lg:w-[45%] relative border-r border-white/5 overflow-hidden min-h-[400px] lg:min-h-screen">
+                    <SignupLeftAnimation type="driver" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black z-10" />
                     
-                    <div className="absolute top-[40px] left-[50px] flex items-center gap-3 z-[4]">
+                    <div className="relative z-20 h-full flex flex-col justify-between p-10 lg:p-20">
                         <Logo size="lg" />
-                    </div>
-
-                    <div className="relative z-[3] animate-up w-full max-w-[480px]">
-                        <div className="inline-flex items-center gap-2 bg-[rgba(232,160,32,0.1)] border border-[rgba(232,160,32,0.2)] p-[6px_16px] mb-[25px] rounded-md">
-                            <span className="w-[7px] h-[7px] bg-[#E8A020] rounded-full shadow-[0_0_10px_#E8A020]" />
-                            <span className="font-barlow-cond text-[11px] font-bold tracking-[0.18em] uppercase text-[#E8A020]">SECURE FLEET UPLINK</span>
-                        </div>
-
-                        <div className="font-bebas text-[105px] italic uppercase leading-[0.88] mb-[30px] tracking-[-0.01em]">
-                            <span className="text-[#F0EDE8] block">READY TO</span>
-                            <span className="text-[#E8A020] block">EARN?</span>
-                        </div>
-
-                        <div className="text-[15px] font-light text-[#5A5550] line-height-[1.6] max-w-[360px] mb-[45px]">Connect with the TrueServe platform and start accepting high-yield delivery routes in your area today.</div>
-
-                        <div className="flex flex-col gap-3 w-full">
-                            <div className="flex items-center gap-[18px] p-[18px_20px] bg-[rgba(19,19,19,0.7)] border border-[rgba(255,255,255,0.04)] rounded-md">
-                                <div className="w-[44px] h-[32px] bg-[#1C1C1C] rounded-md flex items-center justify-center shrink-0">🚗</div>
-                                <div>
-                                    <div className="font-barlow-cond text-[15px] font-bold text-[#F0EDE8] mb-[2px] uppercase tracking-[0.04em]">Daily Liquidity Settlements</div>
-                                    <div className="text-[12px] text-[#5A5550] font-normal">Drive today, get paid today. Transparent splits.</div>
-                                </div>
+                        
+                        <div className="animate-up">
+                            <div className="inline-flex items-center gap-2 bg-[#3dd68c]/10 border border-[#3dd68c]/20 rounded-md px-3 py-1 mb-6">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#3dd68c]" />
+                                <span className="barlow-cond font-black text-[10px] uppercase tracking-[0.2em] text-[#3dd68c]">FLEET UPLINK</span>
                             </div>
-                            <div className="flex items-center gap-[18px] p-[18px_20px] bg-[rgba(19,19,19,0.7)] border border-[rgba(255,255,255,0.04)] rounded-md">
-                                <div className="w-[44px] h-[32px] bg-[#1C1C1C] rounded-md flex items-center justify-center shrink-0">🛰️</div>
-                                <div>
-                                    <div className="font-barlow-cond text-[15px] font-bold text-[#F0EDE8] mb-[2px] uppercase tracking-[0.04em]">Optimized Strategic Routing</div>
-                                    <div className="text-[12px] text-[#5A5550] font-normal">Smart dispatching to maximize fuel and time.</div>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-[18px] p-[18px_20px] bg-[rgba(19,19,19,0.7)] border border-[rgba(255,255,255,0.04)] rounded-md">
-                                <div className="w-[44px] h-[32px] bg-[#1C1C1C] rounded-md flex items-center justify-center shrink-0">🛡️</div>
-                                <div>
-                                    <div className="font-barlow-cond text-[15px] font-bold text-[#F0EDE8] mb-[2px] uppercase tracking-[0.04em]">Priority Fleet Support</div>
-                                    <div className="text-[12px] text-[#5A5550] font-normal">Continuous assistance for every mile of your mission.</div>
-                                </div>
+                            <h1 className="bebas italic text-[70px] lg:text-[120px] leading-[0.85] tracking-tight uppercase mb-8">
+                                READY TO<br /><span className="text-[#3dd68c]">EARN?</span>
+                            </h1>
+                            <div className="grid gap-6 max-w-md">
+                                {[
+                                    { title: "Daily Liquidity", desc: "Drive today, get paid today. Transparent splits.", icon: <Activity className="w-5 h-5 text-[#3dd68c]" /> },
+                                    { title: "Mission Control", desc: "You control your shifts and routing tech.", icon: <Clock className="w-5 h-5 text-[#3dd68c]" /> },
+                                    { title: "Priority Support", desc: "24/7 assistance for every mile of your mission.", icon: <ShieldCheck className="w-5 h-5 text-[#3dd68c]" /> }
+                                ].map((card) => (
+                                    <div key={card.title} className="blur-card p-5 rounded-2xl flex items-center gap-5 hover:border-[#3dd68c]/30 transition-all border-l-2 border-l-[#3dd68c]">
+                                        <div className="w-10 h-10 bg-black/40 flex items-center justify-center rounded-xl shrink-0">{card.icon}</div>
+                                        <div>
+                                            <h3 className="bebas text-xl text-white uppercase">{card.title}</h3>
+                                            <p className="barlow-cond text-[9px] font-black tracking-widest text-[#5A5550] uppercase mt-0.5">{card.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[#0A0A0A] flex flex-col items-center justify-center p-[60px] relative">
-                    <div className="w-full max-w-[420px] animate-fade-in">
-                        <div className="font-barlow-cond text-[42px] font-extrabold italic text-[#F0EDE8] mb-2 uppercase tracking-[-0.01em]">Fleet Authorization</div>
-                        <div className="font-barlow-cond text-[11px] font-bold tracking-[0.22em] uppercase text-[#E8A020] mb-[45px] opacity-90">SECURE UPLINK TERMINAL</div>
-
+                {/* ── RIGHT COLUMN (LOGIN FORM) ── */}
+                <div className="w-full lg:w-[55%] bg-[#050505] relative flex items-center justify-center p-8 lg:p-20">
+                    <div className="max-w-[500px] w-full animate-up [animation-delay:0.2s]">
+                        <div className="mb-14">
+                            <h2 className="bebas italic text-[44px] lg:text-[56px] leading-[0.95] uppercase mb-3 text-white">FLEET <span className="text-[#3dd68c]">LOGIN.</span></h2>
+                            <p className="barlow-cond font-black text-[10px] uppercase tracking-[0.3em] text-[#5A5550]">SECURE TERMINAL FOR MISSION HUB</p>
+                        </div>
+                        
                         <Suspense fallback={<div className="text-center text-[#5A5550] text-[10px] font-bold uppercase tracking-widest animate-pulse p-12">Uplinking Terminal...</div>}>
                             <DriverLoginForm />
                         </Suspense>
 
-                        <div className="mt-[45px] flex items-center justify-center gap-2 text-[#222] font-semibold text-[10px] uppercase tracking-[0.2em] opacity-40">
-                            <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2"/></svg>
-                            ENCRYPTED CONNECTION · SECURE UPLINK
+                        <div className="text-center pt-8">
+                            <Link href="/driver/apply" className="barlow-cond font-black text-[11px] uppercase tracking-[0.25em] text-[#2a2f3a] hover:text-white transition-colors">NEW TO FLEET? ENROLL NOW</Link>
                         </div>
                     </div>
+
+                    {/* MOBILE NAV OVERLAY */}
+                    <nav className="fixed lg:hidden bottom-0 left-0 w-full bg-[#080808]/95 backdrop-blur-2xl border-t border-white/5 flex justify-around py-4 z-50">
+                        {['HOME', 'EXPLORE', 'ORDERS', 'PROFILE'].map(l => (
+                             <div key={l} className="flex flex-col items-center opacity-30">
+                                <div className="w-6 h-6 bg-white/10 rounded-full mb-1" />
+                                <span className="barlow-cond text-[9px] font-black tracking-widest uppercase">{l}</span>
+                             </div>
+                        ))}
+                    </nav>
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function DriverLoginPage() {
+    return (
+        <Suspense fallback={null}>
+            <DriverLoginPageContent />
+        </Suspense>
     );
 }
