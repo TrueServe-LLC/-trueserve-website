@@ -42,7 +42,7 @@ export default function MerchantLoginPage() {
                 
                 .left-content { position: relative; z-index: 2; animation: slideRight 1s ease-out; }
                 .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; animation: slideRight 0.8s ease-out; cursor: pointer; text-decoration: none; }
-                .logo-ring { width: 42px; height: 42px; border: 1.5px solid #2a2f3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(19,23,32,0.6); }
+                .logo-circle { width: 42px; height: 42px; border: 1.5px solid #2a2f3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); overflow: hidden; }
                 .logo-text { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; color: #fff; font-style: italic; letter-spacing: -0.05em; line-height: 1; }
                 .logo-text span { color: #e8a230; }
 
@@ -95,8 +95,8 @@ export default function MerchantLoginPage() {
                 <div className="bg-overlay" />
                 
                 <a href="/" className="logo-wrap">
-                    <div className="logo-ring">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#e8a230" strokeWidth="1.5"/><path d="M7 10l2.5 2.5L14 7" stroke="#e8a230" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <div className="logo-circle">
+                         <img src="/logo.png" alt="TrueServe Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
                     <div className="logo-text">True<span>Serve</span></div>
                 </a>
