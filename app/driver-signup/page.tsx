@@ -1,11 +1,32 @@
-export const dynamic = "force-dynamic";
+"use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import DriverApplicationForm from "@/app/driver/DriverApplicationForm";
 
 export default function DriverSignupPage() {
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#02040a] text-white selection:bg-emerald-500 font-sans relative overflow-x-hidden">
+            <style dangerouslySetInnerHTML={{ __html: `
+                .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+                .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+                .delay-1 { transition-delay: 0.1s; }
+                .delay-2 { transition-delay: 0.2s; }
+                .delay-3 { transition-delay: 0.3s; }
+            ` }} />
             {/* Animated Mesh Gradient Background (Step 15/18 Style) */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] animate-blob filter" />
@@ -29,13 +50,13 @@ export default function DriverSignupPage() {
                     <Link href="/driver" className="mb-8 w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white/10 hover:border-primary transition-all text-primary shadow-2xl backdrop-blur-md">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
                     </Link>
-                    <div className="bg-primary/10 border border-primary/20 rounded-full px-6 py-2 mb-6 backdrop-blur-md">
+                    <div className="bg-primary/10 border border-primary/20 rounded-full px-6 py-2 mb-6 backdrop-blur-md animate-on-scroll">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Join the Elite Fleet</p>
                     </div>
-                    <h1 className="text-4xl md:text-[100px] font-black text-white italic tracking-tighter uppercase leading-[0.85] mb-4 px-2">
+                    <h1 className="text-4xl md:text-[100px] font-black text-white italic tracking-tighter uppercase leading-[0.85] mb-4 px-2 animate-on-scroll delay-1">
                         Strategic <span className="text-primary italic">Delivery.</span>
                     </h1>
-                    <p className="text-slate-400 text-sm md:text-lg font-medium max-w-2xl italic mt-6">
+                    <p className="text-slate-400 text-sm md:text-lg font-medium max-w-2xl italic mt-6 animate-on-scroll delay-2">
                         The most efficient mileage-based engine in the South East corridor. <br className="hidden md:block" />
                         Synchronize your schedule, maximize your net earnings.
                     </p>
@@ -47,7 +68,7 @@ export default function DriverSignupPage() {
                    
                     {/* Left Side: Context & Visuals */}
                     <div className="lg:col-span-5 space-y-12 h-fit md:sticky md:top-32">
-                        <div>
+                        <div className="animate-on-scroll">
                            <h2 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight mb-6 px-2">Fleet Onboarding <br />Process.</h2>
                            <p className="text-slate-500 text-lg font-medium leading-relaxed italic max-w-sm mb-12">Complete the synchronization to unlock your operational credentials.</p>
                         </div>
@@ -58,7 +79,7 @@ export default function DriverSignupPage() {
                              { icon: '🗺️', label: 'Smart Grid', desc: 'Optimized high-velocity routing.' },
                              { icon: '🛡️', label: 'Safety Sync', desc: 'Premium logistics protection.' }
                            ].map((item, i) => (
-                             <div key={i} className="flex gap-6 items-center p-6 bg-white/[0.03] border border-white/5 rounded-[2rem] group hover:border-primary/20 transition-all">
+                             <div key={i} className="flex gap-6 items-center p-6 bg-white/[0.03] border border-white/5 rounded-[2rem] group hover:border-primary/20 transition-all animate-on-scroll">
                                 <div className="text-3xl group-hover:scale-110 transition-transform">{item.icon}</div>
                                 <div>
                                     <h4 className="text-[11px] font-black uppercase tracking-widest text-white mb-1 italic">{item.label}</h4>
@@ -69,10 +90,11 @@ export default function DriverSignupPage() {
                         </div>
 
                         {/* Social Proof Image */}
-                        <div className="relative rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white/5 h-[300px]">
+                        <div className="relative rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white/5 h-[300px] animate-on-scroll">
                             <img 
                                 src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200" 
                                 className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-700"
+                                alt="Fleet Team"
                             />
                             <div className="absolute inset-x-8 bottom-8 p-6 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10">
                                 <p className="text-white font-black italic uppercase tracking-tighter text-sm">Join 2,400+ Trusted Fleet Partners</p>

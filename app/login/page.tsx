@@ -39,13 +39,23 @@ export default function FleetLoginPage() {
                 body { margin: 0; background: #0c0e13; overflow-x: hidden; }
                 .login-grid { display: grid; grid-template-columns: 1fr 480px; min-height: 100vh; background: #0c0e13; }
                 
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(30px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                @keyframes slideRight {
+                    from { opacity: 0; transform: translateX(-30px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+
                 /* LEFT PANEL */
                 .left-panel { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px 80px; overflow: hidden; background: #080a0f; }
-                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-cover grayscale; opacity: 0.25; filter: contrast(1.1); transform: scale(1.05); }
+                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; grayscale: 1; opacity: 0.25; filter: contrast(1.1); transform: scale(1.05); }
                 .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,19,0.3) 0%, rgba(12,14,19,0.8) 100%); z-index: 1; }
                 
-                .left-content { position: relative; z-index: 2; }
-                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; }
+                .left-content { position: relative; z-index: 2; animation: slideRight 1s ease-out; }
+                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; animation: slideRight 0.8s ease-out; }
                 .logo-ring { width: 38px; height: 38px; border: 1.5px solid #e8a230; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(19,23,32,0.6); }
                 .logo-text { font-size: 20px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
                 .logo-text span { color: #e8a230; }
@@ -64,7 +74,7 @@ export default function FleetLoginPage() {
 
                 /* RIGHT PANEL */
                 .right-panel { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
-                .form-box { width: 100%; max-width: 340px; }
+                .form-box { width: 100%; max-width: 340px; animation: fadeInUp 0.8s ease-out; }
                 .form-hd { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; font-style: italic; }
                 .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #e8a230; margin-bottom: 40px; }
 

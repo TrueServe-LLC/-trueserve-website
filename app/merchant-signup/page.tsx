@@ -1,11 +1,29 @@
-export const dynamic = "force-dynamic";
+"use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import MerchantSignupForm from "./MerchantSignupForm";
 
 export default function MerchantSignupPage() {
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#02040a] text-white selection:bg-primary font-sans relative flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
+            <style dangerouslySetInnerHTML={{ __html: `
+                .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
+                .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+            ` }} />
             {/* Animated Mesh Gradient Background */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] animate-blob filter" />
@@ -28,7 +46,7 @@ export default function MerchantSignupPage() {
                 </div>
             </div>
 
-            <main className="w-full max-w-7xl mx-auto pb-40 relative z-10">
+            <main className="w-full max-w-7xl mx-auto pb-40 relative z-10 animate-on-scroll">
                 <MerchantSignupForm />
             </main>
 

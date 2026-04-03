@@ -12,8 +12,6 @@ export default function MerchantLoginPage() {
         const checkUser = async () => {
             const isPreview = document.cookie.includes("preview_mode=true");
             if (isPreview) {
-                // Determine if it was a merchant or driver preview
-                // For now, we favor merchant if on this page
                 router.push("/merchant/dashboard");
                 return;
             }
@@ -34,43 +32,53 @@ export default function MerchantLoginPage() {
                 body { margin: 0; background: #0c0e13; overflow-x: hidden; }
                 .login-grid { display: grid; grid-template-columns: 1fr 480px; min-height: 100vh; background: #0c0e13; }
                 
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(30px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                @keyframes slideRight {
+                    from { opacity: 0; transform: translateX(-30px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+
                 /* LEFT PANEL */
                 .left-panel { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px 80px; overflow: hidden; background: #080a0f; }
                 .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; grayscale: 1; opacity: 0.2; filter: contrast(1.1); transform: scale(1.05); }
                 .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,19,0.3) 0%, rgba(12,14,19,0.85) 100%); z-index: 1; }
                 
-                .left-content { position: relative; z-index: 2; }
-                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; }
+                .left-content { position: relative; z-index: 2; animation: slideRight 1s ease-out; }
+                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; animation: slideRight 0.8s ease-out; }
                 .logo-ring { width: 38px; height: 38px; border: 1.5px solid #e8a230; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(19,23,32,0.6); }
                 .logo-text { font-size: 20px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
                 .logo-text span { color: #e8a230; }
 
-                .biz-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(61,214,140,0.1); border: 1px solid rgba(61,214,140,0.2); padding: 6px 14px; margin-bottom: 24px; border-radius: 2px; }
-                .badge-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; box-shadow: 0 0 10px #3dd68c; }
-                .badge-text { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #3dd68c; }
+                .biz-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,162,48,0.1); border: 1px solid rgba(232,162,48,0.2); padding: 6px 14px; margin-bottom: 24px; border-radius: 2px; }
+                .badge-dot { width: 6px; height: 6px; background: #e8a230; border-radius: 50%; box-shadow: 0 0 10px #e8a230; }
+                .badge-text { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8a230; }
 
                 .hero-txt { font-family: 'Barlow Condensed', sans-serif; font-size: 72px; font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 0.9; margin-bottom: 20px; color: #fff; }
                 .hero-txt span { color: #e8a230; }
                 .hero-sub { font-size: 14px; color: #555; line-height: 1.6; max-width: 400px; margin-bottom: 40px; }
 
                 .feat-item { display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: rgba(15,18,25,0.4); border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(10px); margin-bottom: 4px; }
-                .feat-icon { width: 32px; height: 32px; background: rgba(61,214,140,0.05); border: 1px solid rgba(61,214,140,0.1); display: flex; align-items: center; justify-content: center; }
+                .feat-icon { width: 32px; height: 32px; background: rgba(232,162,48,0.05); border: 1px solid rgba(232,162,48,0.1); display: flex; align-items: center; justify-content: center; }
                 .feat-name { font-size: 12px; font-weight: 700; color: #ccc; text-transform: uppercase; letter-spacing: 0.05em; }
 
                 /* RIGHT PANEL */
                 .right-panel { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
-                .form-box { width: 100%; max-width: 340px; }
+                .form-box { width: 100%; max-width: 340px; animation: fadeInUp 0.8s ease-out; }
                 .form-hd { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; font-style: italic; }
-                .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #3dd68c; margin-bottom: 40px; }
+                .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #e8a230; margin-bottom: 40px; }
 
-                .field-row { margin-bottom: 20px; }
+                .field-row { margin-bottom: 24px; }
                 .field-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #444; margin-bottom: 8px; margin-left: 2px; }
                 
-                .input-box { width: 100%; background: #0f1219; border: 1px solid #1c1f28; padding: 14px 18px; color: #fff; font-family: 'DM Mono', monospace; font-size: 14px; outline: none; transition: border-color .15s; box-sizing: border-box; }
-                .input-box:focus { border-color: #3dd68c; }
+                .input-box { width: 100%; background: #0f1219; border: 1px solid #1c1f28; padding: 16px 18px; color: #fff; font-family: 'DM Mono', monospace; font-size: 14px; outline: none; transition: border-color .15s; border-radius: 0; }
+                .input-box:focus { border-color: #e8a230; }
                 .input-box::placeholder { color: #222; }
 
-                .submit-btn { width: 100%; padding: 16px; background: #3dd68c; border: none; color: #000; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; cursor: pointer; transition: opacity .15s; margin-top: 10px; margin-bottom: 24px; }
+                .submit-btn { width: 100%; padding: 18px; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; cursor: pointer; transition: opacity .15s; margin-top: 10px; margin-bottom: 24px; }
                 .submit-btn:hover { opacity: 0.9; }
 
                 .divider { display: flex; align-items: center; gap: 12px; margin: 32px 0; }
@@ -78,8 +86,8 @@ export default function MerchantLoginPage() {
                 .divider-txt { font-size: 10px; font-weight: 700; color: #222; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
 
                 .pilot-btn { width: 100%; padding: 14px; background: transparent; border: 1.5px solid #2a2f3a; color: #888; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: all .15s; margin-bottom: 8px; }
-                .pilot-btn:hover { border-color: #3dd68c; color: #3dd68c; background: rgba(61,214,140,0.03); }
-                .pilot-btn.green { border-color: rgba(61,214,140,0.3); color: #3dd68c; }
+                .pilot-btn:hover { border-color: #e8a230; color: #e8a230; background: rgba(232,162,48,0.03); }
+                .pilot-btn.gold { border-color: rgba(232,162,48,0.3); color: #e8a230; }
 
                 @media (max-width: 1024px) { 
                     .login-grid { grid-template-columns: 1fr; }
@@ -93,19 +101,19 @@ export default function MerchantLoginPage() {
                 
                 <div className="logo-wrap">
                     <div className="logo-ring">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#e8a230" strokeWidth="1.5"/><path d="M7 10l2.5 2.5L14 7" stroke="#e8a230" strokeWidth="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#e8a230" strokeWidth="1.5"/><path d="M7 10l2.5 2.5L14 7" stroke="#e8a230" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </div>
                     <div className="logo-text">True<span>Serve</span></div>
                 </div>
 
                 <div className="left-content">
                     <div className="biz-badge">
-                        <div className="badge-dot" />
-                        <div className="badge-text">Secure Merchant Uplink</div>
+                        <span className="badge-dot" />
+                        <span className="badge-text">Secure Merchant Uplink</span>
                     </div>
                     <div className="hero-txt">Ready to<br/><span>Scale?</span></div>
                     <div className="hero-sub">Enter the operational nerve center for top-performing kitchens. Manage your orders, logistics and growth in real-time.</div>
-                    
+
                     <div className="feat-item">
                         <div className="feat-icon">🍱</div>
                         <div className="feat-name">Real-Time Kitchen Feed</div>
@@ -123,21 +131,21 @@ export default function MerchantLoginPage() {
 
             <div className="right-panel">
                 <div className="form-box">
-                    <div className="form-hd">Partner Login</div>
+                    <div className="form-hd">Partner Connection</div>
                     <div className="form-sub">Operations Terminal Access</div>
 
                     <div className="field-row">
                         <div className="field-lbl">Email Identifier</div>
-                        <input className="input-box" type="email" placeholder="partner@yourstore.com" />
+                        <input type="text" className="input-box" placeholder="partner@yourstore.com" />
                     </div>
 
                     <div className="field-row">
                         <div className="field-lbl">Security Password</div>
-                        <input className="input-box" type="password" placeholder="••••••••" />
+                        <input type="password" className="input-box" placeholder="••••••••" />
                     </div>
 
                     <button className="submit-btn" onClick={() => setIsLoading(true)}>
-                        Authorize Connection →
+                        {isLoading ? "Authorizing..." : "Authorize Connection →"}
                     </button>
 
                     <div className="divider">
@@ -146,16 +154,14 @@ export default function MerchantLoginPage() {
                         <div className="divider-line" />
                     </div>
 
-                    <form action={loginAsDemoMerchant}>
-                        <button className="pilot-btn green" type="submit">
-                            ⚡ Quick Pilot Access (Merchant)
-                        </button>
-                    </form>
-                    
-                    <button className="pilot-btn" onClick={() => router.push('/login')}>
-                        🚛 Fleet Hub Gateway
+                    <button className="pilot-btn gold" onClick={loginAsDemoMerchant}>
+                        ⚡ Quick Pilot Access (Merchant)
                     </button>
-
+                    
+                    <button className="pilot-btn" onClick={() => router.push("/login")}>
+                        ← Fleet Hub Gateway
+                    </button>
+                    
                     <div className="mt-8 flex items-center justify-center gap-2 text-[#222] font-black text-[9px] uppercase tracking-[0.2em]">
                         <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2"/></svg>
                         Encrypted Connection · Secure Uplink
