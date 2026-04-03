@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
 import MerchantModeToggle from "@/components/MerchantModeToggle";
+import SupportWidget from "@/components/SupportWidget";
 
 export const dynamic = 'force-dynamic';
 
@@ -63,24 +64,19 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                 }
                 .ml-nav-link:hover { color: #aaa; }
                 .ml-nav-link.active { color: #e8a230; border-bottom-color: #e8a230; }
-                .ml-nav-right { display: flex; align-items: center; gap: 8px; }
+                .ml-nav-right { display: flex; align-items: center; gap: 24px; }
                 .ml-store-status { display: flex; flex-direction: column; align-items: flex-end; margin-right: 8px; }
                 .ml-store-status-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #555; }
                 .ml-store-status-live { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; }
                 .ml-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: ml-pulse 2s infinite; flex-shrink: 0; }
                 @keyframes ml-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-                .ml-mode-tabs { display: flex; gap: 1px; }
-                .ml-mode-tab {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-                    text-transform: uppercase; padding: 7px 14px;
-                    background: #131720; border: 1px solid #1c1f28; color: #555; cursor: pointer;
-                }
-                .ml-mode-tab.active { background: #e8a230; color: #000; border-color: #e8a230; }
                 .ml-nav-avatar {
                     width: 32px; height: 32px; background: #e8a230; border-radius: 50%;
                     display: flex; align-items: center; justify-content: center;
                     font-size: 13px; font-weight: 700; color: #000; cursor: pointer;
                 }
+                .ml-logout-link { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #2a2f3a; cursor: pointer; text-decoration: none; }
+                .ml-logout-link:hover { color: #444; }
             `}</style>
 
             <div style={{ background: '#0c0e13', minHeight: '100vh', color: '#fff', fontFamily: "'DM Sans', sans-serif" }}>
@@ -95,16 +91,16 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                                 </svg>
                                 Customer Preview
                             </Link>
-                            <Link href="/merchant/dashboard/integrations" className="ml-nav-link">
+                            <Link href="/merchant/dashboard/integrations" className="ml-nav-link active">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                     <path d="M4 4h4M4 8h4M2 6h8" stroke="#555" strokeWidth="1.3" strokeLinecap="round"/>
                                 </svg>
                                 Integrations
                             </Link>
-                            <Link href="/merchant/dashboard" className="ml-nav-link active">
+                            <Link href="/merchant/dashboard" className="ml-nav-link">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <rect x="1" y="1" width="10" height="10" rx="1" stroke="#e8a230" strokeWidth="1.3"/>
-                                    <path d="M4 6h4M6 4v4" stroke="#e8a230" strokeWidth="1.3"/>
+                                    <rect x="1" y="1" width="10" height="10" rx="1" stroke="#555" strokeWidth="1.3"/>
+                                    <path d="M4 6h4M6 4v4" stroke="#555" strokeWidth="1.3"/>
                                 </svg>
                                 Merchant Hub
                             </Link>
@@ -119,11 +115,17 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                             </div>
                         </div>
                         <MerchantModeToggle />
-                        <div className="ml-nav-avatar">{merchantInitials}</div>
+                        <div className="flex items-center gap-4">
+                            <div className="ml-logout-link uppercase tracking-widest font-bold">
+                                <LogoutButton />
+                            </div>
+                            <div className="ml-nav-avatar">{merchantInitials}</div>
+                        </div>
                     </div>
                 </div>
 
                 <main>{children}</main>
+                <SupportWidget role="MERCHANT" />
             </div>
         </>
     );

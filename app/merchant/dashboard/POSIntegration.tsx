@@ -21,7 +21,7 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
     const [clientSecret, setClientSecret] = useState("");
 
     const handleGenerate = async () => {
-        if (apiKey && !confirm("Generating a new key will immediately disable your old POS integration. Continue?")) return;
+        if (apiKey && !confirm("Rotating will invalidate the current key. All existing integrations will disconnect. Continue?")) return;
 
         setLoading(true);
         const res = await generateApiKey();
@@ -29,7 +29,7 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
             setApiKey(res.apiKey);
             setShowKey(true);
         } else {
-            alert("Failed to generate key: " + res.error);
+            alert("Failed to rotate key: " + res.error);
         }
         setLoading(false);
     };
@@ -42,141 +42,219 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
         setSyncing(true);
         const res = await savePosCredentials(externalPos, clientId, clientSecret);
         if (res.success) {
-            alert(`${externalPos} integration configured and synced!`);
+            alert(`${externalPos} system synchronized and protocols active!`);
         } else {
-            alert("Failed to sync: " + res.error);
+            alert("Sync Failure: " + res.error);
         }
         setSyncing(false);
     };
 
     const copyToClipboard = () => {
+        if (!showKey) {
+            alert("Reveal the key protocol first.");
+            return;
+        }
         navigator.clipboard.writeText(apiKey);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
     return (
-        <div className="space-y-12">
-            {/* SECTION 1: SYSTEM HOOKS (TOAST/SQUARE) */}
-            <section className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-10 backdrop-blur-3xl shadow-2xl">
-                <div className="flex justify-between items-start mb-10">
+        <>
+            <style>{`
+                /* ── SECTION ── */
+                .section { background: #0f1219; border: 1px solid #1c1f28; margin-bottom: 24px; position: relative; }
+                .section-hd { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid #1c1f28; }
+                .section-icon { width: 28px; height: 28px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+                .section-title-text { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
+                .section-title-text span { color: #e8a230; }
+                .section-sub-text { font-size: 11px; color: #444; margin-top: 2px; }
+                .section-body { padding: 0; }
+
+                /* ── TWO COL ── */
+                .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1c1f28; }
+                .col { background: #0f1219; padding: 24px; position: relative; overflow: hidden; }
+
+                /* ── PLATFORM SELECTOR ── */
+                .field-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #444; margin-bottom: 10px; }
+                .platform-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+                .platform-btn { padding: 12px 16px; background: #0c0e13; border: 1px solid #2a2f3a; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; cursor: pointer; text-align: center; transition: all .15s; }
+                .platform-btn:hover { border-color: #444; color: #888; }
+                .platform-btn.active { background: #1a1200; border-color: #e8a230; color: #e8a230; }
+                .platform-btn.none { grid-column: span 1; }
+
+                /* ── FIELDS ── */
+                .field-input { width: 100%; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Mono', monospace; font-size: 13px; padding: 11px 14px; outline: none; margin-bottom: 14px; transition: border-color .15s; }
+                .field-input:focus { border-color: #e8a230; }
+                .field-input::placeholder { color: #222; }
+
+                /* ── BUTTONS ── */
+                .primary-btn { width: 100%; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 14px; cursor: pointer; transition: opacity .15s; }
+                .primary-btn:hover { opacity: .9; }
+                .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+                .outline-btn { background: transparent; border: 1px solid #2a2f3a; color: #888; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 20px; cursor: pointer; transition: border-color .15s, color .15s; white-space: nowrap; }
+                .outline-btn:hover { border-color: #e8a230; color: #e8a230; }
+                .danger-btn { background: transparent; border: 1px solid #3a1010; color: #e24b4a; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 20px; cursor: pointer; transition: border-color .15s; }
+                .danger-btn:hover { border-color: #e24b4a; }
+
+                /* ── KEY BLOCK ── */
+                .key-block { display: flex; align-items: center; gap: 6px; background: #0c0e13; border: 1px solid #2a2f3a; padding: 12px 16px; margin-bottom: 6px; position: relative; }
+                .key-value { flex: 1; font-family: 'DM Mono', monospace; font-size: 12px; color: #3dd68c; letter-spacing: 0.08em; overflow: hidden; text-overflow: ellipsis; }
+                .key-hidden { flex: 1; font-family: 'DM Mono', monospace; font-size: 14px; color: #2a2f3a; letter-spacing: 0.1em; }
+                .copy-btn { width: 32px; height: 32px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: border-color .15s; }
+                .copy-btn:hover { border-color: #e8a230; }
+                .key-hint { font-size: 10px; color: #333; line-height: 1.5; font-style: italic; margin-bottom: 14px; }
+
+                /* ── STATUS TAG ── */
+                .status-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+                .connected-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; background: #0d2a1a; color: #3dd68c; border: 1px solid #1a4a2a; }
+                .disconnected-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; background: #1a0808; color: #e24b4a; border: 1px solid #3a1010; }
+
+                /* ── API WATERMARK ── */
+                .api-watermark { font-family: 'Barlow Condensed', sans-serif; font-size: 80px; font-weight: 800; font-style: italic; color: rgba(232, 162, 48, 0.04); letter-spacing: 0.05em; text-align: right; line-height: 1; margin-top: -8px; pointer-events: none; user-select: none; position: absolute; bottom: 10px; right: 20px; }
+                
+                .divider { height: 1px; background: #1c1f28; margin: 16px 0; }
+                .action-row { display: flex; align-items: center; gap: 8px; }
+            `}</style>
+
+            {/* SYSTEM HOOKS */}
+            <div className="section">
+                <div className="section-hd">
+                    <div className="section-icon">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M3 7h8M7 3v8" stroke="#e8a230" strokeWidth="1.4" strokeLinecap="round"/>
+                            <circle cx="7" cy="7" r="6" stroke="#e8a230" strokeWidth="1.2"/>
+                        </svg>
+                    </div>
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-2xl">🔌</span>
-                            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">System Hooks</h3>
-                        </div>
-                        <p className="text-slate-500 text-sm font-bold italic">Synchronize your existing POS menus and orders.</p>
+                        <div className="section-title-text">System <span>Hooks</span></div>
+                        <div className="section-sub-text">Synchronize your existing POS menus and orders.</div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="space-y-6">
-                        <label className="text-[10px] font-black uppercase text-slate-600 tracking-widest italic">Platform Selection</label>
-                        <div className="grid grid-cols-2 gap-3">
-                             {['Toast', 'Square', 'Clover', 'Revel', 'None'].map((sys) => (
-                                 <button 
+                <div className="two-col">
+                    <div className="col">
+                        <div className="field-label">Platform Selection</div>
+                        <div className="platform-grid">
+                            {['Toast', 'Square', 'Clover', 'Revel', 'None'].map((sys) => (
+                                <button 
                                     key={sys}
                                     onClick={() => setExternalPos(sys)}
-                                    className={`px-6 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${externalPos === sys ? 'bg-primary border-primary text-black shadow-lg shadow-primary/20' : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20'}`}
-                                 >
+                                    className={`platform-btn ${externalPos === sys ? 'active' : ''} ${sys === 'None' ? 'none' : ''}`}
+                                >
                                     {sys}
-                                 </button>
-                             ))}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {externalPos !== 'None' && (
-                        <div className="space-y-6 animate-fade-in">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{externalPos} Client ID</label>
-                                <input 
-                                    type="text" 
-                                    value={clientId} 
-                                    onChange={(e) => setClientId(e.target.value)}
-                                    placeholder="Enter ID..."
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-primary focus:outline-none font-mono"
-                                />
+                    <div className="col">
+                        <div className="status-row">
+                            <div className={externalPos !== 'None' && clientId ? "connected-tag" : "disconnected-tag"}>
+                                {externalPos !== 'None' && clientId ? "Protocols Active" : "Not Connected"}
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{externalPos} Client Secret</label>
-                                <input 
-                                    type="password" 
-                                    value={clientSecret} 
-                                    onChange={(e) => setClientSecret(e.target.value)}
-                                    placeholder="••••••••••••"
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-primary focus:outline-none font-mono"
-                                />
-                            </div>
-                            <button 
-                                onClick={handleSync}
-                                disabled={syncing}
-                                className="badge-solid-primary !py-4 !w-full !text-[10px] h-glow disabled:opacity-50"
-                            >
-                                {syncing ? "Syncing Protocols..." : `Sync ${externalPos} System`}
-                            </button>
                         </div>
-                    )}
-                </div>
-            </section>
-
-            {/* SECTION 2: DEVELOPER API */}
-            <section className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
-                     <span className="text-6xl italic font-black text-white">API</span>
-                 </div>
-                 
-                 <div className="mb-10">
-                    <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">Direct Hub Access</h3>
-                    <p className="text-slate-500 text-sm font-bold italic">Integrate custom kiosks or 3rd party dispatchers.</p>
-                </div>
-
-                <div className="space-y-8 max-w-2xl">
-                    <div className="p-8 bg-black/60 rounded-[2rem] border border-white/5 space-y-6">
-                        <label className="text-[10px] uppercase font-black tracking-widest text-slate-600 italic block">TrueServe Secret Key</label>
-
-                        {apiKey ? (
-                            <div className="flex gap-4">
-                                <div className="flex-1 bg-black border border-white/10 rounded-xl px-6 py-4 font-mono text-sm text-primary overflow-hidden relative group">
-                                    <span className={showKey ? "" : "blur-md select-none"}>
-                                        {apiKey}
-                                    </span>
-                                    {!showKey && (
-                                        <button
-                                            onClick={() => setShowKey(true)}
-                                            className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/60 transition-colors text-[10px] font-black uppercase tracking-[0.3em] text-white"
-                                        >
-                                            Reveal Protocol Key
-                                        </button>
-                                    )}
-                                </div>
-                                <button
-                                    onClick={copyToClipboard}
-                                    className="w-14 h-14 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all text-xl"
+                        
+                        {externalPos !== "None" ? (
+                            <>
+                                <div className="field-label">{externalPos} Client ID</div>
+                                <input 
+                                    className="field-input" 
+                                    type="text" 
+                                    placeholder="Enter ID..."
+                                    value={clientId}
+                                    onChange={(e) => setClientId(e.target.value)}
+                                />
+                                <div className="field-label">{externalPos} Client Secret</div>
+                                <input 
+                                    className="field-input" 
+                                    type="password" 
+                                    placeholder="••••••••••••"
+                                    value={clientSecret}
+                                    onChange={(e) => setClientSecret(e.target.value)}
+                                />
+                                <button 
+                                    className="primary-btn" 
+                                    onClick={handleSync}
+                                    disabled={syncing}
                                 >
-                                    {copied ? "✓" : "📋"}
+                                    {syncing ? "Syncing..." : `Sync ${externalPos} System →`}
                                 </button>
-                            </div>
+                            </>
                         ) : (
-                            <div className="py-4 border-2 border-dashed border-white/10 rounded-2xl text-center">
-                                <p className="text-slate-600 italic font-bold">No active protocol key generated.</p>
+                            <div className="flex items-center justify-center h-full text-[10px] uppercase font-bold text-slate-700 italic">
+                                Select a platform to proceed
                             </div>
                         )}
                     </div>
+                </div>
+            </div>
 
-                    <div className="flex flex-col md:flex-row gap-8 items-center justify-between pt-6">
-                        <p className="text-[10px] text-slate-700 font-bold italic leading-relaxed max-w-sm">
-                            Generate a new key to reset your connection. Existing kiosks must be updated immediately.
-                        </p>
-                        <button
-                            onClick={handleGenerate}
-                            disabled={loading}
-                            className="badge-outline-white !py-3 !px-10 !text-[10px]"
-                        >
-                            {loading ? "Rotating..." : apiKey ? "Rotate Protocol" : "Initialize API"}
-                        </button>
+            {/* DIRECT HUB ACCESS */}
+            <div className="section">
+                <div className="section-hd">
+                    <div className="section-icon">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <rect x="2" y="4" width="10" height="7" rx="1" stroke="#e8a230" strokeWidth="1.2"/>
+                            <path d="M5 4V3a2 2 0 014 0v1" stroke="#e8a230" strokeWidth="1.2"/>
+                            <circle cx="7" cy="7.5" r="1" fill="#e8a230"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div className="section-title-text">Direct <span>Hub Access</span></div>
+                        <div className="section-sub-text">Integrate custom kiosks or 3rd party dispatchers.</div>
                     </div>
                 </div>
-            </section>
-        </div>
+
+                <div className="two-col">
+                    <div className="col">
+                        <div className="field-label">TrueServe Secret Key</div>
+                        <div className="key-block">
+                            <div className={showKey ? "key-value" : "key-hidden"}>
+                                {showKey ? apiKey : "••••••••••••••••••••••••••••••••"}
+                            </div>
+                            <div className="copy-btn" onClick={copyToClipboard} title="Copy key">
+                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                    <rect x="4" y="4" width="8" height="8" rx="1" stroke="#888" strokeWidth="1.2"/>
+                                    <path d="M1 9V2a1 1 0 011-1h7" stroke="#888" strokeWidth="1.2" strokeLinecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div className="key-hint">Generate a new key to reset your connection. Existing kiosks must be updated immediately.</div>
+                        <div className="action-row">
+                            <button className="outline-btn" onClick={() => setShowKey(!showKey)}>
+                                {showKey ? "Hide Protocol Key" : "Reveal Protocol Key"}
+                            </button>
+                            <button className="danger-btn" onClick={handleGenerate} disabled={loading}>
+                                {loading ? "Rotating..." : "Rotate Protocol"}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="col">
+                        <div className="field-label">API Endpoint</div>
+                        <div className="key-block" style={{ marginBottom: "14px" }}>
+                            <div className="key-value">https://api.trueserve.io/v1/hub</div>
+                            <div className="copy-btn">
+                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                    <rect x="4" y="4" width="8" height="8" rx="1" stroke="#888" strokeWidth="1.2"/>
+                                    <path d="M1 9V2a1 1 0 011-1h7" stroke="#888" strokeWidth="1.2" strokeLinecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div className="field-label">Webhook Delivery</div>
+                        <div className="key-block">
+                            <div className="key-value" style={{ color: "#555", fontSize: "11px" }}>No webhook URL configured</div>
+                        </div>
+                        <div className="divider"></div>
+                        <div className="status-row">
+                            <div className="connected-tag">Protocol Active</div>
+                            <span style={{ fontSize: "10px", color: "#333", letterSpacing: "0.08em", textTransform: "uppercase" }}>Version 2.1</span>
+                        </div>
+                        <div className="api-watermark">API</div>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }

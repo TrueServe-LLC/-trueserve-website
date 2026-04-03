@@ -39,10 +39,16 @@ export default async function IntegrationsPage() {
     }
 
     return (
-        <div className="p-8 max-w-5xl mx-auto animate-fade-in-up">
+        <div className="p-10 max-w-6xl mx-auto animate-fade-in-up">
+            <style dangerouslySetInnerHTML={{ __html: `
+                @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&display=swap');
+                .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; line-height: 1; }
+                .page-sub { font-size: 13px; color: #444; margin-top: 5px; font-weight: 600; letter-spacing: 0.02em; }
+            `}} />
+            
             <div className="mb-10">
-                <h1 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Integrations</h1>
-                <p className="text-slate-500 text-sm font-bold italic">Manage your POS systems and API protocols.</p>
+                <h1 className="page-title">Integrations</h1>
+                <p className="page-sub">Manage your POS systems and API protocols.</p>
             </div>
             
             <POSIntegration 
