@@ -1,3 +1,5 @@
+"use client";
+
 import { Suspense } from "react";
 import Link from "next/link";
 import DriverLoginForm from "./DriverLoginForm";
@@ -5,104 +7,122 @@ import Logo from "@/components/Logo";
 
 export default function DriverLoginPage() {
     return (
-        <div className="flex min-h-screen bg-[#080c14] font-sans selection:bg-primary/30">
-            {/* Sidebar - Inspired by HouseEats */}
-            <aside className="hidden lg:flex w-[420px] bg-[#0a0a0b] border-r border-white/5 flex-col p-12 relative overflow-hidden shrink-0">
-                {/* Background Image Layer */}
-                <div className="absolute inset-0 z-0">
-                    <img 
-                        src="/admin_login_bg_cinematic_1774378543203.png" 
-                        alt="Background" 
-                        className="w-full h-full object-cover grayscale opacity-20 scale-110 blur-[2px]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-transparent" />
-                </div>
+        <div className="login-grid selection:bg-primary/30">
+            <style dangerouslySetInnerHTML={{ __html: `
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&display=swap');
                 
-                {/* Decorative radial gradient */}
-                <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+                body { margin: 0; background: #0c0e13; overflow-x: hidden; }
+                .login-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; background: #0c0e13; }
                 
-                <div className="relative z-10 flex flex-col h-full">
-                    {/* Logo */}
+                /* ── LEFT PANEL ── */
+                .left-panel { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px 44px; overflow: hidden; background: #0e1018; }
+                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; grayscale: 0.1; opacity: 0.8; filter: contrast(1.1); transition: transform 0.5s ease-out; }
+                .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,12,18,0.55) 0%, rgba(10,12,18,0.3) 40%, rgba(10,12,18,0.85) 100%); z-index: 1; }
+                .bg-grid { position: absolute; inset: 0; background-image: 
+                    repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.02) 48px, rgba(255,255,255,0.02) 49px),
+                    repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.02) 48px, rgba(255,255,255,0.02) 49px); 
+                    z-index: 2; 
+                }
+                
+                .left-content { position: relative; z-index: 3; animation: slideUp 0.8s ease-out; }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+                .logo-row { position: absolute; top: 36px; left: 44px; display: flex; align-items: center; gap: 12px; z-index: 4; }
+                
+                .fleet-badge { display: inline-flex; align-items: center; gap: 6px; background: #1a1200; border: 1px solid #3a1010; padding: 5px 14px; margin-bottom: 20px; border-radius: 4px; }
+                .badge-dot { width: 7px; height: 7px; background: #e8a230; border-radius: 50%; box-shadow: 0 0 10px #e8a230; }
+                .badge-text { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #e8a230; }
+
+                .hero-heading { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(52px, 6vw, 80px); font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 0.95; margin-bottom: 16px; }
+                .hero-heading .white { color: #fff; }
+                .hero-heading .gold { color: #e8a230; }
+                
+                .hero-sub { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 380px; margin-bottom: 32px; }
+
+                .feature-list { display: flex; flex-direction: column; gap: 4px; }
+                .feature-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: rgba(15,18,25,0.7); border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(8px); transition: all 0.2s; }
+                .feature-item:hover { border-color: rgba(232,162,48,0.2); transform: translateX(4px); }
+                .feature-icon { width: 36px; height: 36px; background: rgba(232,162,48,0.12); border: 1px solid rgba(232,162,48,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+                .feature-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+                .feature-desc { font-size: 11px; color: rgba(255,255,255,0.35); }
+
+                /* ── RIGHT PANEL ── */
+                .right-panel { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 72px; }
+                .form-wrap { width: 100%; max-width: 440px; animation: fadeIn 1s ease-out; }
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                
+                .form-title { font-family: 'DM Sans', sans-serif; font-size: 32px; font-weight: 700; font-style: italic; color: #fff; margin-bottom: 4px; letter-spacing: -0.3px; }
+                .form-subtitle { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #e8a230; margin-bottom: 32px; }
+
+                @media (max-width: 1024px) { 
+                    .login-grid { grid-template-columns: 1fr; }
+                    .left-panel { display: none; }
+                }
+            ` }} />
+
+            <div className="left-panel">
+                <img src="/driver_login_background_v2.png" alt="Driving Background" className="bg-img" />
+                <div className="bg-overlay" />
+                <div className="bg-grid" />
+                
+                <div className="logo-row">
                     <Logo size="lg" />
+                </div>
 
-                    {/* Program Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-8 w-fit">
-                        🛵 Fleet Access Program
+                <div className="left-content">
+                    <div className="fleet-badge">
+                        <span className="badge-dot" />
+                        <span className="badge-text">Fleet Access Program</span>
                     </div>
 
-                    {/* Title */}
-                    <h2 className="text-4xl md:text-5xl font-black italic text-white leading-[1.1] mb-6 tracking-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        Ready to <br />
-                        <span className="text-primary uppercase tracking-tighter not-italic font-sans">Earn?</span>
-                    </h2>
+                    <div className="hero-heading">
+                        <div className="white">Ready to</div>
+                        <div className="gold">Earn?</div>
+                    </div>
 
-                    <p className="text-slate-400 text-sm leading-relaxed mb-12 max-w-xs">
-                        Connect with the TrueServe platform and start accepting local delivery routes in your area today.
-                    </p>
+                    <div className="hero-sub">Connect with the TrueServe platform and start accepting local delivery routes in your area today.</div>
 
-                    {/* Perks */}
-                    <div className="space-y-4 mt-auto">
-                        <div className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-primary/20 transition-all">
-                            <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-lg bg-primary/10 text-primary border border-primary/20">💰</div>
-                            <div className="space-y-1">
-                                <p className="text-[13px] font-bold text-white tracking-wide">Daily Payouts</p>
-                                <p className="text-[11px] text-slate-500 leading-tight">Drive today, get paid today. Transparent splits.</p>
+                    <div className="feature-list">
+                        <div className="feature-item">
+                            <div className="feature-icon">💰</div>
+                            <div>
+                                <div className="feature-name">Daily Payouts</div>
+                                <div className="feature-desc">Drive today, get paid today. Transparent splits.</div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-primary/20 transition-all">
-                            <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-lg bg-white/5 text-white border border-white/10 text-primary">⛽</div>
-                            <div className="space-y-1">
-                                <p className="text-[13px] font-bold text-white tracking-wide">Optimized Routing</p>
-                                <p className="text-[11px] text-slate-500 leading-tight">Smart dispatching to minimize fuel and time.</p>
+                        <div className="feature-item">
+                            <div className="feature-icon">🏎️</div>
+                            <div>
+                                <div className="feature-name">Optimized Routing</div>
+                                <div className="feature-desc">Smart dispatching to minimize fuel and time.</div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-primary/20 transition-all">
-                            <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-lg bg-white/5 text-white border border-white/10">🏆</div>
-                            <div className="space-y-1">
-                                <p className="text-[13px] font-bold text-white tracking-wide">Fleet Support</p>
-                                <p className="text-[11px] text-slate-500 leading-tight">Priority 24/7 assistance for every mile.</p>
+                        <div className="feature-item">
+                            <div className="feature-icon">🏆</div>
+                            <div>
+                                <div className="feature-name">Fleet Support</div>
+                                <div className="feature-desc">Priority 24/7 assistance for every mile.</div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </aside>
+            </div>
 
-            {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative overflow-y-auto">
-                {/* Background Grid - HouseEats Style */}
-                <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_80%)]" />
-                </div>
-                
-                {/* Mobile Nav Header */}
-                <div className="lg:hidden flex items-center justify-between p-6 border-b border-white/5 bg-[#0a0a0b]/80 backdrop-blur-xl">
-                    <Logo size="sm" />
-                    <div className="text-[10px] font-black uppercase tracking-widest text-primary">Fleet Login</div>
-                </div>
+            <div className="right-panel">
+                <div className="form-wrap">
+                    <div className="form-title">Fleet Authorization</div>
+                    <div className="form-subtitle">Secure Uplink Terminal</div>
 
-                <div className="flex-1 flex items-center justify-center p-8 md:p-16">
-                    <div className="w-full max-w-md space-y-12">
-                        {/* Header */}
-                        <div className="space-y-1">
-                            <h3 className="text-3xl font-black italic text-white tracking-tight leading-tight uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Fleet Authorization</h3>
-                            <p className="text-[#e8a230] text-sm italic tracking-[0.2em] font-black uppercase text-[10px]">Secure Uplink Terminal</p>
-                        </div>
+                    <Suspense fallback={<div className="text-center text-slate-500 text-[10px] font-black uppercase tracking-widest animate-pulse p-12">Uplinking Terminal...</div>}>
+                        <DriverLoginForm />
+                    </Suspense>
 
-                        {/* OTP Form Module */}
-                        <Suspense fallback={<div className="text-center text-slate-500 text-[10px] font-black uppercase tracking-widest animate-pulse p-12 bg-[#1c1916] rounded-3xl border border-white/5">Establishing Secure Uplink...</div>}>
-                            <DriverLoginForm />
-                        </Suspense>
-
-                        {/* Footer Link */}
-                        <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-4">
-                            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest">New to the Fleet?</p>
-                            <Link href="/driver" className="badge-solid-primary !rounded-full !py-2.5 !px-8 !text-[10px] !opacity-100 h-glow">
-                                Apply to Drive
-                            </Link>
-                        </div>
+                    <div className="mt-8 flex items-center justify-center gap-2 text-[#2a2f3a] font-black text-[9px] uppercase tracking-[0.2em]">
+                        <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2"/></svg>
+                        Encrypted Connection · Secure Hub Access
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     );
 }
