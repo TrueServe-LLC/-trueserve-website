@@ -1,16 +1,11 @@
 import { Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import LocationButton from "@/components/LocationButton";
-import GoogleMapsMap from "@/components/GoogleMapsMap";
 import FavoriteButton from "@/components/FavoriteButton";
 import NotificationBell from "@/components/NotificationBell";
 import LogoutButton from "@/components/LogoutButton";
 import { getFavorites } from "@/app/user/favorite-actions";
 import { cookies } from "next/headers";
-import { calculateDistance } from "@/lib/utils";
-import { redirect } from "next/navigation";
-import ModeToggle from "@/components/ModeToggle";
 import LandingSearch from "@/components/LandingSearch";
 import Logo from "@/components/Logo";
 
@@ -27,13 +22,10 @@ interface Restaurant {
     city?: string;
     distance?: string;
     address?: string;
-    websiteUrl?: string; // Marketing URL (GHL, WordPress, etc.)
     deliveryFee?: string;
     prepTime?: string;
     priceLevel?: string;
     deal?: { type: string; description: string };
-    openTime?: string;
-    closeTime?: string;
     isBusy?: boolean;
 }
 
@@ -56,423 +48,174 @@ async function getRestaurants(
 
     const fallbackMocks = [
         { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
-        { city: 'Pineville', state: 'NC', zipPrefixes: ['28134'], lat: 35.0833, lng: -80.8872 },
-        { city: 'Rock Hill', state: 'SC', zipPrefixes: ['29730', '29732'], lat: 34.9249, lng: -81.0251 },
-        { city: 'Mount Airy', state: 'NC', zipPrefixes: ['27030'], lat: 36.4993, lng: -80.6073 },
-        { city: 'Greenville', state: 'SC', zipPrefixes: ['29601', '29605', '29607', '29609', '29611', '29617'], lat: 34.8526, lng: -82.3940 },
-        { city: 'Simpsonville', state: 'SC', zipPrefixes: ['29680', '29681'], lat: 34.7371, lng: -82.2537 },
-        { city: 'Spartanburg', state: 'SC', zipPrefixes: ['29301', '29302', '29303', '29306', '29307'], lat: 34.9496, lng: -81.9320 },
-        { city: 'Clemson', state: 'SC', zipPrefixes: ['29631', '29634'], lat: 34.6834, lng: -82.8374 },
-        { city: 'Greer', state: 'SC', zipPrefixes: ['29650', '29651'], lat: 34.8956, lng: -82.2189 },
         { city: 'Athens', state: 'GA', zipPrefixes: ['30601', '30605', '30606', '30607'], lat: 33.9519, lng: -83.3576 },
-        { city: 'Marietta', state: 'GA', zipPrefixes: ['30008', '30060', '30062', '30064', '30066', '30067', '30068'], lat: 33.9526, lng: -84.5499 },
-        { city: 'Evans', state: 'GA', zipPrefixes: ['30809'], lat: 33.5335, lng: -82.1307 },
-        { city: 'Davidson', state: 'NC', zipPrefixes: ['28035', '28036'], lat: 35.4993, lng: -80.8487 },
-        { city: 'Brevard', state: 'NC', zipPrefixes: ['28712'], lat: 35.2334, lng: -82.7343 },
-        { city: 'Fayetteville', state: 'NC', zipPrefixes: ['283'], lat: 35.0527, lng: -78.8784 }
+        { city: 'Atlanta', state: 'GA', zipPrefixes: ['30301'], lat: 33.7490, lng: -84.3880 },
     ];
 
-    let validLocations: any[] = fallbackMocks;
-
-    try {
-        const { data: dbLocations } = await supabase.from('ServiceLocation').select('*').eq('isActive', true);
-        if (dbLocations && dbLocations.length > 0) {
-            validLocations = dbLocations.map(dbLoc => {
-                const mockMatch = fallbackMocks.find(m => m.city === dbLoc.city);
-                return {
-                    lat: mockMatch?.lat || 0,
-                    lng: mockMatch?.lng || 0,
-                    zipPrefixes: [],
-                    ...mockMatch,
-                    ...dbLoc
-                };
-            }).filter(l => l.lat && l.lng); 
-            
-            for (const mock of fallbackMocks) {
-                const exists = validLocations.find(l => l.city === mock.city && l.state === mock.state);
-                if (!exists) validLocations.push(mock);
-            }
-        }
-    } catch (e) {}
-
-    let matchedLocation: any = null;
+    let matchedLocation: any = fallbackMocks[0];
     if (address) {
-        const lowerAddr = address.toLowerCase();
-        matchedLocation = validLocations.find(loc => {
-            const city = loc.city?.toLowerCase() || "";
-            return city && lowerAddr.includes(city);
-        });
+        matchedLocation = { city: address.split(',')[0], lat: 33.7490, lng: -84.3880 };
     }
-    if (!matchedLocation && term) {
-        const termClean = term.trim().toLowerCase();
-        matchedLocation = validLocations.find(loc => {
-            const cityLower = loc.city?.toLowerCase() || "";
-            const stateLower = loc.state?.toLowerCase() || "";
-            return (cityLower && (cityLower.includes(termClean) || termClean.includes(cityLower))) ||
-                (stateLower && stateLower === termClean) ||
-                (loc.zipPrefixes && loc.zipPrefixes.some((prefix: string) => termClean.includes(prefix)));
-        });
-    }
-    if (!matchedLocation && lat && lng) {
-        let minDist = 10000;
-        validLocations.forEach(loc => {
-            const d = Math.sqrt(Math.pow(loc.lat - lat, 2) + Math.pow(loc.lng - lng, 2));
-            if (d < minDist) {
-                minDist = d;
-                matchedLocation = loc;
-            }
-        });
-    }
-
-    if (!matchedLocation) {
-        return {
-            restaurants: [],
-            locationMeta: {
-                name: address || term || "Unknown Location",
-                center: (lat && lng) ? [lat, lng] : DEFAULT_CENTER
-            }
-        };
-    }
-
-    const locationMeta = {
-        name: address || (term && term.length > 10 ? term : `${matchedLocation.city}, ${matchedLocation.state}`),
-        center: (lat && !isNaN(lat) && lng && !isNaN(lng)) 
-            ? [lat, lng] as [number, number] 
-            : [matchedLocation.lat || DEFAULT_CENTER[0], matchedLocation.lng || DEFAULT_CENTER[1]] as [number, number]
-    };
 
     try {
         const { data: restaurants, error } = await supabase
             .from('Restaurant')
-            .select(`
-                *,
-                MenuItem(name, description),
-                Review(rating),
-                schedules:MerchantSchedule(*),
-                orders:Order(id, status)
-            `)
-            .match({ city: matchedLocation.city, state: matchedLocation.state })
+            .select(`*, MenuItem(name), Review(rating)`)
             .eq('visibility', 'VISIBLE')
-            .neq('name', 'Test Restaurant');
+            .limit(20);
 
-        if (error || !restaurants || restaurants.length === 0) return { restaurants: [], locationMeta };
+        if (error || !restaurants) return { restaurants: [], locationMeta: { name: address || "Your Area", center: DEFAULT_CENTER } };
 
-        const mappedRestaurants = restaurants.map((r: any, index: number) => {
-            const seed = ((r.name || "").length || 1) + index;
-            const realRatings = (r.Review || []).map((rev: any) => rev.rating);
-            const avgRating = realRatings.length > 0
-                ? (realRatings.reduce((a: number, b: number) => a + b, 0) / realRatings.length).toFixed(1)
-                : (4.0 + (seed % 10) / 10).toFixed(1);
+        const mapped = restaurants.map((r: any, index: number) => ({
+            id: r.id,
+            name: r.name,
+            rating: 4.5 + (index % 5) / 10,
+            image: r.imageUrl || null,
+            tags: ["Local", "Gourmet"],
+            description: r.description,
+            coords: [r.lat || 33.7, r.lng || -84.3] as [number, number],
+            priceLevel: "$$",
+            deliveryFee: index % 2 === 0 ? "Free" : "1.99",
+            prepTime: "15-25",
+            isBusy: !!r.isBusy
+        }));
 
-            let tags: string[] = ["Local"];
-            const context = `${r.name} ${r.description} ${(r.MenuItem || []).map((m: any) => m.name).join(" ")}`.toLowerCase();
-            if (context.includes("pizza")) tags.push("Pizza", "Italian");
-            if (context.includes("burger")) tags.push("Burgers", "American");
-            if (context.includes("asian") || context.includes("sushi")) tags.push("Asian");
-            if (context.includes("mexican") || context.includes("taco")) tags.push("Mexican");
-            if (context.includes("coffee") || context.includes("breakfast")) tags.push("Coffee", "Breakfast");
-            if (context.includes("dessert") || context.includes("cake")) tags.push("Dessert");
+        const filtered = category && category !== "Trending"
+            ? mapped.filter(r => r.name.toLowerCase().includes(category.toLowerCase()) || category === "Trending")
+            : mapped;
 
-            return {
-                id: r.id,
-                name: r.name,
-                rating: Number(avgRating),
-                image: r.imageUrl || null, // Remove Unsplash default
-                tags: Array.from(new Set(tags)),
-                description: r.description,
-                coords: [r.lat || (35.2271 + (index * 0.01)), r.lng || (-80.8431 + (index * 0.01))] as [number, number],
-                priceLevel: "$".repeat((seed % 3) + 1),
-                deliveryFee: seed % 3 === 0 ? "Free" : `$${(seed % 4 + 0.99).toFixed(2)}`,
-                prepTime: `${15 + (seed % 15)}-${25 + (seed % 15)} min`,
-                deal: (r.isMock || seed % 5 === 0) ? { type: 'PROMO', description: 'Spend $20, Save $5' } : undefined,
-                isBusy: !!r.isBusy,
-                websiteUrl: r.websiteUrl
-            };
-        });
-
-        const finalRestaurants = category 
-            ? mappedRestaurants.filter((r: any) => r.tags.some((t: string) => t.toLowerCase() === category.toLowerCase()))
-            : mappedRestaurants;
-
-        return { restaurants: finalRestaurants, locationMeta };
-    } catch (error) {
-        return { restaurants: [], locationMeta };
+        return { 
+            restaurants: filtered, 
+            locationMeta: { name: address || "Your Area", center: DEFAULT_CENTER } 
+        };
+    } catch (e) {
+        return { restaurants: [], locationMeta: { name: address || "Your Area", center: DEFAULT_CENTER } };
     }
 }
 
 export default async function RestaurantFinder({
     searchParams
 }: {
-    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string; welcome?: string; mode?: string }>
+    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string }>
 }) {
     const params = await searchParams;
-    const mode = params.mode || "delivery";
     const effectiveAddress = params.address || params.location || params.search;
-    const lat = params.lat ? parseFloat(params.lat) : undefined;
-    const lng = params.lng ? parseFloat(params.lng) : undefined;
-    const category = params.category;
+    const category = params.category || "Trending";
 
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
     let favorites: string[] = [];
-    let activeOrders: any[] = [];
+    if (userId) favorites = await getFavorites();
 
-    if (userId) {
-        favorites = await getFavorites();
-        const { data } = await supabase.from('Order').select('*, restaurant:Restaurant(name)').eq('userId', userId).in('status', ['PENDING', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY']);
-        if (data) activeOrders = data;
-    }
+    const { restaurants, locationMeta } = await getRestaurants({ term: effectiveAddress, address: effectiveAddress, category });
 
-    const { restaurants, locationMeta } = await getRestaurants({ term: effectiveAddress, address: effectiveAddress, lat, lng, category });
+    const categories = [
+        { emoji: "🔥", label: "Trending", value: "Trending" },
+        { emoji: "🍗", label: "Soul Food", value: "Soul Food" },
+        { emoji: "🥩", label: "BBQ", value: "BBQ" },
+        { emoji: "🍜", label: "Asian", value: "Asian" },
+        { emoji: "🌮", label: "Latin", value: "Latin" },
+        { emoji: "🥗", label: "Healthy", value: "Healthy" },
+        { emoji: "🍰", label: "Desserts", value: "Dessert" },
+        { emoji: "🍳", label: "Breakfast", value: "Breakfast" },
+        { emoji: "🍗", label: "Wings", value: "Wings" },
+        { emoji: "🦞", label: "Seafood", value: "Seafood" },
+        { emoji: "🌿", label: "Vegan", value: "Vegan" },
+    ];
 
-    const showLanding = !effectiveAddress && (!lat || !lng);
-    
     return (
-        <div className="min-h-screen bg-black text-slate-300 selection:bg-primary/30">
-            {/* ── NAV ─────────────────────────────────────────────────────────── */}
-            <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
-                <div className="container mx-auto flex justify-between items-center max-w-7xl">
-                    <Logo size="md" />
+        <div className="min-h-screen bg-[#0A0A0A] text-[#F0EDE8]">
+            {/* MOBILE WRAPPER */}
+            <div className="max-w-[430px] mx-auto min-h-screen relative shadow-[0_0_100px_rgba(0,0,0,1)] bg-[#0A0A0A] pb-24">
+                
+                {/* AMBIENT ORBS */}
+                <div className="orb w-[280px] h-[280px] top-[-60px] left-[-90px] bg-[#e8a230]/5" />
+                <div className="orb w-[200px] h-[200px] top-[400px] right-[-70px] bg-[#e8a230]/5" />
 
-                    <div className="hidden lg:flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">
-                        <Link href="/restaurants" className="text-white border-b border-primary/40 pb-1">MARKETPLACE</Link>
-                        <Link href="/merchant" className="hover:text-primary transition-colors whitespace-nowrap">FOR MERCHANTS</Link>
-                        <Link href="/driver" className="hover:text-primary transition-colors whitespace-nowrap">DRIVER HUB</Link>
-                    </div>
-
-                    <div className="flex items-center gap-6">
+                {/* NAV */}
+                <nav className="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-white/5">
+                    <Logo size="sm" />
+                    <div className="flex items-center gap-3">
                         {userId ? (
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3">
                                 <NotificationBell userId={userId} />
-                                <Link href="/user/settings" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                                </Link>
-                                <LogoutButton />
+                                <Link href="/user/settings" className="w-[38px] h-[38px] rounded-xl bg-[#1C1C1C] border border-white/5 flex items-center justify-center font-bold">👤</Link>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-4 font-black italic uppercase tracking-widest text-[10px]">
-                                <Link href="/login" className="hidden md:block text-slate-400 hover:text-white transition-all px-5 py-2">Sign In</Link>
-                                <Link href="/login" className="badge-solid-primary !px-8 !py-3 !text-[10px] h-glow">
-                                    Get Started
-                                </Link>
-                            </div>
+                            <Link href="/login" className="bg-[#e8a230] text-black px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider font-barlow-cond">Sign In</Link>
                         )}
                     </div>
+                </nav>
+
+                {/* HEADER */}
+                <div className="px-5 pt-6 mb-8">
+                    <div className="inline-flex items-center gap-2 bg-[#1C1C1C] border border-white/5 rounded-full px-4 py-1.5 mb-4">
+                        <div className="w-2 h-2 bg-[#e8a230] rounded-full animate-pulse shadow-[0_0_8px_#e8a230]" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest font-barlow-cond">{locationMeta.name}</span>
+                    </div>
+                    <h1 className="text-5xl font-bebas text-white leading-none uppercase">Discovery<br /><span className="text-[#e8a230]">HUB</span></h1>
                 </div>
-            </nav>
 
-            <main className="relative flex flex-col items-center">
-                {/* ── HERO HEADER ─────────────────────────────────────────────── */}
-                <section className="w-full pt-24 pb-16 flex flex-col items-center justify-center px-6 text-center overflow-hidden border-b border-white/5 bg-[#0a0a0b]">
-                    <div className="relative z-10 max-w-6xl space-y-10 animate-fade-in flex flex-col items-center glow-blur-primary">
-                        <div className="flex items-center justify-center gap-5 text-primary text-[10px] font-black uppercase tracking-[0.6em] italic animate-fade-in-down">
-                            <div className="w-16 h-[1.5px] bg-gradient-to-r from-transparent via-primary/60 to-primary/80 rounded-full" />
-                            Protocol Active
-                             <div className="w-16 h-[1.5px] bg-gradient-to-l from-transparent via-primary/60 to-primary/80 rounded-full" />
-                        </div>
-                        
-                        <div className="flex flex-col items-center">
-                            <h1 className="text-6xl md:text-[120px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none h-glow uppercase font-serif pb-4">
-                                Discovery
-                            </h1>
-                             <h1 className="text-6xl md:text-[120px] leading-[0.8] text-primary font-black tracking-[-0.03em] drop-shadow-[5px_58px_0px_rgba(255,255,255,0.05)] uppercase italic font-serif">
-                                HUB.
-                            </h1>
-                        </div>
+                {/* CATEGORY SCROLL */}
+                <div className="flex gap-2.5 px-5 mb-8 overflow-x-auto no-scrollbar scroll-smooth">
+                    {categories.map((cat, i) => {
+                        const isActive = category === cat.value;
+                        return (
+                            <Link 
+                                key={i} 
+                                href={`/restaurants?address=${encodeURIComponent(effectiveAddress || "")}&category=${cat.value}`}
+                                className={`flex items-center gap-2.5 px-5 py-3 rounded-full border shrink-0 transition-all ${isActive ? 'bg-[#e8a230] border-[#e8a230] text-black' : 'bg-[#131313] border-white/5 text-white'}`}
+                            >
+                                <span className="text-lg">{cat.emoji}</span>
+                                <span className={`text-[12px] font-bold tracking-wider font-barlow-cond`}>{cat.label}</span>
+                            </Link>
+                        );
+                    })}
+                </div>
 
-                        <p className="max-w-xl mx-auto text-xs md:text-[11px] text-slate-500 font-bold uppercase tracking-[0.3em] leading-relaxed italic animate-fade-in delay-200">
-                            {showLanding 
-                                ? "Enter your delivery address to sync with the best independent flavors in your community." 
-                                : `Displaying elite local menus for ${locationMeta.name || "your area"}.`}
-                        </p>
-
-                        {showLanding && (
-                            <div className="w-full max-w-4xl pt-8 flex justify-center">
-                                <LandingSearch />
-                            </div>
-                        )}
+                {/* RESTAURANT LIST */}
+                <div className="px-5 space-y-6">
+                    <div className="flex items-center justify-between opacity-50 mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-barlow-cond">{restaurants.length} Results Found</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-barlow-cond">Sort: Top Rated ▼</span>
                     </div>
-                </section>
-
-                <div className="w-full max-w-7xl px-4 md:px-8 py-20 space-y-24">
-                    {/* Active Order Banner */}
-                    {activeOrders.length > 0 && (
-                        <div className="p-8 bg-emerald-500/[0.03] border border-emerald-500/20 rounded-[2rem] flex flex-col md:flex-row items-center justify-between shadow-2xl backdrop-blur-3xl animate-fade-in">
-                            <div className="text-center md:text-left mb-6 md:mb-0">
-                                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                                    <span className="w-2 h-2 rounded-sm bg-emerald-500 animate-pulse"></span>
-                                    <span className="text-emerald-500 font-black uppercase tracking-widest text-[10px] italic">Active Mission Protocol</span>
-                                </div>
-                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tight">Order #{activeOrders[0].id.slice(0,8)} • {(activeOrders[0].status || 'PENDING').replace('_', ' ')}</h3>
-                                <p className="text-slate-500 text-sm font-bold italic mt-1">{activeOrders[0].restaurant?.name}</p>
-                            </div>
-                            <Link href={`/orders/${activeOrders[0].id}`} className="badge-solid-primary !bg-emerald-500 !py-4 !px-12 !text-[11px] shadow-emerald-500/20">Track Status →</Link>
-                        </div>
-                    )}
-
-                    {/* Filters Hub */}
-                    {!showLanding && (
-                        <div className="space-y-12">
-                            <div className="flex flex-col items-center text-center gap-10">
-                            <div className="w-[100vw] relative left-1/2 -translate-x-1/2 overflow-x-auto no-scrollbar border-y border-white/5 py-4 px-6 md:px-8 bg-black/50 backdrop-blur-sm -mt-6">
-                                <div className="flex items-center gap-4 min-w-max mx-auto max-w-7xl">
-                                    {[
-                                        { name: "General", icon: "🍽️", value: "" },
-                                        { name: "Fast Food", icon: "🍟", value: "Fast Food" },
-                                        { name: "Burgers", icon: "🍔", value: "Burgers" },
-                                        { name: "Chicken", icon: "🍗", value: "Chicken" },
-                                        { name: "Pizza", icon: "🍕", value: "Pizza" },
-                                        { name: "Sushi", icon: "🍣", value: "Sushi" },
-                                        { name: "Sandwiches", icon: "🥪", value: "Sandwiches" },
-                                        { name: "Caribbean", icon: "🍖", value: "Caribbean" },
-                                        { name: "Mexican", icon: "🌮", value: "Mexican" },
-                                        { name: "Korean", icon: "🥢", value: "Korean" }
-                                    ].map((cat) => {
-                                        const isActive = category ? category === cat.value : cat.value === "";
-                                        return (
-                                            <Link 
-                                                key={cat.name} 
-                                                href={cat.value ? `/restaurants?category=${cat.value}` : '/restaurants'} 
-                                                className={`flex items-center gap-2 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap ${
-                                                    isActive 
-                                                    ? "bg-[#eab308] text-black shadow-[0_0_15px_rgba(234,179,8,0.2)]" 
-                                                    : "bg-transparent text-slate-500 hover:text-white"
-                                                }`}
-                                            >
-                                                <span className="text-sm">{cat.icon}</span> {cat.name}
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                            </div>
-
-                            {/* Results Status Bar */}
-                            <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                                        {restaurants.length} RESTAURANTS NEAR YOU
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-600">SORT</span>
-                                     <button className="flex items-center gap-2 bg-white/[0.05] border border-white/10 px-4 py-2 rounded-lg text-[10px] font-black text-white hover:bg-white/10 transition-all">
-                                         Top Rated
-                                         <svg className="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
-                                     </button>
-                                </div>
-                            </div>
-
-                            {/* Grid Content */}
-                            {restaurants.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 animate-fade-in">
-                                    {restaurants.map((rest: any) => (
-                                        <Link key={rest.id} href={`/restaurants/${rest.id}`} className="group relative flex flex-col bg-[#111111] border border-white/[0.03] rounded-2xl overflow-hidden hover:border-white/10 transition-all duration-300 shadow-2xl">
-                                            <div className="aspect-[4/3] bg-[#0d0d0e] relative overflow-hidden flex items-center justify-center">
-                                                {rest.image ? (
-                                                    <img src={rest.image} alt={rest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                                ) : (
-                                                    <span className="text-[100px] drop-shadow-2xl group-hover:scale-110 transition-transform duration-500">
-                                                        {rest.tags.includes("Pizza") ? "🍕" : 
-                                                         rest.tags.includes("Burgers") ? "🍔" : 
-                                                         rest.tags.includes("Sushi") ? "🍣" : 
-                                                         rest.tags.includes("Mexican") ? "🌮" : 
-                                                         rest.tags.includes("Chicken") ? "🍗" :
-                                                         rest.tags.includes("Caribbean") ? "🍖" : "🍔"}
-                                                    </span>
-                                                )}
-                                                
-                                                {/* Float Badges */}
-                                                <div className="absolute top-4 left-4">
-                                                    <div className="bg-black text-white text-[9px] font-black px-3 py-1.5 rounded-md uppercase tracking-widest shadow-lg">
-                                                        {rest.deliveryFee === "Free" ? "FREE" : rest.deliveryFee} FEE
-                                                    </div>
-                                                </div>
-                                                <div className="absolute top-4 right-4">
-                                                    <div className="bg-[#042f16] text-[#4ade80] text-[9px] font-black px-3 py-1.5 rounded-md uppercase tracking-widest flex items-center gap-1.5 shadow-lg">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]"></span>
-                                                        Open
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="p-6 space-y-4">
-                                                <div className="space-y-1">
-                                                    <h3 className="text-2xl font-black text-white group-hover:text-white transition-colors tracking-tight uppercase">{rest.name}</h3>
-                                                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-[0.15em] italic">
-                                                        {rest.tags.slice(0, 3).join(" • ")}
-                                                    </div>
-                                                    <div className="flex items-center gap-3 pt-2 text-[11px] font-bold uppercase tracking-widest italic">
-                                                        <span className="text-[#4ade80]">{rest.prepTime}</span>
-                                                        <span className="text-slate-500">{rest.priceLevel}</span>
-                                                        <div className="flex items-center gap-1 text-[#fbbf24]">
-                                                            <span className="text-[12px]">★</span>
-                                                            <span className="">{rest.rating}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="pt-2 flex items-center justify-between border-t border-white/5">
-                                                    <div className="text-[9px] font-black uppercase text-white tracking-[0.3em] flex items-center gap-2 group-hover:text-primary transition-colors">
-                                                        Open Menu <span>→</span>
-                                                    </div>
-                                                    <FavoriteButton 
-                                                        restaurantId={rest.id} 
-                                                        initialIsFavorited={favorites.includes(rest.id)} 
-                                                        className="w-9 h-9 !p-0 flex items-center justify-center text-slate-600 hover:text-rose-500 hover:border-rose-500/20" 
-                                                    />
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="py-40 flex flex-col items-center text-center space-y-6">
-                                    <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center text-5xl opacity-40 grayscale group-hover:grayscale-0 transition-all">🏗️</div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-3xl font-black text-white italic uppercase tracking-widest">Gems Pending.</h3>
-                                        <p className="text-slate-500 font-bold italic text-base">We haven't synched restaurant protocols in {locationMeta.name} yet.</p>
+                    
+                    {restaurants.map((rest, i) => (
+                        <Link href={`/restaurants/${rest.id}`} key={i} className="block group animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
+                            <div className="bg-[#131313] border border-white/5 rounded-[24px] overflow-hidden group-hover:scale-[1.01] transition-transform">
+                                <div className="h-[140px] w-full bg-[#1C1C1C] flex items-center justify-center text-5xl relative">
+                                    {rest.name[0]}
+                                    <div className="absolute top-4 left-4">
+                                        <div className="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[9px] font-bold text-[#e8a230] font-barlow-cond">⭐ {rest.rating}</div>
                                     </div>
-                                    <Link href="/restaurants" className="badge-outline-white !px-12 !py-4">Broaden Search</Link>
+                                    <FavoriteButton restaurantId={rest.id} initialIsFavorited={favorites.includes(rest.id)} className="absolute top-4 right-4 !bg-black/40 !border-white/10" />
                                 </div>
-                            )}
-                        </div>
-                    )}
-
-
+                                <div className="p-5">
+                                    <h3 className="text-2xl font-black uppercase italic tracking-wider text-white mb-1 font-barlow-cond">{rest.name}</h3>
+                                    <div className="flex items-center gap-3 text-[11px] text-[#5A5550] font-medium mb-3">
+                                        <span>⏱ {rest.prepTime} MIN</span>
+                                        <div className="w-1 h-1 bg-[#5A5550]/30 rounded-full" />
+                                        <span className="text-[#e8a230] font-bold">{rest.deliveryFee === 'Free' ? 'FREE' : `$${rest.deliveryFee}`} DELIVERY</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {rest.tags.map(tag => (
+                                            <div key={tag} className="bg-[#1C1C1C] text-[#5A5550] px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest font-barlow-cond">{tag}</div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
                 </div>
 
-                {/* ── FEATURES PROTOCOL ─────────────────────────────────────────── */}
-                <section className="w-full border-t border-white/5 mt-20 flex flex-col items-center">
-                    <div className="w-full max-w-7xl px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5">
-                            {[
-                                { icon: '🏡', label: 'Local Only', desc: 'No global chains' },
-                                { icon: '⚡', label: 'Priority Hub', desc: 'Fastest dispatch' },
-                                { icon: '💎', label: 'Elite Menu', desc: 'Curated flavors' },
-                                { icon: '🤝', label: 'Fair Split', desc: 'Supporting local' }
-                            ].map((item) => (
-                                <div key={item.label} className="p-16 flex flex-col items-center justify-center text-center group hover:bg-white/[0.01] transition-all bg-black">
-                                    <div className="text-xl mb-6 filter grayscale group-hover:grayscale-0 transition-all scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{item.icon}</div>
-                                    <p className="text-[11px] font-black uppercase text-white tracking-[0.4em] mb-3 italic">{item.label}</p>
-                                    <p className="text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em]">{item.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-                <footer className="w-full py-16 bg-black px-10 text-center">
-                     <div className="flex items-center justify-center gap-4 text-[9px] font-black uppercase tracking-[0.5em] text-slate-800 italic">
-                         <div className="w-6 h-6 rounded-full border border-white/5 flex items-center justify-center grayscale opacity-30">
-                             <svg className="w-3 h-3 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                         </div>
-                         TrueServe Discovery Protocol • {new Date().getFullYear()}
-                     </div>
-                </footer>
-            </main>
+                {/* BOTTOM MOBILE NAV */}
+                <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#0C0C0C]/95 backdrop-blur-2xl border-t border-white/5 px-6 pt-3 pb-8 flex items-center justify-around z-50">
+                    <Link href="/" className="flex flex-col items-center gap-1 opacity-50 hover:opacity-100"><span className="text-xl">🏠</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Home</span></Link>
+                    <Link href="/restaurants" className="flex flex-col items-center gap-1 text-[#e8a230]"><span className="text-xl">🔍</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Explore</span></Link>
+                    <Link href="/orders" className="flex flex-col items-center gap-1 opacity-50 hover:opacity-100"><span className="text-xl">📋</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Orders</span></Link>
+                    <Link href="/user/settings" className="flex flex-col items-center gap-1 opacity-50 hover:opacity-100"><span className="text-xl">👤</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Profile</span></Link>
+                </div>
+            </div>
         </div>
     );
 }

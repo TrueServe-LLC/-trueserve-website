@@ -2,222 +2,227 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import LandingSearch from "@/components/LandingSearch";
-import NotificationBell from "@/components/NotificationBell";
-import LogoutButton from "@/components/LogoutButton";
 import { cookies } from "next/headers";
 import EmergencyBanner from "@/components/EmergencyBanner";
 import Logo from "@/components/Logo";
 
-export default async function Home() {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
+export default async function Home({
+    searchParams
+}: {
+    searchParams: Promise<{ address?: string; lat?: string; lng?: string; category?: string }>
+}) {
+    const params = await searchParams;
+    const hasAddress = !!params.address;
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
 
-  return (
-    <div className="min-h-screen relative font-sans text-slate-300 bg-black selection:bg-primary/30">
-      <EmergencyBanner />
+    const categories = [
+        { emoji: "🔥", label: "Trending", value: "Trending" },
+        { emoji: "🍗", label: "Soul Food", value: "Soul Food" },
+        { emoji: "🥩", label: "BBQ", value: "BBQ" },
+        { emoji: "🍜", label: "Asian", value: "Asian" },
+        { emoji: "🌮", label: "Latin", value: "Latin" },
+        { emoji: "🥗", label: "Healthy", value: "Healthy" },
+        { emoji: "🍰", label: "Desserts", value: "Dessert" },
+        { emoji: "🍳", label: "Breakfast", value: "Breakfast" },
+        { emoji: "🍗", label: "Wings", value: "Wings" },
+        { emoji: "🦞", label: "Seafood", value: "Seafood" },
+        { emoji: "🌿", label: "Vegan", value: "Vegan" },
+    ];
 
-      {/* ── NAV ─────────────────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
-        <div className="container mx-auto flex justify-between items-center max-w-7xl">
-          <Logo size="lg" />
+    return (
+        <div className="min-h-screen bg-[#0A0A0A] text-[#F0EDE8] selection:bg-primary/30 overflow-x-hidden">
+            <EmergencyBanner />
 
-          <div className="hidden lg:flex items-center gap-12 text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">
-            <Link href="/restaurants" className="hover:text-primary transition-colors">ORDER FOOD</Link>
-            <Link href="/merchant" className="hover:text-primary transition-colors whitespace-nowrap">FOR MERCHANTS</Link>
-            <Link href="/driver" className="hover:text-primary transition-colors whitespace-nowrap">DRIVER HUB</Link>
-          </div>
+            {/* MOBILE WRAPPER */}
+            <div className="max-w-[430px] mx-auto min-h-screen relative shadow-[0_0_100px_rgba(0,0,0,1)] bg-[#0A0A0A]">
+                
+                {/* AMBIENT ORBS */}
+                <div className="orb w-[280px] h-[280px] top-[-60px] right-[-90px] bg-[#e8a230]/10" />
+                <div className="orb w-[200px] h-[200px] top-[500px] left-[-70px] bg-[#e8a230]/5" />
+                <div className="orb w-[160px] h-[160px] bottom-[100px] right-[-50px] bg-[#e8a230]/6" />
 
-          <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="https://www.instagram.com/trueserve_food/" 
-              target="_blank" 
-              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-              title="Instagram"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-              </svg>
-            </Link>
-            <Link 
-              href="https://www.facebook.com/share/1EHeS1jdoq/?mibextid=wwXIfr" 
-              target="_blank" 
-              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-              title="Facebook"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-              </svg>
-            </Link>
-            <Link 
-              href="https://www.linkedin.com/company/112360123/admin/dashboard/" 
-              target="_blank" 
-              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-              title="LinkedIn"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-              </svg>
-            </Link>
-          </div>
-            {userId ? (
-              <div className="flex items-center gap-4">
-                <NotificationBell userId={userId} />
-                <Link href="/user/settings" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                </Link>
-                <LogoutButton />
-              </div>
-            ) : (
-              <div className="flex items-center gap-6">
-                <Link href="/login" className="hidden md:block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all border border-white/10 rounded-full px-5 py-2 hover:bg-white/5 italic">Sign In</Link>
-                <Link href="/restaurants" className="badge-solid-primary !px-10 !py-3 !text-[11px] h-glow">
-                  Get Started
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      <main>
-        {/* ── HERO ────────────────────────────────────────────────────────── */}
-        <section className="relative min-h-[95vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="/hero_food_delivery.png"
-              alt="Fine Dining"
-              className="w-full h-full object-cover opacity-30 brightness-50 blur-3xl scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black" />
-          </div>
-
-          <div className="relative z-10 max-w-6xl space-y-12 animate-fade-in text-center flex flex-col items-center justify-center glow-blur-primary">
-            
-            <h1 className="text-5xl md:text-[115px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none">
-              Cravings meet <br />
-              <span className="text-primary not-italic tracking-[-0.03em] drop-shadow-[5px_5px_0px_rgba(255,255,255,0.1)] uppercase italic">Lightning Speed.</span>
-            </h1>
-
-            <p className="max-w-3xl mx-auto text-lg md:text-2xl text-slate-400 font-bold leading-relaxed italic animate-fade-in delay-200">
-              Experience the future of local food delivery. Zero platform fees, fair driver pay, and the best local flavors delivered to your door.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-12">
-              <Link href="/restaurants" className="badge-solid-primary !px-16 !py-6 !text-sm">
-                Browse Restaurants
-              </Link>
-              <Link href="/merchant" className="badge-outline-white !px-16 !py-6 !text-sm h-glow">
-                For Businesses
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
-        <section className="py-32 bg-[#0a0a0b] w-full flex flex-col items-center">
-          <div className="w-full max-w-7xl px-8 flex flex-col items-center text-center">
-            <div className="flex items-center justify-center gap-10 text-primary font-black uppercase tracking-[1em] text-[9px] mb-24 opacity-80 select-none w-full">
-                <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
-                <span className="shrink-0 px-4">Platform Features</span>
-                <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-              {[
-                { 
-                  title: "Order Locally.", 
-                  img: "/community_section.png",
-                  desc: "Support independent gems. Zero platform fees ensure local restaurants stay in business.",
-                  cta: "Explore Menus",
-                  link: "/restaurants"
-                },
-                { 
-                  title: "Grow Partners.", 
-                  img: "/merchant_section.png",
-                  desc: "Stop losing margins to big apps. Fair pricing and elite dispatch built for you.",
-                  cta: "Partner Hub",
-                  link: "/merchant"
-                },
-                { 
-                  title: "Drive More.", 
-                  img: "/diverse_drivers.png",
-                  desc: "Join our fleet and earn 20-30% more with optimized routing and reliable local payouts.",
-                  cta: "Start Driving",
-                  link: "/driver"
-                }
-              ].map((card, i) => (
-                <Link key={i} href={card.link} className={`reveal-scale delay-${(i + 1) * 200} group relative min-h-[600px] bg-black overflow-hidden border border-white/5 transition-all duration-700 flex flex-col justify-end p-12 hover:bg-white/[0.02] active:scale-[0.98] shadow-2xl`}>
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2.5s] opacity-20 group-hover:opacity-45 brightness-50" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <div className="relative z-10 space-y-6 flex flex-col items-center text-center">
-                    <h3 className="text-4xl md:text-6xl font-[900] text-white leading-[0.85] italic uppercase font-serif tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                        {card.title}
-                    </h3>
-                    <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity italic">
-                        {card.desc}
-                    </p>
-                    <div className="pt-6">
-                      <div className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-white border border-white/20 rounded-md px-8 py-4 backdrop-blur-sm bg-black/40 group-hover:border-primary group-hover:text-primary transition-all duration-500 italic">
-                         {card.cta} <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
-                      </div>
+                {/* STICKY NAV */}
+                <nav className="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-gradient-to-b from-[#0A0A0A]/95 to-transparent backdrop-blur-xl border-b border-white/5 animate-[fadeDown_0.5s_ease_both]">
+                    <div className="flex items-center gap-3">
+                        <Logo size="sm" />
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
+                    <div className="flex items-center gap-3">
+                        <Link href="/cart" className="w-[38px] h-[38px] rounded-xl bg-[#1C1C1C] border border-white/5 flex items-center justify-center relative hover:scale-105 transition-transform">
+                            <span className="text-lg">🛒</span>
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#e8a230] text-black text-[10px] font-bold rounded-full flex items-center justify-center font-barlow-cond">2</div>
+                        </Link>
+                        {!userId ? (
+                            <Link href="/login" className="bg-[#e8a230] text-black px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider font-barlow-cond hover:opacity-90 active:scale-95 transition-all">
+                                Sign In
+                            </Link>
+                        ) : (
+                            <Link href="/user/settings" className="w-[38px] h-[38px] rounded-xl bg-[#1C1C1C] border border-white/5 flex items-center justify-center font-bold">
+                                👤
+                            </Link>
+                        )}
+                    </div>
+                </nav>
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-       <footer className="py-32 bg-black border-t border-white/10 px-10">
-        <div className="container mx-auto max-w-7xl text-center space-y-20">
-          <div className="flex flex-col items-center gap-10">
-            <Logo size="xl" className="animate-pulse" />
-            
-            <div className="flex flex-wrap justify-center gap-x-16 gap-y-10 text-[10px] font-black uppercase tracking-[0.5em] text-slate-600 italic">
-              <Link href="/privacy" className="hover:text-white transition-colors">Safety</Link>
-              <Link href="/merchant" className="hover:text-primary transition-colors">Merchant Help</Link>
-              <Link href="/driver" className="hover:text-primary transition-colors">Driver Guide</Link>
-              <Link 
-                href="https://www.instagram.com/trueserve_food/" 
-                target="_blank" 
-                className="text-slate-500 hover:text-primary flex items-center gap-2 group/insta transition-all"
-              >
-                <svg className="w-5 h-5 group-hover/insta:scale-125 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                </svg>
-              </Link>
-              <Link 
-                href="https://www.facebook.com/share/1EHeS1jdoq/?mibextid=wwXIfr" 
-                target="_blank" 
-                className="text-slate-500 hover:text-primary flex items-center gap-2 group/fb transition-all"
-              >
-                <svg className="w-5 h-5 group-hover/fb:scale-125 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.248h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
-                </svg>
-              </Link>
-              <Link 
-                href="https://www.linkedin.com/company/112360123/admin/dashboard/" 
-                target="_blank" 
-                className="text-slate-500 hover:text-primary flex items-center gap-2 group/linkedin transition-all"
-              >
-                <svg className="w-5 h-5 group-hover/linkedin:scale-125 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-              </Link>
+                {/* HERO SECTION */}
+                <div className="px-5 pt-4 animate-[fadeUp_0.6s_0.1s_ease_both]">
+                    <div className="inline-flex items-center gap-2 bg-[#1C1C1C] border border-white/5 rounded-full px-4 py-1.5 mb-6 hover:bg-[#252525] transition-colors cursor-pointer group">
+                        <div className="w-2 h-2 bg-[#4CAF50] rounded-full animate-[blink_2s_infinite] shadow-[0_0_8px_#4CAF50]" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#F0EDE8] font-barlow-cond">
+                            {params.address ? params.address.split(',')[0] : "Select Delivery Zone"}
+                        </span>
+                        <span className="text-[#e8a230] text-[10px] group-hover:translate-y-0.5 transition-transform">▼</span>
+                    </div>
+
+                    <div className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#e8a230] mb-3 font-barlow-cond italic">The Local Hub · Protocol Alpha</div>
+                    
+                    <h1 className="text-[clamp(66px,18vw,80px)] leading-[0.88] mb-6 flex flex-col font-bebas">
+                        <span className="text-white">REAL FOOD.</span>
+                        <span className="text-[#e8a230]">REAL LOCAL.</span>
+                    </h1>
+
+                    <p className="text-[13px] font-light text-[#5A5550] leading-relaxed mb-8 max-w-[280px] font-barlow">
+                        Skip the industrial chains. Discover the best independent kitchens in your area — delivered at light speed.
+                    </p>
+
+                    {/* SEARCH COMPONENT INTEGRATION */}
+                    <div className="mb-10 scale-105 origin-left">
+                        <LandingSearch initialValue={params.address} />
+                    </div>
+
+                    <div className="flex items-center gap-4 mb-10 overflow-x-auto no-scrollbar pb-2">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                            <strong className="text-[12px] font-bold text-white font-barlow-cond">⚡ 15-25</strong>
+                            <span className="text-[11px] text-[#5A5550] font-barlow">MIN AVG</span>
+                        </div>
+                        <div className="w-1 h-1 bg-[#5A5550] rounded-full shrink-0" />
+                        <div className="flex items-center gap-1.5 shrink-0">
+                            <strong className="text-[12px] font-bold text-white font-barlow-cond">🏠 LOCAL</strong>
+                            <span className="text-[11px] text-[#5A5550] font-barlow">ONLY</span>
+                        </div>
+                        <div className="w-1 h-1 bg-[#5A5550] rounded-full shrink-0" />
+                        <div className="flex items-center gap-1.5 shrink-0">
+                            <strong className="text-[12px] font-bold text-white font-barlow-cond">🤝 FAIR</strong>
+                            <span className="text-[11px] text-[#5A5550] font-barlow">PARTNERS</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* TRUE SERVE PLUS BANNER */}
+                <div className="mx-5 mb-10 p-6 bg-gradient-to-br from-[#e8a230]/20 to-[#e8a230]/5 border border-[#e8a230]/30 rounded-3xl flex items-center justify-between gap-4 animate-[fadeUp_0.6s_0.15s_ease_both] ring-1 ring-[#e8a230]/10 shadow-[0_20px_40px_-20px_rgba(232,162,48,0.3)]">
+                    <div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-[#e8a230] mb-1 font-barlow-cond flex items-center gap-2">
+                            <span className="w-1 h-1 bg-[#e8a230] rounded-full"></span>
+                            Elite Rewards
+                        </div>
+                        <div className="text-3xl leading-none mb-1 text-white tracking-tight font-bebas">TRUE SERVE<br /><span className="text-[#e8a230]">PLUS</span></div>
+                        <div className="text-[11px] font-light text-[#5A5550] font-barlow">Unlimited $0 Delivery & Member Pricing</div>
+                    </div>
+                    <Link href="/plus" className="bg-[#e8a230] text-black px-4 py-3 text-sm rounded-xl leading-tight text-center hover:scale-105 active:scale-95 transition-all shadow-lg decoration-none font-bebas">
+                        SIGN UP<br />NOW!
+                    </Link>
+                </div>
+
+                {/* HIDDEN SECTIONS - ONLY SHOW IF ADDRESS IS SET */}
+                {hasAddress && (
+                    <div className="animate-[fadeUp_0.8s_ease_both]">
+                        {/* CATEGORIES */}
+                        <div className="px-5 mb-4 flex items-center justify-between">
+                            <h2 className="text-lg font-bold uppercase tracking-widest text-white font-barlow-cond">Browse Cuisines</h2>
+                            <span className="text-[12px] text-[#e8a230] font-barlow font-bold cursor-pointer hover:underline underline-offset-4">Filters →</span>
+                        </div>
+                        <div className="flex gap-2.5 px-5 mb-10 overflow-x-auto no-scrollbar scroll-smooth pb-2">
+                            {categories.map((cat, i) => {
+                                const isActive = params.category === cat.value || (i === 0 && !params.category);
+                                return (
+                                    <Link 
+                                        key={i} 
+                                        href={`/?address=${encodeURIComponent(params.address || "")}&category=${cat.value}`}
+                                        className={`flex items-center gap-2.5 px-6 py-3.5 rounded-full border shrink-0 cursor-pointer transition-all ${isActive ? 'bg-[#e8a230] border-[#e8a230] shadow-[0_8px_20px_-8px_#e8a230]' : 'bg-[#131313] border-white/5 hover:border-white/10'}`}
+                                    >
+                                        <span className="text-xl">{cat.emoji}</span>
+                                        <span className={`text-[13px] font-bold tracking-wider font-barlow-cond ${isActive ? 'text-black' : 'text-white'}`}>{cat.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+
+                        {/* FEATURED SPOTS */}
+                        <div className="px-5 mb-4 flex items-center justify-between">
+                            <h2 className="text-lg font-bold uppercase tracking-widest text-white font-barlow-cond">Top Spots Near You</h2>
+                        </div>
+                        <div className="px-5 space-y-6 mb-24">
+                            {[
+                                { name: "Smoke & Soul BBQ", time: "18-28", fee: "1.99", dist: "0.4", rating: "4.9", emoji: "🔥", color: "from-[#1a0d00] to-[#2d1600]" },
+                                { name: "Mama Dee's Kitchen", time: "20-35", fee: "Free", dist: "0.7", rating: "4.8", emoji: "🍗", color: "from-[#0f0820] to-[#1a1000]" },
+                                { name: "Golden Wok House", time: "15-25", fee: "0.99", dist: "1.1", rating: "4.7", emoji: "🍜", color: "from-[#001a0d] to-[#0d1a00]" },
+                            ].map((spot, i) => (
+                                <Link href="/restaurants" key={i} className="block group animate-[fadeUp_0.6s_ease_both]" style={{ animationDelay: `${0.2 + (i * 0.1)}s` }}>
+                                    <div className="bg-[#131313] border border-white/5 rounded-[28px] overflow-hidden group-hover:scale-[1.01] transition-transform shadow-2xl">
+                                        <div className={`h-[180px] w-full bg-gradient-to-br ${spot.color} flex items-center justify-center text-7xl relative`}>
+                                            {spot.emoji}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent opacity-60" />
+                                            <div className="absolute top-5 left-5 flex gap-2">
+                                                <div className="bg-black/60 backdrop-blur-md border border-white/10 px-4 py-1.5 rounded-full text-[11px] font-bold text-[#e8a230] font-barlow-cond">⭐ {spot.rating}</div>
+                                            </div>
+                                            <div className="absolute top-5 right-5 w-11 h-11 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/50 group-hover:text-rose-500 transition-all font-bold">🤍</div>
+                                        </div>
+                                        <div className="p-6 pt-3">
+                                            <h3 className="text-3xl font-black uppercase italic tracking-wider text-white mb-2 font-barlow-cond">{spot.name}</h3>
+                                            <div className="flex items-center gap-4 text-[12px] text-[#5A5550] font-bold mb-5">
+                                                <span className="flex items-center gap-1.5">⏱ {spot.time} MIN</span>
+                                                <div className="w-1 h-1 bg-[#5A5550]/40 rounded-full" />
+                                                <span className="text-[#e8a230]">{spot.fee === 'Free' ? 'FREE' : `$${spot.fee}`} DELIVERY</span>
+                                                <div className="w-1 h-1 bg-[#5A5550]/40 rounded-full" />
+                                                <span>{spot.dist} MI</span>
+                                            </div>
+                                            <div className="flex gap-2.5">
+                                                <div className="bg-[#e8a230]/10 text-[#e8a230] px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest font-barlow-cond border border-[#e8a230]/20">LOCAL FAV</div>
+                                                <div className="bg-[#1C1C1C] text-[#5A5550] px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest font-barlow-cond">Gourmet</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {!hasAddress && (
+                    <div className="px-5 py-20 flex flex-col items-center text-center opacity-40">
+                         <div className="text-4xl mb-4">📍</div>
+                         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5A5550] font-barlow-cond italic">Enter address to reveal local menus</p>
+                    </div>
+                )}
+
+                {/* BOTTOM MOBILE NAV */}
+                <div className="sticky bottom-0 bg-[#0C0C0C]/95 backdrop-blur-2xl border-t border-white/5 px-6 pt-3 pb-8 flex items-center justify-around z-50">
+                    {[
+                        { icon: "🏠", label: "Home", active: true },
+                        { icon: "🔍", label: "Explore" },
+                        { icon: "📋", label: "Orders" },
+                        { icon: "👤", label: "Profile" },
+                    ].map((item, i) => (
+                        <div key={i} className={`flex flex-col items-center gap-1 cursor-pointer group`}>
+                            <span className="text-[22px] group-hover:scale-110 transition-transform opacity-70 group-hover:opacity-100">{item.icon}</span>
+                            <span className={`text-[9px] font-bold uppercase tracking-[0.2em] font-barlow-cond ${item.active ? 'text-[#e8a230]' : 'text-[#5A5550]'}`}>{item.label}</span>
+                        </div>
+                    ))}
+                </div>
+
             </div>
-          </div>
-          
-          <div className="pt-16 border-t border-white/5 text-slate-700 text-[11px] font-black uppercase tracking-[0.4em] italic">
-            © {new Date().getFullYear()} TrueServe. Empowering local businesses through strategic logistics and elite partnerships.
-          </div>
+
+            {/* DESKTOP FOOTER */}
+            <div className="hidden lg:block bg-black py-20 px-10 border-t border-white/5">
+                <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-10">
+                    <Logo size="xl" />
+                    <div className="text-[11px] font-black uppercase tracking-[0.5em] text-[#2a2f3a] italic max-w-2xl leading-relaxed">
+                        © {new Date().getFullYear()} TrueServe Platform. <br />
+                        Discovery Hub Neural Protocol Active. <br />
+                        Supporting Independent Culinary Infrastructure.
+                    </div>
+                </div>
+            </div>
         </div>
-      </footer>
-    </div>
-  );
+    );
 }

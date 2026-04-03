@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
-import { Kalam, Playfair_Display } from "next/font/google";
+import { Barlow, Barlow_Condensed, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import MobileNavWrapper from "@/components/MobileNavWrapper";
 import LaunchDarklyClientProvider from "@/components/LaunchDarklyClientProvider";
 import { Suspense } from "react";
 import DynamicBranding from "@/components/DynamicBranding";
 
-const kalam = Kalam({
-  variable: "--font-kalam",
-  weight: ["300", "400", "700"],
+const barlow = Barlow({
+  variable: "--font-barlow",
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const barlowCond = Barlow_Condensed({
+  variable: "--font-barlow-cond",
+  weight: ["400", "600", "700"],
   subsets: ["latin"],
-  weight: ["400", "700", "900"],
-  style: ["normal", "italic"],
+});
+
+const bebas = Bebas_Neue({
+  variable: "--font-bebas",
+  weight: ["400"],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -34,9 +39,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${barlow.variable} ${barlowCond.variable} ${bebas.variable}`}>
       <body
-        className={`${kalam.variable} ${playfair.variable} bg-black text-slate-200 antialiased pb-24 md:pb-0 font-sans overflow-x-hidden`}
+        className="bg-[#0A0A0A] text-[#F0EDE8] antialiased pb-24 md:pb-0 font-sans overflow-x-hidden"
         suppressHydrationWarning
       >
         <LaunchDarklyClientProvider>
@@ -66,7 +71,7 @@ export default function RootLayout({
              document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => observer.observe(el));
           });
 
-          // Also handle dynamic content (SPA transitions)
+          // Also handle dynamic content
           const mutationObserver = new MutationObserver((mutations) => {
             mutations.forEach(mutation => {
               mutation.addedNodes.forEach(node => {

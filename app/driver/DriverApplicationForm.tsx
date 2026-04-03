@@ -9,7 +9,7 @@ const initialState = { message: "", success: false, error: false };
 
 export default function DriverApplicationForm() {
     return (
-        <Suspense fallback={<div className="p-16 text-center text-slate-600 font-black uppercase tracking-widest text-[10px] animate-pulse italic">Loading enrollment terminal...</div>}>
+        <Suspense fallback={<div className="p-16 text-center text-slate-600 font-bebas uppercase tracking-widest text-sm animate-pulse italic">Loading enrollment terminal...</div>}>
             <DriverApplicationFormInner />
         </Suspense>
     );
@@ -84,35 +84,35 @@ function DriverApplicationFormInner() {
 
     if (state.success) {
         return (
-            <div className="w-full max-w-2xl mx-auto p-8 md:p-16 text-center space-y-6 md:space-y-8 bg-white/[0.02] border border-white/5 rounded-[2rem] md:rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden animate-fade-in">
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent" />
-                <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 bg-primary/10 border-2 border-primary/20 rounded-2xl md:rounded-[2rem] flex items-center justify-center text-3xl md:text-4xl mx-auto">🚀</div>
+            <div className="w-full max-w-2xl mx-auto p-8 md:p-16 text-center space-y-6 md:space-y-8 bg-[#131313] border border-white/5 rounded-[2rem] md:rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden animate-fade-in font-barlow">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#e8a230]/10 via-transparent to-transparent" />
+                <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 bg-[#e8a230]/10 border-2 border-[#e8a230]/20 rounded-2xl md:rounded-[2rem] flex items-center justify-center text-3xl md:text-4xl mx-auto">🚀</div>
                 <div className="relative z-10 space-y-3">
-                    <h3 className="text-2xl md:text-4xl font-serif italic text-white tracking-tight uppercase">Deployment Commenced!</h3>
+                    <h3 className="text-3xl md:text-5xl font-bebas text-white tracking-tight uppercase italic">Deployment Commenced!</h3>
                     <p className="text-slate-400 text-sm md:text-base max-w-md mx-auto leading-relaxed italic font-bold">
                         Your application is under review. Expect a response on your mobile terminal within 24 hours.
                     </p>
                 </div>
                 <div className="relative z-10 flex flex-col sm:flex-row justify-center gap-4 pt-6">
-                    <Link href="/driver/login" className="badge-solid-primary !py-4 !px-12 !text-[11px] h-glow">Check Status</Link>
-                    <Link href="/" className="px-10 py-4 text-[10px] font-black uppercase text-slate-600 hover:text-white transition-all border border-white/5 rounded-2xl italic tracking-widest">Return Home</Link>
+                    <Link href="/driver/login" className="bg-[#e8a230] text-black px-12 py-4 rounded-full font-bebas text-lg shadow-[0_0_30px_rgba(232,162,48,0.3)]">Check Status</Link>
+                    <Link href="/" className="px-10 py-4 text-[10px] font-black uppercase text-slate-600 hover:text-white transition-all border border-white/5 rounded-2xl italic tracking-[0.3em] font-barlow-cond">Return Home</Link>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="w-full relative">
+        <div className="w-full relative font-barlow-cond">
             {isMockMode && (
-                <div className="absolute top-0 right-0 z-[60]">
-                    <button onClick={fillDemoData} className="text-[10px] font-black uppercase tracking-[0.3em] px-5 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary hover:bg-primary hover:text-black transition-all italic">
+                <div className="absolute -top-12 right-0 z-[60]">
+                    <button onClick={fillDemoData} className="text-[10px] font-black uppercase tracking-[0.3em] px-5 py-2 bg-[#e8a230]/10 border border-[#e8a230]/20 rounded-full text-[#e8a230] hover:bg-[#e8a230] hover:text-black transition-all italic font-bebas">
                         Auto-Fill
                     </button>
                 </div>
             )}
 
             {/* Step Progress */}
-            <div className="flex items-center justify-center gap-3 mb-12 overflow-x-auto pb-2">
+            <div className="flex items-center justify-center gap-3 mb-12 overflow-x-auto no-scrollbar pb-2">
                 {steps.map((label, i) => {
                     const s = i + 1;
                     const active = currentStep >= s;
@@ -120,23 +120,22 @@ function DriverApplicationFormInner() {
                     return (
                         <div key={s} className="flex items-center gap-3">
                             <div className="flex flex-col items-center gap-2">
-                                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-[10px] md:text-xs font-black transition-all duration-700 ${
-                                    active ? "bg-primary text-black shadow-[0_0_20px_rgba(245,158,11,0.5)]" : "bg-white/5 text-slate-600 border border-white/5"
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bebas transition-all duration-700 ${
+                                    active ? "bg-[#e8a230] text-black shadow-[0_0_20px_rgba(232,162,48,0.5)]" : "bg-white/5 text-slate-600 border border-white/5"
                                 }`}>
                                     {currentStep > s ? "✓" : s}
                                 </div>
-                                <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-[0.15em] whitespace-nowrap ${current ? "text-white" : "text-slate-700"}`}>{label}</span>
+                                <span className={`text-[9px] font-bold uppercase tracking-[0.2em] whitespace-nowrap ${current ? "text-white" : "text-slate-700"}`}>{label}</span>
                             </div>
                             {i < steps.length - 1 && (
-                                <div className={`w-6 sm:w-12 h-px mb-6 transition-all duration-700 ${currentStep > s ? "bg-primary/40" : "bg-white/5"}`} />
+                                <div className={`w-6 h-px mb-6 transition-all duration-700 ${currentStep > s ? "bg-[#e8a230]/40" : "bg-white/5"}`} />
                             )}
                         </div>
                     );
                 })}
             </div>
 
-
-            {/* Form - no outer box */}
+            {/* Form */}
             <div className="w-full">
                 {state.error && (
                     <div className="mb-6">
@@ -147,172 +146,118 @@ function DriverApplicationFormInner() {
                 <form onSubmit={handleSubmit} key={currentStep}>
                     <div className="space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="border-b border-white/5 pb-5">
-                            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">
-                                {["Personal Identification", "Operational Logistics", "Credentials Upload", "Review & Agreement"][currentStep - 1]}
+                            <h4 className="text-3xl font-bebas text-white uppercase italic tracking-wider">
+                                {["Personal Identity", "Operational Logistics", "Secure Credentials", "Fleet Agreement"][currentStep - 1]}
                             </h4>
                         </div>
 
                         {/* Step 1: Identity */}
                         {currentStep === 1 && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div className="space-y-2">
-                                    <label className="label-sm">First Name <span className="text-primary">*</span></label>
-                                    <input name="first_name" required value={formData.first_name} onChange={updateForm} placeholder="Alex" className="input-field" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="label-sm">Last Name <span className="text-primary">*</span></label>
-                                    <input name="last_name" required value={formData.last_name} onChange={updateForm} placeholder="Johnson" className="input-field" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="label-sm">Date of Birth <span className="text-primary">*</span></label>
-                                    <input name="dob" type="date" required value={formData.dob} onChange={updateForm} className="input-field font-mono" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="label-sm">SSN Last 4 <span className="text-primary">*</span></label>
-                                    <input name="ssn_last4" maxLength={4} required value={formData.ssn_last4} onChange={updateForm} placeholder="XXXX" className="input-field font-mono" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="label-sm">Email <span className="text-primary">*</span></label>
-                                    <input name="email" type="email" required value={formData.email} onChange={updateForm} placeholder="hello@trueserve.com" className="input-field" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="label-sm">Phone <span className="text-primary">*</span></label>
-                                    <input name="phone" required value={formData.phone} onChange={updateForm} placeholder="(336) 000-0000" className="input-field font-mono" />
-                                </div>
+                                <FormItem label="First Name" required><input name="first_name" required value={formData.first_name} onChange={updateForm} placeholder="Alex" className="input-field" /></FormItem>
+                                <FormItem label="Last Name" required><input name="last_name" required value={formData.last_name} onChange={updateForm} placeholder="Johnson" className="input-field" /></FormItem>
+                                <FormItem label="Date of Birth" required><input name="dob" type="date" required value={formData.dob} onChange={updateForm} className="input-field" /></FormItem>
+                                <FormItem label="SSN Last 4" required><input name="ssn_last4" maxLength={4} required value={formData.ssn_last4} onChange={updateForm} placeholder="XXXX" className="input-field font-mono" /></FormItem>
+                                <FormItem label="Email" required><input name="email" type="email" required value={formData.email} onChange={updateForm} placeholder="hello@trueserve.com" className="input-field" /></FormItem>
+                                <FormItem label="Phone" required><input name="phone" required value={formData.phone} onChange={updateForm} placeholder="(336) 000-0000" className="input-field font-mono" /></FormItem>
                             </div>
                         )}
 
                         {/* Step 2: Logistics */}
                         {currentStep === 2 && (
                             <div className="space-y-6">
-                                <div className="space-y-2">
-                                    <label className="label-sm">Street Address <span className="text-primary">*</span></label>
-                                    <input name="address" required value={formData.address} onChange={updateForm} placeholder="Street address" className="input-field uppercase" />
-                                </div>
+                                <FormItem label="Street Address" required><input name="address" required value={formData.address} onChange={updateForm} placeholder="123 MAIN ST" className="input-field uppercase" /></FormItem>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                    <div className="space-y-2 col-span-2 sm:col-span-1">
-                                        <label className="label-sm">City <span className="text-primary">*</span></label>
-                                        <input name="city" required value={formData.city} onChange={updateForm} placeholder="City" className="input-field uppercase" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="label-sm">State <span className="text-primary">*</span></label>
-                                        <input name="state" required value={formData.state} onChange={updateForm} placeholder="SC" className="input-field uppercase" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="label-sm">ZIP <span className="text-primary">*</span></label>
-                                        <input name="zip" required value={formData.zip} onChange={updateForm} placeholder="29401" className="input-field font-mono" />
-                                    </div>
+                                    <div className="col-span-2 sm:col-span-1"><FormItem label="City" required><input name="city" required value={formData.city} onChange={updateForm} placeholder="CHARLOTTE" className="input-field uppercase" /></FormItem></div>
+                                    <FormItem label="State" required><input name="state" required value={formData.state} onChange={updateForm} placeholder="NC" className="input-field uppercase" /></FormItem>
+                                    <FormItem label="ZIP" required><input name="zip" required value={formData.zip} onChange={updateForm} placeholder="28202" className="input-field font-mono" /></FormItem>
                                 </div>
                                 <div className="space-y-3 pt-2">
-                                    <label className="label-sm">Vehicle Type</label>
-                                    <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 md:gap-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5A5550]">Vehicle Protocol</label>
+                                    <div className="grid grid-cols-1 xs:grid-cols-3 gap-3">
                                         {[{ id: "bicycle", icon: "🚲", name: "Bicycle" }, { id: "motorcycle", icon: "🛵", name: "Moto" }, { id: "car", icon: "🚗", name: "Auto" }].map(v => (
                                             <button key={v.id} type="button" onClick={() => setFormData({ ...formData, vehicleType: v.id })}
-                                                className={`p-4 md:p-5 rounded-2xl border transition-all text-center space-y-2 ${formData.vehicleType === v.id ? "bg-primary/10 border-primary" : "bg-white/[0.02] border-white/5 opacity-50 hover:opacity-100"}`}>
-                                                <div className="text-2xl md:text-3xl">{v.icon}</div>
-                                                <div className={`text-[10px] font-black uppercase tracking-widest ${formData.vehicleType === v.id ? "text-primary" : "text-slate-500"}`}>{v.name}</div>
+                                                className={`p-4 rounded-2xl border transition-all text-center space-y-2 ${formData.vehicleType === v.id ? "bg-[#e8a230]/10 border-[#e8a230]" : "bg-white/[0.02] border-white/5 opacity-50 hover:opacity-100"}`}>
+                                                <div className="text-2xl">{v.icon}</div>
+                                                <div className={`text-[10px] font-bold uppercase tracking-widest ${formData.vehicleType === v.id ? "text-[#e8a230]" : "text-slate-600"}`}>{v.name}</div>
                                             </button>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="label-sm">Color <span className="text-primary">*</span></label>
-                                        <input name="vehicleColor" required value={formData.vehicleColor} onChange={updateForm} placeholder="Silver" className="input-field uppercase" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="label-sm">Make/Model <span className="text-primary">*</span></label>
-                                        <input name="vehicleMake" required value={formData.vehicleMake} onChange={updateForm} placeholder="Toyota Camry" className="input-field uppercase" />
-                                    </div>
-                                    <div className="space-y-2 col-span-2 md:col-span-1">
-                                        <label className="label-sm">License Plate <span className="text-primary">*</span></label>
-                                        <input name="licensePlate" required value={formData.licensePlate} onChange={updateForm} placeholder="ABC-123" className="input-field uppercase font-mono" />
-                                    </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <FormItem label="Vehicle Color" required><input name="vehicleColor" required value={formData.vehicleColor} onChange={updateForm} placeholder="Black" className="input-field uppercase" /></FormItem>
+                                    <FormItem label="License Plate" required><input name="licensePlate" required value={formData.licensePlate} onChange={updateForm} placeholder="ABC-1234" className="input-field uppercase font-mono" /></FormItem>
                                 </div>
                             </div>
                         )}
 
                         {/* Step 3: Documents */}
                         {currentStep === 3 && (
-                            <div className="space-y-5">
-                                <p className="text-slate-500 text-[11px] italic font-bold opacity-70 leading-relaxed">Upload scans or photos of your credentials. JPEG or PDF accepted.</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                                    {[
-                                        { label: "Driver's License", icon: "🪪", file: idFile, onChange: (f: File) => setIdFile(f) },
-                                        { label: "Proof of Insurance", icon: "📄", file: insuranceFile, onChange: (f: File) => setInsuranceFile(f) },
-                                        { label: "Vehicle Registration", icon: "🚗", file: registrationFile, onChange: (f: File) => setRegistrationFile(f) },
-                                    ].map((doc, i) => (
-                                        <div key={i} className="space-y-2">
-                                            <label className="label-sm">{doc.label} <span className="text-primary">*</span></label>
-                                            <div className="relative border-2 border-dashed border-white/8 rounded-2xl h-28 md:h-32 bg-white/[0.02] flex flex-col items-center justify-center gap-2 hover:border-primary/40 cursor-pointer transition-all group overflow-hidden">
-                                                <input type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && doc.onChange(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
-                                                <div className="text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-500">{doc.icon}</div>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-600 group-hover:text-primary px-4 text-center transition-colors">
-                                                    {doc.file ? <span className="text-primary">{doc.file.name}</span> : "Upload File"}
-                                                </p>
+                            <div className="grid grid-cols-1 gap-5">
+                                <p className="text-[11px] text-slate-500 italic font-medium opacity-70">Attach high-resolution scans of your documentation.</p>
+                                {[
+                                    { label: "Driver's License", icon: "🪪", file: idFile, onChange: (f: File) => setIdFile(f) },
+                                    { label: "Proof of Insurance", icon: "📄", file: insuranceFile, onChange: (f: File) => setInsuranceFile(f) },
+                                    { label: "Vehicle Registration", icon: "🚗", file: registrationFile, onChange: (f: File) => setRegistrationFile(f) },
+                                ].map((doc, i) => (
+                                    <div key={i} className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5A5550]">{doc.label} <span className="text-[#e8a230]">*</span></label>
+                                        <div className="relative border border-dashed border-white/10 rounded-2xl h-24 bg-white/[0.02] flex items-center gap-4 px-6 hover:border-[#e8a230]/40 cursor-pointer transition-all group overflow-hidden">
+                                            <input type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && doc.onChange(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+                                            <div className="text-3xl grayscale group-hover:grayscale-0 transition-all">{doc.icon}</div>
+                                            <div className="text-[10px] font-bold uppercase tracking-widest text-[#5A5550] group-hover:text-white transition-colors truncate max-w-[200px]">
+                                                {doc.file ? doc.file.name : "Select File"}
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
 
-                        {/* Step 4: Agreement */}
+                        {/* Step 4: Approval */}
                         {currentStep === 4 && (
                             <div className="space-y-6">
-                                <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
-                                    <p className="text-[12px] text-white font-black uppercase tracking-tight opacity-90 relative z-10">Terms of Operational Engagement</p>
-                                    <p className="text-[11px] text-slate-500 leading-relaxed font-bold relative z-10">
-                                        By finalizing this application, you authorize TrueServe to perform a comprehensive background and identity validation.
-                                        You acknowledge operating as an Independent Contractor (1099) and affirm all provided credentials are accurate and current.
+                                <div className="p-6 rounded-2xl bg-[#131313] border border-white/5 space-y-3">
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#e8a230]">Engagement Terms</p>
+                                    <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
+                                        By selecting 'Accept Protocol', you verify that all information is accurate. You authorize TrueServe to perform identity validation and understand your engagement is as an Independent Agent.
                                     </p>
                                 </div>
-                                <label className="flex items-center gap-6 cursor-pointer group/agree p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all">
+                                <label className="flex items-center gap-5 cursor-pointer group p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#e8a230]/20 transition-all">
                                     <input name="hasSignedAgreement" type="checkbox" checked={formData.hasSignedAgreement} onChange={updateForm} className="hidden" />
-                                    <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all duration-300 shrink-0 ${
-                                        formData.hasSignedAgreement ? "bg-primary border-primary text-black shadow-[0_0_20px_rgba(245,158,11,0.3)]" : "bg-transparent border-white/10 group-hover/agree:border-primary/40"
+                                    <div className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-all ${
+                                        formData.hasSignedAgreement ? "bg-[#e8a230] border-[#e8a230]" : "bg-transparent border-white/10"
                                     }`}>
-                                        {formData.hasSignedAgreement && <span className="text-lg font-black text-black">✓</span>}
+                                        {formData.hasSignedAgreement && <span className="text-black font-bold">✓</span>}
                                     </div>
-                                    <div>
-                                        <span className="text-[12px] font-black uppercase tracking-widest text-slate-400 group-hover/agree:text-white transition-colors">I Accept Fleet Protocols</span>
-                                        <p className="text-[9px] text-slate-700 font-bold uppercase tracking-widest mt-1">Digital Signature — Level Alpha</p>
-                                    </div>
+                                    <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500 group-hover:text-white transition-colors">Accept Protocol Signature</span>
                                 </label>
                             </div>
                         )}
                     </div>
 
-                    {/* Footer Actions */}
-                    <div className="pt-8 mt-4 border-t border-white/5 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3 opacity-40">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                            <span className="text-slate-700 text-[9px] font-black uppercase tracking-widest italic">Secure · Encrypted</span>
+                    {/* Footer */}
+                    <div className="pt-10 flex flex-col gap-6">
+                        <div className="flex gap-4">
+                            {currentStep > 1 && (
+                                <button type="button" onClick={prevStep} className="flex-1 px-8 py-4 rounded-xl border border-white/5 text-[11px] font-bold uppercase tracking-widest text-slate-600 hover:text-white transition-all">
+                                    Previous
+                                </button>
+                            )}
+                            {currentStep < 4 ? (
+                                <button type="button" onClick={nextStep} className="flex-1 bg-[#e8a230] text-black px-12 py-4 rounded-xl font-bebas text-lg shadow-[0_0_20px_rgba(232,162,48,0.2)]">
+                                    Next Protocol →
+                                </button>
+                            ) : (
+                                <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="flex-1 bg-[#e8a230] text-black px-12 py-4 rounded-xl font-bebas text-lg shadow-[0_0_20px_rgba(232,162,48,0.3)] disabled:opacity-20">
+                                    {isPending ? "PROCESSING..." : "SUBMIT ENROLLMENT ✓"}
+                                </button>
+                            )}
                         </div>
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 w-full">
-                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 italic">
-                                Pre-Approved Agent?{" "}
-                                <Link href="/driver/login" className="text-primary hover:text-primary/80 transition-colors underline decoration-primary/20 underline-offset-4">
-                                    Login here
-                                </Link>
-                            </div>
-                            <div className="flex gap-3 w-full sm:w-auto">
-                                {currentStep > 1 && (
-                                    <button type="button" onClick={prevStep} className="flex-1 sm:flex-none px-8 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:border-white/20 transition-all italic">
-                                        Back
-                                    </button>
-                                )}
-                                {currentStep < 4 ? (
-                                    <button type="button" onClick={nextStep} className="flex-1 sm:flex-none badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full h-glow">
-                                        Continue →
-                                    </button>
-                                ) : (
-                                    <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="flex-1 sm:flex-none badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full disabled:opacity-30 h-glow">
-                                        {isPending ? "Submitting..." : "Submit Application ✓"}
-                                    </button>
-                                )}
-                            </div>
+                        <div className="text-center">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-800 italic">
+                                Active Agent? <Link href="/driver/login" className="text-[#e8a230] font-black underline underline-offset-4 ml-2">Login Terminal</Link>
+                            </span>
                         </div>
                     </div>
                 </form>
@@ -321,37 +266,38 @@ function DriverApplicationFormInner() {
             <style jsx>{`
                 .input-field {
                     width: 100%;
-                    background: rgba(255,255,255,0.03);
-                    border: 1px solid rgba(255,255,255,0.06);
-                    border-radius: 0.875rem;
-                    padding: 0.8rem 1.1rem;
+                    background: rgba(255,255,255,0.02);
+                    border: 1px solid rgba(255,255,255,0.05);
+                    border-radius: 1rem;
+                    padding: 1rem 1.25rem;
                     color: white;
-                    font-size: 0.875rem;
-                    font-weight: 600;
+                    font-size: 0.9375rem;
+                    font-weight: 500;
                     outline: none;
                     transition: all 0.3s ease;
                 }
                 .input-field:focus {
-                    border-color: rgba(245,158,11,0.4);
-                    background: rgba(245,158,11,0.03);
-                    box-shadow: 0 0 0 3px rgba(245,158,11,0.04);
+                    border-color: rgba(232,162,48,0.4);
+                    background: rgba(232,162,48,0.02);
                 }
                 .input-field::placeholder {
-                    color: rgba(255,255,255,0.12);
-                    font-style: italic;
+                    color: rgba(255,255,255,0.1);
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
                     font-size: 0.75rem;
                 }
-                .label-sm {
-                    display: block;
-                    font-size: 0.65rem;
-                    font-weight: 800;
-                    color: rgb(100,116,139);
-                    text-transform: uppercase;
-                    letter-spacing: 0.18em;
-                    margin-left: 2px;
-                    margin-bottom: 4px;
-                }
             `}</style>
+        </div>
+    );
+}
+
+function FormItem({ label, children, required }: { label: string, children: React.ReactNode, required?: boolean }) {
+    return (
+        <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5A5550] block ml-1">
+                {label} {required && <span className="text-[#e8a230]">*</span>}
+            </label>
+            {children}
         </div>
     );
 }

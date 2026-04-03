@@ -38,9 +38,9 @@ const Logo: React.FC<LogoProps> = ({
             <div className={`${iconSizeClasses[size]} ${isVertical ? 'mx-auto mb-2' : ''} rounded-full border-2 border-slate-600 bg-black/60 flex items-center justify-center overflow-hidden shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
                 <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
             </div>
-            <span className={`${sizeClasses[size]} font-bold italic tracking-tighter text-white leading-none whitespace-nowrap ${isVertical ? 'text-center' : ''} drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]`} style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800 }}>
-                True<span style={{ color: '#e8a230' }}>Serve</span>
-                {showPlus && <span className="text-primary ml-0.5 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]">+</span>}
+            <span className={`${sizeClasses[size]} font-bebas tracking-widest text-white leading-none whitespace-nowrap ${isVertical ? 'text-center' : ''} drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]`}>
+                True<span className="text-[#e8a230]">Serve</span>
+                {showPlus && <span className="text-[#e8a230] ml-1">+</span>}
             </span>
         </Link>
     );
