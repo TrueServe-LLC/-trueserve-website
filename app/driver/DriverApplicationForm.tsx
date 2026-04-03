@@ -84,12 +84,12 @@ function DriverApplicationFormInner() {
 
     if (state.success) {
         return (
-            <div className="w-full max-w-2xl mx-auto p-16 text-center space-y-8 bg-white/[0.02] border border-white/5 rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden animate-fade-in">
+            <div className="w-full max-w-2xl mx-auto p-8 md:p-16 text-center space-y-6 md:space-y-8 bg-white/[0.02] border border-white/5 rounded-[2rem] md:rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden animate-fade-in">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent" />
-                <div className="relative z-10 w-20 h-20 bg-primary/10 border-2 border-primary/20 rounded-[2rem] flex items-center justify-center text-4xl mx-auto">🚀</div>
+                <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 bg-primary/10 border-2 border-primary/20 rounded-2xl md:rounded-[2rem] flex items-center justify-center text-3xl md:text-4xl mx-auto">🚀</div>
                 <div className="relative z-10 space-y-3">
-                    <h3 className="text-4xl font-serif italic text-white tracking-tight uppercase">Deployment Commenced!</h3>
-                    <p className="text-slate-400 text-base max-w-md mx-auto leading-relaxed italic font-bold">
+                    <h3 className="text-2xl md:text-4xl font-serif italic text-white tracking-tight uppercase">Deployment Commenced!</h3>
+                    <p className="text-slate-400 text-sm md:text-base max-w-md mx-auto leading-relaxed italic font-bold">
                         Your application is under review. Expect a response on your mobile terminal within 24 hours.
                     </p>
                 </div>
@@ -120,15 +120,15 @@ function DriverApplicationFormInner() {
                     return (
                         <div key={s} className="flex items-center gap-3">
                             <div className="flex flex-col items-center gap-2">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black transition-all duration-700 ${
+                                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-[10px] md:text-xs font-black transition-all duration-700 ${
                                     active ? "bg-primary text-black shadow-[0_0_20px_rgba(245,158,11,0.5)]" : "bg-white/5 text-slate-600 border border-white/5"
                                 }`}>
                                     {currentStep > s ? "✓" : s}
                                 </div>
-                                <span className={`text-[9px] font-black uppercase tracking-[0.15em] whitespace-nowrap ${current ? "text-white" : "text-slate-700"}`}>{label}</span>
+                                <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-[0.15em] whitespace-nowrap ${current ? "text-white" : "text-slate-700"}`}>{label}</span>
                             </div>
                             {i < steps.length - 1 && (
-                                <div className={`w-12 h-px mb-6 transition-all duration-700 ${currentStep > s ? "bg-primary/40" : "bg-white/5"}`} />
+                                <div className={`w-6 sm:w-12 h-px mb-6 transition-all duration-700 ${currentStep > s ? "bg-primary/40" : "bg-white/5"}`} />
                             )}
                         </div>
                     );
@@ -189,8 +189,8 @@ function DriverApplicationFormInner() {
                                     <label className="label-sm">Street Address <span className="text-primary">*</span></label>
                                     <input name="address" required value={formData.address} onChange={updateForm} placeholder="Street address" className="input-field uppercase" />
                                 </div>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="space-y-2 col-span-1">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    <div className="space-y-2 col-span-2 sm:col-span-1">
                                         <label className="label-sm">City <span className="text-primary">*</span></label>
                                         <input name="city" required value={formData.city} onChange={updateForm} placeholder="City" className="input-field uppercase" />
                                     </div>
@@ -205,17 +205,17 @@ function DriverApplicationFormInner() {
                                 </div>
                                 <div className="space-y-3 pt-2">
                                     <label className="label-sm">Vehicle Type</label>
-                                    <div className="grid grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 md:gap-4">
                                         {[{ id: "bicycle", icon: "🚲", name: "Bicycle" }, { id: "motorcycle", icon: "🛵", name: "Moto" }, { id: "car", icon: "🚗", name: "Auto" }].map(v => (
                                             <button key={v.id} type="button" onClick={() => setFormData({ ...formData, vehicleType: v.id })}
-                                                className={`p-5 rounded-2xl border transition-all text-center space-y-2 ${formData.vehicleType === v.id ? "bg-primary/10 border-primary" : "bg-white/[0.02] border-white/5 opacity-50 hover:opacity-100"}`}>
-                                                <div className="text-3xl">{v.icon}</div>
+                                                className={`p-4 md:p-5 rounded-2xl border transition-all text-center space-y-2 ${formData.vehicleType === v.id ? "bg-primary/10 border-primary" : "bg-white/[0.02] border-white/5 opacity-50 hover:opacity-100"}`}>
+                                                <div className="text-2xl md:text-3xl">{v.icon}</div>
                                                 <div className={`text-[10px] font-black uppercase tracking-widest ${formData.vehicleType === v.id ? "text-primary" : "text-slate-500"}`}>{v.name}</div>
                                             </button>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     <div className="space-y-2">
                                         <label className="label-sm">Color <span className="text-primary">*</span></label>
                                         <input name="vehicleColor" required value={formData.vehicleColor} onChange={updateForm} placeholder="Silver" className="input-field uppercase" />
@@ -224,7 +224,7 @@ function DriverApplicationFormInner() {
                                         <label className="label-sm">Make/Model <span className="text-primary">*</span></label>
                                         <input name="vehicleMake" required value={formData.vehicleMake} onChange={updateForm} placeholder="Toyota Camry" className="input-field uppercase" />
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 col-span-2 md:col-span-1">
                                         <label className="label-sm">License Plate <span className="text-primary">*</span></label>
                                         <input name="licensePlate" required value={formData.licensePlate} onChange={updateForm} placeholder="ABC-123" className="input-field uppercase font-mono" />
                                     </div>
@@ -236,7 +236,7 @@ function DriverApplicationFormInner() {
                         {currentStep === 3 && (
                             <div className="space-y-5">
                                 <p className="text-slate-500 text-[11px] italic font-bold opacity-70 leading-relaxed">Upload scans or photos of your credentials. JPEG or PDF accepted.</p>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                                     {[
                                         { label: "Driver's License", icon: "🪪", file: idFile, onChange: (f: File) => setIdFile(f) },
                                         { label: "Proof of Insurance", icon: "📄", file: insuranceFile, onChange: (f: File) => setInsuranceFile(f) },
@@ -244,9 +244,9 @@ function DriverApplicationFormInner() {
                                     ].map((doc, i) => (
                                         <div key={i} className="space-y-2">
                                             <label className="label-sm">{doc.label} <span className="text-primary">*</span></label>
-                                            <div className="relative border-2 border-dashed border-white/8 rounded-2xl h-32 bg-white/[0.02] flex flex-col items-center justify-center gap-2 hover:border-primary/40 cursor-pointer transition-all group overflow-hidden">
+                                            <div className="relative border-2 border-dashed border-white/8 rounded-2xl h-28 md:h-32 bg-white/[0.02] flex flex-col items-center justify-center gap-2 hover:border-primary/40 cursor-pointer transition-all group overflow-hidden">
                                                 <input type="file" required accept="image/*,.pdf" onChange={(e) => e.target.files && doc.onChange(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
-                                                <div className="text-3xl group-hover:scale-110 transition-transform duration-500">{doc.icon}</div>
+                                                <div className="text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-500">{doc.icon}</div>
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-600 group-hover:text-primary px-4 text-center transition-colors">
                                                     {doc.file ? <span className="text-primary">{doc.file.name}</span> : "Upload File"}
                                                 </p>
@@ -290,21 +290,29 @@ function DriverApplicationFormInner() {
                             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                             <span className="text-slate-700 text-[9px] font-black uppercase tracking-widest italic">Secure · Encrypted</span>
                         </div>
-                        <div className="flex gap-3">
-                            {currentStep > 1 && (
-                                <button type="button" onClick={prevStep} className="px-8 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:border-white/20 transition-all italic">
-                                    Back
-                                </button>
-                            )}
-                            {currentStep < 4 ? (
-                                <button type="button" onClick={nextStep} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full h-glow">
-                                    Continue →
-                                </button>
-                            ) : (
-                                <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full disabled:opacity-30 h-glow">
-                                    {isPending ? "Submitting..." : "Submit Application ✓"}
-                                </button>
-                            )}
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 w-full">
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 italic">
+                                Pre-Approved Agent?{" "}
+                                <Link href="/driver/login" className="text-primary hover:text-primary/80 transition-colors underline decoration-primary/20 underline-offset-4">
+                                    Login here
+                                </Link>
+                            </div>
+                            <div className="flex gap-3 w-full sm:w-auto">
+                                {currentStep > 1 && (
+                                    <button type="button" onClick={prevStep} className="flex-1 sm:flex-none px-8 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:border-white/20 transition-all italic">
+                                        Back
+                                    </button>
+                                )}
+                                {currentStep < 4 ? (
+                                    <button type="button" onClick={nextStep} className="flex-1 sm:flex-none badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full h-glow">
+                                        Continue →
+                                    </button>
+                                ) : (
+                                    <button type="submit" disabled={isPending || !formData.hasSignedAgreement} className="flex-1 sm:flex-none badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full disabled:opacity-30 h-glow">
+                                        {isPending ? "Submitting..." : "Submit Application ✓"}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </form>

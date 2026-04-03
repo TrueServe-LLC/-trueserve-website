@@ -57,6 +57,9 @@ export default function DriverLoginPage() {
                 @media (max-width: 1024px) { 
                     .login-grid { grid-template-columns: 1fr; }
                     .left-panel { display: none; }
+                    .right-panel { padding: 40px 24px; min-height: 100vh; justify-content: flex-start; }
+                    .form-wrap { max-width: 100%; }
+                    .form-title { font-size: 28px; margin-top: 20px; }
                 }
             ` }} />
 

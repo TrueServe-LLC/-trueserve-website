@@ -43,12 +43,12 @@ function MerchantSignupFormInner() {
 
     if (state.success) {
         return (
-            <div className="w-full max-w-2xl mx-auto p-16 text-center space-y-8 bg-white/[0.02] border border-white/5 rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden animate-fade-in">
+            <div className="w-full max-w-2xl mx-auto p-8 md:p-16 text-center space-y-6 md:space-y-8 bg-white/[0.02] border border-white/5 rounded-[2rem] md:rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden animate-fade-in">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent" />
-                <div className="relative z-10 w-20 h-20 bg-primary/10 border-2 border-primary/20 rounded-[2rem] flex items-center justify-center text-4xl mx-auto">🏛️</div>
+                <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 bg-primary/10 border-2 border-primary/20 rounded-2xl md:rounded-[2rem] flex items-center justify-center text-3xl md:text-4xl mx-auto">🏛️</div>
                 <div className="relative z-10 space-y-3">
-                    <h3 className="text-4xl font-serif italic text-white tracking-tight uppercase">Partnership Authorized!</h3>
-                    <p className="text-slate-400 text-base max-w-md mx-auto leading-relaxed italic font-bold">
+                    <h3 className="text-2xl md:text-4xl font-serif italic text-white tracking-tight uppercase">Partnership Authorized!</h3>
+                    <p className="text-slate-400 text-sm md:text-base max-w-md mx-auto leading-relaxed italic font-bold">
                         A partner specialist will reach out within 24 hours to finalize your integration.
                     </p>
                 </div>
@@ -142,8 +142,8 @@ function MerchantSignupFormInner() {
                                     <label className="label-sm">Street Address <span className="text-primary">*</span></label>
                                     <input name="address" required value={formData.address} onChange={updateForm} placeholder="Street address" className="input-field uppercase" />
                                 </div>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="space-y-2 col-span-1">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    <div className="space-y-2 col-span-2 sm:col-span-1">
                                         <label className="label-sm">City <span className="text-primary">*</span></label>
                                         <input name="city" required value={formData.city} onChange={updateForm} placeholder="City" className="input-field uppercase" />
                                     </div>
@@ -158,11 +158,11 @@ function MerchantSignupFormInner() {
                                 </div>
                                 <div className="pt-2 space-y-3">
                                     <label className="label-sm">Establishment Type</label>
-                                    <div className="grid grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 md:gap-4">
                                         {[{ id: 'RESTAURANT', icon: '🍳', name: 'Restaurant' }, { id: 'GROCERY', icon: '🛒', name: 'Market' }, { id: 'LIQUOR', icon: '🍷', name: 'Beverage' }].map(v => (
                                             <button key={v.id} type="button" onClick={() => setFormData({ ...formData, category: v.id })}
-                                                className={`p-5 rounded-2xl border transition-all text-center space-y-2 ${formData.category === v.id ? 'bg-primary/10 border-primary' : 'bg-white/[0.02] border-white/5 opacity-50 hover:opacity-100'}`}>
-                                                <div className="text-3xl">{v.icon}</div>
+                                                className={`p-4 md:p-5 rounded-2xl border transition-all text-center space-y-2 ${formData.category === v.id ? 'bg-primary/10 border-primary' : 'bg-white/[0.02] border-white/5 opacity-50 hover:opacity-100'}`}>
+                                                <div className="text-2xl md:text-3xl">{v.icon}</div>
                                                 <div className={`text-[10px] font-black uppercase tracking-widest ${formData.category === v.id ? 'text-primary' : 'text-slate-500'}`}>{v.name}</div>
                                             </button>
                                         ))}
@@ -193,10 +193,10 @@ function MerchantSignupFormInner() {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="label-sm">POS System</label>
-                                    <div className="grid grid-cols-4 gap-3">
+                                    <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 md:gap-3">
                                         {['Toast', 'Clover', 'Square', 'None'].map(pos => (
                                             <button key={pos} type="button" onClick={() => setFormData({ ...formData, posSystem: pos })}
-                                                className={`py-4 rounded-2xl border transition-all text-center text-[10px] font-black uppercase tracking-widest italic ${formData.posSystem === pos ? 'bg-primary/10 border-primary text-primary' : 'bg-white/[0.02] border-white/5 text-slate-600 opacity-50 hover:opacity-100'}`}>
+                                                className={`py-3 md:py-4 rounded-xl md:rounded-2xl border transition-all text-center text-[9px] md:text-[10px] font-black uppercase tracking-widest italic ${formData.posSystem === pos ? 'bg-primary/10 border-primary text-primary' : 'bg-white/[0.02] border-white/5 text-slate-600 opacity-50 hover:opacity-100'}`}>
                                                 {pos}
                                             </button>
                                         ))}
@@ -207,28 +207,30 @@ function MerchantSignupFormInner() {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="pt-8 mt-4 border-t border-white/5 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3 opacity-40">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                            <span className="text-slate-700 text-[9px] font-black uppercase tracking-widest italic">Secure · Encrypted</span>
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 w-full">
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 italic">
+                                Existing Merchant Partner?{" "}
+                                <Link href="/merchant/login" className="text-primary hover:text-primary/80 transition-colors underline decoration-primary/20 underline-offset-4">
+                                    Login here
+                                </Link>
+                            </div>
+                            <div className="flex gap-3 w-full sm:w-auto">
+                                {currentStep > 1 && (
+                                    <button type="button" onClick={prevStep} className="flex-1 sm:flex-none px-8 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:border-white/20 transition-all italic">
+                                        Back
+                                    </button>
+                                )}
+                                {currentStep < 3 ? (
+                                    <button type="button" onClick={nextStep} className="flex-1 sm:flex-none badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full h-glow">
+                                        Continue →
+                                    </button>
+                                ) : (
+                                    <button type="submit" disabled={isPending} className="flex-1 sm:flex-none badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full disabled:opacity-30 h-glow">
+                                        {isPending ? "Submitting..." : "Submit Application ✓"}
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                        <div className="flex gap-3">
-                            {currentStep > 1 && (
-                                <button type="button" onClick={prevStep} className="px-8 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:border-white/20 transition-all italic">
-                                    Back
-                                </button>
-                            )}
-                            {currentStep < 3 ? (
-                                <button type="button" onClick={nextStep} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full h-glow">
-                                    Continue →
-                                </button>
-                            ) : (
-                                <button type="submit" disabled={isPending} className="badge-solid-primary !py-3 !px-10 !text-[11px] !rounded-full disabled:opacity-30 h-glow">
-                                    {isPending ? "Submitting..." : "Submit Application ✓"}
-                                </button>
-                            )}
-                        </div>
-                    </div>
                 </form>
             </div>
 

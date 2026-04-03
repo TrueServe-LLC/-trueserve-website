@@ -190,16 +190,37 @@ export default async function DriverDashboard() {
                         <div className="text-[9px] font-bold text-[#2a2f3a] uppercase tracking-[4px]">Awaiting Target Engagement</div>
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                        <div className="bg-[#131720] border border-[#2a2f3a] p-4">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="font-barlow text-lg font-black italic uppercase text-white">Rapid Liquidity</div>
-                                <div className="px-2 py-0.5 bg-[#1a1a1a] text-[#555] text-[9px] font-bold uppercase border border-[#222]">Settlement Ready</div>
+                    <div className="flex flex-col gap-3">
+                        <div className="bg-[#0c0e13] border border-[#1c1f28] p-6 relative overflow-hidden group">
+                            {/* Subtle background glow */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#e8a230]/5 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
+                            
+                            <div className="flex justify-between items-start mb-8 relative z-10">
+                                <div>
+                                    <div className="font-barlow text-xl font-black italic uppercase text-white leading-none">Rapid <span>Liquidity</span></div>
+                                    <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[#444] mt-2 italic">Neural Settlement Bridge</div>
+                                </div>
+                                <div className="px-3 py-1 bg-white/5 border border-white/5 text-[#3dd68c] text-[9px] font-black uppercase tracking-widest">Protocol V4</div>
                             </div>
-                            <div className="text-[9px] font-bold uppercase tracking-widest text-[#e8a230] mb-1">Liquid Balance</div>
-                            <div className="text-4xl font-mono font-bold text-white leading-none mb-6">${stats.balance.toFixed(2)}</div>
-                            <button className="w-full bg-[#3dd68c] text-black text-xs font-black uppercase tracking-widest py-3">Cash Out Funds</button>
-                            <p className="text-center text-[9px] font-bold text-[#222] mt-2 uppercase tracking-widest">Protocol Sync: Active</p>
+                            
+                            <div className="relative z-10 mb-8">
+                                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#e8a230] mb-3 opacity-60">Available Balance</div>
+                                <div className="text-5xl font-mono font-bold text-white leading-none tracking-tighter tabular-nums">
+                                    <span className="text-2xl text-[#444] mr-1">$</span>{stats.balance.toFixed(2)}
+                                </div>
+                            </div>
+
+                            <button className="w-full bg-[#3dd68c] text-black text-[10px] font-black uppercase tracking-[0.3em] py-4 shadow-[0_0_20px_rgba(61,214,140,0.15)] hover:shadow-[0_0_30px_rgba(61,214,140,0.3)] transition-all relative z-10">
+                                Deploy Funds →
+                            </button>
+                            
+                            <div className="mt-4 flex items-center justify-between relative z-10">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#3dd68c] shadow-[0_0_8px_rgba(61,214,140,1)]"></div>
+                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#222]">Encrypted Sync</span>
+                                </div>
+                                <div className="text-[8px] font-black uppercase tracking-[0.2em] text-[#222]">Settlement Ready</div>
+                            </div>
                         </div>
                     </div>
                 </div>

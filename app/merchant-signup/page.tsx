@@ -40,8 +40,10 @@ export default function MerchantSignupPage() {
                     <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl border border-white/10 group-hover:scale-110 transition-transform" />
                     <span className="text-xl font-black text-slate-300 tracking-tighter italic uppercase group-hover:text-white transition-colors">TrueServe <span className="text-primary not-italic">Hub</span></span>
                 </Link>
-                <div className="hidden md:flex items-center gap-6">
-                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest italic">Terminal Access Authorized</span>
+                <div className="flex items-center gap-4">
+                    <Link href="/merchant/login" className="text-[10px] font-black text-primary uppercase tracking-widest italic hover:text-white transition-colors">
+                        Already have an account? Login
+                    </Link>
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 </div>
             </div>

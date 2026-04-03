@@ -53,18 +53,23 @@ export default function DriverSignupPage() {
                     <div className="bg-primary/10 border border-primary/20 rounded-full px-6 py-2 mb-6 backdrop-blur-md animate-on-scroll">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Join the Elite Fleet</p>
                     </div>
-                    <h1 className="text-4xl md:text-[100px] font-black text-white italic tracking-tighter uppercase leading-[0.85] mb-4 px-2 animate-on-scroll delay-1">
+                    <h1 className="text-4xl sm:text-5xl md:text-[80px] lg:text-[100px] font-black text-white italic tracking-tighter uppercase [line-height:0.9] mb-4 px-2 animate-on-scroll delay-1">
                         Strategic <span className="text-primary italic">Delivery.</span>
                     </h1>
-                    <p className="text-slate-400 text-sm md:text-lg font-medium max-w-2xl italic mt-6 animate-on-scroll delay-2">
+                    <p className="text-slate-400 text-xs sm:text-sm md:text-lg font-medium max-w-2xl italic mt-4 md:mt-6 animate-on-scroll delay-2">
                         The most efficient mileage-based engine in the South East corridor. <br className="hidden md:block" />
                         Synchronize your schedule, maximize your net earnings.
                     </p>
+                    <div className="mt-8 animate-on-scroll delay-3 text-center md:text-left">
+                        <Link href="/driver/login" className="text-xs uppercase tracking-widest font-black text-white/50 hover:text-primary transition-colors inline-flex items-center gap-2 group">
+                            Already have an account? <span className="text-primary border-b border-primary/30 group-hover:border-primary pb-0.5">Login Here</span>
+                        </Link>
+                    </div>
                 </div>
             </div>
 
-            <main className="container py-24 md:py-32 px-4 md:px-8 pb-40 relative z-10 -mt-20">
-                <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
+            <main className="container py-12 md:py-32 px-4 md:px-8 pb-40 relative z-10 -mt-10 md:-mt-20">
+                <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-24">
                    
                     {/* Left Side: Context & Visuals */}
                     <div className="lg:col-span-5 space-y-12 h-fit md:sticky md:top-32">

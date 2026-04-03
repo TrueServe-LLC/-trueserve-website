@@ -87,6 +87,9 @@ export default function MerchantLoginPage() {
                 @media (max-width: 1024px) { 
                     .login-grid { grid-template-columns: 1fr; }
                     .left-panel { display: none; }
+                    .right-panel { padding: 40px 24px; min-height: 100vh; justify-content: flex-start; }
+                    .form-box { max-width: 100%; }
+                    .form-hd { font-size: 28px; margin-top: 20px; }
                 }
             ` }} />
 
