@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 interface LogoProps {
     className?: string;
-    showPlus?: boolean;
     size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
@@ -11,18 +10,18 @@ const Logo: React.FC<LogoProps> = ({
     className = "", 
     size = 'md'
 }) => {
-    const sizeClasses = {
-        sm: 'text-[21px]',
-        md: 'text-[24px]',
-        lg: 'text-[32px]',
-        xl: 'text-[44px]'
+    const textSizes = {
+        sm: 'text-[15px]',
+        md: 'text-[18px]',
+        lg: 'text-[24px]',
+        xl: 'text-[32px]'
     };
 
-    const iconSizeClasses = {
-        sm: 'w-[40px] h-[40px]',
-        md: 'w-[48px] h-[48px]',
-        lg: 'w-[56px] h-[56px]',
-        xl: 'w-[72px] h-[72px]'
+    const iconSizes = {
+        sm: 'w-[20px] h-[20px]',
+        md: 'w-[26px] h-[26px]',
+        lg: 'w-[32px] h-[32px]',
+        xl: 'w-[44px] h-[44px]'
     };
 
     return (
@@ -30,11 +29,11 @@ const Logo: React.FC<LogoProps> = ({
             href="/" 
             className={`flex items-center gap-[12px] group active:scale-95 transition-all ${className}`}
         >
-            <div className={`${iconSizeClasses[size]} rounded-full border-[3px] border-[#2A2F3A] bg-black flex items-center justify-center overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-300`}>
-                <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
+            <div className={`${iconSizes[size]} rounded-full border border-[#e8a230]/40 flex items-center justify-center bg-[#e8a230]/10 backdrop-blur-md shadow-[0_0_15px_rgba(232,162,48,0.1)] transition-transform group-hover:scale-105 duration-300`}>
+                <span className="text-[#e8a230] text-[50%] font-black leading-none uppercase">✓</span>
             </div>
-            <span className={`${sizeClasses[size]} font-barlow-cond font-black italic tracking-tight text-white leading-none whitespace-nowrap`}>
-                True<span className="text-[#E8A020]">Serve</span>
+            <span className={`${textSizes[size]} font-bold tracking-tight text-white leading-none whitespace-nowrap`}>
+                TrueServe
             </span>
         </Link>
     );

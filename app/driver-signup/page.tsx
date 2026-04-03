@@ -1,134 +1,97 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import DriverApplicationForm from "@/app/driver/DriverApplicationForm";
+import Logo from "@/components/Logo";
 
 export default function DriverSignupPage() {
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-        return () => observer.disconnect();
-    }, []);
+    const [step, setStep] = useState(1);
+    const [vehicle, setVehicle] = useState("car");
 
     return (
-        <div className="min-h-screen bg-[#02040a] text-white selection:bg-emerald-500 font-sans relative overflow-x-hidden">
+        <div className="min-h-screen bg-[#000] text-white font-sans selection:bg-[#e8a230]/30 selection:text-black overflow-x-hidden">
             <style dangerouslySetInnerHTML={{ __html: `
-                .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
-                .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
-                .delay-1 { transition-delay: 0.1s; }
-                .delay-2 { transition-delay: 0.2s; }
-                .delay-3 { transition-delay: 0.3s; }
-            ` }} />
-            {/* Animated Mesh Gradient Background (Step 15/18 Style) */}
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] animate-blob filter" />
-                <div className="absolute top-[20%] right-[-10%] w-[45%] h-[45%] bg-primary/10 rounded-full blur-[120px] animate-blob-reverse filter delay-700" />
-                <div className="absolute bottom-[-10%] left-[20%] w-[55%] h-[55%] bg-indigo-500/10 rounded-full blur-[120px] animate-blob-slow filter" />
-                <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-emerald-400/10 rounded-full blur-[120px] animate-blob filter delay-1000" />
-                <div className="absolute inset-0 bg-[#02040a]/40 backdrop-blur-[20px]" />
-                <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
-            </div>
-
-            {/* Cinematic Hero */}
-            <div className="relative h-[40vh] md:h-[60vh] w-full overflow-hidden z-10">
-                <img 
-                    src="https://images.unsplash.com/photo-1585909600100-3484f279a78a?q=80&w=2400&auto=format&fit=crop" 
-                    alt="Scooter Delivery Cinematic" 
-                    className="w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000 scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#02040a] via-transparent to-transparent"></div>
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&family=Bebas+Neue&display=swap');
                 
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-                    <Link href="/driver" className="mb-8 w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white/10 hover:border-primary transition-all text-primary shadow-2xl backdrop-blur-md">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
-                    </Link>
-                    <div className="bg-primary/10 border border-primary/20 rounded-full px-6 py-2 mb-6 backdrop-blur-md animate-on-scroll">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Join the Elite Fleet</p>
-                    </div>
-                    <h1 className="text-4xl sm:text-5xl md:text-[80px] lg:text-[100px] font-black text-white italic tracking-tighter uppercase [line-height:0.9] mb-4 px-2 animate-on-scroll delay-1">
-                        Strategic <span className="text-primary italic">Delivery.</span>
-                    </h1>
-                    <p className="text-slate-400 text-xs sm:text-sm md:text-lg font-medium max-w-2xl italic mt-4 md:mt-6 animate-on-scroll delay-2">
-                        The most efficient mileage-based engine in the South East corridor. <br className="hidden md:block" />
-                        Synchronize your schedule, maximize your net earnings.
-                    </p>
-                    <div className="mt-8 animate-on-scroll delay-3 text-center md:text-left">
-                        <Link href="/driver/login" className="text-xs uppercase tracking-widest font-black text-white/50 hover:text-primary transition-colors inline-flex items-center gap-2 group">
-                            Already have an account? <span className="text-primary border-b border-primary/30 group-hover:border-primary pb-0.5">Login Here</span>
-                        </Link>
-                    </div>
-                </div>
+                .bebas { font-family: 'Bebas Neue', sans-serif; }
+                .barlow-cond { font-family: 'Barlow Condensed', sans-serif; }
+                
+                .fi::placeholder { color: #2a2f3a; }
+                .fi:focus { border-color: #e8a230; background: rgba(19, 23, 32, 0.5); }
+                
+                @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                .animate-up { animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+                .blur-card {
+                    background: rgba(12, 14, 19, 0.4);
+                    border: 1px solid rgba(255, 255, 255, 0.04);
+                    backdrop-filter: blur(20px);
+                    transition: all 0.3s ease;
+                }
+                .blur-card:hover {
+                    border-color: rgba(232, 162, 48, 0.2);
+                    background: rgba(18, 20, 25, 0.5);
+                }
+            ` }} />
+
+            {/* ── BACKGROUND IMAGE ── */}
+            <div className="fixed inset-0 z-0">
+                <img 
+                    src="/driver_signup_bg_v3_1775197461975.png" 
+                    alt="" 
+                    className="w-full h-full object-cover grayscale opacity-[0.15] brightness-[0.4] filter contrast(1.1)"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
             </div>
 
-            <main className="container py-12 md:py-32 px-4 md:px-8 pb-40 relative z-10 -mt-10 md:-mt-20">
-                <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-24">
-                   
-                    {/* Left Side: Context & Visuals */}
-                    <div className="lg:col-span-5 space-y-12 h-fit md:sticky md:top-32">
-                        <div className="animate-on-scroll">
-                           <h2 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight mb-6 px-2">Fleet Onboarding <br />Process.</h2>
-                           <p className="text-slate-500 text-lg font-medium leading-relaxed italic max-w-sm mb-12">Complete the synchronization to unlock your operational credentials.</p>
-                        </div>
+            {/* ── HEADER ── */}
+            <header className="relative z-50 flex items-center justify-between px-10 py-8 max-w-[1400px] mx-auto">
+                <Logo size="md" />
+                <div className="flex gap-8 items-center">
+                    <Link href="/driver/login" className="barlow-cond font-black text-[11px] uppercase tracking-[0.25em] text-[#5A5550]">Fleet Authorization</Link>
+                </div>
+            </header>
 
-                        <div className="grid grid-cols-1 gap-4">
-                           {[
-                             { icon: '💸', label: 'T+0 Settlements', desc: 'Earnings transferred instantly.' },
-                             { icon: '🗺️', label: 'Smart Grid', desc: 'Optimized high-velocity routing.' },
-                             { icon: '🛡️', label: 'Safety Sync', desc: 'Premium logistics protection.' }
-                           ].map((item, i) => (
-                             <div key={i} className="flex gap-6 items-center p-6 bg-white/[0.03] border border-white/5 rounded-[2rem] group hover:border-primary/20 transition-all animate-on-scroll">
-                                <div className="text-3xl group-hover:scale-110 transition-transform">{item.icon}</div>
-                                <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-widest text-white mb-1 italic">{item.label}</h4>
-                                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider italic">{item.desc}</p>
-                                </div>
-                             </div>
-                           ))}
-                        </div>
+            <main className="relative z-10 flex flex-col items-center pt-10 pb-40 px-6 max-w-7xl mx-auto text-center">
+                <div className="space-y-3 mb-20 animate-up">
+                    <h1 className="bebas italic text-[80px] lg:text-[124px] leading-[0.88] tracking-tight text-white uppercase">
+                        FLEET<span className="text-[#e8a230]">PROTOCOLS.</span>
+                    </h1>
+                    <p className="barlow-cond font-black text-[12px] lg:text-[14px] uppercase tracking-[0.45em] text-[#5A5550]">
+                        ESTABLISH YOUR MOBILE LOGISTICS HUB
+                    </p>
+                </div>
 
-                        {/* Social Proof Image */}
-                        <div className="relative rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white/5 h-[300px] animate-on-scroll">
-                            <img 
-                                src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200" 
-                                className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-700"
-                                alt="Fleet Team"
-                            />
-                            <div className="absolute inset-x-8 bottom-8 p-6 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10">
-                                <p className="text-white font-black italic uppercase tracking-tighter text-sm">Join 2,400+ Trusted Fleet Partners</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-[1100px] mb-8 animate-up [animation-delay:0.1s]">
+                    {[
+                        { title: "FAIR PAY", desc: "Competitive base pay + tips deposited weekly into your hub.", icon: "💰" },
+                        { title: "FLEX HOURS", desc: "Drive when you want — you are your own operational boss.", icon: "🕒" },
+                        { title: "LOCAL PRIDE", desc: "Deliver for the best neighborhood restaurants in your city.", icon: "📍" }
+                    ].map((card) => (
+                        <div key={card.title} className="blur-card p-10 flex flex-col items-center text-center space-y-5 rounded-[2.5rem]">
+                            <div className="text-4xl grayscale brightness-200">{card.icon}</div>
+                            <div className="space-y-2">
+                                <h3 className="bebas italic text-[28px] tracking-wider">{card.title}</h3>
+                                <p className="barlow-cond text-[11px] font-bold text-[#5A5550] leading-relaxed max-w-[220px] uppercase tracking-wider">{card.desc}</p>
                             </div>
                         </div>
-                    </div>
+                    ))}
+                </div>
 
-                    {/* Right Side: Deployment Form */}
-                    <div className="lg:col-span-7">
-                        <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-8 md:p-12 shadow-3xl">
-                            <DriverApplicationForm />
+                <div className="w-full max-w-[620px] bg-[#050505]/60 border border-white/5 rounded-[3rem] p-12 lg:p-20 backdrop-blur-[50px] animate-up shadow-2xl">
+                    <h2 className="bebas italic text-5xl lg:text-7xl mb-12">START YOUR <span className="text-[#e8a230]">APPLICATION.</span></h2>
+                    
+                    <form className="space-y-8 text-left" onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
+                         <div className="space-y-3">
+                            <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.25em] text-[#e8a230]">FIRST NAME *</label>
+                            <input type="text" className="fi w-full bg-[#030303] border border-white/10 text-[16px] px-7 py-5 text-white outline-none rounded-2xl" placeholder="ALEX" required />
                         </div>
-                    </div>
+                        <button type="submit" className="w-full bg-[#e8a230] text-black bebas italic text-[26px] tracking-wider py-6 rounded-2xl transition-all shadow-xl">
+                            CONTINUE APPLICATION →
+                        </button>
+                    </form>
                 </div>
             </main>
-
-            <footer className="py-24 bg-black border-t border-white/5">
-                <div className="container max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
-                    <div className="flex items-center gap-4">
-                        <img src="/logo.png" alt="Logo" className="w-12 h-12 border border-white/10 rounded-full shadow-xl" />
-                        <span className="font-black text-slate-500 tracking-tighter text-2xl italic uppercase">TrueServe Fleet &copy; {new Date().getFullYear()}</span>
-                    </div>
-                    <div className="flex flex-wrap justify-center md:justify-end gap-x-12 gap-y-6 text-[11px] font-black uppercase tracking-[0.3em] text-slate-600">
-                        <Link href="/legal" className="hover:text-white transition-colors">Safety Standard</Link>
-                        <Link href="/legal" className="hover:text-white transition-colors">Fleet Terms</Link>
-                        <Link href="/driver/login" className="hover:text-primary transition-colors text-primary italic">Fleet Entry</Link>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 }
