@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getAuthSession, loginAsPilot } from "@/app/auth/actions";
 
 export default function FleetLoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#0c0e13] flex items-center justify-center text-[10px] font-black uppercase tracking-[0.4em] text-[#e8a230] animate-pulse italic">Uplinking Terminal...</div>}>
+            <FleetLoginContent />
+        </Suspense>
+    );
+}
+
+function FleetLoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get("next") || "/driver/dashboard";
