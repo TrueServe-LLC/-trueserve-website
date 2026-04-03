@@ -10,7 +10,9 @@ export async function middleware(request: NextRequest) {
   // --- 1. PREVIEW BYPASS ---
   const isPreviewParam = url.searchParams.get('preview') === 'true'
   const isPreviewCookie = request.cookies.get('preview_mode')?.value === 'true'
-  const isPreview = isPreviewParam || isPreviewCookie
+  const isTunnel = host.includes('lhr.life') || host.includes('loca.lt')
+  const isAuthPath = path === '/login' || path.startsWith('/auth')
+  const isPreview = isPreviewParam || isPreviewCookie || (isTunnel && (path.startsWith('/driver') || isAuthPath))
   
   if (isPreviewParam && !isPreviewCookie) {
     const previewResponse = NextResponse.redirect(new URL(url.pathname, request.url))
@@ -63,7 +65,8 @@ export async function middleware(request: NextRequest) {
   // Dynamic root domain detection
   const pieces = cleanHost.split('.')
   let cookieDomain = ""
-  if (!isLocal && !isVercel && pieces.length >= 2) {
+  
+  if (!isLocal && !isVercel && !isTunnel && pieces.length >= 2) {
     cookieDomain = `.${pieces.slice(-2).join('.')}`
   }
 

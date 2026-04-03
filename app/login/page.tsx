@@ -32,6 +32,12 @@ function LoginWithParams() {
 
     useEffect(() => {
         const checkUser = async () => {
+            const isPreview = document.cookie.includes("preview_mode=true");
+            if (isPreview) {
+                router.push("/driver/dashboard");
+                return;
+            }
+
             const session = await getAuthSession();
 
             if (session.isAuth) {

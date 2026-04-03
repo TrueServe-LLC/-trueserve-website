@@ -442,15 +442,20 @@ export async function loginAsDemoDriver() {
 
 export async function loginAsPilot() {
     const cookieStore = await cookies();
-    const DEMO_DRIVER_ID = "a18a0115-5238-4e82-a2e1-0020e2c40ba1";
     
-    // Ensure standard driver setup exists for this ID
-    await loginAsDemoDriver();
+    console.log("[AUTH] Atomic Reset: Clearing cached sessions for Pilot access...");
     
-    cookieStore.set("userId", DEMO_DRIVER_ID, { 
-        secure: process.env.NODE_ENV === "production", 
-        httpOnly: true, 
-        path: '/' 
+    // Clear everything first to prevent redirect loops from old CUSTOMER sessions
+    cookieStore.delete("userId");
+    cookieStore.delete("sb-access-token");
+    cookieStore.delete("sb-refresh-token");
+    
+    // Set the Pilot bypass (Not httpOnly so the Login page can see it)
+    cookieStore.set("preview_mode", "true", { 
+        path: "/", 
+        httpOnly: false, 
+        secure: false, // Ensure visibility on localtunnel HTTPS
+        maxAge: 60 * 60 * 12 // 12 hours
     });
     
     redirect("/driver/dashboard");

@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 export async function getDriverOrRedirect() {
     const isPreview = (await cookies()).get("preview_mode")?.value === "true";
+
     if (isPreview) {
         return {
             id: "preview-driver",

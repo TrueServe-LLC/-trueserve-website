@@ -35,7 +35,6 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
             setBotStatus(res.chat.status);
             setMessages(res.messages || []);
         } else {
-            // No active chat, let's just greet them
             setMessages([{
                 id: 'welcome',
                 sender: 'BOT',
@@ -52,7 +51,6 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
         const userMsg = input.trim();
         setInput("");
         
-        // Optimistic UI update
         const tempId = Date.now().toString();
         setMessages(prev => [...prev, { id: tempId, sender: 'USER', content: userMsg }]);
         setIsTyping(true);
@@ -66,7 +64,6 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
             if (res.reply) {
                 setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'BOT', content: res.reply }]);
             } else if (res.status === 'HUMAN_REQUIRED') {
-                // If it transitioned but no explicit reply returned, show generic escalation
                 setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'BOT', content: "An agent will be with you shortly." }]);
             }
         } else {
@@ -76,103 +73,101 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-            
-            {/* Chat Window */}
+        <div className="fixed bottom-6 right-6 z-[9999]">
+            <style dangerouslySetInnerHTML={{ __html: `
+                .chat-modal { 
+                    position: fixed; bottom: 84px; right: 24px; width: 340px; background: #0f1219; 
+                    border: 1px solid #1c1f28; border-radius: 12px; display: flex; flex-direction: column; 
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; animation: fadeInUp 0.3s ease;
+                    z-index: 9999;
+                }
+                @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                
+                .chat-hd { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #1c1f28; background: #0c0e13; }
+                .chat-icon { width: 36px; height: 36px; background: #0d2a1a; border: 1px solid #1a4a2a; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+                .chat-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+                .chat-status { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; display: flex; align-items: center; gap: 5px; }
+                .live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: pulse 2s infinite; }
+                @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+                .chat-close { margin-left: auto; cursor: pointer; color: #444; font-size: 20px; outline: none; }
+                .chat-close:hover { color: #888; }
+
+                .chat-body { flex: 1; padding: 16px; height: 320px; overflow-y: auto; background: #0f1219; }
+                .msg-group { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 16px; }
+                .msg-icon { width: 24px; height: 24px; background: #131720; border: 1px solid #1c1f28; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 4px; }
+                .msg-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #444; margin-bottom: 4px; display: block; }
+                .bubble { background: #131720; border: 1px solid #1c1f28; padding: 12px 14px; font-size: 13px; color: #ccc; line-height: 1.5; border-radius: 4px; max-width: 90%; }
+                
+                .user-group { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+                .user-bubble { background: #1a1200; border: 1px solid #3a2800; padding: 12px 14px; font-size: 13px; color: #e8a230; max-width: 80%; line-height: 1.5; border-radius: 4px; }
+
+                .input-row { display: flex; gap: 6px; padding: 12px; border-top: 1px solid #1c1f28; background: #0c0e13; }
+                .chat-input { flex: 1; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; border-radius: 4px; }
+                .chat-input::placeholder { color: #333; }
+                .send-btn { width: 42px; height: 42px; background: #3dd68c; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; border-radius: 4px; color: #000; outline: none; }
+                
+                .float-btn { width: 52px; height: 52px; background: #3dd68c; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #000; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: none; outline: none; }
+            ` }} />
+
             {isOpen && (
-                <div className="w-80 sm:w-96 h-[500px] max-h-[80vh] bg-slate-900 border border-emerald-500/20 rounded-2xl shadow-2xl flex flex-col mb-4 overflow-hidden animate-fade-in-up">
-                    
-                    {/* Header */}
-                    <div className="p-4 bg-black border-b border-white/5 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                                <Bot size={18} />
-                            </div>
-                            <div>
-                                <h3 className="text-white font-bold text-sm">TrueServe Support</h3>
-                                <p className="text-emerald-400 font-mono text-[10px] tracking-widest uppercase flex items-center gap-1">
-                                    {botStatus === 'BOT_ACTIVE' ? "● Claude AI Active" : <><span className="text-orange-400">● </span> <span className="text-orange-400">Waiting for Agent</span></>}
-                                </p>
-                            </div>
+                <div className="chat-modal">
+                    <div className="chat-hd">
+                        <div className="chat-icon">
+                            <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="3" y="5" width="10" height="8" rx="1" stroke="#3dd68c" strokeWidth="1.2"/><path d="M6 5V4a2 2 0 014 0v1" stroke="#3dd68c" strokeWidth="1.2"/><circle cx="6" cy="9" r="1" fill="#3dd68c"/><circle cx="10" cy="9" r="1" fill="#3dd68c"/></svg>
                         </div>
-                        <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white transition-colors">
-                            <X size={20} />
-                        </button>
+                        <div>
+                            <div className="chat-title">TrueServe Support</div>
+                            <div className="chat-status"><span className="live-dot"></span> Claude AI Active</div>
+                        </div>
+                        <button className="chat-close" onClick={() => setIsOpen(false)}>✕</button>
                     </div>
-
-                    {/* Messages Area */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    
+                    <div className="chat-body">
                         {messages.map((msg, idx) => {
-                            const isBot = msg.sender === 'BOT';
-                            const isHumanAgent = msg.sender === 'HUMAN_AGENT';
                             const isUser = msg.sender === 'USER';
-
-                            return (
-                                <div key={msg.id || idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[85%] rounded-2xl px-4 py-2 ${
-                                        isUser ? "bg-emerald-500 text-black rounded-tr-sm" : 
-                                        isHumanAgent ? "bg-orange-500/20 text-orange-50 border border-orange-500/30 rounded-tl-sm" :
-                                        "bg-white/5 text-slate-200 border border-white/10 rounded-tl-sm"
-                                    }`}>
-                                        {!isUser && (
-                                            <div className="flex items-center gap-1.5 mb-1 opacity-70">
-                                                {isHumanAgent ? <ShieldAlert size={10} /> : <Bot size={10} />}
-                                                <span className="text-[9px] uppercase font-bold tracking-wider">
-                                                    {isHumanAgent ? "Human Agent" : "AI Copilot"}
-                                                </span>
-                                            </div>
-                                        )}
-                                        <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                            return isUser ? (
+                                <div key={msg.id || idx} className="user-group">
+                                    <div className="user-bubble">{msg.content}</div>
+                                </div>
+                            ) : (
+                                <div key={msg.id || idx} className="msg-group">
+                                    <div className="msg-icon">
+                                        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="1" y="3" width="9" height="6" rx="1" stroke="#3dd68c" strokeWidth="1"/><path d="M4 3V2a1.5 1.5 0 013 0v1" stroke="#3dd68c" strokeWidth="1"/></svg>
+                                    </div>
+                                    <div>
+                                        <span className="msg-label">{msg.sender === 'HUMAN_AGENT' ? "Human Agent" : "AI Copilot"}</span>
+                                        <div className="bubble">{msg.content}</div>
                                     </div>
                                 </div>
                             );
                         })}
                         {isTyping && (
-                            <div className="flex justify-start">
-                                <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce"></div>
-                                    <div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce delay-100"></div>
-                                    <div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce delay-200"></div>
-                                </div>
+                            <div className="msg-group">
+                                <div className="msg-icon animate-pulse">⚙️</div>
+                                <div className="bubble">Thinking...</div>
                             </div>
                         )}
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input Area */}
-                    <form onSubmit={handleSend} className="p-3 bg-black border-t border-white/5 relative">
-                        {botStatus === 'RESOLVED' ? (
-                            <div className="text-center py-2 text-slate-500 text-xs">This chat has been resolved.</div>
-                        ) : (
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="text"
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    placeholder={botStatus === 'BOT_ACTIVE' ? "Explain your issue..." : "Type to the human agent..."}
-                                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-colors placeholder:text-slate-600"
-                                    disabled={isTyping}
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={!input.trim() || isTyping}
-                                    className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-black disabled:opacity-50 hover:bg-emerald-400 transition-colors shrink-0"
-                                >
-                                    <Send size={16} className="-ml-0.5" />
-                                </button>
-                            </div>
-                        )}
+                    <form className="input-row" onSubmit={handleSend}>
+                        <input 
+                            className="chat-input" 
+                            type="text" 
+                            placeholder="Type a message..." 
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                        />
+                        <button className="send-btn" type="submit">
+                            <svg width="18" height="18" viewBox="0 0 14 14" fill="none"><path d="M2 7l10-5-4 5 4 5L2 7z" fill="currentColor"/></svg>
+                        </button>
                     </form>
                 </div>
             )}
 
-            {/* Floating Toggle Button */}
             {!isOpen && (
-                <button
-                    onClick={() => setIsOpen(true)}
-                    className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-black shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95 transition-all group"
-                >
-                    <MessageCircle size={24} className="group-hover:animate-pulse" />
+                <button className="float-btn" onClick={() => setIsOpen(true)}>
+                    <svg width="24" height="24" viewBox="0 0 18 18" fill="none"><path d="M2 3a1 1 0 011-1h12a1 1 0 011 1v8a1 1 0 01-1 1H6l-4 3V3z" fill="currentColor"/></svg>
                 </button>
             )}
         </div>
