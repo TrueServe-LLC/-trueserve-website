@@ -57,99 +57,148 @@ export default async function UserSettings() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#000] text-[#F0EDE8] font-sans overflow-x-hidden pb-[160px] animate-in fade-in duration-700">
-             <style dangerouslySetInnerHTML={{ __html: `
-                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&family=Bebas+Neue&display=swap');
-                
-                .bebas { font-family: 'Bebas Neue', sans-serif; }
-                .barlow-cond { font-family: 'Barlow Condensed', sans-serif; }
-            ` }} />
-
-            {/* AMBIENT ORBS */}
+        <div className="min-h-screen bg-[#0A0A0A] text-[#F0EDE8] font-barlow overflow-x-hidden pb-32">
+            {/* AMBIENT LIGHTING */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute w-[260px] h-[260px] top-[-60px] right-[-80px] bg-[#E8A020]/10 rounded-full blur-[100px]" />
-                <div className="absolute w-[200px] h-[200px] top-[400px] left-[-70px] bg-[#E8A020]/0.04 rounded-full blur-[80px]" />
+                <div className="absolute w-[300px] h-[300px] top-[-100px] right-[-100px] bg-[#E8A020]/10 rounded-full blur-[100px]" />
+                <div className="absolute w-[250px] h-[250px] top-[40%] left-[-80px] bg-[rgba(232,162,48,0.05)] rounded-full blur-[80px]" />
             </div>
 
-            <div className="max-w-[440px] mx-auto min-h-screen relative flex flex-col z-10">
+            {/* ── MOBILE APP VIEW ── */}
+            <div className="lg:hidden max-w-[430px] mx-auto min-h-screen relative flex flex-col z-10 animate-up px-5 pt-10">
                 
-                {/* ─── SHARED NAV ─── */}
-                <nav className="flex items-center justify-between px-8 pt-10 pb-6">
-                    <Logo size="sm" />
-                    <Link href="/hub" className="barlow-cond font-black text-[10px] uppercase tracking-widest text-[#555] hover:text-[#e8a230] transition-all">Command Terminal</Link>
-                </nav>
-
-                <main className="px-8 py-4">
-                    
-                    {/* PROFILE HEADER */}
-                    <header className="flex items-center gap-6 bg-[#0d0d0d] border border-white/5 rounded-[2rem] p-6 mb-8 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#e8a230]/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
-                        <div className="relative z-10 flex items-center gap-6">
+                {/* PROFILE HEADER */}
+                <div className="flex flex-col items-center mb-10">
+                    <div className="relative group">
+                        <div className="w-32 h-32 rounded-[2.5rem] bg-[#141417] border border-white/5 flex items-center justify-center text-4xl shadow-2xl relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-[#E8A020]/20 to-transparent" />
                             <ProfileAvatar 
                                 userId={userId} 
                                 initialName={user?.name || ""} 
                                 initialColor={user?.avatarColor || "#E8A230"} 
                                 initialUrl={user?.avatarUrl} 
-                                className="w-16 h-16 border-2 border-[#E8A020]/20 rounded-full shadow-[0_0_20px_rgba(232,162,48,0.2)]"
+                                className="w-full h-full object-cover rounded-[2.5rem]"
                             />
-                            <div className="flex-1 min-w-0">
-                                <h2 className="font-barlow-cond text-[22px] font-bold uppercase tracking-[0.04em] truncate italic">
-                                    {user?.name || "GUEST"}
-                                </h2>
-                                <p className="font-mono text-[10px] text-[#222] tracking-widest uppercase opacity-60 truncate">{user?.email}</p>
-                                <div className="inline-flex items-center gap-[6px] bg-[#E8A020]/10 border border-[#E8A020]/20 rounded-full px-3 py-1 mt-3">
-                                    <span className="font-barlow-cond text-[9px] font-black uppercase tracking-[0.14em] text-[#E8A230]">
-                                        ⭐ TrueServe Member
-                                    </span>
-                                </div>
-                            </div>
                         </div>
-                    </header>
+                        <Link href="/user/settings/info" className="absolute -bottom-2 -right-2 bg-[#E8A020] text-black w-10 h-10 rounded-2xl flex items-center justify-center border-4 border-[#0A0A0A] shadow-lg active:scale-90 transition-all">
+                            <span className="text-xl">✏️</span>
+                        </Link>
+                    </div>
+                    <h1 className="font-bebas text-4xl italic tracking-widest text-white uppercase mt-6 mb-1">{user?.name || "TRUE SERVE ELITE"}</h1>
+                    <p className="font-barlow-cond text-[10px] font-black uppercase tracking-[0.3em] text-[#E8A020] animate-pulse italic">SECTOR OPERATIVE · {user?.email}</p>
+                </div>
 
-                    {/* SETTINGS SECTIONS */}
-                    {sections.map((section, si) => (
-                        <section key={si} className="mb-8">
-                            <div className="flex items-center gap-4 mb-4">
-                                <h3 className="font-barlow-cond text-[11px] font-black uppercase tracking-[0.3em] text-[#333] italic pl-1">
-                                    {section.label}
-                                </h3>
-                                <div className="h-px flex-1 bg-gradient-to-r from-white/5 to-transparent" />
-                            </div>
-                            <div className="space-y-3">
-                                {section.items.map((item, ii) => (
-                                    <Link key={ii} href={item.href} className="
-                                        flex items-center gap-4 p-5 
-                                        bg-[#0d0d0d] border border-white/5 
-                                        rounded-2xl transition-all duration-300
-                                        hover:bg-[#111] hover:border-[#e8a230]/10 group active:scale-95
-                                    ">
-                                        <div className="text-[20px] w-6 flex justify-center grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all filter brightness-[0.4] group-hover:brightness-100">{item.icon}</div>
-                                        <div className="flex-1">
-                                            <div className="font-barlow-cond text-[16px] font-black uppercase tracking-[0.05em] text-white/90 group-hover:text-white transition-colors italic">{item.title}</div>
-                                            <div className="text-[11px] font-medium text-[#444] mt-0.5 tracking-wide">{item.sub}</div>
-                                        </div>
-                                        {item.badge ? (
-                                            <div className="bg-[#E8A020]/10 text-[#E8A020] font-barlow-cond text-[10px] font-black uppercase tracking-[0.1em] px-[10px] py-[4px] rounded-full">
-                                                {item.badge}
-                                            </div>
-                                        ) : (
-                                            <div className="text-[#222] group-hover:text-[#e8a230] group-hover:translate-x-1 transition-all text-sm">{item.right || "›"}</div>
-                                        )}
-                                    </Link>
-                                ))}
-                            </div>
-                        </section>
-                    ))}
+                {/* ELITE CARDS */}
+                <div className="space-y-8">
+                    {/* SECTION: OPERATIONAL CONTROLS */}
+                    <div>
+                        <h2 className="font-bebas text-2xl italic tracking-widest text-[#555] uppercase mb-4 px-2">Operational Controls</h2>
+                        <div className="bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                            {[
+                                { label: 'Personal Information', sub: 'ID & Contact Records', icon: '👤', href: '/user/settings/info' },
+                                { label: 'Active Missions', sub: 'Order Tracking Hub', icon: '🚚', href: '/orders' },
+                                { label: 'Security Protocols', sub: 'Password & Auth Hooks', icon: '🔐', href: '#' },
+                                { label: 'Settlement Synchronizer', sub: 'Payment Methods & Logic', icon: '💳', href: '#' },
+                            ].map((item, i) => (
+                                <Link key={i} href={item.href} className={`flex items-center gap-5 p-6 active:bg-white/[0.02] transition-colors ${i !== 3 ? 'border-b border-white/5' : ''}`}>
+                                    <div className="w-12 h-12 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-xl">{item.icon}</div>
+                                    <div className="flex-1">
+                                        <p className="font-bold text-white tracking-tight uppercase barlow-cond italic text-lg">{item.label}</p>
+                                        <p className="font-barlow-cond text-[10px] font-black uppercase tracking-widest text-[#444] mt-0.5">{item.sub}</p>
+                                    </div>
+                                    <span className="text-[#E8A020] opacity-30 text-xl font-bold tracking-tighter">➔</span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
 
-                    <div className="pt-8 mb-12">
-                        <LogoutButton className="w-full bg-[#0d0d0d] border border-white/5 text-[#444] font-barlow-cond font-black text-[12px] uppercase tracking-[0.25em] py-5 rounded-2xl transition-all hover:bg-[#111] hover:text-[#e24b4a] active:scale-[0.98] italic" />
+                    {/* SECTION: PARTNERSHIPS - CRITICAL FOR PORTAL ACCESS */}
+                    <div>
+                        <h2 className="font-bebas text-2xl italic tracking-widest text-white uppercase mb-4 px-2 animate-blink">Elite Portal Access</h2>
+                        <div className="grid grid-cols-2 gap-4">
+                            <Link href="/merchant/signup" className="group relative bg-[#0c0c0e] border border-[#E8A020]/20 p-7 rounded-[3rem] shadow-2xl active:scale-95 transition-all overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">🏬</div>
+                                <h3 className="font-bebas text-3xl italic text-white tracking-widest uppercase leading-none">Merchant<br />Hub</h3>
+                                <p className="font-barlow-cond text-[9px] font-black uppercase tracking-widest text-[#E8A020] mt-4 italic bg-[#E8A020]/10 py-1.5 px-3 rounded-lg inline-block">Execute Login ➔</p>
+                            </Link>
+                            <Link href="/driver/signup" className="group relative bg-[#0c0c0e] border border-[#3dd68c]/20 p-7 rounded-[3rem] shadow-2xl active:scale-95 transition-all overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">🏎️</div>
+                                <h3 className="font-bebas text-3xl italic text-white tracking-widest uppercase leading-none">Fleet<br />Terminal</h3>
+                                <p className="font-barlow-cond text-[9px] font-black uppercase tracking-widest text-[#3dd68c] mt-4 italic bg-[#3dd68c]/10 py-1.5 px-3 rounded-lg inline-block">Join Fleet ➔</p>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* LOGOUT */}
+                    <div className="pt-6">
+                        <LogoutButton className="w-full bg-[#111] border border-red-500/10 text-[#444] font-barlow-cond font-black text-xs uppercase tracking-[0.3em] py-6 rounded-[2rem] transition-all hover:bg-black hover:text-red-500 active:scale-95 italic" />
                     </div>
 
                     <div className="flex flex-col items-center opacity-10 pb-10">
-                         <div className="w-12 h-12 flex items-center justify-center grayscale"><Logo size="sm" /></div>
-                         <p className="font-barlow-cond text-[9px] font-black tracking-[0.4em] uppercase mt-4">TrueServe Protocol 2.6.0</p>
+                        <Logo size="sm" />
+                        <p className="font-barlow-cond text-[9px] font-black tracking-[0.5em] uppercase mt-4">TrueServe Protocol V2.6</p>
                     </div>
+                </div>
+            </div>
 
+            {/* ── DESKTOP VIEW ── */}
+            <div className="hidden lg:block">
+                <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md px-24 py-6 flex justify-between items-center">
+                    <Logo size="sm" />
+                    <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">← Back to Home</Link>
+                </nav>
+                <main className="max-w-4xl mx-auto py-24 px-12">
+                    <div className="flex items-center gap-10 mb-16 animate-slide-up">
+                        <ProfileAvatar 
+                            userId={userId} 
+                            initialName={user?.name || ""} 
+                            initialColor={user?.avatarColor || "#E8A230"} 
+                            initialUrl={user?.avatarUrl} 
+                            className="w-40 h-40 border-2 border-white/10 rounded-full flex items-center justify-center text-4xl shadow-2xl"
+                        />
+                        <div>
+                            <h1 className="text-5xl font-serif text-white mb-2 italic">Account Settings</h1>
+                            <p className="text-zinc-500 font-medium text-lg leading-relaxed">{user?.email}</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-10 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+                        <div className="p-10 card-glass flex items-start gap-8 hover:border-primary/30 transition-all group">
+                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👤</div>
+                            <div>
+                                <h3 className="text-2xl font-serif text-white mb-3">Personal Information</h3>
+                                <p className="text-zinc-500 text-sm leading-relaxed mb-6">Update your name and primary email address.</p>
+                                <Link href="/user/settings/info" className="text-primary font-bold text-sm tracking-widest uppercase hover:underline">Edit Records →</Link>
+                            </div>
+                        </div>
+                        <div className="p-10 card-glass flex items-start gap-8 opacity-60 hover:border-primary/30 transition-all group">
+                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🔐</div>
+                            <div>
+                                <h3 className="text-2xl font-serif text-white mb-3">Password & Security</h3>
+                                <p className="text-zinc-500 text-sm leading-relaxed mb-6">Manage your password and security settings.</p>
+                                <span className="text-zinc-600 font-bold text-xs tracking-widest uppercase">Encryption Active</span>
+                            </div>
+                        </div>
+                        <div className="p-10 card-glass flex items-start gap-8 opacity-60 hover:border-primary/30 transition-all group">
+                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">💳</div>
+                            <div>
+                                <h3 className="text-2xl font-serif text-white mb-3">Payment Methods</h3>
+                                <p className="text-zinc-500 text-sm leading-relaxed mb-6">Add or remove payment methods for faster checkout.</p>
+                                <span className="text-zinc-600 font-bold text-xs tracking-widest uppercase">Secure Wallet Ready</span>
+                            </div>
+                        </div>
+                        <div className="p-10 card-glass flex items-start gap-8 hover:border-primary/30 transition-all group border-primary/20">
+                            <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🤝</div>
+                            <div>
+                                <h3 className="text-2xl font-serif text-white mb-3">Partnerships</h3>
+                                <p className="text-zinc-500 text-sm leading-relaxed mb-6">Grow with TrueServe by becoming a partner.</p>
+                                <div className="flex gap-4">
+                                    <Link href="/merchant/login" className="text-primary font-extrabold text-sm tracking-widest uppercase hover:underline">Merchant Portal</Link>
+                                    <span className="text-zinc-700">|</span>
+                                    <Link href="/driver/login" className="text-primary font-extrabold text-sm tracking-widest uppercase hover:underline">Driver Portal</Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </main>
             </div>
         </div>

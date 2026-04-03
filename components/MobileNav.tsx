@@ -3,33 +3,35 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Stylized SVGs for the "Empire" Look
+// Stylized SVGs for the "Empire" Look - Focused on High-Fidelity App Aesthetics
 const Icons = {
     Home: ({ active }: { active: boolean }) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.5" : "2"}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? "#E8A020" : "none"} stroke="currentColor" strokeWidth={active ? "2.5" : "2"}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3.5m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3.5m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
     ),
     Explore: ({ active }: { active: boolean }) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.5" : "2"}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.8" : "2.2"}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
     ),
     Orders: ({ active }: { active: boolean }) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.5" : "2"}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? "#E8A020" : "none"} stroke="currentColor" strokeWidth={active ? "2.5" : "2.2"}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
     ),
     Hub: ({ active }: { active: boolean }) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.5" : "2"}>
-            <rect x="3" y="3" width="7" height="7" rx="1" strokeLinecap="round" />
-            <rect x="14" y="3" width="7" height="7" rx="1" strokeLinecap="round" strokeOpacity={active ? 1 : 0.4} />
-            <rect x="3" y="14" width="7" height="7" rx="1" strokeLinecap="round" strokeOpacity={active ? 1 : 0.4} />
-            <rect x="14" y="14" width="7" height="7" rx="1" strokeLinecap="round" fill={active ? "#e8a230" : "none"} stroke="#e8a230" />
-        </svg>
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${active ? 'bg-[#E8A020] shadow-[0_10px_35px_rgba(232,160,32,0.4)] rotate-45' : 'bg-[#141417] border border-white/5'}`}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "black" : "#E8A020"} strokeWidth="3" className={active ? "-rotate-45" : ""}>
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+        </div>
     ),
     Profile: ({ active }: { active: boolean }) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.5" : "2"}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? "#E8A020" : "none"} stroke="currentColor" strokeWidth={active ? "2.5" : "2.2"}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
     )
@@ -41,45 +43,42 @@ export default function MobileNav({ role }: { role?: string | null }) {
     const hideOnRoutes = ['/login', '/signup', '/onboarding', '/merchant/login', '/driver/login'];
     if (hideOnRoutes.includes(pathname)) return null;
 
-    const isActive = (path: string) => pathname === path || (pathname.startsWith(path) && path !== '/');
+    const isActive = (path: string) => {
+        if (path === '/') return pathname === '/';
+        return pathname.startsWith(path);
+    };
 
-    const NavItem = ({ href, label, icon: Icon, active }: { href: string, label: string, icon: any, active: boolean }) => (
-        <Link href={href} className={`flex flex-col items-center gap-[6px] flex-1 group transition-all duration-300 ${active ? 'scale-105' : 'hover:scale-105'}`}>
-            <div className={`
-                flex items-center justify-center p-2 rounded-xl transition-all duration-300
-                ${active ? 'text-[#e8a230] shadow-[0_0_20px_rgba(232,162,48,0.15)] bg-[#e8a230]/5' : 'text-[#444] group-hover:text-white/60'}
-            `}>
+    const NavItem = ({ href, label, icon: Icon, active, special = false }: { href: string, label: string, icon: any, active: boolean, special?: boolean }) => (
+        <Link href={href} className={`flex flex-col items-center flex-1 transition-all duration-500 relative ${active ? 'scale-110' : 'active:scale-95'}`}>
+            <div className={`p-2 transition-all duration-500 ${active && !special ? 'text-[#E8A020] drop-shadow-[0_0_12px_rgba(232,160,32,0.4)]' : 'text-[#444]'}`}>
                 <Icon active={active} />
             </div>
-            <span className={`
-                font-barlow-cond font-black text-[9.5px] uppercase tracking-[0.18em] transition-all duration-300
-                ${active ? 'text-white' : 'text-[#333] group-hover:text-[#555]'}
-            `}>
-                {label}
-            </span>
-            {active && (
-                <div className="absolute -bottom-1.5 w-1 h-1 bg-[#e8a230] rounded-full shadow-[0_0_8px_rgba(232,162,48,0.8)]" />
+            
+            {!special && (
+                <span className={`font-barlow-cond text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 mt-0.5 ${active ? 'text-white' : 'text-[#333]'}`}>
+                    {label}
+                </span>
+            )}
+            
+            {active && !special && (
+                <div className="absolute -bottom-2 w-[4px] h-[4px] bg-[#E8A020] rounded-full shadow-[0_0_10px_#E8A020] animate-pulse" />
             )}
         </Link>
     );
 
-    // DETERMINING NAVIGATION CONTEXT
-    const isProfessional = pathname.startsWith('/driver') || pathname.startsWith('/merchant') || role === 'DRIVER' || role === 'MERCHANT';
-    
-    // CUSTOMER NAV DEFAULT
     return (
-        <div className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] z-[100] pb-8 px-6 bg-gradient-to-t from-[#000] via-[#000]/60 to-transparent pointer-events-none">
-            <nav className="
-                w-full bg-[#0d0d0d]/90 backdrop-blur-3xl border border-white/5 
-                rounded-[2.4rem] shadow-[0_25px_60px_rgba(0,0,0,0.95)] 
-                p-4 px-3 flex justify-between items-center relative pointer-events-auto
+        <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] z-[100] pointer-events-none">
+            <div className="
+                w-full bg-[#0A0A0A]/85 backdrop-blur-3xl border border-white/5 
+                rounded-[2.8rem] shadow-[0_30px_60px_rgba(0,0,0,0.85)] 
+                p-2 px-1 flex justify-between items-center relative pointer-events-auto
             ">
-                <NavItem href="/" label="Home" icon={Icons.Home} active={pathname === '/'} />
-                <NavItem href="/restaurants" label="Explore" icon={Icons.Explore} active={pathname === '/restaurants'} />
-                <NavItem href="/hub" label="Hubs" icon={Icons.Hub} active={pathname === '/hub'} />
-                <NavItem href="/orders" label="Orders" icon={Icons.Orders} active={pathname === '/orders'} />
-                <NavItem href="/user/settings" label="Profile" icon={Icons.Profile} active={pathname.startsWith('/user')} />
-            </nav>
+                <NavItem href="/" label="Home" icon={Icons.Home} active={isActive('/')} />
+                <NavItem href="/restaurants" label="Explore" icon={Icons.Explore} active={isActive('/restaurants')} />
+                <NavItem href="/hub" label="Hubs" icon={Icons.Hub} active={isActive('/hub')} special />
+                <NavItem href="/orders" label="Orders" icon={Icons.Orders} active={isActive('/orders')} />
+                <NavItem href="/user/settings" label="Profile" icon={Icons.Profile} active={isActive('/user')} />
+            </div>
         </div>
     );
 }

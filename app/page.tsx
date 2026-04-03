@@ -164,73 +164,141 @@ export default async function Home() {
                 </footer>
             </div>
 
-            {/* ─── MOBILE VIEW (LG AND DOWN) ─── */}
-            <div className="lg:hidden mobile-empire-root noise-overlay font-barlow text-[#F0EDE8]">
-                <div className="max-w-[430px] mx-auto min-h-screen relative flex flex-col z-10 bg-[#0A0A0A]/20">
-                    {/* AMBIENT ORBS */}
+            {/* ─── HI-FI MOBILE APP VIEW (LG AND DOWN) ─── */}
+            <div className="lg:hidden mobile-empire-root noise-overlay font-barlow text-[#F0EDE8] pb-32">
+                <div className="max-w-[430px] mx-auto min-h-screen relative flex flex-col z-10 bg-[#0A0A0A]">
+                    
+                    {/* AMBIENT LIGHTING */}
                     <div className="fixed inset-0 pointer-events-none z-0">
-                        <div className="orb w-[260px] h-[260px] top-[-60px] right-[-80px] bg-[#E8A020]/10" />
-                        <div className="orb w-[200px] h-[200px] top-[480px] left-[-70px] bg-[#E8A020]/0.06" />
-                        <div className="orb w-[160px] h-[160px] bottom-[130px] right-[-50px] bg-[rgba(232,80,20,0.06)]" />
+                        <div className="orb w-[300px] h-[300px] top-[-100px] right-[-100px] bg-[#E8A020]/15" />
+                        <div className="orb w-[250px] h-[250px] top-[40%] left-[-80px] bg-[rgba(232,162,48,0.08)]" />
                     </div>
 
-                    {/* ─── MOBILE NAV HEADER ─── */}
-                    <nav className="lg:hidden sticky top-0 z-50 flex items-center justify-between px-[18px] py-[18px] bg-[#0A0A0A]/98 backdrop-blur-xl animate-dn">
-                        <Logo size="sm" />
-                        <div className="flex items-center gap-[9px]">
-                            <Link href="/restaurants" className="w-[38px] h-[38px] rounded-[10px] bg-[#1C1C1C] border border-white/5 flex items-center justify-center text-[17px] relative">
-                                🛒
-                                <div className="absolute -top-[5px] -right-[5px] w-[16px] h-[16px] rounded-full bg-[#E8A020] text-black font-barlow-cond text-[10px] font-bold flex items-center justify-center">2</div>
-                            </Link>
-                            <Link href="/login" className="bg-[#E8A020] text-[#0A0A0A] font-barlow-cond font-bold text-[12px] uppercase tracking-[0.1em] px-[15px] py-[9px] rounded-[9px]">
-                                Sign In
+                    {/* ── APP HEADER ── */}
+                    <nav className="sticky top-0 z-[60] bg-[#0A0A0A]/85 backdrop-blur-2xl border-b border-white/5 px-5 py-4 flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="font-barlow-cond text-[9px] font-black uppercase tracking-[0.3em] text-[#555] italic">OPERATIONAL SECTOR</span>
+                            <div className="flex items-center gap-1.5 cursor-pointer group">
+                                <span className="font-bold text-[14px] text-white group-hover:text-[#E8A020] transition-colors italic">Charlotte, NC HQ</span>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-[#E8A020] rotate-90"><path d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Link href="/user/settings/info" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center relative shadow-inner">
+                                <span className="text-lg">👤</span>
+                                <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#E8A020] rounded-full border-2 border-[#0A0A0A] animate-pulse" />
                             </Link>
                         </div>
                     </nav>
 
-                    <main className="px-[18px] pt-4 animate-up mb-10">
-                        <div className="font-barlow-cond text-[12px] font-semibold tracking-[0.24em] uppercase text-[#E8A020] mb-2.5">
-                            Elite Discovery Terminal
-                        </div>
-                        
-                        <h1 className="font-bebas text-[clamp(64px,18vw,80px)] leading-[0.88] mb-3.5 italic">
-                            <span className="block text-[#F0EDE8]">CRAVINGS</span>
-                            <span className="block text-[#E8A020]">MEET</span>
-                            <span className="block text-[#F0EDE8]">LIGHTNING<br />SPEED.</span>
-                        </h1>
-
-                        <p className="text-[14px] font-light text-[#5A5550] leading-[1.65] mb-[30px] max-w-[280px]">
-                            Syncing with independent kitchens and fair driver protocols in your area.
-                        </p>
-
-                        <div className="cat-cards space-y-[14px] pb-10">
-                            <Link href="/restaurants" className="block relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end">
-                                <img src="/merchant_login_bg_restaurant.png" className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105" />
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#1a0800]/80 via-[#2d1200]/60 to-[#1a0800]/80" />
-                                <div className="relative z-10 p-5 bg-gradient-to-t from-[#0A0A0A]/95 to-transparent">
-                                    <div className="inline-flex items-center gap-[6px] rounded-full px-[10px] py-[3px] bg-[#E8A020]/20 text-[#E8A020] font-barlow-cond text-[10px] font-bold uppercase tracking-[0.12em] mb-[6px]">🔥 Live Hub</div>
-                                    <h3 className="font-bebas text-[30px] text-white">Discovery Hub</h3>
+                    <main className="relative z-10">
+                        {/* ── SEARCH TERMINAL ── */}
+                        <section className="px-5 pt-6 animate-up">
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#444] group-focus-within:text-[#E8A020] transition-colors"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                                 </div>
-                            </Link>
-
-                            <Link href="/merchant/login" className="block relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end">
-                                <img src="/merchant_login_bg_restaurant.png" className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105" />
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a]/80 via-[#151528]/60 to-[#0a0a1a]/80" />
-                                <div className="relative z-10 p-5 bg-gradient-to-t from-[#0A0A0A]/95 to-transparent">
-                                    <div className="inline-flex items-center gap-[6px] rounded-full px-[10px] py-[3px] bg-[#a0a0ff]/20 text-[#a0a0ff] font-barlow-cond text-[10px] font-bold uppercase tracking-[0.12em] mb-[6px]">Partnership</div>
-                                    <h3 className="font-bebas text-[30px] text-white">Become a Merchant</h3>
+                                <input 
+                                    type="text" 
+                                    placeholder="Search mission targets..." 
+                                    className="w-full h-15 bg-[#141417] border border-white/5 rounded-2xl pl-13 pr-5 text-[15px] font-medium text-white placeholder:text-[#333] focus:outline-none focus:ring-2 focus:ring-[#E8A020]/20 focus:border-[#E8A020]/40 transition-all shadow-inner"
+                                />
+                                <div className="absolute inset-y-0 right-3 flex items-center">
+                                    <button className="w-9 h-9 bg-[#E8A020] rounded-xl flex items-center justify-center shadow-[0_5px_15px_rgba(232,160,32,0.3)] active:scale-90 transition-all">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6m2-6h6m2 8h6"/></svg>
+                                    </button>
                                 </div>
-                            </Link>
+                            </div>
+                        </section>
 
-                            <Link href="/driver/login" className="block relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end">
-                                <img src="/driver_login_bg_car.png" className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105" />
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#001208]/80 via-[#001f0d]/60 to-[#001208]/80" />
-                                <div className="relative z-10 p-5 bg-gradient-to-t from-[#0A0A0A]/95 to-transparent">
-                                    <div className="inline-flex items-center gap-[6px] rounded-full px-[10px] py-[3px] bg-[#80e080]/20 text-[#80e080] font-barlow-cond text-[10px] font-bold uppercase tracking-[0.12em] mb-[6px]">Protocol</div>
-                                    <h3 className="font-bebas text-[30px] text-white">Become a Driver</h3>
+                        {/* ── CATEGORY PULSE ── */}
+                        <section className="mt-8 animate-up" style={{ animationDelay: '0.1s' }}>
+                            <div className="flex items-center justify-between px-5 mb-4">
+                                <h2 className="font-bebas text-2xl italic tracking-widest text-[#555] uppercase">Sector Categories</h2>
+                                <span className="font-barlow-cond text-[10px] font-black text-[#E8A020] uppercase tracking-widest italic">View Hub →</span>
+                            </div>
+                            <div className="flex gap-3 overflow-x-auto px-5 pb-4 scrollbar-hide">
+                                {[
+                                    { label: 'BURGERS', icon: '🍔', color: '#FF4D00' },
+                                    { label: 'PIZZA', icon: '🍕', color: '#E8A020' },
+                                    { label: 'SUSHI', icon: '🍣', color: '#FF0055' },
+                                    { label: 'TACOS', icon: '🌮', color: '#32D74B' },
+                                    { label: 'VEGAN', icon: '🥗', color: '#00D2FF' },
+                                ].map((cat, i) => (
+                                    <Link key={i} href={`/restaurants?category=${cat.label.toLowerCase()}`} className="flex flex-col items-center gap-2 group shrink-0">
+                                        <div className="w-18 h-18 bg-[#141417] border border-white/5 rounded-3xl flex items-center justify-center text-3xl shadow-lg relative overflow-hidden group-active:scale-90 transition-all">
+                                            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity" style={{ background: cat.color }} />
+                                            {cat.icon}
+                                        </div>
+                                        <span className="font-barlow-cond text-[9px] font-black uppercase tracking-[0.2em] text-[#444] group-hover:text-white transition-colors">{cat.label}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* ── ELITE PROMOTIONS ── */}
+                        <section className="mt-6 animate-up" style={{ animationDelay: '0.2s' }}>
+                            <div className="flex gap-4 overflow-x-auto px-5 pb-6 scrollbar-hide">
+                                {[
+                                    { title: 'FREE DELIVERY', sub: 'Sector Alpha Rewards', img: '/community_section.png', color: 'from-[#E8A020]/40' },
+                                    { title: '40% HARVEST', sub: 'Merchant Integration', img: '/merchant_section.png', color: 'from-[#00D2FF]/40' },
+                                ].map((promo, i) => (
+                                    <div key={i} className="relative w-[300px] h-[160px] rounded-[2.5rem] overflow-hidden shrink-0 border border-white/5 shadow-2xl group cursor-pointer active:scale-[0.98] transition-all">
+                                        <img src={promo.img} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4s] grayscale opacity-50" />
+                                        <div className={`absolute inset-0 bg-gradient-to-tr ${promo.color} via-black/80 to-black/95`} />
+                                        <div className="absolute inset-0 p-7 flex flex-col justify-end">
+                                            <p className="font-barlow-cond text-[10px] font-black uppercase tracking-[0.3em] text-[#E8A020] mb-1 italic animate-blink">{promo.sub}</p>
+                                            <h3 className="font-bebas text-4xl italic text-white leading-none uppercase tracking-wider">{promo.title}</h3>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* ── NEARBY MISSION TARGETS ── */}
+                        <section className="mt-4 px-5 animate-up" style={{ animationDelay: '0.3s' }}>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="font-bebas text-3xl italic tracking-wider text-white uppercase">Elite Mission Partners</h2>
+                                <div className="flex gap-1.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#E8A020]" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
                                 </div>
-                            </Link>
-                        </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6 pb-12">
+                                {[
+                                    { name: 'LUXE KITCHEN', rating: '4.9', time: '15-20 MIN', img: '/merchant_login_bg_restaurant.png', tags: ['PREMIUM', 'BURGER'] },
+                                    { name: 'NEO SUSHI', rating: '5.0', time: '20-30 MIN', img: '/merchant_login_bg_restaurant.png', tags: ['ELITE', 'JAPANESE'] },
+                                    { name: 'CRISP N CO', rating: '4.7', time: '10-15 MIN', img: '/hero_food_delivery.png', tags: ['RAPID', 'DESSERT'] },
+                                ].map((shop, i) => (
+                                    <Link key={i} href="/restaurants" className="group relative bg-[#0c0c0e] rounded-[3rem] overflow-hidden border border-white/5 shadow-2xl active:scale-[0.98] transition-all">
+                                        <div className="relative h-[220px] overflow-hidden">
+                                            <img src={shop.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[5s] brightness-75" />
+                                            <div className="absolute top-5 right-5 bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl px-3 py-2 flex items-center gap-1.5">
+                                                <span className="text-[#E8A020] text-xs">★</span>
+                                                <span className="font-bold text-[13px] text-white">{shop.rating}</span>
+                                            </div>
+                                            <div className="absolute bottom-5 left-5 flex gap-2">
+                                                {shop.tags.map((tag, j) => (
+                                                    <span key={j} className="bg-[#E8A020] text-black font-barlow-cond text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md">{tag}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="p-7">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <h3 className="font-bebas text-4xl italic text-white tracking-widest uppercase">{shop.name}</h3>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-[#E8A020] animate-pulse" />
+                                                    <span className="font-barlow-cond text-[11px] font-black uppercase tracking-widest text-[#444] italic">ACTIVE HUB</span>
+                                                </div>
+                                            </div>
+                                            <p className="font-barlow-cond text-[11px] font-black uppercase tracking-[0.1em] text-[#555] italic">Sector ETA: <span className="text-white">{shop.time}</span> &nbsp;·&nbsp; Deployment Fee: <span className="text-[#32D74B]">$0.00</span></p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
                     </main>
                 </div>
             </div>
