@@ -57,7 +57,7 @@ export default async function DriverDashboard() {
                 .hero { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; border-bottom: 1px solid #1c1f28; }
                 .hero-left { display: flex; align-items: center; gap: 16px; }
                 .hero-icon { width: 48px; height: 48px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-                .hero-title { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; line-height: 1; letter-spacing: 0.01em; }
+                .hero-title { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(24px, 5vw, 36px); font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; line-height: 1; letter-spacing: 0.01em; }
                 .hero-title span { color: #e8a230; }
                 .hero-sub { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #444; margin-top: 5px; }
                 .online-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; background: #0a1e12; border: 1px solid #1a4a2a; padding: 8px 16px; }
@@ -74,6 +74,18 @@ export default async function DriverDashboard() {
 
                 .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; border-top: none; }
                 .panel { background: #0f1219; padding: 20px; }
+
+                @media (max-width: 1024px) {
+                    .stat-bar { grid-template-columns: repeat(2, 1fr); }
+                    .main-grid { grid-template-columns: 1fr; }
+                    .hero { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+                    .panel { border-right: none !important; border-bottom: 1px solid #1c1f28; }
+                }
+
+                @media (max-width: 640px) {
+                    .stat-bar { grid-template-columns: 1fr; }
+                    .stat-val { font-size: 24px; }
+                }
                 .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
                 .panel-title span { color: #e8a230; }
                 .panel-sub { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #333; margin-bottom: 16px; }

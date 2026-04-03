@@ -79,7 +79,10 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
                     position: fixed; bottom: 84px; right: 24px; width: 340px; background: #0f1219; 
                     border: 1px solid #1c1f28; border-radius: 12px; display: flex; flex-direction: column; 
                     box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; animation: fadeInUp 0.3s ease;
-                    z-index: 9999;
+                    z-index: 10000;
+                }
+                @media (max-width: 640px) {
+                    .chat-modal { bottom: 0; right: 0; width: 100vw; height: 100vh; border-radius: 0; border: none; max-height: none; }
                 }
                 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
                 

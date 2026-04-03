@@ -6,11 +6,11 @@ import MerchantRealtime from "@/components/MerchantRealtime";
 import WelcomeModal from "./WelcomeModal";
 import { createStripeAccount } from "../actions";
 import { logout } from "@/app/auth/actions";
-import PrepTimingPanel from "./PrepTimingPanel";
-import TerminalStatusPanel from "./TerminalStatusPanel";
-import AutoPilotPanel from "./AutoPilotPanel";
-import BusyZonesPanel from "./BusyZonesPanel";
-import IssuesPanel from "./IssuesPanel";
+import PrepTimingPanel from "@/app/merchant/dashboard/PrepTimingPanel";
+import TerminalStatusPanel from "@/app/merchant/dashboard/TerminalStatusPanel";
+import AutoPilotPanel from "@/app/merchant/dashboard/AutoPilotPanel";
+import BusyZonesPanel from "@/app/merchant/dashboard/BusyZonesPanel";
+import IssuesPanel from "@/app/merchant/dashboard/IssuesPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -146,6 +146,20 @@ export default async function MerchantDashboard() {
                 .md-two-col {
                     display: grid; grid-template-columns: 1fr 1fr;
                     gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 16px 24px 0;
+                }
+
+                @media (max-width: 1024px) {
+                    .md-page-hd { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+                    .md-hd-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+                    .md-stat-grid { grid-template-columns: repeat(2, 1fr); margin: 16px 20px 0; }
+                    .md-two-col { grid-template-columns: 1fr; margin: 16px 20px 0; }
+                    .md-stripe-banner { flex-direction: column; align-items: flex-start; gap: 16px; margin: 16px 20px 0; }
+                    .md-stripe-left { flex-direction: column; align-items: flex-start; gap: 12px; }
+                }
+
+                @media (max-width: 640px) {
+                    .md-stat-grid { grid-template-columns: 1fr; }
+                    .md-stat-value { font-size: 26px; }
                 }
 
                 /* ── BOTTOM TWO-COL ── */
