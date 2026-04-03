@@ -37,13 +37,13 @@ export default function MerchantLoginPage() {
 
                 /* LEFT PANEL */
                 .left-panel { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px 80px; overflow: hidden; background: #080a0f; }
-                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; grayscale: 1; opacity: 0.25; filter: contrast(1.1); transform: scale(1.05); }
-                .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,19,0.3) 0%, rgba(12,14,19,0.85) 100%); z-index: 1; }
+                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; grayscale: 1; opacity: 0.35; filter: contrast(1.1); transform: scale(1.05); }
+                .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,19,0.2) 0%, rgba(12,14,19,0.95) 100%); z-index: 1; }
                 
                 .left-content { position: relative; z-index: 2; animation: slideRight 1s ease-out; }
-                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; animation: slideRight 0.8s ease-out; }
+                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; animation: slideRight 0.8s ease-out; cursor: pointer; text-decoration: none; }
                 .logo-ring { width: 42px; height: 42px; border: 1.5px solid #2a2f3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(19,23,32,0.6); }
-                .logo-text { font-size: 20px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
+                .logo-text { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; color: #fff; font-style: italic; letter-spacing: -0.05em; line-height: 1; }
                 .logo-text span { color: #e8a230; }
 
                 .biz-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,162,48,0.1); border: 1px solid rgba(232,162,48,0.2); padding: 6px 14px; margin-bottom: 24px; border-radius: 2px; }
@@ -91,15 +91,15 @@ export default function MerchantLoginPage() {
             ` }} />
 
             <div className="left-panel">
-                <img src="/admin_login_bg_cinematic_1774378543203.png" alt="" className="bg-img" />
+                <img src="/merchant_login_bg_restaurant.png" alt="" className="bg-img" />
                 <div className="bg-overlay" />
                 
-                <div className="logo-wrap">
+                <a href="/" className="logo-wrap">
                     <div className="logo-ring">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#e8a230" strokeWidth="1.5"/><path d="M7 10l2.5 2.5L14 7" stroke="#e8a230" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </div>
                     <div className="logo-text">True<span>Serve</span></div>
-                </div>
+                </a>
 
                 <div className="left-content">
                     <div className="biz-badge">
