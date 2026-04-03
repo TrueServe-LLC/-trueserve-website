@@ -676,7 +676,7 @@ export async function completePhotoDelivery(formData: FormData) {
         // 1. Fetch order details for payout calculation
         const { data: order } = await supabase
             .from('Order')
-            .select('totalPay, tip, driverId, deliveryLat, deliveryLng')
+            .select('totalPay, tip, driverId, userId, deliveryLat, deliveryLng')
             .eq('id', orderId)
             .single();
 
@@ -760,9 +760,27 @@ export async function completePhotoDelivery(formData: FormData) {
             console.error("[Customer Notification Error]:", notifErr);
         }
 
-        // 4. Payout driver
+        // 4. Payout driver & Notify Customer via SMS
         if (order.driverId) {
             const earnings = (Number(order.totalPay) || 0) + (Number(order.tip) || 0);
+            
+            // --- NEW: SEND SMS TO CUSTOMER WITH PHOTO ---
+            try {
+                const { data: customerData } = await supabaseAdmin
+                    .from('User')
+                    .select('phone, name')
+                    .eq('id', order.userId)
+                    .single();
+
+                if (customerData?.phone && proofOfDeliveryUrl) {
+                    const firstName = customerData.name?.split(' ')[0] || "there";
+                    const smsBody = `TrueServe: Hi ${firstName}, your order has been delivered! 📸 View your delivery photo here: ${proofOfDeliveryUrl}`;
+                    await sendSMS(customerData.phone, smsBody);
+                }
+            } catch (smsErr) {
+                console.error("[SMS Delivery Confirmation Error]:", smsErr);
+            }
+
             if (earnings > 0) {
                 // Instantly update internal balance
                 await supabase.rpc('increment_driver_balance', {
