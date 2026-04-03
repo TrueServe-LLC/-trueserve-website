@@ -93,7 +93,13 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                     <path d="M1 3h10M1 6h7M1 9h9" stroke="#555" strokeWidth="1.3" strokeLinecap="round"/>
                                 </svg>
-                                Order Food
+                                Customer Preview
+                            </Link>
+                            <Link href="/merchant/dashboard/integrations" className="ml-nav-link">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                    <path d="M4 4h4M4 8h4M2 6h8" stroke="#555" strokeWidth="1.3" strokeLinecap="round"/>
+                                </svg>
+                                Integrations
                             </Link>
                             <Link href="/merchant/dashboard" className="ml-nav-link active">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">

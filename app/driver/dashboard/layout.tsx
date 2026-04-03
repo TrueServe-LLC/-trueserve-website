@@ -1,5 +1,7 @@
 import { getAuthSession } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = 'force-dynamic';
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
