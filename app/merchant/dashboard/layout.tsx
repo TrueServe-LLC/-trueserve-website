@@ -6,6 +6,7 @@ import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
 import MerchantModeToggle from "@/components/MerchantModeToggle";
 import SupportWidget from "@/components/SupportWidget";
+import Logo from "@/components/Logo";
 
 export const dynamic = 'force-dynamic';
 
@@ -83,7 +84,7 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                 {/* TOP NAV */}
                 <div className="ml-top-nav">
                     <div className="ml-nav-left">
-                        <Link href="/" className="ml-nav-brand">True<span>Serve</span></Link>
+                        <Logo size="sm" />
                         <div className="ml-nav-links">
                             <Link href="/" className="ml-nav-link">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">

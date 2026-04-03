@@ -30,7 +30,7 @@ export default function PrepTimingPanel({ restaurantId, manualPrepTime, avgPrepT
             <style>{`
                 .prep-panel { background: #0f1219; padding: 18px 20px; }
                 .prep-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-                .prep-title { font-size: 14px; font-weight: 700; color: #ccc; }
+                .prep-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
                 .prep-accuracy { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #e8a230; background: #1a1200; border: 1px solid #3a2800; padding: 3px 8px; }
                 .prep-main { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
                 .prep-time-block {
@@ -39,7 +39,7 @@ export default function PrepTimingPanel({ restaurantId, manualPrepTime, avgPrepT
                 }
                 .prep-time-num { font-size: 28px; font-weight: 700; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; }
                 .prep-time-unit { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-top: 2px; }
-                .prep-ai-title { font-size: 13px; font-weight: 700; color: #ccc; margin-bottom: 3px; }
+                .prep-ai-title { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #e8a230; margin-bottom: 3px; }
                 .prep-ai-desc { font-size: 11px; color: #444; line-height: 1.5; }
                 .prep-tabs { display: flex; gap: 4px; }
                 .prep-tab-btn {

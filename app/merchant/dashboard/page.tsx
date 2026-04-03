@@ -75,7 +75,7 @@ export default async function MerchantDashboard() {
         <>
             {/* Google Fonts for this page */}
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&family=DM+Mono:wght@400;500&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@1,700;1,800&display=swap');
 
                 /* ── PAGE TOKENS ── */
                 .md-body { background: #0c0e13; font-family: 'DM Sans', sans-serif; color: #fff; }
@@ -90,8 +90,8 @@ export default async function MerchantDashboard() {
                     display: flex; align-items: center; justify-content: space-between;
                     padding: 16px 24px; border-bottom: 1px solid #1c1f28;
                 }
-                .md-page-title { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: #ccc; }
-                .md-page-sub { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #444; margin-top: 3px; }
+                .md-page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; line-height: 1; }
+                .md-page-sub { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #444; margin-top: 5px; }
                 .md-hd-right { display: flex; align-items: center; gap: 8px; }
                 .md-terminal-btn {
                     font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
@@ -171,7 +171,7 @@ export default async function MerchantDashboard() {
                 /* ── PANEL SHARED ── */
                 .md-panel-inner { background: #0f1219; padding: 18px 20px; }
                 .md-panel-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-                .md-panel-title { font-size: 14px; font-weight: 700; color: #ccc; }
+                .md-panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
 
                 /* ── LIVE DOT (reuse from layout) ── */
                 .md-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: md-pulse 2s infinite; }

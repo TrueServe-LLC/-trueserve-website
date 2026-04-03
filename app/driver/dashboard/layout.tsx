@@ -10,6 +10,7 @@ import NotificationBell from "@/components/NotificationBell";
 import { cookies } from "next/headers";
 
 import DashboardNav from "@/components/DashboardNav";
+import Logo from "@/components/Logo";
 
 export default async function DriverDashboardLayout({ children }: { children: React.ReactNode }) {
     const { isAuth, name, userId } = await getAuthSession();
@@ -83,7 +84,9 @@ export default async function DriverDashboardLayout({ children }: { children: Re
             ` }} />
             
             <div className="top-nav">
-                <div className="nav-brand">True<span>Serve</span></div>
+                <div className="nav-brand">
+                    <Logo size="sm" />
+                </div>
                 <div className="flex gap-2">
                     <Link href="/driver/dashboard" className="nav-link active">Fleet Hub</Link>
                 </div>

@@ -31,7 +31,7 @@ export default function WelcomeModal({ restaurantName }: { restaurantName: strin
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 border border-primary/20 shadow-inner">
                     👋
                 </div>
-                <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Welcome, {restaurantName}!</h2>
+                <h2 className="text-3xl font-black text-white mb-2 tracking-tight italic uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800 }}>Welcome, {restaurantName}!</h2>
                 <p className="text-slate-400 mb-8 font-medium">
                     Your TrueServe terminal is ready. Let's start serving your community with style and speed.
                 </p>

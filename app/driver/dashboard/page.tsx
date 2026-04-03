@@ -86,7 +86,7 @@ export default async function DriverDashboard() {
                     .stat-bar { grid-template-columns: 1fr; }
                     .stat-val { font-size: 24px; }
                 }
-                .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
+                .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
                 .panel-title span { color: #e8a230; }
                 .panel-sub { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #333; margin-bottom: 16px; }
 
