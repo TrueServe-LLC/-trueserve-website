@@ -7,17 +7,19 @@ export async function middleware(request: NextRequest) {
   const path = url.pathname
 
   // --- 1. PREVIEW BYPASS ---
-  if (url.searchParams.get('preview') === 'true') {
+  // --- 1. PREVIEW BYPASS ---
+  const isPreviewParam = url.searchParams.get('preview') === 'true'
+  const isPreviewCookie = request.cookies.get('preview_mode')?.value === 'true'
+  const isPreview = isPreviewParam || isPreviewCookie
+  
+  if (isPreviewParam && !isPreviewCookie) {
     const previewResponse = NextResponse.redirect(new URL(url.pathname, request.url))
     previewResponse.cookies.set('preview_mode', 'true', { maxAge: 60 * 5, path: '/' }) // 5 minutes
     return previewResponse
   }
 
-  // --- 1. EXCLUSIONS ---
   const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.')
   if (isInternal) return NextResponse.next()
-
-  const isPreview = request.cookies.get('preview_mode')?.value === 'true'
 
   const response = NextResponse.next({
     request: {

@@ -111,56 +111,52 @@ export default async function DriverDashboard() {
         <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans">
             {driver && <DriverRealtime driverId={driver.id} />}
 
-            {/* Standardized Portal Nav (Mirroring Layout styles) */}
-            <div className="db-nav font-sans">
-                <div className="db-nav-brand">True <span>SERVE</span></div>
-                <div className="db-nav-links">
-                    <Link href="/restaurants" className="db-nav-link text-slate-500 hover:text-white transition-colors">Order Food</Link>
-                    <Link href="/driver/dashboard" className="db-nav-link active">Dashboard</Link>
-                    <div className="flex items-center gap-3 ml-2">
-                         <ModeToggle />
-                         <LogoutButton />
-                    </div>
-                </div>
-            </div>
 
-            <main className="container py-8 md:py-20 px-4 md:px-8 pb-40 font-sans">
-                {/* Header Title Stack */}
-                <div className="mb-12 md:mb-16 flex flex-col md:flex-row md:items-center justify-between gap-6 max-w-7xl mx-auto px-2">
+
+            <main className="db-main font-sans">
+                {/* HERO SECTION MATCHING v2.html */}
+                <div className="flex items-center justify-between py-6 border-b border-[#1c1f28] mb-10">
                     <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 md:w-16 md:h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-3xl shadow-xl font-sans">🏎️</div>
+                        <div className="w-12 h-12 bg-[#131720] border border-[#2a2f3a] flex items-center justify-center text-3xl shadow-xl">🏎️</div>
                         <div>
-                            <h1 className="text-xl md:text-3xl lg:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight">
-                                Fleet Mission Hub
+                            <h1 className="text-2xl md:text-4xl font-black text-white italic tracking-tight uppercase leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                Fleet <span className="text-[#e8a230]">Mission</span> Hub
                             </h1>
-                            <p className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-widest mt-1">
-                                Welcome back, {(driver?.name || driver?.user?.name || 'Driver').split(' ')[0]}. Grid temp: {weather.temperature}°F
+                            <p className="text-[#444] text-[9px] md:text-[10px] font-bold uppercase tracking-[0.14em] mt-2">
+                                Welcome back, {(driver?.name || driver?.user?.name || 'Driver').split(' ')[0]} · Grid Temp: {weather.temperature}°F
                             </p>
                         </div>
                     </div>
+                    <div className="hidden md:flex items-center gap-3 px-4 py-2 border border-[#1a4a2a] bg-[#0a1e12] text-[#3dd68c] text-[10px] uppercase font-black tracking-widest font-sans">
+                        <span className="w-1.5 h-1.5 bg-[#3dd68c] rounded-full animate-pulse"></span>
+                        {driver?.status || 'ONLINE'}
+                    </div>
                 </div>
 
-                {/* Primary Stats Grid - Optimized for Mobile & Production Data */}
-                <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 mb-12 md:mb-16">
-                    <Link href="/driver/dashboard/earnings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] hover:bg-white/[0.08] active:scale-[0.98] transition-all shadow-xl">
-                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-5 group-hover:scale-110 transition-transform">💰</div>
-                        <p className="text-slate-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3">Daily Yield</p>
-                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-white tracking-tighter italic uppercase">${stats.totalEarnings.toFixed(2)}</p>
+                {/* Primary Stats Grid - Matches v2.html spacing */}
+                <div className="db-grid" style={{ gap: '1px', background: '#1c1f28', border: '1px solid #1c1f28' }}>
+                    <Link href="/driver/dashboard/earnings" className="db-stat-card group" style={{ borderRadius: 0, border: 'none' }}>
+                        <div className="db-card-icon">💰</div>
+                        <p className="db-stat-label">Daily Yield</p>
+                        <p className="db-stat-value text-gold" style={{ fontSize: '30px' }}>${stats.totalEarnings.toFixed(2)}</p>
                     </Link>
-                    <div className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-xl">
-                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-5">🛵</div>
-                        <p className="text-slate-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3">Trips</p>
-                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-white tracking-tighter italic uppercase">{stats.trips}</p>
+                    <div className="db-stat-card" style={{ borderRadius: 0, border: 'none' }}>
+                         <div className="db-card-icon">🛵</div>
+                        <p className="db-stat-label">Trips Today</p>
+                        <p className="db-stat-value text-white" style={{ fontSize: '30px' }}>{stats.trips}</p>
                     </div>
-                    <Link href="/driver/dashboard/ratings" className="group relative overflow-hidden bg-white/[0.03] border border-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] hover:bg-white/[0.08] transition-all shadow-xl">
-                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-5 group-hover:scale-110 transition-transform">⭐</div>
-                        <p className="text-slate-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3">Fleet Rating</p>
-                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-yellow-500 tracking-tighter italic uppercase">★ {stats.rating.toFixed(1)}</p>
+                    <Link href="/driver/dashboard/ratings" className="db-stat-card group" style={{ borderRadius: 0, border: 'none' }}>
+                         <div className="db-card-icon">⭐</div>
+                        <p className="db-stat-label">Fleet Rating</p>
+                        <div className="flex items-baseline gap-2">
+                             <span className="text-gold text-xs">★</span>
+                             <p className="db-stat-value text-white" style={{ fontSize: '30px' }}>{stats.rating.toFixed(1)}</p>
+                        </div>
                     </Link>
-                    <div className="group relative overflow-hidden bg-emerald-500/5 border border-emerald-500/10 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-xl">
-                        <div className="absolute top-0 right-0 p-6 md:p-8 text-4xl md:text-5xl opacity-10 font-sans">🏆</div>
-                        <p className="text-emerald-500/50 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-3 font-sans">Status</p>
-                        <p className="text-xl md:text-3xl lg:text-5xl font-black text-emerald-400 tracking-tighter italic uppercase">{driver?.status || 'ONLINE'}</p>
+                    <div className="db-stat-card" style={{ borderRadius: 0, border: 'none' }}>
+                        <div className="db-card-icon">🌊</div>
+                        <p className="db-stat-label">Status</p>
+                        <p className="db-stat-value text-green" style={{ fontSize: '20px', letterSpacing: '0.1em' }}>{driver?.status || 'ONLINE'}</p>
                     </div>
                 </div>
 
@@ -316,7 +312,6 @@ export default async function DriverDashboard() {
                                                             <button 
                                                                 type="submit" 
                                                                 className="text-slate-600 text-[9px] font-black uppercase tracking-widest hover:text-red-500 transition-colors italic"
-                                                                onClick={() => !confirm("Abort Mission?") && event?.preventDefault()}
                                                             >
                                                                 Terminate Mission Connection
                                                             </button>

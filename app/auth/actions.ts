@@ -28,6 +28,24 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
         return { message: "Email and Password are required", error: true };
     }
 
+    // --- PILOT TESTING BYPASS ---
+    if (email === "test@trueserve.com" && password === "trueserve2026") {
+        console.log("[AUTH] Using Pilot Testing Bypass Credentials");
+        const DEMO_DRIVER_ID = "a18a0115-5238-4e82-a2e1-0020e2c40ba1";
+        const cookieStore = await cookies();
+        
+        // Ensure standard driver setup exists for this ID
+        await loginAsDemoDriver();
+        
+        cookieStore.set("userId", DEMO_DRIVER_ID, { 
+            secure: process.env.NODE_ENV === "production", 
+            httpOnly: true, 
+            path: '/' 
+        });
+        
+        return { message: "Pilot Login successful!", success: true, role: "DRIVER" };
+    }
+
     try {
         console.log(`[AUTH] Checking login for: "${email}"`);
 

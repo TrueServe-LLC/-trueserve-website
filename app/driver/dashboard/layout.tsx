@@ -48,9 +48,25 @@ export default async function DriverDashboardLayout({ children }: { children: Re
 
     return (
         <>
+            <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800&display=swap" rel="stylesheet" />
             <style>{`
                 .db { background: #0c0e13 !important; font-family: 'DM Sans', sans-serif; color: #fff !important; min-height: 100vh; }
                 
+                .db-main { padding: 40px 16px; max-width: 1400px; margin: 0 auto; }
+                .db-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 40px; }
+                @media (max-width: 1024px) { .db-grid { grid-template-columns: repeat(2, 1fr); } }
+                @media (max-width: 640px) { .db-grid { grid-template-columns: 1fr; } }
+                
+                .text-gold { color: #e8a230 !important; }
+                .text-green { color: #3dd68c !important; }
+                .text-white { color: #ffffff !important; }
+                
+                /* Cards */
+                .db-stat-card { background: #11131a; border: 1px solid #1c1f28; padding: 24px; border-radius: 24px; position: relative; overflow: hidden; }
+                .db-stat-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #666; letter-spacing: 0.1em; margin-bottom: 4px; }
+                .db-stat-value { font-size: 42px; font-weight: 900; font-style: italic; letter-spacing: -0.02em; color: #fff; line-height: 1; }
+                .db-card-icon { position: absolute; top: 12px; right: 12px; font-size: 32px; opacity: 0.1; }
+
                 .db-nav { 
                     display: flex; align-items: center; justify-content: space-between; 
                     padding: 12px 16px; min-height: 52px; background: #0c0e13; border-bottom: 1px solid #1c1f28; 
@@ -84,22 +100,24 @@ export default async function DriverDashboardLayout({ children }: { children: Re
             {/* Standardized Portal Nav (Matches Admin) */}
             <div className="db-nav">
                 <div className="db-nav-brand">True <span>SERVE</span></div>
-                <div className="db-nav-links font-sans">
+                <div className="db-nav-links">
                     <Link href="/restaurants" className="db-nav-link text-slate-500 hover:text-white transition-colors">Marketplace</Link>
-                    <Link href="/driver/dashboard" className="db-nav-link active">Fleet Dashboard</Link>
-                    <div className="flex items-center gap-3 ml-4">
-                        <div className="hidden md:flex items-center gap-4 bg-white/5 px-4 py-1.5 border border-white/5 h-8">
-                            <div className="flex flex-col items-end">
-                                <p className="text-[7px] text-slate-500 uppercase font-black tracking-widest leading-none">Balance</p>
-                                <p className="text-emerald-400 text-[10px] font-black leading-none">${balance.toFixed(2)}</p>
-                            </div>
-                        </div>
-                        {driverData && <NotificationBell userId={driverData.userId} />}
-                        <ModeToggle />
-                        <Link href="/driver/dashboard/account" className="db-badge db-badge-gray !px-3 font-mono">
-                            {driverInitials}
-                        </Link>
+                    <Link href="/driver/dashboard" className="db-nav-link active">Dashboard</Link>
+                    <Link href="/driver" className="db-nav-link">Order Food</Link>
+                </div>
+                <div className="flex items-center gap-4 ml-auto">
+                    <div className="flex flex-col items-end mr-2">
+                        <p className="text-[7px] text-[#444] uppercase font-black tracking-widest leading-none">Balance</p>
+                        <p className="text-[#e8a230] text-[11px] font-mono font-black border-r border-[#1c1f28] pr-4 leading-none">${balance.toFixed(2)}</p>
                     </div>
+                    {driverData && <NotificationBell userId={driverData.userId} />}
+                    <div className="flex gap-[1px] bg-[#1c1f28] border border-[#1c1f28]">
+                        <div className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-[#e8a230] text-black cursor-pointer">Delivery</div>
+                        <div className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-[#131720] text-[#555] cursor-pointer">Pickup</div>
+                    </div>
+                    <Link href="/driver/dashboard/account" className="db-badge db-badge-gray !px-3 font-mono">
+                        {driverInitials}
+                    </Link>
                 </div>
             </div>
 
