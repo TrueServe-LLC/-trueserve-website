@@ -12,48 +12,43 @@ const Logo: React.FC<LogoProps> = ({
 }) => {
     const textSizes = {
         sm: 'text-[14px]',
-        md: 'text-[16px]',
-        lg: 'text-[24px]',
-        xl: 'text-[32px]'
+        md: 'text-[22px]',
+        lg: 'text-[32px]',
+        xl: 'text-[44px]'
     };
 
-    const containerSizes = {
+    const emblemSizes = {
         sm: 'w-[28px] h-[28px]',
-        md: 'w-[38px] h-[38px]',
-        lg: 'w-[48px] h-[48px]',
-        xl: 'w-[64px] h-[64px]'
-    };
-
-    const svgSizes = {
-        sm: 14,
-        md: 18,
-        lg: 24,
-        xl: 32
+        md: 'w-[44px] h-[44px]',
+        lg: 'w-[64px] h-[64px]',
+        xl: 'w-[88px] h-[88px]'
     };
 
     return (
         <Link 
             href="/" 
-            className={`flex items-center gap-[10px] group active:scale-95 transition-all ${className}`}
+            className={`flex items-center gap-[12px] group active:scale-95 transition-all ${className}`}
         >
             <div className={`
-                ${containerSizes[size]} 
-                rounded-full border-[1.5px] border-white/10 
-                bg-[#0c0e13]/85 backdrop-blur-[14px]
+                ${emblemSizes[size]} 
+                rounded-full 
                 flex items-center justify-center 
-                transition-all duration-300 group-hover:scale-110 group-hover:border-[#e8a230]/50
+                transition-all duration-300 group-hover:scale-110
             `}>
-                <svg width={svgSizes[size]} height={svgSizes[size]} viewBox="0 0 18 18" fill="none">
-                    <circle cx="9" cy="9" r="7" stroke="#e8a230" stroke-width="1.4"/>
-                    <path d="M6 9l2.5 2.5L13 7" stroke="#e8a230" stroke-width="1.4" stroke-linecap="round"/>
-                </svg>
+                <img 
+                    src="/logo.png" 
+                    alt="TrueServe Icon" 
+                    className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(232,162,48,0.3)]"
+                />
             </div>
-            <span 
-                className={`${textSizes[size]} font-bold text-white whitespace-nowrap tracking-normal leading-none`}
-                style={{ textShadow: '0 1px 10px rgba(0,0,0,.7)' }}
-            >
-                TrueServe
-            </span>
+            <div className={`
+                ${textSizes[size]} 
+                font-black italic uppercase tracking-[-0.03em] 
+                leading-none flex items-baseline
+            `}>
+                <span className="text-white">TRUE</span>
+                <span className="text-[#e8a230]">SERVE</span>
+            </div>
         </Link>
     );
 };

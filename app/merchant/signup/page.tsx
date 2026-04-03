@@ -4,13 +4,7 @@ import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// --- LOGO SVG (From Template) ---
-const LogoSVG = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <circle cx="9" cy="9" r="7" stroke="#e8a230" stroke-width="1.4"/>
-    <path d="M6 9l2.5 2.5L13 7" stroke="#e8a230" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>
-);
+import Logo from "@/components/Logo";
 
 export default function MerchantSignupPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -224,8 +218,7 @@ export default function MerchantSignupPage() {
           <canvas ref={canvasRef} className="anim-canvas"></canvas>
           <div className="video-overlay"></div>
           <div className="logo-row">
-            <div className="logo-circle"><LogoSVG /></div>
-            <div className="logo-name">TrueServe</div>
+            <Logo size="md" />
           </div>
           <div className="s-left-content">
             <div className="s-badge"><span className="s-badge-dot"></span><span className="s-badge-txt">Partner Protocols</span></div>

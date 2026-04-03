@@ -3,15 +3,8 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getAuthSession, loginAsDriver } from "@/app/auth/actions";
+import { getAuthSession, loginAsDemoDriver } from "@/app/auth/actions";
 import Logo from "@/components/Logo";
-
-const LogoSVG = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <circle cx="9" cy="9" r="7" stroke="#e8a230" stroke-width="1.4"/>
-    <path d="M6 9l2.5 2.5L13 7" stroke="#e8a230" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>
-);
 
 function DriverLoginPageContent() {
   const router = useRouter();
@@ -115,8 +108,7 @@ function DriverLoginPageContent() {
           <canvas ref={canvasRef} className="anim-canvas"></canvas>
           <div className="video-overlay"></div>
           <div className="logo-row">
-            <div className="logo-circle"><LogoSVG /></div>
-            <div className="logo-name">TrueServe</div>
+            <Logo size="md" />
           </div>
           <div className="s-left-content relative z-10 px-4">
              <div className="s-heading animate-up"><div className="w">Fleet</div><div className="g">Uplink.</div></div>
@@ -139,7 +131,7 @@ function DriverLoginPageContent() {
               </button>
             </form>
 
-            <button onClick={loginAsDriver} className="w-full mt-4 bg-transparent border border-white/5 py-4 text-[9px] font-bold tracking-[0.2em] text-[#444] hover:border-[#e8a230]/30 hover:text-[#e8a230] transition-all uppercase rounded-[2px]">
+            <button onClick={loginAsDemoDriver} className="w-full mt-4 bg-transparent border border-white/5 py-4 text-[9px] font-bold tracking-[0.2em] text-[#444] hover:border-[#e8a230]/30 hover:text-[#e8a230] transition-all uppercase rounded-[2px]">
               🚀 Authenticate Demo Access (Driver)
             </button>
 

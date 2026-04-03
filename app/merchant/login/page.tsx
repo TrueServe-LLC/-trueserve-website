@@ -6,13 +6,6 @@ import { useRouter } from "next/navigation";
 import { getAuthSession, loginAsDemoMerchant } from "@/app/auth/actions";
 import Logo from "@/components/Logo";
 
-const LogoSVG = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <circle cx="9" cy="9" r="7" stroke="#e8a230" stroke-width="1.4"/>
-    <path d="M6 9l2.5 2.5L13 7" stroke="#e8a230" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>
-);
-
 function MerchantLoginPageContent() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -112,8 +105,7 @@ function MerchantLoginPageContent() {
           <canvas ref={canvasRef} className="anim-canvas"></canvas>
           <div className="video-overlay"></div>
           <div className="logo-row">
-            <div className="logo-circle"><LogoSVG /></div>
-            <div className="logo-name">TrueServe</div>
+            <Logo size="md" />
           </div>
           <div className="s-left-content relative z-10 px-4">
              <div className="s-heading animate-up"><div className="w">Partner</div><div className="g">Command.</div></div>
