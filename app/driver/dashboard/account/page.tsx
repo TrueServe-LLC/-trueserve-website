@@ -16,9 +16,17 @@ export default async function DriverAccount() {
             <style dangerouslySetInnerHTML={{ __html: `
                 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700;1,800&display=swap');
                 
-                .page-wrap { padding: 20px md:32px; }
+                .page-wrap { padding: 20px; }
+                @media (min-width: 768px) { .page-wrap { padding: 32px; } }
                 .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; margin-bottom: 24px; line-height: 1; }
                 .page-title span { color: #e8a230; }
+
+                @keyframes scanning {
+                    0% { top: 0; }
+                    50% { top: 100%; }
+                    100% { top: 0; }
+                }
+                .animate-scanning { animation: scanning 2s linear infinite; }
 
                 .acct-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; }
                 @media (min-width: 1024px) { .acct-grid { grid-template-columns: 1fr 1.2fr; } }
@@ -80,9 +88,17 @@ export default async function DriverAccount() {
 
                         <div className="field-row">
                             <div className="field-lbl">Profile Uplink Photo</div>
-                            <div className="flex items-center gap-4 bg-[#0c0e13] p-4 border border-[#2a2f3a]">
-                                <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-xs text-slate-500">?</div>
-                                <button className="text-[10px] font-black uppercase tracking-widest text-[#e8a230]">Replace Scan</button>
+                            <div className="group relative flex items-center gap-5 bg-[#0c0e13] p-5 border border-[#2a2f3a] hover:border-[#e8a230]/40 transition-all cursor-pointer rounded-xl overflow-hidden shadow-2xl">
+                                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#e8a230] to-transparent opacity-30 animate-pulse" />
+                                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-xl text-slate-500 overflow-hidden relative border border-white/5">
+                                    <span className="group-hover:scale-125 transition-transform duration-500">👤</span>
+                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-[#e8a230] shadow-[0_0_10px_#e8a230] opacity-0 group-hover:opacity-100 animate-scanning" />
+                                </div>
+                                <div className="flex-1">
+                                    <button className="text-[11px] font-black uppercase tracking-[0.2em] text-[#e8a230] group-hover:text-white transition-colors">Start Identity Scan</button>
+                                    <p className="text-[9px] font-bold text-[#333] uppercase mt-1 tracking-widest">Face-ID Sync · 2026 Secured</p>
+                                </div>
+                                <div className="text-[#e8a230] opacity-30 text-xs">↑</div>
                             </div>
                         </div>
 

@@ -99,14 +99,6 @@ export default async function OrdersPage() {
                     </div>
                 </section>
             </main>
-
-            {/* BOTTOM NAV */}
-            <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#0C0C0C]/95 backdrop-blur-2xl border-t border-white/5 px-6 pt-3 pb-8 flex items-center justify-around z-50">
-                <Link href="/" className="flex flex-col items-center gap-1 opacity-50"><span className="text-xl">🏠</span><span className="text-[9px] font-bold uppercase tracking-widest">Home</span></Link>
-                <Link href="/restaurants" className="flex flex-col items-center gap-1 opacity-50"><span className="text-xl">🔍</span><span className="text-[9px] font-bold uppercase tracking-widest">Explore</span></Link>
-                <Link href="/orders" className="flex flex-col items-center gap-1 text-[#e8a230]"><span className="text-xl">📋</span><span className="text-[9px] font-bold uppercase tracking-widest">Orders</span></Link>
-                <Link href="/user/settings" className="flex flex-col items-center gap-1 opacity-50"><span className="text-xl">👤</span><span className="text-[9px] font-bold uppercase tracking-widest">Profile</span></Link>
-            </div>
         </div>
     );
 }

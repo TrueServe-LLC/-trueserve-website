@@ -103,26 +103,6 @@ function RestaurantFinderContent() {
                         <p className="text-[13px] font-light text-[#5A5550] leading-[1.6]">Type your delivery address above to sync with the best independent flavors in your community.</p>
                     </div>
                 </div>
-
-                {/* ─── BOTTOM NAV ─── */}
-                <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-[#0C0C0C]/97 backdrop-blur-2xl border-t border-white/5 flex justify-around px-2 pt-[11px] pb-[24px]">
-                    <Link href="/" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
-                        <span className="text-[21px]">🏠</span>
-                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Home</span>
-                    </Link>
-                    <Link href="/restaurants" className="flex flex-col items-center gap-1 flex-1 text-[#E8A020]">
-                        <span className="text-[21px]">🔍</span>
-                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Explore</span>
-                    </Link>
-                    <Link href="/orders" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
-                        <span className="text-[21px]">📋</span>
-                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Orders</span>
-                    </Link>
-                    <Link href="/user/settings" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
-                        <span className="text-[21px]">👤</span>
-                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Profile</span>
-                    </Link>
-                </nav>
             </div>
         </div>
     );
