@@ -440,6 +440,22 @@ export async function loginAsDemoDriver() {
     return { success: true };
 }
 
+export async function loginAsPilot() {
+    const cookieStore = await cookies();
+    const DEMO_DRIVER_ID = "a18a0115-5238-4e82-a2e1-0020e2c40ba1";
+    
+    // Ensure standard driver setup exists for this ID
+    await loginAsDemoDriver();
+    
+    cookieStore.set("userId", DEMO_DRIVER_ID, { 
+        secure: process.env.NODE_ENV === "production", 
+        httpOnly: true, 
+        path: '/' 
+    });
+    
+    redirect("/driver/dashboard");
+}
+
 export async function loginAsDemoMerchant() {
     const cookieStore = await cookies();
     const DEMO_MERCHANT_ID = "merchant-demo-2026";

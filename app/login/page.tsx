@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginWithPassword, signupWithPassword, resetPassword, getAuthSession } from "../auth/actions";
+import { loginWithPassword, signupWithPassword, resetPassword, getAuthSession, loginAsPilot } from "../auth/actions";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -192,6 +192,18 @@ function LoginWithParams() {
                         >
                             {isLoading ? "Processing..." : (mode === 'login' ? "Login" : mode === 'signup' ? "Create Account" : "Send Reset Link")}
                         </button>
+
+                        {/* --- EXCLUSIVE PILOT TESTING BYPASS --- */}
+                        <div className="pt-2">
+                            <form action={loginAsPilot}>
+                                <button
+                                    type="submit"
+                                    className="w-full bg-[#131720] border border-[#e8a230]/30 hover:border-[#e8a230]/60 text-[#e8a230] text-[9px] font-black uppercase tracking-[0.2em] py-4 rounded-xl transition-all shadow-xl active:scale-95"
+                                >
+                                    ⚡ Quick Pilot Access (East Coast)
+                                </button>
+                            </form>
+                        </div>
 
                         <div className="relative my-8">
                             <div className="absolute inset-0 flex items-center">
