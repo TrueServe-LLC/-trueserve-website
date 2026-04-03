@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { loginAsDemoDriver } from "@/app/auth/actions";
+import Link from "next/link";
 
 export default function DriverLoginForm() {
     const supabase = createClient();
@@ -15,7 +16,6 @@ export default function DriverLoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);
 
-    // Format phone cleanly (+13365551234)
     const formatPhone = (val: string) => {
         let digits = val.replace(/\D/g, "");
         if (digits.length > 0 && !digits.startsWith("1")) {
@@ -30,7 +30,6 @@ export default function DriverLoginForm() {
         setIsLoading(true);
 
         const formattedPhone = formatPhone(phone);
-
         if (formattedPhone.length < 11) {
             setMessage({ text: "Please enter a valid US phone number.", error: true });
             setIsLoading(false);
@@ -38,7 +37,6 @@ export default function DriverLoginForm() {
         }
 
         try {
-            // BACKDOOR: Allow +15550001234 to skip real OTP send
             if (formattedPhone === "+15550001234") {
                 setPhone(formattedPhone);
                 setStep("otp");
@@ -47,17 +45,12 @@ export default function DriverLoginForm() {
                 return;
             }
 
-            // Check if phone number is attached to an approved Driver
-            // We use standard user RPC to ensure they exist safely without exposing Admin keys
-            const { data: { user }, error } = await supabase.auth.signInWithOtp({
+            const { error } = await supabase.auth.signInWithOtp({
                 phone: formattedPhone,
-                options: {
-                    shouldCreateUser: false // Disallow random people from creating accounts this way
-                }
+                options: { shouldCreateUser: false }
             });
 
             if (error) {
-                // Supabase returns error if shouldCreateUser is false and user doesn't exist
                 if (error.message.includes("Signups not allowed")) {
                     throw new Error("This phone number is not registered to an approved driver.");
                 }
@@ -68,7 +61,6 @@ export default function DriverLoginForm() {
             setStep("otp");
             setMessage({ text: "Code sent successfully via text!", error: false });
         } catch (err: any) {
-            console.error("OTP Send Error:", err);
             setMessage({ text: err.message || "Failed to send code.", error: true });
         } finally {
             setIsLoading(false);
@@ -78,16 +70,13 @@ export default function DriverLoginForm() {
     const handleVerifyOTP = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
-
         if (token.length < 6) {
             setMessage({ text: "Code must be 6 digits.", error: true });
             return;
         }
-
         setIsLoading(true);
 
         try {
-            // BACKDOOR: Verification for +15550001234
             if (phone === "+15550001234" && token === "123456") {
                 window.location.href = "/auth/demo";
                 return;
@@ -102,39 +91,36 @@ export default function DriverLoginForm() {
             if (error) throw error;
 
             if (data?.session) {
-                // Success! The session is saved globally via Supabase client.
                 router.push("/driver/dashboard");
                 router.refresh();
             }
         } catch (err: any) {
-            console.error("OTP Verify Error:", err);
             setMessage({ text: "Invalid or expired code. Please request a new one.", error: true });
-            setIsLoading(false); // only reset loading on failure
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="space-y-6 animate-fade-in relative z-10 w-full">
+        <div className="space-y-6 animate-fade-in relative z-10 w-full overflow-hidden">
             {message && (
-                <div className={`p-4 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 border animate-in fade-in slide-in-from-top-2 ${
-                    message.error ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-green-500/10 border-green-500/20 text-green-400'
+                <div className={`p-4 rounded-lg text-[11px] font-bold uppercase tracking-widest flex items-center gap-3 border ${
+                    message.error ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[#E8A020]/10 border-[#E8A020]/20 text-[#E8A020]'
                 }`}>
-                    <span>{message.error ? '⚠️' : '✅'}</span>
                     {message.text}
                 </div>
             )}
 
             {step === "phone" ? (
                 <form onSubmit={handleSendOTP} className="space-y-6">
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Mobile Identification</label>
-                        <div className="flex gap-2">
-                            <div className="bg-[#1c1916] border border-white/5 rounded-2xl px-4 flex items-center text-slate-400 text-sm font-bold">🇺🇸 +1</div>
+                    <div className="space-y-3.5">
+                        <label className="text-[11px] font-bold text-[#5A5550] uppercase tracking-[0.2em] ml-0.5">Mobile Identification</label>
+                        <div className="flex gap-[1px] bg-[#121212] border border-white/5 rounded-md overflow-hidden p-0.5">
+                            <div className="px-4 flex items-center text-[#5A5550] text-[13px] font-bold bg-[#0D0D0D] border-r border-white/5">🇺🇸 +1</div>
                             <input 
                                 type="tel"
                                 required
                                 placeholder="555 000 0000"
-                                className="flex-1 bg-[#1c1916] border border-white/5 rounded-2xl px-6 py-4 text-sm text-white focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-slate-700"
+                                className="flex-1 bg-[#0D0D0D] px-6 py-4 text-[15px] font-medium text-white outline-none placeholder:text-[#222]"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 disabled={isLoading}
@@ -145,49 +131,43 @@ export default function DriverLoginForm() {
                     <button 
                         type="submit"
                         disabled={isLoading || phone.length < 10}
-                        className="w-full bg-primary hover:bg-primary-hover disabled:opacity-40 text-black font-black uppercase tracking-[0.3em] text-[11px] h-14 rounded-2xl italic shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                        className="w-full bg-[#E8A020] hover:brightness-110 disabled:opacity-40 text-black font-bold uppercase tracking-[0.14em] text-[13px] h-[58px] rounded-md transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                     >
-                        {isLoading ? "Validating..." : "Request Access Code →"}
+                        {isLoading ? "UPLINKING..." : "REQUEST ACCESS CODE →"}
                     </button>
                     
-                    <p className="text-[10px] text-center text-slate-600 leading-relaxed max-w-[280px] mx-auto opacity-70">
-                        By continuing, you consent to receive automated authentication text messages from TrueServe.
-                    </p>
-
-                    <div className="flex items-center gap-6 py-4">
+                    <div className="flex items-center gap-4 py-3">
                         <div className="flex-1 h-px bg-white/5" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-700 whitespace-nowrap">Pilot Rollout Access</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#222] whitespace-nowrap">PILOT ROLLOUT ACCESS</span>
                         <div className="flex-1 h-px bg-white/5" />
                     </div>
 
-                    <button 
-                        type="button"
-                        onClick={() => loginAsDemoDriver()}
-                        className="w-full bg-transparent border border-[#e8a230]/30 hover:border-[#e8a230] text-[#e8a230] font-black uppercase tracking-[0.3em] text-[10px] h-12 rounded-2xl italic transition-all duration-300"
-                    >
-                        ⚡ Quick Pilot Access (Driver)
-                    </button>
+                    <div className="space-y-3">
+                        <button 
+                            type="button"
+                            onClick={() => loginAsDemoDriver()}
+                            className="w-full bg-transparent border border-white/5 hover:border-[#E8A020]/40 text-[#E8A020] font-bold uppercase tracking-[0.12em] text-[12px] h-[52px] rounded-md transition-all flex items-center justify-center gap-2"
+                        >
+                            ⚡ QUICK PILOT ACCESS (DRIVER)
+                        </button>
+
+                        <Link 
+                            href="/driver/apply"
+                            className="w-full bg-transparent border border-white/5 hover:border-white/20 text-[#F0EDE8]/30 hover:text-[#F0EDE8]/60 font-bold uppercase tracking-[0.12em] text-[12px] h-[52px] rounded-md transition-all flex items-center justify-center"
+                        >
+                            NEW TO THE FLEET? APPLY TO DRIVE
+                        </Link>
+                    </div>
                 </form>
             ) : (
-                <form onSubmit={handleVerifyOTP} className="space-y-6 animate-slide-up">
-                    <div className="space-y-2 text-center">
-                        <div className="mb-4">
-                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Sent to <span className="text-primary">{phone}</span></p>
-                            <button 
-                                type="button"
-                                onClick={() => { setStep("phone"); setToken(""); setMessage(null); }}
-                                className="text-[9px] font-black text-primary/60 hover:text-primary uppercase tracking-widest transition-colors mt-1"
-                            >
-                                Change Number
-                            </button>
-                        </div>
-                        
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">6-Digit Activation Code</label>
+                <form onSubmit={handleVerifyOTP} className="space-y-6">
+                    <div className="space-y-3.5 text-center">
+                        <p className="text-[11px] text-[#5A5550] font-bold uppercase tracking-widest mb-1.5">Verification code sent to <span className="text-[#E8A020]">{phone}</span></p>
                         <input 
                             type="text"
                             maxLength={6}
                             placeholder="••••••"
-                            className="w-full bg-[#1c1916] border border-white/5 rounded-2xl px-6 py-5 text-2xl font-black tracking-[1em] text-center text-primary focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-slate-800"
+                            className="w-full bg-[#0D0D0D] border border-white/5 rounded-md px-6 py-5 text-2xl font-bold tracking-[1em] text-center text-[#E8A020] outline-none placeholder:text-[#111]"
                             value={token}
                             onChange={(e) => setToken(e.target.value.replace(/\D/g, ""))}
                             disabled={isLoading}
@@ -197,17 +177,17 @@ export default function DriverLoginForm() {
                     <button 
                         type="submit"
                         disabled={isLoading || token.length < 6}
-                        className="w-full bg-primary hover:bg-primary-hover disabled:opacity-40 text-black font-black uppercase tracking-[0.3em] text-[11px] h-14 rounded-2xl italic shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                        className="w-full bg-[#E8A020] hover:brightness-110 disabled:opacity-40 text-black font-bold uppercase tracking-[0.14em] text-[13px] h-[58px] rounded-md transition-all flex items-center justify-center"
                     >
-                        {isLoading ? "Activating..." : "Authorize Terminal ✓"}
+                        {isLoading ? "AUTHORIZING..." : "AUTHORIZE TERMINAL ✓"}
                     </button>
 
                     <button 
                         type="button"
                         onClick={() => { setStep("phone"); setMessage(null); }}
-                        className="w-full text-[9px] font-black text-slate-600 uppercase tracking-widest hover:text-white transition-colors"
+                        className="w-full text-[10px] font-bold text-[#5A5550] uppercase tracking-widest hover:text-white transition-colors"
                     >
-                        Wrong number? Try again
+                        Cancel and try again
                     </button>
                 </form>
             )}

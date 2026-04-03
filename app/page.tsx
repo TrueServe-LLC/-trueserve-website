@@ -175,16 +175,8 @@ export default async function Home() {
                     </div>
 
                     {/* ─── MOBILE NAV HEADER ─── */}
-                    <nav className="sticky top-0 z-50 flex items-center justify-between px-[18px] py-[18px] bg-[#0A0A0A]/98 backdrop-blur-xl animate-dn">
-                        {/* High-Fi Mobile Logo with Gold Background */}
-                        <Link href="/" className="flex items-center gap-[9px] group">
-                           <div className="w-[36px] h-[36px] p-[4px] rounded-[9px] bg-[#E8A020] flex items-center justify-center overflow-hidden">
-                                <img src="/logo.png" alt="TS" className="w-full h-full object-contain" />
-                           </div>
-                           <span className="font-barlow-cond font-bold text-[21px] tracking-tight text-white leading-none">
-                                True<em className="text-[#E8A020] not-italic">Serve</em>
-                           </span>
-                        </Link>
+                    <nav className="lg:hidden sticky top-0 z-50 flex items-center justify-between px-[18px] py-[18px] bg-[#0A0A0A]/98 backdrop-blur-xl animate-dn">
+                        <Logo size="sm" />
                         <div className="flex items-center gap-[9px]">
                             <Link href="/restaurants" className="w-[38px] h-[38px] rounded-[10px] bg-[#1C1C1C] border border-white/5 flex items-center justify-center text-[17px] relative">
                                 🛒
@@ -242,7 +234,7 @@ export default async function Home() {
                     </main>
 
                     {/* ─── MOBILE BOTTOM NAV ─── */}
-                    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-[100] bg-[#0C0C0C]/97 backdrop-blur-2xl border-t border-white/5 flex justify-around px-2 pt-2.5 pb-6">
+                    <nav className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-[100] bg-[#0C0C0C]/97 backdrop-blur-2xl border-t border-white/5 flex justify-around px-2 pt-2.5 pb-6">
                         <Link href="/" className="flex flex-col items-center gap-1 flex-1 text-[#E8A020]">
                             <span className="text-[21px]">🏠</span>
                             <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Home</span>

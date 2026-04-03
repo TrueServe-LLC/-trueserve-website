@@ -12,29 +12,29 @@ const Logo: React.FC<LogoProps> = ({
     size = 'md'
 }) => {
     const sizeClasses = {
-        sm: 'text-lg',
-        md: 'text-2xl',
-        lg: 'text-3xl',
-        xl: 'text-4xl'
+        sm: 'text-[21px]',
+        md: 'text-[24px]',
+        lg: 'text-[32px]',
+        xl: 'text-[44px]'
     };
 
     const iconSizeClasses = {
-        sm: 'w-8 h-8 p-1',
-        md: 'w-10 h-10 p-1.5',
-        lg: 'w-11 h-11 p-1.5',
-        xl: 'w-14 h-14 p-2'
+        sm: 'w-[40px] h-[40px]',
+        md: 'w-[48px] h-[48px]',
+        lg: 'w-[56px] h-[56px]',
+        xl: 'w-[72px] h-[72px]'
     };
 
     return (
         <Link 
             href="/" 
-            className={`flex items-center gap-3 md:gap-4 group ${className}`}
+            className={`flex items-center gap-[12px] group active:scale-95 transition-all ${className}`}
         >
-            <div className={`${iconSizeClasses[size]} rounded-full border border-white/20 bg-black flex items-center justify-center overflow-hidden shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
+            <div className={`${iconSizeClasses[size]} rounded-full border-[3px] border-[#2A2F3A] bg-black flex items-center justify-center overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-300`}>
                 <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
             </div>
-            <span className={`${sizeClasses[size]} font-serif italic tracking-tight text-white leading-none whitespace-nowrap`}>
-                True<span className="text-[#f59e0b]">Serve</span>
+            <span className={`${sizeClasses[size]} font-barlow-cond font-black italic tracking-tight text-white leading-none whitespace-nowrap`}>
+                True<span className="text-[#E8A020]">Serve</span>
             </span>
         </Link>
     );
