@@ -126,8 +126,8 @@ export default function DriverLoginForm() {
 
             {step === "phone" ? (
                 <form onSubmit={handleSendOTP} className="space-y-6">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Mobile Number</label>
+                    <div className="space-y-4">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Mobile Identification</label>
                         <div className="flex gap-2">
                             <div className="bg-[#1c1916] border border-white/5 rounded-2xl px-4 flex items-center text-slate-400 text-sm font-bold">🇺🇸 +1</div>
                             <input 
@@ -153,6 +153,20 @@ export default function DriverLoginForm() {
                     <p className="text-[10px] text-center text-slate-600 leading-relaxed max-w-[280px] mx-auto opacity-70">
                         By continuing, you consent to receive automated authentication text messages from TrueServe.
                     </p>
+
+                    <div className="flex items-center gap-6 py-4">
+                        <div className="flex-1 h-px bg-white/5" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-700 whitespace-nowrap">Pilot Rollout Access</span>
+                        <div className="flex-1 h-px bg-white/5" />
+                    </div>
+
+                    <button 
+                        type="button"
+                        onClick={() => loginAsDemoDriver()}
+                        className="w-full bg-transparent border border-[#e8a230]/30 hover:border-[#e8a230] text-[#e8a230] font-black uppercase tracking-[0.3em] text-[10px] h-12 rounded-2xl italic transition-all duration-300"
+                    >
+                        ⚡ Quick Pilot Access (Driver)
+                    </button>
                 </form>
             ) : (
                 <form onSubmit={handleVerifyOTP} className="space-y-6 animate-slide-up">

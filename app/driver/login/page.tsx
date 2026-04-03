@@ -31,7 +31,7 @@ export default function DriverLoginPage() {
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-4xl md:text-5xl font-serif italic text-white leading-[1.1] mb-6">
+                    <h2 className="text-4xl md:text-5xl font-black italic text-white leading-[1.1] mb-6 tracking-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                         Ready to <br />
                         <span className="text-primary uppercase tracking-tighter not-italic font-sans">Earn?</span>
                     </h2>
@@ -83,9 +83,9 @@ export default function DriverLoginPage() {
                 <div className="flex-1 flex items-center justify-center p-8 md:p-16">
                     <div className="w-full max-w-md space-y-12">
                         {/* Header */}
-                        <div className="space-y-2">
-                            <h3 className="text-3xl font-serif italic text-white tracking-tight leading-tight">Fleet Authorization</h3>
-                            <p className="text-slate-500 text-sm italic tracking-widest font-black uppercase text-[10px]">Secure Uplink Terminal</p>
+                        <div className="space-y-1">
+                            <h3 className="text-3xl font-black italic text-white tracking-tight leading-tight uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Fleet Authorization</h3>
+                            <p className="text-[#e8a230] text-sm italic tracking-[0.2em] font-black uppercase text-[10px]">Secure Uplink Terminal</p>
                         </div>
 
                         {/* OTP Form Module */}
