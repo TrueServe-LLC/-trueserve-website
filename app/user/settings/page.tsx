@@ -1,9 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
-import WalletUI from "@/components/WalletUI";
-import MembershipUI from "@/components/MembershipUI";
-import ProfileNameEditor from "@/components/ProfileNameEditor";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import { getAuthSession } from "@/app/auth/actions";
 import Logo from "@/components/Logo";
@@ -15,110 +12,132 @@ export default async function UserSettings() {
     if (!isAuth || !userId) return null;
 
     const { data: user } = await supabase.from('User').select('*').eq('id', userId).single();
-    const { data: orders } = await supabase.from('Order').select('*, restaurant:Restaurant(name)').eq('userId', userId).order('createdAt', { ascending: false }).limit(5);
-    const { data: savedStoresData } = await supabase.from('Favorite').select('restaurant:Restaurant(*)').eq('userId', userId);
-    const savedStores = savedStoresData?.map(s => s.restaurant) || [];
+
+    const sections = [
+        {
+            label: "Account",
+            items: [
+                { icon: "👤", title: "Personal Info", sub: "Name, email, phone number", href: "/user/settings/info" },
+                { icon: "🔒", title: "Password & Security", sub: "Manage your login security", href: "/user/settings/security" },
+            ]
+        },
+        {
+            label: "Payment",
+            items: [
+                { icon: "💳", title: "Saved Cards", sub: "Manage payment methods", href: "/user/settings/payment", right: "+" },
+                { icon: "⭐", title: "TrueServe Plus", sub: "Unlimited free delivery", href: "/plus", badge: "Upgrade" },
+            ]
+        },
+        {
+            label: "Preferences",
+            items: [
+                { icon: "🔔", title: "Notifications", sub: "Order updates, offers, news", href: "/user/settings/notifications" },
+                { icon: "📍", title: "Saved Addresses", sub: "Home, work, and more", href: "/user/settings/addresses" },
+            ]
+        }
+    ];
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-[#F0EDE8] font-barlow-cond pb-32">
+        <div className="min-h-screen bg-[#0A0A0A] text-[#F0EDE8] font-barlow overflow-x-hidden pb-[120px]">
             {/* AMBIENT ORBS */}
-            <div className="orb w-[300px] h-[300px] top-[-100px] right-[-100px] bg-[#e8a230]/5 animate-pulse-slow" />
-            
-            {/* NAV */}
-            <nav className="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-white/5">
-                <Logo size="sm" />
-                <div className="flex items-center gap-3">
-                    <LogoutButton />
-                </div>
-            </nav>
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="orb w-[260px] h-[260px] top-[-60px] right-[-80px] bg-[#E8A020]/10" />
+                <div className="orb w-[200px] h-[200px] top-[400px] left-[-70px] bg-[#E8A020]/0.06" />
+            </div>
 
-            <main className="max-w-[430px] mx-auto px-5 pt-8 space-y-10">
-                {/* PROFILE HEADER */}
-                <header className="flex items-center gap-6 animate-fade-in">
-                    <ProfileAvatar 
-                        userId={userId} 
-                        initialName={user?.name || ""} 
-                        initialColor={user?.avatarColor} 
-                        initialUrl={user?.avatarUrl} 
-                        className="w-20 h-20 rounded-[2rem] border-2 border-[#e8a230]/20 shadow-[0_0_40px_rgba(232,162,48,0.1)]"
-                    />
-                    <div className="space-y-1">
-                        <ProfileNameEditor userId={userId} initialName={user?.name || "GUEST"} />
-                        <p className="text-[#5A5550] text-[10px] font-bold uppercase tracking-widest italic">{user?.email}</p>
-                    </div>
-                </header>
+            <div className="max-w-[430px] mx-auto min-h-screen relative flex flex-col z-10 bg-[#0A0A0A]/20">
+                
+                {/* ─── SHARED NAV ─── */}
+                <nav className="sticky top-0 z-50 flex items-center justify-between px-[18px] py-[18px] bg-[#0A0A0A]/98 backdrop-blur-xl animate-dn">
+                    <Logo size="sm" />
+                </nav>
 
-                {/* WALLET & MEMBERSHIP */}
-                <div className="space-y-8 animate-slide-up">
-                    <WalletUI userId={userId} />
-                    <MembershipUI userId={userId} plan={user?.plan || "Basic"} hasPaymentMethod={!!user?.stripeCustomerId} />
-                </div>
-
-                {/* POINTS STATUS */}
-                <section className="bg-[#131313] border border-white/5 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#e8a230]/5 blur-[40px] rounded-full -mr-12 -mt-12 pointer-events-none"></div>
-                    <h3 className="font-bebas text-white text-3xl uppercase italic leading-none tracking-wider mb-6">Discovery <span className="text-[#e8a230]">POUTS</span></h3>
-                    <div className="flex items-end gap-3 mb-6">
-                        <span className="text-6xl font-bebas text-white leading-none">{user?.truePointsBalance || 0}</span>
-                        <span className="text-[#5A5550] text-xs font-bold uppercase tracking-widest mb-1 italic">PTS ACTIVE</span>
-                    </div>
-                    <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden border border-white/5 p-[1px]">
-                        <div className="h-full bg-[#e8a230] rounded-full shadow-[0_0_15px_#e8a230]" style={{ width: `${Math.min(100, (user?.truePointsBalance || 0) / 10)}%` }} />
-                    </div>
-                </section>
-
-                {/* RECENT ACTIVITY */}
-                <section className="space-y-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                        <h3 className="font-bebas text-white text-3xl uppercase italic leading-none tracking-wider">Mission <span className="text-[#e8a230]">LOGS</span></h3>
-                        <Link href="/orders" className="text-[10px] font-bold text-[#e8a230] uppercase tracking-widest italic decoration-dotted underline underline-offset-4">VIEW ALL ➔</Link>
-                    </div>
-                    <div className="space-y-4">
-                        {orders && orders.length > 0 ? (
-                            orders.map((order: any) => (
-                                <Link key={order.id} href={`/orders/${order.id}`} className="flex items-center justify-between p-5 bg-[#131313] border border-white/5 rounded-2xl hover:bg-[#1C1C1C] transition-all">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-bold text-white tracking-widest">{order.restaurant?.name || "RESTAURANT"}</p>
-                                        <p className="text-[9px] text-[#5A5550] font-black uppercase tracking-widest italic">
-                                            {new Date(order.createdAt).toLocaleDateString()} · STATUS: {order.status}
-                                        </p>
-                                    </div>
-                                    <span className="text-lg font-bebas text-[#e8a230] italic tracking-wider">${Number(order.total).toFixed(2)}</span>
-                                </Link>
-                            ))
-                        ) : (
-                            <div className="py-12 bg-[#131313] border border-white/5 border-dashed rounded-2xl text-center">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5550] italic">No missions logged yet.</p>
+                <main className="px-[18px] py-[14px] animate-up">
+                    
+                    {/* PROFILE HEADER */}
+                    <header className="flex items-center gap-4 bg-[#131313] border border-white/0.05 rounded-[20px] p-[18px] mb-6">
+                        <ProfileAvatar 
+                            userId={userId} 
+                            initialName={user?.name || ""} 
+                            initialColor={user?.avatarColor} 
+                            initialUrl={user?.avatarUrl} 
+                            className="w-[66px] h-[66px] border-2 border-[#E8A020]/20 rounded-full"
+                        />
+                        <div className="flex-1 min-w-0">
+                            <h2 className="font-barlow-cond text-[20px] font-bold uppercase tracking-[0.04em] white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                                {user?.name || "GUEST"}
+                            </h2>
+                            <p className="text-[12px] text-[#5A5550] truncate">{user?.email}</p>
+                            <div className="inline-flex items-center gap-[5px] bg-[#E8A020]/10 border border-[#E8A020]/20 rounded-full px-[10px] py-[3px] mt-2">
+                                <span className="font-barlow-cond text-[11px] font-semibold uppercase tracking-[0.1em] text-[#E8A020]">
+                                    ⭐ TrueServe Member
+                                </span>
                             </div>
-                        )}
-                    </div>
-                </section>
+                        </div>
+                    </header>
 
-                {/* SAVED STORES */}
-                <section className="space-y-6 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                    <h3 className="font-bebas text-white text-3xl uppercase italic leading-none tracking-wider">Saved <span className="text-[#e8a230]">Hubs</span></h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        {savedStores.map((store: any) => (
-                            <Link key={store.id} href={`/restaurants/${store.id}`} className="bg-[#131313] border border-white/5 rounded-2xl p-4 space-y-3 hover:bg-[#1C1C1C] transition-all group">
-                                <div className="aspect-square bg-black/40 rounded-xl flex items-center justify-center text-3xl grayscale group-hover:grayscale-0 transition-all">
-                                    🏪
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-[11px] font-bold text-white truncate uppercase tracking-widest">{store.name}</p>
-                                    <p className="text-[8px] text-[#5A5550] font-black uppercase tracking-widest">{store.city}</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
-            </main>
+                    {/* SETTINGS SECTIONS */}
+                    {sections.map((section, si) => (
+                        <section key={si} className="mb-6">
+                            <h3 className="font-barlow-cond text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5A5550] mb-2.5 pl-1 italic">
+                                {section.label}
+                            </h3>
+                            <div className="bg-[#131313] border border-white/0.05 rounded-[16px] overflow-hidden">
+                                {section.items.map((item, ii) => (
+                                    <Link key={ii} href={item.href} className="flex items-center gap-3.5 p-[15px] border-b border-white/0.05 last:border-0 hover:bg-white/0.03 transition-all active:scale-[0.99] group">
+                                        <div className="text-[20px] w-6 flex justify-center grayscale group-hover:grayscale-0 transition-all">{item.icon}</div>
+                                        <div className="flex-1">
+                                            <div className="font-barlow-cond text-[16px] font-bold uppercase tracking-[0.04em] text-white italic">{item.title}</div>
+                                            <div className="text-[12px] text-[#5A5550] mt-0.5">{item.sub}</div>
+                                        </div>
+                                        {item.badge ? (
+                                            <div className="bg-[#E8A020]/10 text-[#E8A020] font-barlow-cond text-[11px] font-bold uppercase tracking-[0.08em] px-[9px] py-[3px] rounded-full">
+                                                {item.badge}
+                                            </div>
+                                        ) : (
+                                            <div className="text-[#5A5550] text-[14px]">{item.right || "›"}</div>
+                                        )}
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+                    ))}
 
-            {/* BOTTOM NAV */}
-            <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#0C0C0C]/95 backdrop-blur-2xl border-t border-white/5 px-6 pt-3 pb-8 flex items-center justify-around z-50">
-                <Link href="/" className="flex flex-col items-center gap-1 opacity-50"><span className="text-xl">🏠</span><span className="text-[9px] font-bold uppercase tracking-widest">Home</span></Link>
-                <Link href="/restaurants" className="flex flex-col items-center gap-1 opacity-50"><span className="text-xl">🔍</span><span className="text-[9px] font-bold uppercase tracking-widest">Explore</span></Link>
-                <Link href="/orders" className="flex flex-col items-center gap-1 opacity-50"><span className="text-xl">📋</span><span className="text-[9px] font-bold uppercase tracking-widest">Orders</span></Link>
-                <Link href="/user/settings" className="flex flex-col items-center gap-1 text-[#e8a230]"><span className="text-xl">👤</span><span className="text-[9px] font-bold uppercase tracking-widest">Profile</span></Link>
+                    {/* EMPTY SECTIONS FOR VISUAL FILL */}
+                    <div className="mb-6">
+                        <h3 className="font-barlow-cond text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5A5550] mb-2.5 pl-1 italic">Mission History</h3>
+                        <div className="bg-[#131313] border border-white/0.05 rounded-[16px] p-7 flex flex-col items-center gap-2.5">
+                            <div className="text-[34px] opacity-40">📋</div>
+                            <div className="font-barlow-cond text-[15px] font-bold uppercase tracking-[0.06em] text-[#5A5550]">No Orders Yet</div>
+                            <p className="text-[12px] text-[#5A5550] text-center max-w-[200px] leading-relaxed">Your order history will appear here after your first delivery.</p>
+                        </div>
+                    </div>
+
+                    <div className="pt-2">
+                        <LogoutButton className="w-full bg-transparent border border-[rgba(255,80,80,0.25)] text-[rgba(255,100,100,0.7)] font-barlow-cond font-bold text-[14px] uppercase tracking-[0.1em] py-[14px] rounded-[14px] transition-all hover:bg-[rgba(255,80,80,0.05)] active:scale-[0.98]" />
+                    </div>
+
+                </main>
+
+                {/* ─── BOTTOM NAV ─── */}
+                <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-[#0C0C0C]/97 backdrop-blur-2xl border-t border-white/5 flex justify-around px-2 pt-[11px] pb-[24px]">
+                    <Link href="/" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
+                        <span className="text-[21px]">🏠</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Home</span>
+                    </Link>
+                    <Link href="/restaurants" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
+                        <span className="text-[21px]">🔍</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Explore</span>
+                    </Link>
+                    <Link href="/orders" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
+                        <span className="text-[21px]">📋</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Orders</span>
+                    </Link>
+                    <Link href="/user/settings" className="flex flex-col items-center gap-1 flex-1 text-[#E8A020]">
+                        <span className="text-[21px]">👤</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Profile</span>
+                    </Link>
+                </nav>
             </div>
         </div>
     );

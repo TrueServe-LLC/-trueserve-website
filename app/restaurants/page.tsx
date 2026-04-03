@@ -1,220 +1,127 @@
-import { Suspense } from "react";
-import { supabase } from "@/lib/supabase";
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import FavoriteButton from "@/components/FavoriteButton";
-import NotificationBell from "@/components/NotificationBell";
-import LogoutButton from "@/components/LogoutButton";
-import { getFavorites } from "@/app/user/favorite-actions";
-import { cookies } from "next/headers";
-import LandingSearch from "@/components/LandingSearch";
 import Logo from "@/components/Logo";
+import LandingSearch from "@/components/LandingSearch";
 
-export const dynamic = "force-dynamic";
-
-interface Restaurant {
-    id: string;
-    name: string;
-    rating: number;
-    image: string;
-    tags: string[];
-    description: string;
-    coords: [number, number];
-    city?: string;
-    distance?: string;
-    address?: string;
-    deliveryFee?: string;
-    prepTime?: string;
-    priceLevel?: string;
-    deal?: { type: string; description: string };
-    isBusy?: boolean;
-}
-
-interface LocationMeta {
-    name: string;
-    center: [number, number];
-}
-
-async function getRestaurants(
-    query: {
-        term?: string;
-        lat?: number;
-        lng?: number;
-        address?: string;
-        category?: string;
-    }
-): Promise<{ restaurants: Restaurant[]; locationMeta: LocationMeta }> {
-    const { term, lat, lng, address, category } = query;
-    const DEFAULT_CENTER: [number, number] = [35.2271, -80.8431]; 
-
-    const fallbackMocks = [
-        { city: 'Charlotte', state: 'NC', zipPrefixes: ['282', '280', '281'], lat: 35.2271, lng: -80.8431 },
-        { city: 'Athens', state: 'GA', zipPrefixes: ['30601', '30605', '30606', '30607'], lat: 33.9519, lng: -83.3576 },
-        { city: 'Atlanta', state: 'GA', zipPrefixes: ['30301'], lat: 33.7490, lng: -84.3880 },
-    ];
-
-    let matchedLocation: any = fallbackMocks[0];
-    if (address) {
-        matchedLocation = { city: address.split(',')[0], lat: 33.7490, lng: -84.3880 };
-    }
-
-    try {
-        const { data: restaurants, error } = await supabase
-            .from('Restaurant')
-            .select(`*, MenuItem(name), Review(rating)`)
-            .eq('visibility', 'VISIBLE')
-            .limit(20);
-
-        if (error || !restaurants) return { restaurants: [], locationMeta: { name: address || "Your Area", center: DEFAULT_CENTER } };
-
-        const mapped = restaurants.map((r: any, index: number) => ({
-            id: r.id,
-            name: r.name,
-            rating: 4.5 + (index % 5) / 10,
-            image: r.imageUrl || null,
-            tags: ["Local", "Gourmet"],
-            description: r.description,
-            coords: [r.lat || 33.7, r.lng || -84.3] as [number, number],
-            priceLevel: "$$",
-            deliveryFee: index % 2 === 0 ? "Free" : "1.99",
-            prepTime: "15-25",
-            isBusy: !!r.isBusy
-        }));
-
-        const filtered = category && category !== "Trending"
-            ? mapped.filter(r => r.name.toLowerCase().includes(category.toLowerCase()) || category === "Trending")
-            : mapped;
-
-        return { 
-            restaurants: filtered, 
-            locationMeta: { name: address || "Your Area", center: DEFAULT_CENTER } 
-        };
-    } catch (e) {
-        return { restaurants: [], locationMeta: { name: address || "Your Area", center: DEFAULT_CENTER } };
-    }
-}
-
-export default async function RestaurantFinder({
-    searchParams
-}: {
-    searchParams: Promise<{ location?: string; search?: string; address?: string; lat?: string; lng?: string; category?: string }>
-}) {
-    const params = await searchParams;
-    const effectiveAddress = params.address || params.location || params.search;
-    const category = params.category || "Trending";
-
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
-    let favorites: string[] = [];
-    if (userId) favorites = await getFavorites();
-
-    const { restaurants, locationMeta } = await getRestaurants({ term: effectiveAddress, address: effectiveAddress, category });
-
-    const categories = [
-        { emoji: "🔥", label: "Trending", value: "Trending" },
-        { emoji: "🍗", label: "Soul Food", value: "Soul Food" },
-        { emoji: "🥩", label: "BBQ", value: "BBQ" },
-        { emoji: "🍜", label: "Asian", value: "Asian" },
-        { emoji: "🌮", label: "Latin", value: "Latin" },
-        { emoji: "🥗", label: "Healthy", value: "Healthy" },
-        { emoji: "🍰", label: "Desserts", value: "Dessert" },
-        { emoji: "🍳", label: "Breakfast", value: "Breakfast" },
-        { emoji: "🍗", label: "Wings", value: "Wings" },
-        { emoji: "🦞", label: "Seafood", value: "Seafood" },
-        { emoji: "🌿", label: "Vegan", value: "Vegan" },
-    ];
+export default function RestaurantFinder() {
+    const searchParams = useSearchParams();
+    const address = searchParams.get("address");
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-[#F0EDE8]">
-            {/* MOBILE WRAPPER */}
-            <div className="max-w-[430px] mx-auto min-h-screen relative shadow-[0_0_100px_rgba(0,0,0,1)] bg-[#0A0A0A] pb-24">
-                
-                {/* AMBIENT ORBS */}
-                <div className="orb w-[280px] h-[280px] top-[-60px] left-[-90px] bg-[#e8a230]/5" />
-                <div className="orb w-[200px] h-[200px] top-[400px] right-[-70px] bg-[#e8a230]/5" />
+        <div className="min-h-screen bg-[#0A0A0A] text-[#F0EDE8] font-barlow overflow-x-hidden">
+            {/* AMBIENT ORBS */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="orb w-[260px] h-[260px] top-[-60px] right-[-80px] bg-[#E8A020]/10" />
+                <div className="orb w-[200px] h-[200px] top-[480px] left-[-70px] bg-[#E8A020]/0.06" />
+                <div className="orb w-[160px] h-[160px] bottom-[130px] right-[-50px] bg-[rgba(232,80,20,0.06)]" />
+            </div>
 
-                {/* NAV */}
-                <nav className="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-white/5">
+            <div className="max-w-[430px] mx-auto min-h-screen relative flex flex-col z-10 bg-[#0A0A0A]/20 pb-[100px]">
+                
+                 {/* ─── SHARED NAV ─── */}
+                 <nav className="sticky top-0 z-50 flex items-center justify-between px-[18px] py-[18px] bg-[#0A0A0A]/98 backdrop-blur-xl animate-dn">
                     <Logo size="sm" />
-                    <div className="flex items-center gap-3">
-                        {userId ? (
-                            <div className="flex items-center gap-3">
-                                <NotificationBell userId={userId} />
-                                <Link href="/user/settings" className="w-[38px] h-[38px] rounded-xl bg-[#1C1C1C] border border-white/5 flex items-center justify-center font-bold">👤</Link>
-                            </div>
-                        ) : (
-                            <Link href="/login" className="bg-[#e8a230] text-black px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider font-barlow-cond">Sign In</Link>
-                        )}
+                    <div className="flex items-center gap-[9px]">
+                        <Link href="/restaurants" className="w-[38px] h-[38px] rounded-[10px] bg-[#1C1C1C] border border-white/5 flex items-center justify-center text-[17px] relative">
+                            🛒
+                            <div className="absolute -top-[5px] -right-[5px] w-[16px] h-[16px] rounded-full bg-[#E8A020] text-black font-barlow-cond text-[10px] font-bold flex items-center justify-center">2</div>
+                        </Link>
+                        <Link href="/login" className="bg-[#E8A020] text-[#0A0A0A] font-barlow-cond font-bold text-[12px] uppercase tracking-[0.1em] px-[15px] py-[9px] rounded-[9px]">
+                            Sign In
+                        </Link>
                     </div>
                 </nav>
 
-                {/* HEADER */}
-                <div className="px-5 pt-6 mb-8">
-                    <div className="inline-flex items-center gap-2 bg-[#1C1C1C] border border-white/5 rounded-full px-4 py-1.5 mb-4">
-                        <div className="w-2 h-2 bg-[#e8a230] rounded-full animate-pulse shadow-[0_0_8px_#e8a230]" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest font-barlow-cond">{locationMeta.name}</span>
-                    </div>
-                    <h1 className="text-5xl font-bebas text-white leading-none uppercase">Discovery<br /><span className="text-[#e8a230]">HUB</span></h1>
-                </div>
+                <div className="hub-body px-[18px] pt-[14px] animate-up relative z-10">
+                    <Link href="/" className="back-btn inline-flex items-center gap-[7px] text-[#5A5550] font-barlow-cond text-[13px] font-semibold uppercase tracking-[0.1em] mb-[18px] hover:text-white transition-colors">
+                        ← Back
+                    </Link>
 
-                {/* CATEGORY SCROLL */}
-                <div className="flex gap-2.5 px-5 mb-8 overflow-x-auto no-scrollbar scroll-smooth">
-                    {categories.map((cat, i) => {
-                        const isActive = category === cat.value;
-                        return (
-                            <Link 
-                                key={i} 
-                                href={`/restaurants?address=${encodeURIComponent(effectiveAddress || "")}&category=${cat.value}`}
-                                className={`flex items-center gap-2.5 px-5 py-3 rounded-full border shrink-0 transition-all ${isActive ? 'bg-[#e8a230] border-[#e8a230] text-black' : 'bg-[#131313] border-white/5 text-white'}`}
-                            >
-                                <span className="text-lg">{cat.emoji}</span>
-                                <span className={`text-[12px] font-bold tracking-wider font-barlow-cond`}>{cat.label}</span>
-                            </Link>
-                        );
-                    })}
-                </div>
-
-                {/* RESTAURANT LIST */}
-                <div className="px-5 space-y-6">
-                    <div className="flex items-center justify-between opacity-50 mb-2">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-barlow-cond">{restaurants.length} Results Found</span>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-barlow-cond">Sort: Top Rated ▼</span>
+                    <div className="hub-badge inline-flex items-center gap-[7px] bg-[#E8A020]/10 border border-[#E8A020]/20 rounded-full px-[14px] py-[6px] mb-5">
+                        <div className="hub-dot w-[7px] h-[7px] rounded-full bg-[#4CAF50] shadow-[0_0_8px_#4CAF50] animate-blink" />
+                        <span className="font-barlow-cond text-[12px] font-semibold uppercase tracking-[0.14em] text-[#E8A020]">Discovery Hub · Protocol Active</span>
                     </div>
-                    
-                    {restaurants.map((rest, i) => (
-                        <Link href={`/restaurants/${rest.id}`} key={i} className="block group animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
-                            <div className="bg-[#131313] border border-white/5 rounded-[24px] overflow-hidden group-hover:scale-[1.01] transition-transform">
-                                <div className="h-[140px] w-full bg-[#1C1C1C] flex items-center justify-center text-5xl relative">
-                                    {rest.name[0]}
-                                    <div className="absolute top-4 left-4">
-                                        <div className="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[9px] font-bold text-[#e8a230] font-barlow-cond">⭐ {rest.rating}</div>
-                                    </div>
-                                    <FavoriteButton restaurantId={rest.id} initialIsFavorited={favorites.includes(rest.id)} className="absolute top-4 right-4 !bg-black/40 !border-white/10" />
-                                </div>
-                                <div className="p-5">
-                                    <h3 className="text-2xl font-black uppercase italic tracking-wider text-white mb-1 font-barlow-cond">{rest.name}</h3>
-                                    <div className="flex items-center gap-3 text-[11px] text-[#5A5550] font-medium mb-3">
-                                        <span>⏱ {rest.prepTime} MIN</span>
-                                        <div className="w-1 h-1 bg-[#5A5550]/30 rounded-full" />
-                                        <span className="text-[#e8a230] font-bold">{rest.deliveryFee === 'Free' ? 'FREE' : `$${rest.deliveryFee}`} DELIVERY</span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        {rest.tags.map(tag => (
-                                            <div key={tag} className="bg-[#1C1C1C] text-[#5A5550] px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest font-barlow-cond">{tag}</div>
-                                        ))}
-                                    </div>
-                                </div>
+
+                    <h1 className="hub-title font-bebas text-[clamp(60px,19vw,84px)] leading-[0.87] mb-[14px] italic">
+                        <span className="block text-[#F0EDE8]">REAL FOOD.</span>
+                        <span className="block text-[#E8A020]">REAL LOCAL.</span>
+                    </h1>
+
+                    <p className="hub-sub text-[13px] font-light text-[#5A5550] leading-[1.65] mb-6 max-w-[290px]">
+                        Skip the chains. Enter your address to find the best independent kitchens near you.
+                    </p>
+
+                    <div className="zone-row flex items-center justify-between bg-[#1C1C1C] border border-white/0.07 rounded-full px-4 py-2 mb-3.5 cursor-pointer hover:bg-[#252525] transition-colors">
+                        <div className="zone-row-left flex items-center gap-[8px]">
+                            <div className="zone-live w-[7px] h-[7px] rounded-full bg-[#4CAF50] shadow-[0_0_7px_#4CAF50] animate-blink" />
+                            <span className="font-barlow-cond text-[13px] font-semibold uppercase tracking-[0.1em] text-white">
+                                {address ? address.split(',')[0] : "Select Delivery Zone"}
+                            </span>
+                        </div>
+                        <span className="text-[#E8A020] text-[12px]">▾</span>
+                    </div>
+
+                    <div className="hub-search bg-[#131313] border border-[#E8A020]/20 rounded-[16px] p-[5px] pl-4 flex items-center gap-[10px] mb-3 transition-all focus-within:border-[#E8A020] focus-within:ring-4 focus-within:ring-[#E8A020]/5">
+                        <span className="text-[17px] shrink-0">📍</span>
+                        <LandingSearch initialValue={address || ""} />
+                    </div>
+
+                    <div className="hub-stats flex bg-[#131313] border border-white/0.05 rounded-[14px] overflow-hidden mb-[30px]">
+                        <div className="hub-stat flex-1 flex flex-col items-center py-[13px] relative after:absolute after:right-0 after:top-1/4 after:bottom-1/4 after:w-px after:bg-white/0.07">
+                            <div className="font-bebas text-[20px] text-[#E8A020] leading-none">⚡ 15–25</div>
+                            <div className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.15em] text-[#5A5550]">Min Avg</div>
+                        </div>
+                        <div className="hub-stat flex-1 flex flex-col items-center py-[13px] relative after:absolute after:right-0 after:top-1/4 after:bottom-1/4 after:w-px after:bg-white/0.07">
+                            <div className="font-bebas text-[20px] text-[#E8A020] leading-none">🏠 Local</div>
+                            <div className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.15em] text-[#5A5550]">Only</div>
+                        </div>
+                        <div className="hub-stat flex-1 flex flex-col items-center py-[13px]">
+                            <div className="font-bebas text-[20px] text-[#E8A020] leading-none">🤝 Fair</div>
+                            <div className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.15em] text-[#5A5550]">Partners</div>
+                        </div>
+                    </div>
+
+                    <div className="hub-plus bg-gradient-to-br from-[#E8A020]/0.14 to-[#E8A020]/0.07 border border-[#E8A020]/20 rounded-[18px] p-[18px] flex items-center justify-between gap-[14px] mb-[32px]">
+                        <div className="flex-1">
+                            <div className="hub-plus-badge inline-flex items-center bg-[#E8A020] rounded-[6px] px-[9px] py-[3px] mb-[7px]">
+                                <span className="font-barlow-cond text-[11px] font-bold uppercase tracking-[0.12em] text-black">Elite Rewards</span>
                             </div>
+                            <div className="font-bebas text-[24px] leading-[0.95] text-white">TrueServe Plus</div>
+                            <div className="text-[12px] font-light text-[#5A5550] mt-1">Unlimited $0 Delivery & Member Pricing</div>
+                        </div>
+                        <Link href="/plus" className="bg-[#E8A020] text-[#0A0A0A] font-barlow-cond font-bold text-[12px] uppercase tracking-[0.07em] px-[15px] py-[12px] rounded-[11px] text-center leading-tight hover:scale-105 active:scale-95 transition-all">
+                            Sign Up<br />Now
                         </Link>
-                    ))}
+                    </div>
+
+                    <div className="hub-empty text-center py-10">
+                        <div className="text-[52px] mb-3.5 opacity-50 grayscale">🗺️</div>
+                        <div className="font-barlow-cond text-[20px] font-bold uppercase tracking-[0.06em] text-[#5A5550] mb-2">Enter Your Address</div>
+                        <p className="text-[13px] font-light text-[#5A5550] leading-[1.6]">Type your delivery address above to sync with the best independent flavors in your community.</p>
+                    </div>
                 </div>
 
-                {/* BOTTOM MOBILE NAV */}
-                <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#0C0C0C]/95 backdrop-blur-2xl border-t border-white/5 px-6 pt-3 pb-8 flex items-center justify-around z-50">
-                    <Link href="/" className="flex flex-col items-center gap-1 opacity-50 hover:opacity-100"><span className="text-xl">🏠</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Home</span></Link>
-                    <Link href="/restaurants" className="flex flex-col items-center gap-1 text-[#e8a230]"><span className="text-xl">🔍</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Explore</span></Link>
-                    <Link href="/orders" className="flex flex-col items-center gap-1 opacity-50 hover:opacity-100"><span className="text-xl">📋</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Orders</span></Link>
-                    <Link href="/user/settings" className="flex flex-col items-center gap-1 opacity-50 hover:opacity-100"><span className="text-xl">👤</span><span className="text-[9px] font-bold uppercase tracking-widest font-barlow-cond">Profile</span></Link>
-                </div>
+                {/* ─── BOTTOM NAV ─── */}
+                <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-[#0C0C0C]/97 backdrop-blur-2xl border-t border-white/5 flex justify-around px-2 pt-[11px] pb-[24px]">
+                    <Link href="/" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
+                        <span className="text-[21px]">🏠</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Home</span>
+                    </Link>
+                    <Link href="/restaurants" className="flex flex-col items-center gap-1 flex-1 text-[#E8A020]">
+                        <span className="text-[21px]">🔍</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Explore</span>
+                    </Link>
+                    <Link href="/orders" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
+                        <span className="text-[21px]">📋</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Orders</span>
+                    </Link>
+                    <Link href="/user/settings" className="flex flex-col items-center gap-1 flex-1 text-[#5A5550] hover:text-[#E8A020] transition-colors">
+                        <span className="text-[21px]">👤</span>
+                        <span className="font-barlow-cond text-[10px] font-semibold uppercase tracking-[0.1em]">Profile</span>
+                    </Link>
+                </nav>
             </div>
         </div>
     );
