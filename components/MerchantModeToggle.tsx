@@ -6,7 +6,7 @@ export default function MerchantModeToggle() {
     const [mode, setMode] = useState<"delivery" | "pickup">("delivery");
 
     return (
-        <div style={{ display: "flex", gap: "1px" }}>
+        <div className="ml-mode-tabs">
             {(["delivery", "pickup"] as const).map((m) => (
                 <button
                     key={m}

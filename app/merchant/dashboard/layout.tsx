@@ -78,6 +78,15 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                 }
                 .ml-logout-link { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #2a2f3a; cursor: pointer; text-decoration: none; }
                 .ml-logout-link:hover { color: #444; }
+
+                /* ── MODE TABS ── */
+                .ml-mode-tabs { display: flex; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; }
+                .ml-mode-tab {
+                    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                    padding: 6px 12px; background: #0c0e13; border: none; color: #444; cursor: pointer; transition: all .15s;
+                }
+                .ml-mode-tab:hover { color: #888; }
+                .ml-mode-tab.active { background: #e8a230; color: #000; }
             `}</style>
 
             <div style={{ background: '#0c0e13', minHeight: '100vh', color: '#fff', fontFamily: "'DM Sans', sans-serif" }}>
@@ -86,24 +95,23 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                     <div className="ml-nav-left">
                         <Logo size="sm" />
                         <div className="ml-nav-links">
-                            <Link href="/" className="ml-nav-link">
+                            <Link href="/merchant/dashboard" className="ml-nav-link">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <path d="M1 3h10M1 6h7M1 9h9" stroke="#555" strokeWidth="1.3" strokeLinecap="round"/>
+                                    <path d="M1 3h10M1 6h7M1 9h9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                                 </svg>
-                                Customer Preview
+                                Live Terminal
                             </Link>
-                            <Link href="/merchant/dashboard/integrations" className="ml-nav-link active">
+                            <Link href="/merchant/dashboard/integrations" className="ml-nav-link">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <path d="M4 4h4M4 8h4M2 6h8" stroke="#555" strokeWidth="1.3" strokeLinecap="round"/>
+                                    <path d="M4 4h4M4 8h4M2 6h8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                                 </svg>
                                 Integrations
                             </Link>
-                            <Link href="/merchant/dashboard" className="ml-nav-link">
+                            <Link href="/restaurants" className="ml-nav-link" target="_blank">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <rect x="1" y="1" width="10" height="10" rx="1" stroke="#555" strokeWidth="1.3"/>
-                                    <path d="M4 6h4M6 4v4" stroke="#555" strokeWidth="1.3"/>
+                                    <path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" transform="rotate(45 6 6)"/>
                                 </svg>
-                                Merchant Hub
+                                Storefront Simulator
                             </Link>
                         </div>
                     </div>
