@@ -67,7 +67,7 @@ export default async function Home() {
                                 <div className="flex items-center gap-6">
                                     <Link href="/login" className="hidden md:block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all border border-white/10 rounded-full px-5 py-2 hover:bg-white/5 italic">Sign In</Link>
                                     <Link href="/restaurants" className="badge-solid-primary !px-10 !py-3 !text-[11px] h-glow">
-                                        Get Started
+                                        Join Network
                                     </Link>
                                 </div>
                             )}

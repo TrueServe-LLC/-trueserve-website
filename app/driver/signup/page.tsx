@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import { Activity, Clock, MapPin } from "lucide-react";
 
 function DriverSignupContent() {
     const [step, setStep] = useState(1);
@@ -56,171 +57,133 @@ function DriverSignupContent() {
             {/* ── HEADER ── */}
             <header className="relative z-50 flex items-center justify-between px-10 py-8 max-w-[1400px] mx-auto">
                 <Logo size="md" />
-                <div className="flex gap-8 items-center">
+                <div className="hidden lg:flex gap-8 items-center">
                     <Link href="/driver/login" className="barlow-cond font-black text-[11px] uppercase tracking-[0.25em] text-[#5A5550] hover:text-[#e8a230] transition-colors">Fleet Authorization</Link>
                 </div>
             </header>
 
-            <main className="relative z-10 flex flex-col items-center pt-10 pb-40 px-6 max-w-7xl mx-auto">
+            <main className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start justify-between min-h-[calc(100vh-140px)] gap-12 lg:gap-20 py-12 lg:py-20 px-6 max-w-[1400px] mx-auto">
                 
-                {/* ── HERO SECTION ── */}
-                <div className="text-center space-y-3 mb-20 animate-up">
-                    <h1 className="bebas italic text-[80px] lg:text-[124px] leading-[0.88] tracking-tight">
-                        FLEET<span className="text-[#e8a230]">PROTOCOLS.</span>
-                    </h1>
-                    <p className="barlow-cond font-black text-[12px] lg:text-[14px] uppercase tracking-[0.45em] text-[#5A5550]">
-                        ESTABLISH YOUR MOBILE LOGISTICS HUB
-                    </p>
-                </div>
-
-                {/* ── THREE MAIN PILLARS ── */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-[1100px] mb-8 animate-up [animation-delay:0.1s]">
-                    {[
-                        { title: "FAIR PAY", desc: "Competitive base pay + tips deposited weekly into your hub.", icon: "💰" },
-                        { title: "FLEX HOURS", desc: "Drive when you want — you are your own operational boss.", icon: "🕒" },
-                        { title: "LOCAL PRIDE", desc: "Deliver for the best neighborhood restaurants in your city.", icon: "📍" }
-                    ].map((card) => (
-                        <div key={card.title} className="blur-card p-10 flex flex-col items-center text-center space-y-5 rounded-[2.5rem]">
-                            <div className="text-4xl grayscale brightness-200">{card.icon}</div>
-                            <div className="space-y-2">
-                                <h3 className="bebas italic text-[28px] tracking-wider">{card.title}</h3>
-                                <p className="barlow-cond text-[11px] font-bold text-[#5A5550] leading-relaxed max-w-[220px] uppercase tracking-wider">{card.desc}</p>
-                            </div>
+                {/* ── LEFT COLUMN: HERO ── */}
+                <div className="w-full lg:w-1/2 space-y-12 animate-up">
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2 bg-[#e8a230]/10 border border-[#e8a230]/20 rounded-md px-3 py-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#e8a230]" />
+                            <span className="barlow-cond font-black text-[10px] uppercase tracking-[0.2em] text-[#e8a230]">DRIVER SIGNUP</span>
                         </div>
-                    ))}
-                </div>
-
-                {/* ── PLATFORM FEATURES GRID ── */}
-                <div className="w-full max-w-[1000px] mb-32 animate-up [animation-delay:0.2s]">
-                    <div className="flex items-center gap-6 mb-6 justify-center">
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#e8a230]/20" />
-                        <span className="barlow-cond font-black text-[11px] uppercase tracking-[0.4em] text-[#e8a230] opacity-50">OPERATIONAL REQUIREMENTS</span>
-                        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#e8a230]/20" />
+                        <h1 className="bebas italic text-[80px] lg:text-[110px] leading-[0.85] tracking-tight uppercase">
+                            DRIVER<br />
+                            <span className="text-[#e8a230]">SIGNUP.</span>
+                        </h1>
+                        <p className="text-[#5A5550] font-bold text-lg max-w-sm leading-tight italic">
+                            Engineered for driver freedom. Join our elite fleet, earn more with every delivery, and power the local culinary ecosystem.
+                        </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div className="space-y-4 max-w-md">
                         {[
-                            { label: "IDENTIFICATION", desc: "18+ years old with valid driver's license.", icon: "🪪" },
-                            { label: "FLEET ASSETS", desc: "Reliable vehicle or bike with active insurance.", icon: "🏎️" },
-                            { label: "MOBILE HUB", desc: "Smartphone with active data and GPS uplink.", icon: "📱" },
-                            { label: "BACKGROUND", desc: "Secure vetting and background verification protocols.", icon: "🛡️" }
-                        ].map((item) => (
-                            <div key={item.label} className="blur-card p-6 flex items-center gap-6 rounded-2xl border-l-2 border-l-[#e8a230]/30 shadow-2xl">
-                                <div className="w-12 h-12 flex items-center justify-center bg-[#0d0d0d] border border-white/5 rounded-xl text-xl grayscale opacity-30">{item.icon}</div>
-                                <div className="flex flex-col">
-                                    <span className="bebas text-[22px] tracking-wider text-white/90">{item.label}</span>
-                                    <span className="barlow-cond text-[10px] font-black text-[#444] uppercase tracking-widest italic">{item.desc}</span>
+                            { title: "Fair Pay", desc: "Keep 100% of your tips + higher base rates.", icon: <Activity className="w-6 h-6 text-[#e8a230]" /> },
+                            { title: "Flex Hours", desc: "You are your own operational boss. Work when you want.", icon: <Clock className="w-6 h-6 text-[#e8a230]" /> },
+                            { title: "Local Impact", desc: "Support independent restaurants in your own backyard.", icon: <MapPin className="w-6 h-6 text-[#e8a230]" /> }
+                        ].map((card) => (
+                            <div key={card.title} className="blur-card p-5 flex items-center gap-5 rounded-2xl border-l border-l-[#e8a230]/30 shadow-[0_5px_15px_rgba(0,0,0,0.3)] hover:scale-[1.02] transition-transform">
+                                <div className="w-12 h-12 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-center shadow-inner">{card.icon}</div>
+                                <div className="space-y-0.5">
+                                    <h3 className="bebas text-xl tracking-wider text-white">{card.title}</h3>
+                                    <p className="barlow-cond text-[10px] font-bold text-[#444] uppercase tracking-widest">{card.desc}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* ── CORE ENROLLMENT FORM ── */}
-                <div className="w-full max-w-[620px] bg-[#050505]/60 border border-white/5 rounded-[3rem] p-12 lg:p-20 backdrop-blur-[50px] animate-up [animation-delay:0.3s] shadow-[0_50px_100px_rgba(0,0,0,0.8)]">
-                    <div className="text-center space-y-3 mb-16">
-                        <h2 className="bebas italic text-5xl lg:text-7xl tracking-wide uppercase leading-tight">START YOUR <span className="text-[#e8a230]">APPLICATION.</span></h2>
-                        <p className="barlow-cond font-black text-[11px] uppercase tracking-[0.35em] text-[#5A5550]">5 MINUTES · APPROVAL WITHIN 24 HOURS</p>
+                {/* ── RIGHT COLUMN: FORM BOX ── */}
+                <div className="w-full lg:w-[540px] bg-[#050505]/60 border border-white/5 rounded-[2.5rem] p-10 lg:p-14 backdrop-blur-[50px] animate-up [animation-delay:0.2s] shadow-[0_50px_100px_rgba(0,0,0,0.8)]">
+                    <div className="space-y-2 mb-12">
+                        <h2 className="bebas italic text-4xl lg:text-5xl tracking-wide uppercase leading-tight">START YOUR <span className="text-[#e8a230]">APPLICATION.</span></h2>
+                        <p className="barlow-cond font-black text-[10px] uppercase tracking-[0.3em] text-[#5A5550]">5 MINUTES · APPROVAL WITHIN 24 HOURS</p>
                     </div>
 
-                    {/* Multi-Step Timeline */}
-                    <div className="flex items-center justify-between relative px-6 mb-20">
-                        <div className="absolute top-[14px] left-14 right-14 h-[1px] bg-[#1c1f28]" />
+                    {/* Timeline */}
+                    <div className="flex items-center justify-between relative px-2 mb-12">
+                        <div className="absolute top-[12px] left-10 right-10 h-px bg-[#1c1f28]" />
                         {[
                             { id: 1, label: "COMMUNICATION" },
                             { id: 2, label: "VEHICLE" },
-                            { id: 3, label: "DOCS" },
-                            { id: 4, label: "FINAL" }
+                            { id: 3, label: "DOCUMENTS" },
+                            { id: 4, label: "PARTNERSHIP" }
                         ].map((s) => (
-                            <div key={s.id} className="relative z-10 flex flex-col items-center gap-4">
-                                <div className={`w-[30px] h-[30px] flex items-center justify-center text-[10px] font-black font-mono transition-all duration-700 rounded-full ${step >= s.id ? 'bg-[#e8a230] text-black shadow-[0_0_25px_rgba(232,162,48,0.5)]' : 'bg-[#0a0a0a] border border-[#1c1f28] text-[#1c1f28]'}`}>
+                            <div key={s.id} className="relative z-10 flex flex-col items-center gap-3">
+                                <div className={`w-6 h-6 flex items-center justify-center text-[9px] font-black font-mono transition-all duration-700 rounded-full ${step >= s.id ? 'bg-[#e8a230] text-black shadow-[0_0_20px_rgba(232,162,48,0.4)]' : 'bg-[#0a0a0a] border border-[#1c1f28] text-[#1c1f28]'}`}>
                                     {s.id}
                                 </div>
-                                <span className={`barlow-cond text-[10px] font-black uppercase tracking-[0.18em] ${step === s.id ? 'text-[#e8a230]' : 'text-[#2a2f3a]'}`}>
+                                <span className={`barlow-cond text-[9px] font-black uppercase tracking-[0.1em] ${step === s.id ? 'text-[#e8a230]' : 'text-[#2a2f3a]'}`}>
                                     {s.label}
                                 </span>
                             </div>
                         ))}
                     </div>
 
-                    <div className="space-y-6 pt-4">
-                        <div className="mb-10 text-left">
-                            <h3 className="bebas italic text-[32px] tracking-wider text-white">PERSONAL INFORMATION</h3>
-                            <div className="h-[2px] w-14 bg-[#e8a230] mt-2" />
+                    <div className="space-y-6 pt-2">
+                        <div className="mb-8">
+                            <h3 className="barlow-cond text-[12px] font-black uppercase tracking-[0.25em] text-[#e8a230]">IDENTITY & CREDENTIALS</h3>
+                            <div className="h-px w-full bg-white/5 mt-3" />
                         </div>
 
-                        <form className="space-y-8" onSubmit={(e) => { e.preventDefault(); setStep(prev => Math.min(prev + 1, 4)); }}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.25em] text-[#e8a230]">FIRST NAME *</label>
-                                    <input type="text" className="fi w-full bg-[#030303] border border-white/10 text-[15px] px-7 py-5 text-white outline-none transition-all rounded-2xl" placeholder="ALEX" required />
+                        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); setStep(prev => Math.min(prev + 1, 4)); }}>
+                            <div className="grid grid-cols-2 gap-5">
+                                <div className="space-y-2.5">
+                                    <label className="barlow-cond text-[10px] font-black uppercase tracking-[0.2em] text-[#5A5550]">FIRST NAME <span className="text-[#e8a230]">*</span></label>
+                                    <input type="text" className="fi w-full bg-[#030303] border border-white/5 text-[14px] px-6 py-4 text-white outline-none transition-all rounded-xl" placeholder="ALEX" required />
                                 </div>
-                                <div className="space-y-3">
-                                    <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.25em] text-[#e8a230]">LAST NAME *</label>
-                                    <input type="text" className="fi w-full bg-[#030303] border border-white/10 text-[15px] px-7 py-5 text-white outline-none transition-all rounded-2xl" placeholder="JOHNSON" required />
-                                </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.25em] text-[#5A5550]">EMAIL ADDRESS *</label>
-                                    <input type="email" className="fi w-full bg-[#030303] border border-white/10 text-[15px] px-7 py-5 text-white outline-none transition-all rounded-2xl" placeholder="YOU@EMAIL.COM" required />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.25em] text-[#5A5550]">PHONE NUMBER *</label>
-                                    <input type="tel" className="fi w-full bg-[#030303] border border-white/10 text-[15px] px-7 py-5 text-white outline-none transition-all rounded-2xl" placeholder="(336) 000-0000" required />
+                                <div className="space-y-2.5">
+                                    <label className="barlow-cond text-[10px] font-black uppercase tracking-[0.2em] text-[#5A5550]">LAST NAME <span className="text-[#e8a230]">*</span></label>
+                                    <input type="text" className="fi w-full bg-[#030303] border border-white/5 text-[14px] px-6 py-4 text-white outline-none transition-all rounded-xl" placeholder="JOHNSON" required />
                                 </div>
                             </div>
 
-                            <div className="space-y-4 pt-4">
-                                <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.25em] text-[#e8a230] ml-1 block">VEHICLE TYPE *</label>
+                            <div className="grid grid-cols-2 gap-5">
+                                <div className="space-y-2.5">
+                                    <label className="barlow-cond text-[10px] font-black uppercase tracking-[0.2em] text-[#5A5550]">EMAIL ADDRESS <span className="text-[#e8a230]">*</span></label>
+                                    <input type="email" className="fi w-full bg-[#030303] border border-white/5 text-[14px] px-6 py-4 text-white outline-none transition-all rounded-xl" placeholder="YOU@EMAIL.COM" required />
+                                </div>
+                                <div className="space-y-2.5">
+                                    <label className="barlow-cond text-[10px] font-black uppercase tracking-[0.2em] text-[#5A5550]">PHONE NUMBER <span className="text-[#e8a230]">*</span></label>
+                                    <input type="tel" className="fi w-full bg-[#030303] border border-white/5 text-[14px] px-6 py-4 text-white outline-none transition-all rounded-xl" placeholder="(336) 000-0000" required />
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 pt-2">
+                                <label className="barlow-cond text-[10px] font-black uppercase tracking-[0.2em] text-[#e8a230] ml-1 block">VEHICLE TYPE *</label>
                                 <div className="grid grid-cols-3 gap-3">
                                     {['car', 'bicycle', 'scooter'].map((type) => (
                                         <button 
                                             key={type}
                                             type="button" 
                                             onClick={() => setVehicle(type)}
-                                            className={`flex flex-col items-center justify-center p-6 border transition-all gap-4 rounded-[2rem] ${vehicle === type ? 'bg-[#1a1200] border-[#e8a230] text-[#e8a230] shadow-[0_0_25px_rgba(232,162,48,0.25)] scale-[1.02]' : 'bg-[#030303] border-white/5 text-[#222] hover:border-white/10'}`}
+                                            className={`flex flex-col items-center justify-center p-4 border transition-all gap-2 rounded-2xl ${vehicle === type ? 'bg-[#1a1200] border-[#e8a230] text-[#e8a230] shadow-[0_0_20px_rgba(232,162,48,0.3)] scale-[1.02]' : 'bg-[#030303] border-white/5 text-[#222] hover:border-white/10'}`}
                                         >
-                                            <div className={`text-4xl transition-transform duration-300 ${vehicle === type ? 'scale-110 opacity-100' : 'opacity-20 grayscale'}`}>
+                                            <div className={`text-2xl transition-transform duration-300 ${vehicle === type ? 'scale-110 opacity-100' : 'opacity-20 grayscale'}`}>
                                                 {type === 'car' ? '🏎️' : type === 'bicycle' ? '🚲' : '🛵'}
                                             </div>
-                                            <span className="bebas text-lg tracking-wider font-bold">{type}</span>
+                                            <span className="bebas text-sm tracking-wider font-bold uppercase">{type}</span>
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            <button type="submit" className="w-full bg-[#e8a230] hover:scale-[1.02] active:scale-[0.98] text-black bebas italic text-[26px] tracking-wider py-6 rounded-2xl transition-all shadow-[0_30px_60px_rgba(232,162,48,0.25)] mt-6">
-                                CONTINUE APPLICATION →
+                            <button type="submit" className="w-full bg-[#e8a230] hover:brightness-110 active:scale-[0.98] text-black bebas italic text-[24px] tracking-wider py-5 rounded-xl transition-all shadow-[0_20px_40px_rgba(232,162,48,0.2)] mt-4 uppercase">
+                                CONTINUE →
                             </button>
                         </form>
                         
-                        {/* ── PILOT CONTROLS ── */}
-                        <div className="mt-10 pt-10 border-t border-white/5 animate-up [animation-delay:0.4s]">
-                            <div className="flex items-center gap-3 mb-5">
-                                <div className="w-2 h-2 rounded-full bg-[#e8a230] animate-pulse" />
-                                <span className="barlow-cond text-[10px] font-black text-[#5A5550] uppercase tracking-[0.25em]">Pilot Controls Locked</span>
-                            </div>
-                            <button 
-                                onClick={() => {
-                                   setStep(4);
-                                   // In a real pilot bypass, we'd potentially auto-fill the form state here
-                                }}
-                                className="w-full bg-[#131720] border border-[#2a2f3a] text-[#888] hover:text-[#e8a230] hover:border-[#e8a230]/40 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 group"
-                            >
-                                <span className="text-lg opacity-40 group-hover:opacity-100 transition-opacity">⚡</span>
-                                BYPASS TO FINAL STEP (PILOT ONLY)
-                            </button>
-                        </div>
-
-                        <div className="text-center pt-12">
-                            <p className="barlow-cond text-[12px] font-black text-[#2a2f3a] uppercase tracking-[0.2em]">
-                                ALREADY A DRIVER? <Link href="/driver/login" className="text-[#e8a230] hover:text-white transition-colors ml-3 border-b border-white opacity-40 hover:opacity-100">LOG IN HERE</Link>
+                        <div className="text-center pt-8">
+                            <p className="barlow-cond text-[11px] font-black text-[#2a2f3a] uppercase tracking-[0.15em]">
+                                ALREADY A DRIVER? <Link href="/driver/login" className="text-[#e8a230] hover:text-white transition-colors ml-2 font-bold">LOGIN HERE</Link>
                             </p>
                         </div>
                     </div>
                 </div>
-
             </main>
 
             {/* ── STICKY BOTTOM NAV (MOBILE) ── */}
