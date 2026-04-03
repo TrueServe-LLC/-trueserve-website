@@ -1,34 +1,15 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { loginWithPassword, signupWithPassword, resetPassword, getAuthSession, loginAsPilot } from "../auth/actions";
+
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getAuthSession, loginAsPilot } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/client";
-import { useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import Logo from "@/components/Logo";
 
-export default function LoginPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-[#080c14] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-            <LoginWithParams />
-        </Suspense>
-    );
-}
-
-function LoginWithParams() {
+export default function FleetLoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectUrl = searchParams.get("redirect") || "/restaurants";
-    const isPlus = searchParams.get("plus") === "true";
-    const isPremium = searchParams.get("premium") === "true";
-    const requestedPlan = isPremium ? 'Premium' : isPlus ? 'Plus' : 'Basic';
-
-    const [mode, setMode] = useState<'login' | 'signup' | 'reset'>(isPlus || isPremium ? 'signup' : 'login');
-    const [formData, setFormData] = useState({ email: '', password: '', name: '', address: '' });
+    const redirectUrl = searchParams.get("next") || "/driver/dashboard";
     const [isLoading, setIsLoading] = useState(false);
-    const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
-    const supabase = createClient();
 
     useEffect(() => {
         const checkUser = async () => {
@@ -39,225 +20,147 @@ function LoginWithParams() {
             }
 
             const session = await getAuthSession();
-
             if (session.isAuth) {
                 let dest = redirectUrl;
                 if (session.role === 'MERCHANT') dest = "/merchant/dashboard";
                 else if (session.role === 'DRIVER') dest = "/driver/dashboard";
                 else if (session.role === 'ADMIN') dest = "/admin/dashboard";
                 router.push(dest);
-            } else {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    const { syncUserSession } = await import("../auth/actions");
-                    const res = await syncUserSession();
-                    if (res.success) {
-                        router.refresh();
-                    } else {
-                        await supabase.auth.signOut();
-                    }
-                }
             }
         };
         checkUser();
-    }, [router, supabase, redirectUrl]);
-
-    const handleSubmit = async () => {
-        setIsLoading(true);
-        setMessage(null);
-
-        const data = new FormData();
-        data.append("email", formData.email);
-        data.append("password", formData.password);
-        data.append("name", formData.name);
-        data.append("address", formData.address);
-        data.append("plan", requestedPlan);
-
-        let res;
-        if (mode === 'login') {
-            const res = await loginWithPassword(data);
-            if (res.success) {
-                if (res.role === 'MERCHANT') router.push("/merchant/dashboard");
-                else if (res.role === 'DRIVER') router.push("/driver/dashboard");
-                else if (res.role === 'ADMIN') router.push("/admin/dashboard");
-                else router.push(redirectUrl);
-            } else {
-                setMessage({ text: res.message, type: 'error' });
-            }
-        } else if (mode === 'signup') {
-            res = await signupWithPassword(data);
-            if (res.success) {
-                router.push(redirectUrl);
-            }
-        } else if (mode === 'reset') {
-            res = await resetPassword(data);
-        }
-
-        if (res && !res.success) {
-            setMessage({ text: res.message, type: 'error' });
-        } else if (res && res.success) {
-            setMessage({ text: res.message, type: 'success' });
-        }
-
-        setIsLoading(false);
-    };
+    }, [router, redirectUrl]);
 
     return (
-        <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-[#080c14] px-4 py-8 md:py-0">
-             {/* Background Layer with heavy blur */}
-             <div className="absolute inset-0 z-0">
-                <img 
-                    src="/admin_login_bg_cinematic_1774378543203.png" 
-                    alt="Background" 
-                    className="w-full h-full object-cover grayscale opacity-20 scale-105"
-                />
-                <div className="absolute inset-0 bg-[#080c14]/90 backdrop-blur-[120px]" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/5" />
+        <div className="login-grid font-sans">
+            <style dangerouslySetInnerHTML={{ __html: `
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&display=swap');
+                
+                body { margin: 0; background: #0c0e13; overflow-x: hidden; }
+                .login-grid { display: grid; grid-template-columns: 1fr 480px; min-height: 100vh; background: #0c0e13; }
+                
+                /* LEFT PANEL */
+                .left-panel { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px 80px; overflow: hidden; background: #080a0f; }
+                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-cover grayscale; opacity: 0.25; filter: contrast(1.1); transform: scale(1.05); }
+                .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,19,0.3) 0%, rgba(12,14,19,0.8) 100%); z-index: 1; }
+                
+                .left-content { position: relative; z-index: 2; }
+                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; }
+                .logo-ring { width: 38px; height: 38px; border: 1.5px solid #e8a230; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(19,23,32,0.6); }
+                .logo-text { font-size: 20px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
+                .logo-text span { color: #e8a230; }
+
+                .fleet-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(26,18,0,0.4); border: 1px solid #3a2800; padding: 6px 14px; margin-bottom: 24px; border-radius: 2px; }
+                .badge-dot { width: 6px; height: 6px; background: #e8a230; border-radius: 50%; box-shadow: 0 0 10px #e8a230; }
+                .badge-text { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8a230; }
+
+                .hero-txt { font-family: 'Barlow Condensed', sans-serif; font-size: 72px; font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 0.9; margin-bottom: 20px; color: #fff; }
+                .hero-txt span { color: #e8a230; }
+                .hero-sub { font-size: 14px; color: #555; line-height: 1.6; max-width: 400px; margin-bottom: 40px; }
+
+                .feat-item { display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: rgba(15,18,25,0.4); border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(10px); margin-bottom: 4px; }
+                .feat-icon { width: 32px; height: 32px; background: rgba(232,162,48,0.1); border: 1px solid rgba(232,162,48,0.2); display: flex; align-items: center; justify-content: center; }
+                .feat-name { font-size: 12px; font-weight: 700; color: #ccc; text-transform: uppercase; letter-spacing: 0.05em; }
+
+                /* RIGHT PANEL */
+                .right-panel { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
+                .form-box { width: 100%; max-width: 340px; }
+                .form-hd { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; font-style: italic; }
+                .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #e8a230; margin-bottom: 40px; }
+
+                .input-wrap { background: #0f1219; border: 1px solid #1c1f28; display: flex; align-items: center; margin-bottom: 16px; transition: border-color .15s; }
+                .input-wrap:focus-within { border-color: #e8a230; }
+                .country-box { padding: 0 16px; border-right: 1px solid #1c1f28; font-size: 12px; font-weight: 600; color: #444; height: 50px; display: flex; align-items: center; }
+                .main-input { flex: 1; background: transparent; border: none; padding: 14px; color: #fff; font-family: 'DM Mono', monospace; font-size: 14px; outline: none; }
+                .main-input::placeholder { color: #222; }
+
+                .submit-btn { width: 100%; padding: 16px; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; cursor: pointer; transition: opacity .15s; margin-bottom: 20px; }
+                .submit-btn:hover { opacity: 0.9; }
+
+                .divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+                .divider-line { flex: 1; height: 1px; background: #1c1f28; }
+                .divider-txt { font-size: 10px; font-weight: 700; color: #222; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+
+                .pilot-btn { width: 100%; padding: 14px; background: transparent; border: 1.5px solid #2a2f3a; color: #888; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: all .15s; margin-bottom: 8px; }
+                .pilot-btn:hover { border-color: #e8a230; color: #e8a230; background: rgba(232,162,48,0.03); }
+                .pilot-btn.gold { border-color: rgba(232,162,48,0.3); color: #e8a230; }
+
+                @media (max-width: 1024px) { 
+                    .login-grid { grid-template-columns: 1fr; }
+                    .left-panel { display: none; }
+                }
+            ` }} />
+
+            <div className="left-panel">
+                <img src="/admin_login_bg_cinematic_1774378543203.png" alt="" className="bg-img" />
+                <div className="bg-overlay" />
+                
+                <div className="logo-wrap">
+                    <div className="logo-ring">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#e8a230" strokeWidth="1.5"/><path d="M7 10l2.5 2.5L14 7" stroke="#e8a230" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </div>
+                    <div className="logo-text">True<span>Serve</span></div>
+                </div>
+
+                <div className="left-content">
+                    <div className="fleet-badge">
+                        <div className="badge-dot" />
+                        <div className="badge-text">Secure Fleet Uplink</div>
+                    </div>
+                    <div className="hero-txt">Ready to<br/><span>Earn?</span></div>
+                    <div className="hero-sub">Enter the next-gen logistics network. Connect with the TrueServe platform and accept high-yield missions in your sector.</div>
+                    
+                    <div className="feat-item">
+                        <div className="feat-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#e8a230" strokeWidth="1.2"/><path d="M7 4v3.5l2 1.5" stroke="#e8a230" strokeWidth="1.2" strokeLinecap="round"/></svg></div>
+                        <div className="feat-name">Rapid Liquidity Payouts</div>
+                    </div>
+                    <div className="feat-item">
+                        <div className="feat-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="#e8a230" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                        <div className="feat-name">Optimized Mission Mesh</div>
+                    </div>
+                    <div className="feat-item">
+                        <div className="feat-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2l1.6 3.3h3.4l-2.5 2.4l.6 3.3l-3.1-1.6l-3.1 1.6l.6-3.3l-2.5-2.4h3.4l1.6-3.3z" stroke="#e8a230" strokeWidth="1.2"/></svg></div>
+                        <div className="feat-name">Priority Pilot Support</div>
+                    </div>
+                </div>
             </div>
 
-            <div className="relative z-10 w-full max-w-md p-1 px-1 bg-gradient-to-b from-white/10 to-transparent rounded-[2.5rem] shadow-2xl">
-                <div className="bg-[#0a0a0b]/90 backdrop-blur-3xl rounded-[2.3rem] p-10 md:p-12 border border-white/5 space-y-8">
-                    <div className="text-center space-y-4">
-                        <Logo size="lg" orientation="vertical" />
-                        <h2 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.4em]">
-                            {mode === 'login' && "Sign in to your account"}
-                            {mode === 'signup' && (
-                                <div className="flex flex-col items-center">
-                                    <span>Create Account</span>
-                                    {(isPlus || isPremium) && (
-                                        <span className={`mt-2 px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${isPremium ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-primary/10 text-primary border-primary/20'}`}>
-                                            {requestedPlan} Membership
-                                        </span>
-                                    )}
-                                </div>
-                            )}
-                            {mode === 'reset' && "Reset Password"}
-                        </h2>
+            <div className="right-panel">
+                <div className="form-box">
+                    <div className="form-hd">Fleet Auth</div>
+                    <div className="form-sub">Secure Terminal Access</div>
+
+                    <div className="mb-8">
+                        <div className="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-3">Mobile Terminal Number</div>
+                        <div className="input-wrap">
+                            <div className="country-box">🇺🇸 +1</div>
+                            <input className="main-input" type="tel" placeholder="555 000 0000" />
+                        </div>
+                        <button className="submit-btn">Request Access Code →</button>
+                        <div className="text-center text-[10px] font-bold text-[#222] uppercase tracking-widest leading-loose">
+                            System will transmit a secure<br/>one-time authentication payload.
+                        </div>
                     </div>
 
-                    {message && (
-                        <div className={`p-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-center animate-shake ${message.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
-                            {message.text}
-                        </div>
-                    )}
+                    <div className="divider">
+                        <div className="divider-line" />
+                        <div className="divider-txt">Pilot Rollout Access</div>
+                        <div className="divider-line" />
+                    </div>
 
-                    <div className="space-y-4">
-                        {mode === 'signup' && (
-                            <>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Full Name</label>
-                                    <input
-                                        type="text"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
-                                        placeholder="John Doe"
-                                        value={formData.name}
-                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Delivery Address</label>
-                                    <input
-                                        type="text"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
-                                        placeholder="123 Main St, Charlotte, NC"
-                                        value={formData.address}
-                                        onChange={e => setFormData({ ...formData, address: e.target.value })}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        <div className="space-y-2">
-                            <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Email Address</label>
-                            <input
-                                type="email"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
-                                placeholder="you@example.com"
-                                value={formData.email}
-                                onChange={e => setFormData({ ...formData, email: e.target.value })}
-                            />
-                        </div>
-
-                        {mode !== 'reset' && (
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Password</label>
-                                <input
-                                    type="password"
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 transition-all text-white font-medium text-sm"
-                                    placeholder="••••••••"
-                                    value={formData.password}
-                                    onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                />
-                            </div>
-                        )}
-
-                        <button
-                            onClick={handleSubmit}
-                            disabled={isLoading || !formData.email || (mode !== 'reset' && !formData.password)}
-                            className="w-full badge-solid-primary !py-5 !text-[11px] uppercase tracking-widest shadow-xl disabled:opacity-50 mt-4 active:scale-95 transition-all font-black"
-                        >
-                            {isLoading ? "Processing..." : (mode === 'login' ? "Login" : mode === 'signup' ? "Create Account" : "Send Reset Link")}
+                    <form action={loginAsPilot}>
+                        <button className="pilot-btn gold" type="submit">
+                            ⚡ Quick Pilot Access (Driver)
                         </button>
+                    </form>
+                    
+                    <button className="pilot-btn" onClick={() => router.push('/merchant/dashboard')}>
+                        🛡️ Merchant Hub Preview
+                    </button>
 
-                        {/* --- EXCLUSIVE PILOT TESTING BYPASS --- */}
-                        <div className="pt-2">
-                            <form action={loginAsPilot}>
-                                <button
-                                    type="submit"
-                                    className="w-full bg-[#131720] border border-[#e8a230]/30 hover:border-[#e8a230]/60 text-[#e8a230] text-[9px] font-black uppercase tracking-[0.2em] py-4 rounded-xl transition-all shadow-xl active:scale-95"
-                                >
-                                    ⚡ Quick Pilot Access (East Coast)
-                                </button>
-                            </form>
-                        </div>
-
-                        <div className="relative my-8">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-white/5" />
-                            </div>
-                            <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
-                                <span className="bg-[#0a0a0b] px-4 text-slate-600">Universal Login</span>
-                            </div>
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={async () => {
-                                try {
-                                    setIsLoading(true);
-                                    const supabase = createClient();
-                                    await supabase.auth.signInWithOAuth({
-                                        provider: 'google',
-                                        options: { redirectTo: `${window.location.origin}/auth/callback` }
-                                    });
-                                } catch (err: any) {
-                                    setMessage({ text: "Failed to start Google login.", type: 'error' });
-                                    setIsLoading(false);
-                                }
-                            }}
-                            disabled={isLoading}
-                            className="w-full flex items-center justify-center gap-3 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] py-4 rounded-xl hover:bg-slate-200 transition-all shadow-xl active:scale-95 disabled:opacity-50"
-                        >
-                            <svg className="w-4 h-4" viewBox="0 0 24 24">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                            </svg>
-                            Google Access
-                        </button>
-
-                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500 mt-8 pt-4 border-t border-white/5">
-                            {mode === 'login' && (
-                                <>
-                                    <button onClick={() => setMode('signup')} className="hover:text-primary transition-colors">Join</button>
-                                    <button onClick={() => setMode('reset')} className="hover:text-primary transition-colors">Lost Key</button>
-                                </>
-                            )}
-                            {mode !== 'login' && (
-                                <button onClick={() => setMode('login')} className="hover:text-primary transition-colors w-full text-center">Identity Terminal</button>
-                            )}
-                        </div>
+                    <div className="mt-8 flex items-center justify-center gap-2 text-[#222] font-black text-[9px] uppercase tracking-[0.2em]">
+                        <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2"/></svg>
+                        Encrypted Connection · Secure Uplink
                     </div>
                 </div>
             </div>

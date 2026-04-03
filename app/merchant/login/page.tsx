@@ -1,184 +1,166 @@
 "use client";
-import { useState, Suspense } from "react";
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginWithPassword } from "../../auth/actions";
-import Link from "next/link";
-import Logo from "@/components/Logo";
+import { getAuthSession, loginAsDemoMerchant } from "@/app/auth/actions";
 
 export default function MerchantLoginPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-[#080c14] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-            <MerchantLoginContent />
-        </Suspense>
-    );
-}
-
-function MerchantLoginContent() {
     const router = useRouter();
-    const [formData, setFormData] = useState({ email: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
-    const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setMessage(null);
+    useEffect(() => {
+        const checkUser = async () => {
+            const isPreview = document.cookie.includes("preview_mode=true");
+            if (isPreview) {
+                // Determine if it was a merchant or driver preview
+                // For now, we favor merchant if on this page
+                router.push("/merchant/dashboard");
+                return;
+            }
 
-        const data = new FormData();
-        data.append("email", formData.email);
-        data.append("password", formData.password);
-
-        const res = await loginWithPassword(data);
-        if (res.success) {
-            if (res.role === 'MERCHANT') router.push("/merchant/dashboard");
-            else router.push("/merchant/dashboard"); // Default for merchant login
-        } else {
-            setMessage({ text: res.message, type: 'error' });
-        }
-        setIsLoading(false);
-    };
+            const session = await getAuthSession();
+            if (session.isAuth && session.role === 'MERCHANT') {
+                router.push("/merchant/dashboard");
+            }
+        };
+        checkUser();
+    }, [router]);
 
     return (
-        <div className="flex min-h-screen bg-[#080c14] font-sans selection:bg-primary/30">
-            {/* Sidebar - Inspired by HouseEats */}
-            <aside className="hidden lg:flex w-[420px] bg-[#0a0a0b] border-r border-white/5 flex-col p-12 relative overflow-hidden shrink-0">
-                {/* Decorative radial gradient */}
-                <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="login-grid font-sans">
+            <style dangerouslySetInnerHTML={{ __html: `
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&display=swap');
                 
-                <div className="relative z-10 flex flex-col h-full">
-                    {/* Logo */}
-                    <Logo size="lg" />
+                body { margin: 0; background: #0c0e13; overflow-x: hidden; }
+                .login-grid { display: grid; grid-template-columns: 1fr 480px; min-height: 100vh; background: #0c0e13; }
+                
+                /* LEFT PANEL */
+                .left-panel { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px 80px; overflow: hidden; background: #080a0f; }
+                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; grayscale: 1; opacity: 0.2; filter: contrast(1.1); transform: scale(1.05); }
+                .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,19,0.3) 0%, rgba(12,14,19,0.85) 100%); z-index: 1; }
+                
+                .left-content { position: relative; z-index: 2; }
+                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; }
+                .logo-ring { width: 38px; height: 38px; border: 1.5px solid #e8a230; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(19,23,32,0.6); }
+                .logo-text { font-size: 20px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
+                .logo-text span { color: #e8a230; }
 
-                    {/* Program Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-8 w-fit">
-                        🏪 Merchant Program
+                .biz-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(61,214,140,0.1); border: 1px solid rgba(61,214,140,0.2); padding: 6px 14px; margin-bottom: 24px; border-radius: 2px; }
+                .badge-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; box-shadow: 0 0 10px #3dd68c; }
+                .badge-text { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #3dd68c; }
+
+                .hero-txt { font-family: 'Barlow Condensed', sans-serif; font-size: 72px; font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 0.9; margin-bottom: 20px; color: #fff; }
+                .hero-txt span { color: #e8a230; }
+                .hero-sub { font-size: 14px; color: #555; line-height: 1.6; max-width: 400px; margin-bottom: 40px; }
+
+                .feat-item { display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: rgba(15,18,25,0.4); border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(10px); margin-bottom: 4px; }
+                .feat-icon { width: 32px; height: 32px; background: rgba(61,214,140,0.05); border: 1px solid rgba(61,214,140,0.1); display: flex; align-items: center; justify-content: center; }
+                .feat-name { font-size: 12px; font-weight: 700; color: #ccc; text-transform: uppercase; letter-spacing: 0.05em; }
+
+                /* RIGHT PANEL */
+                .right-panel { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
+                .form-box { width: 100%; max-width: 340px; }
+                .form-hd { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; font-style: italic; }
+                .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #3dd68c; margin-bottom: 40px; }
+
+                .field-row { margin-bottom: 20px; }
+                .field-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #444; margin-bottom: 8px; margin-left: 2px; }
+                
+                .input-box { width: 100%; background: #0f1219; border: 1px solid #1c1f28; padding: 14px 18px; color: #fff; font-family: 'DM Mono', monospace; font-size: 14px; outline: none; transition: border-color .15s; box-sizing: border-box; }
+                .input-box:focus { border-color: #3dd68c; }
+                .input-box::placeholder { color: #222; }
+
+                .submit-btn { width: 100%; padding: 16px; background: #3dd68c; border: none; color: #000; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; cursor: pointer; transition: opacity .15s; margin-top: 10px; margin-bottom: 24px; }
+                .submit-btn:hover { opacity: 0.9; }
+
+                .divider { display: flex; align-items: center; gap: 12px; margin: 32px 0; }
+                .divider-line { flex: 1; height: 1px; background: #1c1f28; }
+                .divider-txt { font-size: 10px; font-weight: 700; color: #222; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+
+                .pilot-btn { width: 100%; padding: 14px; background: transparent; border: 1.5px solid #2a2f3a; color: #888; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: all .15s; margin-bottom: 8px; }
+                .pilot-btn:hover { border-color: #3dd68c; color: #3dd68c; background: rgba(61,214,140,0.03); }
+                .pilot-btn.green { border-color: rgba(61,214,140,0.3); color: #3dd68c; }
+
+                @media (max-width: 1024px) { 
+                    .login-grid { grid-template-columns: 1fr; }
+                    .left-panel { display: none; }
+                }
+            ` }} />
+
+            <div className="left-panel">
+                <img src="/admin_login_bg_cinematic_1774378543203.png" alt="" className="bg-img" />
+                <div className="bg-overlay" />
+                
+                <div className="logo-wrap">
+                    <div className="logo-ring">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#e8a230" strokeWidth="1.5"/><path d="M7 10l2.5 2.5L14 7" stroke="#e8a230" strokeWidth="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
+                    <div className="logo-text">True<span>Serve</span></div>
+                </div>
 
-                    {/* Title */}
-                    <h2 className="text-4xl md:text-5xl font-serif italic text-white leading-[1.1] mb-6">
-                        Welcome Back, <br />
-                        <span className="text-primary">Partner.</span>
-                    </h2>
-
-                    <p className="text-slate-400 text-sm leading-relaxed mb-12 max-w-xs">
-                        Your kitchen's command center is ready. Access your orders, manage your menu, and track performance.
-                    </p>
-
-                    {/* Perks */}
-                    <div className="space-y-4 mt-auto">
-                        <PerkItem 
-                            icon="🚀" 
-                            title="Real-Time Orders" 
-                            desc="Track every ticket from kitchen to customer." 
-                        />
-                        <PerkItem 
-                            icon="📊" 
-                            title="Growth Insights" 
-                            desc="Understand your best-selling dishes instantly." 
-                            amber 
-                        />
-                        <PerkItem 
-                            icon="🛡️" 
-                            title="Elite Support" 
-                            desc="Priority 24/7 assistance for our partners." 
-                        />
+                <div className="left-content">
+                    <div className="biz-badge">
+                        <div className="badge-dot" />
+                        <div className="badge-text">Secure Merchant Uplink</div>
                     </div>
-                </div>
-            </aside>
-
-            {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative overflow-y-auto">
-                {/* Background Grid - HouseEats Style */}
-                <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_80%)]" />
-                </div>
-
-                {/* Mobile Nav Header */}
-                <div className="lg:hidden flex items-center justify-between p-6 border-b border-white/5 bg-[#0a0a0b]/80 backdrop-blur-xl">
-                    <Logo size="sm" />
-                    <div className="text-[10px] font-black uppercase tracking-widest text-primary">Merchant Login</div>
-                </div>
-
-                <div className="flex-1 flex items-center justify-center p-8 md:p-16">
-                    <div className="w-full max-w-md space-y-12">
-                        {/* Header */}
-                        <div className="space-y-2">
-                            <h3 className="text-3xl font-serif italic text-white tracking-tight leading-tight">Merchant Access</h3>
-                            <p className="text-slate-500 text-sm">Enter your credentials to manage your store.</p>
-                        </div>
-
-                        {/* Form */}
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {message && (
-                                <div className={`p-4 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-3 border animate-in fade-in slide-in-from-top-2 ${
-                                    message.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-green-500/10 border-green-500/20 text-green-400'
-                                }`}>
-                                    <span>{message.type === 'error' ? '⚠️' : '✅'}</span>
-                                    {message.text}
-                                </div>
-                            )}
-
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Email Address</label>
-                                    <input 
-                                        type="email" 
-                                        required
-                                        placeholder="partner@yourstore.com"
-                                        className="w-full bg-[#1c1916] border border-white/5 rounded-2xl px-6 py-4 text-sm text-white focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-slate-700"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                    />
-                                </div>
-                                
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-end mr-1">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Password</label>
-                                        <Link href="/login?mode=reset" className="text-[9px] font-black text-primary/60 uppercase tracking-widest hover:text-primary transition-colors">Forgot?</Link>
-                                    </div>
-                                    <input 
-                                        type="password" 
-                                        required
-                                        placeholder="••••••••"
-                                        className="w-full bg-[#1c1916] border border-white/5 rounded-2xl px-6 py-4 text-sm text-white focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-slate-700"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                    />
-                                </div>
-                            </div>
-
-                            <button 
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 text-black font-black uppercase tracking-[0.3em] text-[11px] h-14 rounded-2xl italic shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
-                            >
-                                {isLoading ? "Authorizing..." : "Continue to Dashboard →"}
-                            </button>
-                        </form>
-
-                        {/* Footer Link */}
-                        <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-4">
-                            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest italic opacity-60">New to the Network?</p>
-                            <Link href="/merchant" className="badge-outline-white !py-3.5 !px-12 !text-[11px] !rounded-full">
-                                Apply to Partner
-                            </Link>
-                        </div>
+                    <div className="hero-txt">Ready to<br/><span>Scale?</span></div>
+                    <div className="hero-sub">Enter the operational nerve center for top-performing kitchens. Manage your orders, logistics and growth in real-time.</div>
+                    
+                    <div className="feat-item">
+                        <div className="feat-icon">🍱</div>
+                        <div className="feat-name">Real-Time Kitchen Feed</div>
+                    </div>
+                    <div className="feat-item">
+                        <div className="feat-icon">📈</div>
+                        <div className="feat-name">Growth Insights & Settlements</div>
+                    </div>
+                    <div className="feat-item">
+                        <div className="feat-icon">🛡️</div>
+                        <div className="feat-name">Priority Partner Support</div>
                     </div>
                 </div>
-            </main>
-        </div>
-    );
-}
-
-function PerkItem({ icon, title, desc, amber }: { icon: string; title: string; desc: string; amber?: boolean }) {
-    return (
-        <div className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-primary/20 transition-all">
-            <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-lg ${amber ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-white/5 text-white border border-white/10'}`}>
-                {icon}
             </div>
-            <div className="space-y-1">
-                <p className="text-[13px] font-bold text-white tracking-wide">{title}</p>
-                <p className="text-[11px] text-slate-500 leading-tight">{desc}</p>
+
+            <div className="right-panel">
+                <div className="form-box">
+                    <div className="form-hd">Partner Login</div>
+                    <div className="form-sub">Operations Terminal Access</div>
+
+                    <div className="field-row">
+                        <div className="field-lbl">Email Identifier</div>
+                        <input className="input-box" type="email" placeholder="partner@yourstore.com" />
+                    </div>
+
+                    <div className="field-row">
+                        <div className="field-lbl">Security Password</div>
+                        <input className="input-box" type="password" placeholder="••••••••" />
+                    </div>
+
+                    <button className="submit-btn" onClick={() => setIsLoading(true)}>
+                        Authorize Connection →
+                    </button>
+
+                    <div className="divider">
+                        <div className="divider-line" />
+                        <div className="divider-txt">Merchant Rollout Access</div>
+                        <div className="divider-line" />
+                    </div>
+
+                    <form action={loginAsDemoMerchant}>
+                        <button className="pilot-btn green" type="submit">
+                            ⚡ Quick Pilot Access (Merchant)
+                        </button>
+                    </form>
+                    
+                    <button className="pilot-btn" onClick={() => router.push('/login')}>
+                        🚛 Fleet Hub Gateway
+                    </button>
+
+                    <div className="mt-8 flex items-center justify-center gap-2 text-[#222] font-black text-[9px] uppercase tracking-[0.2em]">
+                        <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2"/></svg>
+                        Encrypted Connection · Secure Uplink
+                    </div>
+                </div>
             </div>
         </div>
     );

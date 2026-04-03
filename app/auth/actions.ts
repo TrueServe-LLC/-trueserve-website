@@ -464,6 +464,11 @@ export async function loginAsPilot() {
 export async function loginAsDemoMerchant() {
     const cookieStore = await cookies();
     const DEMO_MERCHANT_ID = "merchant-demo-2026";
+    
+    // Clear old tokens to avoid session ghosting
+    cookieStore.delete("sb-access-token");
+    cookieStore.delete("sb-refresh-token");
+
     cookieStore.set("userId", DEMO_MERCHANT_ID, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -471,6 +476,15 @@ export async function loginAsDemoMerchant() {
         path: '/',
         maxAge: 60 * 60 * 24
     });
-    return { success: true };
+
+    // Set the Pilot bypass for redirect speed
+    cookieStore.set("preview_mode", "true", { 
+        path: "/", 
+        httpOnly: false, 
+        secure: false, // Ensure visibility on localtunnel HTTPS
+        maxAge: 60 * 60 * 12 // 12 hours
+    });
+
+    redirect("/merchant/dashboard");
 }
 
