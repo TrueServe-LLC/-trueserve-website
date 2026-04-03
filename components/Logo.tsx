@@ -11,35 +11,46 @@ const Logo: React.FC<LogoProps> = ({
     size = 'md'
 }) => {
     const textSizes = {
-        sm: 'text-[18px]',
-        md: 'text-[24px]',
-        lg: 'text-[32px]',
-        xl: 'text-[48px]'
+        sm: 'text-[14px]',
+        md: 'text-[16px]',
+        lg: 'text-[24px]',
+        xl: 'text-[32px]'
     };
 
     const containerSizes = {
-        sm: 'w-[28px] h-[28px] text-[16px]',
-        md: 'w-[36px] h-[36px] text-[20px]',
-        lg: 'w-[48px] h-[48px] text-[28px]',
-        xl: 'w-[72px] h-[72px] text-[40px]'
+        sm: 'w-[28px] h-[28px]',
+        md: 'w-[38px] h-[38px]',
+        lg: 'w-[48px] h-[48px]',
+        xl: 'w-[64px] h-[64px]'
+    };
+
+    const svgSizes = {
+        sm: 14,
+        md: 18,
+        lg: 24,
+        xl: 32
     };
 
     return (
         <Link 
             href="/" 
-            className={`flex items-center gap-[12px] group active:scale-95 transition-all ${className}`}
+            className={`flex items-center gap-[10px] group active:scale-95 transition-all ${className}`}
         >
             <div className={`
                 ${containerSizes[size]} 
-                rounded-full border-2 border-[#e8a230] 
+                rounded-full border-[1.5px] border-white/10 
+                bg-[#0c0e13]/85 backdrop-blur-[14px]
                 flex items-center justify-center 
-                font-black text-[#e8a230]
-                transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(232,162,48,0.3)]
+                transition-all duration-300 group-hover:scale-110 group-hover:border-[#e8a230]/50
             `}>
-                ✓
+                <svg width={svgSizes[size]} height={svgSizes[size]} viewBox="0 0 18 18" fill="none">
+                    <circle cx="9" cy="9" r="7" stroke="#e8a230" stroke-width="1.4"/>
+                    <path d="M6 9l2.5 2.5L13 7" stroke="#e8a230" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
             </div>
             <span 
-                className={`${textSizes[size]} font-extrabold uppercase tracking-widest text-white leading-none whitespace-nowrap font-barlow-cond`}
+                className={`${textSizes[size]} font-bold text-white whitespace-nowrap tracking-normal leading-none`}
+                style={{ textShadow: '0 1px 10px rgba(0,0,0,.7)' }}
             >
                 TrueServe
             </span>

@@ -1,127 +1,156 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
-import { useRouter } from "next/navigation";
-import Logo from "@/components/Logo";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
-import { Activity, Clock, MapPin, ShieldCheck } from "lucide-react";
-import DriverLoginForm from "./DriverLoginForm";
+import { useRouter } from "next/navigation";
+import { getAuthSession, loginAsDriver } from "@/app/auth/actions";
+import Logo from "@/components/Logo";
+
+const LogoSVG = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+    <circle cx="9" cy="9" r="7" stroke="#e8a230" stroke-width="1.4"/>
+    <path d="M6 9l2.5 2.5L13 7" stroke="#e8a230" stroke-width="1.4" stroke-linecap="round"/>
+  </svg>
+);
 
 function DriverLoginPageContent() {
-    const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const [phone, setPhone] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    return (
-        <div className="min-h-screen bg-[#0c0e13] text-white font-sans selection:bg-[#3dd68c]/30 selection:text-black overflow-x-hidden">
-            <style dangerouslySetInnerHTML={{ __html: `
-                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&family=Bebas+Neue&display=swap');
-                .bebas { font-family: 'Bebas Neue', sans-serif; }
-                .barlow-cond { font-family: 'Barlow Condensed', sans-serif; }
-                
-                .fi-input {
-                    background: #131720;
-                    border: 1px solid #2a2f3a;
-                    border-radius: 4px;
-                    padding: 12px 16px;
-                    width: 100%;
-                    outline: none;
-                    font-size: 14px;
-                    color: #fff;
-                    transition: border-color 0.2s;
-                }
-                .fi-input:focus { border-color: #e8a230; }
-                .fi-input::placeholder { color: #555; }
-                
-                .fi-label {
-                    font-family: 'Barlow Condensed', sans-serif;
-                    font-weight: 800;
-                    font-size: 11px;
-                    text-transform: uppercase;
-                    letter-spacing: 1.5px;
-                    color: #e8a230;
-                    margin-bottom: 8px;
-                    display: block;
-                }
-            ` }} />
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    let W: number, H: number;
 
-            {/* ── TOP NAV TABS ── */}
-            <div className="flex bg-[#080a0f] border-b border-white/5">
-                <Link href="/merchant/login" className="px-8 py-4 text-[#555] hover:text-white transition-colors font-bold text-xs uppercase tracking-widest">Merchant Login</Link>
-                <Link href="/driver/login" className="px-8 py-4 bg-[#e8a230] text-black font-bold text-xs uppercase tracking-widest">Driver Login</Link>
-            </div>
+    const resize = () => {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
 
-            <div className="flex flex-col lg:flex-row min-h-[calc(100vh-50px)]">
-                
-                {/* ── LEFT COLUMN ── */}
-                <div className="w-full lg:w-1/2 p-10 lg:p-24 space-y-16">
-                    {/* Logo Section */}
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full border-2 border-[#e8a230] flex items-center justify-center">
-                            <span className="text-[#e8a230] text-xl">✓</span>
-                        </div>
-                        <span className="barlow-cond text-2xl font-black uppercase tracking-widest">TrueServe</span>
-                    </div>
+    const AMBER = '#e8a230';
+    const CELL = 72;
 
-                    <div className="space-y-8">
-                        <div className="inline-block px-3 py-1 border border-[#e8a230] rounded flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[#e8a230]" />
-                            <span className="barlow-cond font-black text-[10px] uppercase tracking-[0.2em] text-[#e8a230]">FLEET UPLINK</span>
-                        </div>
+    function drawCity() {
+      ctx!.fillStyle = '#0e1218'; ctx!.fillRect(0, 0, W, H);
+      const cols = Math.ceil(W / CELL) + 2; const rows = Math.ceil(H / CELL) + 2;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const bx = (c - 0.5) * CELL + 8; const by = (r - 0.5) * CELL + 8;
+          const bw = CELL - 16; const bh = CELL - 16;
+          const shade = (r * 7 + c * 13) % 3;
+          const fills = ['#111820', '#0f151e', '#13191f'];
+          ctx!.fillStyle = fills[shade]; ctx!.fillRect(bx, by, bw, bh);
+        }
+      }
+      ctx!.strokeStyle = 'rgba(232,162,48,0.07)'; ctx!.lineWidth = 1;
+      for (let x = 0; x <= W; x += CELL) { ctx!.beginPath(); ctx!.moveTo(x, 0); ctx!.lineTo(x, H); ctx!.stroke(); }
+      for (let y = 0; y <= H; y += CELL) { ctx!.beginPath(); ctx!.moveTo(0, y); ctx!.lineTo(W, y); ctx!.stroke(); }
+    }
 
-                        <h1 className="italic text-white text-[80px] lg:text-[110px] leading-[0.85] font-black uppercase tracking-tighter">
-                            MISSION<br />
-                            <span className="text-[#e8a230]">HUB.</span>
-                        </h1>
+    function makeRoute() {
+      const snapX = (n: number) => Math.round(n / CELL) * CELL;
+      const snapY = (n: number) => Math.round(n / CELL) * CELL;
+      return {
+        sx: snapX(Math.random() * W), sy: snapY(Math.random() * H),
+        ex: snapX(Math.random() * W), ey: snapY(Math.random() * H),
+        progress: Math.random(), speed: 0.003 + Math.random() * 0.004,
+        color: AMBER, trailLen: 0.15 + Math.random() * 0.2, dotR: 2 + Math.random() * 2,
+      };
+    }
 
-                        <p className="max-w-md text-[#888] font-medium text-lg leading-relaxed">
-                            Access your fleet command center. Manage your active mission, track your earnings, and access exclusive logistics data to maximize yield.
-                        </p>
-                    </div>
+    let routes = Array.from({length: 10}, makeRoute);
+    function animate() {
+      drawCity();
+      routes.forEach(r => {
+        const x = r.sx + (r.ex - r.sx) * r.progress;
+        const y = r.sy + (r.ey - r.sy) * r.progress;
+        const grd = ctx!.createRadialGradient(x, y, 0, x, y, r.dotR * 4);
+        grd.addColorStop(0, 'rgba(232,162,48,0.3)'); grd.addColorStop(1, 'transparent');
+        ctx!.fillStyle = grd; ctx!.beginPath(); ctx!.arc(x, y, r.dotR * 4, 0, Math.PI*2); ctx!.fill();
+        ctx!.fillStyle = AMBER; ctx!.beginPath(); ctx!.arc(x, y, r.dotR, 0, Math.PI*2); ctx!.fill();
+        r.progress += r.speed; if (r.progress >= 1) { Object.assign(r, makeRoute()); r.progress = 0; }
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+    return () => window.removeEventListener('resize', resize);
+  }, []);
 
-                    <div className="space-y-4 max-w-lg">
-                        {[
-                            { title: "Active Mission", desc: "Monitor live delivery routes and order statuses.", icon: "🛰️" },
-                            { title: "Yield Data", desc: "Access high-performance earnings analytics.", icon: "💰" },
-                            { title: "Pilot Support", desc: "24/7 mission-ready assistance for fleet.", icon: "🛡️" }
-                        ].map((card) => (
-                            <div key={card.title} className="bg-[#0f1219] border border-white/5 p-6 flex items-center gap-6 rounded-sm">
-                                <div className="w-12 h-12 bg-[#131720] border border-[#2a2f3a] rounded flex items-center justify-center text-[#e8a230] text-xl">{card.icon}</div>
-                                <div>
-                                    <h3 className="font-bold text-lg text-white uppercase">{card.title}</h3>
-                                    <p className="text-[#555] text-sm">{card.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+  return (
+    <div className="min-h-screen bg-[#0c0e13] text-white selection:bg-[#e8a230]/30 overflow-x-hidden font-['DM_Sans',sans-serif]">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .login-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+        .s-left { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 44px 48px; }
+        .anim-canvas { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; }
+        .video-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom,rgba(8,10,16,0.88) 0%,rgba(8,10,16,0.22) 38%,rgba(8,10,16,0.55) 68%,rgba(8,10,16,0.97) 100%),linear-gradient(to right,rgba(8,10,16,0.75) 0%,rgba(8,10,16,0.05) 60%); }
+        .logo-row { position: absolute; top: 36px; left: 48px; z-index: 5; display: flex; align-items: center; gap: 10px; }
+        .logo-circle { width: 38px; height: 38px; background: rgba(12,14,19,.85); border: 1.5px solid rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; border-radius: 50%; backdrop-filter: blur(14px); }
+        .logo-name { font-size: 16px; font-weight: 700; color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.7); }
+        .s-heading { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(48px, 6vw, 84px); font-weight: 800; font-style: italic; text-transform: uppercase; line-height: .92; margin-bottom: 14px; }
+        .s-heading .w { color: #fff; } .s-heading .g { color: #e8a230; }
+        .s-sub { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.65; max-width: 360px; margin-bottom: 28px; }
+        .s-right { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; align-items: center; justify-content: center; padding: 48px 60px; }
+        .s-form { width: 100%; max-width: 440px; }
+        .form-title { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 3px; }
+        .form-title span { color: #e8a230; }
+        .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #444; margin-bottom: 40px; }
+        .sec-label { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8a230; padding-bottom: 8px; border-bottom: 1px solid #1c1f28; margin-bottom: 24px; }
+        .fl { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+        .fi { width: 100%; background: #0f1219; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 14px 16px; outline: none; margin-bottom: 20px; transition: border-color .2s; border-radius: 2px; }
+        .fi:focus { border-color: #e8a230; }
+        .fi::placeholder { color: #2a2f3a; }
+        .cta { width: 100%; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 18px; cursor: pointer; transition: opacity .15s, transform .1s; border-radius: 2px; }
+        .signup-note { font-size: 11px; color: #333; text-align: center; margin-top: 24px; }
+        .signup-note a { color: #e8a230; cursor: pointer; font-weight: 600; text-decoration: none; }
+      ` }} />
 
-                {/* ── RIGHT COLUMN ── */}
-                <div className="w-full lg:w-1/2 bg-[#0c0e13] border-l border-white/5 p-10 lg:p-24 flex items-center justify-center">
-                    <div className="max-w-[500px] w-full">
-                        <div className="mb-12">
-                            <h2 className="italic text-white text-5xl font-black uppercase tracking-tight">FLEET <span className="text-[#e8a230]">LOGIN.</span></h2>
-                            <p className="barlow-cond font-black text-[10px] uppercase tracking-[0.3em] text-[#555] mt-2">SECURE TERMINAL FOR MISSION HUB</p>
-                        </div>
-
-                        <Suspense fallback={<div className="text-center text-[#555] text-[10px] font-bold uppercase tracking-widest p-12">Uplinking Terminal...</div>}>
-                            <DriverLoginForm />
-                        </Suspense>
-
-                        <div className="text-center pt-8">
-                            <p className="text-[#555] text-xs font-bold uppercase tracking-widest">
-                                New to fleet? <Link href="/driver/signup" className="text-[#e8a230] hover:underline">Apply now</Link>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div className="login-wrap">
+        <div className="s-left">
+          <canvas ref={canvasRef} className="anim-canvas"></canvas>
+          <div className="video-overlay"></div>
+          <div className="logo-row">
+            <div className="logo-circle"><LogoSVG /></div>
+            <div className="logo-name">TrueServe</div>
+          </div>
+          <div className="s-left-content relative z-10 px-4">
+             <div className="s-heading animate-up"><div className="w">Fleet</div><div className="g">Uplink.</div></div>
+             <div className="s-sub animate-up [animation-delay:0.1s]">Access the driver mission hub. Manage your active tasks, track yield, and synchronize your schedule with regional logistics.</div>
+          </div>
         </div>
-    );
+
+        <div className="s-right">
+          <div className="s-form animate-up">
+            <div className="form-title">Fleet <span>Access.</span></div>
+            <div className="form-sub">Secure mobile terminal for mission hubs</div>
+            <div className="sec-label">Authentication Terminal</div>
+            
+            <form onSubmit={(e) => { e.preventDefault(); setIsLoading(true); setTimeout(() => router.push("/driver/dashboard"), 1000); }}>
+              <div className="fl">Mobile Identifier (US Only) <span className="text-[#e24b4a]">*</span></div>
+              <input className="fi" type="tel" placeholder="(336) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+              
+              <button className="cta" disabled={isLoading}>
+                {isLoading ? "Requesting Uplink..." : "Request Access Code →"}
+              </button>
+            </form>
+
+            <button onClick={loginAsDriver} className="w-full mt-4 bg-transparent border border-white/5 py-4 text-[9px] font-bold tracking-[0.2em] text-[#444] hover:border-[#e8a230]/30 hover:text-[#e8a230] transition-all uppercase rounded-[2px]">
+              🚀 Authenticate Demo Access (Driver)
+            </button>
+
+            <div className="signup-note">New to fleet? <Link href="/driver/signup">Apply for partnership</Link></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function DriverLoginPage() {
-    return (
-        <Suspense fallback={null}>
-            <DriverLoginPageContent />
-        </Suspense>
-    );
+  return <Suspense fallback={null}><DriverLoginPageContent /></Suspense>;
 }
