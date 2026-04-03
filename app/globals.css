@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #E8A020;
-  --color-secondary: #0A0A0B;
-  --color-accent: #E8A020;
-  --color-background: #0A0A0A;
-  --color-foreground: #F0EDE8;
+  --color-primary: #f59e0b;
+  --color-secondary: #0a0a0b;
+  --color-accent: #f59e0b;
+  --color-background: #0a0a0b;
+  --color-foreground: #ffffff;
 }
 
 :root {
-  /* ── EMPIRE DESIGN SYSTEM ── */
-  --gold: #E8A020;
-  --gold-dim: rgba(232, 160, 32, 0.10);
-  --gold-bdr: rgba(232, 160, 32, 0.20);
-  --bg: #0A0A0A;
-  --s1: #131313;
-  --s2: #1C1C1C;
-  --s3: #222222;
-  --text: #F0EDE8;
-  --muted: #5A5550;
-  --green: #4CAF50;
+  /* Premium Dark Theme with Glow */
+  --background: #000000;
+  --foreground: #ffffff;
+  
+  --primary: #f59e0b; /* Amber */
+  --primary-hover: #d97706;
+  
+  --secondary: #0a0a0b;
+  --accent: #f59e0b;
 
-  --font-bebas: 'Bebas Neue', cursive;
-  --font-barlow-cond: 'Barlow Condensed', sans-serif;
-  --font-barlow: 'Barlow', sans-serif;
+  --card-bg: rgba(20, 20, 22, 0.4);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 * {
@@ -34,59 +34,171 @@
 
 html,
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: var(--font-barlow), sans-serif !important;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+  height: 100%;
+  background-color: #000000;
+  color: #cbd5e1;
+  font-family: var(--font-family) !important;
+  line-height: 1.6;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
-/* NOISE GRAIN OVERLAY */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 9999;
+h1, h2, h3, h4, .text-serif {
+  @apply font-serif;
+  font-family: var(--font-playfair), serif !important;
 }
 
-/* Global Branding Font Overrides */
-h1, h2, h3, h4, .font-bebas {
-  font-family: var(--font-bebas), cursive !important;
-  letter-spacing: -0.01em;
+p, span, div, a, button, input {
+  font-family: var(--font-family) !important;
 }
 
-.font-barlow-cond { font-family: var(--font-barlow-cond) !important; }
-.font-barlow { font-family: var(--font-barlow) !important; }
-
-/* AMBIENT ORBS */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  pointer-events: none;
-  z-index: 0;
+@utility glow-blur-primary {
+  @apply relative;
+  &::before {
+    content: '';
+    @apply absolute inset-0 -z-10 bg-primary/20 blur-[60px] rounded-full opacity-40;
+  }
 }
 
-@keyframes up { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
-@keyframes dn { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@utility h-glow {
+  @apply text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)];
+}
 
-.animate-up { animation: up 0.55s ease both; }
-.animate-dn { animation: dn 0.45s ease both; }
-.animate-blink { animation: blink 2s infinite; }
+@utility badge-solid-primary {
+  @apply rounded-xl bg-[#f59e0b] text-black px-12 py-5 text-base font-bold transition-all inline-flex items-center justify-center active:scale-[0.98] shadow-lg italic tracking-widest uppercase shadow-primary/10;
+  
+  &:hover {
+    @apply -translate-y-[3px] brightness-110 shadow-primary/20;
+  }
+}
+
+@utility badge-outline-white {
+  @apply rounded-xl bg-transparent border border-white/20 text-white px-10 py-4 text-base font-bold transition-all inline-flex items-center justify-center backdrop-blur-md italic tracking-widest uppercase;
+  
+  &:hover {
+    @apply bg-white/10 border-white scale-[1.01];
+  }
+}
+
+@utility btn-standard {
+  @apply rounded-xl bg-[#f59e0b] text-black px-12 py-5 text-base font-bold active:scale-[0.98] transition-all inline-flex items-center justify-center shadow-lg uppercase italic tracking-widest;
+  
+  &:hover {
+    @apply -translate-y-[3px] brightness-110 shadow-primary/20;
+  }
+}
+
+@utility filter-pill {
+  @apply rounded-xl px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-all border shadow-lg backdrop-blur-md;
+}
+
+@utility section-container {
+  @apply max-w-7xl mx-auto px-12 md:px-24;
+}
+
+@utility card-glass {
+  @apply bg-white/[0.02] border border-white/10 backdrop-blur-3xl rounded-[3rem] shadow-2xl;
+}
+
+@utility text-glow-orange {
+  @apply text-primary drop-shadow-[0_0_8px_rgba(245,158,11,0.5)];
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animate-blob {
+  animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .animate-fade-in {
+    animation: fade-in 1.2s ease-out forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
 
-/* ── EMPIRE COMPONENTS ── */
-.badge-solid-primary {
-  @apply bg-[#E8A020] text-[#0A0A0A] font-bold uppercase tracking-widest px-6 py-3 rounded-xl transition-all active:scale-95 shadow-lg;
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-.input-field {
-  @apply bg-[#131313] border border-white/5 rounded-2xl px-5 py-4 text-white font-medium outline-none transition-all placeholder:text-[#5A5550];
-  &:focus { @apply border-[#E8A020]/40 bg-[#E8A020]/5; }
+@keyframes slide-up {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   HI-FI EMPIRE MOBILE UTILITIES (Only active on mobile viewport)
+   ────────────────────────────────────────────────────────────────────────── */
+
+@layer components {
+    .mobile-empire-root {
+        --mobile-gold: #E8A020;
+        --mobile-bg: #0A0A0A;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.5;
+        z-index: 1;
+        mix-blend-mode: screen;
+        pointer-events: none;
+    }
+
+    /* Noise texture overlay for high-fidelity look */
+    .noise-overlay::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0.045;
+        z-index: 9999;
+        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        filter: contrast(120%) brightness(120%);
+    }
+
+    .font-bebas { font-family: 'Bebas Neue', sans-serif !important; }
+    .font-barlow-cond { font-family: 'Barlow Condensed', sans-serif !important; }
+    .font-barlow { font-family: 'Barlow', sans-serif !important; }
+
+    @keyframes mobile-up {
+        from { transform: translateY(24px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-up { animation: mobile-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+    @keyframes mobile-dn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-dn { animation: mobile-dn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+    .animate-blink { animation: blink 2s infinite ease-in-out; }
 }
