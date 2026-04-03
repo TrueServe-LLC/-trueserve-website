@@ -13,7 +13,16 @@ export default async function UserSettings() {
 
     const { data: user } = await supabase.from('User').select('*').eq('id', userId).single();
 
-    const sections = [
+    interface SettingItem {
+        icon: string;
+        title: string;
+        sub: string;
+        href: string;
+        right?: string;
+        badge?: string;
+    }
+
+    const sections: { label: string; items: SettingItem[] }[] = [
         {
             label: "Account",
             items: [

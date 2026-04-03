@@ -4,8 +4,9 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import LandingSearch from "@/components/LandingSearch";
+import { Suspense } from "react";
 
-export default function RestaurantFinder() {
+function RestaurantFinderContent() {
     const searchParams = useSearchParams();
     const address = searchParams.get("address");
 
@@ -124,5 +125,13 @@ export default function RestaurantFinder() {
                 </nav>
             </div>
         </div>
+    );
+}
+
+export default function RestaurantFinder() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center font-bebas text-2xl text-[#E8A020] animate-pulse">Syncing Hub...</div>}>
+            <RestaurantFinderContent />
+        </Suspense>
     );
 }

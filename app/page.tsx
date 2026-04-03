@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import LandingSearch from "@/components/LandingSearch";
 
 export default function Home() {
     return (
@@ -15,10 +13,10 @@ export default function Home() {
                 <div className="orb w-[160px] h-[160px] bottom-[130px] right-[-50px] bg-[rgba(232,80,20,0.06)]" />
             </div>
 
-            <div className="max-w-[430px] mx-auto min-h-screen relative flex flex-col z-10 shadow-[0_0_100px_rgba(0,0,0,1)] bg-[#0A0A0A]/20">
+            <div className="max-w-[430px] mx-auto min-h-screen relative flex flex-col z-10 bg-[#0A0A0A]/20">
                 
                 {/* ─── SHARED NAV ─── */}
-                <nav className="sticky top-0 z-50 flex items-center justify-between px-[18px] py-[18px] bg-gradient-to-b from-[#0A0A0A]/98 via-[#0A0A0A]/98 to-transparent backdrop-blur-xl animate-dn">
+                <nav className="sticky top-0 z-50 flex items-center justify-between px-[18px] py-[18px] bg-[#0A0A0A]/98 backdrop-blur-xl animate-dn">
                     <Logo size="sm" />
                     <div className="flex items-center gap-[9px]">
                         <Link href="/restaurants" className="w-[38px] h-[38px] rounded-[10px] bg-[#1C1C1C] border border-white/5 flex items-center justify-center text-[17px] relative hover:scale-105 transition-transform">
@@ -50,10 +48,10 @@ export default function Home() {
                     <div className="cat-cards space-y-[14px]">
                         {/* Discovery Hub */}
                         <Link href="/restaurants" className="cat-card group">
-                            <div className="cat-card-base discover relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end transition-transform active:scale-[0.98]">
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#1a0800] via-[#2d1200] to-[#1a0800]" />
+                            <div className="cat-card-base relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end transition-transform active:scale-[0.98]">
+                                <img src="/merchant_login_bg_restaurant.png" className="absolute inset-0 w-full h-full object-cover grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-50 transition-all duration-700 scale-105 group-hover:scale-100" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#1a0800]/80 via-[#2d1200]/60 to-[#1a0800]/80" />
                                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_40%,rgba(232,160,32,0.18),transparent_65%)]" />
-                                <div className="absolute inset-0 flex items-center justify-center text-[70px] opacity-[0.18] pointer-events-none group-hover:scale-110 transition-transform">🍽️</div>
                                 <div className="absolute top-4 right-4 w-[34px] h-[34px] rounded-full bg-white/7 border border-white/0.1 flex items-center justify-center text-[15px] group-hover:bg-[#E8A020] group-hover:text-black transition-all">→</div>
                                 <div className="relative z-10 p-5 bg-gradient-to-t from-[#0A0A0A]/92 to-transparent">
                                     <div className="inline-flex items-center gap-[6px] rounded-full px-[11px] py-1 bg-[#E8A020]/20 text-[#E8A020] font-barlow-cond text-[11px] font-bold uppercase tracking-[0.14em] mb-[7px]">
@@ -66,11 +64,11 @@ export default function Home() {
                         </Link>
 
                         {/* Merchant Card */}
-                        <Link href="/merchant" className="cat-card group">
-                            <div className="cat-card-base merchant relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end transition-transform active:scale-[0.98]">
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#151528] to-[#0a0a1a]" />
+                        <Link href="/merchant/login" className="cat-card group">
+                            <div className="cat-card-base relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end transition-transform active:scale-[0.98]">
+                                <img src="/merchant_login_bg_restaurant.png" className="absolute inset-0 w-full h-full object-cover grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-50 transition-all duration-700 scale-105 group-hover:scale-100" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a]/80 via-[#151528]/60 to-[#0a0a1a]/80" />
                                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_40%,rgba(100,100,232,0.15),transparent_65%)]" />
-                                <div className="absolute inset-0 flex items-center justify-center text-[70px] opacity-[0.18] pointer-events-none group-hover:scale-110 transition-transform">🏪</div>
                                 <div className="absolute top-4 right-4 w-[34px] h-[34px] rounded-full bg-white/7 border border-white/0.1 flex items-center justify-center text-[15px] group-hover:bg-[#a0a0ff] group-hover:text-black transition-all">→</div>
                                 <div className="relative z-10 p-5 bg-gradient-to-t from-[#0A0A0A]/92 to-transparent">
                                     <div className="inline-flex items-center gap-[6px] rounded-full px-[11px] py-1 bg-[rgba(150,150,255,0.15)] text-[#a0a0ff] font-barlow-cond text-[11px] font-bold uppercase tracking-[0.14em] mb-[7px]">
@@ -83,11 +81,11 @@ export default function Home() {
                         </Link>
 
                         {/* Driver Card */}
-                        <Link href="/driver" className="cat-card group">
-                            <div className="cat-card-base driver relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end transition-transform active:scale-[0.98]">
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#001208] via-[#001f0d] to-[#001208]" />
+                        <Link href="/driver/login" className="cat-card group">
+                            <div className="cat-card-base relative min-h-[160px] rounded-[20px] overflow-hidden border border-white/0.06 flex flex-col justify-end transition-transform active:scale-[0.98]">
+                                <img src="/driver_login_bg_car.png" className="absolute inset-0 w-full h-full object-cover grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-50 transition-all duration-700 scale-105 group-hover:scale-100" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#001208]/80 via-[#001f0d]/60 to-[#001208]/80" />
                                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_40%,rgba(80,200,80,0.12),transparent_65%)]" />
-                                <div className="absolute inset-0 flex items-center justify-center text-[70px] opacity-[0.18] pointer-events-none group-hover:scale-110 transition-transform">🛵</div>
                                 <div className="absolute top-4 right-4 w-[34px] h-[34px] rounded-full bg-white/7 border border-white/0.1 flex items-center justify-center text-[15px] group-hover:bg-[#80e080] group-hover:text-black transition-all">→</div>
                                 <div className="relative z-10 p-5 bg-gradient-to-t from-[#0A0A0A]/92 to-transparent">
                                     <div className="inline-flex items-center gap-[6px] rounded-full px-[11px] py-1 bg-[rgba(80,200,80,0.15)] text-[#80e080] font-barlow-cond text-[11px] font-bold uppercase tracking-[0.14em] mb-[7px]">
@@ -97,6 +95,17 @@ export default function Home() {
                                     <p className="text-[12px] font-light text-[#5A5550] leading-[1.5]">Earn on your schedule delivering for local kitchens</p>
                                 </div>
                             </div>
+                        </Link>
+                    </div>
+
+                    {/* MOCK PORTAL ACCESS (ADMIN) */}
+                    <div className="mt-12 pt-8 border-t border-white/5 opacity-40 hover:opacity-100 transition-opacity">
+                        <Link href="/admin/login" className="flex items-center justify-between p-4 bg-[#131313] rounded-2xl border border-white/5 group">
+                            <div className="flex items-center gap-3">
+                                <span className="text-xl">🛡️</span>
+                                <span className="font-barlow-cond font-bold uppercase tracking-widest text-[#5A5550] group-hover:text-[#E8A020] transition-colors">Admin Terminal</span>
+                            </div>
+                            <span className="text-[#5A5550]">›</span>
                         </Link>
                     </div>
                 </main>
