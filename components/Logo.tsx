@@ -17,11 +17,11 @@ const Logo: React.FC<LogoProps> = ({
         xl: 'text-[48px]'
     };
 
-    const iconSizes = {
-        sm: 'w-[24px] h-[24px] text-[14px]',
-        md: 'w-[32px] h-[32px] text-[18px]',
-        lg: 'w-[44px] h-[44px] text-[24px]',
-        xl: 'w-[64px] h-[64px] text-[36px]'
+    const containerSizes = {
+        sm: 'w-[28px] h-[28px] text-[16px]',
+        md: 'w-[36px] h-[36px] text-[20px]',
+        lg: 'w-[48px] h-[48px] text-[28px]',
+        xl: 'w-[72px] h-[72px] text-[40px]'
     };
 
     return (
@@ -29,7 +29,13 @@ const Logo: React.FC<LogoProps> = ({
             href="/" 
             className={`flex items-center gap-[12px] group active:scale-95 transition-all ${className}`}
         >
-            <div className={`${iconSizes[size]} rounded-full bg-[#e8a230] text-black flex items-center justify-center font-black transition-transform group-hover:scale-105 duration-300`}>
+            <div className={`
+                ${containerSizes[size]} 
+                rounded-full border-2 border-[#e8a230] 
+                flex items-center justify-center 
+                font-black text-[#e8a230]
+                transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(232,162,48,0.3)]
+            `}>
                 ✓
             </div>
             <span 
