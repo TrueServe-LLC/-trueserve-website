@@ -153,16 +153,28 @@ export async function middleware(request: NextRequest) {
   const matchedPortal = portals.find(p => path.startsWith(p))
 
   if (matchedPortal) {
-    // PUBLIC PATHS for Portals: Landing pages should NOT require login
-    const isPublicPortalPath = path === '/merchant' || path === '/driver' || path === '/admin/login' || path.startsWith('/merchant-signup') || path.startsWith('/driver-signup')
+    // PUBLIC PATHS for Portals: Landing pages and enrollment should NOT require login
+    const isPublicPortalPath = 
+      path === '/merchant' || 
+      path === '/driver' || 
+      path === '/merchant/login' || 
+      path === '/driver/login' || 
+      path === '/merchant/signup' || 
+      path === '/driver/signup' || 
+      path === '/admin/login';
     
     // If it's the admin portal and they have a manual admin_session cookie, let the page-layer auth guard handle it
     if (path.startsWith('/admin') && request.cookies.has("admin_session")) {
         // Do nothing, let it pass through to the page
     } else if (isPublicPortalPath) {
-        // Do nothing, let them see the landing page
+        // Do nothing, let them see the landing/enrollment page
     } else {
-        if (!user && !isPreview) return NextResponse.redirect(new URL('/login', request.url))
+        if (!user && !isPreview) {
+            // Redirect to the SPECIFIC portal login if possible
+            if (path.startsWith('/merchant')) return NextResponse.redirect(new URL('/merchant/login', request.url))
+            if (path.startsWith('/driver')) return NextResponse.redirect(new URL('/driver/login', request.url))
+            return NextResponse.redirect(new URL('/login', request.url))
+        }
 
         if (user) {
             const roleRes = await fetch(
