@@ -221,8 +221,8 @@ export default function MerchantSignupPage() {
             <Logo size="md" />
           </div>
           <div className="s-left-content">
-            <div className="s-badge"><span className="s-badge-dot"></span><span className="s-badge-txt">Partner Protocols</span></div>
-            <div className="s-heading"><div className="w">Partner</div><div className="g">Protocols.</div></div>
+            <div className="s-badge"><span className="s-badge-dot"></span><span className="s-badge-txt">Partner Portal</span></div>
+            <div className="s-heading"><div className="w">Partner</div><div className="g">Portal.</div></div>
             <div className="s-sub">Engineered for merchant success. List your restaurant, reach more customers, and grow without losing control of your brand.</div>
             <div className="s-feats">
               <div className="s-feat"><div className="s-feat-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10L5 7l2 2 3-4 2 2" stroke="#e8a230" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div className="s-feat-name">Rapid Growth</div><div className="s-feat-desc">Expand reach without losing control of your brand.</div></div></div>

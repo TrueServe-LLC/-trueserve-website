@@ -229,8 +229,8 @@ export default function DriverSignupPage() {
             <Logo size="md" />
           </div>
           <div className="s-left-content">
-            <div className="s-badge"><span className="s-badge-dot"></span><span className="s-badge-txt">Fleet Protocols</span></div>
-            <div className="s-heading"><div className="w">Fleet</div><div className="g">Protocols.</div></div>
+            <div className="s-badge"><span className="s-badge-dot"></span><span className="s-badge-txt">Driver Portal</span></div>
+            <div className="s-heading"><div className="w">Driver</div><div className="g">Portal.</div></div>
             <div className="s-sub">Your city, your schedule, your earnings. Join the TrueServe fleet and start making money delivering for local restaurants today.</div>
             <div className="s-feats">
               <div className="s-feat"><div className="s-feat-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#e8a230" stroke-width="1.2"/><path d="M7 4.5v3l1.5 1" stroke="#e8a230" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div className="s-feat-name">Fair Pay</div><div className="s-feat-desc">Competitive base pay + tips deposited weekly.</div></div></div>

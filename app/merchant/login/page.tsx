@@ -108,15 +108,15 @@ function MerchantLoginPageContent() {
             <Logo size="md" />
           </div>
           <div className="s-left-content relative z-10 px-4">
-             <div className="s-heading animate-up"><div className="w">Partner</div><div className="g">Command.</div></div>
+             <div className="s-heading animate-up"><div className="w">Partner</div><div className="g">Portal.</div></div>
              <div className="s-sub animate-up [animation-delay:0.1s]">Access your storefront infrastructure. Monitor operations, sync inventory, and scale your merchant footprint.</div>
           </div>
         </div>
 
         <div className="s-right">
           <div className="s-form animate-up">
-            <div className="form-title">Merchant <span>Access.</span></div>
-            <div className="form-sub">Secure uplink for partnership protocols</div>
+            <div className="form-title">Merchant <span>Login.</span></div>
+            <div className="form-sub">Secure entry for partnership portal</div>
             <div className="sec-label">Credentials Terminal</div>
             
             <form onSubmit={(e) => { e.preventDefault(); setIsLoading(true); setTimeout(() => router.push("/merchant/dashboard"), 1000); }}>

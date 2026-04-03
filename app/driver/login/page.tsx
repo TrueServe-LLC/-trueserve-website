@@ -111,14 +111,14 @@ function DriverLoginPageContent() {
             <Logo size="md" />
           </div>
           <div className="s-left-content relative z-10 px-4">
-             <div className="s-heading animate-up"><div className="w">Fleet</div><div className="g">Uplink.</div></div>
+             <div className="s-heading animate-up"><div className="w">Driver</div><div className="g">Portal.</div></div>
              <div className="s-sub animate-up [animation-delay:0.1s]">Access the driver mission hub. Manage your active tasks, track yield, and synchronize your schedule with regional logistics.</div>
           </div>
         </div>
 
         <div className="s-right">
           <div className="s-form animate-up">
-            <div className="form-title">Fleet <span>Access.</span></div>
+            <div className="form-title">Driver <span>Login.</span></div>
             <div className="form-sub">Secure mobile terminal for mission hubs</div>
             <div className="sec-label">Authentication Terminal</div>
             

@@ -43,7 +43,7 @@ const Logo: React.FC<LogoProps> = ({
             </div>
             <div className={`
                 ${textSizes[size]} 
-                font-black italic uppercase tracking-[-0.03em] 
+                font-barlow-cond font-black italic uppercase tracking-[-0.04em] 
                 leading-none flex items-baseline
             `}>
                 <span className="text-white">TRUE</span>
