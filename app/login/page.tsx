@@ -55,6 +55,13 @@ export default function LoginPage() {
     }
   };
 
+  const enterPreview = (targetRole: 'merchant' | 'driver') => {
+      // Set preview cookie to bypass server-side auth checks for UI auditing
+      document.cookie = "preview_mode=true; path=/; max-age=3600";
+      if (targetRole === 'merchant') router.push('/merchant/dashboard');
+      else router.push('/driver/dashboard');
+  };
+
   return (
     <div className="min-h-screen bg-[#0c0e13] text-white">
       <nav>
@@ -134,6 +141,16 @@ export default function LoginPage() {
               </button>
               <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading}>
                 <span style={{ fontSize: '16px' }}></span> Continue with Apple
+              </button>
+          </div>
+
+          {/* Portal Previews */}
+          <div style={{ marginTop: '24px', display: 'flex', gap: '8px' }}>
+              <button onClick={() => enterPreview('merchant')} className="btn btn-ghost" style={{ flex: 1, fontSize: '10px', padding: '10px' }}>
+                Preview Merchant Portal
+              </button>
+              <button onClick={() => enterPreview('driver')} className="btn btn-ghost" style={{ flex: 1, fontSize: '10px', padding: '10px' }}>
+                Preview Driver Portal
               </button>
           </div>
 

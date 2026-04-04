@@ -92,7 +92,6 @@ export default function MerchantSignupPage() {
               <div id="ms-2" className="step active">
                 <div className="sc">
                   <h3><span className="sn">2</span> Business Details</h3>
-                  <div className="fg"><label>EIN / Tax ID</label><input type="text" placeholder="XX-XXXXXXX"/></div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="fg"><label>Opens at</label><input type="text" placeholder="11:00 AM"/></div>
                     <div className="fg"><label>Closes at</label><input type="text" placeholder="9:00 PM"/></div>
