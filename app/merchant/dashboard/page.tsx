@@ -84,8 +84,8 @@ export default async function MerchantDashboard() {
                         <div className="md-page-title">Orders Dashboard</div>
                         <div className="md-page-sub">Operational Control · {restaurant.name}</div>
                     </div>
-                    <div className="md-hd-right">
-                        <div className="md-terminal-btn hidden sm:flex">
+                    <div className="md-hd-right flex-wrap">
+                        <div className="md-terminal-btn">
                             <span className="md-terminal-dot"></span>
                             Kitchen Terminal
                         </div>
@@ -126,7 +126,7 @@ export default async function MerchantDashboard() {
                             </div>
                             <div>
                                 <div className="md-stripe-title">Connect Stripe to get paid.</div>
-                                <div className="md-stripe-desc hidden md:block">To start receiving payouts for your orders, you need to connect your Stripe account.</div>
+                                <div className="md-stripe-desc">To start receiving payouts for your orders, you need to connect your Stripe account.</div>
                             </div>
                         </div>
                         <form action={createStripeAccount}>
@@ -146,7 +146,7 @@ export default async function MerchantDashboard() {
                             </div>
                             <div>
                                 <div className="md-stripe-title" style={{ fontStyle: "normal" }}>Stripe account connected.</div>
-                                <div className="md-stripe-desc hidden md:block">Your payouts are active. Funds are deposited on a rolling basis.</div>
+                                <div className="md-stripe-desc">Your payouts are active. Funds are deposited on a rolling basis.</div>
                             </div>
                         </div>
                         <div className="md-stripe-connected">✓ Payouts Active</div>

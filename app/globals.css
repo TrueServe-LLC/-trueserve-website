@@ -546,4 +546,21 @@ nav {
   .main-grid { grid-template-columns: 1fr; }
   .panel { padding: 20px; }
   .md-body { padding: 20px; }
+  .md-stat-value { font-size: 24px; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   FONT UTILITIES
+   ────────────────────────────────────────────────────────────────────────── */
+
+.bebas { font-family: var(--font-bebas), sans-serif; }
+.barlow-cond { font-family: var(--font-barlow-cond), sans-serif; }
+.dm-sans { font-family: var(--font-dm-sans), sans-serif; }
+.dm-mono { font-family: var(--font-dm-mono), monospace; }
+
+/* Global Override for Dashboard Titles */
+.hero-title, .md-page-title, .panel-title, .bebas-title { 
+    font-family: var(--font-bebas), sans-serif; 
+    text-transform: uppercase;
+    font-style: italic;
 }

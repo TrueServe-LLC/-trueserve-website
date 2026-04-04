@@ -1,11 +1,7 @@
-// Deployment Trigger: 2026-04-04 03:45
+// Deployment Trigger: 2026-04-04 04:10
 import type { Metadata } from "next";
 import { Barlow_Condensed, DM_Sans, DM_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
-import MobileNavWrapper from "@/components/MobileNavWrapper";
-import LaunchDarklyClientProvider from "@/components/LaunchDarklyClientProvider";
-import { Suspense } from "react";
-import DynamicBranding from "@/components/DynamicBranding";
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas",
@@ -51,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${bebasNeue.variable} ${dmSans.variable} ${dmMono.variable} ${barlowCond.variable}`}>
       <body className="antialiased">
         {children}
       </body>

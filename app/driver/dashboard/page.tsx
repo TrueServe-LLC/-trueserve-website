@@ -73,14 +73,12 @@ export default async function DriverDashboard() {
                 <div className="hero">
                     <div className="hero-left">
                         <div className="hero-icon">🏎️</div>
-                        <div>
+                        <div className="flex-1">
                             <div className="hero-title">FLEET <span>MISSION</span> HUB</div>
-                            <div className="hero-sub hidden sm:block">SECURE AUTHENTICATED ACCESS &nbsp;·&nbsp; {weather.temperature}°F GRID TEMP</div>
-                            <div className="hero-sub sm:hidden">GRID STATUS: SECURE</div>
+                            <div className="hero-sub">SECURE AUTHENTICATED ACCESS &nbsp;·&nbsp; {weather.temperature}°F GRID TEMP</div>
                         </div>
                     </div>
-                    <div className="online-badge hidden sm:flex"><span className="live-dot"></span> CONNECTION STABLE</div>
-                    <div className="online-badge sm:hidden"><span className="live-dot"></span> LIVE</div>
+                    <div className="online-badge"><span className="live-dot"></span> CONNECTION STABLE</div>
                 </div>
 
                 {/* STAT BAR */}
@@ -93,7 +91,7 @@ export default async function DriverDashboard() {
                         <div className="stat-lbl">Missions</div>
                         <div className="stat-val">{stats.trips}</div>
                     </div>
-                    <div className="stat-cell hidden sm:block">
+                    <div className="stat-cell">
                         <div className="stat-lbl">Fleet Rating</div>
                         <div className="flex items-center gap-2"><span className="star">★</span><span className="stat-val">{stats.rating.toFixed(1)}</span></div>
                     </div>
