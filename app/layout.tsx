@@ -50,51 +50,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${dmMono.variable} ${barlowCond.variable} ${bebasNeue.variable}`}>
-      <body
-        className="bg-[#0A0A0A] text-[#F0EDE8] antialiased pb-24 md:pb-0 font-sans overflow-x-hidden"
-        suppressHydrationWarning
-      >
-        <LaunchDarklyClientProvider>
-          <Suspense fallback={null}>
-            <DynamicBranding />
-          </Suspense>
-          {children}
-          <MobileNavWrapper />
-        </LaunchDarklyClientProvider>
-
-        {/* Global Scroll Reveal Script */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-          };
-
-          const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-              }
-            });
-          }, observerOptions);
-
-          document.addEventListener('DOMContentLoaded', () => {
-             document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => observer.observe(el));
-          });
-
-          // Also handle dynamic content
-          const mutationObserver = new MutationObserver((mutations) => {
-            mutations.forEach(mutation => {
-              mutation.addedNodes.forEach(node => {
-                if (node.nodeType === 1) {
-                  if (node.matches('.reveal, .reveal-left, .reveal-scale')) observer.observe(node);
-                  node.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => observer.observe(el));
-                }
-              });
-            });
-          });
-          mutationObserver.observe(document.body, { childList: true, subtree: true });
-        `}} />
+    <html lang="en">
+      <body className="antialiased">
+        {children}
       </body>
     </html>
   );
