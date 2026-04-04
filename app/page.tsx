@@ -20,41 +20,17 @@ export default async function Home() {
             {/* ─── DESKTOP VIEW (LG and UP) ─── */}
             <div className="hidden lg:block">
                 {/* ── NAV ─────────────────────────────────────────────────────────── */}
-                <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
+                <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/5 py-3 px-6">
                     <div className="container mx-auto flex justify-between items-center max-w-7xl">
-                        <Logo size="lg" />
+                        <Logo size="md" />
 
-                        <div className="hidden lg:flex items-center gap-12 text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">
-                            <Link href="/restaurants" className="hover:text-[#f59e0b] transition-all">ORDER FOOD</Link>
-                            <Link href="/merchant" className="hover:text-[#f59e0b] transition-all whitespace-nowrap">FOR MERCHANTS</Link>
-                            <Link href="/driver" className="hover:text-[#f59e0b] transition-all whitespace-nowrap">DRIVER HUB</Link>
+                        <div className="hidden lg:flex items-center gap-8 text-[13px] font-medium text-slate-400">
+                            <Link href="/" className="hover:text-white transition-all">Home</Link>
+                            <Link href="/merchant" className="hover:text-white transition-all whitespace-nowrap">For Merchants</Link>
+                            <Link href="/driver" className="hover:text-white transition-all whitespace-nowrap">For Drivers</Link>
                         </div>
 
-                        <div className="flex items-center gap-6">
-                            <div className="flex items-center gap-4">
-                                <Link 
-                                    href="https://www.instagram.com/trueserve_delivery/" 
-                                    target="_blank" 
-                                    className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-[#f59e0b] hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-                                    title="Instagram"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                                    </svg>
-                                </Link>
-                                <Link 
-                                    href="https://www.facebook.com/share/1EHeS1jdoq/?mibextid=wwXIfr" 
-                                    target="_blank" 
-                                    className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-[#f59e0b] hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-                                    title="Facebook"
-                                >
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-                                    </svg>
-                                </Link>
-                            </div>
+                        <div className="flex items-center gap-4">
                             {userId ? (
                                 <div className="flex items-center gap-4">
                                     <NotificationBell userId={userId} />
@@ -64,10 +40,10 @@ export default async function Home() {
                                     <LogoutButton />
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-6">
-                                    <Link href="/login" className="hidden md:block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all border border-white/10 rounded-full px-5 py-2 hover:bg-white/5 italic">Sign In</Link>
-                                    <Link href="/restaurants" className="badge-solid-primary !px-10 !py-3 !text-[11px] h-glow">
-                                        Join Network
+                                <div className="flex items-center gap-4">
+                                    <Link href="/login" className="text-[13px] font-bold text-white hover:bg-white/5 transition-all border border-white/10 rounded-lg px-6 py-2.5">Sign In</Link>
+                                    <Link href="/restaurants" className="bg-[#f59e0b] text-black text-[13px] font-bold rounded-lg px-6 py-2.5 hover:bg-[#d97706] transition-all">
+                                        Get Started
                                     </Link>
                                 </div>
                             )}
@@ -77,33 +53,49 @@ export default async function Home() {
 
                 <main>
                     {/* ── HERO ────────────────────────────────────────────────────────── */}
-                    <section className="relative min-h-[95vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+                    <section className="relative min-h-[85vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
                         <div className="absolute inset-0 z-0">
                             <img
                                 src="/hero_food_delivery.png"
-                                alt="Fine Dining"
-                                className="w-full h-full object-cover opacity-30 brightness-50 blur-3xl scale-110"
+                                alt="Food Delivery Background"
+                                className="w-full h-full object-cover opacity-40 brightness-[0.4]"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
                         </div>
 
-                        <div className="relative z-10 max-w-6xl space-y-12 animate-slide-up text-center flex flex-col items-center justify-center">
-                            <h1 className="text-5xl md:text-[115px] leading-[0.8] text-white font-serif italic select-none font-black tracking-tighter">
-                                Cravings meet <br />
-                                <span className="text-[#f59e0b] not-italic tracking-[-0.03em] drop-shadow-[5px_5px_0px_rgba(255,255,255,0.1)] uppercase italic">Lightning Speed.</span>
+                        <div className="relative z-10 max-w-5xl space-y-8 animate-slide-up flex flex-col items-center">
+                            <h1 className="text-6xl md:text-[88px] leading-[1.1] text-white font-bold tracking-tight">
+                                Food Delivered<br />
+                                <span className="text-[#f59e0b]">The Right Way</span>
                             </h1>
 
-                            <p className="max-w-3xl mx-auto text-lg md:text-2xl text-slate-400 font-bold leading-relaxed italic opacity-80">
-                                Experience the future of local food delivery. Zero platform fees, fair driver pay, and the best local flavors delivered to your door.
+                            <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-300 font-medium opacity-90 leading-relaxed">
+                                Enter your address to discover restaurants near you — real food, real fast.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-12">
-                                <Link href="/restaurants" className="badge-solid-primary !px-16 !py-6 !text-sm">
-                                    Browse Restaurants
-                                </Link>
-                                <Link href="/merchant" className="badge-outline-white !px-16 !py-6 !text-sm h-glow">
-                                    For Businesses
-                                </Link>
+                            <div className="w-full max-w-2xl pt-4">
+                                <div className="flex items-stretch bg-[#0f1115]/90 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-2xl p-1.5 focus-within:border-[#f59e0b]/50 transition-all">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Enter your delivery address..." 
+                                        className="flex-1 bg-transparent px-8 py-5 text-white placeholder:text-slate-500 outline-none text-xl"
+                                    />
+                                    <button className="bg-[#f59e0b] text-black font-bold px-10 rounded-lg hover:bg-[#d97706] transition-all flex items-center gap-2 whitespace-nowrap text-lg">
+                                        Find Food <span>→</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap justify-center gap-4 pt-8">
+                                {[
+                                    "Free delivery on first order",
+                                    "Real-time tracking",
+                                    "AI-powered support"
+                                ].map((feature, i) => (
+                                    <div key={i} className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/5 border border-white/10 text-white text-sm font-semibold hover:border-[#f59e0b]/50 hover:bg-[#f59e0b]/5 transition-all">
+                                        <span className="text-[#f59e0b]">✓</span> {feature}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </section>

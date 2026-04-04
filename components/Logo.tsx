@@ -11,10 +11,10 @@ const Logo: React.FC<LogoProps> = ({
     size = 'md'
 }) => {
     const textSizes = {
-        sm: 'text-[14px]',
-        md: 'text-[22px]',
-        lg: 'text-[32px]',
-        xl: 'text-[44px]'
+        sm: 'text-[16px]',
+        md: 'text-[26px]',
+        lg: 'text-[36px]',
+        xl: 'text-[48px]'
     };
 
     const emblemSizes = {
@@ -27,7 +27,7 @@ const Logo: React.FC<LogoProps> = ({
     return (
         <Link 
             href="/" 
-            className={`flex items-center gap-[12px] group active:scale-95 transition-all ${className}`}
+            className={`flex items-center gap-[8px] group active:scale-95 transition-all ${className}`}
         >
             <div className={`
                 ${emblemSizes[size]} 
@@ -38,16 +38,16 @@ const Logo: React.FC<LogoProps> = ({
                 <img 
                     src="/logo.png" 
                     alt="TrueServe Icon" 
-                    className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(232,162,48,0.3)]"
+                    className="w-full h-full object-contain mix-blend-screen"
                 />
             </div>
             <div className={`
                 ${textSizes[size]} 
-                font-barlow-cond font-black italic uppercase tracking-[-0.04em] 
+                font-sans font-[900] italic tracking-[-0.07em] 
                 leading-none flex items-baseline
             `}>
-                <span className="text-white">TRUE</span>
-                <span className="text-[#e8a230]">SERVE</span>
+                <span className="text-white">True</span>
+                <span className="text-[#e8a230]">Serve</span>
             </div>
         </Link>
     );
