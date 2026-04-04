@@ -48,10 +48,6 @@ export default function MerchantSignupPage() {
                   </div>
                 </div>
               </div>
-              <div className="su-quote">
-                <p>"TrueServe helped us double our delivery orders in the first month — and we kept every dollar."</p>
-                <div className="su-quoter">— Dhan Griffin, Dhan's Kitchen</div>
-              </div>
             </div>
           </div>
 

@@ -48,10 +48,6 @@ export default function DriverSignupPage() {
                   </div>
                 </div>
               </div>
-              <div className="su-quote" style={{ borderTop: '1px solid var(--border)', paddingTop: '24px', marginTop: '32px' }}>
-                <p>"The best part about TrueServe is the transparency. I always know exactly what I'm making before I accept."</p>
-                <div className="su-quoter">— Marcus J., Elite Driver</div>
-              </div>
             </div>
           </div>
 
