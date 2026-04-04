@@ -1,19 +1,31 @@
 "use client";
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import { supabase } from "@/lib/supabase";
 
 function RestaurantFinderContent() {
   const searchParams = useSearchParams();
   const address = searchParams.get("address");
+  const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const restaurants = [
-    { id: 1, name: "Dhan's Kitchen", rating: 4.9, time: "18 mins", type: "Caribbean", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80" },
-    { id: 2, name: "Burgers & Beers", rating: 4.7, time: "22 mins", type: "American", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" },
-    { id: 3, name: "The Gourmet Bistro", rating: 4.8, time: "25 mins", type: "French", img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" }
-  ];
+  useEffect(() => {
+    async function fetchRestaurants() {
+      const { data, error } = await supabase
+        .from('Restaurant')
+        .select('*')
+        .eq('visibility', 'VISIBLE');
+      
+      if (!error && data) {
+        setRestaurants(data);
+      }
+      setLoading(false);
+    }
+    fetchRestaurants();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0c0e13] text-white">
@@ -35,25 +47,32 @@ function RestaurantFinderContent() {
           </div>
         </div>
 
-        <div className="rest-grid">
-          {restaurants.map(r => (
-            <Link key={r.id} href={`/restaurants/${r.id}`} className="rest-card">
-              <div className="rc-img" style={{ backgroundImage: `url('${r.img}')` }}>
-                <div className="rc-badge">Free Delivery</div>
-              </div>
-              <div className="rc-info">
-                <div className="rc-name">{r.name}</div>
-                <div className="rc-meta">
-                  <div className="rc-rating"><span>★</span> {r.rating}</div>
-                  <div>•</div>
-                  <div>{r.time}</div>
-                  <div>•</div>
-                  <div>{r.type}</div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {loading ? (
+             <div className="text-center py-20 opacity-50 font-bold text-[#e8a230] animate-pulse">Connecting to Hive...</div>
+        ) : (
+            <div className="rest-grid">
+              {restaurants.map(r => (
+                <Link key={r.id} href={`/restaurants/${r.id}`} className="rest-card">
+                  <div className="rc-img" style={{ backgroundImage: `url('${r.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'}')` }}>
+                    <div className="rc-badge">Free Delivery</div>
+                  </div>
+                  <div className="rc-info">
+                    <div className="rc-name">{r.name}</div>
+                    <div className="rc-meta">
+                      <div className="rc-rating"><span>★</span> {r.rating || '4.9'}</div>
+                      <div>•</div>
+                      <div>18-24 mins</div>
+                      <div>•</div>
+                      <div>{r.cuisineType || 'Caribbean'}</div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+              {restaurants.length === 0 && (
+                  <div className="col-span-full text-center py-20 opacity-50">No restaurants found in this sector yet.</div>
+              )}
+            </div>
+        )}
       </main>
     </div>
   );
