@@ -448,8 +448,9 @@ nav {
    ────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  nav { padding: 0 16px; }
-  .nav-links { display: none; } /* Hide secondary links on mobile */
+  nav { padding: 0 16px; min-height: 70px; height: auto; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .nav-links { display: flex; gap: 15px; font-size: 10px; order: 2; width: 100%; justify-content: center; padding-bottom: 10px; }
+  .nav-r { order: 1; }
   
   /* Home Page Scaling */
   .home-h1 { font-size: 32px; }
@@ -460,12 +461,14 @@ nav {
   /* Signup Flow Vertical Stack */
   .signup-page { flex-direction: column; }
   .signup-left { 
-    width: 100%; height: 160px; /* Short header on mobile */
-    padding: 24px 20px; flex-shrink: 0; min-height: auto;
+    width: 100%; height: auto;
+    padding: 32px 20px; flex-shrink: 0;
     justify-content: center;
   }
-  .signup-left-content h2 { font-size: 20px; }
-  .signup-left-content .su-desc, .su-perks { display: none; } /* Focus on form */
+  .signup-left-content h2 { font-size: 20px; margin-top: 20px; }
+  .signup-left-content .su-desc { display: block; font-size: 12px; }
+  .su-perks { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; }
+  .su-perk { flex: 1; min-width: 140px; }
 
   .signup-right { padding: 32px 20px; }
   .signup-right h1 { font-size: 20px; }

@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Logo from "@/components/Logo";
-import MobileOrdersList from "@/components/MobileOrdersList";
 import { getAuthSession } from "@/app/auth/actions";
 
 export const dynamic = "force-dynamic";
@@ -27,12 +26,7 @@ export default async function OrdersPage() {
 
     return (
         <div className="min-h-screen bg-[#0c0e13] text-[#F0EDE8] font-barlow overflow-x-hidden">
-            
-            {/* ── MOBILE APP VIEW ── */}
-            <MobileOrdersList user={user} orders={orders} />
-
-            {/* ── DESKTOP VIEW ── */}
-            <div className="hidden lg:block pb-32">
+            <div className="pb-32">
                 <nav className="sticky top-0 z-[60] bg-[#0A0A0A]/85 backdrop-blur-2xl border-b border-white/5 px-5 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-all">
