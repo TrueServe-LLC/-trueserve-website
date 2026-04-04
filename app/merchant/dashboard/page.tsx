@@ -12,6 +12,7 @@ import AutoPilotPanel from "@/app/merchant/dashboard/AutoPilotPanel";
 import BusyZonesPanel from "@/app/merchant/dashboard/BusyZonesPanel";
 import IssuesPanel from "@/app/merchant/dashboard/IssuesPanel";
 import MobileMerchantDashboard from "@/components/MobileMerchantDashboard";
+import GHLSettingsPanel from "@/app/merchant/dashboard/GHLSettingsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -175,6 +176,11 @@ export default async function MerchantDashboard() {
                         busyUntil={restaurant.busyUntil}
                     />
                 </div>
+
+                <GHLSettingsPanel 
+                    restaurantId={restaurant.id} 
+                    initialGhlUrl={restaurant.ghlUrl} 
+                />
 
                 {/* AI AUTOPILOT + BUSY ZONES */}
                 <div className="md-bottom-grid">

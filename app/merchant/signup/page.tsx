@@ -98,6 +98,17 @@ export default function MerchantSignupPage() {
                     <div className="fg"><label>Closes at</label><input type="text" placeholder="9:00 PM"/></div>
                   </div>
                   <div className="fg">
+                    <label>Go High Level (GHL) Iframe URL (Optional)</label>
+                    <input 
+                      id="m-ghl-url"
+                      type="text" 
+                      placeholder="https://api.leadconnectorhq.com/widget/booking/..."
+                    />
+                    <p style={{ fontSize: '11px', color: 'var(--t3)', marginTop: '4px' }}>
+                      Pasting your GHL booking/ordering iframe URL here will enable direct widget ordering.
+                    </p>
+                  </div>
+                  <div className="fg">
                     <label>How did you hear about us?</label>
                     <select className="w-full bg-[#0c0e13] border border-[#1c1f28] rounded-lg p-3">
                       <option>Social media</option>

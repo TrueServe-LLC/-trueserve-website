@@ -50,6 +50,24 @@ export default function MenuClient({
     const [deliveryInstructions, setDeliveryInstructions] = useState("");
     const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
     const [redeemPoints, setRedeemPoints] = useState(false);
+    
+    // GHL State
+    const [isGHLOpen, setIsGHLOpen] = useState(false);
+    const [ghlLoading, setGHLLoading] = useState(false);
+    
+    // Hardcoded GHL demo for Dhan's Kitchen per request
+    const ghlUrl = restaurant.name.includes("Dhan") 
+        ? "https://api.leadconnectorhq.com/widget/booking/demo-dhans-kitchen"
+        : restaurant.ghlUrl; // Assuming fallback to DB field
+
+    const openGHL = () => {
+        if(!ghlUrl) {
+            alert("No GHL embed configured for this restaurant.");
+            return;
+        }
+        setGHLLoading(true);
+        setIsGHLOpen(true);
+    };
 
     // Cart calculations
     const cartItems = Object.entries(cart).filter(([_, qty]) => qty > 0);
@@ -117,8 +135,39 @@ export default function MenuClient({
                     onComplete={() => router.push(`/orders/${pendingOrderId}`)}
                 />
             )}
+
+            {/* GHL Modal */}
+            {isGHLOpen && (
+                <div className="ghl-modal" onClick={() => setIsGHLOpen(false)}>
+                    <div className="ghl-card" onClick={e => e.stopPropagation()}>
+                        <div className="ghl-hd">
+                            <span style={{ fontWeight: 800 }}>{restaurant.name} Assistant</span>
+                            <button onClick={() => setIsGHLOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
+                        </div>
+                        <div style={{ position: 'relative', flex: 1 }}>
+                            {ghlLoading && (
+                                <div className="ghl-loading">
+                                    <div className="ai-dot" style={{ width: '12px', height: '12px' }}></div>
+                                    Connecting to GHL Hive...
+                                </div>
+                            )}
+                            <iframe 
+                                src={ghlUrl} 
+                                className="ghl-frame"
+                                onLoad={() => setGHLLoading(false)}
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            )}
             
             <div className="menu-items">
+                {ghlUrl && (
+                    <button className="ghl-btn" onClick={openGHL}>
+                        <span style={{ fontSize: '14px' }}>🤖</span> 
+                        Launch GHL Fast Booking/Order Assistant
+                    </button>
+                )}
                 <div className="cat">Main Menu</div>
                 {items.map(item => (
                     <div key={item.id} className="m-item">
@@ -216,3 +265,4 @@ export default function MenuClient({
         </div>
     );
 }
+
