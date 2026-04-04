@@ -70,15 +70,18 @@ export default async function DriverDashboard() {
         <div className="font-sans min-h-screen bg-[#080808] text-white">
             <div className="driver-body">
                 {/* HERO */}
-                <div className="hero">
-                    <div className="hero-left">
-                        <div className="hero-icon">🏎️</div>
+                <div className="hero !py-12 sm:!py-16 !bg-transparent border-none">
+                    <div className="hero-left !gap-6 sm:!gap-10">
+                        <div className="hero-icon !w-16 !h-16 sm:!w-20 sm:!h-20 !text-4xl sm:!text-5xl !rounded-3xl !bg-white/5 !border-[#e8a230]/20">🏎️</div>
                         <div className="flex-1">
-                            <div className="hero-title">FLEET <span>MISSION</span> HUB</div>
-                            <div className="hero-sub">SECURE AUTHENTICATED ACCESS &nbsp;·&nbsp; {weather.temperature}°F GRID TEMP</div>
+                            <div className="hero-title !text-5xl sm:!text-8xl !font-black italic text-white uppercase leading-[0.8] mb-4">FLEET <span className="text-[#e8a230]">MISSION</span> HUB</div>
+                            <div className="hero-sub !text-[10px] sm:!text-[12px] !font-black !tracking-[0.4em] !text-[#444] uppercase flex items-center gap-4 italic">
+                                SECURE AUTHENTICATED ACCESS
+                                <span className="w-1.5 h-1.5 rounded-full bg-white/10"></span>
+                                {weather.temperature}°F GRID TEMP
+                            </div>
                         </div>
                     </div>
-                    <div className="online-badge"><span className="live-dot"></span> CONNECTION STABLE</div>
                 </div>
 
                 {/* STAT BAR */}
@@ -105,11 +108,11 @@ export default async function DriverDashboard() {
                 <div className="main-grid">
                     {/* ACTIVE MISSIONS (MISSION CONTROL) */}
                     <div className="panel border-r border-[#1c1f28] bg-[#0c0c0e]">
-                        <div className="panel-hd">
-                            <div className="panel-title">MISSION <span>CONTROL</span></div>
-                            <LogoutButton />
+                        <div className="panel-hd flex justify-between items-center mb-10">
+                            <div className="panel-title text-4xl sm:text-6xl !mb-0 font-barlow-cond font-black italic uppercase italic tracking-tighter">MISSION <span className="text-[#e8a230]">CONTROL</span></div>
+                            <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center opacity-30 text-white italic text-[10px] font-black tracking-widest">DS-01</div>
                         </div>
-                        <span className="panel-sub">Active fulfillment neural links</span>
+                        <span className="panel-sub !text-[9px] !tracking-[0.5em] !font-black !text-[#222] italic !mb-12 block uppercase">Active fulfillment neural links</span>
 
                         {myActiveOrders.length === 0 ? (
                             <div className="h-[300px] sm:h-[400px] border border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center p-10 text-center">

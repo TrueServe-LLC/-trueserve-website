@@ -6,9 +6,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
 import SupportWidget from "@/components/SupportWidget";
-import NotificationBell from "@/components/NotificationBell";
 import { cookies } from "next/headers";
-
 import DashboardNav from "@/components/DashboardNav";
 import Logo from "@/components/Logo";
 
@@ -35,86 +33,60 @@ export default async function DriverDashboardLayout({ children }: { children: Re
     const driverInitials = (name || driverData?.name || "Driver").split(" ").map((n: string) => n[0]).join("").toUpperCase();
 
     return (
-        <>
-        <div className="db">
-            <style dangerouslySetInnerHTML={{ __html: `
-                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700;1,800&display=swap');
-                
-                body { background: #080a0f !important; font-family: 'DM Sans', sans-serif !important; color: #fff !important; margin: 0; padding: 0; }
-                .db { 
-                    background: radial-gradient(circle at 50% 0%, #101622 0%, #080a0f 100%); 
-                    min-height: 100vh; position: relative; overflow-x: hidden;
-                }
-                .db::before {
-                    content: ""; position: absolute; inset: 0; 
-                    background-image: linear-gradient(rgba(16, 22, 34, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 22, 34, .3) 1px, transparent 1px);
-                    background-size: 40px 40px; pointer-events: none; opacity: 0.5;
-                }
-                .db::after {
-                    content: ""; position: absolute; inset: 0; 
-                    background: radial-gradient(circle at 80% 20%, rgba(232, 162, 48, 0.05) 0%, transparent 40%),
-                                radial-gradient(circle at 20% 80%, rgba(61, 214, 140, 0.03) 0%, transparent 40%);
-                    pointer-events: none;
-                }
-
-                .top-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 52px; border-bottom: 1px solid #1c1f28; background: #0c0e13; position: sticky; top: 0; z-index: 100; }
-                .nav-brand { font-size: 15px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
-                .nav-brand span { color: #e8a230; }
-                
-                .nav-link { font-size: 11px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: #555; padding: 6px 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s; text-decoration: none; }
-                .nav-link:hover { color: #999; }
-                .nav-link.active { color: #e8a230; border-bottom-color: #e8a230; }
-                
-                .balance-wrap { display: flex; flex-direction: column; align-items: flex-end; margin-right: 4px; }
-                .balance-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #444; }
-                .balance-val { font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; color: #e8a230; }
-                
-                .mode-tabs { display: flex; gap: 1px; }
-                .mode-tab { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 14px; background: #131720; border: 1px solid #1c1f28; color: #555; cursor: pointer; }
-                .mode-tab.active { background: #e8a230; color: #000; border-color: #e8a230; }
-                
-                .nav-av { width: 32px; height: 32px; background: #e8a230; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #000; }
-
-                .sub-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 40px; background: #090b0f; border-bottom: 1px solid #1c1f28; position: sticky; top: 52px; z-index: 90; }
-                .sub-link { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #444; padding: 5px 12px; cursor: pointer; border-bottom: 2px solid transparent; text-decoration: none; }
-                .sub-link:hover { color: #888; }
-                .sub-link.active { color: #e8a230; border-bottom-color: #e8a230; }
-
-                .main-content { padding: 0; min-height: calc(100vh - 92px); position: relative; z-index: 10; }
-            ` }} />
-            
-            <div className="top-nav">
-                <div className="nav-brand">
-                    <Logo size="sm" />
-                </div>
-                <div className="flex gap-2">
-                    <Link href="/driver/dashboard" className="nav-link active">Fleet Hub</Link>
-                </div>
-                <div className="flex items-center gap-6">
-                    <div className="balance-wrap">
-                        <div className="balance-lbl">Balance</div>
-                        <div className="balance-val">${balance.toFixed(2)}</div>
+        <div className="min-h-screen bg-[#080a0f] text-white selection:bg-[#e8a230]/30 selection:text-white">
+            {/* ── ELITE FLEET HEADER ── */}
+            <header className="sticky top-0 z-[100] bg-[#0c0e13]/80 backdrop-blur-3xl border-b border-white/5">
+                <div className="max-w-[1600px] mx-auto px-4 sm:px-8 py-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 sm:gap-10">
+                        <Logo size="sm" />
+                        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#3dd68c]/5 border border-[#3dd68c]/10 rounded-full">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#3dd68c] animate-pulse"></span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#3dd68c] italic">Connection Stable</span>
+                        </div>
                     </div>
-                    <div className="mode-tabs">
-                        <div className="mode-tab active">Delivery</div>
-                        <div className="mode-tab">Pickup</div>
+
+                    <div className="flex items-center gap-3 sm:gap-8">
+                        <div className="text-right">
+                            <p className="font-barlow-cond text-[9px] font-black uppercase tracking-widest text-[#444] mb-0.5 italic">Fleet Balance</p>
+                            <p className="bebas text-2xl sm:text-3xl italic text-[#e8a230] leading-none">${balance.toFixed(2)}</p>
+                        </div>
+                        <div className="h-8 w-px bg-white/5 hidden sm:block"></div>
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-2xl bg-[#e8a230] border border-[#e8a230]/20 flex items-center justify-center text-[#080a0f] font-black italic text-sm shadow-[0_0_15px_rgba(232,162,48,0.2)]">
+                                {driverInitials}
+                            </div>
+                        </div>
                     </div>
-                    <div className="nav-av">{driverInitials}</div>
                 </div>
-            </div>
 
-            <div className="sub-nav">
-                <DashboardNav />
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[#2a2f3a] hover:text-[#444]">
-                    <LogoutButton />
+                {/* SECONDARY ELITE NAV */}
+                <div className="border-t border-white/5 bg-black/40 overflow-x-auto no-scrollbar">
+                    <div className="max-w-[1600px] mx-auto px-4 sm:px-8 py-2 flex items-center justify-between gap-6">
+                        <div className="flex items-center gap-1 sm:gap-4 overflow-x-auto no-scrollbar">
+                            <Link href="/driver/dashboard" className="barlow-cond text-[10px] font-black uppercase tracking-widest text-[#e8a230] bg-[#e8a230]/5 px-4 py-1.5 rounded-lg border border-[#e8a230]/20 italic">Dashboard</Link>
+                            <Link href="/driver/dashboard/earnings" className="barlow-cond text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-white px-4 py-1.5 rounded-lg italic">Settlements</Link>
+                            <Link href="/driver/dashboard/ratings" className="barlow-cond text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-white px-4 py-1.5 rounded-lg italic">Reputation</Link>
+                            <Link href="/driver/dashboard/account" className="barlow-cond text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-white px-4 py-1.5 rounded-lg italic">Profile</Link>
+                        </div>
+                        <div className="flex-shrink-0 barlow-cond text-[9px] font-black uppercase tracking-[0.2em] text-[#2a2f3a] hover:text-red-500/50 transition-colors">
+                            <LogoutButton />
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </header>
 
-            <main className="main-content">
+            <main className="main-content relative z-10">
+                <style dangerouslySetInnerHTML={{ __html: `
+                    .main-content::before {
+                        content: ""; position: fixed; inset: 0; 
+                        background-image: linear-gradient(rgba(16, 22, 34, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 22, 34, .3) 1px, transparent 1px);
+                        background-size: 40px 40px; pointer-events: none; opacity: 0.5; z-index: -1;
+                    }
+                ` }} />
                 {children}
             </main>
+
+            <SupportWidget role="DRIVER" />
         </div>
-        <SupportWidget role="DRIVER" />
-    </>
     );
 }
