@@ -4,23 +4,55 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Logo from "@/components/Logo";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
   const [role, setRole] = useState<'customer' | 'merchant' | 'driver'>('customer');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const doLogin = () => {
+  const doLogin = async () => {
     if (!email || !password) {
       alert('Please enter your email and password.');
       return;
     }
-    // Logic for login (backend logic remains same)
-    // In demo mode:
+    
+    setIsLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error) {
+        alert(error.message);
+        setIsLoading(false);
+        return;
+    }
+
+    // Role-based routing
     if (role === 'merchant') router.push('/merchant/dashboard');
     else if (role === 'driver') router.push('/driver/dashboard');
     else router.push('/');
+  };
+
+  const signInWithProvider = async (provider: 'google' | 'apple') => {
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+            queryParams: {
+                prompt: 'select_account',
+            }
+        }
+    });
+
+    if (error) {
+        alert(`Failed to connect with ${provider}: ${error.message}`);
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -59,7 +91,6 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Email / password */}
           <div className="fg">
             <label>Email address</label>
             <input 
@@ -67,6 +98,7 @@ export default function LoginPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <div className="fg" style={{ marginTop: '10px' }}>
@@ -76,6 +108,7 @@ export default function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <div style={{ textAlign: 'right', margin: '8px 0 16px' }}>
@@ -84,17 +117,25 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <button className="place-btn" style={{ marginTop: 0 }} onClick={doLogin}>
-            Sign In →
+          <button 
+            className="place-btn" 
+            style={{ marginTop: 0 }} 
+            onClick={doLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing in..." : "Sign In →"}
           </button>
 
           <div className="login-or">or continue with</div>
-          <button className="social-btn">
-            <span style={{ fontSize: '16px' }}>G</span> Continue with Google
-          </button>
-          <button className="social-btn">
-            <span style={{ fontSize: '16px' }}></span> Continue with Apple
-          </button>
+          
+          <div className="grid grid-cols-1 gap-3">
+              <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading}>
+                <span style={{ fontSize: '16px' }}>G</span> Continue with Google
+              </button>
+              <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading}>
+                <span style={{ fontSize: '16px' }}></span> Continue with Apple
+              </button>
+          </div>
 
           <div className="login-foot">
             {role === 'customer' ? (
@@ -110,4 +151,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
