@@ -1,12 +1,10 @@
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
 import { acceptOrder } from "../actions";
 import { getCurrentWeather } from "@/lib/weather";
 import LogoutButton from "@/components/LogoutButton";
 import PickupPhotoForm from "./PickupPhotoForm";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
-import MobileDriverDashboard from "./MobileDriverDashboard";
 
 export const dynamic = 'force-dynamic';
 
@@ -70,76 +68,32 @@ export default async function DriverDashboard() {
 
     return (
         <div className="font-sans min-h-screen bg-[#080808] text-white">
-            <MobileDriverDashboard 
-                driver={driver}
-                stats={stats}
-                myActiveOrders={myActiveOrders}
-                availableOrders={availableOrders}
-            />
-
-            <div className="hidden lg:block">
-                <style dangerouslySetInnerHTML={{ __html: `
-                    .hero { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px; border-bottom: 1px solid #1c1f28; background: #0c0e13; }
-                    .hero-left { display: flex; align-items: center; gap: 20px; }
-                    .hero-icon { width: 56px; height: 56px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 28px; }
-                    .hero-title { font-family: 'Barlow Condensed', sans-serif; font-size: 40px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; line-height: 0.9; letter-spacing: -0.02em; }
-                    .hero-title span { color: #e8a230; }
-                    .hero-sub { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #555; margin-top: 6px; }
-                    .online-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: #3dd68c; background: #0d1a12; border: 1px solid #1a3a2a; padding: 10px 20px; border-radius: 8px; }
-                    .live-dot { width: 7px; height: 7px; background: #3dd68c; border-radius: 50%; box-shadow: 0 0 10px #3dd68c; animation: pulse 2s infinite; }
-                    @keyframes pulse { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity:0.4; transform: scale(0.8); } }
-
-                    .stat-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #1c1f28; border-bottom: 1px solid #1c1f28; }
-                    .stat-cell { background: #0c0e13; padding: 24px 32px; }
-                    .stat-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: #444; margin-bottom: 12px; }
-                    .stat-val { font-size: 36px; font-weight: 800; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; tracking: -0.04em; }
-                    .stat-val.gold { color: #e8a230; }
-                    .stat-val.grn { color: #3dd68c; }
-                    .star { color: #e8a230; font-size: 20px; }
-
-                    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1c1f28; min-height: calc(100vh - 250px); }
-                    .panel { background: #080808; padding: 32px; }
-
-                    .panel-hd { display: flex; items-center; justify-content: space-between; margin-bottom: 32px; }
-                    .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.05em; line-height: 1; }
-                    .panel-title span { color: #e8a230; }
-                    .panel-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 24px; display: block; }
-
-                    .order-card { background: #0c0e13; border: 1px solid #1c1f28; margin-bottom: 12px; border-radius: 16px; overflow: hidden; transition: all 0.3s; }
-                    .order-card:hover { border-color: #333; transform: translateY(-2px); }
-                    .order-card-hd { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #1c1f28; background: #131720; }
-                    .order-name { font-size: 16px; font-weight: 800; color: #fff; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; italic; }
-                    .order-body { padding: 20px; }
-                    .yield-tag { font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; background: #0a1e12; border: 1px solid #1a4a2a; padding: 4px 10px; border-radius: 4px; }
-                    .dist-tag { font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #666; background: #131720; border: 1px solid #2a2f3a; padding: 4px 10px; border-radius: 4px; }
-                    
-                    .mission-status { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #e8a230/10; border: 1px solid #e8a230/30; border-radius: 12px; margin-bottom: 24px; }
-                    .mission-status span { color: #e8a230; font-size: 11px; font-weight: 900; text-transform: uppercase; tracking: 0.25em; }
-                ` }} />
-                
+            <div className="driver-body">
                 {/* HERO */}
                 <div className="hero">
                     <div className="hero-left">
                         <div className="hero-icon">🏎️</div>
                         <div>
                             <div className="hero-title">FLEET <span>MISSION</span> HUB</div>
-                            <div className="hero-sub">SECURE AUTHENTICATED ACCESS &nbsp;·&nbsp; {weather.temperature}°F GRID TEMP</div>
+                            <div className="hero-sub hidden sm:block">SECURE AUTHENTICATED ACCESS &nbsp;·&nbsp; {weather.temperature}°F GRID TEMP</div>
+                            <div className="hero-sub sm:hidden">GRID STATUS: SECURE</div>
                         </div>
                     </div>
-                    <div className="online-badge"><span className="live-dot"></span> CONNECTION STABLE</div>
+                    <div className="online-badge hidden sm:flex"><span className="live-dot"></span> CONNECTION STABLE</div>
+                    <div className="online-badge sm:hidden"><span className="live-dot"></span> LIVE</div>
                 </div>
 
                 {/* STAT BAR */}
                 <div className="stat-bar">
                     <div className="stat-cell">
                         <div className="stat-lbl">Daily Yield</div>
-                        <div className="stat-val gold">${stats.totalEarnings.toFixed(2)}</div>
+                        <div className="stat-val gold">${stats.totalEarnings.toFixed(0)}</div>
                     </div>
                     <div className="stat-cell">
-                        <div className="stat-lbl">Mission Count</div>
+                        <div className="stat-lbl">Missions</div>
                         <div className="stat-val">{stats.trips}</div>
                     </div>
-                    <div className="stat-cell">
+                    <div className="stat-cell hidden sm:block">
                         <div className="stat-lbl">Fleet Rating</div>
                         <div className="flex items-center gap-2"><span className="star">★</span><span className="stat-val">{stats.rating.toFixed(1)}</span></div>
                     </div>
@@ -160,29 +114,28 @@ export default async function DriverDashboard() {
                         <span className="panel-sub">Active fulfillment neural links</span>
 
                         {myActiveOrders.length === 0 ? (
-                            <div className="h-[400px] border border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center p-10 text-center">
+                            <div className="h-[300px] sm:h-[400px] border border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center p-10 text-center">
                                 <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center text-3xl mb-6 grayscale opacity-20">📡</div>
-                                <p className="bebas text-2xl italic text-white/20 tracking-widest">AWAITING MISSION ASSIGNMENT</p>
-                                <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.3em] text-[#222] mt-2 italic">Sector: Charlotte HQ</p>
+                                <p className="bebas text-2xl italic text-white/20 tracking-widest uppercase">Awaiting Assignment</p>
+                                <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.3em] text-[#222] mt-2 italic">Sector: active</p>
                             </div>
                         ) : (
-                            <div className="space-y-8">
+                            <div className="space-y-6">
                                 {myActiveOrders.map((order) => (
-                                    <div key={order.id} className="bg-[#111114] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                                    <div key={order.id} className="bg-[#111114] border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden group">
                                         <div className="absolute top-0 left-0 w-full h-[1px] bg-[#e8a230]/20 shadow-[0_0_10px_#e8a230] animate-[scanning_4s_linear_infinite]" />
                                         
-                                        <div className="flex justify-between items-start mb-10">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6 sm:mb-10">
                                             <div>
                                                 <div className="mission-status">
                                                     <span className="animate-pulse">●</span>
                                                     <span>{order.status === 'PICKED_UP' ? 'DELIVERY IN PROGRESS' : 'PICKUP REQUIRED'}</span>
                                                 </div>
-                                                <h3 className="bebas text-6xl italic text-white leading-none uppercase">{order.restaurant?.name || "RESTAURANT"}</h3>
-                                                <p className="barlow-cond text-xs font-black uppercase tracking-[0.4em] text-[#444] mt-3 italic underline decoration-[#e8a230]/30">Payload: Verified Food Delivery</p>
+                                                <h3 className="bebas text-4xl sm:text-6xl italic text-white leading-none uppercase">{order.restaurant?.name || "RESTAURANT"}</h3>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="barlow-cond text-[10px] font-black tracking-widest text-[#444] uppercase mb-2 italic">Operational ID</p>
-                                                <p className="bebas text-3xl italic text-[#e8a230] tracking-wider leading-none">#{order.id.slice(-6).toUpperCase()}</p>
+                                            <div className="text-left sm:text-right">
+                                                <p className="barlow-cond text-[10px] font-black tracking-widest text-[#444] uppercase mb-1 sm:mb-2 italic">Operational ID</p>
+                                                <p className="bebas text-2xl sm:text-3xl italic text-[#e8a230] tracking-wider leading-none">#{order.id.slice(-6).toUpperCase()}</p>
                                             </div>
                                         </div>
 
@@ -239,7 +192,7 @@ export default async function DriverDashboard() {
 
                         <div className="grid grid-cols-1 gap-4">
                             {availableOrders.length === 0 ? (
-                                <div className="p-12 border border-white/5 rounded-3xl bg-black/20 text-center">
+                                <div className="p-8 sm:p-12 border border-white/5 rounded-3xl bg-black/20 text-center">
                                     <p className="barlow-cond text-xs font-black text-[#222] uppercase tracking-[0.4em] italic">No active opportunities in this sector</p>
                                 </div>
                             ) : (
@@ -249,7 +202,7 @@ export default async function DriverDashboard() {
                                             <div className="order-name italic">{order.restaurant?.name}</div>
                                             <div className="flex items-center gap-1.5 opacity-40"><span className="live-dot"></span> <span className="text-[9px] font-black tracking-widest uppercase">Live</span></div>
                                         </div>
-                                        <div className="order-body flex items-center justify-between">
+                                        <div className="order-body flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                             <div>
                                                 <p className="text-[11px] font-bold text-[#444] mb-3">{order.restaurant?.address}</p>
                                                 <div className="flex gap-2">
@@ -263,7 +216,7 @@ export default async function DriverDashboard() {
                                                 await acceptOrder(id);
                                             }}>
                                                 <input type="hidden" name="orderId" value={order.id} />
-                                                <button className="bebas italic text-2xl bg-[#e8a230] text-black px-10 py-3 rounded-xl hover:bg-white transition-all shadow-[0_10px_30px_rgba(232,162,48,0.2)] active:scale-95">ENGAGE</button>
+                                                <button className="bebas italic text-2xl bg-[#e8a230] text-black w-full sm:w-auto px-10 py-3 rounded-xl hover:bg-white transition-all shadow-[0_10px_30px_rgba(232,162,48,0.2)] active:scale-95">ENGAGE</button>
                                             </form>
                                         </div>
                                     </div>
@@ -271,16 +224,16 @@ export default async function DriverDashboard() {
                             )}
                         </div>
 
-                        <div className="mt-12 group cursor-pointer relative overflow-hidden bg-black border border-white/10 rounded-[2.5rem] p-10 active:scale-95 transition-all">
+                        <div className="mt-8 sm:mt-12 group cursor-pointer relative overflow-hidden bg-black border border-white/10 rounded-[2.5rem] p-8 sm:p-10 active:scale-95 transition-all">
                             <div className="absolute inset-0 bg-[#e8a230]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="flex justify-between items-start mb-4">
                                 <div className="bebas text-3xl italic text-white uppercase tracking-widest">SETTLEMENT <span>BRIDGE</span></div>
                                 <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-[#e8a230]">⚡</div>
                             </div>
-                            <div className="bebas text-7xl italic text-white tracking-tighter leading-none mb-4">
-                                <span className="text-3xl text-[#222] mr-2">$</span>{stats.balance.toFixed(2)}
+                            <div className="bebas text-5xl sm:text-7xl italic text-white tracking-tighter leading-none mb-4">
+                                <span className="text-2xl sm:text-3xl text-[#222] mr-2">$</span>{stats.balance.toFixed(2)}
                             </div>
-                            <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.4em] text-[#444] italic">Tap to request instant payout to Stripe Link</p>
+                            <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.4em] text-[#444] italic">Tap to request instant payout</p>
                         </div>
                     </div>
                 </div>

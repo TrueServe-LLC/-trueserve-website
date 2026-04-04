@@ -494,3 +494,56 @@ nav {
     .login-box { padding: 24px 20px; }
     .role-tab { font-size: 11px; padding: 7px; }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   DASHBOARD ELITE UTILITIES (DRIVERS & MERCHANTS)
+   ────────────────────────────────────────────────────────────────────────── */
+
+.driver-body { padding: 0; }
+.hero { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px; border-bottom: 1px solid #1c1f28; background: #0c0e13; }
+.hero-left { display: flex; align-items: center; gap: 20px; }
+.hero-icon { width: 56px; height: 56px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 28px; }
+.hero-title { font-family: 'Barlow Condensed', sans-serif; font-size: 40px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; line-height: 0.9; letter-spacing: -0.02em; }
+.hero-title span { color: #e8a230; }
+.hero-sub { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #555; margin-top: 6px; }
+
+.online-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: #3dd68c; background: #0d1a12; border: 1px solid #1a3a2a; padding: 10px 20px; border-radius: 8px; }
+.live-dot { width: 7px; height: 7px; background: #3dd68c; border-radius: 50%; box-shadow: 0 0 10px #3dd68c; animation: pulse 2s infinite; }
+
+.stat-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #1c1f28; border-bottom: 1px solid #1c1f28; }
+.stat-cell { background: #0c0e13; padding: 24px 32px; }
+.stat-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: #444; margin-bottom: 12px; }
+.stat-val { font-size: 36px; font-weight: 800; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; letter-spacing: -0.04em; }
+.stat-val.gold { color: #e8a230; }
+.stat-val.grn { color: #3dd68c; }
+.star { color: #e8a230; font-size: 20px; }
+
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1c1f28; min-height: calc(100vh - 250px); }
+.panel { background: #080808; padding: 32px; }
+.panel-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.05em; line-height: 1; }
+.panel-title span { color: #e8a230; }
+.panel-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 24px; display: block; }
+
+.mission-status { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(232, 162, 48, 0.1); border: 1px solid rgba(232, 162, 48, 0.3); border-radius: 8px; margin-bottom: 16px; }
+.mission-status span { color: #e8a230; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; }
+
+.order-card { background: #0c0e13; border: 1px solid #1c1f28; margin-bottom: 12px; border-radius: 16px; overflow: hidden; transition: all 0.3s; }
+.order-card-hd { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #1c1f28; background: #131720; }
+.order-name { font-size: 16px; font-weight: 800; color: #fff; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; font-style: italic; }
+.order-body { padding: 20px; }
+.yield-tag { font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; background: #0a1e12; border: 1px solid #1a4a2a; padding: 4px 10px; border-radius: 4px; }
+.dist-tag { font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #666; background: #131720; border: 1px solid #2a2f3a; padding: 4px 10px; border-radius: 4px; }
+
+@keyframes scanning { 0% { transform: translateY(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(400px); opacity: 0; } }
+
+@media (max-width: 1024px) {
+  .hero { padding: 20px; }
+  .hero-title { font-size: 28px; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-cell { padding: 16px; }
+  .stat-val { font-size: 28px; }
+  .main-grid { grid-template-columns: 1fr; }
+  .panel { padding: 20px; }
+  .md-body { padding: 20px; }
+}

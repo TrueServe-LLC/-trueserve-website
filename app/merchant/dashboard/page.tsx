@@ -11,7 +11,6 @@ import TerminalStatusPanel from "@/app/merchant/dashboard/TerminalStatusPanel";
 import AutoPilotPanel from "@/app/merchant/dashboard/AutoPilotPanel";
 import BusyZonesPanel from "@/app/merchant/dashboard/BusyZonesPanel";
 import IssuesPanel from "@/app/merchant/dashboard/IssuesPanel";
-import MobileMerchantDashboard from "@/components/MobileMerchantDashboard";
 import GHLSettingsPanel from "@/app/merchant/dashboard/GHLSettingsPanel";
 
 export const dynamic = "force-dynamic";
@@ -78,15 +77,7 @@ export default async function MerchantDashboard() {
              <WelcomeModal restaurantName={restaurant.name} />
              {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
 
-             {/* ── MOBILE VIEW ── */}
-             <MobileMerchantDashboard 
-                 restaurant={restaurant} 
-                 pendingOrders={pendingOrders} 
-                 netRevenue={netRevenue} 
-             />
-
-             {/* ── DESKTOP VIEW ── */}
-             <div className="hidden lg:block md-body min-h-screen">
+             <div className="md-body min-h-screen">
                 {/* PAGE HEADER */}
                 <div className="md-page-hd">
                     <div>
@@ -94,12 +85,11 @@ export default async function MerchantDashboard() {
                         <div className="md-page-sub">Operational Control · {restaurant.name}</div>
                     </div>
                     <div className="md-hd-right">
-                        <div className="md-terminal-btn">
+                        <div className="md-terminal-btn hidden sm:flex">
                             <span className="md-terminal-dot"></span>
                             Kitchen Terminal
                         </div>
-                        <div className="md-scale-badge">Pro Scale</div>
-                        <div className={`md-online-badge`} style={restaurant.isBusy ? { background: "#e24b4a" } : {}}>
+                        <div className="md-online-badge" style={restaurant.isBusy ? { background: "#e24b4a" } : {}}>
                             {restaurant.isBusy ? "Paused" : "Online"}
                         </div>
                         <form action={logout} style={{ display: "inline" }}>
@@ -136,7 +126,7 @@ export default async function MerchantDashboard() {
                             </div>
                             <div>
                                 <div className="md-stripe-title">Connect Stripe to get paid.</div>
-                                <div className="md-stripe-desc">To start receiving payouts for your orders, you need to connect your Stripe account.</div>
+                                <div className="md-stripe-desc hidden md:block">To start receiving payouts for your orders, you need to connect your Stripe account.</div>
                             </div>
                         </div>
                         <form action={createStripeAccount}>
@@ -156,7 +146,7 @@ export default async function MerchantDashboard() {
                             </div>
                             <div>
                                 <div className="md-stripe-title" style={{ fontStyle: "normal" }}>Stripe account connected.</div>
-                                <div className="md-stripe-desc">Your payouts are active. Funds are deposited on a rolling basis.</div>
+                                <div className="md-stripe-desc hidden md:block">Your payouts are active. Funds are deposited on a rolling basis.</div>
                             </div>
                         </div>
                         <div className="md-stripe-connected">✓ Payouts Active</div>
