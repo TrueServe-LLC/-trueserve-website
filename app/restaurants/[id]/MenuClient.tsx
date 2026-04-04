@@ -163,9 +163,9 @@ export default function MenuClient({
             
             <div className="menu-items">
                 {ghlUrl && (
-                    <button className="ghl-btn" onClick={openGHL}>
-                        <span style={{ fontSize: '14px' }}>🤖</span> 
-                        Launch GHL Fast Booking/Order Assistant
+                    <button className="ghl-btn !bg-[#e8a230] !text-black shadow-lg" onClick={openGHL}>
+                        <span style={{ fontSize: '16px' }}>⚡️</span> 
+                        Order via Fast AI Assistant (GHL)
                     </button>
                 )}
                 <div className="cat">Main Menu</div>

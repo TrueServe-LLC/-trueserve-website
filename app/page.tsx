@@ -21,9 +21,6 @@ export default function Home() {
     router.push(`/restaurants?address=${encodeURIComponent(addr.trim())}`);
   };
 
-  const fillFay = () => {
-    setAddr('322 Circle Dr, Fayetteville, NC 28305');
-  };
 
   return (
     <div className="min-h-screen bg-[#0c0e13] text-white">
@@ -65,7 +62,6 @@ export default function Home() {
             <button onClick={doSearch}>Find Food</button>
           </div>
           
-          <p className="hint">Try: <span onClick={fillFay}>322 Circle Dr, Fayetteville, NC 28305</span></p>
 
           <div className="flex flex-wrap justify-center gap-4 mt-12">
             {[
