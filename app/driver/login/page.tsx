@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 function DriverLoginPageContent() {
   const router = useRouter();
   const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState<"phone" | "otp">("phone");
   const [isLoading, setIsLoading] = useState(false);
 
   const signInWithProvider = async (provider: 'google' | 'apple') => {
@@ -28,6 +30,40 @@ function DriverLoginPageContent() {
         alert(`Failed to connect with ${provider}: ${error.message}`);
         setIsLoading(false);
     }
+  };
+
+  const requestOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phone) return alert("Please enter your mobile identifier.");
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: phone.startsWith("+") ? phone : `+1${phone.replace(/\D/g, "")}`,
+    });
+
+    if (error) {
+      alert(`Carrier Link Failed: ${error.message}`);
+    } else {
+      setStep("otp");
+    }
+    setIsLoading(false);
+  };
+
+  const verifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp) return alert("Please enter the 6-digit mission code.");
+    setIsLoading(true);
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone: phone.startsWith("+") ? phone : `+1${phone.replace(/\D/g, "")}`,
+      token: otp,
+      type: "sms",
+    });
+
+    if (error) {
+      alert(`Authentication Rejected: ${error.message}`);
+    } else {
+      router.push("/driver/dashboard");
+    }
+    setIsLoading(false);
   };
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -139,16 +175,30 @@ function DriverLoginPageContent() {
           <div className="s-form animate-up">
             <div className="form-title">Driver <span>Login.</span></div>
             <div className="form-sub">Secure mobile terminal for mission hubs</div>
-            <div className="sec-label">Authentication Terminal</div>
+            <div className="sec-label">{step === "phone" ? "Authentication Terminal" : "Mission Verification Hub"}</div>
             
-            <form onSubmit={(e) => { e.preventDefault(); setIsLoading(true); setTimeout(() => router.push("/driver/dashboard"), 1000); }}>
-              <div className="fl">Mobile Identifier (US Only) <span className="text-[#e24b4a]">*</span></div>
-              <input className="fi" type="tel" placeholder="(336) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-              
-              <button className="cta" disabled={isLoading}>
-                {isLoading ? "Requesting Uplink..." : "Request Access Code →"}
-              </button>
-            </form>
+            {step === "phone" ? (
+              <form onSubmit={requestOTP}>
+                <div className="fl">Mobile Identifier (US Only) <span className="text-[#e24b4a]">*</span></div>
+                <input className="fi" type="tel" placeholder="(336) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                
+                <button className="cta" disabled={isLoading}>
+                  {isLoading ? "Requesting Uplink..." : "Request Access Code →"}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={verifyOTP}>
+                <div className="fl">Mission Code (6-Digits) <span className="text-[#e24b4a]">*</span></div>
+                <input className="fi" type="text" placeholder="000000" value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={6} required />
+                
+                <button className="cta" disabled={isLoading}>
+                  {isLoading ? "Synchronizing Hub..." : "Complete Uplink →"}
+                </button>
+                <button onClick={() => setStep("phone")} className="w-full mt-4 bg-transparent text-[9px] font-bold tracking-[0.2em] text-[#444] uppercase py-2">
+                  ← Previous Sector
+                </button>
+              </form>
+            )}
 
             <button onClick={loginAsDemoDriver} className="w-full mt-4 bg-transparent border border-white/5 py-4 text-[9px] font-bold tracking-[0.2em] text-[#444] hover:border-[#e8a230]/30 hover:text-[#e8a230] transition-all uppercase rounded-[2px]">
               🚀 Authenticate Demo Access (Driver)
@@ -163,9 +213,6 @@ function DriverLoginPageContent() {
             <div className="grid grid-cols-1 gap-3">
                 <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0f1219', border: '1px solid #1c1f28', borderRadius: '2px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <span style={{ fontSize: '14px', color: '#e8a230' }}>G</span> Google Access
-                </button>
-                <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0f1219', border: '1px solid #1c1f28', borderRadius: '2px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <span style={{ fontSize: '14px' }}></span> Apple ID Login
                 </button>
             </div>
 

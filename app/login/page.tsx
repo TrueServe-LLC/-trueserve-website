@@ -26,6 +26,7 @@ export default function LoginPage() {
     });
 
     if (error) {
+        // Fallback or alert
         alert(error.message);
         setIsLoading(false);
         return;
@@ -35,6 +36,27 @@ export default function LoginPage() {
     if (role === 'merchant') router.push('/merchant/dashboard');
     else if (role === 'driver') router.push('/driver/dashboard');
     else router.push('/');
+  };
+
+  const sendMagicLink = async () => {
+    if (!email) {
+      alert('Please enter your email to receive a secure link.');
+      return;
+    }
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      }
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert('Mission Uplink Sent! Check your inbox for the secure access link.');
+    }
+    setIsLoading(false);
   };
 
   const signInWithProvider = async (provider: 'google' | 'apple') => {
@@ -124,23 +146,29 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <button 
-            className="place-btn" 
-            style={{ marginTop: 0 }} 
-            onClick={doLogin}
-            disabled={isLoading}
-          >
-            {isLoading ? "Signing in..." : "Sign In →"}
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ marginTop: 0 }}>
+            <button 
+              className="place-btn" 
+              onClick={doLogin}
+              disabled={isLoading}
+            >
+              {isLoading ? "Uplinking..." : "Sign In →"}
+            </button>
+            <button 
+              className="btn btn-ghost" 
+              style={{ padding: '16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+              onClick={sendMagicLink}
+              disabled={isLoading}
+            >
+              Secure Magic Link ✨
+            </button>
+          </div>
 
           <div className="login-or">or continue with</div>
           
           <div className="grid grid-cols-1 gap-3">
               <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading}>
                 <span style={{ fontSize: '16px' }}>G</span> Continue with Google
-              </button>
-              <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading}>
-                <span style={{ fontSize: '16px' }}></span> Continue with Apple
               </button>
           </div>
 

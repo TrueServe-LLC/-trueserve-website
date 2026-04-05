@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface LogoProps {
     className?: string;
@@ -10,28 +11,51 @@ const Logo: React.FC<LogoProps> = ({
     className = "", 
     size = 'md'
 }) => {
-    // Exact sizing to match the .logo class in the provided template
-    const sizes = {
-        sm: 'text-[18px]',
-        md: 'text-[24px]',
-        lg: 'text-[32px]',
-        xl: 'text-[48px]'
+    const dim = {
+        sm: { img: 24, font: '18px', gap: '8px' },
+        md: { img: 32, font: '24px', gap: '10px' },
+        lg: { img: 44, font: '32px', gap: '12px' },
+        xl: { img: 64, font: '48px', gap: '16px' }
     };
 
     return (
         <Link 
             href="/" 
-            className={`logo ${sizes[size]} ${className}`}
+            className={`logo-container group ${className}`}
             style={{ 
-                fontWeight: 900, 
-                letterSpacing: '-.5px', 
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center'
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: dim[size].gap,
+                textDecoration: 'none',
+                cursor: 'pointer'
             }}
         >
-            <span style={{ color: '#fff' }}>True</span>
-            <em style={{ color: '#e8a230', fontStyle: 'normal' }}>Serve</em>
+            <div className="logo-emblem relative" style={{ 
+                width: dim[size].img, 
+                height: dim[size].img,
+                flexShrink: 0 
+            }}>
+                <img 
+                    src="/logo.png" 
+                    alt="TrueServe Emblem"
+                    className="w-full h-full object-contain"
+                />
+            </div>
+            <div 
+                className="logo-text"
+                style={{ 
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: dim[size].font,
+                    fontWeight: 800,
+                    letterSpacing: '-.03em',
+                    lineHeight: 1,
+                    display: 'flex',
+                    alignItems: 'baseline'
+                }}
+            >
+                <span style={{ color: '#fff' }}>True</span>
+                <span style={{ color: '#529c92' }}>Serve</span>
+            </div>
         </Link>
     );
 };

@@ -91,9 +91,6 @@ export default function DriverSignupPage() {
                     <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0c0e13', border: '1px solid #1c1f28', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       <span style={{ fontSize: '14px', color: '#e8a230' }}>G</span> Google Sync
                     </button>
-                    <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0c0e13', border: '1px solid #1c1f28', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                      <span style={{ fontSize: '14px' }}></span> Apple Identity
-                    </button>
                  </div>
                  <div className="login-or" style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '20px 0', color: '#222', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
