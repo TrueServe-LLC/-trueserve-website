@@ -5,6 +5,9 @@ import { getCurrentWeather } from "@/lib/weather";
 import LogoutButton from "@/components/LogoutButton";
 import PickupPhotoForm from "./PickupPhotoForm";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
+import DriverTacticalMap from "./DriverTacticalMap";
+
+const defaultCenter = { lat: 35.2271, lng: -80.8431 };
 
 export const dynamic = 'force-dynamic';
 
@@ -101,6 +104,24 @@ export default async function DriverDashboard() {
                     <div className="stat-cell">
                         <div className="stat-lbl">Protocol</div>
                         <div className="stat-val grn uppercase">Online</div>
+                    </div>
+                </div>
+
+                {/* SITUATIONAL AWARENESS */}
+                <div className="mb-12">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#e8a230] animate-pulse shadow-[0_0_10px_#e8a230]"></div>
+                            <h2 className="bebas text-2xl sm:text-4xl italic text-white/90 uppercase tracking-widest leading-none">SITUATIONAL <span className="text-[#e8a230]">AWARENESS</span></h2>
+                        </div>
+                        <div className="text-[9px] font-black uppercase tracking-widest text-[#222]">Sector: 01-Tactical</div>
+                    </div>
+                    <div className="h-[300px] sm:h-[400px] bg-[#0c0c0e] rounded-[2.5rem] border border-white/5 overflow-hidden relative group">
+                        <DriverTacticalMap 
+                            availableOrders={availableOrders} 
+                            activeMission={myActiveOrders[0]} 
+                            driverLocation={isPreview ? defaultCenter : { lat: driver?.currentLat || 35.2271, lng: driver?.currentLng || -80.8431 }} 
+                        />
                     </div>
                 </div>
 
