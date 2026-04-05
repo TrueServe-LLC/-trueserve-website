@@ -104,11 +104,11 @@ export default function PickupPhotoForm({ orderId, restaurantName }: { orderId: 
                     {/* Header */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="text-lg">📸</span>
+                            <span className="text-xl">🏎️</span>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Pickup Verification</p>
-                                <p className="text-[9px] text-slate-500 font-medium mt-0.5">
-                                    Photo the sealed bag from {restaurantName || "the restaurant"}
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#e8a230] italic">Pickup Verification</p>
+                                <p className="text-[9px] text-[#444] font-black uppercase mt-0.5 tracking-widest italic">
+                                    Secure photo: {restaurantName || "the restaurant"}
                                 </p>
                             </div>
                         </div>
@@ -118,7 +118,7 @@ export default function PickupPhotoForm({ orderId, restaurantName }: { orderId: 
                                 setShowCamera(false);
                                 setPhotoCaptured(null);
                             }}
-                            className="text-slate-500 hover:text-white text-sm transition-colors"
+                            className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors border border-white/5"
                         >
                             ✕
                         </button>
@@ -139,10 +139,10 @@ export default function PickupPhotoForm({ orderId, restaurantName }: { orderId: 
                                 {stream && (
                                     <button
                                         onClick={takePhoto}
-                                        className="absolute bottom-4 w-14 h-14 bg-emerald-500 rounded-full border-4 border-white shadow-xl flex items-center justify-center active:scale-95 transition-all hover:bg-emerald-400"
+                                        className="absolute bottom-6 w-16 h-16 bg-[#e8a230] rounded-full border-4 border-white shadow-[0_0_40px_rgba(232,162,48,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white"
                                     >
                                         <span className="sr-only">Take Photo</span>
-                                        <div className="w-5 h-5 bg-white rounded-full"></div>
+                                        <div className="w-6 h-6 bg-black rounded-full"></div>
                                     </button>
                                 )}
                                 {!stream && !error && (
@@ -172,13 +172,13 @@ export default function PickupPhotoForm({ orderId, restaurantName }: { orderId: 
                     </div>
 
                     {/* Checklist hint */}
-                    <div className="flex items-start gap-3 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
-                        <span className="text-base mt-0.5">📋</span>
-                        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider space-y-1">
-                            <p className="text-emerald-400">Make sure photo shows:</p>
-                            <p>✓ Sealed bag / container</p>
-                            <p>✓ Restaurant counter or branded bag</p>
-                            <p>✓ All items accounted for</p>
+                    <div className="flex items-start gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                        <span className="text-lg mt-0.5 italic">📋</span>
+                        <div className="text-[9px] text-[#444] font-black uppercase tracking-[0.2em] space-y-2 italic">
+                            <p className="text-[#3dd68c]">Scan Protocol Verification:</p>
+                            <p className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[#3dd68c]"></span> Sealed bag / container</p>
+                            <p className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[#3dd68c]"></span> Restaurant counter or branded bag</p>
+                            <p className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[#3dd68c]"></span> All items accounted for</p>
                         </div>
                     </div>
 
@@ -186,18 +186,18 @@ export default function PickupPhotoForm({ orderId, restaurantName }: { orderId: 
                     <button
                         onClick={submitPickup}
                         disabled={loading || !photoCaptured}
-                        className="w-full py-4 rounded-xl bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-[11px] 
-                            disabled:opacity-30 disabled:scale-100 hover:bg-emerald-400 active:scale-95 
-                            transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2"
+                        className="w-full py-5 rounded-2xl bg-[#3dd68c] text-black font-black uppercase tracking-[0.3em] text-[11px] 
+                            disabled:opacity-30 disabled:scale-100 hover:bg-white active:scale-95 
+                            transition-all shadow-[0_10px_30px_rgba(61,214,140,0.2)] flex items-center justify-center gap-3 italic"
                     >
                         {loading ? (
                             <>
                                 <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                                Confirming Pickup...
+                                Transmitting...
                             </>
                         ) : (
                             <>
-                                <span>🚀</span> Confirm Pickup — Food Secured
+                                <span>🚀</span> Secured — Broadcast to Fleet
                             </>
                         )}
                     </button>

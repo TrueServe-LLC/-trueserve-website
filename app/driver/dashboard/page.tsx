@@ -198,43 +198,58 @@ export default async function DriverDashboard() {
                                 </div>
                             ) : (
                                 availableOrders.map((order) => (
-                                    <div key={order.id} className="order-card group">
-                                        <div className="order-card-hd">
-                                            <div className="order-name italic">{order.restaurant?.name}</div>
-                                            <div className="flex items-center gap-1.5 opacity-40"><span className="live-dot"></span> <span className="text-[9px] font-black tracking-widest uppercase">Live</span></div>
+                                    <div key={order.id} className="order-card group !mb-6 !rounded-[1.5rem] !bg-[#0c0c0e] hover:!border-[#e8a230]/40 transition-all duration-300">
+                                        <div className="order-card-hd !bg-transparent !border-white/5 !px-6 !py-5">
+                                            <div className="order-name !bebas !text-2xl !italic !tracking-wide">{order.restaurant?.name}</div>
+                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-[#3dd68c]/10 rounded-full border border-[#3dd68c]/20">
+                                                <span className="w-1 h-1 rounded-full bg-[#3dd68c] animate-pulse"></span>
+                                                <span className="text-[8px] font-black tracking-widest uppercase text-[#3dd68c]">Live Grid</span>
+                                            </div>
                                         </div>
-                                        <div className="order-body flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                            <div>
-                                                <p className="text-[11px] font-bold text-[#444] mb-3">{order.restaurant?.address}</p>
-                                                <div className="flex gap-2">
-                                                    <div className="yield-tag">${(order.totalPay || order.total)?.toFixed(2)} YIELD</div>
-                                                    <div className="dist-tag">{order.distance?.toFixed(1) || "1.2"} MI</div>
+                                        <div className="order-body !px-6 !pb-6">
+                                            <div className="flex flex-col gap-4">
+                                                <p className="barlow-cond text-[10px] font-black text-[#333] uppercase tracking-widest italic">{order.restaurant?.address}</p>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex gap-2">
+                                                        <div className="yield-tag !px-4 !py-1.5 !text-[10px] !font-black !border-[#3dd68c]/30 !text-[#3dd68c] !bg-[#3dd68c]/5 italic">${(order.totalPay || order.total)?.toFixed(2)} YIELD</div>
+                                                        <div className="dist-tag !px-4 !py-1.5 !text-[10px] !font-black !border-white/10 !text-white/40 !bg-white/5 italic">{order.distance?.toFixed(1) || "1.2"} MI</div>
+                                                    </div>
+                                                    <form action={async (formData) => {
+                                                        "use server";
+                                                        const id = formData.get("orderId") as string;
+                                                        await acceptOrder(id);
+                                                    }}>
+                                                        <input type="hidden" name="orderId" value={order.id} />
+                                                        <button className="bebas italic text-xl bg-[#e8a230] text-black px-8 py-2.5 rounded-xl hover:bg-white transition-all shadow-[0_10px_30px_rgba(232,162,48,0.2)] active:scale-95 uppercase tracking-wide">ENGAGE</button>
+                                                    </form>
                                                 </div>
                                             </div>
-                                            <form action={async (formData) => {
-                                                "use server";
-                                                const id = formData.get("orderId") as string;
-                                                await acceptOrder(id);
-                                            }}>
-                                                <input type="hidden" name="orderId" value={order.id} />
-                                                <button className="bebas italic text-2xl bg-[#e8a230] text-black w-full sm:w-auto px-10 py-3 rounded-xl hover:bg-white transition-all shadow-[0_10px_30px_rgba(232,162,48,0.2)] active:scale-95">ENGAGE</button>
-                                            </form>
                                         </div>
                                     </div>
                                 ))
                             )}
                         </div>
 
-                        <div className="mt-8 sm:mt-12 group cursor-pointer relative overflow-hidden bg-black border border-white/10 rounded-[2.5rem] p-8 sm:p-10 active:scale-95 transition-all">
+                        <div className="mt-8 sm:mt-12 group cursor-pointer relative overflow-hidden bg-black/40 border border-white/5 rounded-[2rem] p-8 sm:p-10 active:scale-95 transition-all">
                             <div className="absolute inset-0 bg-[#e8a230]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="bebas text-3xl italic text-white uppercase tracking-widest">SETTLEMENT <span>BRIDGE</span></div>
-                                <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-[#e8a230]">⚡</div>
+                            <div className="flex justify-between items-start mb-10 sm:mb-12">
+                                <div>
+                                    <div className="bebas text-2xl sm:text-4xl italic text-white/90 uppercase tracking-widest leading-none">SETTLEMENT <span className="text-[#e8a230]">BRIDGE</span></div>
+                                    <p className="barlow-cond text-[9px] font-black uppercase tracking-[0.4em] text-[#222] mt-2 italic">Sector: instant liquidity</p>
+                                </div>
+                                <div className="w-12 h-12 bg-[#e8a230]/10 border border-[#e8a230]/20 rounded-2xl flex items-center justify-center text-[#e8a230] text-xl shadow-[0_0_20px_rgba(232,162,48,0.1)]">⚡</div>
                             </div>
-                            <div className="bebas text-5xl sm:text-7xl italic text-white tracking-tighter leading-none mb-4">
-                                <span className="text-2xl sm:text-3xl text-[#222] mr-2">$</span>{stats.balance.toFixed(2)}
+                            <div className="flex items-baseline gap-2 mb-10 sm:mb-12">
+                                <span className="bebas text-2xl sm:text-3xl text-[#222] italic leading-none">$</span>
+                                <span className="bebas text-6xl sm:text-9xl italic text-white tracking-tighter leading-none">{stats.balance.toFixed(2)}</span>
                             </div>
-                            <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.4em] text-[#444] italic">Tap to request instant payout</p>
+                            <div className="border-t border-white/5 pt-8 flex items-center justify-between">
+                                <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.3em] text-[#333] italic flex items-center gap-3">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#e8a230] animate-pulse"></span>
+                                    Tap to request instant payout
+                                </p>
+                                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#e8a230] italic opacity-40">TR-001</div>
+                            </div>
                         </div>
                     </div>
                 </div>
