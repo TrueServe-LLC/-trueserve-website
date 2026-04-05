@@ -5,11 +5,30 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAuthSession, loginAsDemoDriver } from "@/app/auth/actions";
 import Logo from "@/components/Logo";
+import { supabase } from "@/lib/supabase";
 
 function DriverLoginPageContent() {
   const router = useRouter();
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const signInWithProvider = async (provider: 'google' | 'apple') => {
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+            queryParams: {
+                prompt: 'select_account',
+            }
+        }
+    });
+
+    if (error) {
+        alert(`Failed to connect with ${provider}: ${error.message}`);
+        setIsLoading(false);
+    }
+  };
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -134,6 +153,21 @@ function DriverLoginPageContent() {
             <button onClick={loginAsDemoDriver} className="w-full mt-4 bg-transparent border border-white/5 py-4 text-[9px] font-bold tracking-[0.2em] text-[#444] hover:border-[#e8a230]/30 hover:text-[#e8a230] transition-all uppercase rounded-[2px]">
               🚀 Authenticate Demo Access (Driver)
             </button>
+
+            <div className="login-or" style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '24px 0', color: '#222', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
+              social uplink
+              <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+                <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0f1219', border: '1px solid #1c1f28', borderRadius: '2px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <span style={{ fontSize: '14px', color: '#e8a230' }}>G</span> Google Access
+                </button>
+                <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0f1219', border: '1px solid #1c1f28', borderRadius: '2px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <span style={{ fontSize: '14px' }}></span> Apple ID Login
+                </button>
+            </div>
 
             <div className="signup-note">New to fleet? <Link href="/driver/signup">Apply for partnership</Link></div>
           </div>

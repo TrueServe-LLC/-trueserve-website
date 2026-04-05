@@ -4,10 +4,30 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Logo from "@/components/Logo";
+import { supabase } from "@/lib/supabase";
 
 export default function DriverSignupPage() {
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const signInWithProvider = async (provider: 'google' | 'apple') => {
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+            queryParams: {
+                prompt: 'select_account',
+            }
+        }
+    });
+
+    if (error) {
+        alert(`Failed to connect with ${provider}: ${error.message}`);
+        setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0c0e13] text-white">
@@ -63,6 +83,25 @@ export default function DriverSignupPage() {
               <div className={`prog-s ${step >= 3 ? 'on' : ''}`}></div>
               <span className="prog-label">{step < 4 ? `Step ${step} of 3` : '✓ Approved!'}</span>
             </div>
+
+            {step === 1 && (
+              <div className="mb-8 p-6 bg-[#0f1219] border border-dashed border-[#1c1f28] rounded-2xl text-center">
+                 <p className="text-[10px] uppercase font-black tracking-widest text-[#444] mb-4">Fast-Track Application</p>
+                 <div className="grid grid-cols-1 gap-3">
+                    <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0c0e13', border: '1px solid #1c1f28', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      <span style={{ fontSize: '14px', color: '#e8a230' }}>G</span> Google Sync
+                    </button>
+                    <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0c0e13', border: '1px solid #1c1f28', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      <span style={{ fontSize: '14px' }}></span> Apple Identity
+                    </button>
+                 </div>
+                 <div className="login-or" style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '20px 0', color: '#222', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
+                  or manual entry
+                  <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
+                 </div>
+              </div>
+            )}
 
             {step === 1 && (
               <div id="ds-1" className="step active">
