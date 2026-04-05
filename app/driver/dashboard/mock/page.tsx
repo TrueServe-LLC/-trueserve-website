@@ -26,14 +26,14 @@ const styles = `
 .mock-app {
   font-family: 'Rajdhani', sans-serif;
   background: var(--bg);
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--text);
   max-width: 420px;
   margin: 0 auto;
   position: relative;
   overflow: hidden;
-  border-left: 1px solid var(--border);
-  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
 }
 
 /* scanline overlay */
@@ -142,9 +142,11 @@ const styles = `
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: calc(100vh - 120px);
+  flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;
 }
+.scroll-area::-webkit-scrollbar { display: none; }
 
 /* ── OPPORTUNITY CARD ── */
 .opp-card {
@@ -308,9 +310,11 @@ const styles = `
   display: flex;
   flex-direction: column;
   gap: 14px;
-  height: calc(100vh - 120px);
+  flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;
 }
+.delivery-screen::-webkit-scrollbar { display: none; }
 
 .progress-badge {
   display: inline-flex;
@@ -521,8 +525,9 @@ const styles = `
   .mock-app {
     margin: 40px auto;
     border-radius: 20px;
-    height: 844px; /* iPhone 13 height approx */
+    height: calc(100vh - 80px);
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
   }
 }
 `;
