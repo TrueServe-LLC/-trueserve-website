@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAuthSession } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import MerchantRealtime from "@/components/MerchantRealtime";
 import WelcomeModal from "./WelcomeModal";
 import { createStripeAccount } from "../actions";
@@ -104,10 +105,11 @@ export default async function MerchantDashboard() {
                         <div className="md-stat-name">Incoming Orders</div>
                         <div className="md-stat-value">{pendingOrders.length}</div>
                     </div>
-                    <div className="md-stat-block">
-                        <div className="md-stat-name">Menu Items</div>
+                    <Link href="/merchant/dashboard/menu" className="md-stat-block hover:scale-[1.02] transition-transform cursor-pointer group">
+                        <div className="md-stat-name group-hover:text-primary transition-colors">Menu Assets</div>
                         <div className="md-stat-value">{(restaurant.menuItems || []).length}</div>
-                    </div>
+                        <div className="text-[8px] font-black uppercase tracking-widest text-[#444] mt-2 group-hover:text-primary">Configure hub ↗</div>
+                    </Link>
                     <div className="md-stat-block">
                         <div className="md-stat-name">Net Revenue</div>
                         <div className="md-stat-value gold">${netRevenue.toFixed(2)}</div>
