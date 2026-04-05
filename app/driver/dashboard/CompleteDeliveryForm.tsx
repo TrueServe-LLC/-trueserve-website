@@ -147,26 +147,26 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                     </>
                 ) : (
                     <>
-                        <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/10 flex flex-col items-center justify-center">
+                        <div className="relative w-full aspect-video bg-[#080808] rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mt-2 group">
                             {!photoCaptured ? (
                                 <>
                                     <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
                                     {stream && (
-                                        <button onClick={takePhoto} className="absolute bottom-4 w-12 h-12 bg-white rounded-full border-4 border-slate-300 shadow-xl flex items-center justify-center active:scale-95 transition-all">
+                                        <button onClick={takePhoto} className="absolute bottom-6 w-16 h-16 bg-[#e8a230] rounded-full border-4 border-white shadow-[0_0_40px_rgba(232,162,48,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white">
                                             <span className="sr-only">Take Photo</span>
+                                            <div className="w-6 h-6 bg-black rounded-full"></div>
                                         </button>
                                     )}
-                                    {!stream && !error && <p className="text-xs text-slate-500 animate-pulse">Loading camera...</p>}
+                                    {!stream && !error && <p className="text-[10px] bebas text-white/5 italic animate-pulse tracking-[0.4em]">INITIATING UPLINK...</p>}
                                 </>
                             ) : (
                                 <>
                                     <img src={URL.createObjectURL(photoCaptured)} className="w-full h-full object-cover" alt="Proof" />
-                                    <button onClick={retakePhoto} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] uppercase font-bold px-3 py-1 rounded shadow-lg border border-white/10">Retake</button>
+                                    <button onClick={retakePhoto} className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-[10px] uppercase font-black px-4 py-2 rounded-xl shadow-lg border border-white/10 hover:bg-black transition-colors">Retake Photo</button>
                                 </>
                             )}
                             <canvas ref={canvasRef} className="hidden" />
                         </div>
-                        <p className="text-[9px] text-center text-primary/70 uppercase font-bold tracking-widest">Photo will be sent to customer</p>
                     </>
                 )}
 

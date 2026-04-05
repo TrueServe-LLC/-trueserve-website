@@ -126,17 +126,17 @@ export default async function DriverDashboard() {
                                     <div key={order.id} className="bg-[#111114] border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden group">
                                         <div className="absolute top-0 left-0 w-full h-[1px] bg-[#e8a230]/20 shadow-[0_0_10px_#e8a230] animate-[scanning_4s_linear_infinite]" />
                                         
-                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6 sm:mb-10">
-                                            <div>
-                                                <div className="mission-status">
+                                        <div className="flex justify-between items-start gap-4 mb-8">
+                                            <div className="flex-1">
+                                                <div className="mission-status !mb-2">
                                                     <span className="animate-pulse">●</span>
-                                                    <span>{order.status === 'PICKED_UP' ? 'DELIVERY IN PROGRESS' : 'PICKUP REQUIRED'}</span>
+                                                    <span>{order.status === 'PICKED_UP' ? 'Delivery Mission' : 'Pickup Mission'}</span>
                                                 </div>
-                                                <h3 className="bebas text-4xl sm:text-6xl italic text-white leading-none uppercase">{order.restaurant?.name || "RESTAURANT"}</h3>
+                                                <h3 className="bebas text-3xl sm:text-5xl italic text-white leading-tight uppercase">{order.restaurant?.name || "RESTAURANT"}</h3>
                                             </div>
-                                            <div className="text-left sm:text-right">
-                                                <p className="barlow-cond text-[10px] font-black tracking-widest text-[#444] uppercase mb-1 sm:mb-2 italic">Operational ID</p>
-                                                <p className="bebas text-2xl sm:text-3xl italic text-[#e8a230] tracking-wider leading-none">#{order.id.slice(-6).toUpperCase()}</p>
+                                            <div className="text-right">
+                                                <div className="bebas text-lg sm:text-xl italic text-white/20 tracking-widest leading-none mb-1">UNIT-ID</div>
+                                                <p className="bebas text-xl sm:text-2xl italic text-[#e8a230] tracking-wider leading-none">#{order.id.slice(-6).toUpperCase()}</p>
                                             </div>
                                         </div>
 
