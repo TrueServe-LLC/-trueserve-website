@@ -86,31 +86,7 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
 
     return (
         <div className="relative">
-            <style jsx>{`
-                @keyframes scan-beam {
-                    0% { top: 0%; opacity: 0; }
-                    20% { opacity: 1; }
-                    80% { opacity: 1; }
-                    100% { top: 100%; opacity: 0; }
-                }
-                .scanning-beam {
-                    position: absolute;
-                    left: 0;
-                    width: 100%;
-                    height: 4px;
-                    background: linear-gradient(90deg, transparent, #448c89, transparent);
-                    box-shadow: 0 0 15px #448c89;
-                    z-index: 10;
-                    animation: scan-beam 2s ease-in-out infinite;
-                }
-                @keyframes fade-up {
-                    from { opacity: 0; transform: translateY(15px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .item-reveal {
-                    animation: fade-up 0.5s ease-out forwards;
-                }
-            `}</style>
+            {/* ANIMATIONS MOVED TO GLOBALS.CSS OR INLINED VIA TAILWIND */}
 
             <button
                 onClick={() => setShowResults(!showResults)}
@@ -193,7 +169,7 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                                     <div className="mb-8 relative group">
                                         <label className="cursor-pointer block">
                                             <div className="relative mx-auto h-48 w-full max-w-sm bg-slate-800/50 rounded-[2rem] flex flex-col items-center justify-center transition-all hover:bg-slate-800 border-2 border-dashed border-white/10 overflow-hidden">
-                                                {scanning && <div className="scanning-beam" />}
+                                                {scanning && <div className="absolute left-0 w-full h-[4px] bg-gradient-to-r from-transparent via-[#448c89] to-transparent shadow-[0_0_15px_#448c89] z-20 animate-scan-beam" />}
 
                                                 {previewUrl ? (
                                                     <img src={previewUrl} alt="Preview" className={`w-full h-full object-cover transition-opacity ${scanning ? 'opacity-40 brightness-50' : 'opacity-80'}`} />

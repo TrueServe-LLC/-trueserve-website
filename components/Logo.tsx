@@ -22,36 +22,30 @@ const Logo: React.FC<LogoProps> = ({
     return (
         <Link 
             href="/" 
-            className={`logo-container group ${className} flex items-center h-fit`}
-            style={{ 
-                gap: dim[size].gap,
-                textDecoration: 'none',
-                cursor: 'pointer'
-            }}
+            className={`flex items-center gap-3 h-fit group no-underline cursor-pointer ${className}`}
         >
-            <div className="logo-emblem relative" style={{ 
-                width: dim[size].img, 
-                height: dim[size].img,
-                flexShrink: 0 
-            }}>
-                <img 
-                    src="/logo.png" 
-                    alt="TrueServe Emblem"
-                    className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(232,162,48,0.3)] group-hover:drop-shadow-[0_0_25px_rgba(232,162,48,0.5)] transition-all duration-300"
-                />
-            </div>
             <div 
-                className="logo-text leading-none flex items-baseline select-none"
+                className="rounded-xl flex items-center justify-center transition-all duration-300 shadow-[0_2px_10px_rgba(232,160,32,0.3)] group-hover:shadow-[0_4px_20px_rgba(232,160,32,0.5)] group-hover:scale-105"
                 style={{ 
-                    fontFamily: "var(--font-bebas), sans-serif",
-                    fontSize: dim[size].font,
-                    letterSpacing: '-.02em',
+                    width: dim[size].img, 
+                    height: dim[size].img,
+                    background: 'linear-gradient(135deg, var(--gold), #c87010)',
+                    fontSize: `${dim[size].img * 0.5}px`
                 }}
             >
-                <span className="italic text-white">TRUE</span>
-                <span className="italic text-[#e8a230]">SERVE</span>
+                🛡️
+            </div>
+            <div 
+                className="font-extrabold leading-none select-none tracking-tight"
+                style={{ 
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: dim[size].font,
+                    color: 'var(--text)'
+                }}
+            >
+                True<span style={{ color: 'var(--gold)' }}>Serve</span>
                 {showPlus && (
-                    <span className="text-[#e8a230] ml-1.5 align-top" style={{ fontSize: '0.6em' }}>+</span>
+                    <span style={{ color: 'var(--gold)', fontSize: '0.6em', marginLeft: '4px', verticalAlign: 'top' }}>+</span>
                 )}
             </div>
         </Link>

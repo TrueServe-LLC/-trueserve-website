@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   const isPreview = isPreviewParam || isPreviewCookie || (isTunnel && (path.startsWith('/driver') || isAuthPath))
   
   if (isPreviewParam && !isPreviewCookie) {
-    const previewResponse = NextResponse.redirect(new URL(url.pathname, request.url))
+    const previewResponse = NextResponse.redirect(new URL(url.pathname + url.search, request.url))
     previewResponse.cookies.set('preview_mode', 'true', { maxAge: 60 * 5, path: '/' }) // 5 minutes
     return previewResponse
   }

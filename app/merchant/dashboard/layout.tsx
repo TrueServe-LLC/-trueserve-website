@@ -38,79 +38,49 @@ export default async function MerchantDashboardLayout({ children }: { children: 
     const merchantInitials = restaurant?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'M';
 
     return (
-        <div className="min-h-screen bg-[#0c0e13] text-[#F0EDE8] font-barlow-cond selection:bg-[#e8a230]/30 selection:text-white">
-            <style jsx global>{`
-                :root {
-                    --font-bebas: 'Bebas Neue', sans-serif;
-                    --font-barlow-cond: 'Barlow Condensed', sans-serif;
-                }
-                
-                .elite-link {
-                    font-size: 10px; font-weight: 800; letter-spacing: 0.15em;
-                    text-transform: uppercase; color: #5A5550; padding: 12px 16px;
-                    display: flex; align-items: center; gap: 8px;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    position: relative; overflow: hidden; border-radius: 0.75rem;
-                }
-                .elite-link:hover { color: #fff; background: rgba(255,255,255,0.03); }
-                .elite-link.active { color: #e8a230; background: rgba(232, 162, 48, 0.05); }
-                .elite-link.active::after {
-                    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
-                    background: #e8a230; box-shadow: 0 0 10px #e8a230;
-                }
-                
-                .carbon-texture {
-                    background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-                    background-repeat: repeat; opacity: 0.03; pointer-events: none;
-                }
-            `}</style>
+        <div className="min-h-screen bg-[#0a0d12] text-[#c8d8e8] font-['Nunito',sans-serif] selection:bg-[#e8a020]/30 selection:text-white">
+            <div className="fixed inset-0 carbon-texture z-0 opacity-[0.02] pointer-events-none"></div>
 
-            <div className="fixed inset-0 carbon-texture z-0 pointer-events-none"></div>
-
-            {/* HIGH-FIDELITY TOP HUD */}
-            <header className="sticky top-0 z-[60] backdrop-blur-2xl bg-black/60 border-b border-white/5 shadow-2xl h-[72px]">
+            <header className="sticky top-0 z-[60] backdrop-blur-2xl bg-[#10151e]/80 border-b border-[#1e2c3a] shadow-2xl h-[72px]">
                 <div className="max-w-[1920px] mx-auto h-full px-8 flex items-center justify-between">
                     <div className="flex items-center gap-12">
                         <Logo size="sm" className="hover:scale-105 transition-transform" />
                         
                         <nav className="hidden lg:flex items-center gap-2">
-                            <Link href="/merchant/dashboard" className="elite-link active">
+                            <Link href="/merchant/dashboard" className="px-5 py-2.5 rounded-xl text-[12px] font-extrabold uppercase tracking-widest transition-all flex items-center gap-2 bg-[#e8a020]/5 text-[#e8a020] border border-[#e8a020]/20">
                                 <span className="text-xl">📡</span> Live Terminal
                             </Link>
-                            <Link href="/merchant/dashboard/menu" className="elite-link">
+                            <Link href="/merchant/dashboard/menu" className="px-5 py-2.5 rounded-xl text-[12px] font-extrabold uppercase tracking-widest transition-all flex items-center gap-2 text-[#7a90a8] hover:text-white hover:bg-white/5">
                                 <span className="text-xl">📦</span> Catalog Sync
                             </Link>
-                            <Link href="/merchant/dashboard/integrations" className="elite-link">
+                            <Link href="/merchant/dashboard/integrations" className="px-5 py-2.5 rounded-xl text-[12px] font-extrabold uppercase tracking-widest transition-all flex items-center gap-2 text-[#7a90a8] hover:text-white hover:bg-white/5">
                                 <span className="text-xl">⛓️</span> Node Sync
-                            </Link>
-                            <Link href="/restaurants" target="_blank" className="elite-link opacity-40 hover:opacity-100">
-                                <span className="text-xl">🛰️</span> Perimeter Sim
                             </Link>
                         </nav>
                     </div>
 
                     <div className="flex items-center gap-8">
                         {/* Status Telemetry */}
-                        <div className="hidden md:flex items-center gap-6 px-6 py-2 bg-white/[0.02] border border-white/10 rounded-full">
+                        <div className="hidden md:flex items-center gap-6 px-6 py-2.5 bg-[#161d2a] border border-[#1e2c3a] rounded-full shadow-inner">
                             <div className="flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-[#3dd68c] animate-pulse shadow-[0_0_10px_#3dd68c]"></div>
-                                <span className="text-[10px] font-black tracking-[0.2em] text-[#3dd68c] uppercase italic">Network Uplink Active</span>
+                                <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                                <span className="text-[10px] font-black tracking-[0.2em] text-[#22c55e] uppercase italic">Network Uplink Active</span>
                             </div>
-                            <div className="w-px h-3 bg-white/10"></div>
-                            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest italic">
+                            <div className="w-px h-3 bg-[#1e2c3a]"></div>
+                            <div className="text-[9px] font-bold text-[#3a5060] uppercase tracking-widest italic">
                                 POS-SYNC: <span className="text-white">SYNCHRONIZED (34ms)</span>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-6">
                             <MerchantModeToggle />
-                            <div className="w-px h-8 bg-white/5"></div>
+                            <div className="w-px h-8 bg-[#1e2c3a]"></div>
                             <div className="flex items-center gap-4">
                                 <div className="flex flex-col items-end">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">{restaurant?.name || 'Authorized Merchant'}</span>
-                                    <div className="text-[9px] font-bold text-slate-600 tracking-widest uppercase italic"><LogoutButton /></div>
+                                    <span className="text-[11px] font-black text-white uppercase tracking-widest leading-none mb-1.5">{restaurant?.name || 'Authorized Merchant'}</span>
+                                    <div className="text-[10px] font-extrabold text-[#3a5060] tracking-widest uppercase italic hover:text-[#e8a020] transition-colors"><LogoutButton /></div>
                                 </div>
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e8a230] to-[#f5b342] text-black font-bebas italic text-xl flex items-center justify-center shadow-lg shadow-[#e8a230]/20 hover:scale-110 transition-transform cursor-pointer">
+                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#e8a020] to-[#c87010] text-[#0a0d12] font-['Barlow_Condensed',sans-serif] font-black italic text-xl flex items-center justify-center shadow-lg shadow-[#e8a020]/20 hover:scale-105 transition-transform cursor-pointer">
                                     {merchantInitials}
                                 </div>
                             </div>

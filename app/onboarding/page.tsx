@@ -117,18 +117,7 @@ export default function OnboardingPortal() {
                 </footer>
             </main>
 
-            <style jsx>{`
-                @media print {
-                    body { background: white !important; color: black !important; padding: 0 !important; }
-                    .min-h-screen { background: white !important; }
-                    .absolute, .animate-pulse, header button { display: none !important; }
-                    .bg-white\/\[0\.02\] { border: 1px solid #ccc !important; background: transparent !important; }
-                    .text-white, .text-\[\#F0EDE8\] { color: black !important; }
-                    .text-slate-500 { color: #555 !important; }
-                    .text-\[\#e8a230\], .text-primary { color: #e8a230 !important; }
-                    footer, header button { display: none !important; }
-                }
-            `}</style>
+            {/* PRINT OVERRIDES SHOULD BE HANDLED VIA GLOBALS.CSS OR MEDIA QUERIES */}
         </div>
     );
 }

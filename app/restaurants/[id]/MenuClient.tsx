@@ -84,12 +84,6 @@ export default function MenuClient({
         setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
     };
 
-    const handleRemoveFromCart = (id: string) => {
-        const newCart = { ...cart };
-        delete newCart[id];
-        setCart(newCart);
-    };
-
     const handleQuantityChange = (id: string, delta: number) => {
         setCart(prev => {
             const next = (prev[id] || 0) + delta;
@@ -153,66 +147,6 @@ export default function MenuClient({
 
     return (
         <div className="flex flex-col lg:flex-row gap-12 font-barlow-cond relative">
-            <style jsx global>{`
-                .industrial-card { 
-                    background: rgba(255,255,255,0.015); 
-                    border: 1px solid rgba(255,255,255,0.05); 
-                    border-radius: 2.5rem; 
-                    padding: 2rem; 
-                    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-                    position: relative;
-                    overflow: hidden;
-                }
-                .industrial-card::before {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(135deg, rgba(232, 162, 48, 0.05) 0%, transparent 100%);
-                    opacity: 0;
-                    transition: opacity 0.5s;
-                }
-                .industrial-card:hover { 
-                    transform: translateY(-8px) scale(1.02); 
-                    border-color: rgba(232, 162, 48, 0.4); 
-                    background: rgba(255,255,255,0.03); 
-                    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8), 0 0 30px rgba(232,162,48,0.05); 
-                }
-                .industrial-card:hover::before { opacity: 1; }
-                
-                .hud-sidebar { 
-                    width: 100%; 
-                    lg:width: 480px; 
-                    position: sticky; 
-                    top: 120px; 
-                    height: fit-content; 
-                    background: linear-gradient(180deg, #0f1218 0%, #0c0e13 100%); 
-                    border: 1px solid rgba(255,255,255,0.07); 
-                    border-radius: 3.5rem; 
-                    overflow: hidden; 
-                    box-shadow: 0 0 120px rgba(0,0,0,0.7), inset 0 0 20px rgba(255,255,255,0.02);
-                }
-                
-                .step-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.4s; position: relative; }
-                .step-dot.active { background: #e8a230; box-shadow: 0 0 20px #e8a230; transform: scale(1.4); }
-                .step-dot.active::after { content: ''; position: absolute; inset: -4px; border: 1px solid #e8a230; border-radius: 50%; animation: pulse-out 2s infinite; }
-                .step-dot.complete { background: #fff; }
-                
-                @keyframes pulse-out {
-                    0% { transform: scale(1); opacity: 1; }
-                    100% { transform: scale(2.5); opacity: 0; }
-                }
-
-                .scanline-overlay { 
-                    position: absolute; inset: 0; 
-                    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(232,162,48,0.015) 3px); 
-                    pointer-events: none; z-index: 10;
-                }
-                
-                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(232,162,48,0.2); border-radius: 10px; }
-            `}</style>
-
             {pendingOrderId && (
                 <OrderConfirmAnimation
                     restaurantName={restaurant.name}
@@ -274,10 +208,11 @@ export default function MenuClient({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     {items.map(item => (
-                        <div key={item.id} className="industrial-card group flex flex-col" onClick={() => handleAddToCart(item.id)}>
-                            <div className="scanline-overlay opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div key={item.id} className="relative group bg-white/[0.015] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 overflow-hidden hover:-translate-y-2 hover:scale-[1.02] hover:border-[#e8a230]/40 hover:bg-white/[0.03] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8),0_0_30px_rgba(232,162,48,0.05)]" onClick={() => handleAddToCart(item.id)}>
+                            {/* Scanline pattern for the card */}
+                            <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(232,162,48,0.015)_3px)]"></div>
                             
-                            <div className="relative z-10 flex-1 space-y-6">
+                            <div className="relative z-20 flex-1 space-y-6">
                                 <div className="flex justify-between items-start">
                                     <div className="space-y-1">
                                         <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#e8a230] italic opacity-0 group-hover:opacity-100 transition-all">// Asset ID: {item.id.slice(0,5)}</p>
@@ -292,7 +227,7 @@ export default function MenuClient({
                                 </p>
                             </div>
                             
-                            <div className="mt-8 relative z-10">
+                            <div className="mt-8 relative z-20">
                                 <button className="w-full py-5 bg-white/[0.02] border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 group-hover:bg-[#e8a230] group-hover:text-black group-hover:border-[#e8a230] group-hover:shadow-[0_0_30px_rgba(232,162,48,0.2)] transition-all italic flex items-center justify-center gap-3">
                                     + Acquire Asset <span className="opacity-40 tracking-normal">→</span>
                                 </button>
@@ -302,8 +237,9 @@ export default function MenuClient({
                 </div>
             </div>
 
-            <div className="hud-sidebar animate-slide-in-right relative">
-                <div className="scanline-overlay pointer-events-none"></div>
+            {/* Sidebar with HUD layout */}
+            <div className="w-full lg:w-[480px] sticky top-[120px] h-fit bg-gradient-to-b from-[#0f1218] to-[#0c0e13] border border-white/10 rounded-[3.5rem] overflow-hidden shadow-[0_0_120px_rgba(0,0,0,0.7),inset_0_0_20px_rgba(255,255,255,0.02)] animate-slide-in-right relative">
+                <div className="absolute inset-0 pointer-events-none z-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(232,162,48,0.015)_3px)]"></div>
                 
                 <div className="bg-white/[0.03] border-b border-white/5 p-10 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none rotate-12">
@@ -327,19 +263,18 @@ export default function MenuClient({
                     <div className="flex items-center justify-between px-2">
                         {[1, 2, 3].map(s => (
                             <div key={s} className="flex items-center gap-4 flex-1 last:flex-none">
-                                <div className={`step-dot ${checkoutStep === s ? 'active' : checkoutStep > s ? 'complete' : ''}`}></div>
+                                <div className={`w-2 h-2 rounded-full transition-all duration-500 ${checkoutStep === s ? 'bg-[#e8a230] shadow-[0_0_10px_#e8a230] scale-150' : checkoutStep > s ? 'bg-white' : 'bg-white/10'}`}></div>
                                 {s < 3 && <div className={`h-px flex-1 mx-2 transition-all duration-1000 ${checkoutStep > s ? 'bg-white/30' : 'bg-white/10'}`} />}
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div className="p-10">
+                <div className="p-10 relative z-20">
                     {cartItems.length === 0 ? (
                         <div className="py-24 text-center space-y-8 flex flex-col items-center">
                             <div className="relative">
                                 <div className="w-24 h-24 rounded-[2rem] bg-white/[0.02] border border-white/5 flex items-center justify-center text-5xl opacity-20">📡</div>
-                                <div className="absolute inset-0 border border-[#e8a230]/20 rounded-[2rem] animate-ping opacity-0 group-hover:opacity-100"></div>
                             </div>
                             <div className="space-y-2">
                                 <p className="text-slate-600 text-[11px] font-black uppercase tracking-[0.5em] italic">Scanning For Signals...</p>
@@ -392,7 +327,7 @@ export default function MenuClient({
                                 <div className="space-y-12 animate-fade-in-up">
                                     <div className="space-y-6 overflow-hidden">
                                         <label className="text-[10px] font-black uppercase tracking-[0.4em] text-[#e8a230] italic">// Payload manifest</label>
-                                        <div className="space-y-5 max-h-[300px] overflow-y-auto pr-4 custom-scrollbar">
+                                        <div className="space-y-5 max-h-[300px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-[#e8a230]/20 scrollbar-track-transparent">
                                             {cartItems.map(([id, qty]) => {
                                                 const item = items.find(i => i.id === id);
                                                 if (!item) return null;
@@ -400,9 +335,9 @@ export default function MenuClient({
                                                     <div key={id} className="flex justify-between items-center group/item p-4 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                                                         <div className="flex items-center gap-6">
                                                             <div className="flex flex-col items-center gap-2">
-                                                                <button onClick={() => handleQuantityChange(id, 1)} className="text-[10px] text-slate-700 hover:text-[#e8a230] transition-colors font-black">▲</button>
+                                                                <button onClick={(e) => { e.stopPropagation(); handleQuantityChange(id, 1); }} className="text-[10px] text-slate-700 hover:text-[#e8a230] transition-colors font-black">▲</button>
                                                                 <span className="text-sm font-black text-[#e8a230] italic font-bebas tracking-widest">{qty}</span>
-                                                                <button onClick={() => handleQuantityChange(id, -1)} className="text-[10px] text-slate-700 hover:text-[#e8a230] transition-colors font-black">▼</button>
+                                                                <button onClick={(e) => { e.stopPropagation(); handleQuantityChange(id, -1); }} className="text-[10px] text-slate-700 hover:text-[#e8a230] transition-colors font-black">▼</button>
                                                             </div>
                                                             <div className="space-y-0.5">
                                                                 <span className="font-bebas text-lg italic text-white uppercase tracking-wider">{item.name}</span>
@@ -504,7 +439,7 @@ export default function MenuClient({
                                 </div>
                             )}
 
-                            {!clientSecret && checkoutStep === 3 && (
+                            {(!clientSecret && checkoutStep === 3) && (
                                 <div className="py-24 text-center flex flex-col items-center gap-8">
                                     <div className="relative w-16 h-16">
                                         <div className="absolute inset-0 border-4 border-white/5 rounded-full"></div>
@@ -532,5 +467,3 @@ export default function MenuClient({
         </div>
     );
 }
-
-
