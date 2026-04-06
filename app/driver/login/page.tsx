@@ -27,7 +27,7 @@ function DriverLoginPageContent() {
     });
 
     if (error) {
-        alert(`Failed to connect with ${provider}: ${error.message}`);
+        alert(`Authentication Failure: ${error.message}`);
         setIsLoading(false);
     }
   };
@@ -41,7 +41,7 @@ function DriverLoginPageContent() {
     });
 
     if (error) {
-      alert(`Carrier Link Failed: ${error.message}`);
+      alert(`Carrier Link Rejected: ${error.message}`);
     } else {
       setStep("otp");
     }
@@ -59,7 +59,7 @@ function DriverLoginPageContent() {
     });
 
     if (error) {
-      alert(`Authentication Rejected: ${error.message}`);
+      alert(`Terminal Clearance Denied: ${error.message}`);
     } else {
       router.push("/driver/dashboard");
     }
@@ -75,8 +75,9 @@ function DriverLoginPageContent() {
     let W: number, H: number;
 
     const resize = () => {
-      W = canvas.width = canvas.offsetWidth;
-      H = canvas.height = canvas.offsetHeight;
+      if (!canvas.parentElement) return;
+      W = canvas.width = canvas.parentElement.offsetWidth;
+      H = canvas.height = canvas.parentElement.offsetHeight;
     };
     resize();
     window.addEventListener('resize', resize);
@@ -85,18 +86,18 @@ function DriverLoginPageContent() {
     const CELL = 72;
 
     function drawCity() {
-      ctx!.fillStyle = '#0e1218'; ctx!.fillRect(0, 0, W, H);
+      ctx!.fillStyle = '#06080b'; ctx!.fillRect(0, 0, W, H);
       const cols = Math.ceil(W / CELL) + 2; const rows = Math.ceil(H / CELL) + 2;
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const bx = (c - 0.5) * CELL + 8; const by = (r - 0.5) * CELL + 8;
-          const bw = CELL - 16; const bh = CELL - 16;
-          const shade = (r * 7 + c * 13) % 3;
-          const fills = ['#111820', '#0f151e', '#13191f'];
+          const bx = (c - 0.5) * CELL + 12; const by = (r - 0.5) * CELL + 12;
+          const bw = CELL - 24; const bh = CELL - 24;
+          const shade = (r * 7 + c * 13) % 4;
+          const fills = ['#0a0e14', '#080c12', '#0c1016', '#05070a'];
           ctx!.fillStyle = fills[shade]; ctx!.fillRect(bx, by, bw, bh);
         }
       }
-      ctx!.strokeStyle = 'rgba(232,162,48,0.07)'; ctx!.lineWidth = 1;
+      ctx!.strokeStyle = 'rgba(232,162,48,0.04)'; ctx!.lineWidth = 1;
       for (let x = 0; x <= W; x += CELL) { ctx!.beginPath(); ctx!.moveTo(x, 0); ctx!.lineTo(x, H); ctx!.stroke(); }
       for (let y = 0; y <= H; y += CELL) { ctx!.beginPath(); ctx!.moveTo(0, y); ctx!.lineTo(W, y); ctx!.stroke(); }
     }
@@ -107,20 +108,22 @@ function DriverLoginPageContent() {
       return {
         sx: snapX(Math.random() * W), sy: snapY(Math.random() * H),
         ex: snapX(Math.random() * W), ey: snapY(Math.random() * H),
-        progress: Math.random(), speed: 0.003 + Math.random() * 0.004,
-        color: AMBER, trailLen: 0.15 + Math.random() * 0.2, dotR: 2 + Math.random() * 2,
+        progress: Math.random(), speed: 0.002 + Math.random() * 0.003,
+        color: AMBER, trailLen: 0.2 + Math.random() * 0.3, dotR: 2 + Math.random() * 2,
       };
     }
 
-    let routes = Array.from({length: 10}, makeRoute);
+    let routes = Array.from({length: 12}, makeRoute);
     function animate() {
       drawCity();
       routes.forEach(r => {
         const x = r.sx + (r.ex - r.sx) * r.progress;
         const y = r.sy + (r.ey - r.sy) * r.progress;
-        const grd = ctx!.createRadialGradient(x, y, 0, x, y, r.dotR * 4);
-        grd.addColorStop(0, 'rgba(232,162,48,0.3)'); grd.addColorStop(1, 'transparent');
-        ctx!.fillStyle = grd; ctx!.beginPath(); ctx!.arc(x, y, r.dotR * 4, 0, Math.PI*2); ctx!.fill();
+        
+        ctx!.shadowBlur = 15;
+        ctx!.shadowColor = AMBER;
+        ctx!.fillStyle = 'rgba(232,162,48,0.4)'; ctx!.beginPath(); ctx!.arc(x, y, r.dotR * 3, 0, Math.PI*2); ctx!.fill();
+        ctx!.shadowBlur = 0;
         ctx!.fillStyle = AMBER; ctx!.beginPath(); ctx!.arc(x, y, r.dotR, 0, Math.PI*2); ctx!.fill();
         r.progress += r.speed; if (r.progress >= 1) { Object.assign(r, makeRoute()); r.progress = 0; }
       });
@@ -131,95 +134,126 @@ function DriverLoginPageContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-white selection:bg-[#e8a230]/30 overflow-x-hidden font-['DM_Sans',sans-serif]">
-      <style dangerouslySetInnerHTML={{ __html: `
-        .login-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
-        .s-left { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 44px 48px; }
-        .anim-canvas { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; }
-        .video-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom,rgba(8,10,16,0.88) 0%,rgba(8,10,16,0.22) 38%,rgba(8,10,16,0.55) 68%,rgba(8,10,16,0.97) 100%),linear-gradient(to right,rgba(8,10,16,0.75) 0%,rgba(8,10,16,0.05) 60%); }
-        .logo-row { position: absolute; top: 36px; left: 48px; z-index: 5; display: flex; align-items: center; gap: 10px; }
-        .logo-circle { width: 38px; height: 38px; background: rgba(12,14,19,.85); border: 1.5px solid rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; border-radius: 50%; backdrop-filter: blur(14px); }
-        .logo-name { font-size: 16px; font-weight: 700; color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.7); }
-        .s-heading { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(48px, 6vw, 84px); font-weight: 800; font-style: italic; text-transform: uppercase; line-height: .92; margin-bottom: 14px; }
-        .s-heading .w { color: #fff; } .s-heading .g { color: #e8a230; }
-        .s-sub { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.65; max-width: 360px; margin-bottom: 28px; }
-        .s-right { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; align-items: center; justify-content: center; padding: 48px 60px; }
-        .s-form { width: 100%; max-width: 440px; }
-        .form-title { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 3px; }
-        .form-title span { color: #e8a230; }
-        .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #444; margin-bottom: 40px; }
-        .sec-label { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8a230; padding-bottom: 8px; border-bottom: 1px solid #1c1f28; margin-bottom: 24px; }
-        .fl { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-bottom: 8px; }
-        .fi { width: 100%; background: #0f1219; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 14px 16px; outline: none; margin-bottom: 20px; transition: border-color .2s; border-radius: 2px; }
-        .fi:focus { border-color: #e8a230; }
-        .fi::placeholder { color: #2a2f3a; }
-        .cta { width: 100%; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 18px; cursor: pointer; transition: opacity .15s, transform .1s; border-radius: 2px; }
-        .signup-note { font-size: 11px; color: #333; text-align: center; margin-top: 24px; }
-        .signup-note a { color: #e8a230; cursor: pointer; font-weight: 600; text-decoration: none; }
-      ` }} />
-
-      <div className="login-wrap">
-        <div className="s-left">
-          <canvas ref={canvasRef} className="anim-canvas"></canvas>
-          <div className="video-overlay"></div>
-          <div className="logo-row">
-            <Logo size="md" />
-          </div>
-          <div className="s-left-content relative z-10 px-4">
-             <div className="s-heading animate-up"><div className="w">Driver</div><div className="g">Portal.</div></div>
-             <div className="s-sub animate-up [animation-delay:0.1s]">Access the driver mission hub. Manage your active tasks, track yield, and synchronize your schedule with regional logistics.</div>
-          </div>
-        </div>
-
-        <div className="s-right">
-          <div className="s-form animate-up">
-            <div className="form-title">Driver <span>Login.</span></div>
-            <div className="form-sub">Secure mobile terminal for mission hubs</div>
-            <div className="sec-label">{step === "phone" ? "Authentication Terminal" : "Mission Verification Hub"}</div>
-            
-            {step === "phone" ? (
-              <form onSubmit={requestOTP}>
-                <div className="fl">Mobile Identifier (US Only) <span className="text-[#e24b4a]">*</span></div>
-                <input className="fi" type="tel" placeholder="(336) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+    <div className="min-h-screen bg-[#0c0e13] text-[#F0EDE8] selection:bg-[#e8a230]/30 overflow-x-hidden font-barlow-cond">
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+            {/* TERMINAL ANIMATION SIDE */}
+            <div className="relative overflow-hidden hidden lg:flex flex-col justify-end p-20 border-r border-white/5 bg-[#06080b]">
+                <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-40"></canvas>
+                <div className="absolute inset-0 z-1 pointer-events-none bg-gradient-to-t from-[#0c0e13] via-transparent to-transparent"></div>
                 
-                <button className="cta" disabled={isLoading}>
-                  {isLoading ? "Requesting Uplink..." : "Request Access Code →"}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={verifyOTP}>
-                <div className="fl">Mission Code (6-Digits) <span className="text-[#e24b4a]">*</span></div>
-                <input className="fi" type="text" placeholder="000000" value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={6} required />
-                
-                <button className="cta" disabled={isLoading}>
-                  {isLoading ? "Synchronizing Hub..." : "Complete Uplink →"}
-                </button>
-                <button onClick={() => setStep("phone")} className="w-full mt-4 bg-transparent text-[9px] font-bold tracking-[0.2em] text-[#444] uppercase py-2">
-                  ← Previous Sector
-                </button>
-              </form>
-            )}
+                <div className="relative z-10 space-y-6">
+                    <div className="px-6 py-2 bg-black/60 border border-white/10 rounded-full w-fit backdrop-blur-xl">
+                        <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 rounded-full bg-[#3dd68c] animate-pulse shadow-[0_0_10px_#3dd68c]"></div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#3dd68c] italic">Regional Grid Live</span>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <h1 className="text-8xl font-bebas italic text-white uppercase leading-[0.9] tracking-tighter">
+                            Driver <span className="text-[#e8a230]">Portal.</span>
+                        </h1>
+                        <p className="text-slate-500 font-semibold uppercase tracking-[0.4em] text-[11px] italic">// Fleet ID: East-Coast-Sector-Alpha</p>
+                    </div>
+                    
+                    <p className="text-sm text-slate-400 max-w-sm font-medium leading-relaxed italic opacity-60">
+                        Secure mission hub for authorized fleet partners. Manage route manifests, synchronize regional logistics, and track yield performance in real-time.
+                    </p>
+                </div>
 
-            <button onClick={loginAsDemoDriver} className="w-full mt-4 bg-transparent border border-white/5 py-4 text-[9px] font-bold tracking-[0.2em] text-[#444] hover:border-[#e8a230]/30 hover:text-[#e8a230] transition-all uppercase rounded-[2px]">
-              🚀 Authenticate Demo Access (Driver)
-            </button>
-
-            <div className="login-or" style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '24px 0', color: '#222', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
-              social uplink
-              <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
+                {/* Scanline Texture Overlay */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
-                <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0f1219', border: '1px solid #1c1f28', borderRadius: '2px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <span style={{ fontSize: '14px', color: '#e8a230' }}>G</span> Google Access
-                </button>
-            </div>
+            {/* AUTHENTICATION SIDE */}
+            <div className="relative flex items-center justify-center p-8 bg-[#0c0e13]">
+                <div className="absolute top-12 left-12 lg:hidden">
+                    <Logo size="sm" />
+                </div>
+                
+                <div className="w-full max-w-md space-y-12 animate-fade-in-up">
+                    <div className="lg:hidden mb-20">
+                         <div className="text-5xl font-bebas italic text-white uppercase mb-2">Driver Portal.</div>
+                         <div className="text-[9px] font-black uppercase tracking-[0.4em] text-[#e8a230] italic">// Mission Ready</div>
+                    </div>
 
-            <div className="signup-note">New to fleet? <Link href="/driver/signup">Apply for partnership</Link></div>
-          </div>
+                    <div className="space-y-1">
+                        <h2 className="text-4xl font-bebas italic text-white uppercase tracking-wider">Terminal Access</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 italic">Secure Uplink Protocol v2.5</p>
+                    </div>
+
+                    <div className="space-y-10">
+                        <div className="pb-4 border-b border-white/5 flex items-center justify-between">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#e8a230] italic">
+                                {step === "phone" ? "Step 01: Identification" : "Step 02: Verification"}
+                            </span>
+                            <div className="flex gap-1">
+                                <div className={`w-12 h-1 rounded-full ${step === 'phone' ? 'bg-[#e8a230]' : 'bg-[#e8a230]/20'}`}></div>
+                                <div className={`w-12 h-1 rounded-full ${step === 'otp' ? 'bg-[#e8a230]' : 'bg-white/5'}`}></div>
+                            </div>
+                        </div>
+
+                        {step === "phone" ? (
+                            <form onSubmit={requestOTP} className="space-y-8">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic block ml-2">Mobile Terminal ID (US Only)</label>
+                                    <input 
+                                        type="tel" 
+                                        placeholder="+1 (555) 000-0000" 
+                                        value={phone} 
+                                        onChange={(e) => setPhone(e.target.value)} 
+                                        className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 px-8 text-white font-bold tracking-widest outline-none focus:border-[#e8a230]/50 focus:bg-white/[0.04] transition-all placeholder:text-slate-800"
+                                        required 
+                                    />
+                                </div>
+                                <button className="w-full bg-[#e8a230] hover:bg-[#f5b342] text-black font-black uppercase tracking-[0.3em] py-5 rounded-2xl text-[11px] transition-all hover:scale-[1.02] active:scale-95 shadow-glow shadow-[#e8a230]/20 italic" disabled={isLoading}>
+                                    {isLoading ? "Requesting Uplink..." : "Initialize Manifest →"}
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={verifyOTP} className="space-y-8">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic block ml-2">Mission Authorization Code</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="000 000" 
+                                        value={otp} 
+                                        onChange={(e) => setOtp(e.target.value)} 
+                                        maxLength={6} 
+                                        className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-6 px-8 text-center text-4xl font-bebas italic text-[#e8a230] tracking-[0.5em] outline-none focus:border-[#e8a230]/50 transition-all"
+                                        required 
+                                    />
+                                </div>
+                                <button className="w-full bg-[#e8a230] text-black font-black uppercase tracking-[0.3em] py-5 rounded-2xl text-[11px] transition-all hover:scale-[1.02] italic shadow-glow shadow-[#e8a230]/20" disabled={isLoading}>
+                                    {isLoading ? "Validating Signal..." : "Complete Handshake →"}
+                                </button>
+                                <button onClick={() => setStep("phone")} className="w-full text-center text-[10px] font-black text-slate-600 uppercase tracking-widest italic hover:text-white transition-colors py-2">
+                                    ← Recalibrate ID
+                                </button>
+                            </form>
+                        )}
+                        
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
+                            <div className="relative flex justify-center text-[9px] uppercase font-black tracking-[0.3em] text-slate-800 italic"><span className="bg-[#0c0e13] px-6">Terminal Uplink</span></div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button onClick={() => signInWithProvider('google')} className="flex items-center justify-center gap-3 bg-white/[0.02] border border-white/10 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white hover:border-white/20 transition-all italic">
+                                <span className="text-[#e8a230]">G</span> Google Auth
+                            </button>
+                            <button onClick={loginAsDemoDriver} className="flex items-center justify-center gap-3 bg-white/[0.02] border border-white/10 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white hover:border-white/20 transition-all italic">
+                                🚀 Fleet Alpha
+                            </button>
+                        </div>
+                    </div>
+
+                    <p className="text-center text-xs font-semibold text-slate-600 italic">
+                        Unregistered Node? <Link href="/driver/signup" className="text-[#e8a230] font-black uppercase tracking-widest ml-2 hover:underline">Apply for Fleet Authorization</Link>
+                    </p>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
   );
 }

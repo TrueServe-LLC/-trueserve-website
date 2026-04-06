@@ -43,20 +43,21 @@ export default async function MerchantMenuPage() {
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <div className="flex justify-between items-end mb-12">
-                <div>
-                    <h1 className="text-4xl font-black italic uppercase tracking-tight text-white mb-2">
-                        Menu <span className="text-primary italic">Engine.</span>
-                    </h1>
-                    <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">
-                        Industrial Catalog Management · {restaurant.name}
-                    </p>
+        <div className="space-y-10 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-8 border-b border-white/5">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-3">
+                         <div className="w-2 h-2 rounded-full bg-[#e8a230] shadow-glow"></div>
+                         <h1 className="text-4xl md:text-5xl font-bebas italic text-white uppercase tracking-tight">Catalog Architect</h1>
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 italic">// Sector: {restaurant.name} · Asset Management</p>
                 </div>
+                
                 <div className="flex gap-4">
-                    <div className="bg-slate-900 border border-white/5 px-6 py-3 rounded-2xl flex flex-col items-center">
-                        <span className="text-[10px] uppercase font-black text-slate-600 tracking-tighter">Live Items</span>
-                        <span className="text-xl font-black">{menuItems.filter(i => i.isAvailable).length}</span>
+                    <div className="bg-white/[0.02] border border-white/5 px-8 py-4 rounded-[1.5rem] flex flex-col items-center min-w-[140px] relative overflow-hidden group hover:border-[#e8a230]/20 transition-all">
+                        <span className="text-[9px] uppercase font-black text-slate-600 tracking-widest italic group-hover:text-white transition-colors relative z-10">Deployed Assets</span>
+                        <span className="text-3xl font-bebas italic text-white relative z-10">{menuItems.filter(i => i.isAvailable).length}</span>
+                        <div className="absolute top-0 right-0 p-4 text-3xl opacity-[0.02] font-bebas italic select-none">NET</div>
                     </div>
                 </div>
             </div>
@@ -69,3 +70,4 @@ export default async function MerchantMenuPage() {
         </div>
     );
 }
+

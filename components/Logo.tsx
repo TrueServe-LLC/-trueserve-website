@@ -1,30 +1,29 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 interface LogoProps {
     className?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
+    showPlus?: boolean;
 }
 
 const Logo: React.FC<LogoProps> = ({ 
     className = "", 
-    size = 'md'
+    size = 'md',
+    showPlus = false
 }) => {
     const dim = {
-        sm: { img: 24, font: '18px', gap: '8px' },
-        md: { img: 32, font: '24px', gap: '10px' },
-        lg: { img: 44, font: '32px', gap: '12px' },
-        xl: { img: 64, font: '48px', gap: '16px' }
+        sm: { img: 24, font: '24px', gap: '8px' },
+        md: { img: 32, font: '32px', gap: '10px' },
+        lg: { img: 44, font: '44px', gap: '12px' },
+        xl: { img: 64, font: '64px', gap: '16px' }
     };
 
     return (
         <Link 
             href="/" 
-            className={`logo-container group ${className}`}
+            className={`logo-container group ${className} flex items-center h-fit`}
             style={{ 
-                display: 'inline-flex',
-                alignItems: 'center',
                 gap: dim[size].gap,
                 textDecoration: 'none',
                 cursor: 'pointer'
@@ -38,26 +37,26 @@ const Logo: React.FC<LogoProps> = ({
                 <img 
                     src="/logo.png" 
                     alt="TrueServe Emblem"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(232,162,48,0.3)] group-hover:drop-shadow-[0_0_25px_rgba(232,162,48,0.5)] transition-all duration-300"
                 />
             </div>
             <div 
-                className="logo-text"
+                className="logo-text leading-none flex items-baseline select-none"
                 style={{ 
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-bebas), sans-serif",
                     fontSize: dim[size].font,
-                    fontWeight: 800,
-                    letterSpacing: '-.03em',
-                    lineHeight: 1,
-                    display: 'flex',
-                    alignItems: 'baseline'
+                    letterSpacing: '-.02em',
                 }}
             >
-                <span style={{ color: '#fff' }}>True</span>
-                <span style={{ color: '#529c92' }}>Serve</span>
+                <span className="italic text-white">TRUE</span>
+                <span className="italic text-[#e8a230]">SERVE</span>
+                {showPlus && (
+                    <span className="text-[#e8a230] ml-1.5 align-top" style={{ fontSize: '0.6em' }}>+</span>
+                )}
             </div>
         </Link>
     );
 };
 
 export default Logo;
+

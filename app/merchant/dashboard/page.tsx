@@ -74,89 +74,85 @@ export default async function MerchantDashboard() {
     const hasStripe = Boolean(restaurant.stripeAccountId);
 
     return (
-        <div className="min-h-screen bg-[#0c0e13]">
+        <div className="space-y-10 animate-fade-in">
              <WelcomeModal restaurantName={restaurant.name} />
              {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
 
-             <div className="md-body min-h-screen">
-                {/* PAGE HEADER */}
-                <div className="md-page-hd">
-                    <div>
-                        <div className="md-page-title">Orders Dashboard</div>
-                        <div className="md-page-sub">Operational Control · {restaurant.name}</div>
+             <div className="flex flex-col gap-10">
+                {/* HUD HEADER */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-8 border-b border-white/5">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                             <div className="w-2 h-2 rounded-full bg-[#e8a230] shadow-glow"></div>
+                             <h1 className="text-4xl md:text-5xl font-bebas italic text-white uppercase tracking-tight">Mission Control</h1>
+                        </div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 italic">// Sector: {restaurant.name} · Operational Hub</p>
                     </div>
-                    <div className="md-hd-right flex-wrap">
-                        <div className="md-terminal-btn">
-                            <span className="md-terminal-dot"></span>
-                            Kitchen Terminal
+                    
+                    <div className="flex items-center gap-4">
+                        <div className="px-6 py-3 bg-white/[0.03] border border-white/5 rounded-2xl flex items-center gap-4 hover:border-[#e8a230]/30 transition-all cursor-pointer group">
+                             <div className={`w-2 h-2 rounded-full ${restaurant.isBusy ? 'bg-red-500 shadow-[0_0_10px_#ef4444]' : 'bg-[#3dd68c] shadow-[0_0_10px_#10b981]'} animate-pulse`}></div>
+                             <span className="text-[10px] font-black uppercase tracking-widest text-white italic group-hover:text-[#e8a230]">
+                                {restaurant.isBusy ? "Protocol: Paused" : "Status: Online"}
+                             </span>
                         </div>
-                        <div className="md-online-badge" style={restaurant.isBusy ? { background: "#e24b4a" } : {}}>
-                            {restaurant.isBusy ? "Paused" : "Online"}
-                        </div>
-                        <form action={logout} style={{ display: "inline" }}>
-                            <button type="submit" className="md-logout">Log Out</button>
-                        </form>
+                        <Link href="/merchant/dashboard/terminal" className="px-6 py-3 bg-[#e8a230] text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-glow shadow-[#e8a230]/10 italic">
+                             Launch Live Terminal
+                        </Link>
                     </div>
                 </div>
 
-                {/* STAT GRID */}
-                <div className="md-stat-grid">
-                    <div className="md-stat-block">
-                        <div className="md-stat-name">Incoming Orders</div>
-                        <div className="md-stat-value">{pendingOrders.length}</div>
-                    </div>
-                    <Link href="/merchant/dashboard/menu" className="md-stat-block hover:scale-[1.02] transition-transform cursor-pointer group">
-                        <div className="md-stat-name group-hover:text-primary transition-colors">Menu Assets</div>
-                        <div className="md-stat-value">{(restaurant.menuItems || []).length}</div>
-                        <div className="text-[8px] font-black uppercase tracking-widest text-[#444] mt-2 group-hover:text-primary">Configure hub ↗</div>
+                {/* TACTICAL STATS GRID */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <StatBlock label="Incoming Mission Segments" value={pendingOrders.length} suffix="Active" />
+                    
+                    <Link href="/merchant/dashboard/menu" className="block group">
+                        <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-8 hover:bg-white/[0.04] hover:border-[#e8a230]/30 transition-all h-full relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 text-5xl opacity-[0.02] font-bebas italic select-none">ASSETS</div>
+                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 italic group-hover:text-[#e8a230] transition-colors">// Stockpiled Assets</div>
+                            <div className="flex items-baseline gap-3">
+                                <span className="text-5xl font-bebas italic text-white tracking-tight">{(restaurant.menuItems || []).length}</span>
+                                <span className="text-[10px] font-black text-slate-700 uppercase italic">Registered SKU</span>
+                            </div>
+                            <div className="mt-4 text-[8px] font-black text-[#e8a230] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">Configure catalog ↗</div>
+                        </div>
                     </Link>
-                    <div className="md-stat-block">
-                        <div className="md-stat-name">Net Revenue</div>
-                        <div className="md-stat-value gold">${netRevenue.toFixed(2)}</div>
-                    </div>
+
+                    <StatBlock label="Accumulated Yield" value={`$${netRevenue.toFixed(2)}`} isGold />
                 </div>
 
-                {/* STRIPE BANNER */}
-                {!hasStripe && (
-                    <div className="md-stripe-banner">
-                        <div className="md-stripe-left">
-                            <div className="md-stripe-icon">
-                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#4a5aaa" strokeWidth="1.3"/>
-                                    <path d="M1 5h18" stroke="#4a5aaa" strokeWidth="1.3"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div className="md-stripe-title">Connect Stripe to get paid.</div>
-                                <div className="md-stripe-desc">To start receiving payouts for your orders, you need to connect your Stripe account.</div>
-                            </div>
+                {/* STRIPE HANDSHAKE BANNER */}
+                <div className={`relative overflow-hidden rounded-[2.5rem] border p-8 flex flex-col lg:flex-row justify-between items-center gap-8 ${hasStripe ? 'bg-[#3dd68c]/5 border-[#3dd68c]/20' : 'bg-[#e8a230]/5 border-[#e8a230]/20'}`}>
+                    <div className="flex items-center gap-8">
+                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 ${hasStripe ? 'bg-[#3dd68c]/10 border-[#3dd68c]/30' : 'bg-[#e8a230]/10 border-[#e8a230]/30'}`}>
+                             <span className="text-3xl">{hasStripe ? '💰' : '⛓️'}</span>
                         </div>
+                        <div className="space-y-1">
+                            <h3 className="font-bebas italic text-2xl uppercase tracking-widest text-white">
+                                {hasStripe ? "Financial Pipeline: Synchronized" : "Stripe Handshake Required"}
+                            </h3>
+                            <p className="text-xs italic text-slate-500 font-medium max-w-lg">
+                                {hasStripe 
+                                    ? "Your payout node is verified. Financial settlement is occurring on a 24-hour rolling cycle." 
+                                    : "Establish a secure connection to Stripe to authorize automatic yield distribution to your business bank."}
+                            </p>
+                        </div>
+                    </div>
+                    {hasStripe ? (
+                        <div className="px-6 py-2 bg-[#3dd68c]/10 border border-[#3dd68c]/30 text-[#3dd68c] font-black text-[9px] uppercase tracking-widest rounded-full italic">
+                             ✓ Payouts Active
+                        </div>
+                    ) : (
                         <form action={createStripeAccount}>
-                            <button type="submit" className="md-stripe-btn">Connect Stripe Account →</button>
+                            <button type="submit" className="px-10 py-5 bg-[#e8a230] text-black font-black uppercase text-[10px] tracking-widest rounded-2xl hover:scale-105 transition-all shadow-glow shadow-[#e8a230]/10 italic">
+                                Initialize Payout Node →
+                            </button>
                         </form>
-                    </div>
-                )}
+                    )}
+                </div>
 
-                {hasStripe && (
-                    <div className="md-stripe-banner" style={{ borderColor: "#1a4a2a", background: "#0d1a10" }}>
-                        <div className="md-stripe-left">
-                            <div className="md-stripe-icon" style={{ borderColor: "#1a4a2a", background: "#0d2a1a" }}>
-                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#3dd68c" strokeWidth="1.3"/>
-                                    <path d="M1 5h18" stroke="#3dd68c" strokeWidth="1.3"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div className="md-stripe-title" style={{ fontStyle: "normal" }}>Stripe account connected.</div>
-                                <div className="md-stripe-desc">Your payouts are active. Funds are deposited on a rolling basis.</div>
-                            </div>
-                        </div>
-                        <div className="md-stripe-connected">✓ Payouts Active</div>
-                    </div>
-                )}
-
-                {/* PREP TIMING + TERMINAL STATUS */}
-                <div className="md-two-col">
+                {/* SECONDARY COMMAND MODULES */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <PrepTimingPanel
                         restaurantId={restaurant.id}
                         manualPrepTime={restaurant.manualPrepTime}
@@ -174,22 +170,39 @@ export default async function MerchantDashboard() {
                     initialGhlUrl={restaurant.ghlUrl} 
                 />
 
-                {/* AI AUTOPILOT + BUSY ZONES */}
-                <div className="md-bottom-grid">
-                    <AutoPilotPanel
-                        restaurantId={restaurant.id}
-                        autoPilotEnabled={restaurant.autoPilotEnabled ?? true}
-                        capacityThreshold={restaurant.capacityThreshold ?? 10}
-                    />
-                    <BusyZonesPanel
-                        restaurantId={restaurant.id}
-                        schedules={restaurant.schedules || []}
-                    />
+                {/* TERTIARY LOGISTICS */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-1">
+                        <AutoPilotPanel
+                            restaurantId={restaurant.id}
+                            autoPilotEnabled={restaurant.autoPilotEnabled ?? true}
+                            capacityThreshold={restaurant.capacityThreshold ?? 10}
+                        />
+                    </div>
+                    <div className="lg:col-span-2">
+                         <BusyZonesPanel
+                            restaurantId={restaurant.id}
+                            schedules={restaurant.schedules || []}
+                        />
+                    </div>
                 </div>
 
-                {/* ISSUES TOAST */}
                 <IssuesPanel pendingCount={pendingOrders.length} />
              </div>
         </div>
     );
 }
+
+function StatBlock({ label, value, suffix, isGold }: { label: string, value: any, suffix?: string, isGold?: boolean }) {
+    return (
+        <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-8 hover:bg-white/[0.04] transition-all relative overflow-hidden group">
+            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 italic transition-colors group-hover:text-white">// {label}</div>
+            <div className="flex items-baseline gap-3">
+                <span className={`text-5xl font-bebas italic tracking-tight ${isGold ? 'text-[#e8a230] shadow-glow' : 'text-white'}`}>{value}</span>
+                {suffix && <span className="text-[10px] font-black text-slate-700 uppercase italic">{suffix}</span>}
+            </div>
+            <div className="absolute top-0 right-0 p-8 text-5xl opacity-[0.01] font-bebas italic select-none">DATA</div>
+        </div>
+    );
+}
+

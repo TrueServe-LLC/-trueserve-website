@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { PaymentElement, ExpressCheckoutElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
@@ -75,42 +73,68 @@ export default function CheckoutForm({ onSuccess, totalAmount, disabled }: Check
     };
 
     return (
-        <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
-            <div className="mb-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Express Checkout</p>
-                <div className={`transition-all duration-300 ${disabled ? 'opacity-50 pointer-events-none grayscale' : ''}`}>
-                    <ExpressCheckoutElement 
-                        onConfirm={handleExpressConfirm}
-                        options={{
-                            buttonHeight: 50,
-                            buttonTheme: {
-                                applePay: 'black',
-                            }
-                        }}
-                    />
+        <form id="payment-form" onSubmit={handleSubmit} className="space-y-10 animate-fade-in">
+             <style jsx global>{`
+                .StripeElement { background: rgba(255,255,255,0.02) !important; border-radius: 12px !important; }
+                #payment-element { --colorBackground: transparent; --colorPrimary: #e8a230; --colorText: #ffffff; --colorTextPlaceholder: #5A5550; --colorDanger: #e24b4a; --borderRadius: 12px; }
+            `}</style>
+            
+            <div className="space-y-8">
+                <div>
+                    <label className="text-[9px] font-black uppercase tracking-[0.4em] text-[#e8a230] mb-4 block italic">// Express Authorization</label>
+                    <div className={`transition-all duration-500 overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-4 ${disabled ? 'opacity-30 pointer-events-none grayscale' : 'hover:border-[#e8a230]/30 shadow-xl shadow-black/50'}`}>
+                        <ExpressCheckoutElement 
+                            onConfirm={handleExpressConfirm}
+                            options={{
+                                buttonHeight: 52,
+                                buttonTheme: {
+                                    applePay: 'black',
+                                }
+                            }}
+                        />
+                    </div>
                 </div>
                 
-                <div className="relative my-6">
+                <div className="relative py-4 flex items-center justify-center">
                     <div className="absolute inset-0 flex items-center">
                         <span className="w-full border-t border-white/10"></span>
                     </div>
-                    <div className="relative flex justify-center text-[10px] uppercase">
-                        <span className="bg-slate-900 px-3 text-slate-500 font-bold tracking-widest">Or pay with card</span>
+                    <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest px-4 bg-[#0c0e13] text-[#5A5550] italic">
+                        Or Manual Node Handshake
                     </div>
+                </div>
+
+                <div className="bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] shadow-2xl backdrop-blur-xl">
+                    <label className="text-[9px] font-black uppercase tracking-[0.4em] text-[#e8a230] mb-6 block italic">// Secure Card Gateway</label>
+                    <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
                 </div>
             </div>
 
-            <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
+            <div className="pt-4">
+                <button
+                    disabled={isLoading || !stripe || !elements || disabled}
+                    id="submit"
+                    className="group relative w-full overflow-hidden bg-[#e8a230] text-black py-5 rounded-2xl font-bebas text-xl uppercase tracking-widest shadow-2xl shadow-[#e8a230]/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-30 disabled:grayscale"
+                >
+                    <div className="relative z-10 flex items-center justify-center gap-3">
+                        {isLoading ? "AUTHORIZING..." : `AUTHORIZE $${totalAmount.toFixed(2)} TRANSACTION →`}
+                    </div>
+                    
+                    {/* Industrial Glow Effect */}
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                </button>
+                
+                <p className="text-center mt-6 text-[9px] font-black uppercase tracking-[0.4em] text-[#5A5550] italic opacity-60">
+                    Secure 256-bit encryption protocol active
+                </p>
+            </div>
 
-            <button
-                disabled={isLoading || !stripe || !elements || disabled}
-                id="submit"
-                className="w-full btn btn-primary py-4 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50"
-            >
-                {isLoading ? "Processing..." : `Pay $${totalAmount.toFixed(2)} & Place Order`}
-            </button>
-
-            {message && <div id="payment-message" className="text-red-400 text-sm font-bold text-center bg-red-500/10 py-3 rounded-lg border border-red-500/20">{message}</div>}
+            {message && (
+                <div id="payment-message" className="animate-shake text-[#e24b4a] text-[10px] font-black uppercase tracking-widest text-center bg-[#e24b4a]/5 py-4 rounded-xl border border-[#e24b4a]/20">
+                    ⚠️ {message}
+                </div>
+            )}
         </form>
     );
 }
+

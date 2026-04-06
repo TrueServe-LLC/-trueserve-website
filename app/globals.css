@@ -10,18 +10,14 @@
 
 :root {
   --gold: #e8a230;
-  --gdim: rgba(232, 162, 48, 0.13);
-  --gb: rgba(232, 162, 48, 0.24);
-  --green: #3dd68c;
-  --red: #e24b4a;
+  --gold-glow: rgba(232, 162, 48, 0.2);
+  --gold-dim: rgba(232, 162, 48, 0.05);
   --bg: #0c0e13;
-  --card: #0f1219;
-  --card2: #131720;
-  --border: #1c1f28;
-  --border2: #2a2f3a;
-  --t1: #fff;
-  --t2: #aaa;
-  --t3: #444;
+  --card: rgba(255, 255, 255, 0.02);
+  --border: rgba(255, 255, 255, 0.05);
+  --t1: #F0EDE8;
+  --t2: #94A3B8;
+  --t3: #475569;
   --radius: 14px;
 }
 
@@ -33,14 +29,21 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-barlow-cond), system-ui, sans-serif;
   background: var(--bg);
   color: var(--t1);
   min-height: 100vh;
-  line-height: 1.5;
+  line-height: normal;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Minimalist Industrial Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-glow); }
 
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; font-family: inherit; }
@@ -446,6 +449,15 @@ nav {
 /* ──────────────────────────────────────────────────────────────────────────
    MOBILE RESPONSIVENESS (MAX-WIDTH: 768PX)
    ────────────────────────────────────────────────────────────────────────── */
+
+/* ──────────────────────────────────────────────────────────────────────────
+   ELITE INDUSTRIAL UTILITIES
+   ────────────────────────────────────────────────────────────────────────── */
+
+.shadow-glow { filter: drop-shadow(0 0 10px var(--gold-glow)); }
+.text-glow { text-shadow: 0 0 15px rgba(255, 255, 255, 0.1); }
+.glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 2rem; }
+.scanline { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; opacity: 0.1; z-index: 50; }
 
 @media (max-width: 768px) {
   nav { padding: 0 16px; min-height: 70px; height: auto; flex-wrap: wrap; justify-content: center; gap: 10px; }
