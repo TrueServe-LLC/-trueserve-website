@@ -338,34 +338,34 @@ export default function DeliveryZonePage() {
                 {/* RIGHT: Stats + Partner */}
                 <div className="right-col">
                     <div>
-                        <div className="col-title">Zone Stats</div>
-                        <div className="col-subtitle">Live activity in your delivery area</div>
+                        <div className="col-title">Zone Statistics</div>
+                        <div className="col-subtitle">Live telemetry from your immediate sector</div>
                     </div>
 
                     <div className="stats-grid">
                         <div className="stat-card">
                             <div className="stat-icon">🍽️</div>
-                            <div className="stat-val">48</div>
+                            <div className="stat-val" style={{ fontSize: '18px', letterSpacing: '0.1em' }}>SCANNING...</div>
                             <div className="stat-label">Restaurants</div>
-                            <div className="stat-sub">In your area</div>
+                            <div className="stat-sub">Identifying Active Sources</div>
                         </div>
                         <div className="stat-card">
                             <div className="stat-icon">⚡</div>
-                            <div className="stat-val">$3.80</div>
+                            <div className="stat-val" style={{ fontSize: '18px', letterSpacing: '0.1em' }}>CALCULATING...</div>
                             <div className="stat-label">Avg. Pay</div>
-                            <div className="stat-sub">Per delivery</div>
+                            <div className="stat-sub">Based on live demand</div>
                         </div>
                         <div className="stat-card">
                             <div className="stat-icon">🕐</div>
-                            <div className="stat-val">~18m</div>
+                            <div className="stat-val" style={{ fontSize: '18px', letterSpacing: '0.1em' }}>SYNCING...</div>
                             <div className="stat-label">Avg. Drive</div>
-                            <div className="stat-sub">To restaurant</div>
+                            <div className="stat-sub">To restaurant relay</div>
                         </div>
                         <div className="stat-card">
                             <div className="stat-icon">📍</div>
-                            <div className="stat-val">3</div>
-                            <div className="stat-label">Live Now</div>
-                            <div className="stat-sub">Taking orders</div>
+                            <div className="stat-val" style={{ fontSize: '18px', letterSpacing: '0.1em' }}>IDENTIFYING...</div>
+                            <div className="stat-label">Live Drivers</div>
+                            <div className="stat-sub">Tracking sector units</div>
                         </div>
                     </div>
 

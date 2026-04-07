@@ -43,7 +43,8 @@ export async function middleware(request: NextRequest) {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com https://api.launchdarkly.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://js.stripe.com https://maps.googleapis.com https://api.launchdarkly.com",
+      "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https: http:",
