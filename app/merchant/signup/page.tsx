@@ -77,6 +77,12 @@ export default function MerchantSignupPage() {
                     <div className="fg"><label>Phone</label><input type="text" placeholder="+1 (555) 000-0000"/></div>
                     <div className="fg"><label>Owner Name</label><input type="text" placeholder="Jane Doe"/></div>
                   </div>
+                  <div className="flex items-start gap-3 mb-6 p-1 opacity-70">
+                    <input type="checkbox" id="merch-sms" className="mt-1 w-4 h-4 rounded border-white/10 bg-white/5 text-primary" required />
+                    <label htmlFor="merch-sms" className="text-[10px] leading-relaxed text-slate-400">
+                      I consent to receive automated text messages from TrueServe for order updates and merchant notifications. Reply STOP to opt-out. Msg & data rates may apply. View <Link href="/legal#privacy" className="text-primary underline">Privacy Policy</Link>.
+                    </label>
+                  </div>
                   <div className="fg"><label>Email Address</label><input type="text" placeholder="jane@restaurant.com"/></div>
                   <div className="fg"><label>Password</label><input type="password" placeholder="At least 8 characters"/></div>
                 </div>

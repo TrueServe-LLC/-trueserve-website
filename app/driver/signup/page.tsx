@@ -139,8 +139,14 @@ export default function DriverSignupPage() {
                                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 italic ml-2">Mobile Interface</label>
                                         <input type="tel" placeholder="+1 (555) 000-0000" className="su-input w-full bg-white/[0.02] border border-white/10 rounded-2xl py-4 px-6 text-white font-bold tracking-widest outline-none focus:border-[#e8a230]/30 transition-all placeholder:text-slate-800 text-sm" />
                                     </div>
+                                    <div className="flex items-start gap-3 mt-4 px-3 opacity-60 hover:opacity-100 transition-opacity translate-y-2">
+                                        <input type="checkbox" id="sms-consent" className="mt-1 w-4 h-4 rounded border-white/10 bg-white/5 text-[#e8a230] focus:ring-[#e8a230]/20" required />
+                                        <label htmlFor="sms-consent" className="text-[9px] font-medium leading-[1.6] text-slate-400 uppercase tracking-widest italic">
+                                            By checking this box, I consent to receive automated text messages from TrueServe for order updates and fleet telemetry. Reply STOP to opt-out. Msg & data rates may apply. View <Link href="/legal#privacy" className="text-[#e8a230] underline underline-offset-4">Privacy Policy</Link>.
+                                        </label>
+                                    </div>
                                 </div>
-                                <button onClick={() => setStep(2)} className="w-full bg-[#e8a230] text-black font-black uppercase tracking-[0.3em] py-5 rounded-2xl text-[11px] transition-all hover:scale-[1.02] active:scale-95 shadow-glow shadow-[#e8a230]/20 italic">
+                                <button onClick={() => setStep(2)} className="w-full bg-[#e8a230] text-black font-black uppercase tracking-[0.3em] py-5 rounded-2xl text-[11px] transition-all hover:scale-[1.02] active:scale-95 shadow-glow shadow-[#e8a230]/20 italic mt-4">
                                     Next: Logistics Asset →
                                 </button>
                             </div>

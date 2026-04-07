@@ -48,6 +48,9 @@ export default async function PersonalInfoPage() {
                     <div className="space-y-2">
                         <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.2em] text-[#333] ml-1">MOBILE CONTACT</label>
                         <input type="tel" className="fi w-full bg-[#0d0d0d] border border-white/5 text-[16px] px-6 py-5 text-white outline-none rounded-2xl transition-all shadow-xl" placeholder="(336) 000-0000" defaultValue={user?.phone || ""} />
+                        <p className="text-[9px] font-medium leading-relaxed text-slate-700 uppercase tracking-widest italic px-1">
+                            By adding your number, you consent to receive automated SMS order updates from TrueServe. Reply STOP to opt-out. Msg & data rates may apply. View <Link href="/legal#privacy" className="text-[#e8a230] underline">Privacy Policy</Link>.
+                        </p>
                     </div>
 
                     <div className="space-y-2">
