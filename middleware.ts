@@ -1,4 +1,5 @@
-import { createServerClient } from '@supabase/ssr'
+ipath === '/admin/login'
+  mport { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
