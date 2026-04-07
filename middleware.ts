@@ -1,205 +1,59 @@
-ipath === '/admin/login'
-  mport { createServerClient } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  const url = request.nextUrl
-  const host = request.headers.get("host") || ""
-  const path = url.pathname
+    const url = request.nextUrl
+    const host = request.headers.get("host") || ""
+    const path = url.pathname
 
   // --- 1. PREVIEW BYPASS ---
-  // --- 1. PREVIEW BYPASS ---
   const isPreviewParam = url.searchParams.get('preview') === 'true'
-  const isPreviewCookie = request.cookies.get('preview_mode')?.value === 'true'
-  const isTunnel = host.includes('lhr.life') || host.includes('loca.lt')
-  const isAuthPath = path === '/login' || path.startsWith('/auth')
-  const isPreview = isPreviewParam || isPreviewCookie || (isTunnel && (path.startsWith('/driver') || isAuthPath))
-  
+    const isPreviewCookie = request.cookies.get('preview_mode')?.value === 'true'
+    const isTunnel = host.includes('lhr.life') || host.includes('loca.lt')
+    const isAuthPath = path === '/login' || path.startsWith('/auth')
+    const isPreview = isPreviewParam || isPreviewCookie || (isTunnel && (path.startsWith('/driver') || isAuthPath))
+
   if (isPreviewParam && !isPreviewCookie) {
-    const previewResponse = NextResponse.redirect(new URL(url.pathname, request.url))
-    previewResponse.cookies.set('preview_mode', 'true', { maxAge: 60 * 5, path: '/' }) // 5 minutes
-    return previewResponse
+        const previewResponse = NextResponse.redirect(new URL(url.pathname, request.url))
+        previewResponse.cookies.set('preview_mode', 'true', { maxAge: 60 * 5, path: '/' }) // 5 minutes
+      return previewResponse
   }
 
   const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.')
-  if (isInternal) return NextResponse.next()
+    if (isInternal) return NextResponse.next()
 
   const response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+        request: {
+                headers: request.headers,
+        },
   })
 
   // --- SECURITY HEADERS (Relaxed for Embedding) ---
   const isEmbed = url.searchParams.get('embed') === 'true';
-  
+
   if (!isEmbed) {
-    response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+        response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   }
-  
+
   response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self), payment=(self)');
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self), payment=(self)');
+
   response.headers.set(
-    'Content-Security-Policy',
-    [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com https://api.launchdarkly.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https: http:",
-      "connect-src 'self' https://*.supabase.co https://api.stripe.com https://app.launchdarkly.com https://api.launchdarkly.com wss://*.supabase.co https://sentry.io",
-      "frame-src https://js.stripe.com https://hooks.stripe.com",
-      isEmbed ? "frame-ancestors *" : "frame-ancestors 'self'",
-      "upgrade-insecure-requests",
-    ].join('; ')
-  );
-  if (process.env.NODE_ENV === 'production') {
-    response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
-  }
+        'Content-Security-Policy',
+        [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://js.stripe.com https://maps.googleapis.com https://api.launchdarkly.com",
+                "worker-src 'self' blob:",
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                "font-src 'self' https://fonts.gstatic.com",
+                "img-src 'self' data: blob: https: http:",
+                "connect-src 'self' https://*.supabase.co https://api.stripe.com https://app.launchdarkly.com https://api.launchdarkly.com wss://*.supabase.co https://sentry.io",
+                "frame-src https://js.stripe.com https://hooks.stripe.com",
+                isEmbed ? "frame-ancestors *" : "frame-ancestors 'self'",
+                "upgrade-insecure-requests",
+              ].join('; ')
+      );
 
-  // Determine the cookie domain for universal sessions (including subdomains)
-  const cleanHost = host.split(':')[0]
-  const isLocal = cleanHost.includes("localhost")
-  const isVercel = cleanHost.endsWith(".vercel.app")
-  
-  // Dynamic root domain detection
-  const pieces = cleanHost.split('.')
-  let cookieDomain = ""
-  
-  if (!isLocal && !isVercel && !isTunnel && pieces.length >= 2) {
-    cookieDomain = `.${pieces.slice(-2).join('.')}`
-  }
-
-  let isSub = isVercel 
-    ? pieces.length > 3 
-    : pieces.length > (isLocal ? 1 : 2)
-  
-  let subdomainPiece = pieces[0].toLowerCase()
-  // Handle www prefix for subdomains (e.g., www.admin.domain.com)
-  if (subdomainPiece === 'www' && pieces.length > (isLocal ? 2 : 3)) {
-    subdomainPiece = pieces[1].toLowerCase()
-    isSub = true
-  }
-  
-  const subdomain = isSub && !['www', 'localhost', 'trueserve'].includes(subdomainPiece) ? subdomainPiece : ""
-
-  // --- 2. SUPABASE SESSION SYNC ---
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          cookiesToSet.forEach(({ name, value, options }) => {
-             const sharedOptions = { ...options, domain: cookieDomain }
-             response.cookies.set(name, value, sharedOptions)
-          })
-        },
-      },
-    }
-  )
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // --- 3. SUBDOMAIN ROUTING & ROLE PROTECTION ---
-  const allowedSubdomains = ["admin", "merchant", "driver"]
-  
-  if (subdomain && allowedSubdomains.includes(subdomain)) {
-    // SECURITY GATE: Only allow internal staff on admin subdomain
-    if (subdomain === 'admin') {
-      const isAllowedPath = path === '/login' || path.startsWith('/admin/login') || path.startsWith('/auth/callback')
-      if (!user && !isAllowedPath) return NextResponse.redirect(new URL('/login', request.url))
-      
-      if (user && !isAllowedPath) {
-        const roleResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
-          {
-            headers: {
-              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-            }
-          }
-        )
-        const roles = await roleResponse.json()
-        const role = roles?.[0]?.role || 'CUSTOMER'
-        if (!['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
-          let rootHost = host;
-          if (subdomain) {
-            rootHost = host.replace(`${subdomain}.`, '');
-            rootHost = rootHost.replace('www.', ''); // clean up www if it stayed
-          }
-          return NextResponse.redirect(new URL('/', `${url.protocol}//${rootHost}`))
-        }
-      }
-    }
-
-    // Rewrite to the internal folder silently (except for shared auth callback)
-    if (!path.startsWith(`/${subdomain}`) && !path.startsWith('/auth')) {
-      const rewriteUrl = new URL(`/${subdomain}${path}${url.search}`, request.url)
-      const rewriteResponse = NextResponse.rewrite(rewriteUrl)
-      
-      // Transfer cookies/headers
-      response.cookies.getAll().forEach(cookie => rewriteResponse.cookies.set(cookie.name, cookie.value))
-      response.headers.forEach((v, k) => rewriteResponse.headers.set(k, v))
-      
-      return rewriteResponse
-    }
-  }
-
-  // --- 4. PATH-BASED PROTECTION (Fallback) ---
-  const portals = ['/admin', '/merchant', '/driver']
-  const matchedPortal = portals.find(p => path.startsWith(p))
-
-  if (matchedPortal) {
-    // PUBLIC PATHS for Portals: Landing pages should NOT require login
-    const isPublicPortalPath = path === '/merchant' || path === '/driver' || path === '/admin/login' || path.startsWith('/merchant-signup') || path.startsWith('/driver-signup')
-    
-    // If it's the admin portal and they have a manual admin_session cookie, let the page-layer auth guard handle it
-    if (path.startsWith('/admin') && request.cookies.has("admin_session")) {
-        // Do nothing, let it pass through to the page
-    } else if (isPublicPortalPath) {
-        // Do nothing, let them see the landing page
-    } else {
-        if (!user && !isPreview) return NextResponse.redirect(new URL('/login', request.url))
-
-        if (user) {
-            const roleRes = await fetch(
-              `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
-              {
-                headers: {
-                  'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-                  'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-                }
-              }
-            )
-            const roles = await roleRes.json()
-            const role = roles?.[0]?.role || 'CUSTOMER'
-
-            if (path.startsWith('/admin') && !['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
-              return NextResponse.redirect(new URL('/', request.url))
-            }
-        }
-    }
-  }
-
-  // SYNC: Universal UserID Cookie
-  if (user && !request.cookies.get('userId')) {
-    response.cookies.set('userId', user.id, {
-      path: '/',
-      domain: cookieDomain,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7 
-    })
-  }
-
-  return response
-}
-
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  return response;
 }
