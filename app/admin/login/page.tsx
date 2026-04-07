@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { login, resetAdminPassword } from "./actions";
 import { createClient } from "@/lib/supabase/client";
+import Logo from "@/components/Logo";
 
 export default function AdminLogin() {
     const [error, setError] = useState("");
@@ -67,11 +68,8 @@ export default function AdminLogin() {
                 <div className="bg-[#05060b]/90 backdrop-blur-3xl rounded-[2.4rem] p-10 md:p-12 border border-white/5 space-y-10">
                     <div className="text-center space-y-4">
                         <div className="flex justify-center mb-6">
-                            <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded-xl border border-primary/20 shadow-lg" />
+                            <Logo size="lg" />
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-serif font-black italic text-white tracking-tighter uppercase leading-none">
-                            True<span className="text-primary not-italic font-black text-3xl ml-1">Serve</span>
-                        </h1>
                         <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">Internal Security Protocol</p>
                     </div>
 

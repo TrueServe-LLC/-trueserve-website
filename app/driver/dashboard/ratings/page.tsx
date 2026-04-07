@@ -13,27 +13,31 @@ export default async function DriverRatings() {
     return (
         <div className="font-sans">
             <style dangerouslySetInnerHTML={{ __html: `
-                .page-wrap { padding: 24px 28px; }
-                .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; margin-bottom: 20px; }
+                .page-wrap { padding: 32px; }
+                .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 32px; }
                 .page-title span { color: #e8a230; }
 
-                .ratings-grid { display: grid; grid-template-columns: 280px 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin-bottom: 20px; }
-                .rating-hero { background: #0f1219; padding: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-                .rating-na { font-size: 64px; font-weight: 700; font-family: 'DM Mono', monospace; color: #e8a230; line-height: 1; margin-bottom: 6px; }
-                .rating-tier { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-                .rating-sub { font-size: 11px; color: #444; margin-bottom: 4px; }
-                .rating-lifetime { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #333; }
+                .ratings-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin-bottom: 24px; }
+                @media (max-width: 1024px) { .ratings-grid { grid-template-columns: 1fr; } }
+                
+                .rating-hero { background: #0c0c0e; padding: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+                .rating-na { font-size: 110px; font-weight: 700; font-family: 'DM Mono', monospace; color: #e8a230; line-height: 0.8; margin-bottom: 12px; letter-spacing: -0.1em; }
+                .rating-tier { font-size: 11px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; color: #fff; margin-bottom: 16px; font-style: italic; }
+                .rating-sub { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: #333; margin-bottom: 4px; }
+                .rating-lifetime { font-size: 10px; font-weight: 800; tracking-widest uppercase color: #1a1a1a; }
 
                 .stats-quad { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1c1f28; }
-                .stat-quad-cell { background: #0f1219; padding: 18px 20px; }
-                .sq-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-bottom: 8px; }
-                .sq-val { font-size: 32px; font-weight: 700; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; margin-bottom: 4px; }
+                @media (max-width: 640px) { .stats-quad { grid-template-columns: 1fr; } }
+                
+                .stat-quad-cell { background: #080808; padding: 32px; }
+                .sq-lbl { font-size: 10px; font-weight: 800; letter-spacing: 0.25em; text-transform: uppercase; color: #444; margin-bottom: 16px; }
+                .sq-val { font-size: 44px; font-weight: 800; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; margin-bottom: 8px; letter-spacing: -0.05em; }
                 .sq-val.grn { color: #3dd68c; }
-                .sq-target { font-size: 10px; color: #333; font-family: 'DM Mono', monospace; }
+                .sq-target { font-size: 10px; font-weight: 800; tracking-widest uppercase color: #1a1a1a; font-family: 'DM Mono', monospace; }
 
-                .feedback-block { background: #0f1219; border: 1px solid #1c1f28; padding: 16px 20px; }
-                .feedback-title { font-size: 13px; font-weight: 700; color: #ccc; margin-bottom: 12px; }
-                .feedback-empty { background: #0c0e13; border: 1px solid #1c1f28; padding: 20px; text-align: center; font-size: 12px; color: #333; font-style: italic; }
+                .feedback-block { background: #0c0c0e; border: 1px solid #1c1f28; padding: 32px; border-radius: 0; }
+                .feedback-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.1em; margin-bottom: 24px; }
+                .feedback-empty { background: #080808; border: 1px solid #131720; padding: 48px; text-align: center; font-size: 11px; font-weight: 800; tracking-widest uppercase color: #222; font-style: italic; }
             ` }} />
             
             <div className="page-wrap">

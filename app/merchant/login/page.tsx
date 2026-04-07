@@ -1,179 +1,147 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAuthSession, loginAsDemoMerchant } from "@/app/auth/actions";
+import Logo from "@/components/Logo";
+
+function MerchantLoginPageContent() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const isPreview = document.cookie.includes("preview_mode=true");
+      if (isPreview) { router.push("/merchant/dashboard"); return; }
+      const session = await getAuthSession();
+      if (session.isAuth && session.role === 'MERCHANT') { router.push("/merchant/dashboard"); }
+    };
+    checkUser();
+  }, [router]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    let W: number, H: number;
+
+    const resize = () => {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    function drawGrid() {
+      ctx!.strokeStyle = 'rgba(232,162,48,0.04)'; ctx!.lineWidth = 1;
+      const size = 52;
+      for (let x = 0; x < W; x += size) { ctx!.beginPath(); ctx!.moveTo(x, 0); ctx!.lineTo(x, H); ctx!.stroke(); }
+      for (let y = 0; y < H; y += size) { ctx!.beginPath(); ctx!.moveTo(0, y); ctx!.lineTo(W, y); ctx!.stroke(); }
+    }
+
+    const GOLD = '#e8a230';
+    function drawFork(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, alpha: number) {
+      ctx.save(); ctx.translate(x,y); ctx.globalAlpha = alpha; ctx.strokeStyle = GOLD; ctx.lineWidth = size * 0.12; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(0, size*0.1); ctx.lineTo(0, size); ctx.stroke();
+      [-0.22, 0, 0.22].forEach(dx => { ctx.beginPath(); ctx.moveTo(dx*size, -size); ctx.lineTo(dx*size, -size*0.1); ctx.stroke(); });
+      ctx.beginPath(); ctx.moveTo(-0.22*size, -size*0.4); ctx.lineTo(0.22*size, -size*0.4); ctx.stroke(); ctx.restore();
+    }
+    const shapes = ['fork', 'plate', 'bag', 'star'];
+    const particles = Array.from({length: 12}, (_, i) => ({
+      x: Math.random(), y: Math.random(), vy: -(0.0001 + Math.random() * 0.00015),
+      size: 8 + Math.random() * 12, alpha: 0.05 + Math.random() * 0.15,
+      rot: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.006, 
+      shape: shapes[i % shapes.length], phase: Math.random() * Math.PI * 2,
+    }));
+
+    let t = 0;
+    function animate() {
+      ctx!.clearRect(0, 0, W, H); ctx!.fillStyle = '#0a0c12'; ctx!.fillRect(0, 0, W, H); drawGrid();
+      particles.forEach(p => {
+        p.x += Math.sin(t * 0.8 + p.phase) * 0.0001; p.y += p.vy; p.rot += p.rotSpeed;
+        if (p.y < -0.05) { p.y = 1.05; p.x = Math.random(); }
+        ctx!.save(); ctx!.translate(p.x * W, p.y * H); ctx!.rotate(p.rot);
+        drawFork(ctx!, 0, 0, p.size, p.alpha); ctx!.restore();
+      });
+      t += 0.016; requestAnimationFrame(animate);
+    }
+    animate();
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#0c0e13] text-white selection:bg-[#e8a230]/30 overflow-x-hidden font-['DM_Sans',sans-serif]">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .login-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+        .s-left { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 44px 48px; }
+        .anim-canvas { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; }
+        .video-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom,rgba(8,10,16,0.88) 0%,rgba(8,10,16,0.22) 38%,rgba(8,10,16,0.55) 68%,rgba(8,10,16,0.97) 100%),linear-gradient(to right,rgba(8,10,16,0.75) 0%,rgba(8,10,16,0.05) 60%); }
+        .logo-row { position: absolute; top: 36px; left: 48px; z-index: 5; display: flex; align-items: center; gap: 10px; }
+        .logo-circle { width: 38px; height: 38px; background: rgba(12,14,19,.85); border: 1.5px solid rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; border-radius: 50%; backdrop-filter: blur(14px); }
+        .logo-name { font-size: 16px; font-weight: 700; color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.7); }
+        .s-heading { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(48px, 6vw, 84px); font-weight: 800; font-style: italic; text-transform: uppercase; line-height: .92; margin-bottom: 14px; }
+        .s-heading .w { color: #fff; } .s-heading .g { color: #e8a230; }
+        .s-sub { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.65; max-width: 360px; margin-bottom: 28px; }
+        .s-right { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; align-items: center; justify-content: center; padding: 48px 60px; }
+        .s-form { width: 100%; max-width: 440px; }
+        .form-title { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 3px; }
+        .form-title span { color: #e8a230; }
+        .form-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #444; margin-bottom: 40px; }
+        .sec-label { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8a230; padding-bottom: 8px; border-bottom: 1px solid #1c1f28; margin-bottom: 24px; }
+        .fl { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+        .fi { width: 100%; background: #0f1219; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 14px 16px; outline: none; margin-bottom: 20px; transition: border-color .2s; border-radius: 2px; }
+        .fi:focus { border-color: #e8a230; }
+        .fi::placeholder { color: #2a2f3a; }
+        .cta { width: 100%; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 18px; cursor: pointer; transition: opacity .15s, transform .1s; border-radius: 2px; }
+        .signup-note { font-size: 11px; color: #333; text-align: center; margin-top: 24px; }
+        .signup-note a { color: #e8a230; cursor: pointer; font-weight: 600; text-decoration: none; }
+      ` }} />
+
+      <div className="login-wrap">
+        <div className="s-left">
+          <canvas ref={canvasRef} className="anim-canvas"></canvas>
+          <div className="video-overlay"></div>
+          <div className="logo-row">
+            <Logo size="md" />
+          </div>
+          <div className="s-left-content relative z-10 px-4">
+             <div className="s-heading animate-up"><div className="w">Partner</div><div className="g">Portal.</div></div>
+             <div className="s-sub animate-up [animation-delay:0.1s]">Access your storefront infrastructure. Monitor operations, sync inventory, and scale your merchant footprint.</div>
+          </div>
+        </div>
+
+        <div className="s-right">
+          <div className="s-form animate-up">
+            <div className="form-title">Merchant <span>Login.</span></div>
+            <div className="form-sub">Secure entry for partnership portal</div>
+            <div className="sec-label">Credentials Terminal</div>
+            
+            <form onSubmit={(e) => { e.preventDefault(); setIsLoading(true); setTimeout(() => router.push("/merchant/dashboard"), 1000); }}>
+              <div className="fl">Identifier <span className="text-[#e24b4a]">*</span></div>
+              <input className="fi" type="email" placeholder="partner@yourplace.com" required />
+              <div className="fl">Security Passkey <span className="text-[#e24b4a]">*</span></div>
+              <input className="fi" type="password" placeholder="••••••••" required />
+              
+              <button className="cta" disabled={isLoading}>
+                {isLoading ? "Authorizing Connection..." : "Establish Session →"}
+              </button>
+            </form>
+
+            <button onClick={loginAsDemoMerchant} className="w-full mt-4 bg-transparent border border-white/5 py-4 text-[9px] font-bold tracking-[0.2em] text-[#444] hover:border-[#e8a230]/30 hover:text-[#e8a230] transition-all uppercase rounded-[2px]">
+              Quick Pilot Access (Merchant)
+            </button>
+
+            <div className="signup-note">New to network? <Link href="/merchant/signup">Apply for partnership</Link></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function MerchantLoginPage() {
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        const checkUser = async () => {
-            const isPreview = document.cookie.includes("preview_mode=true");
-            if (isPreview) {
-                router.push("/merchant/dashboard");
-                return;
-            }
-
-            const session = await getAuthSession();
-            if (session.isAuth && session.role === 'MERCHANT') {
-                router.push("/merchant/dashboard");
-            }
-        };
-        checkUser();
-    }, [router]);
-
-    return (
-        <div className="login-grid font-sans">
-            <style dangerouslySetInnerHTML={{ __html: `
-                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800&display=swap');
-                
-                body { margin: 0; background: #0c0e13; overflow-x: hidden; }
-                .login-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; background: #0c0e13; }
-                
-                @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes slideRight { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-
-                /* LEFT PANEL */
-                .left-panel { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px 80px; overflow: hidden; background: #080a0f; }
-                .bg-img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; grayscale: 1; opacity: 0.35; filter: contrast(1.1); transform: scale(1.05); }
-                .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,19,0.2) 0%, rgba(12,14,19,0.95) 100%); z-index: 1; }
-                
-                .left-content { position: relative; z-index: 2; animation: slideRight 1s ease-out; }
-                .logo-wrap { position: absolute; top: 40px; left: 80px; display: flex; align-items: center; gap: 12px; z-index: 2; animation: slideRight 0.8s ease-out; cursor: pointer; text-decoration: none; }
-                .logo-ring { width: 42px; height: 42px; border: 1.5px solid #2a2f3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(19,23,32,0.6); }
-                .logo-text { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; color: #fff; font-style: italic; letter-spacing: -0.05em; line-height: 1; }
-                .logo-text span { color: #e8a230; }
-
-                .biz-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,162,48,0.1); border: 1px solid rgba(232,162,48,0.2); padding: 6px 14px; margin-bottom: 24px; border-radius: 2px; }
-                .badge-dot { width: 7px; height: 7px; background: #e8a230; border-radius: 50%; box-shadow: 0 0 10px #e8a230; }
-                .badge-text { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8a230; }
-
-                .hero-txt { font-family: 'Barlow Condensed', sans-serif; font-size: 72px; font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 0.95; margin-bottom: 20px; color: #fff; }
-                .hero-txt span { color: #e8a230; }
-                .hero-sub { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 400px; margin-bottom: 40px; }
-
-                .feat-list { display: flex; flex-direction: column; gap: 3px; }
-                .feat-item { display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: rgba(15,18,25,0.7); border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(8px); }
-                .feat-icon { width: 36px; height: 36px; background: rgba(232,162,48,0.12); border: 1px solid rgba(232,162,48,0.2); display: flex; align-items: center; justify-content: center; }
-                .feat-name { font-size: 13px; font-weight: 700; color: #fff; }
-                .feat-desc { font-size: 11px; color: rgba(255,255,255,0.35); }
-
-                /* RIGHT PANEL */
-                .right-panel { background: #0c0e13; border-left: 1px solid #1c1f28; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
-                .form-box { width: 100%; max-width: 440px; animation: fadeInUp 0.8s ease-out; }
-                .form-hd { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; font-style: italic; letter-spacing: -0.3px; }
-                .form-sub { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #e8a230; margin-bottom: 32px; }
-
-                .field-row { margin-bottom: 24px; }
-                .field-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-bottom: 8px; }
-                
-                .input-box { width: 100%; background: #0f1219; border: 1px solid #2a2f3a; padding: 16px 18px; color: #ccc; font-family: 'DM Mono', monospace; font-size: 14px; outline: none; transition: border-color .15s; border-radius: 0; }
-                .input-box:focus { border-color: #e8a230; }
-                .input-box::placeholder { color: #333; }
-
-                .submit-btn { width: 100%; padding: 17px; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; cursor: pointer; transition: opacity .15s; margin-top: 10px; margin-bottom: 24px; }
-                .submit-btn:hover { opacity: 0.9; }
-
-                .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-                .divider-line { flex: 1; height: 1px; background: #1c1f28; }
-                .divider-txt { font-size: 10px; font-weight: 700; color: #2a2f3a; text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
-
-                .pilot-btn { width: 100%; padding: 15px; background: transparent; border: 1px solid #2a2f3a; color: #888; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; cursor: pointer; transition: all .15s; margin-bottom: 8px; }
-                .pilot-btn:hover { border-color: #e8a230; color: #e8a230; }
-                .pilot-btn.gold { border-color: rgba(232,162,48,0.3); color: #e8a230; background: rgba(232,162,48,0.02); }
-
-                @media (max-width: 1024px) { 
-                    .login-grid { grid-template-columns: 1fr; }
-                    .left-panel { display: none; }
-                }
-            ` }} />
-
-            <div className="left-panel">
-                <img src="/merchant_login_bg_restaurant.png" alt="" className="bg-img" />
-                <div className="bg-overlay" />
-                
-                <a href="/" className="logo-wrap">
-                    <div className="logo-ring">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#e8a230" strokeWidth="1.5"/><path d="M7 10l2.5 2.5L14 7" stroke="#e8a230" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                    <div className="logo-text">True<span>Serve</span></div>
-                </a>
-
-                <div className="left-content">
-                    <div className="biz-badge">
-                        <div className="badge-dot" />
-                        <div className="badge-text">Secure Merchant Uplink</div>
-                    </div>
-                    <div className="hero-txt">Ready to<br/><span>Scale?</span></div>
-                    <div className="hero-sub">Enter the operational nerve center for top-performing kitchens. Manage your orders, logistics and growth in real-time.</div>
-                    
-                    <div className="feat-list">
-                        <div className="feat-item">
-                            <div className="feat-icon">🍱</div>
-                            <div>
-                                <div className="feat-name">Real-Time Kitchen Feed</div>
-                                <div className="feat-desc">Monitor live order flow and preparation timers.</div>
-                            </div>
-                        </div>
-                        <div className="feat-item">
-                            <div className="feat-icon">📈</div>
-                            <div>
-                                <div className="feat-name">Growth & Density Analysis</div>
-                                <div className="feat-desc">Access high-yield sector data for market expansion.</div>
-                            </div>
-                        </div>
-                        <div className="feat-item">
-                            <div className="feat-icon">🛡️</div>
-                            <div>
-                                <div className="feat-name">Priority Partner Support</div>
-                                <div className="feat-desc">Continuous 24/7 assistance for your kitchen operations.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="right-panel">
-                <div className="form-box">
-                    <div className="form-hd">Partner Connection</div>
-                    <div className="form-sub">Operations Terminal Access</div>
-
-                    <div className="field-row">
-                        <div className="field-lbl">Email Identifier</div>
-                        <input type="text" className="input-box" placeholder="partner@yourstore.com" />
-                    </div>
-
-                    <div className="field-row">
-                        <div className="field-lbl">Security Password</div>
-                        <input type="password" className="input-box" placeholder="••••••••" />
-                    </div>
-
-                    <button className="submit-btn" disabled={isLoading} onClick={() => setIsLoading(true)}>
-                        {isLoading ? "AUTHORIZING..." : "Authorize Connection →"}
-                    </button>
-
-                    <div className="divider">
-                        <div className="divider-line" />
-                        <div className="divider-txt">Merchant Rollout Access</div>
-                        <div className="divider-line" />
-                    </div>
-
-                    <button className="pilot-btn gold" onClick={loginAsDemoMerchant}>
-                        ⚡ Quick Pilot Access (Merchant)
-                    </button>
-                    
-                    <button className="pilot-btn" onClick={() => router.push("/login")}>
-                        ← Fleet Hub Gateway
-                    </button>
-                    
-                    <div className="mt-8 flex items-center justify-center gap-2 text-[#2a2f3a] font-black text-[9px] uppercase tracking-[0.2em]">
-                        <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2"/></svg>
-                        Encrypted Connection · Secure Uplink
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+  return <Suspense fallback={null}><MerchantLoginPageContent /></Suspense>;
 }

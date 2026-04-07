@@ -38,7 +38,7 @@ export default function BusyZonesPanel({ restaurantId, schedules: initialSchedul
             <style>{`
                 .bz-panel { background: #0f1219; padding: 18px 20px; }
                 .bz-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-                .bz-title { font-size: 14px; font-weight: 700; color: #ccc; }
+                .bz-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
                 .bz-add-btn {
                     font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
                     color: #e8a230; background: transparent; border: 1px solid #3a2800;
@@ -68,9 +68,9 @@ export default function BusyZonesPanel({ restaurantId, schedules: initialSchedul
                 /* Add zone modal */
                 .bz-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
                 .bz-modal { background: #0f1219; border: 1px solid #2a2f3a; padding: 28px; width: 100%; max-width: 420px; position: relative; }
-                .bz-modal-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+                .bz-modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 20px; }
                 .bz-field { margin-bottom: 14px; }
-                .bz-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #555; display: block; margin-bottom: 6px; }
+                .bz-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #555; display: block; margin-bottom: 6px; }
                 .bz-input, .bz-select {
                     width: 100%; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc;
                     font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 10px; outline: none;

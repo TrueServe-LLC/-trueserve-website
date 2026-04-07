@@ -143,7 +143,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                     />
                 </div>
 
-                <button type="submit" className="bg-primary text-black font-black uppercase italic tracking-widest text-[11px] px-12 h-12 rounded-full hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95">
+                <button type="submit" className="bg-[#E8A230] text-black font-bebas uppercase tracking-widest text-sm px-10 h-12 rounded-full hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(232,162,48,0.2)] active:scale-95">
                      Find Food
                 </button>
             </form>

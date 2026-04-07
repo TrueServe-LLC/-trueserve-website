@@ -3,47 +3,57 @@ import Link from 'next/link';
 
 interface LogoProps {
     className?: string;
-    showPlus?: boolean;
     size?: 'sm' | 'md' | 'lg' | 'xl';
-    orientation?: 'horizontal' | 'vertical';
+    showPlus?: boolean;
 }
 
 const Logo: React.FC<LogoProps> = ({ 
     className = "", 
-    showPlus = false, 
     size = 'md',
-    orientation = 'horizontal'
+    showPlus = false
 }) => {
-    const sizeClasses = {
-        sm: 'text-lg',
-        md: 'text-2xl',
-        lg: 'text-3xl',
-        xl: 'text-5xl'
+    const dim = {
+        sm: { img: 24, font: '24px', gap: '8px' },
+        md: { img: 32, font: '32px', gap: '10px' },
+        lg: { img: 44, font: '44px', gap: '12px' },
+        xl: { img: 64, font: '64px', gap: '16px' }
     };
-
-    const iconSizeClasses = {
-        sm: 'w-8 h-8 p-1',
-        md: 'w-10 h-10 p-1.5',
-        lg: 'w-12 h-12 p-1.5',
-        xl: 'w-16 h-16 p-2'
-    };
-
-    const isVertical = orientation === 'vertical';
 
     return (
         <Link 
             href="/" 
-            className={`flex ${isVertical ? 'flex-col justify-center' : 'items-center'} gap-3 md:gap-4 group ${className}`}
+            className={`flex items-center gap-3 h-fit group no-underline cursor-pointer ${className}`}
         >
-            <div className={`${iconSizeClasses[size]} ${isVertical ? 'mx-auto mb-2' : ''} rounded-full border-2 border-slate-600 bg-black/60 flex items-center justify-center overflow-hidden shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
-                <img src="/logo.png" alt="TrueServe Logo" className="w-full h-full object-contain" />
+            <div 
+                className="rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 shadow-[0_2px_15px_rgba(232,160,32,0.4)] group-hover:shadow-[0_4px_25px_rgba(232,160,32,0.6)] group-hover:scale-110"
+                style={{ 
+                    width: dim[size].img, 
+                    height: dim[size].img,
+                    background: '#0a0d12',
+                }}
+            >
+                <img 
+                    src="/logo.png" 
+                    alt="TrueServe Logo" 
+                    className="w-full h-full object-contain"
+                />
             </div>
-            <span className={`${sizeClasses[size]} font-bold italic tracking-tighter text-white leading-none whitespace-nowrap ${isVertical ? 'text-center' : ''} drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]`} style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800 }}>
-                True<span style={{ color: '#e8a230' }}>Serve</span>
-                {showPlus && <span className="text-primary ml-0.5 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]">+</span>}
-            </span>
+            <div 
+                className="font-extrabold italic leading-none select-none tracking-tight"
+                style={{ 
+                    fontFamily: "var(--font-barlow-cond), sans-serif",
+                    fontSize: dim[size].font,
+                    color: '#FFF'
+                }}
+            >
+                True<span style={{ color: 'var(--gold)' }}>Serve</span>
+                {showPlus && (
+                    <span style={{ color: 'var(--gold)', fontSize: '0.6em', marginLeft: '4px', verticalAlign: 'top' }}>+</span>
+                )}
+            </div>
         </Link>
     );
 };
 
 export default Logo;
+

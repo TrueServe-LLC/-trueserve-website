@@ -9,12 +9,14 @@ export default function ProfileAvatar({
     userId, 
     initialName, 
     initialColor, 
-    initialUrl 
+    initialUrl,
+    className = ""
 }: { 
     userId: string, 
     initialName: string, 
     initialColor?: string, 
-    initialUrl?: string 
+    initialUrl?: string,
+    className?: string
 }) {
     const router = useRouter();
     const [color, setColor] = useState(initialColor || "bg-primary/20");
@@ -78,7 +80,7 @@ export default function ProfileAvatar({
     };
 
     return (
-        <div className="relative">
+        <div className={`relative ${className}`}>
             <input 
                 type="file" 
                 ref={fileInputRef} 

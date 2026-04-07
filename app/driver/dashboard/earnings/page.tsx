@@ -13,13 +13,15 @@ export default async function DriverEarnings() {
         <div className="font-sans">
             <style dangerouslySetInnerHTML={{ __html: `
                 .page-wrap { padding: 0; }
-                .two-col-ledger { display: grid; grid-template-columns: 1fr 360px; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin-top: -1px; }
-                .ledger-left { background: #0f1219; padding: 20px; }
-                .ledger-right { background: #0f1219; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+                .two-col-ledger { display: grid; grid-template-columns: 1fr 360px; gap: 1px; background: #1c1f28; border-bottom: 1px solid #1c1f28; }
+                @media (max-width: 1024px) { .two-col-ledger { grid-template-columns: 1fr; } }
+                
+                .ledger-left { background: #0c0c0e; padding: 32px; }
+                .ledger-right { background: #080808; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
 
-                .section-hd-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; margin-bottom: 2px; }
+                .section-hd-title { font-family: 'Barlow Condensed', sans-serif; font-size: 48px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 8px; }
                 .section-hd-title span { color: #e8a230; }
-                .section-hd-sub { font-size: 9px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #444; margin-bottom: 14px; }
+                .section-hd-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 32px; display: block; }
 
                 .ledger-table { width: 100%; border-collapse: collapse; border: 1px solid #1c1f28; margin-bottom: 14px; }
                 .ledger-table th { background: #0f1219; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #444; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1c1f28; }

@@ -17,6 +17,8 @@ const config: Config = {
             },
             fontFamily: {
                 serif: ['var(--font-playfair)', 'serif'],
+                bebas: ['Bebas Neue', 'sans-serif'],
+                'barlow-cond': ['Barlow Condensed', 'sans-serif'],
             },
             keyframes: {
                 'fade-in': {

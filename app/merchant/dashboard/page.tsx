@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAuthSession } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import MerchantRealtime from "@/components/MerchantRealtime";
 import WelcomeModal from "./WelcomeModal";
 import { createStripeAccount } from "../actions";
@@ -11,6 +12,7 @@ import TerminalStatusPanel from "@/app/merchant/dashboard/TerminalStatusPanel";
 import AutoPilotPanel from "@/app/merchant/dashboard/AutoPilotPanel";
 import BusyZonesPanel from "@/app/merchant/dashboard/BusyZonesPanel";
 import IssuesPanel from "@/app/merchant/dashboard/IssuesPanel";
+import GHLSettingsPanel from "@/app/merchant/dashboard/GHLSettingsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -72,194 +74,85 @@ export default async function MerchantDashboard() {
     const hasStripe = Boolean(restaurant.stripeAccountId);
 
     return (
-        <>
-            {/* Google Fonts for this page */}
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&family=DM+Mono:wght@400;500&display=swap');
+        <div className="space-y-12 animate-fade-in">
+             <WelcomeModal restaurantName={restaurant.name} />
+             {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
 
-                /* ── PAGE TOKENS ── */
-                .md-body { background: #0c0e13; font-family: 'DM Sans', sans-serif; color: #fff; }
-                .md-border { border: 1px solid #1c1f28; }
-                .md-border-top { border-top: 1px solid #1c1f28; }
-                .md-border-bottom { border-bottom: 1px solid #1c1f28; }
-                .md-panel { background: #0f1219; }
-                .md-surface { background: #131720; border: 1px solid #1c1f28; }
-
-                /* ── PAGE HEADER ── */
-                .md-page-hd {
-                    display: flex; align-items: center; justify-content: space-between;
-                    padding: 16px 24px; border-bottom: 1px solid #1c1f28;
-                }
-                .md-page-title { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: #ccc; }
-                .md-page-sub { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #444; margin-top: 3px; }
-                .md-hd-right { display: flex; align-items: center; gap: 8px; }
-                .md-terminal-btn {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-                    padding: 8px 16px; background: #131720; border: 1px solid #2a2f3a; color: #888;
-                    cursor: pointer; display: flex; align-items: center; gap: 6px;
-                }
-                .md-terminal-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; flex-shrink: 0; }
-                .md-scale-badge {
-                    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-                    padding: 7px 12px; background: #0d2a1a; border: 1px solid #1a4a2a; color: #3dd68c;
-                }
-                .md-online-badge {
-                    font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-                    padding: 7px 12px; background: #e8a230; color: #000;
-                }
-                .md-logout {
-                    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
-                    color: #444; cursor: pointer; background: none; border: none;
-                }
-
-                /* ── STAT GRID ── */
-                .md-stat-grid {
-                    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 20px 24px 0;
-                }
-                .md-stat-block { background: #0f1219; padding: 18px 20px; }
-                .md-stat-name { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 10px; }
-                .md-stat-value { font-size: 32px; font-weight: 700; color: #fff; font-family: 'DM Mono', monospace; line-height: 1; }
-                .md-stat-value.gold { color: #e8a230; }
-
-                /* ── STRIPE BANNER ── */
-                .md-stripe-banner {
-                    margin: 16px 24px 0; background: #111420; border: 1px solid #2a3060;
-                    padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-                }
-                .md-stripe-left { display: flex; align-items: center; gap: 16px; }
-                .md-stripe-icon {
-                    width: 44px; height: 44px; background: #1a1e3a; border: 1px solid #2a3060;
-                    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-                }
-                .md-stripe-title { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; font-style: italic; color: #fff; margin-bottom: 3px; }
-                .md-stripe-desc { font-size: 12px; color: #555; line-height: 1.5; }
-                .md-stripe-btn {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-                    padding: 10px 20px; background: transparent; border: 1.5px solid #e8a230; color: #e8a230;
-                    cursor: pointer; white-space: nowrap; flex-shrink: 0;
-                }
-                .md-stripe-btn:hover { background: #e8a23015; }
-                .md-stripe-connected { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; white-space: nowrap; flex-shrink: 0; }
-
-                /* ── TWO-COL LOWER ── */
-                .md-two-col {
-                    display: grid; grid-template-columns: 1fr 1fr;
-                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 16px 24px 0;
-                }
-
-                @media (max-width: 1024px) {
-                    .md-page-hd { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
-                    .md-hd-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
-                    .md-stat-grid { grid-template-columns: repeat(2, 1fr); margin: 16px 20px 0; }
-                    .md-two-col { grid-template-columns: 1fr; margin: 16px 20px 0; }
-                    .md-stripe-banner { flex-direction: column; align-items: flex-start; gap: 16px; margin: 16px 20px 0; }
-                    .md-stripe-left { flex-direction: column; align-items: flex-start; gap: 12px; }
-                }
-
-                @media (max-width: 640px) {
-                    .md-stat-grid { grid-template-columns: 1fr; }
-                    .md-stat-value { font-size: 26px; }
-                }
-
-                /* ── BOTTOM TWO-COL ── */
-                .md-bottom-grid {
-                    display: grid; grid-template-columns: 1fr 1fr;
-                    gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin: 16px 24px 24px;
-                }
-
-                /* ── PANEL SHARED ── */
-                .md-panel-inner { background: #0f1219; padding: 18px 20px; }
-                .md-panel-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-                .md-panel-title { font-size: 14px; font-weight: 700; color: #ccc; }
-
-                /* ── LIVE DOT (reuse from layout) ── */
-                .md-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: md-pulse 2s infinite; }
-                @keyframes md-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-            `}</style>
-
-            <div className="md-body">
-                {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
-                <WelcomeModal restaurantName={restaurant.name} />
-
-                {/* PAGE HEADER */}
-                <div className="md-page-hd">
-                    <div>
-                        <div className="md-page-title">Orders Dashboard</div>
-                        <div className="md-page-sub">Operational Control · {restaurant.name}</div>
+             <div className="flex flex-col gap-10">
+                {/* HUD HEADER */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 pb-10 border-b border-[#1e2c3a]">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-4">
+                             <div className="w-2.5 h-2.5 rounded-full bg-[#e8a020] shadow-[0_0_12px_#e8a020]"></div>
+                             <h1 className="text-[44px] md:text-[54px] font-['Barlow_Condensed',sans-serif] font-black italic text-white uppercase tracking-tight leading-none">Mission Control</h1>
+                        </div>
+                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-[#3a5060] italic">// Sector: {restaurant.name} · Operational Hub</p>
                     </div>
-                    <div className="md-hd-right">
-                        <div className="md-terminal-btn">
-                            <span className="md-terminal-dot"></span>
-                            Kitchen Terminal
+                    
+                    <div className="flex items-center gap-6">
+                        <div className="px-6 py-4 bg-[#10151e] border border-[#1e2c3a] rounded-2xl flex items-center gap-4 hover:border-[#e8a020]/40 transition-all cursor-pointer group shadow-lg">
+                             <div className={`w-2.5 h-2.5 rounded-full ${restaurant.isBusy ? 'bg-red-500 shadow-[0_0_12px_#ef4444]' : 'bg-[#22c55e] shadow-[0_0_12px_#10b981]'} animate-pulse`}></div>
+                             <span className="text-[11px] font-black uppercase tracking-widest text-white italic group-hover:text-[#e8a020] transition-colors">
+                                {restaurant.isBusy ? "Protocol: Paused" : "Status: Online"}
+                             </span>
                         </div>
-                        <div className="md-scale-badge">Pro Scale</div>
-                        <div className={`md-online-badge`} style={restaurant.isBusy ? { background: "#e24b4a" } : {}}>
-                            {restaurant.isBusy ? "Paused" : "Online"}
-                        </div>
-                        <form action={logout} style={{ display: "inline" }}>
-                            <button type="submit" className="md-logout">Log Out</button>
-                        </form>
+                        <Link href="/merchant/dashboard/terminal" className="px-8 py-4 bg-[#e8a020] text-[#0a0d12] rounded-xl text-[12px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_4px_20px_rgba(232,160,32,0.3)] italic no-underline">
+                             Launch Live Terminal
+                        </Link>
                     </div>
                 </div>
 
-                {/* STAT GRID */}
-                <div className="md-stat-grid">
-                    <div className="md-stat-block">
-                        <div className="md-stat-name">Incoming Orders</div>
-                        <div className="md-stat-value">{pendingOrders.length}</div>
-                    </div>
-                    <div className="md-stat-block">
-                        <div className="md-stat-name">Menu Items</div>
-                        <div className="md-stat-value">{(restaurant.menuItems || []).length}</div>
-                    </div>
-                    <div className="md-stat-block">
-                        <div className="md-stat-name">Net Revenue</div>
-                        <div className="md-stat-value gold">${netRevenue.toFixed(2)}</div>
-                    </div>
+                {/* TACTICAL STATS GRID */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <StatBlock label="Incoming Mission Segments" value={pendingOrders.length} suffix="Active" />
+                    
+                    <Link href="/merchant/dashboard/menu" className="block group no-underline">
+                        <div className="bg-[#10151e] border border-[#1e2c3a] rounded-[24px] p-8 md:p-10 hover:bg-[#161d2a] hover:border-[#e8a020]/40 transition-all h-full relative overflow-hidden shadow-lg">
+                            <div className="absolute top-0 right-0 p-8 text-5xl opacity-[0.03] font-['Barlow_Condensed',sans-serif] font-black italic select-none">ASSETS</div>
+                            <div className="text-[10px] font-black text-[#3a5060] uppercase tracking-[0.4em] mb-7 italic group-hover:text-[#e8a020] transition-colors">// Stockpiled Assets</div>
+                            <div className="flex items-baseline gap-4">
+                                <span className="text-[54px] font-['Barlow_Condensed',sans-serif] font-black italic text-white tracking-tight leading-none">{(restaurant.menuItems || []).length}</span>
+                                <span className="text-[11px] font-black text-[#3a5060] uppercase italic">Registered SKU</span>
+                            </div>
+                            <div className="mt-5 text-[9px] font-black text-[#e8a020] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-x-[-10px] group-hover:translate-x-0">Configure catalog ↗</div>
+                        </div>
+                    </Link>
+
+                    <StatBlock label="Accumulated Yield" value={`$${netRevenue.toFixed(2)}`} isGold />
                 </div>
 
-                {/* STRIPE BANNER */}
-                {!hasStripe && (
-                    <div className="md-stripe-banner">
-                        <div className="md-stripe-left">
-                            <div className="md-stripe-icon">
-                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#4a5aaa" strokeWidth="1.3"/>
-                                    <path d="M1 5h18" stroke="#4a5aaa" strokeWidth="1.3"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div className="md-stripe-title">Connect Stripe to get paid.</div>
-                                <div className="md-stripe-desc">To start receiving payouts for your orders, you need to connect your Stripe account.</div>
-                            </div>
+                {/* STRIPE HANDSHAKE BANNER */}
+                <div className={`relative overflow-hidden rounded-[2.5rem] border p-10 flex flex-col lg:flex-row justify-between items-center gap-10 shadow-2xl ${hasStripe ? 'bg-[#22c55e]/5 border-[#22c55e]/20' : 'bg-[#e8a020]/5 border-[#e8a020]/20'}`}>
+                    <div className="flex items-center gap-10">
+                        <div className={`w-[72px] h-[72px] rounded-2xl flex items-center justify-center border-2 ${hasStripe ? 'bg-[#22c55e]/10 border-[#22c55e]/30' : 'bg-[#e8a020]/10 border-[#e8a020]/30'}`}>
+                             <span className="text-4xl">{hasStripe ? '💰' : '⛓️'}</span>
                         </div>
+                        <div className="space-y-2">
+                            <h3 className="font-['Barlow_Condensed',sans-serif] italic text-3xl uppercase tracking-widest text-white leading-none">
+                                {hasStripe ? "Financial Pipeline: Synchronized" : "Stripe Handshake Required"}
+                            </h3>
+                            <p className="text-[13px] italic text-[#7a90a8] font-bold max-w-lg leading-relaxed">
+                                {hasStripe 
+                                    ? "Your payout node is verified. Financial settlement is occurring on a 24-hour rolling cycle with zero extraction leaks." 
+                                    : "Establish a secure connection to Stripe to authorize automatic yield distribution to your business bank node."}
+                            </p>
+                        </div>
+                    </div>
+                    {hasStripe ? (
+                        <div className="px-8 py-3 bg-[#22c55e]/10 border border-[#22c55e]/30 text-[#22c55e] font-black text-[11px] uppercase tracking-widest rounded-full italic shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                             ✓ Payouts Active
+                        </div>
+                    ) : (
                         <form action={createStripeAccount}>
-                            <button type="submit" className="md-stripe-btn">Connect Stripe Account →</button>
+                            <button type="submit" className="px-12 py-5 bg-[#e8a020] text-[#0a0d12] font-black uppercase text-[12px] tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_4px_24px_rgba(232,160,32,0.3)] italic">
+                                Initialize Payout Node →
+                            </button>
                         </form>
-                    </div>
-                )}
+                    )}
+                </div>
 
-                {hasStripe && (
-                    <div className="md-stripe-banner" style={{ borderColor: "#1a4a2a", background: "#0d1a10" }}>
-                        <div className="md-stripe-left">
-                            <div className="md-stripe-icon" style={{ borderColor: "#1a4a2a", background: "#0d2a1a" }}>
-                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#3dd68c" strokeWidth="1.3"/>
-                                    <path d="M1 5h18" stroke="#3dd68c" strokeWidth="1.3"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div className="md-stripe-title" style={{ fontStyle: "normal" }}>Stripe account connected.</div>
-                                <div className="md-stripe-desc">Your payouts are active. Funds are deposited on a rolling basis.</div>
-                            </div>
-                        </div>
-                        <div className="md-stripe-connected">✓ Payouts Active</div>
-                    </div>
-                )}
-
-                {/* PREP TIMING + TERMINAL STATUS */}
-                <div className="md-two-col">
+                {/* SECONDARY COMMAND MODULES */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <PrepTimingPanel
                         restaurantId={restaurant.id}
                         manualPrepTime={restaurant.manualPrepTime}
@@ -272,22 +165,48 @@ export default async function MerchantDashboard() {
                     />
                 </div>
 
-                {/* AI AUTOPILOT + BUSY ZONES */}
-                <div className="md-bottom-grid">
-                    <AutoPilotPanel
-                        restaurantId={restaurant.id}
-                        autoPilotEnabled={restaurant.autoPilotEnabled ?? true}
-                        capacityThreshold={restaurant.capacityThreshold ?? 10}
-                    />
-                    <BusyZonesPanel
-                        restaurantId={restaurant.id}
-                        schedules={restaurant.schedules || []}
+                <div className="bg-[#10151e] border border-[#1e2c3a] rounded-[2rem] p-1 shadow-inner">
+                    <GHLSettingsPanel 
+                        restaurantId={restaurant.id} 
+                        initialGhlUrl={restaurant.ghlUrl} 
                     />
                 </div>
 
-                {/* ISSUES TOAST */}
-                <IssuesPanel pendingCount={pendingOrders.length} />
-            </div>
-        </>
+                {/* TERTIARY LOGISTICS */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    <div className="lg:col-span-1 h-full">
+                        <AutoPilotPanel
+                            restaurantId={restaurant.id}
+                            autoPilotEnabled={restaurant.autoPilotEnabled ?? true}
+                            capacityThreshold={restaurant.capacityThreshold ?? 10}
+                        />
+                    </div>
+                    <div className="lg:col-span-2 h-full">
+                         <BusyZonesPanel
+                            restaurantId={restaurant.id}
+                            schedules={restaurant.schedules || []}
+                        />
+                    </div>
+                </div>
+
+                <div className="pt-8 border-t border-[#1e2c3a]">
+                    <IssuesPanel pendingCount={pendingOrders.length} />
+                </div>
+             </div>
+        </div>
     );
 }
+
+function StatBlock({ label, value, suffix, isGold }: { label: string, value: any, suffix?: string, isGold?: boolean }) {
+    return (
+        <div className="bg-[#10151e] border border-[#1e2c3a] rounded-[24px] p-8 md:p-10 hover:bg-[#161d2a] hover:border-[#e8a020]/20 transition-all relative overflow-hidden group shadow-lg">
+            <div className="text-[10px] font-black text-[#3a5060] uppercase tracking-[0.4em] mb-7 italic transition-colors group-hover:text-[#e8a020]">// {label}</div>
+            <div className="flex items-baseline gap-4">
+                <span className={`text-[54px] font-['Barlow_Condensed',sans-serif] font-black italic tracking-tight leading-none ${isGold ? 'text-[#e8a020] drop-shadow-[0_0_12px_rgba(232,160,32,0.3)]' : 'text-white'}`}>{value}</span>
+                {suffix && <span className="text-[11px] font-black text-[#3a5060] uppercase italic">{suffix}</span>}
+            </div>
+            <div className="absolute top-0 right-0 p-8 text-5xl opacity-[0.02] font-['Barlow_Condensed',sans-serif] font-black italic select-none">DATA</div>
+        </div>
+    );
+}
+

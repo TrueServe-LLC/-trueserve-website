@@ -5,11 +5,13 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
 import MerchantModeToggle from "@/components/MerchantModeToggle";
+import SupportWidget from "@/components/SupportWidget";
+import Logo from "@/components/Logo";
 
 export const dynamic = 'force-dynamic';
 
 export default async function MerchantDashboardLayout({ children }: { children: React.ReactNode }) {
-    const { isAuth, userId, role } = await getAuthSession();
+    const { isAuth, userId } = await getAuthSession();
     const cookieStore = await cookies();
     const isPreview = cookieStore.get("preview_mode")?.value === "true";
     const cookieUserId = cookieStore.get("userId")?.value;
@@ -36,89 +38,63 @@ export default async function MerchantDashboardLayout({ children }: { children: 
     const merchantInitials = restaurant?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'M';
 
     return (
-        <>
-            <style>{`
-                /* ── MERCHANT LAYOUT TOKENS ── */
-                .ml-bg { background: #0c0e13; }
-                .ml-border { border-color: #1c1f28; }
-                .ml-panel { background: #0f1219; }
-                .ml-surface { background: #131720; }
+        <div className="min-h-screen bg-[#0a0d12] text-[#c8d8e8] font-['Nunito',sans-serif] selection:bg-[#e8a020]/30 selection:text-white">
+            <div className="fixed inset-0 carbon-texture z-0 opacity-[0.02] pointer-events-none"></div>
 
-                /* ── TOP NAV ── */
-                .ml-top-nav {
-                    display: flex; align-items: center; justify-content: space-between;
-                    padding: 0 24px; height: 52px;
-                    background: #0c0e13; border-bottom: 1px solid #1c1f28;
-                    position: sticky; top: 0; z-index: 50;
-                }
-                .ml-nav-left { display: flex; align-items: center; gap: 24px; }
-                .ml-nav-brand { font-size: 15px; font-weight: 700; color: #fff; text-decoration: none; }
-                .ml-nav-brand span { color: #e8a230; }
-                .ml-nav-links { display: flex; gap: 2px; }
-                .ml-nav-link {
-                    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-                    text-transform: uppercase; color: #555; padding: 6px 12px;
-                    cursor: pointer; display: flex; align-items: center; gap: 5px;
-                    text-decoration: none; border-bottom: 2px solid transparent;
-                }
-                .ml-nav-link:hover { color: #aaa; }
-                .ml-nav-link.active { color: #e8a230; border-bottom-color: #e8a230; }
-                .ml-nav-right { display: flex; align-items: center; gap: 8px; }
-                .ml-store-status { display: flex; flex-direction: column; align-items: flex-end; margin-right: 8px; }
-                .ml-store-status-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #555; }
-                .ml-store-status-live { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; }
-                .ml-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: ml-pulse 2s infinite; flex-shrink: 0; }
-                @keyframes ml-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-                .ml-mode-tabs { display: flex; gap: 1px; }
-                .ml-mode-tab {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-                    text-transform: uppercase; padding: 7px 14px;
-                    background: #131720; border: 1px solid #1c1f28; color: #555; cursor: pointer;
-                }
-                .ml-mode-tab.active { background: #e8a230; color: #000; border-color: #e8a230; }
-                .ml-nav-avatar {
-                    width: 32px; height: 32px; background: #e8a230; border-radius: 50%;
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 13px; font-weight: 700; color: #000; cursor: pointer;
-                }
-            `}</style>
-
-            <div style={{ background: '#0c0e13', minHeight: '100vh', color: '#fff', fontFamily: "'DM Sans', sans-serif" }}>
-                {/* TOP NAV */}
-                <div className="ml-top-nav">
-                    <div className="ml-nav-left">
-                        <Link href="/" className="ml-nav-brand">True<span>Serve</span></Link>
-                        <div className="ml-nav-links">
-                            <Link href="/" className="ml-nav-link">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <path d="M1 3h10M1 6h7M1 9h9" stroke="#555" strokeWidth="1.3" strokeLinecap="round"/>
-                                </svg>
-                                Order Food
+            <header className="sticky top-0 z-[60] backdrop-blur-2xl bg-[#10151e]/80 border-b border-[#1e2c3a] shadow-2xl h-[72px]">
+                <div className="max-w-[1920px] mx-auto h-full px-8 flex items-center justify-between">
+                    <div className="flex items-center gap-12">
+                        <Logo size="sm" className="hover:scale-105 transition-transform" />
+                        
+                        <nav className="hidden lg:flex items-center gap-2">
+                            <Link href="/merchant/dashboard" className="px-5 py-2.5 rounded-xl text-[12px] font-extrabold uppercase tracking-widest transition-all flex items-center gap-2 bg-[#e8a020]/5 text-[#e8a020] border border-[#e8a020]/20">
+                                <span className="text-xl">📡</span> Live Terminal
                             </Link>
-                            <Link href="/merchant/dashboard" className="ml-nav-link active">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <rect x="1" y="1" width="10" height="10" rx="1" stroke="#e8a230" strokeWidth="1.3"/>
-                                    <path d="M4 6h4M6 4v4" stroke="#e8a230" strokeWidth="1.3"/>
-                                </svg>
-                                Merchant Hub
+                            <Link href="/merchant/dashboard/menu" className="px-5 py-2.5 rounded-xl text-[12px] font-extrabold uppercase tracking-widest transition-all flex items-center gap-2 text-[#7a90a8] hover:text-white hover:bg-white/5">
+                                <span className="text-xl">📦</span> Catalog Sync
                             </Link>
-                        </div>
+                            <Link href="/merchant/dashboard/integrations" className="px-5 py-2.5 rounded-xl text-[12px] font-extrabold uppercase tracking-widest transition-all flex items-center gap-2 text-[#7a90a8] hover:text-white hover:bg-white/5">
+                                <span className="text-xl">⛓️</span> Node Sync
+                            </Link>
+                        </nav>
                     </div>
-                    <div className="ml-nav-right">
-                        <div className="ml-store-status">
-                            <div className="ml-store-status-label">Store Status</div>
-                            <div className="ml-store-status-live">
-                                <span className="ml-live-dot"></span>
-                                Live Terminal
+
+                    <div className="flex items-center gap-8">
+                        {/* Status Telemetry */}
+                        <div className="hidden md:flex items-center gap-6 px-6 py-2.5 bg-[#161d2a] border border-[#1e2c3a] rounded-full shadow-inner">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                                <span className="text-[10px] font-black tracking-[0.2em] text-[#22c55e] uppercase italic">Network Uplink Active</span>
+                            </div>
+                            <div className="w-px h-3 bg-[#1e2c3a]"></div>
+                            <div className="text-[9px] font-bold text-[#3a5060] uppercase tracking-widest italic">
+                                POS-SYNC: <span className="text-white">SYNCHRONIZED (34ms)</span>
                             </div>
                         </div>
-                        <MerchantModeToggle />
-                        <div className="ml-nav-avatar">{merchantInitials}</div>
+
+                        <div className="flex items-center gap-6">
+                            <MerchantModeToggle />
+                            <div className="w-px h-8 bg-[#1e2c3a]"></div>
+                            <div className="flex items-center gap-4">
+                                <div className="flex flex-col items-end">
+                                    <span className="text-[11px] font-black text-white uppercase tracking-widest leading-none mb-1.5">{restaurant?.name || 'Authorized Merchant'}</span>
+                                    <div className="text-[10px] font-extrabold text-[#3a5060] tracking-widest uppercase italic hover:text-[#e8a020] transition-colors"><LogoutButton /></div>
+                                </div>
+                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#e8a020] to-[#c87010] text-[#0a0d12] font-['Barlow_Condensed',sans-serif] font-black italic text-xl flex items-center justify-center shadow-lg shadow-[#e8a020]/20 hover:scale-105 transition-transform cursor-pointer">
+                                    {merchantInitials}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </header>
 
-                <main>{children}</main>
-            </div>
-        </>
+            <main className="relative z-10 px-8 py-10 max-w-[1920px] mx-auto min-h-[calc(100vh-72px)]">
+                {children}
+            </main>
+
+            <SupportWidget role="MERCHANT" />
+        </div>
     );
 }
+

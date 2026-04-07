@@ -24,72 +24,62 @@ export default function TerminalStatusPanel({ restaurantId, isBusy: initialBusy,
     };
 
     return (
-        <>
-            <style>{`
-                .term-panel { background: #0f1219; padding: 18px 20px; border-left: 3px solid #3dd68c; }
-                .term-panel.busy { border-left-color: #e24b4a; }
-                .term-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-                .term-title { font-size: 14px; font-weight: 700; color: #ccc; }
-                .term-live { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; }
-                .term-paused { color: #e24b4a; }
-                .term-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: term-pulse 2s infinite; }
-                .term-paused-dot { background: #e24b4a; }
-                @keyframes term-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-                .term-desc { font-size: 12px; color: #555; line-height: 1.5; margin-bottom: 14px; }
-                .term-actions { display: flex; align-items: center; gap: 8px; }
-                .term-emergency {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-                    padding: 9px 18px; background: #e24b4a; border: none; color: #fff;
-                    cursor: pointer; flex: 1; text-align: center; font-family: 'DM Sans', sans-serif;
-                }
-                .term-emergency.resume { background: #22a464; }
-                .term-emergency:hover { opacity: 0.9; }
-                .term-dur-select {
-                    background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc;
-                    font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 10px;
-                    cursor: pointer; outline: none;
-                }
-                .term-short-btn {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-                    padding: 9px 16px; background: transparent; border: 1px solid #2a2f3a;
-                    color: #888; cursor: pointer; font-family: 'DM Sans', sans-serif;
-                }
-                .term-short-btn:hover { border-color: #555; color: #ccc; }
-            `}</style>
-            <div className={`term-panel${isBusy ? " busy" : ""}`}>
-                <div className="term-hd">
-                    <div className="term-title">Terminal Status</div>
-                    <div className={`term-live${isBusy ? " term-paused" : ""}`}>
-                        <span className={`term-live-dot${isBusy ? " term-paused-dot" : ""}`}></span>
-                        {isBusy ? "Paused" : "Live"}
-                    </div>
+        <div className={`relative overflow-hidden bg-white/[0.02] border border-white/5 rounded-[2rem] p-8 hover:bg-white/[0.04] transition-all group min-h-[240px]`}>
+            {/* Status Sidebar Indicator */}
+            <div className={`absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-500 ${isBusy ? 'bg-red-500 shadow-[2px_0_15px_rgba(239,68,68,0.3)]' : 'bg-[#3dd68c] shadow-[2px_0_15px_rgba(61,214,140,0.3)]'}`}></div>
+
+            <div className="flex justify-between items-center mb-6 pl-2">
+                <div className="space-y-1">
+                    <h3 className="text-2xl font-bebas italic text-white uppercase tracking-wider">Operational Handshake</h3>
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 italic">// Terminal Link Status</p>
                 </div>
-                <div className="term-desc">
-                    {isBusy
-                        ? "Orders are currently paused. Customers cannot place new orders until you resume."
-                        : "The kitchen is live and accepting orders. Toggle to pause if the kitchen is overwhelmed."}
-                </div>
-                <div className="term-actions">
-                    <button className={`term-emergency${isBusy ? " resume" : ""}`} onClick={handleEmergencyPause}>
-                        {isBusy ? "Resume Orders" : "Emergency Pause"}
-                    </button>
-                    {!isBusy && (
-                        <>
-                            <select
-                                className="term-dur-select"
-                                value={duration}
-                                onChange={(e) => setDuration(e.target.value)}
-                                aria-label="Pause duration"
-                            >
-                                <option value="30">30m</option>
-                                <option value="15">15m</option>
-                                <option value="60">60m</option>
-                            </select>
-                            <button className="term-short-btn" onClick={handleShortPause}>Short Pause</button>
-                        </>
-                    )}
+                <div className={`flex items-center gap-3 px-4 py-1.5 rounded-full border ${isBusy ? 'bg-red-500/10 border-red-500/30 text-red-500' : 'bg-[#3dd68c]/10 border-[#3dd68c]/30 text-[#3dd68c]'} transition-colors duration-500`}>
+                    <div className={`w-1.5 h-1.5 rounded-full ${isBusy ? 'bg-red-500' : 'bg-[#3dd68c]'} animate-pulse`}></div>
+                    <span className="text-[10px] font-black uppercase tracking-widest italic">{isBusy ? "Protocol: Paused" : "Status: Live"}</span>
                 </div>
             </div>
-        </>
+
+            <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-[420px] mb-8 pl-2">
+                {isBusy
+                    ? "Inbound order encryption is currently suspended. Perimeter simulation suggests resuming protocols once kitchen bandwidth stabilizes."
+                    : "Terminal uplink is active. Synchronized with the Perimeter Fleet. Toggle emergency broadcast to suspend traffic during peak load."}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pl-2">
+                <button 
+                    className={`flex-1 min-w-[160px] py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all italic shadow-lg
+                        ${isBusy 
+                            ? "bg-[#3dd68c] text-black hover:scale-[1.02] shadow-[#3dd68c]/10" 
+                            : "bg-red-500 text-white hover:scale-[1.02] shadow-red-500/10"}`} 
+                    onClick={handleEmergencyPause}
+                >
+                    {isBusy ? "Resume Uplink Protocols" : "Emergency Pause Broadcast"}
+                </button>
+
+                {!isBusy && (
+                    <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-xl p-1">
+                        <select
+                            className="bg-transparent border-none text-[10px] font-black text-white px-4 py-2 outline-none cursor-pointer uppercase tracking-widest italic"
+                            value={duration}
+                            onChange={(e) => setDuration(e.target.value)}
+                            aria-label="Pause duration"
+                        >
+                            <option value="30">30m Cycle</option>
+                            <option value="15">15m Cycle</option>
+                            <option value="60">60m Cycle</option>
+                        </select>
+                        <button 
+                            className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all italic"
+                            onClick={handleShortPause}
+                        >
+                            Execute
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <div className="absolute top-0 right-0 p-8 text-6xl opacity-[0.01] font-bebas italic select-none pointer-events-none">NODE</div>
+        </div>
     );
 }
+

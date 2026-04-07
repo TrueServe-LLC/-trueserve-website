@@ -1,223 +1,195 @@
-export const dynamic = "force-dynamic";
+"use client";
 
-import Link from "next/link";
-import LandingSearch from "@/components/LandingSearch";
-import NotificationBell from "@/components/NotificationBell";
-import LogoutButton from "@/components/LogoutButton";
-import { cookies } from "next/headers";
-import EmergencyBanner from "@/components/EmergencyBanner";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Logo from "@/components/Logo";
 
-export default async function Home() {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
+export default function Home() {
+  const router = useRouter();
+  const [addr, setAddr] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Basic client-side check for userId cookie
+    const match = document.cookie.match(new RegExp('(^| )userId=([^;]+)'));
+    if (match) setUserId(match[2]);
+  }, []);
+
+  const doSearch = () => {
+    if (!addr.trim()) return;
+    router.push(`/restaurants?address=${encodeURIComponent(addr.trim())}`);
+  };
+
 
   return (
-    <div className="min-h-screen relative font-sans text-slate-300 bg-black selection:bg-primary/30">
-      <EmergencyBanner />
+    <div className="min-h-screen bg-[#0a0d12] text-[#c8d8e8] selection:bg-[#e8a020]/30 selection:text-white relative overflow-hidden">
+      {/* TOPBAR */}
+      <div className="topbar bg-[#10151e] border-b border-[#1e2c3a] px-8 md:px-12 flex justify-between items-center h-[68px] sticky top-0 z-50 shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+        <Logo size="sm" />
+        <div className="hidden md:flex items-center gap-12 text-[13px] font-extrabold uppercase tracking-widest text-[#7a90a8]">
+          <Link href="/restaurants" className="hover:text-[#e8a020] transition-colors">Order Food</Link>
+          <Link href="/merchant/signup" className="hover:text-[#e8a020] transition-colors">For Merchants</Link>
+          <Link href="/driver/signup" className="hover:text-[#e8a020] transition-colors">Driver Hub</Link>
+        </div>
+        <div className="flex items-center gap-4 md:gap-6">
+          <div className="hidden lg:flex flex-col items-end mr-2">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3a5060]">Network Status</div>
+            <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-3 py-1 mt-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse shadow-[0_0_6px_#22c55e]"></div>
+              <span className="text-[11px] font-bold text-[#22c55e]">Live</span>
+            </div>
+          </div>
+          {userId ? (
+            <Link href="/user/settings" className="bg-[#161d2a] hover:bg-[#1e2c3a] border border-[#1e2c3a] px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all">Account</Link>
+          ) : (
+            <Link href="/login" className="bg-[#161d2a] hover:bg-[#1e2c3a] border border-[#1e2c3a] px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all">Sign In</Link>
+          )}
+          <Link href="/merchant/signup" className="bg-[#e8a020] hover:bg-[#c87010] text-[#0a0d12] px-6 py-2.5 rounded-xl text-[13px] font-extrabold shadow-[0_4px_20px_rgba(232,160,32,0.3)] transition-all uppercase tracking-widest">Join Network</Link>
+        </div>
+      </div>
 
-      {/* ── NAV ─────────────────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-[100] bg-black/60 backdrop-blur-3xl border-b border-white/10 py-4 px-6">
-        <div className="container mx-auto flex justify-between items-center max-w-7xl">
-          <Logo size="lg" />
+      <div className="max-w-[1100px] mx-auto px-6 md:px-10 py-12 md:py-24 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10 md:gap-14 items-start">
+        
+        <div className="flex flex-col gap-6 md:gap-8">
+          {/* HERO CARD */}
+          <div className="bg-gradient-to-br from-[#0d1520] to-[#13200d] border border-[#1e2c3a] rounded-[24px] p-10 md:p-14 relative overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.5)] group">
+             <div className="absolute right-10 top-10 text-9xl opacity-[0.03] group-hover:opacity-10 transition-all duration-700 pointer-events-none transform rotate-12">🍴</div>
+             
+             <div className="inline-flex items-center gap-2 bg-[#e8a020]/10 border border-[#e8a020]/30 rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.1em] text-[#e8a020] mb-8">
+               🛡️ Restaurant Delivery
+             </div>
 
-          <div className="hidden lg:flex items-center gap-12 text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">
-            <Link href="/restaurants" className="hover:text-primary transition-colors">ORDER FOOD</Link>
-            <Link href="/merchant" className="hover:text-primary transition-colors whitespace-nowrap">FOR MERCHANTS</Link>
-            <Link href="/driver" className="hover:text-primary transition-colors whitespace-nowrap">DRIVER HUB</Link>
+             <h1 className="font-['Barlow_Condensed',sans-serif] text-[72px] md:text-[96px] font-extrabold italic uppercase leading-[0.9] tracking-tight mb-6">
+                AVAILABLE<br /><span className="text-[#e8a020]">NOW.</span>
+             </h1>
+
+             <p className="text-[15px] md:text-[16px] font-semibold text-[#7a90a8] leading-relaxed mb-10 max-w-[380px]">
+                High-fidelity restaurant logistics and zero-fee independent food delivery. Establish your operational node today.
+             </p>
+
+             <div className="flex flex-wrap gap-3">
+                {["Verified Nodes", "Fair Wages", "Zero Fees"].map(m => (
+                  <span key={m} className="bg-white/5 border border-[#1e2c3a] rounded-full px-4 py-1.5 text-[12px] font-bold text-[#7a90a8]">
+                    {m}
+                  </span>
+                ))}
+             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="https://www.instagram.com/trueserve_food/" 
-              target="_blank" 
-              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-              title="Instagram"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-              </svg>
-            </Link>
-            <Link 
-              href="https://www.facebook.com/share/1EHeS1jdoq/?mibextid=wwXIfr" 
-              target="_blank" 
-              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-              title="Facebook"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-              </svg>
-            </Link>
-            <Link 
-              href="https://www.linkedin.com/company/112360123/admin/dashboard/" 
-              target="_blank" 
-              className="hidden lg:flex w-10 h-10 rounded-full bg-white/5 items-center justify-center text-slate-400 hover:text-primary hover:bg-white/10 transition-all border border-white/5 hover:scale-110"
-              title="LinkedIn"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-              </svg>
-            </Link>
+          {/* STATUS CARD / SEARCH */}
+          <div className="bg-[#10151e] border border-[#1e2c3a] rounded-[20px] overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+             <div className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 md:gap-10">
+                <div className="relative w-[72px] h-[72px] flex-shrink-0 flex items-center justify-center">
+                   <div className="absolute rounded-full border-[1.5px] border-[#e8a020]/50 animate-ripple-1 transition-all w-[72px] h-[72px] origin-center"></div>
+                   <div className="absolute rounded-full border-[1.5px] border-[#e8a020]/50 animate-ripple-2 transition-all w-[72px] h-[72px] origin-center"></div>
+                   <div className="absolute rounded-full border-[1.5px] border-[#e8a020]/50 animate-ripple-3 transition-all w-[72px] h-[72px] origin-center"></div>
+                   <div className="relative z-10 w-9 h-9 bg-[#e8a020] rounded-full flex items-center justify-center shadow-[0_0_16px_#e8a020/50] rotate-[-45deg] origin-center rounded-br-none scale-100">
+                      <div className="w-3.5 h-3.5 bg-[#0a0d12] rounded-full rotate-[45deg]"></div>
+                   </div>
+                </div>
+                
+                <div className="flex-1 text-center md:text-left">
+                   <div className="text-[18px] md:text-[20px] font-extrabold text-white mb-2">Initialize Sector Scan</div>
+                   <div className="text-[13px] md:text-[14px] font-semibold text-[#7a90a8]">Search for established operational nodes in your vicinity.</div>
+                </div>
+
+                <div className="flex gap-10">
+                  <div className="text-center">
+                    <div className="font-['Barlow_Condensed',sans-serif] text-[32px] font-extrabold italic text-[#e8a020] leading-none">48</div>
+                    <div className="text-[10px] font-black text-[#3a5060] uppercase tracking-widest mt-1">Sectors</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-['Barlow_Condensed',sans-serif] text-[32px] font-extrabold italic text-[#e8a020] leading-none">ACTIVE</div>
+                    <div className="text-[10px] font-black text-[#3a5060] uppercase tracking-widest mt-1">Grid Status</div>
+                  </div>
+                </div>
+             </div>
+
+             <div className="bg-[#161d2a]/50 p-6 md:p-8 border-t border-[#1e2c3a] flex flex-col md:flex-row gap-4">
+                <input 
+                  type="text" 
+                  placeholder="Enter universal coordinates (Address)…" 
+                  value={addr}
+                  onChange={(e) => setAddr(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && doSearch()}
+                  className="flex-1 bg-[#0a0d12] border border-[#1e2c3a] rounded-xl px-6 py-4 text-[15px] font-semibold text-white placeholder-[#3a5060] outline-none focus:border-[#e8a020] transition-all"
+                />
+                <button 
+                  onClick={doSearch}
+                  className="bg-[#e8a020] hover:bg-[#c87010] text-[#0a0d12] font-['Barlow_Condensed',sans-serif] text-[20px] font-black italic tracking-widest px-10 py-4 rounded-xl shadow-[0_4px_20px_rgba(232,160,32,0.35)] hover:shadow-[0_6px_24px_rgba(232,160,32,0.5)] transition-all uppercase"
+                >
+                  INITIALIZE SCAN
+                </button>
+             </div>
           </div>
-            {userId ? (
-              <div className="flex items-center gap-4">
-                <NotificationBell userId={userId} />
-                <Link href="/user/settings" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-white/10 transition-all">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                </Link>
-                <LogoutButton />
-              </div>
-            ) : (
-              <div className="flex items-center gap-6">
-                <Link href="/login" className="hidden md:block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all border border-white/10 rounded-full px-5 py-2 hover:bg-white/5 italic">Sign In</Link>
-                <Link href="/restaurants" className="badge-solid-primary !px-10 !py-3 !text-[11px] h-glow">
-                  Get Started
-                </Link>
-              </div>
-            )}
+
+          <div className="flex flex-wrap gap-4 mt-4">
+             <Link href="/restaurants" className="bg-[#10151e] border border-[#1e2c3a] hover:border-[#e8a020] hover:text-[#e8a020] px-6 py-3 rounded-xl text-[14px] font-bold text-[#c8d8e8] transition-all no-underline">Browse Sectors</Link>
+             <button className="bg-[#10151e] border border-[#1e2c3a] hover:border-[#e8a020] hover:text-[#e8a020] px-6 py-3 rounded-xl text-[14px] font-bold text-[#c8d8e8] transition-all">Support Comms</button>
+             <button className="bg-[#10151e] border border-[#1e2c3a] hover:border-[#e8a020] hover:text-[#e8a020] px-6 py-3 rounded-xl text-[14px] font-bold text-[#c8d8e8] transition-all">Fleet Registry</button>
           </div>
         </div>
-      </nav>
 
-      <main>
-        {/* ── HERO ────────────────────────────────────────────────────────── */}
-        <section className="relative min-h-[95vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="/hero_food_delivery.png"
-              alt="Fine Dining"
-              className="w-full h-full object-cover opacity-30 brightness-50 blur-3xl scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black" />
+        {/* RIGHT COL - TRENDING SECTORS / RESTAURANTS */}
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center mb-2">
+            <div className="text-[20px] font-black text-white italic uppercase tracking-tight">Active Nodes</div>
+            <div className="bg-[#e8a020]/10 border border-[#9b6a14] text-[#e8a020] text-[12px] font-black px-4 py-1 rounded-full uppercase italic tracking-widest">Sector Peak</div>
           </div>
 
-          <div className="relative z-10 max-w-6xl space-y-12 animate-fade-in text-center flex flex-col items-center justify-center glow-blur-primary">
-            
-            <h1 className="text-5xl md:text-[115px] leading-[0.8] text-white font-black tracking-tighter italic animate-slide-up select-none">
-              Cravings meet <br />
-              <span className="text-primary not-italic tracking-[-0.03em] drop-shadow-[5px_5px_0px_rgba(255,255,255,0.1)] uppercase italic">Lightning Speed.</span>
-            </h1>
-
-            <p className="max-w-3xl mx-auto text-lg md:text-2xl text-slate-400 font-bold leading-relaxed italic animate-fade-in delay-200">
-              Experience the future of local food delivery. Zero platform fees, fair driver pay, and the best local flavors delivered to your door.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-12">
-              <Link href="/restaurants" className="badge-solid-primary !px-16 !py-6 !text-sm">
-                Browse Restaurants
-              </Link>
-              <Link href="/merchant" className="badge-outline-white !px-16 !py-6 !text-sm h-glow">
-                For Businesses
-              </Link>
+          {[
+            { icon: "🍣", name: "Sushi Neko", dist: "0.4 mi", loc: "Charlotte, NC", yield: "$4.20" },
+            { icon: "🍖", name: "Mount Airy BBQ", dist: "0.8 mi", loc: "Mount Airy, NC", yield: "$3.56" },
+            { icon: "🥗", name: "Emerald Kitchen", dist: "1.2 mi", loc: "Concord, NC", yield: "$3.84" },
+            { icon: "🍕", name: "Krave It", dist: "1.5 mi", loc: "Bayside, NY", yield: "$4.12" },
+            { icon: "🍜", name: "Harbor Ramen", dist: "2.1 mi", loc: "Charlotte, NC", yield: "SOON", dimmed: true },
+          ].map((node, i) => (
+            <div key={i} className={`bg-[#10151e] border border-[#1e2c3a] rounded-[18px] p-5 flex items-center gap-5 cursor-pointer hover:border-[#9b6a14] hover:shadow-[0_8px_30px_#e8a020/5] transition-all group ${node.dimmed ? 'opacity-40 pointer-events-none' : ''}`}>
+               <div className="w-[52px] h-[52px] bg-[#161d2a] border border-[#1e2c3a] rounded-xl flex items-center justify-center text-[28px] flex-shrink-0 group-hover:scale-110 transition-transform">{node.icon}</div>
+               <div className="flex-1 min-w-0">
+                  <div className="text-[16px] font-extrabold text-white truncate">{node.name}</div>
+                  <div className="text-[13px] font-semibold text-[#7a90a8] truncate">{node.dist} · {node.loc}</div>
+               </div>
+               <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                  {!node.dimmed ? (
+                    <>
+                      <div className="bg-green-500/10 border border-green-500/30 text-[#22c55e] text-[10px] font-black px-2 py-0.5 rounded-full uppercase italic tracking-tighter">● Live</div>
+                      <div className="font-['Barlow_Condensed',sans-serif] text-[22px] font-extrabold italic text-[#e8a020] leading-none">{node.yield}</div>
+                    </>
+                  ) : (
+                    <div className="bg-[#161d2a] border border-[#1e2c3a] text-[#3a5060] text-[10px] font-black px-3 py-1 rounded-full uppercase italic tracking-widest">Coming Soon</div>
+                  )}
+               </div>
             </div>
-          </div>
-        </section>
+          ))}
 
-        {/* ── PLATFORM FEATURES ───────────────────────────────────────────── */}
-        <section className="py-32 bg-[#0a0a0b] w-full flex flex-col items-center">
-          <div className="w-full max-w-7xl px-8 flex flex-col items-center text-center">
-            <div className="flex items-center justify-center gap-10 text-primary font-black uppercase tracking-[1em] text-[9px] mb-24 opacity-80 select-none w-full">
-                <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
-                <span className="shrink-0 px-4">Platform Features</span>
-                <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-              {[
-                { 
-                  title: "Order Locally.", 
-                  img: "/community_section.png",
-                  desc: "Support independent gems. Zero platform fees ensure local restaurants stay in business.",
-                  cta: "Explore Menus",
-                  link: "/restaurants"
-                },
-                { 
-                  title: "Grow Partners.", 
-                  img: "/merchant_section.png",
-                  desc: "Stop losing margins to big apps. Fair pricing and elite dispatch built for you.",
-                  cta: "Partner Hub",
-                  link: "/merchant"
-                },
-                { 
-                  title: "Drive More.", 
-                  img: "/diverse_drivers.png",
-                  desc: "Join our fleet and earn 20-30% more with optimized routing and reliable local payouts.",
-                  cta: "Start Driving",
-                  link: "/driver"
-                }
-              ].map((card, i) => (
-                <Link key={i} href={card.link} className={`reveal-scale delay-${(i + 1) * 200} group relative min-h-[600px] bg-black overflow-hidden border border-white/5 transition-all duration-700 flex flex-col justify-end p-12 hover:bg-white/[0.02] active:scale-[0.98] shadow-2xl`}>
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2.5s] opacity-20 group-hover:opacity-45 brightness-50" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <div className="relative z-10 space-y-6 flex flex-col items-center text-center">
-                    <h3 className="text-4xl md:text-6xl font-[900] text-white leading-[0.85] italic uppercase font-serif tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                        {card.title}
-                    </h3>
-                    <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity italic">
-                        {card.desc}
-                    </p>
-                    <div className="pt-6">
-                      <div className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-white border border-white/20 rounded-md px-8 py-4 backdrop-blur-sm bg-black/40 group-hover:border-primary group-hover:text-primary transition-all duration-500 italic">
-                         {card.cta} <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
+          <section className="mt-8 pt-8 border-t border-[#1e2c3a]">
+             <div className="text-[11px] font-black uppercase tracking-[0.4em] text-[#3a5060] italic text-center">
+                TrueServe Platform // Tactical Operational Hub V.1.0
+             </div>
+          </section>
+        </div>
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-       <footer className="py-32 bg-black border-t border-white/10 px-10">
-        <div className="container mx-auto max-w-7xl text-center space-y-20">
-          <div className="flex flex-col items-center gap-10">
-            <Logo size="xl" className="animate-pulse" />
-            
-            <div className="flex flex-wrap justify-center gap-x-16 gap-y-10 text-[10px] font-black uppercase tracking-[0.5em] text-slate-600 italic">
-              <Link href="/privacy" className="hover:text-white transition-colors">Safety</Link>
-              <Link href="/merchant" className="hover:text-primary transition-colors">Merchant Help</Link>
-              <Link href="/driver" className="hover:text-primary transition-colors">Driver Guide</Link>
-              <Link 
-                href="https://www.instagram.com/trueserve_food/" 
-                target="_blank" 
-                className="text-slate-500 hover:text-primary flex items-center gap-2 group/insta transition-all"
-              >
-                <svg className="w-5 h-5 group-hover/insta:scale-125 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                </svg>
-              </Link>
-              <Link 
-                href="https://www.facebook.com/share/1EHeS1jdoq/?mibextid=wwXIfr" 
-                target="_blank" 
-                className="text-slate-500 hover:text-primary flex items-center gap-2 group/fb transition-all"
-              >
-                <svg className="w-5 h-5 group-hover/fb:scale-125 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.248h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
-                </svg>
-              </Link>
-              <Link 
-                href="https://www.linkedin.com/company/112360123/admin/dashboard/" 
-                target="_blank" 
-                className="text-slate-500 hover:text-primary flex items-center gap-2 group/linkedin transition-all"
-              >
-                <svg className="w-5 h-5 group-hover/linkedin:scale-125 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-              </Link>
-            </div>
+      </div>
+
+      {/* FOOTER */}
+      <footer className="py-16 bg-[#0a0d12] border-t border-[#1e2c3a] text-center">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
+          <Logo size="md" className="mb-10" />
+          <div className="flex flex-wrap justify-center gap-10 text-[11px] font-black uppercase tracking-[0.3em] text-[#3a5060] mb-10">
+            <Link href="/privacy" className="hover:text-white transition-colors no-underline">Privacy</Link>
+            <Link href="/merchant/signup" className="hover:text-[#e8a020] transition-colors no-underline">Merchants</Link>
+            <Link href="/driver/signup" className="hover:text-[#e8a020] transition-colors no-underline">Drivers</Link>
+            <Link href="/terms" className="hover:text-white transition-colors no-underline">Terms</Link>
           </div>
-          
-          <div className="pt-16 border-t border-white/5 text-slate-700 text-[11px] font-black uppercase tracking-[0.4em] italic">
-            © {new Date().getFullYear()} TrueServe. Empowering local businesses through strategic logistics and elite partnerships.
-          </div>
+          <p className="text-[11px] font-bold text-[#3a5060] uppercase tracking-widest leading-loose">
+            © {new Date().getFullYear()} TrueServe Platform. <br />
+            Supporting Independent Culinary Infrastructure.
+          </p>
         </div>
       </footer>
     </div>
   );
 }
+

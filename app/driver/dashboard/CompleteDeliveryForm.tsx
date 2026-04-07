@@ -114,16 +114,16 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
     return (
         <div className="w-full mt-2 bg-slate-900 border border-white/10 rounded-2xl p-4 shadow-xl">
             {/* Delivery Tabs */}
-            <div className="flex bg-black/50 rounded-lg p-1 mb-4">
+            <div className="flex bg-black/50 rounded-xl p-1.5 mb-6 border border-white/5">
                 <button 
                     onClick={() => handleTabChange('PIN')}
-                    className={`flex-1 py-2 text-[10px] uppercase font-black tracking-widest rounded-md transition-all ${mode === 'PIN' ? 'bg-emerald-500 text-black shadow-md' : 'text-slate-500 hover:text-white'}`}
+                    className={`flex-1 py-3 text-[10px] uppercase font-black tracking-[0.2em] rounded-lg transition-all italic ${mode === 'PIN' ? 'bg-[#3dd68c] text-black shadow-[0_4px_20px_rgba(61,214,140,0.2)]' : 'text-[#444] hover:text-white'}`}
                 >
                     Hand to Me
                 </button>
                 <button 
                     onClick={() => handleTabChange('PHOTO')}
-                    className={`flex-1 py-2 text-[10px] uppercase font-black tracking-widest rounded-md transition-all ${mode === 'PHOTO' ? 'bg-primary text-black shadow-md' : 'text-slate-500 hover:text-white'}`}
+                    className={`flex-1 py-3 text-[10px] uppercase font-black tracking-[0.2em] rounded-lg transition-all italic ${mode === 'PHOTO' ? 'bg-[#e8a230] text-black shadow-[0_4px_20px_rgba(232,162,48,0.2)]' : 'text-[#444] hover:text-white'}`}
                 >
                     Leave at Door
                 </button>
@@ -137,46 +137,51 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                         <input 
                             type="text" 
                             placeholder="4-DIGIT PIN" 
-                            className="w-full bg-black border border-emerald-500/30 rounded-xl p-4 text-emerald-400 tracking-[1em] text-center font-black placeholder:text-emerald-900/50 focus:outline-none focus:border-emerald-400 transition-all text-xl"
+                            className="w-full bg-[#080808] border border-[#3dd68c]/20 rounded-2xl p-5 text-[#3dd68c] tracking-[0.8em] text-center font-black placeholder:text-[#3dd68c]/10 focus:outline-none focus:border-[#3dd68c] transition-all text-4xl bebas italic"
                             maxLength={4}
                             value={pin}
                             onChange={e => setPin(e.target.value.replace(/\D/g, ''))} // Numeric only
                             disabled={loading}
                         />
-                        <p className="text-[9px] text-center text-emerald-500/50 uppercase font-bold tracking-widest">Ask {customerName || 'Customer'} for PIN</p>
+                        <p className="text-[10px] text-center text-[#333] uppercase font-black tracking-[0.3em] mt-2 italic">Retrieve Access Code from {customerName || 'Recipient'}</p>
                     </>
                 ) : (
                     <>
-                        <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/10 flex flex-col items-center justify-center">
+                        <div className="relative w-full aspect-video bg-[#080808] rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mt-2 group">
                             {!photoCaptured ? (
                                 <>
                                     <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
                                     {stream && (
-                                        <button onClick={takePhoto} className="absolute bottom-4 w-12 h-12 bg-white rounded-full border-4 border-slate-300 shadow-xl flex items-center justify-center active:scale-95 transition-all">
+                                        <button onClick={takePhoto} className="absolute bottom-6 w-16 h-16 bg-[#e8a230] rounded-full border-4 border-white shadow-[0_0_40px_rgba(232,162,48,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white">
                                             <span className="sr-only">Take Photo</span>
+                                            <div className="w-6 h-6 bg-black rounded-full"></div>
                                         </button>
                                     )}
-                                    {!stream && !error && <p className="text-xs text-slate-500 animate-pulse">Loading camera...</p>}
+                                    {!stream && !error && <p className="text-[10px] bebas text-white/5 italic animate-pulse tracking-[0.4em]">INITIATING UPLINK...</p>}
                                 </>
                             ) : (
                                 <>
                                     <img src={URL.createObjectURL(photoCaptured)} className="w-full h-full object-cover" alt="Proof" />
-                                    <button onClick={retakePhoto} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] uppercase font-bold px-3 py-1 rounded shadow-lg border border-white/10">Retake</button>
+                                    <button onClick={retakePhoto} className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-[10px] uppercase font-black px-4 py-2 rounded-xl shadow-lg border border-white/10 hover:bg-black transition-colors">Retake Photo</button>
                                 </>
                             )}
                             <canvas ref={canvasRef} className="hidden" />
                         </div>
-                        <p className="text-[9px] text-center text-primary/70 uppercase font-bold tracking-widest">Photo will be sent to customer</p>
                     </>
                 )}
 
                 <button 
                     onClick={submitDelivery}
                     disabled={loading || (mode === 'PIN' && pin.length < 4) || (mode === 'PHOTO' && !photoCaptured)}
-                    className={`w-full btn py-4 text-[12px] font-black uppercase tracking-[0.2em] transition-all disabled:opacity-30 disabled:scale-100 mt-2
-                        ${mode === 'PIN' ? 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]' : 'bg-primary text-black hover:bg-orange-400 shadow-[0_0_20px_rgba(255,153,42,0.2)]'}`}
+                    className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] transition-all disabled:opacity-30 disabled:scale-100 mt-4 italic
+                        ${mode === 'PIN' ? 'bg-[#3dd68c] text-black hover:bg-white shadow-[0_10px_30px_rgba(61,214,140,0.2)]' : 'bg-[#e8a230] text-black hover:bg-white shadow-[0_10px_30_rgba(232,162,48,0.2)]'}`}
                 >
-                    {loading ? "Verifying Dropoff..." : "Complete Delivery"}
+                    {loading ? (
+                        <div className="flex items-center justify-center gap-3">
+                            <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                            Finalizing Mission...
+                        </div>
+                    ) : "Verify & Complete Mission"}
                 </button>
             </div>
         </div>

@@ -4,179 +4,143 @@ import Logo from '@/components/Logo';
 
 export default function RewardsPage() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-primary/30 pb-24">
-            {/* Background Decor */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="min-h-screen bg-[#0c0e13] text-[#F0EDE8] selection:bg-[#e8a230]/30 pb-24 relative overflow-hidden font-barlow-cond">
+            {/* Elite Industrial Background Elements */}
+            <div className="fixed inset-0 pointer-events-none -z-10">
+                <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#e8a230]/5 rounded-full blur-[160px] animate-pulse" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-[#e8a230]/3 rounded-full blur-[140px] animate-pulse" style={{ animationDelay: '3s' }} />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] pointer-events-none"></div>
             </div>
 
-            {/* Navigation */}
-            <nav className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/5 px-6 py-4 bg-black/50">
+            {/* Navigation - Industrial HUD Style */}
+            <nav className="sticky top-0 z-50 backdrop-blur-2xl border-b border-white/5 px-6 sm:px-12 py-5 bg-[#0c0e13]/80">
                 <div className="container mx-auto flex justify-between items-center">
-                    <Logo size="md" />
-                    <div className="hidden sm:flex items-center gap-6">
-                        <Link href="/restaurants" className="text-sm font-bold text-slate-400 hover:text-white transition-colors">Restaurants</Link>
-                        <div className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black border border-primary/20 shadow-lg shadow-primary/5">
-                            2,450 PTS
+                    <Logo size="md" showPlus={true} />
+                    <div className="hidden sm:flex items-center gap-8">
+                        <Link href="/restaurants" className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-[#e8a230] transition-all italic">Back to Terminals</Link>
+                        <div className="bg-[#e8a230]/10 border border-[#e8a230]/20 text-[#e8a230] px-5 py-2 rounded-xl text-[11px] font-black tracking-widest flex items-center gap-2 shadow-[0_0_20px_rgba(232,162,48,0.1)]">
+                            <span className="opacity-60 font-medium">BALANCE:</span> 2,450 PTS
                         </div>
                     </div>
                 </div>
             </nav>
 
-            <main className="container mx-auto py-12 px-6 animate-fade-in">
-                {/* Hero Section */}
-                <div className="text-center mb-20 relative">
-                    <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/10 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-6 shadow-2xl backdrop-blur-sm">
-                        <span>Loyalty Program</span>
+            <main className="container mx-auto py-20 px-6 animate-fade-in relative z-10">
+                {/* Hero Section - Cinematic Industrial */}
+                <div className="text-center mb-32 relative">
+                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/[0.03] border border-white/10 rounded-full text-[#e8a230] text-[9px] font-black uppercase tracking-[0.4em] mb-10 shadow-2xl backdrop-blur-md italic">
+                        <span>// Loyalty Telemetry v2.0</span>
                     </div>
-                    <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 leading-[0.85] text-white">
-                        Rewards <br /><span className="text-gradient italic">Center.</span>
+                    <h1 className="text-6xl md:text-9xl font-bebas italic font-black tracking-tighter mb-8 leading-[0.8] text-white uppercase">
+                        Rewards <br /><span className="text-[#e8a230]">Interface.</span>
                     </h1>
-                    <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                        Earn as you eat. Redeem points for premium perks, free meals, or charitable impact.
+                    <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed italic font-medium">
+                        Synchronize your activity with premium redemptions. <br className="hidden md:block" />
+                        A fair rewards system built for the elite delivery network.
                     </p>
                 </div>
 
-                {/* Points Balance Card - Polish Box Sizing */}
-                <div className="mb-24 relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
-                    <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-10">
-                        <div className="text-center md:text-left flex-1">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-4">Total Balance</p>
-                            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-4 md:gap-6">
-                                <span className="text-7xl md:text-8xl lg:text-9xl font-black text-white tabular-nums tracking-tighter">2,450</span>
+                {/* Points Balance HUD */}
+                <div className="mb-24 relative group max-w-5xl mx-auto">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#e8a230]/20 to-transparent rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+                    <div className="relative bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-[2rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden shadow-2xl">
+                        <div className="absolute top-0 right-0 p-12 text-9xl font-bebas italic text-white/[0.02] select-none pointer-events-none">ASSET</div>
+                        
+                        <div className="text-center md:text-left flex-1 relative z-10">
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#e8a230] mb-6 italic">// Total Verified Yield</p>
+                            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-4 md:gap-8">
+                                <span className="text-8xl md:text-9xl font-bebas italic text-white leading-none tracking-tighter">2,450</span>
                                 <div className="flex flex-col items-center sm:items-start">
-                                    <span className="text-primary font-black text-sm uppercase tracking-widest whitespace-nowrap">+150 PENDING</span>
-                                    <span className="text-slate-500 text-[10px] uppercase font-bold whitespace-nowrap">Gold Multiplier Active</span>
+                                    <span className="text-[#e8a230] font-black text-sm uppercase tracking-widest italic animate-pulse shadow-glow">+150 PENDING</span>
+                                    <span className="text-slate-600 text-[10px] uppercase font-bold tracking-widest mt-1">Gold Multiplier Active</span>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto shrink-0">
-                            <button className="flex-1 btn btn-outline border-white/10 hover:bg-white/5 py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-widest min-w-[140px]">History</button>
-                            <button className="flex-1 btn btn-primary py-4 px-10 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 min-w-[140px]">Earn More</button>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto shrink-0 relative z-10">
+                            <button className="flex-1 border border-white/10 hover:bg-white/5 py-4 px-10 rounded-2xl text-[10px] font-black uppercase tracking-widest italic transition-all">Audit History</button>
+                            <button className="flex-1 bg-[#e8a230] text-black py-4 px-12 rounded-2xl text-[11px] font-black uppercase tracking-widest italic shadow-xl shadow-[#e8a230]/20 hover:scale-105 transition-all">Accumulate</button>
                         </div>
                     </div>
                 </div>
 
-                {/* MEMBERSHIP SELECTION - Fixed Clickability with higher Z-Index */}
-                <div className="mb-32 relative z-20">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 uppercase">Upgrade Your Standard</h2>
-                        <p className="text-slate-500 max-w-xl mx-auto font-medium">Earn points faster and unlock exclusive benefits with TrueServe+ Membership.</p>
-                    </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12 max-w-6xl mx-auto">
-                        <PricingCard
-                            tier="Basic"
-                            price="Free"
-                            subtitle="The standard access"
-                            features={[
-                                "Access to platform",
-                                "Standard delivery times",
-                                "Basic rewards points",
-                                "Community news & updates"
-                            ]}
-                            buttonText="Current Plan"
-                            buttonLink="/login"
-                        />
-                        <PricingCard
-                            tier="Plus"
-                            price="$9.99"
-                            subtitle="The community favorite"
-                            isPopular={true}
-                            features={[
-                                "Reduced service fees",
-                                "Priority driver dispatch",
-                                "Annual birthday credit",
-                                "5% Member-only discount",
-                            ]}
-                            buttonLink="/login?plus=true"
-                        />
-                        <PricingCard
-                            tier="Premium"
-                            price="$19.99"
-                            subtitle="The ultimate standard"
-                            features={[
-                                "Zero delivery fees on all orders",
-                                "Exclusive early access menu items",
-                                "24/7 Concierge support",
-                                "Double loyalty rewards points",
-                                "Advanced 7-day scheduling"
-                            ]}
-                            buttonLink="/login?premium=true"
-                        />
-                    </div>
+                {/* PLUS BANNER - Fixed Integrated Version */}
+                <div className="mb-32 max-w-5xl mx-auto relative group overflow-hidden rounded-3xl border border-[#e8a230]/20">
+                     <div className="absolute inset-0 bg-gradient-to-r from-[#e8a230]/10 via-transparent to-transparent opacity-50"></div>
+                     <div className="relative bg-[#0c0e13] px-10 py-12 flex flex-col md:flex-row items-center justify-between gap-8">
+                         <div className="flex items-center gap-8">
+                             <div className="w-16 h-16 rounded-2xl bg-[#e8a230]/20 border border-[#e8a230]/30 flex items-center justify-center text-3xl shadow-glow">⚡</div>
+                             <div>
+                                 <h3 className="text-2xl font-bebas italic text-white uppercase tracking-wider">TrueServe <span className="text-[#e8a230]">Plus</span></h3>
+                                 <p className="text-slate-500 text-xs font-medium italic mt-1">Triple your rewards yields and unlock $0 delivery protocols instantly.</p>
+                             </div>
+                         </div>
+                         <Link href="/login?plus=true" className="px-10 py-4 bg-white text-black rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:scale-105 transition-all shadow-xl italic">Upgrade Status</Link>
+                     </div>
                 </div>
 
-                {/* Rewards Grid */}
-                <h2 className="text-2xl font-black mb-8 px-2 uppercase tracking-tight">Available Redemptions</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+                {/* Redemptions Grid - Industrial Layout */}
+                <h2 className="text-3xl font-bebas italic mb-12 px-4 uppercase tracking-widest text-white"><span className="text-[#e8a230]/50 mr-4">//</span> Available Redemptions</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
                     <RewardCard
-                        title="$5 Off Order"
+                        title="$5.00 Credit"
                         points={500}
                         icon="💵"
-                        desc="Instant discount applied at checkout."
-                        accent="emerald"
+                        desc="Instant capital injection applied at checkout terminal."
                     />
                     <RewardCard
-                        title="Free Delivery"
+                        title="Free Logistics"
                         points={750}
                         icon="🛵"
-                        desc="Skip the delivery fee on any order."
-                        accent="blue"
+                        desc="Bypass service fees on your next delivery mission."
                     />
                     <RewardCard
-                        title="Free Appetizer"
+                        title="Elite Appetizer"
                         points={1200}
                         icon="🍟"
-                        desc="Valid at participating local partners."
-                        accent="orange"
+                        desc="Authorized at participating merchant culinary nodes."
                     />
                     <RewardCard
-                        title="$10 Off Order"
+                        title="$10.00 Credit"
                         points={1000}
                         icon="💰"
-                        desc="Double value discount for savvy savers."
-                        accent="purple"
+                        desc="Optimized value for recurring fleet operations."
                     />
                     <RewardCard
-                        title="Priority Support"
+                        title="Priority Lane"
                         points={2000}
                         icon="⭐"
-                        desc="Priority lane for all your inquiries."
-                        accent="yellow"
+                        desc="Dedicated support corridor for all account inquiries."
                     />
                     <RewardCard
-                        title="Donate Meal"
+                        title="Meal Donation"
                         points={2500}
                         icon="❤️"
-                        desc="Feed a neighbor through local food banks."
-                        accent="red"
+                        desc="External asset transfer to local community food banks."
                     />
                 </div>
 
-                {/* Status Tier */}
-                <div className="relative overflow-hidden bg-white/5 border border-white/10 rounded-[3rem] p-10 md:p-16">
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-yellow-500/10 rounded-full blur-[100px] -z-10" />
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-10">
+                {/* Status HUD */}
+                <div className="relative overflow-hidden bg-white/[0.02] border border-white/5 rounded-[3rem] p-10 md:p-20 shadow-2xl">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#e8a230]/5 rounded-full blur-[120px] -z-10" />
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-12">
                         <div>
-                            <span className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-yellow-500/30">Current Tier</span>
-                            <h3 className="text-4xl md:text-5xl font-black text-white mt-4 mb-2">Gold Member</h3>
-                            <p className="text-slate-400 font-medium">Enjoy 1.5x points on every order and exclusive chef drops.</p>
+                            <span className="px-4 py-1.5 bg-[#e8a230]/10 text-[#e8a230] rounded-full text-[9px] font-black uppercase tracking-[0.3em] border border-[#e8a230]/20 italic shadow-glow">Active Protocol</span>
+                            <h3 className="text-5xl md:text-7xl font-bebas italic text-white mt-6 mb-2 tracking-tight">Gold <span className="text-[#e8a230]">Operator</span></h3>
+                            <p className="text-slate-500 font-medium italic text-lg leading-relaxed">System performance: 1.5x Multiplier active on all orders.</p>
                         </div>
-                        <div className="text-left md:text-right min-w-[150px]">
-                            <p className="text-sm font-bold text-white mb-1">Platinum Tier</p>
-                            <p className="text-xs text-slate-500 font-medium">550 pts until next level</p>
+                        <div className="text-left md:text-right min-w-[200px]">
+                            <p className="text-[11px] font-black text-white uppercase tracking-[0.2em] mb-2 italic">Next Phase: PLATINUM</p>
+                            <p className="text-[10px] text-[#e8a230] font-black uppercase tracking-widest opacity-80">550 pts remaining</p>
                         </div>
                     </div>
-                    <div className="relative">
-                        <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
-                            <div className="h-full bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-200 w-[75%] rounded-full shadow-[0_0_30px_rgba(253,224,71,0.4)]" />
+                    <div className="relative mt-8">
+                        <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 shadow-inner">
+                            <div className="h-full bg-gradient-to-r from-[#e8a230]/40 via-[#e8a230] to-[#fff] w-[75%] rounded-full shadow-[0_0_30px_rgba(232,162,48,0.3)]" />
                         </div>
-                        <div className="flex justify-between mt-4 px-1">
-                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Silver</span>
-                            <span className="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Gold</span>
-                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Platinum</span>
+                        <div className="flex justify-between mt-6 px-1">
+                            <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] italic">Silver</span>
+                            <span className="text-[9px] font-black text-[#e8a230] uppercase tracking-[0.4em] italic shadow-glow">Gold</span>
+                            <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] italic">Platinum</span>
                         </div>
                     </div>
                 </div>
@@ -186,75 +150,25 @@ export default function RewardsPage() {
     );
 }
 
-function PricingCard({ tier, price, subtitle, isPopular = false, features, buttonText = "Join " + tier, buttonLink = "/login" }: any) {
+function RewardCard({ title, points, icon, desc }: { title: string, points: number, icon: string, desc: string }) {
     return (
-        <div className={`relative rounded-[3rem] border flex flex-col items-center text-center transition-all h-full overflow-hidden ${isPopular
-            ? 'bg-slate-900 border-primary shadow-[0_0_50px_rgba(255,165,0,0.1)] z-10'
-            : 'bg-white/5 border-white/10 z-0'
-            }`}>
-
-            <div className="flex-1 w-full p-10 md:p-12 pb-8 md:pb-10 flex flex-col items-center">
-                <div className="mb-8 w-full">
-                    <h3 className="text-3xl font-black mb-2 text-white">{tier}</h3>
-                    <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{subtitle}</p>
-                </div>
-
-                <div className="flex items-end justify-center gap-1 mb-10 w-full text-white">
-                    <span className="text-6xl font-black tracking-tighter">{price}</span>
-                    {price !== 'Free' && <span className="text-sm text-slate-500 font-bold mb-2">/ mo</span>}
-                </div>
-
-                <ul className="space-y-5 w-full flex-1 flex flex-col items-center">
-                    {features.map((f: string) => (
-                        <li key={f} className="text-sm text-slate-400 font-bold flex items-center justify-center gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
-                            <span className="leading-tight">{f}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            <Link
-                href={buttonLink}
-                className={`block w-full py-6 font-black text-sm uppercase tracking-widest transition-all text-center relative z-20 ${isPopular
-                    ? 'bg-primary text-black hover:bg-white'
-                    : 'bg-white/10 text-white hover:bg-white/20 border-t border-white/10'
-                    }`}
-            >
-                {buttonText}
-            </Link>
-        </div>
-    )
-}
-
-function RewardCard({ title, points, icon, desc, accent }: { title: string, points: number, icon: string, desc: string, accent: string }) {
-    const accents: any = {
-        emerald: "from-emerald-500/20 text-emerald-400 border-emerald-500/20",
-        blue: "from-blue-500/20 text-blue-400 border-blue-500/20",
-        orange: "from-orange-500/20 text-orange-400 border-orange-500/20",
-        purple: "from-purple-500/20 text-purple-400 border-purple-500/20",
-        yellow: "from-yellow-500/20 text-yellow-500 border-yellow-500/20",
-        red: "from-red-500/20 text-red-400 border-red-500/20",
-    }
-
-    return (
-        <div className="group bg-white/5 border border-white/10 p-10 rounded-[2.5rem] flex flex-col h-full hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative overflow-hidden text-center items-center">
-            <div className={`absolute -bottom-6 -right-6 text-8xl opacity-[0.03] group-hover:opacity-10 transition-all duration-500 transform group-hover:-rotate-12 pointer-events-none`}>
-                {icon}
-            </div>
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${accents[accent]} border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform mx-auto`}>
+        <div className="group bg-white/[0.02] border border-white/5 p-12 rounded-[2.5rem] flex flex-col h-full hover:bg-white/[0.05] hover:border-[#e8a230]/20 transition-all duration-500 relative overflow-hidden text-center items-center shadow-lg">
+            <div className="absolute top-0 right-0 p-8 text-7xl opacity-[0.02] group-hover:opacity-[0.05] transition-all duration-700 pointer-events-none italic font-bebas">REWARD</div>
+            
+            <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-3xl mb-10 group-hover:scale-110 group-hover:border-[#e8a230]/30 transition-all duration-500 mx-auto shadow-inner">
                 {icon}
             </div>
             <div className="flex-1 flex flex-col items-center">
-                <h3 className="text-xl font-black text-white mb-2 leading-tight break-words">{title}</h3>
-                <p className="text-slate-400 text-sm font-medium leading-relaxed mb-6 break-words max-w-[240px]">{desc}</p>
+                <h3 className="text-2xl font-bebas italic text-white mb-3 uppercase tracking-wider">{title}</h3>
+                <p className="text-slate-500 text-xs font-medium leading-relaxed mb-8 italic max-w-[200px]">{desc}</p>
             </div>
-            <div className="flex flex-col items-center justify-center gap-4 mt-auto pt-6 border-t border-white/5 w-full">
-                <span className="text-primary font-black text-lg tracking-tight whitespace-nowrap">{points.toLocaleString()} <span className="text-[10px] uppercase tracking-widest">PTS</span></span>
-                <button className="px-5 py-2 rounded-xl bg-white/10 hover:bg-primary hover:text-black text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap">
-                    Redeem
+            <div className="flex flex-col items-center justify-center gap-6 mt-auto pt-8 border-t border-white/5 w-full">
+                <span className="text-[#e8a230] font-bebas text-2xl tracking-wide">{points.toLocaleString()} <span className="text-[9px] font-black uppercase tracking-[0.4em] ml-1 opacity-60">PTS</span></span>
+                <button className="w-full py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-[#e8a230] hover:text-black text-[10px] font-black uppercase tracking-widest transition-all duration-300 italic">
+                    Authorize
                 </button>
             </div>
         </div>
-    )
+    );
 }
+

@@ -36,11 +36,13 @@ export default function TermsAndPrivacy() {
                         <li><strong>Payment Info:</strong> Processed directly by Stripe; we do not store full credit card numbers.</li>
                     </ul>
 
-                    <h3 className="font-bold text-white">2. SMS Communications</h3>
-                    <p>By providing your phone number, you consent to receive transactional SMS messages regarding your orders or deliveries. Reply STOP to opt-out (this may affect service delivery).</p>
+                    <h3 className="font-bold text-white">2. SMS Communications & A2P Compliance</h3>
+                    <p>By providing your phone number, you explicitly consent to receive transactional and operational SMS messages (e.g., order updates, delivery telemetry, account security alerts) from TrueServe. Frequency varies. Msg & data rates may apply.</p>
+                    <p><strong>Opt-Out:</strong> Reply <strong>STOP</strong> at any time to opt-out. To receive assistance, reply <strong>HELP</strong> to any message.</p>
+                    <p><strong>Privacy:</strong> We respect your data. Your mobile information and SMS consent will <strong>not</strong> be shared with third parties or affiliates for marketing or promotional purposes. Your data is used exclusively for TrueServe communications.</p>
 
                     <h3 className="font-bold text-white">3. Data Sharing</h3>
-                    <p>We share necessary data with Restaurants (order details) and Drivers (delivery location) to fulfill your service request.</p>
+                    <p>We share necessary data with Restaurants (order details) and Drivers (delivery location) specifically to fulfill your service requests. No personal information is sold or traded to outside parties.</p>
                 </div>
             </section>
 

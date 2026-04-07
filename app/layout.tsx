@@ -1,22 +1,35 @@
+// Deployment Trigger: 2026-04-04 04:10
 import type { Metadata } from "next";
-import { Kalam, Playfair_Display } from "next/font/google";
+import { Barlow_Condensed, DM_Sans, DM_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
-import MobileNavWrapper from "@/components/MobileNavWrapper";
-import LaunchDarklyClientProvider from "@/components/LaunchDarklyClientProvider";
-import { Suspense } from "react";
-import DynamicBranding from "@/components/DynamicBranding";
 
-const kalam = Kalam({
-  variable: "--font-kalam",
-  weight: ["300", "400", "700"],
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
+  weight: ["400"],
   subsets: ["latin"],
+  display: 'swap',
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
-  weight: ["400", "700", "900"],
+  display: 'swap',
+});
+
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  display: 'swap',
+});
+
+const barlowCond = Barlow_Condensed({
+  variable: "--font-barlow-cond",
+  weight: ["700", "800"],
+  subsets: ["latin"],
   style: ["normal", "italic"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -34,51 +47,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${kalam.variable} ${playfair.variable} bg-black text-slate-200 antialiased pb-24 md:pb-0 font-sans overflow-x-hidden`}
-        suppressHydrationWarning
-      >
-        <LaunchDarklyClientProvider>
-          <Suspense fallback={null}>
-            <DynamicBranding />
-          </Suspense>
-          {children}
-          <MobileNavWrapper />
-        </LaunchDarklyClientProvider>
-
-        {/* Global Scroll Reveal Script */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-          };
-
-          const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-              }
-            });
-          }, observerOptions);
-
-          document.addEventListener('DOMContentLoaded', () => {
-             document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => observer.observe(el));
-          });
-
-          // Also handle dynamic content (SPA transitions)
-          const mutationObserver = new MutationObserver((mutations) => {
-            mutations.forEach(mutation => {
-              mutation.addedNodes.forEach(node => {
-                if (node.nodeType === 1) {
-                  if (node.matches('.reveal, .reveal-left, .reveal-scale')) observer.observe(node);
-                  node.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => observer.observe(el));
-                }
-              });
-            });
-          });
-          mutationObserver.observe(document.body, { childList: true, subtree: true });
-        `}} />
+    <html lang="en" className={`${bebasNeue.variable} ${dmSans.variable} ${dmMono.variable} ${barlowCond.variable}`}>
+      <body className="antialiased">
+        {children}
       </body>
     </html>
   );
