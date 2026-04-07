@@ -34,6 +34,9 @@ export default function DriverSignupPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
             {/* BRAND SIDE */}
             <div className="relative overflow-hidden hidden lg:flex flex-col justify-end p-20 border-r border-white/5 bg-[#06080b]">
+                <div className="absolute top-12 left-12 z-20">
+                    <Logo size="md" />
+                </div>
                 <div 
                     className="absolute inset-0 z-0 opacity-40 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-1000"
                     style={{ backgroundImage: "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80')" }}
@@ -86,7 +89,7 @@ export default function DriverSignupPage() {
 
             {/* FORM SIDE */}
             <div className="relative flex items-center justify-center p-8 bg-[#0c0e13]">
-                <div className="absolute top-12 left-12 lg:hidden">
+                <div className="absolute top-12 left-12 lg:hidden z-20">
                     <Logo size="sm" />
                 </div>
                 <Link href="/driver/login" className="absolute top-12 right-12 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-[#e8a230] transition-colors italic">Login Terminal →</Link>
