@@ -33,12 +33,6 @@ const Logo: React.FC<LogoProps> = ({
                 alt="TrueServe logo"
                 width={sizes[size].icon}
                 height={sizes[size].icon}
-                onError={(event) => {
-                    const target = event.currentTarget;
-                    if (target.src.endsWith("/logo.png")) {
-                        target.src = "/new_logo.png";
-                    }
-                }}
                 style={{
                     borderRadius: '999px',
                     boxShadow: '0 0 20px rgba(232, 162, 48, 0.35)',
