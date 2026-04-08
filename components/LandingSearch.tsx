@@ -123,15 +123,18 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
     return (
         <div className="w-full max-w-3xl relative animate-fade-in group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/25 via-transparent to-primary/25 rounded-[28px] blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
 
-            <form onSubmit={handleManualSearch} className={`relative flex items-center bg-[#0a0a0b]/80 backdrop-blur-3xl border border-white/10 rounded-full p-2 shadow-2xl z-20`}>
-                <div className="flex items-center flex-1 px-6">
-                    <span className="text-xl filter drop-shadow-[0_0_8px_rgba(239,68,68,0.4)] mr-2">📍</span>
+            <form
+                onSubmit={handleManualSearch}
+                className="relative z-20 flex w-full items-center gap-2 rounded-[28px] border border-white/10 bg-[#0a0a0b]/85 p-2 shadow-2xl backdrop-blur-3xl"
+            >
+                <div className="flex min-w-0 flex-1 items-center rounded-[20px] border border-white/5 bg-black/25 px-4 md:px-5">
+                    <span className="mr-2 text-[18px]">📍</span>
                     <input
                         type="text"
                         placeholder="Enter delivery address..."
-                        className="flex-1 min-w-[50px] bg-transparent border-none focus:outline-none text-white placeholder:text-slate-600 px-2 font-bold tracking-tight text-lg h-14"
+                        className="h-14 min-w-0 flex-1 bg-transparent px-1 text-[20px] font-bold tracking-tight text-white placeholder:text-white/45 focus:outline-none"
                         value={inputValue}
                         onChange={handleInput}
                         onFocus={() => {
@@ -143,8 +146,11 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                     />
                 </div>
 
-                <button type="submit" className="bg-[#E8A230] text-black font-bebas uppercase tracking-widest text-sm px-10 h-12 rounded-full hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(232,162,48,0.2)] active:scale-95">
-                     Find Food
+                <button
+                    type="submit"
+                    className="h-14 shrink-0 rounded-[22px] bg-[#E8A230] px-7 text-[12px] font-black uppercase tracking-[0.18em] text-black transition-all hover:bg-[#efb23f] md:px-9"
+                >
+                    Find Food
                 </button>
             </form>
 

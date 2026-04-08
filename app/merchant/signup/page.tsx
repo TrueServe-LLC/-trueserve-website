@@ -77,8 +77,8 @@ export default function MerchantSignupPage() {
                 <div className="sc">
                   <h3><span className="sn">1</span> Restaurant Info</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="fg"><label>Restaurant Name</label><input type="text" placeholder="e.g. Dhan's Kitchen"/></div>
-                    <div className="fg"><label>Cuisine Type</label><input type="text" placeholder="e.g. Caribbean"/></div>
+                    <div className="fg"><label>Restaurant Name</label><input type="text" placeholder="Your restaurant name"/></div>
+                    <div className="fg"><label>Cuisine Type</label><input type="text" placeholder="Cuisine category"/></div>
                   </div>
                   <div className="fg"><label>Street Address</label><input type="text" placeholder="123 Main St, City, State"/></div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

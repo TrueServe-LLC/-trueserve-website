@@ -55,13 +55,6 @@ export default function LoginPage() {
     }
   };
 
-  const enterPreview = (targetRole: 'merchant' | 'driver') => {
-      // Set preview cookie to bypass server-side auth checks for UI auditing
-      document.cookie = "preview_mode=true; path=/; max-age=3600";
-      if (targetRole === 'merchant') router.push('/merchant/dashboard');
-      else router.push('/driver/dashboard');
-  };
-
   return (
     <div className="food-app-shell">
       <nav className="food-app-nav">
@@ -168,15 +161,6 @@ export default function LoginPage() {
             <div className="grid grid-cols-1 gap-3">
               <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading}>
                 <span style={{ fontSize: '16px' }}>G</span> Continue with Google
-              </button>
-            </div>
-
-            <div style={{ marginTop: '24px', display: 'flex', gap: '8px' }}>
-              <button onClick={() => enterPreview('merchant')} className="btn btn-ghost" style={{ flex: 1, fontSize: '10px', padding: '10px' }}>
-                Preview Merchant
-              </button>
-              <button onClick={() => enterPreview('driver')} className="btn btn-ghost" style={{ flex: 1, fontSize: '10px', padding: '10px' }}>
-                Preview Driver
               </button>
             </div>
 

@@ -19,7 +19,7 @@ export default function Home() {
       <nav className="food-app-nav">
         <Logo size="sm" />
         <div className="nav-links hidden md:flex">
-          <Link href="/">Order Food</Link>
+          <Link href="/restaurants">Order Food</Link>
           <Link href="/merchant/signup">For Merchants</Link>
           <Link href="/driver/signup">Driver Hub</Link>
         </div>
@@ -74,12 +74,12 @@ export default function Home() {
 
               <div className="food-stat-row">
                 <div className="food-stat">
-                  <strong>18-24</strong>
-                  <span>Typical delivery window</span>
+                  <strong>Live</strong>
+                  <span>Delivery ETAs update in real time</span>
                 </div>
                 <div className="food-stat">
-                  <strong>4.9</strong>
-                  <span>Average restaurant rating</span>
+                  <strong>Verified</strong>
+                  <span>Restaurant reviews come from Google</span>
                 </div>
               </div>
 
@@ -128,7 +128,11 @@ export default function Home() {
               <div className="grid gap-3 text-sm">
                 <Link href="/signup" className="btn btn-gold justify-center">Create Account</Link>
                 <Link href="/restaurants" className="btn btn-ghost justify-center">Browse Restaurants</Link>
-                <Link href="/orders" className="btn btn-ghost justify-center">View Orders</Link>
+                {userId ? (
+                  <Link href="/orders" className="btn btn-ghost justify-center">View Orders</Link>
+                ) : (
+                  <Link href="/login" className="btn btn-ghost justify-center">Sign In to View Orders</Link>
+                )}
               </div>
             </div>
           </div>

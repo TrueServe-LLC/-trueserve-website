@@ -16,7 +16,13 @@ import GHLSettingsPanel from "@/app/merchant/dashboard/GHLSettingsPanel";
 
 export const dynamic = "force-dynamic";
 
-export default async function MerchantDashboard() {
+export default async function MerchantDashboard({
+    searchParams,
+}: {
+    searchParams?: Promise<{ mode?: string }>;
+}) {
+    const params = searchParams ? await searchParams : undefined;
+    const activeMode = params?.mode === "pickup" ? "pickup" : "delivery";
     const cookieStore = await cookies();
     const isPreview = cookieStore.get("preview_mode")?.value === "true";
     const cookieUserId = cookieStore.get("userId")?.value;
@@ -83,13 +89,16 @@ export default async function MerchantDashboard() {
                 <div className="md-page-hd">
                     <div>
                         <div className="md-page-title">Orders Dashboard</div>
-                        <div className="md-page-sub">Operational Control · {restaurant.name}</div>
+                        <div className="md-page-sub">
+                            {activeMode === "pickup" ? "Pickup Operations" : "Delivery Operations"} · {restaurant.name}
+                        </div>
                     </div>
                     <div className="md-hd-right flex-wrap">
                         <div className="md-terminal-btn">
                             <span className="md-terminal-dot"></span>
                             Kitchen Terminal
                         </div>
+                        <div className="md-online-badge">{activeMode === "pickup" ? "Pickup Mode" : "Delivery Mode"}</div>
                         <div className="md-online-badge" style={restaurant.isBusy ? { background: "#e24b4a" } : {}}>
                             {restaurant.isBusy ? "Paused" : "Online"}
                         </div>

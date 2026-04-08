@@ -294,11 +294,6 @@ export async function logout() {
 export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: string; role?: string; name?: string; stripeAccountId?: string }> {
     try {
         const cookieStore = await cookies();
-        const isPreview = cookieStore.get("preview_mode")?.value === "true";
-        
-        if (isPreview) {
-            return { isAuth: true, userId: "preview-user-id", role: "ADMIN", name: "Preview User" };
-        }
 
         const userId = cookieStore.get("userId")?.value;
         console.log("[AuthSession] userId from cookie:", userId);
@@ -487,4 +482,3 @@ export async function loginAsDemoMerchant() {
 
     redirect("/merchant/dashboard");
 }
-

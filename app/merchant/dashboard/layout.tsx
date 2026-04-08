@@ -49,7 +49,10 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                     </div>
                     <div className="flex items-center gap-3">
                         <MerchantModeToggle />
-                        <div className="rounded-full bg-[#e8a230] px-3 py-1 text-xs font-black text-black">{merchantInitials}</div>
+                        <div className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#e8a230]/45 bg-[radial-gradient(circle_at_30%_30%,#f2c15f_0%,#e8a230_55%,#cb8611_100%)] text-[11px] font-black text-black shadow-[0_10px_24px_rgba(232,162,48,0.35)]">
+                            {merchantInitials}
+                            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border border-black/50 bg-[#3dd68c]" />
+                        </div>
                         <div className="text-xs uppercase tracking-[0.14em] text-white/70">
                             <LogoutButton />
                         </div>
