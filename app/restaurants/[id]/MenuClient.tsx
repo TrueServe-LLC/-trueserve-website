@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { placeOrder, createPaymentIntent } from "../actions";
@@ -82,16 +82,8 @@ export default function MenuClient({
     const pointsDiscount = redeemPoints ? pointsValue * 0.01 : 0;
     const total = subtotal + 2.99 + tax + tip - pointsDiscount;
 
-    const handleCartChange = async (newCart: { [key: string]: number }, currentTipPct: number = tipPct) => {
+    const handleCartChange = (newCart: { [key: string]: number }) => {
         setCart(newCart);
-        const hasItems = Object.values(newCart).some(q => q > 0);
-        if (hasItems) {
-            const currentTip = subtotal * (currentTipPct / 100);
-            const res = await createPaymentIntent(restaurant.id, Object.entries(newCart).map(([id, quantity]) => ({ id, quantity })), currentTip, redeemPoints ? pointsValue : 0);
-            if (res.clientSecret) setClientSecret(res.clientSecret);
-        } else {
-            setClientSecret(null);
-        }
     };
 
     const addItem = (id: string) => {
@@ -104,6 +96,29 @@ export default function MenuClient({
         if (newCart[id] <= 0) delete newCart[id];
         handleCartChange(newCart);
     };
+
+    useEffect(() => {
+        const syncPaymentIntent = async () => {
+            const nextCartItems = Object.entries(cart).filter(([_, qty]) => qty > 0);
+            if (!nextCartItems.length) {
+                setClientSecret(null);
+                return;
+            }
+
+            const res = await createPaymentIntent(
+                restaurant.id,
+                nextCartItems.map(([id, quantity]) => ({ id, quantity })),
+                tip,
+                redeemPoints ? pointsValue : 0
+            );
+
+            if (res.clientSecret) {
+                setClientSecret(res.clientSecret);
+            }
+        };
+
+        syncPaymentIntent();
+    }, [cart, pointsValue, redeemPoints, restaurant.id, tip]);
 
     const handlePaymentSuccess = async (paymentIntentId: string) => {
         if (!deliveryAddress) return alert("Please set a delivery address");
@@ -165,7 +180,7 @@ export default function MenuClient({
                 {ghlUrl && (
                     <button className="ghl-btn !bg-[#e8a230] !text-black shadow-lg" onClick={openGHL}>
                         <span style={{ fontSize: '16px' }}>⚡️</span> 
-                        Order via Fast AI Assistant (GHL)
+                        Order with Fast Assist
                     </button>
                 )}
                 <div className="cat">Main Menu</div>
@@ -184,10 +199,10 @@ export default function MenuClient({
             </div>
 
             <div className="cart">
-                <div className="cart-hd">🛒 Your Order</div>
+                <div className="cart-hd">Your Order</div>
                 <div className="cart-scroll" style={{ flex: 1, overflowY: 'auto' }}>
                     {cartItems.length === 0 ? (
-                        <div className="cart-empty">Add items to get started.</div>
+                        <div className="cart-empty">Add a few favorites to start your cart.</div>
                     ) : (
                         cartItems.map(([id, qty]) => {
                             const item = items.find(i => i.id === id);
@@ -217,7 +232,7 @@ export default function MenuClient({
 
                         {/* Tip Selection */}
                         <div style={{ marginTop: '16px' }}>
-                            <div style={{ fontSize: '11px', color: 'var(--t2)', marginBottom: '8px' }}>Tip Your Driver</div>
+                            <div style={{ fontSize: '11px', color: 'var(--t2)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '.14em', fontWeight: 800 }}>Tip your driver</div>
                             <div style={{ display: 'flex', gap: '5px' }}>
                                 {[0, 15, 18, 20].map(p => (
                                     <button 
@@ -231,6 +246,17 @@ export default function MenuClient({
                                 ))}
                             </div>
                         </div>
+
+                        {userId && truePointsBalance > 0 && (
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', fontSize: '12px', color: 'var(--t2)' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={redeemPoints}
+                                    onChange={(e) => setRedeemPoints(e.target.checked)}
+                                />
+                                Redeem TruePoints balance (${(truePointsBalance / 100).toFixed(2)} available)
+                            </label>
+                        )}
 
                         {/* Address Selection */}
                         {!isSubmitting && (
@@ -254,7 +280,7 @@ export default function MenuClient({
                                     </Elements>
                                 </div>
                             ) : (
-                                <div style={{ marginTop: '20px', textAlign: 'center', opacity: 0.5, fontSize: '12px' }}>Loading payment session...</div>
+                                <div style={{ marginTop: '20px', textAlign: 'center', opacity: 0.5, fontSize: '12px' }}>Preparing secure checkout...</div>
                             )
                         ) : (
                             <Link href={`/login?redirect=/restaurants/${restaurant.id}`} className="co-btn" style={{ textAlign: 'center', display: 'block' }}>Sign In to Order</Link>
@@ -265,4 +291,3 @@ export default function MenuClient({
         </div>
     );
 }
-

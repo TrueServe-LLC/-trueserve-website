@@ -10,28 +10,43 @@ const Logo: React.FC<LogoProps> = ({
     className = "", 
     size = 'md'
 }) => {
-    // Exact sizing to match the .logo class in the provided template
     const sizes = {
-        sm: 'text-[18px]',
-        md: 'text-[24px]',
-        lg: 'text-[32px]',
-        xl: 'text-[48px]'
+        sm: { text: 'text-[18px]', icon: 32 },
+        md: { text: 'text-[24px]', icon: 40 },
+        lg: { text: 'text-[32px]', icon: 48 },
+        xl: { text: 'text-[48px]', icon: 60 }
     };
 
     return (
         <Link 
             href="/" 
-            className={`logo ${sizes[size]} ${className}`}
+            className={`logo ${sizes[size].text} ${className}`}
             style={{ 
-                fontWeight: 900, 
-                letterSpacing: '-.5px', 
                 cursor: 'pointer',
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                gap: '10px'
             }}
         >
-            <span style={{ color: '#fff' }}>True</span>
-            <em style={{ color: '#e8a230', fontStyle: 'normal' }}>Serve</em>
+            <img
+                src="/logo.png"
+                alt="TrueServe logo"
+                width={sizes[size].icon}
+                height={sizes[size].icon}
+                onError={(event) => {
+                    const target = event.currentTarget;
+                    if (target.src.endsWith("/logo.png")) {
+                        target.src = "/new_logo.png";
+                    }
+                }}
+                style={{
+                    borderRadius: '999px',
+                    boxShadow: '0 0 20px rgba(232, 162, 48, 0.35)',
+                    objectFit: 'cover'
+                }}
+            />
+            <span style={{ color: '#fff', fontWeight: 900, letterSpacing: '-0.02em' }}>True</span>
+            <em style={{ color: '#68c7cc', fontStyle: 'normal', fontWeight: 900, letterSpacing: '-0.02em' }}>Serve</em>
         </Link>
     );
 };

@@ -1,11 +1,9 @@
 import { getDriverOrRedirect } from "@/lib/driver-auth";
-import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DriverPreferences() {
-    const driver = await getDriverOrRedirect();
-    const isPreview = driver?.id === "preview-driver";
+    await getDriverOrRedirect();
 
     return (
         <div className="font-sans">

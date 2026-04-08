@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { getFavorites } from "@/app/user/favorite-actions";
 import FavoriteButton from "@/components/FavoriteButton";
-import NotificationBell from "@/components/NotificationBell";
 
 import MenuClient from "./MenuClient";
 
@@ -112,43 +111,66 @@ export default async function RestaurantMenu({
     }
 
     return (
-        <main id="view-menu" className={`active ${isEmbedded ? 'bg-transparent' : ''}`}>
-            <div className="menu-hd">
-                <div>
-                    {!isEmbedded && (
-                        <Link href="/restaurants" className="back" style={{ marginBottom: '6px' }}>
-                            ← Restaurants
-                        </Link>
-                    )}
-                    <h2>{restaurant.name}</h2>
-                    <p>{restaurant.address} · {restaurant.cuisineType || 'Caribbean'} · Open until 8 PM</p>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '9px', flexShrink: 0 }}>
-                    <span className="stars">★★★★★</span>
-                    <span style={{ fontWeight: 900, fontSize: '14px' }}>{restaurant.rating || '4.9'}</span>
-                    {restaurant.cuisineType && <span className="pill">{restaurant.cuisineType}</span>}
-                    {userId && (
-                        <FavoriteButton
-                            restaurantId={id}
-                            initialIsFavorited={initialIsFavorited}
-                        />
-                    )}
-                </div>
-            </div>
+        <div className={isEmbedded ? '' : 'food-app-shell'}>
+            {!isEmbedded && (
+                <main className="food-app-main">
+                    <div id="view-menu" className="active menu-page">
+                        <div className="menu-hd">
+                            <div>
+                                <Link href="/restaurants" className="back" style={{ marginBottom: '8px' }}>
+                                    ← Restaurants
+                                </Link>
+                                <div className="food-eyebrow">Restaurant Menu</div>
+                                <h2>{restaurant.name}</h2>
+                                <p>{restaurant.address} · {restaurant.cuisineType || 'Comfort Food'} · Prep time {restaurant.prepTime}</p>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '9px', flexShrink: 0, flexWrap: 'wrap' }}>
+                                <span className="stars">★★★★★</span>
+                                <span style={{ fontWeight: 900, fontSize: '14px' }}>{restaurant.rating || '4.9'}</span>
+                                {restaurant.cuisineType && <span className="food-chip">{restaurant.cuisineType}</span>}
+                                {userId && (
+                                    <FavoriteButton
+                                        restaurantId={id}
+                                        initialIsFavorited={initialIsFavorited}
+                                    />
+                                )}
+                            </div>
+                        </div>
 
-            <MenuClient
-                userId={userId}
-                truePointsBalance={truePointsBalance}
-                restaurant={restaurant}
-                items={restaurant.menuItems.map((item: any) => ({
-                    ...item,
-                    price: Number(item.price)
-                }))}
-                orderingEnabled={orderingEnabled}
-                initialAddress={address}
-                initialLat={typeof lat === 'string' ? parseFloat(lat) : undefined}
-                initialLng={typeof lng === 'string' ? parseFloat(lng) : undefined}
-            />
-        </main>
+                        <MenuClient
+                            userId={userId}
+                            truePointsBalance={truePointsBalance}
+                            restaurant={restaurant}
+                            items={restaurant.menuItems.map((item: any) => ({
+                                ...item,
+                                price: Number(item.price)
+                            }))}
+                            orderingEnabled={orderingEnabled}
+                            initialAddress={address}
+                            initialLat={typeof lat === 'string' ? parseFloat(lat) : undefined}
+                            initialLng={typeof lng === 'string' ? parseFloat(lng) : undefined}
+                        />
+                    </div>
+                </main>
+            )}
+
+            {isEmbedded && (
+                <main id="view-menu" className="active">
+                    <MenuClient
+                        userId={userId}
+                        truePointsBalance={truePointsBalance}
+                        restaurant={restaurant}
+                        items={restaurant.menuItems.map((item: any) => ({
+                            ...item,
+                            price: Number(item.price)
+                        }))}
+                        orderingEnabled={orderingEnabled}
+                        initialAddress={address}
+                        initialLat={typeof lat === 'string' ? parseFloat(lat) : undefined}
+                        initialLng={typeof lng === 'string' ? parseFloat(lng) : undefined}
+                    />
+                </main>
+            )}
+        </div>
     );
 }

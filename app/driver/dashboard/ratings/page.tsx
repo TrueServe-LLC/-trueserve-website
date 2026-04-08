@@ -1,14 +1,12 @@
 import { getDriverOrRedirect } from "@/lib/driver-auth";
-import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DriverRatings() {
     const driver = await getDriverOrRedirect();
-    const isPreview = driver?.id === "preview-driver";
 
-    const rating = isPreview ? "N/A" : (driver?.rating || "N/A");
-    const lifetimeDeliveries = isPreview ? 0 : (driver?.orders?.length || 0);
+    const rating = driver?.rating || "N/A";
+    const lifetimeDeliveries = driver?.orders?.length || 0;
 
     return (
         <div className="font-sans">
@@ -46,8 +44,8 @@ export default async function DriverRatings() {
                 <div className="ratings-grid">
                     <div className="rating-hero">
                         <div className="rating-na">{rating}</div>
-                        <div className="rating-tier">{isPreview ? "New" : "Fleet Driver"}</div>
-                        <div className="rating-sub">{isPreview ? "No ratings yet" : "Based on last 100 trips"}</div>
+                        <div className="rating-tier">Fleet Driver</div>
+                        <div className="rating-sub">Based on last 100 trips</div>
                         <div className="rating-lifetime">{lifetimeDeliveries} Lifetime Ratings</div>
                     </div>
                     

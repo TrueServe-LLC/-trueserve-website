@@ -11,11 +11,6 @@ const containerStyle = {
     borderRadius: '1rem'
 };
 
-const center = {
-    lat: 35.2271,
-    lng: -80.8431
-};
-
 interface MapWithDirectionsProps {
     origin?: string | google.maps.LatLngLiteral;
     destination?: string | google.maps.LatLngLiteral;
@@ -45,11 +40,9 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
     // Fetch Directions Imperatively - Only if startPoint or destination changes
     useEffect(() => {
         if (!isLoaded || !startPoint || !destination) {
-            console.log("MapWithDirections: Waiting for map/coords...", { isLoaded, startPoint, destination });
             return;
         }
 
-        console.log("MapWithDirections: Fetching route...", { startPoint, destination });
         setError(null); // Reset error
         const directionsService = new window.google.maps.DirectionsService();
         directionsService.route({
@@ -58,7 +51,6 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
             travelMode: window.google.maps.TravelMode.DRIVING,
             provideRouteAlternatives: false
         }, (result, status) => {
-            console.log("MapWithDirections: Result", status, result);
             if (status === window.google.maps.DirectionsStatus.OK && result) {
                 setDirections(result);
                 if (onDurationUpdate && result.routes[0]?.legs[0]?.duration?.text) {
@@ -73,7 +65,7 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
             }
         });
 
-    }, [isLoaded, startPoint, destination]);
+    }, [destination, isLoaded, onDurationUpdate, onStepsUpdate, startPoint]);
 
 
     const mapRef = React.useRef<google.maps.Map | null>(null);
@@ -135,8 +127,23 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
     // Standard Light Mode (Matches reference image)
     const defaultLightStyle: google.maps.MapTypeStyle[] = [];
 
-    // Center map on Driver (origin) if available, else startPoint
-    const mapCenter = (typeof origin === 'object' && origin !== null && 'lat' in origin) ? origin : center;
+    // Center map on origin first, otherwise route start/destination.
+    const mapCenter =
+        (typeof origin === 'object' && origin !== null && 'lat' in origin)
+            ? origin
+            : ((typeof startPoint === 'object' && startPoint !== null && 'lat' in startPoint)
+                ? startPoint
+                : ((typeof destination === 'object' && destination !== null && 'lat' in destination)
+                    ? destination
+                    : null));
+
+    if (!mapCenter) {
+        return (
+            <div className="h-[400px] w-full bg-slate-900 rounded-2xl flex items-center justify-center text-slate-500 text-sm">
+                Waiting for live route coordinates...
+            </div>
+        );
+    }
 
     return (
         <GoogleMap
@@ -243,6 +250,4 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
         </GoogleMap>
     );
 }
-
-
 

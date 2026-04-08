@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { loginAsDemoDriver } from "@/app/auth/actions";
 import Link from "next/link";
 
 export default function DriverLoginForm() {
@@ -37,14 +36,6 @@ export default function DriverLoginForm() {
         }
 
         try {
-            if (formattedPhone === "+15550001234") {
-                setPhone(formattedPhone);
-                setStep("otp");
-                setMessage({ text: "Demo Mode: Verification code is 123456", error: false });
-                setIsLoading(false);
-                return;
-            }
-
             const { error } = await supabase.auth.signInWithOtp({
                 phone: formattedPhone,
                 options: { shouldCreateUser: false }
@@ -77,11 +68,6 @@ export default function DriverLoginForm() {
         setIsLoading(true);
 
         try {
-            if (phone === "+15550001234" && token === "123456") {
-                window.location.href = "/auth/demo";
-                return;
-            }
-
             const { data, error } = await supabase.auth.verifyOtp({
                 phone: phone,
                 token: token,
@@ -136,19 +122,7 @@ export default function DriverLoginForm() {
                         {isLoading ? "UPLINKING..." : "Request Access Code →"}
                     </button>
                     
-                    <div className="auth-divider">
-                        <span className="auth-divider-txt">Quick Access</span>
-                    </div>
-
                     <div className="space-y-3">
-                        <button 
-                            type="button"
-                            onClick={() => loginAsDemoDriver()}
-                            className="w-full bg-transparent border border-white/5 hover:border-[#3dd68c]/40 text-[#3dd68c] font-bold uppercase tracking-[0.12em] text-[12px] h-[52px] rounded-[100px] transition-all flex items-center justify-center gap-2"
-                        >
-                            ⚡ LOGIN AS DEMO DRIVER
-                        </button>
-
                         <div className="text-center font-dm-sans text-[12px] text-[#555]">
                             New to the fleet? <Link href="/driver/apply" className="text-[#3dd68c] font-bold">Apply to partner</Link>
                         </div>

@@ -11,7 +11,7 @@ export default function DriverSignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const signInWithProvider = async (provider: 'google' | 'apple') => {
+  const signInWithProvider = async (provider: 'google') => {
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -30,58 +30,66 @@ export default function DriverSignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-white">
-      <nav>
+    <div className="food-app-shell">
+      <nav className="food-app-nav">
         <Logo size="sm" />
       </nav>
 
-      <main id="view-driver-signup" className="active">
-        <div className="signup-page">
-          {/* LEFT PANEL */}
-          <div className="signup-left">
-            <div className="signup-left-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80')" }}></div>
-            <div className="signup-left-overlay"></div>
-            <div className="signup-left-content">
-              <div className="su-tag">For Our Drivers</div>
-              <h2>Drive with TrueServe.<br />Earn on your terms.</h2>
-              <p className="su-desc">Join the most driver-friendly fleet in the city. High pay, total flexibility, and a support team that actually answers.</p>
-              <div className="su-perks">
-                <div className="su-perk">
-                  <div className="su-perk-ico">💵</div>
-                  <div className="su-perk-text">
-                    <div className="su-perk-title">Elite Pay Rates</div>
-                    <div className="su-perk-desc">Earn 20-30% more than other platforms with our fair pay model.</div>
-                  </div>
-                </div>
-                <div className="su-perk">
-                  <div className="su-perk-ico">📍</div>
-                  <div className="su-perk-text">
-                    <div className="su-perk-title">Smart Dispatch</div>
-                    <div className="su-perk-desc">AI-optimized routes mean less idling and more deliveries per hour.</div>
-                  </div>
-                </div>
-                <div className="su-perk">
-                  <div className="su-perk-ico">⚡️</div>
-                  <div className="su-perk-text">
-                    <div className="su-perk-title">Instant Cashout</div>
-                    <div className="su-perk-desc">Get paid the same day you drive. No waiting for weekly deposits.</div>
-                  </div>
-                </div>
+      <main className="food-auth-wrap">
+        <div className="food-auth-grid">
+          <section className="food-hero-card food-auth-hero">
+            <div className="food-auth-image" style={{ backgroundImage: "url('/diverse_drivers.png')" }} />
+            <div className="food-auth-hero-inner">
+              <div className="food-eyebrow">Driver onboarding</div>
+              <div className="mt-5 space-y-4">
+                <h1 className="food-heading !text-[56px]">Drive With TrueServe. <span className="accent">Earn More Per Hour.</span></h1>
+                <p className="food-subtitle !max-w-[520px]">
+                  The driver sign-up flow now follows the same visual language while using imagery and content made for delivery partners.
+                </p>
               </div>
+              <ul className="food-auth-list">
+                <li>
+                  <div className="food-auth-icon">1</div>
+                  <div>
+                    <div className="font-extrabold">Higher earning potential</div>
+                    <div className="text-sm text-white/65">Competitive payouts with fair routing logic.</div>
+                  </div>
+                </li>
+                <li>
+                  <div className="food-auth-icon">2</div>
+                  <div>
+                    <div className="font-extrabold">Smart dispatch</div>
+                    <div className="text-sm text-white/65">Fewer dead miles and better trip density.</div>
+                  </div>
+                </li>
+                <li>
+                  <div className="food-auth-icon">3</div>
+                  <div>
+                    <div className="font-extrabold">Flexible schedule</div>
+                    <div className="text-sm text-white/65">Drive when it fits your day and cash out quickly.</div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </div>
+          </section>
 
-          {/* RIGHT PANEL */}
-          <div className="signup-right">
+          <section className="food-panel food-auth-form">
             <Link href="/" className="su-back">← Back to Home</Link>
-            <h1>Join the Fleet</h1>
-            <p className="lead">5 minutes to apply. Approval usually within 24 hours.</p>
+            <p className="food-kicker mb-3">Driver account</p>
+            <h1 className="food-heading !text-[36px]">Join the Fleet</h1>
+            <p className="lead mt-2">Apply in minutes and start delivering with confidence.</p>
+
+            <div className="food-auth-gallery">
+              <div className="food-auth-thumb"><img src="/diverse_drivers.png" alt="Friendly team of delivery drivers" /></div>
+              <div className="food-auth-thumb"><img src="/driver_section.png" alt="Driver using delivery app" /></div>
+              <div className="food-auth-thumb"><img src="/driver_login_bg_car.png" alt="Driver ready for deliveries" /></div>
+            </div>
             
-            <div className="prog">
+            <div className="prog mt-6">
               <div className={`prog-s ${step >= 1 ? 'on' : ''}`}></div>
               <div className={`prog-s ${step >= 2 ? 'on' : ''}`}></div>
               <div className={`prog-s ${step >= 3 ? 'on' : ''}`}></div>
-              <span className="prog-label">{step < 4 ? `Step ${step} of 3` : '✓ Approved!'}</span>
+              <span className="prog-label">{step < 4 ? `Step ${step} of 3` : 'Approved'}</span>
             </div>
 
             {step === 1 && (
@@ -91,14 +99,11 @@ export default function DriverSignupPage() {
                     <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0c0e13', border: '1px solid #1c1f28', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       <span style={{ fontSize: '14px', color: '#e8a230' }}>G</span> Google Sync
                     </button>
-                    <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading} style={{ width: '100%', padding: '14px', background: '#0c0e13', border: '1px solid #1c1f28', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                      <span style={{ fontSize: '14px' }}></span> Apple Identity
-                    </button>
                  </div>
                  <div className="login-or" style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '20px 0', color: '#222', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
-                  or manual entry
-                  <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
+                 <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
+                 or manual entry
+                 <div style={{ flex: 1, height: '1px', background: '#1c1f28' }}></div>
                  </div>
               </div>
             )}
@@ -115,7 +120,7 @@ export default function DriverSignupPage() {
                   <div className="fg"><label>Phone Number</label><input type="tel" placeholder="(555) 000-0000"/></div>
                   <div className="fg"><label>Create Password</label><input type="password" placeholder="At least 8 characters"/></div>
                 </div>
-                <button className="place-btn" onClick={() => setStep(2)}>Next: Vehicle →</button>
+                <button className="place-btn" onClick={() => setStep(2)}>Next: Vehicle</button>
               </div>
             )}
 
@@ -136,7 +141,7 @@ export default function DriverSignupPage() {
                   <div className="fg"><label>Referral Code (Optional)</label><input type="text" placeholder="XXXXXX"/></div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <button className="place-btn" onClick={() => setStep(3)}>Submit Application →</button>
+                  <button className="place-btn" onClick={() => setStep(3)}>Submit Application</button>
                   <button className="btn btn-ghost w-full" onClick={() => setStep(1)}>← Back</button>
                 </div>
               </div>
@@ -148,11 +153,11 @@ export default function DriverSignupPage() {
                   <div className="done-ico">🚚</div>
                   <h3>Application Received!</h3>
                   <p>Thanks for applying! Our onboarding team will review your info and reach out via SMS within 24 hours.</p>
-                  <button className="place-btn" onClick={() => router.push('/')}>Back to Home →</button>
+                  <button className="place-btn" onClick={() => router.push('/')}>Back to Home</button>
                 </div>
               </div>
             )}
-          </div>
+          </section>
         </div>
       </main>
     </div>

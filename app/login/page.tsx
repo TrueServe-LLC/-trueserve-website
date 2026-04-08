@@ -37,7 +37,7 @@ export default function LoginPage() {
     else router.push('/');
   };
 
-  const signInWithProvider = async (provider: 'google' | 'apple') => {
+  const signInWithProvider = async (provider: 'google') => {
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -63,106 +63,133 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-white">
-      <nav>
+    <div className="food-app-shell">
+      <nav className="food-app-nav">
         <Logo size="sm" />
       </nav>
 
-      <main id="view-login" className="active">
-        <div className="home-bg-img"></div>
-        <div className="home-bg-grad"></div>
-        <div className="login-box">
-          <Link href="/" className="back">← Home</Link>
-          <h2>Welcome back</h2>
-          <p className="lead">Sign in to your TrueServe account.</p>
-
-          {/* Role selector */}
-          <div className="role-tabs">
-            <button 
-              className={`role-tab ${role === 'customer' ? 'on' : ''}`} 
-              onClick={() => setRole('customer')}
-            >
-              🍽 Customer
-            </button>
-            <button 
-              className={`role-tab ${role === 'merchant' ? 'on' : ''}`} 
-              onClick={() => setRole('merchant')}
-            >
-              🏪 Merchant
-            </button>
-            <button 
-              className={`role-tab ${role === 'driver' ? 'on' : ''}`} 
-              onClick={() => setRole('driver')}
-            >
-              🚗 Driver
-            </button>
-          </div>
-
-          <div className="fg">
-            <label>Email address</label>
-            <input 
-              type="email" 
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
+      <main className="food-auth-wrap">
+        <div className="food-auth-grid">
+          <section className="food-hero-card food-auth-hero">
+            <div
+              className="food-auth-image"
+              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80')" }}
             />
-          </div>
-          <div className="fg" style={{ marginTop: '10px' }}>
-            <label>Password</label>
-            <input 
-              type="password" 
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+            <div className="food-auth-hero-inner">
+              <div className="food-eyebrow">Customer and team access</div>
+              <div className="mt-5 space-y-4">
+                <h1 className="food-heading !text-[56px]">Welcome Back To <span className="accent">Dinner Mode.</span></h1>
+                <p className="food-subtitle !max-w-[520px]">
+                  The sign-in experience now matches the rest of the food app: warm dark surfaces, clear hierarchy, and straightforward next steps.
+                </p>
+              </div>
+              <ul className="food-auth-list">
+                {[
+                  ["Order faster", "Save addresses, past orders, and checkout details."],
+                  ["Track live", "Follow prep and delivery progress in one place."],
+                  ["Switch roles", "Customer, merchant, and driver access stays organized here."],
+                ].map(([title, desc], index) => (
+                  <li key={title}>
+                    <div className="food-auth-icon">{index + 1}</div>
+                    <div>
+                      <div className="font-extrabold">{title}</div>
+                      <div className="text-sm text-white/65">{desc}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          <section className="food-panel food-auth-form">
+            <Link href="/" className="back">← Home</Link>
+            <p className="food-kicker mb-3">Account access</p>
+            <h2 className="food-heading !text-[36px]">Sign In</h2>
+            <p className="lead mt-2">Access your TrueServe account and continue your order flow.</p>
+
+            <div className="role-tabs mt-6">
+              <button
+                className={`role-tab ${role === 'customer' ? 'on' : ''}`}
+                onClick={() => setRole('customer')}
+              >
+                Customer
+              </button>
+              <button
+                className={`role-tab ${role === 'merchant' ? 'on' : ''}`}
+                onClick={() => setRole('merchant')}
+              >
+                Merchant
+              </button>
+              <button
+                className={`role-tab ${role === 'driver' ? 'on' : ''}`}
+                onClick={() => setRole('driver')}
+              >
+                Driver
+              </button>
+            </div>
+
+            <div className="fg mt-5">
+              <label>Email address</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="fg" style={{ marginTop: '10px' }}>
+              <label>Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            <div style={{ textAlign: 'right', margin: '8px 0 16px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--gold)', cursor: 'pointer' }}>
+                Forgot password?
+              </span>
+            </div>
+
+            <button
+              className="place-btn"
+              style={{ marginTop: 0 }}
+              onClick={doLogin}
               disabled={isLoading}
-            />
-          </div>
-          <div style={{ textAlign: 'right', margin: '8px 0 16px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--gold)', cursor: 'pointer' }}>
-              Forgot password?
-            </span>
-          </div>
+            >
+              {isLoading ? "Signing in..." : "Sign In"}
+            </button>
 
-          <button 
-            className="place-btn" 
-            style={{ marginTop: 0 }} 
-            onClick={doLogin}
-            disabled={isLoading}
-          >
-            {isLoading ? "Signing in..." : "Sign In →"}
-          </button>
+            <div className="login-or">or continue with</div>
 
-          <div className="login-or">or continue with</div>
-          
-          <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading}>
                 <span style={{ fontSize: '16px' }}>G</span> Continue with Google
               </button>
-              <button className="social-btn" onClick={() => signInWithProvider('apple')} disabled={isLoading}>
-                <span style={{ fontSize: '16px' }}></span> Continue with Apple
-              </button>
-          </div>
+            </div>
 
-          {/* Portal Previews */}
-          <div style={{ marginTop: '24px', display: 'flex', gap: '8px' }}>
+            <div style={{ marginTop: '24px', display: 'flex', gap: '8px' }}>
               <button onClick={() => enterPreview('merchant')} className="btn btn-ghost" style={{ flex: 1, fontSize: '10px', padding: '10px' }}>
-                Preview Merchant Portal
+                Preview Merchant
               </button>
               <button onClick={() => enterPreview('driver')} className="btn btn-ghost" style={{ flex: 1, fontSize: '10px', padding: '10px' }}>
-                Preview Driver Portal
+                Preview Driver
               </button>
-          </div>
+            </div>
 
-          <div className="login-foot">
-            {role === 'customer' ? (
-              <>Don't have an account? <Link href="/signup">Sign up</Link></>
-            ) : role === 'merchant' ? (
-              <>No account yet? <Link href="/merchant/signup">Sign up as Merchant</Link></>
-            ) : (
-              <>No account yet? <Link href="/driver/signup">Sign up as Driver</Link></>
-            )}
-          </div>
+            <div className="login-foot">
+              {role === 'customer' ? (
+                <>Don't have an account? <Link href="/signup">Sign up</Link></>
+              ) : role === 'merchant' ? (
+                <>No account yet? <Link href="/merchant/signup">Sign up as Merchant</Link></>
+              ) : (
+                <>No account yet? <Link href="/driver/signup">Sign up as Driver</Link></>
+              )}
+            </div>
+          </section>
         </div>
       </main>
     </div>

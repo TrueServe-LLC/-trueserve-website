@@ -1,9 +1,8 @@
 import { supabase } from "@/lib/supabase";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import ChatWindow from "@/components/ChatWindow";
 import Logo from "@/components/Logo";
 import OrderTrackingClient from "./OrderTrackingClient";
+import SupportWidget from "@/components/SupportWidget";
 
 
 import { createClient } from '@supabase/supabase-js';
@@ -51,22 +50,15 @@ export default async function OrderTracking({ params }: { params: Promise<{ id: 
         return notFound();
     }
 
-    const driverName = order.driver?.user.name || "Michael T.";
-    const driverLocation = order.driver?.currentLocation || order.restaurant.coords || [35.2271, -80.8431];
-
-    // Dynamic Center: Driver -> Restaurant -> Default Charlotte
-    const mapCenter = order.driver?.currentLat && order.driver?.currentLng
-        ? [order.driver.currentLat, order.driver.currentLng] as [number, number]
-        : (order.restaurant?.lat && order.restaurant?.lng
-            ? [order.restaurant.lat, order.restaurant.lng] as [number, number]
-            : [35.2271, -80.8431] as [number, number]);
-
     return (
-        <div className="min-h-screen bg-[#0c0e13] text-white">
-            <nav>
+        <div className="food-app-shell">
+            <nav className="food-app-nav">
                 <Logo size="sm" />
             </nav>
-            <OrderTrackingClient order={order} />
+            <div className="food-app-main">
+                <OrderTrackingClient order={order} />
+            </div>
+            <SupportWidget role="CUSTOMER" />
         </div>
     );
 }

@@ -37,13 +37,19 @@ const containerStyle = {
     borderRadius: '1rem'
 };
 
-const defaultCenter = {
-    lat: 35.2271,
-    lng: -80.8431
+type LatLng = {
+    lat: number;
+    lng: number;
 };
 
-export default function DriverMap() {
-    const [mapCenter, setMapCenter] = useState(defaultCenter);
+export default function DriverMap({
+    initialCenter,
+    className = "h-[400px] w-full"
+}: {
+    initialCenter?: LatLng | null;
+    className?: string;
+}) {
+    const [mapCenter, setMapCenter] = useState<LatLng | null>(initialCenter || null);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -55,11 +61,11 @@ export default function DriverMap() {
                     });
                 },
                 () => {
-                    console.log("Geolocation permission denied or error. Using default center.");
+                    console.log("Geolocation unavailable. Continuing with stored driver coordinates.");
                 }
             );
         }
-    }, []);
+    }, [initialCenter]);
     const { isLoaded } = useJsApiLoader({
         id: GOOGLE_MAPS_SCRIPT_ID,
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -131,11 +137,19 @@ export default function DriverMap() {
     }), []);
 
     if (!isLoaded) {
-        return <div className="h-[400px] w-full bg-slate-900 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Initializing Real-time Heatmap...</div>;
+        return <div className={`${className} bg-slate-900 animate-pulse rounded-xl flex items-center justify-center text-slate-500`}>Initializing Real-time Heatmap...</div>;
+    }
+
+    if (!mapCenter) {
+        return (
+            <div className={`${className} rounded-xl border border-white/10 bg-slate-900 flex items-center justify-center text-slate-400 text-sm`}>
+                Waiting for live location to initialize map...
+            </div>
+        );
     }
 
     return (
-        <div className="h-[400px] w-full rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0">
+        <div className={`${className} rounded-xl overflow-hidden shadow-lg border border-white/10 relative z-0`}>
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={mapCenter}

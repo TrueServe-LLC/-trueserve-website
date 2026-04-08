@@ -1,13 +1,11 @@
 "use client";
 
-import { calculateDistance } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import Link from 'next/link';
 import { supabase } from "@/lib/supabase";
 import ChatWindow from "@/components/ChatWindow";
 import MapWithDirections from "@/components/MapWithDirections";
 import ReviewModal from "@/components/ReviewModal";
-import { customerCancelOrder } from "../actions";
+import { customerCancelOrder, submitOrderIssueProof } from "../actions";
 
 interface OrderTrackingClientProps {
     order: any;
@@ -15,29 +13,50 @@ interface OrderTrackingClientProps {
 
 export default function OrderTrackingClient({ order }: OrderTrackingClientProps) {
     const [currentOrder, setCurrentOrder] = useState(order);
-    const [isChatOpen, setIsChatOpen] = useState(false);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [cancelComment, setCancelComment] = useState("");
     const [isCancelling, setIsCancelling] = useState(false);
     const [eta, setEta] = useState<string>("Calculating...");
+    const [issueType, setIssueType] = useState("Wrong items");
+    const [issueDescription, setIssueDescription] = useState("");
+    const [issuePhoto, setIssuePhoto] = useState<File | null>(null);
+    const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
 
-    // Positions (Ensure numbers)
-    const restaurantLat = Number(order.restaurant.lat) || 35.2271;
-    const restaurantLng = Number(order.restaurant.lng) || -80.8431;
-    
-    const driverLat = order.driver?.currentLat ? Number(order.driver.currentLat) : restaurantLat;
-    const driverLng = order.driver?.currentLng ? Number(order.driver.currentLng) : restaurantLng;
-    
-    const [customerPos] = useState<[number, number]>(
-        (order.deliveryLat && order.deliveryLng)
-            ? [Number(order.deliveryLat), Number(order.deliveryLng)]
-            : [restaurantLat + 0.015, restaurantLng + 0.015]
+    const parseCoordinate = (value: unknown): number | null => {
+        const num = typeof value === "number" ? value : Number(value);
+        return Number.isFinite(num) ? num : null;
+    };
+
+    const restaurantLat = parseCoordinate(order.restaurant?.lat);
+    const restaurantLng = parseCoordinate(order.restaurant?.lng);
+    const driverLat = parseCoordinate(order.driver?.currentLat);
+    const driverLng = parseCoordinate(order.driver?.currentLng);
+    const deliveryLat = parseCoordinate(order.deliveryLat);
+    const deliveryLng = parseCoordinate(order.deliveryLng);
+
+    const [customerPos, setCustomerPos] = useState<[number, number] | null>(
+        deliveryLat !== null && deliveryLng !== null ? [deliveryLat, deliveryLng] : null
     );
-
-    const [driverPos, setDriverPos] = useState<[number, number]>([driverLat, driverLng]);
+    const [driverPos, setDriverPos] = useState<[number, number] | null>(
+        driverLat !== null && driverLng !== null
+            ? [driverLat, driverLng]
+            : (restaurantLat !== null && restaurantLng !== null ? [restaurantLat, restaurantLng] : null)
+    );
     const [driverBearing, setDriverBearing] = useState(0);
+    const routeOrigin =
+        restaurantLat !== null && restaurantLng !== null
+            ? { lat: restaurantLat, lng: restaurantLng }
+            : null;
+    const mapDestination =
+        customerPos !== null
+            ? { lat: customerPos[0], lng: customerPos[1] }
+            : null;
+    const mapOrigin =
+        driverPos !== null
+            ? { lat: driverPos[0], lng: driverPos[1] }
+            : null;
 
     function calculateBearing(startLat: number, startLng: number, destLat: number, destLng: number) {
         const startLatRad = (startLat * Math.PI) / 180;
@@ -50,6 +69,19 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         const brng = (Math.atan2(y, x) * 180) / Math.PI;
         return (brng + 360) % 360;
     }
+
+    useEffect(() => {
+        if (customerPos || !navigator.geolocation) return;
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setCustomerPos([position.coords.latitude, position.coords.longitude]);
+            },
+            () => {
+                console.log("Unable to access geolocation for customer map centering.");
+            }
+        );
+    }, [customerPos]);
 
     useEffect(() => {
         const orderChannel = supabase
@@ -69,11 +101,14 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 .channel(`driver-loc-${order.driverId}`)
                 .on('broadcast', { event: 'location_update' }, (payload) => {
                     const { lat, lng } = payload.payload;
-                    if (lat && lng) {
+                    const nextLat = parseCoordinate(lat);
+                    const nextLng = parseCoordinate(lng);
+                    if (nextLat !== null && nextLng !== null) {
                         setDriverPos(prev => {
-                            const bearing = calculateBearing(prev[0], prev[1], lat, lng);
+                            if (!prev) return [nextLat, nextLng];
+                            const bearing = calculateBearing(prev[0], prev[1], nextLat, nextLng);
                             if (bearing !== 0) setDriverBearing(bearing);
-                            return [lat, lng];
+                            return [nextLat, nextLng];
                         });
                     }
                 })
@@ -109,34 +144,63 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         }
     };
 
+    const handleSubmitIssue = async () => {
+        if (!issueDescription.trim() && !issuePhoto) {
+            alert("Please provide details or attach a photo.");
+            return;
+        }
+
+        setIsSubmittingIssue(true);
+        const res = await submitOrderIssueProof(
+            currentOrder.id,
+            issueType,
+            issueDescription,
+            issuePhoto
+        );
+        setIsSubmittingIssue(false);
+
+        if (res.success) {
+            setIssueDescription("");
+            setIssuePhoto(null);
+            alert("Issue submitted. Support and the merchant have been notified.");
+        } else {
+            alert(res.error || "Failed to submit issue.");
+        }
+    };
+
     return (
         <main id="view-tracking" className="active">
-            <div style={{ maxWidth: '980px', margin: '0 auto', padding: '34px 24px' }}>
-                <div className="track-top">
-                    <div>
-                        <div className="track-label">Order #{currentOrder.id.slice(-6).toUpperCase()} · {currentOrder.restaurant.name}</div>
-                        <h2>Track Your Order</h2>
-                    </div>
-                    {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
-                        <button className="btn btn-red" onClick={() => setIsCancelModalOpen(true)}>Cancel Order</button>
-                    )}
+            <div className="track-top">
+                <div>
+                    <div className="track-label">Order #{currentOrder.id.slice(-6).toUpperCase()} · {currentOrder.restaurant.name}</div>
+                    <h2>Track Your Order</h2>
                 </div>
+                {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
+                    <button className="btn btn-red" onClick={() => setIsCancelModalOpen(true)}>Cancel Order</button>
+                )}
+            </div>
 
-                <div className="track-grid">
+            <div className="track-grid">
                     {/* LEFT PANEL */}
                     <div className="track-left">
                         <div id="track-map" style={{ height: '300px', backgroundColor: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
-                            <MapWithDirections
-                                routeOrigin={{ lat: restaurantLat, lng: restaurantLng }}
-                                origin={{ lat: driverPos[0], lng: driverPos[1] }}
-                                destination={{ lat: customerPos[0], lng: customerPos[1] }}
-                                driverRotation={driverBearing}
-                                showDriver={true}
-                                onDurationUpdate={setEta}
-                            />
+                            {routeOrigin && mapOrigin && mapDestination ? (
+                                <MapWithDirections
+                                    routeOrigin={routeOrigin}
+                                    origin={mapOrigin}
+                                    destination={mapDestination}
+                                    driverRotation={driverBearing}
+                                    showDriver={true}
+                                    onDurationUpdate={setEta}
+                                />
+                            ) : (
+                                <div className="h-full w-full flex items-center justify-center text-xs uppercase tracking-[0.16em] text-white/45">
+                                    Waiting for live location coordinates...
+                                </div>
+                            )}
                         </div>
 
-                        <div className="chat-box" style={{ height: '320px', display: 'flex', flexDirection: 'column', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+                        <div className="chat-box" style={{ height: '320px' }}>
                              <ChatWindow orderId={currentOrder.id} role="CUSTOMER" />
                         </div>
                     </div>
@@ -164,7 +228,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                     <div className={`tl-dot ${currentStep >= 4 ? 'done' : currentStep === 3 ? 'live' : 'wait'}`}>{currentStep === 3 ? '⟳' : '✓'}</div>
                                     <div className="tl-body">
                                         <div className="tl-lbl">Driver Picked Up</div>
-                                        <div className="tl-sub">Heading your way</div>
+                                        <div className="tl-sub">Estimated arrival: {eta}</div>
                                     </div>
                                 </div>
                                 <div className={`tl-row ${currentStep >= 5 ? 'done' : currentStep === 4 ? 'live' : ''}`}>
@@ -192,7 +256,54 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                 </div>
                             </div>
                         )}
-                    </div>
+
+                        {["DELIVERED", "PICKED_UP", "READY_FOR_PICKUP"].includes(currentOrder.status) && (
+                            <div className="driver-box" style={{ marginTop: "12px" }}>
+                                <h3>Report Order Issue</h3>
+                                <p style={{ fontSize: "12px", color: "var(--t2)", marginBottom: "10px" }}>
+                                    Received the wrong order? Send details and an optional photo proof.
+                                </p>
+                                <select
+                                    value={issueType}
+                                    onChange={(e) => setIssueType(e.target.value)}
+                                    className="bg-transparent border border-white/10 w-full p-2 rounded"
+                                    style={{ marginBottom: "10px" }}
+                                >
+                                    <option value="Wrong items">Wrong items</option>
+                                    <option value="Missing items">Missing items</option>
+                                    <option value="Damaged order">Damaged order</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <textarea
+                                    value={issueDescription}
+                                    onChange={(e) => setIssueDescription(e.target.value)}
+                                    className="bg-transparent border border-white/10 w-full p-2 rounded"
+                                    placeholder="Tell us what happened..."
+                                    rows={3}
+                                />
+                                <div style={{ marginTop: "10px", marginBottom: "12px" }}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setIssuePhoto(e.target.files?.[0] || null)}
+                                    />
+                                    {issuePhoto && (
+                                        <div style={{ fontSize: "11px", color: "var(--t2)", marginTop: "6px" }}>
+                                            Attached: {issuePhoto.name}
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    type="button"
+                                    className="place-btn"
+                                    style={{ marginTop: 0 }}
+                                    onClick={handleSubmitIssue}
+                                    disabled={isSubmittingIssue}
+                                >
+                                    {isSubmittingIssue ? "Submitting..." : "Submit Issue Report"}
+                                </button>
+                            </div>
+                        )}
                 </div>
             </div>
 

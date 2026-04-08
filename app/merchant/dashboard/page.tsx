@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAuthSession } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import MerchantRealtime from "@/components/MerchantRealtime";
 import WelcomeModal from "./WelcomeModal";
 import { createStripeAccount } from "../actions";
@@ -171,6 +172,30 @@ export default async function MerchantDashboard() {
                     restaurantId={restaurant.id} 
                     initialGhlUrl={restaurant.ghlUrl} 
                 />
+
+                <div className="md-two-col">
+                    <div className="md-stat-block">
+                        <div className="md-stat-name">Merchant Integration Hub</div>
+                        <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, marginBottom: "14px" }}>
+                            Manage Toast or other POS credentials, Go High Level iframe ordering, Stripe payouts, and launch onboarding controls in one place.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <Link href="/merchant/dashboard/integrations" className="btn btn-gold">POS + API</Link>
+                            <Link href="/merchant/dashboard/integrations" className="btn btn-ghost">Go High Level Iframe</Link>
+                            <button className="btn btn-ghost" type="button">{hasStripe ? "Stripe Connected" : "Connect Stripe"}</button>
+                        </div>
+                    </div>
+                    <div className="md-stat-block">
+                        <div className="md-stat-name">Operations Assistant</div>
+                        <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, marginBottom: "14px" }}>
+                            Welcome animation is active at dashboard entry and Claude-powered TrueServe AI Support is available from the floating help widget.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <button className="btn btn-ghost" type="button">Welcome Animation Enabled</button>
+                            <button className="btn btn-ghost" type="button">Claude Support Active</button>
+                        </div>
+                    </div>
+                </div>
 
                 {/* AI AUTOPILOT + BUSY ZONES */}
                 <div className="md-bottom-grid">

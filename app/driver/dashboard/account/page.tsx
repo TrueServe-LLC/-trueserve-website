@@ -1,11 +1,9 @@
 import { getDriverOrRedirect } from "@/lib/driver-auth";
-import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DriverAccount() {
     const driver = await getDriverOrRedirect();
-    const isPreview = driver?.id === "preview-driver";
 
     const name = driver?.name || driver?.user?.name || "Driver";
     const email = driver?.user?.email || "driver@trueserve.com";

@@ -10,58 +10,66 @@ export default function MerchantSignupPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-white">
-      <nav>
+    <div className="food-app-shell">
+      <nav className="food-app-nav">
         <Logo size="sm" />
       </nav>
 
-      <main id="view-merchant-signup" className="active">
-        <div className="signup-page">
-          {/* LEFT PANEL */}
-          <div className="signup-left">
-            <div className="signup-left-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80')" }}></div>
-            <div className="signup-left-overlay"></div>
-            <div className="signup-left-content">
-              <div className="su-tag">For Restaurant Partners</div>
-              <h2>Grow your restaurant with TrueServe</h2>
-              <p className="su-desc">Join a platform built for local restaurants — not against them. Zero platform fees, real tools, real support.</p>
-              <div className="su-perks">
-                <div className="su-perk">
-                  <div className="su-perk-ico">💸</div>
-                  <div className="su-perk-text">
-                    <div className="su-perk-title">Zero Platform Fees</div>
-                    <div className="su-perk-desc">Keep 100% of your revenue. We earn when you earn.</div>
-                  </div>
-                </div>
-                <div className="su-perk">
-                  <div className="su-perk-ico">🤖</div>
-                  <div className="su-perk-text">
-                    <div className="su-perk-title">AI Menu Scanner</div>
-                    <div className="su-perk-desc">Snap a photo of your menu and we build it for you instantly.</div>
-                  </div>
-                </div>
-                <div className="su-perk">
-                  <div className="su-perk-ico">🖥</div>
-                  <div className="su-perk-text">
-                    <div className="su-perk-title">POS Integration</div>
-                    <div className="su-perk-desc">Works with Toast, Square, Clover and more — orders sync automatically.</div>
-                  </div>
-                </div>
+      <main className="food-auth-wrap">
+        <div className="food-auth-grid">
+          <section className="food-hero-card food-auth-hero">
+            <div className="food-auth-image" style={{ backgroundImage: "url('/merchant_hero.png')" }} />
+            <div className="food-auth-hero-inner">
+              <div className="food-eyebrow">Merchant onboarding</div>
+              <div className="mt-5 space-y-4">
+                <h1 className="food-heading !text-[56px]">Grow Your Restaurant <span className="accent">Without Losing Margin.</span></h1>
+                <p className="food-subtitle !max-w-[520px]">
+                  A merchant sign-up flow designed for owners and operators with clear setup steps and visuals tailored to restaurant partners.
+                </p>
               </div>
+              <ul className="food-auth-list">
+                <li>
+                  <div className="food-auth-icon">1</div>
+                  <div>
+                    <div className="font-extrabold">Zero platform fees</div>
+                    <div className="text-sm text-white/65">Keep more from every order while growing online reach.</div>
+                  </div>
+                </li>
+                <li>
+                  <div className="food-auth-icon">2</div>
+                  <div>
+                    <div className="font-extrabold">Smart operations</div>
+                    <div className="text-sm text-white/65">Connect POS, control prep time, and automate busy windows.</div>
+                  </div>
+                </li>
+                <li>
+                  <div className="food-auth-icon">3</div>
+                  <div>
+                    <div className="font-extrabold">Faster go-live</div>
+                    <div className="text-sm text-white/65">Get approved quickly and begin accepting delivery orders.</div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </div>
+          </section>
 
-          {/* RIGHT PANEL */}
-          <div className="signup-right">
+          <section className="food-panel food-auth-form">
             <Link href="/" className="su-back">← Back to Home</Link>
-            <h1>Partner with TrueServe</h1>
-            <p className="lead">Set up your restaurant in minutes. No hidden fees, ever.</p>
+            <p className="food-kicker mb-3">Restaurant account</p>
+            <h1 className="food-heading !text-[36px]">Partner with TrueServe</h1>
+            <p className="lead mt-2">Set up your restaurant in minutes with no hidden fees.</p>
             
-            <div className="prog">
+            <div className="food-auth-gallery">
+              <div className="food-auth-thumb"><img src="/merchant_hero.png" alt="Restaurant kitchen operations" /></div>
+              <div className="food-auth-thumb"><img src="/merchant_section.png" alt="Restaurant owner working" /></div>
+              <div className="food-auth-thumb"><img src="/merchant_login_bg_restaurant.png" alt="Restaurant storefront and dining area" /></div>
+            </div>
+            
+            <div className="prog mt-6">
               <div className={`prog-s ${step >= 1 ? 'on' : ''}`}></div>
               <div className={`prog-s ${step >= 2 ? 'on' : ''}`}></div>
               <div className={`prog-s ${step >= 3 ? 'on' : ''}`}></div>
-              <span className="prog-label">{step < 4 ? `Step ${step} of 3` : '✓ Complete!'}</span>
+              <span className="prog-label">{step < 4 ? `Step ${step} of 3` : 'Complete'}</span>
             </div>
 
             {step === 1 && (
@@ -80,7 +88,7 @@ export default function MerchantSignupPage() {
                   <div className="fg"><label>Email Address</label><input type="text" placeholder="jane@restaurant.com"/></div>
                   <div className="fg"><label>Password</label><input type="password" placeholder="At least 8 characters"/></div>
                 </div>
-                <button className="place-btn" onClick={() => setStep(2)}>Continue →</button>
+                <button className="place-btn" onClick={() => setStep(2)}>Continue</button>
               </div>
             )}
 
@@ -113,7 +121,7 @@ export default function MerchantSignupPage() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <button className="place-btn" onClick={() => setStep(3)}>Submit Application →</button>
+                  <button className="place-btn" onClick={() => setStep(3)}>Submit Application</button>
                   <button className="btn btn-ghost w-full" onClick={() => setStep(1)}>← Back</button>
                 </div>
               </div>
@@ -125,11 +133,11 @@ export default function MerchantSignupPage() {
                   <div className="done-ico">🎉</div>
                   <h3>You're in! Application Submitted.</h3>
                   <p>We'll review your application within 24 hours and send setup instructions straight to your inbox.</p>
-                  <button className="place-btn" onClick={() => router.push('/merchant/dashboard')}>Go to Portal →</button>
+                  <button className="place-btn" onClick={() => router.push('/merchant/dashboard')}>Go to Portal</button>
                 </div>
               </div>
             )}
-          </div>
+          </section>
         </div>
       </main>
     </div>

@@ -1,13 +1,13 @@
 import { getDriverOrRedirect } from "@/lib/driver-auth";
-import { createClient } from "@/lib/supabase/server";
+import DriverMap from "@/components/DriverMap";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DriverEarnings() {
     const driver = await getDriverOrRedirect();
-    const isPreview = driver?.id === "preview-driver";
-
-    const balance = isPreview ? 62.00 : (driver?.balance || 0);
+    const balance = driver?.balance || 0;
+    const driverLat = typeof driver?.currentLat === "number" ? driver.currentLat : null;
+    const driverLng = typeof driver?.currentLng === "number" ? driver.currentLng : null;
 
     return (
         <div className="font-sans">
@@ -82,10 +82,13 @@ export default async function DriverEarnings() {
 
                     <div className="heatmap-block">
                         <div className="heatmap-hd"><div className="heatmap-dot"></div><div className="heatmap-title">Smart Heatmap</div></div>
-                        <div className="heatmap-visual">
-                            <div className="text-[9px] font-bold text-[#2a2f3a] uppercase tracking-[4px]">Mesh Forecasting: Active</div>
+                        <div className="heatmap-visual !h-[280px] !p-3">
+                            <DriverMap
+                                className="h-full w-full"
+                                initialCenter={driverLat !== null && driverLng !== null ? { lat: driverLat, lng: driverLng } : null}
+                            />
                         </div>
-                        <div className="heatmap-status"><div className="heatmap-status-txt">3 Active Regions</div><div className="heatmap-status-txt">Last Sync: Just Now</div></div>
+                        <div className="heatmap-status"><div className="heatmap-status-txt">Live demand zones</div><div className="heatmap-status-txt">Based on your location</div></div>
                     </div>
                 </div>
 

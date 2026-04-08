@@ -9,58 +9,103 @@ import { supabase } from "@/lib/supabase";
 function RestaurantFinderContent() {
   const searchParams = useSearchParams();
   const address = searchParams.get("address");
+  const search = searchParams.get("search");
+  const latParam = searchParams.get("lat");
+  const lngParam = searchParams.get("lng");
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchRestaurants() {
-      // Filter for those specifically requested to show for pilot
+      const targetLat = latParam ? Number(latParam) : null;
+      const targetLng = lngParam ? Number(lngParam) : null;
+      const targetSearch = (search || address || "").toLowerCase();
+
       const { data, error } = await supabase
         .from('Restaurant')
-        .select('*')
-        .or('name.ilike.%Dhan%,name.ilike.%Krave%');
+        .select('*');
       
       if (!error && data) {
-        setRestaurants(data);
+        const withDistance = data.map((restaurant: any) => {
+          const hasCoords = typeof restaurant.lat === "number" && typeof restaurant.lng === "number";
+          let distanceMiles: number | null = null;
+
+          if (targetLat !== null && targetLng !== null && hasCoords) {
+            const toRad = (value: number) => (value * Math.PI) / 180;
+            const earthMiles = 3958.8;
+            const dLat = toRad(restaurant.lat - targetLat);
+            const dLng = toRad(restaurant.lng - targetLng);
+            const a =
+              Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRad(targetLat)) * Math.cos(toRad(restaurant.lat)) * Math.sin(dLng / 2) ** 2;
+            distanceMiles = 2 * earthMiles * Math.asin(Math.sqrt(a));
+          }
+
+          return { ...restaurant, distanceMiles };
+        });
+
+        const filtered = withDistance
+          .filter((restaurant: any) => {
+            if (targetLat !== null && targetLng !== null && restaurant.distanceMiles !== null) {
+              return restaurant.distanceMiles <= 20;
+            }
+
+            if (!targetSearch) return true;
+
+            const haystack = `${restaurant.name || ""} ${restaurant.city || ""} ${restaurant.state || ""} ${restaurant.address || ""}`.toLowerCase();
+            return haystack.includes(targetSearch);
+          })
+          .sort((a: any, b: any) => {
+            if (a.distanceMiles === null || b.distanceMiles === null) return 0;
+            return a.distanceMiles - b.distanceMiles;
+          });
+
+        setRestaurants(filtered);
       }
       setLoading(false);
     }
     fetchRestaurants();
-  }, []);
+  }, [address, latParam, lngParam, search]);
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-white">
-      <nav>
+    <div className="food-app-shell">
+      <nav className="food-app-nav">
         <Logo size="sm" />
       </nav>
 
-      <main id="view-restaurants" className="active">
-        <div className="rest-top">
-          <Link href="/" className="back" style={{ marginBottom: '16px' }}>← Back </Link>
-          <h2>Available Now</h2>
-          <p className="lead">Showing infrastructure partners in your sector: <span className="text-[#e8a230] font-bold">{address || "All Sectors"}</span></p>
-          
-          <div className="rest-filters">
-            <button className="on">All</button>
-            <button>Fast Feedback</button>
-            <button>Elite Fleet</button>
-          </div>
-        </div>
+      <main className="food-app-main">
+        <div id="view-restaurants" className="active">
+          <section className="food-panel rest-top">
+            <Link href="/" className="back" style={{ marginBottom: '16px' }}>← Back</Link>
+            <div className="food-eyebrow">Browse restaurants</div>
+            <h2>Available Now</h2>
+            <p className="lead">
+              Showing restaurants for <span className="text-[#e8a230] font-bold">{address || search || "your area"}</span>.
+              Ratings and reviews are linked to Google so customers see external feedback, not platform-only scores.
+            </p>
 
-        {loading ? (
-             <div className="text-center py-20 opacity-50 font-bold text-[#e8a230] animate-pulse">Connecting to Hive...</div>
-        ) : (
+            <div className="rest-filters">
+              <button className="on">All Restaurants</button>
+              <button>Fast Delivery</button>
+              <button>Top Rated</button>
+            </div>
+          </section>
+
+          {loading ? (
+            <div className="food-panel text-center py-20 opacity-60 font-bold text-[#e8a230] animate-pulse">Loading nearby kitchens...</div>
+          ) : (
             <div className="rest-grid">
               {restaurants.map(r => {
                 const hasGHL = r.name.toLowerCase().includes('dhan') || r.ghlUrl;
+                const googleQuery = encodeURIComponent(`${r.name || ""} ${r.address || ""} ${r.city || ""} ${r.state || ""}`);
                 return (
                   <Link key={r.id} href={`/restaurants/${r.id}`} className="rest-card">
                     <div className="rc-img" style={{ backgroundImage: `url('${r.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'}')` }}>
                       <div className="rc-badge">Pilot Partner</div>
                       {hasGHL && (
-                          <div style={{ position:'absolute', bottom:10, right:10, background:'var(--gold)', color:'#000', padding:'4px 8px', borderRadius:5, fontSize:9, fontWeight:900, display:'flex', alignItems:'center', gap:4 }}>
-                              🤖 AI ASSISTANT ACTIVE
-                          </div>
+                        <div style={{ position:'absolute', bottom:12, right:12, background:'rgba(12,14,19,.85)', color:'#fff', padding:'7px 10px', borderRadius:999, fontSize:9, fontWeight:900, display:'flex', alignItems:'center', gap:6, zIndex:1, border:'1px solid rgba(255,255,255,.08)', letterSpacing:'.12em' }}>
+                          <span style={{ color: 'var(--gold)' }}>●</span> FAST ASSIST
+                        </div>
                       )}
                     </div>
                     <div className="rc-info">
@@ -68,19 +113,33 @@ function RestaurantFinderContent() {
                       <div className="rc-meta">
                         <div className="rc-rating"><span>★</span> {r.rating || '4.9'}</div>
                         <div>•</div>
-                        <div>18-24 mins</div>
+                        <div>
+                          {typeof r.distanceMiles === "number" ? `${r.distanceMiles.toFixed(1)} mi` : "18-24 mins"}
+                        </div>
                         <div>•</div>
                         <div>{r.city}, {r.state}</div>
                       </div>
+                      <button
+                        type="button"
+                        className="mt-2 inline-flex text-[11px] uppercase tracking-[0.14em] font-bold text-[#e8a230] hover:text-white transition-colors"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          window.open(`https://www.google.com/search?q=${googleQuery}+reviews`, "_blank", "noopener,noreferrer");
+                        }}
+                      >
+                        View Google Reviews
+                      </button>
                     </div>
                   </Link>
                 );
               })}
               {restaurants.length === 0 && (
-                  <div className="col-span-full text-center py-20 opacity-50">Zero restaurants found. Onboarding in progress...</div>
+                <div className="food-panel col-span-full text-center py-20 opacity-50">No restaurants matched that area yet.</div>
               )}
             </div>
-        )}
+          )}
+        </div>
       </main>
     </div>
   );
@@ -88,7 +147,7 @@ function RestaurantFinderContent() {
 
 export default function RestaurantFinder() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0c0e13] flex items-center justify-center text-[#e8a230] font-bold">Connecting to Hive...</div>}>
+    <Suspense fallback={<div className="food-app-shell flex min-h-screen items-center justify-center text-[#e8a230] font-bold">Loading restaurants...</div>}>
       <RestaurantFinderContent />
     </Suspense>
   );
