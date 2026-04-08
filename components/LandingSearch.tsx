@@ -127,9 +127,9 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
             <form
                 onSubmit={handleManualSearch}
-                className="relative z-20 flex w-full items-center gap-2 rounded-[28px] border border-white/10 bg-[#0a0a0b]/85 p-2 shadow-2xl backdrop-blur-3xl"
+                className="relative z-20 grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[28px] border border-white/10 bg-[#0a0a0b]/85 p-2 shadow-2xl backdrop-blur-3xl"
             >
-                <div className="flex min-w-0 flex-1 items-center rounded-[20px] border border-white/5 bg-black/25 px-4 md:px-5">
+                <div className="flex min-w-0 items-center rounded-[20px] border border-white/5 bg-black/25 px-4 md:px-5">
                     <span className="mr-2 text-[18px]">📍</span>
                     <input
                         type="text"
@@ -148,7 +148,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                 <button
                     type="submit"
-                    className="h-14 shrink-0 rounded-[22px] bg-[#E8A230] px-7 text-[12px] font-black uppercase tracking-[0.18em] text-black transition-all hover:bg-[#efb23f] md:px-9"
+                    className="place-btn place-btn-inline h-14 shrink-0 px-6 md:px-9"
                 >
                     Find Food
                 </button>

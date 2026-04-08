@@ -93,7 +93,7 @@ export default function Home() {
         <section className="mt-8 grid gap-8 md:grid-cols-3">
           {[
             { title: "Start ordering", desc: "Search by address, discover nearby restaurants, and jump straight into menu browsing.", link: "/restaurants" },
-            { title: "Create an account", desc: "Keep addresses, payment details, and order history in one familiar interface.", link: "/signup" },
+            { title: "Save your details", desc: "Keep addresses, payment details, and order history in one familiar interface.", link: "/signup" },
             { title: "Track every delivery", desc: "Follow prep, pickup, and arrival inside the same visual system.", link: "/orders" }
           ].map((card) => (
             <Link key={card.title} href={card.link} className="food-card transition-transform hover:-translate-y-1">
@@ -126,8 +126,7 @@ export default function Home() {
             <div className="food-card">
               <p className="food-kicker mb-3">Quick Access</p>
               <div className="grid gap-3 text-sm">
-                <Link href="/signup" className="btn btn-gold justify-center">Create Account</Link>
-                <Link href="/restaurants" className="btn btn-ghost justify-center">Browse Restaurants</Link>
+                <Link href="/restaurants" className="btn btn-gold justify-center">Order Food</Link>
                 {userId ? (
                   <Link href="/orders" className="btn btn-ghost justify-center">View Orders</Link>
                 ) : (
