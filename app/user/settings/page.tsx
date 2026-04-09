@@ -1,10 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
 import Link from "next/link";
-import LogoutButton from "@/components/LogoutButton";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import Logo from "@/components/Logo";
 import { getAuthSession } from "@/app/auth/actions";
+import WalletUI from "@/components/WalletUI";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +11,6 @@ export default async function UserSettings() {
     const { isAuth, userId, name, role } = await getAuthSession();
     if (!isAuth || !userId) return null;
 
-    const cookieStore = await cookies();
     const supabase = await createClient();
     const { data: user } = await supabase.from('User').select('*').eq('id', userId).single();
 
@@ -37,6 +35,9 @@ export default async function UserSettings() {
                         <div className="text-center sm:text-left">
                             <h1 className="text-4xl sm:text-5xl font-serif text-white mb-2 italic">Account Settings</h1>
                             <p className="zinc-500 font-medium text-lg leading-relaxed">{user?.email}</p>
+                            <p className="mt-3 text-xs uppercase tracking-[0.2em] text-white/55">
+                                Click your avatar to upload a photo or change color.
+                            </p>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 animate-slide-up" style={{ animationDelay: '0.2s' }}>
@@ -56,12 +57,12 @@ export default async function UserSettings() {
                                 <span className="zinc-600 font-bold text-xs tracking-widest uppercase">Encryption Active</span>
                             </div>
                         </div>
-                        <div className="p-8 sm:p-10 card-glass flex flex-col sm:flex-row items-center sm:items-start gap-8 opacity-60 hover:border-[#e8a230]/30 transition-all group">
+                        <div className="p-8 sm:p-10 card-glass flex flex-col sm:flex-row items-center sm:items-start gap-8 hover:border-[#e8a230]/30 transition-all group border-[#e8a230]/20">
                             <div className="w-16 h-16 bg-[#e8a230]/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrinking-0">💳</div>
                             <div className="text-center sm:text-left">
                                 <h3 className="text-2xl font-serif text-white mb-3">Payment Methods</h3>
                                 <p className="zinc-500 text-sm leading-relaxed mb-6">Add or remove payment methods for faster checkout.</p>
-                                <span className="zinc-600 font-bold text-xs tracking-widest uppercase">Secure Wallet Ready</span>
+                                <a href="#wallet" className="text-[#e8a230] font-bold text-sm tracking-widest uppercase hover:underline">Manage Wallet →</a>
                             </div>
                         </div>
                         <div className="p-8 sm:p-10 card-glass flex flex-col sm:flex-row items-center sm:items-start gap-8 hover:border-[#e8a230]/30 transition-all group border-[#e8a230]/20">
@@ -77,6 +78,9 @@ export default async function UserSettings() {
                             </div>
                         </div>
                     </div>
+                    <section id="wallet" className="mt-10 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+                        <WalletUI userId={userId} />
+                    </section>
                 </main>
             </div>
         </div>

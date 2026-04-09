@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
+import LandingSearch from "@/components/LandingSearch";
 
 function RestaurantFinderContent() {
   const searchParams = useSearchParams();
@@ -12,6 +13,8 @@ function RestaurantFinderContent() {
   const search = searchParams.get("search");
   const latParam = searchParams.get("lat");
   const lngParam = searchParams.get("lng");
+  const selectedArea = address || search || "your area";
+  const hasLocationInput = Boolean((address || search || "").trim() || (latParam && lngParam));
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,6 +45,7 @@ function RestaurantFinderContent() {
       const targetLng = lngParam ? Number(lngParam) : null;
       const targetSearch = targetRaw.toLowerCase();
       const targetState = extractStateCode(targetRaw);
+      const shouldFilterByLocation = Boolean(targetRaw || (targetLat !== null && targetLng !== null));
 
       const { data, error } = await supabase
         .from('Restaurant')
@@ -70,6 +74,8 @@ function RestaurantFinderContent() {
 
         const filtered = withDistance
           .filter((restaurant: any) => {
+            if (!shouldFilterByLocation) return false;
+
             if (targetLat !== null && targetLng !== null && restaurant.distanceMiles !== null) {
               return restaurant.distanceMiles <= 20;
             }
@@ -108,9 +114,17 @@ function RestaurantFinderContent() {
             <div className="food-eyebrow">Browse restaurants</div>
             <h2>Available Now</h2>
             <p className="lead">
-              Showing restaurants for <span className="text-[#e8a230] font-bold">{address || search || "your area"}</span>.
+              Showing restaurants for <span className="text-[#e8a230] font-bold">{selectedArea}</span>.
               Ratings and reviews are linked to Google so customers see external feedback, not platform-only scores.
             </p>
+            <div className="mt-5">
+              <LandingSearch initialValue={address || search || ""} isCompact />
+            </div>
+            {!hasLocationInput && (
+              <p className="mt-3 text-xs uppercase tracking-[0.14em] text-white/55">
+                Enter your delivery address above to see restaurants near you.
+              </p>
+            )}
 
             <div className="rest-filters">
               <button className="on">All Restaurants</button>
@@ -162,7 +176,9 @@ function RestaurantFinderContent() {
                 );
               })}
               {restaurants.length === 0 && (
-                <div className="food-panel col-span-full text-center py-20 opacity-50">No restaurants matched that area yet.</div>
+                <div className="food-panel col-span-full text-center py-20 opacity-50">
+                  {hasLocationInput ? "No restaurants matched that area yet." : "Add your address to start browsing restaurants."}
+                </div>
               )}
             </div>
           )}

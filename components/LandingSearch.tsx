@@ -122,19 +122,19 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
     }
 
     return (
-        <div className="w-full max-w-3xl relative animate-fade-in group">
+        <div className={`w-full relative animate-fade-in group ${isCompact ? "max-w-full" : "max-w-3xl"}`}>
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/25 via-transparent to-primary/25 rounded-[28px] blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
 
             <form
                 onSubmit={handleManualSearch}
-                className="relative z-20 grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[28px] border border-white/10 bg-[#0a0a0b]/85 p-2 shadow-2xl backdrop-blur-3xl"
+                className={`relative z-20 grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "rounded-2xl p-1.5" : "rounded-[28px] p-2"}`}
             >
-                <div className="flex min-w-0 items-center rounded-[20px] border border-white/5 bg-black/25 px-4 md:px-5">
+                <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[20px] px-4 md:px-5"}`}>
                     <span className="mr-2 text-[18px]">📍</span>
                     <input
                         type="text"
                         placeholder="Enter delivery address..."
-                        className="h-14 min-w-0 flex-1 bg-transparent px-1 text-[20px] font-bold tracking-tight text-white placeholder:text-white/45 focus:outline-none"
+                        className={`min-w-0 flex-1 bg-transparent px-1 font-bold tracking-tight text-white placeholder:text-white/45 focus:outline-none ${isCompact ? "h-12 text-[17px]" : "h-14 text-[20px]"}`}
                         value={inputValue}
                         onChange={handleInput}
                         onFocus={() => {
@@ -148,7 +148,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                 <button
                     type="submit"
-                    className="place-btn place-btn-inline h-14 shrink-0 px-6 md:px-9"
+                    className={`place-btn place-btn-inline shrink-0 ${isCompact ? "h-12 px-6 md:px-8" : "h-14 px-6 md:px-9"}`}
                 >
                     Find Food
                 </button>

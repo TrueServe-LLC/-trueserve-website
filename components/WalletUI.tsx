@@ -5,7 +5,8 @@ import { getPaymentMethods, detachPaymentMethod, createSetupIntent } from "@/app
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 function SetupForm({
     clientSecret,
@@ -117,6 +118,11 @@ export default function WalletUI({ userId }: { userId: string }) {
     const handleAddClick = async () => {
         setIsAddingCard(true);
         setError(null);
+        if (!stripePromise) {
+            setError("Stripe publishable key is missing. Add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY and refresh.");
+            setIsAddingCard(false);
+            return;
+        }
         try {
             const result = await createSetupIntent(userId);
             if (result && result.error) throw new Error(result.error);
@@ -190,7 +196,7 @@ export default function WalletUI({ userId }: { userId: string }) {
                 >
                     + Establish Secure Link
                 </button>
-            ) : clientSecret ? (
+            ) : clientSecret && stripePromise ? (
                 <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#e8a230', colorBackground: '#0c0e13', colorText: '#f8fafc', fontFamily: 'DM Sans, sans-serif' } } }}>
                     <SetupForm
                         clientSecret={clientSecret}
