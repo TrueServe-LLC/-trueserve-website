@@ -124,7 +124,7 @@ export default function DriverLoginForm() {
                     
                     <div className="space-y-3">
                         <div className="text-center font-dm-sans text-[12px] text-[#555]">
-                            New to the fleet? <Link href="/driver/apply" className="text-[#3dd68c] font-bold">Apply to partner</Link>
+                            New to the fleet? <Link href="/driver/signup" className="text-[#3dd68c] font-bold">Apply to partner</Link>
                         </div>
                     </div>
                 </form>
