@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import Logo from "@/components/Logo";
 import { getAuthSession } from "@/app/auth/actions";
 import WalletUI from "@/components/WalletUI";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +11,7 @@ export default async function UserSettings() {
     const { isAuth, userId, name, role } = await getAuthSession();
     if (!isAuth || !userId) return null;
 
-    const supabase = await createClient();
-    const { data: user } = await supabase.from('User').select('*').eq('id', userId).single();
+    const { data: user } = await supabaseAdmin.from('User').select('*').eq('id', userId).maybeSingle();
 
     if (!user) return null;
 
