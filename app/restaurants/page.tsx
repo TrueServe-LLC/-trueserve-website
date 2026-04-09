@@ -26,7 +26,8 @@ function RestaurantFinderContent() {
           TEST_DATA_PATTERN.test(searchableText) ||
           searchableText.toLowerCase().includes("(mock)");
         const isVisible = !visibility || visibility === "VISIBLE";
-        const isApproved = restaurant.isApproved === true;
+        const hasApprovalColumn = Object.prototype.hasOwnProperty.call(restaurant, "isApproved");
+        const isApproved = !hasApprovalColumn || restaurant.isApproved !== false;
 
         return !isMock && !isLikelyTestRecord && isVisible && isApproved;
       };
