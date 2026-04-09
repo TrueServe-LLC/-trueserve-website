@@ -21,7 +21,7 @@ export default function Home() {
         <div className="nav-links hidden md:flex">
           <Link href="/restaurants">Order Food</Link>
           <Link href="/merchant/signup">For Merchants</Link>
-          <Link href="/driver/signup">Driver Hub</Link>
+          <Link href="/driver/login">For Drivers</Link>
         </div>
         <div className="nav-r">
           {userId ? (
