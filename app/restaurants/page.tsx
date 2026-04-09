@@ -17,16 +17,30 @@ function RestaurantFinderContent() {
 
   useEffect(() => {
     async function fetchRestaurants() {
+      const extractStateCode = (value: string) => {
+        const match = value.toUpperCase().match(/\b([A-Z]{2})\b/);
+        return match ? match[1] : null;
+      };
+
+      const targetRaw = (search || address || "").trim();
       const targetLat = latParam ? Number(latParam) : null;
       const targetLng = lngParam ? Number(lngParam) : null;
-      const targetSearch = (search || address || "").toLowerCase();
+      const targetSearch = targetRaw.toLowerCase();
+      const targetState = extractStateCode(targetRaw);
 
       const { data, error } = await supabase
         .from('Restaurant')
         .select('*');
       
       if (!error && data) {
-        const withDistance = data.map((restaurant: any) => {
+        const liveRestaurants = data.filter((restaurant: any) => {
+          const isMock = restaurant.isMock === true || (restaurant.name || "").toLowerCase().includes("(mock)");
+          const isVisible = !restaurant.visibility || restaurant.visibility === "VISIBLE";
+          const isApproved = restaurant.isApproved !== false;
+          return !isMock && isVisible && isApproved;
+        });
+
+        const withDistance = liveRestaurants.map((restaurant: any) => {
           const hasCoords = typeof restaurant.lat === "number" && typeof restaurant.lng === "number";
           let distanceMiles: number | null = null;
 
@@ -48,6 +62,10 @@ function RestaurantFinderContent() {
           .filter((restaurant: any) => {
             if (targetLat !== null && targetLng !== null && restaurant.distanceMiles !== null) {
               return restaurant.distanceMiles <= 20;
+            }
+
+            if (targetState && (restaurant.state || "").toUpperCase() !== targetState) {
+              return false;
             }
 
             if (!targetSearch) return true;
@@ -92,7 +110,7 @@ function RestaurantFinderContent() {
           </section>
 
           {loading ? (
-            <div className="food-panel text-center py-20 opacity-60 font-bold text-[#e8a230] animate-pulse">Loading nearby kitchens...</div>
+            <div className="food-panel text-center py-20 opacity-60 font-bold text-[#e8a230] animate-pulse">Loading nearby restaurants...</div>
           ) : (
             <div className="rest-grid">
               {restaurants.map(r => {
