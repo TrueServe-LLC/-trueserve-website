@@ -21,7 +21,6 @@ function RestaurantFinderContent() {
       const isLiveRestaurant = (restaurant: any) => {
         const visibility = typeof restaurant.visibility === "string" ? restaurant.visibility.toUpperCase() : "";
         const searchableText = `${restaurant.name || ""} ${restaurant.address || ""} ${restaurant.city || ""} ${restaurant.description || ""}`;
-        const hasMerchantOwner = Boolean(restaurant.ownerId || restaurant.merchantId);
         const isMock = restaurant.isMock === true;
         const isLikelyTestRecord =
           TEST_DATA_PATTERN.test(searchableText) ||
@@ -29,7 +28,7 @@ function RestaurantFinderContent() {
         const isVisible = !visibility || visibility === "VISIBLE";
         const isApproved = restaurant.isApproved === true;
 
-        return hasMerchantOwner && !isMock && !isLikelyTestRecord && isVisible && isApproved;
+        return !isMock && !isLikelyTestRecord && isVisible && isApproved;
       };
 
       const extractStateCode = (value: string) => {
