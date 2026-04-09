@@ -20,7 +20,7 @@ export default function Home() {
         <Logo size="sm" />
         <div className="nav-links hidden md:flex">
           <Link href="/restaurants">Order Food</Link>
-          <Link href="/merchant/signup">For Merchants</Link>
+          <Link href="/merchant/login">For Merchants</Link>
           <Link href="/driver/login">For Drivers</Link>
         </div>
         <div className="nav-r">
