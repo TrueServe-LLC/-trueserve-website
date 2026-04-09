@@ -47,9 +47,9 @@ function SetupForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 bg-[#0c0e13] rounded-2xl border border-white/10 mt-6 animate-in fade-in slide-in-from-top-4 duration-500 shadow-2xl">
-            <h4 className="font-bebas text-white mb-6 text-xl uppercase italic tracking-widest flex items-center gap-3">
-                Setup Payment Uplink
+        <form onSubmit={handleSubmit} className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-6">
+            <h4 className="mb-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white/85">
+                Add Payment Method
             </h4>
 
             <div className="bg-black/40 p-4 border border-white/5 mb-6 rounded-xl">
@@ -66,16 +66,16 @@ function SetupForm({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="flex-1 py-4 border border-white/5 text-slate-500 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#e8a230] transition-all font-barlow-cond"
+                    className="btn btn-ghost flex-1 justify-center"
                 >
-                    Abort
+                    Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={isSaving || !stripe || !elements}
-                    className="flex-1 bg-[#e8a230] text-black py-4 font-bebas uppercase tracking-widest text-lg disabled:opacity-30 transition-all shadow-[0_0_20px_rgba(232,162,48,0.2)] rounded-xl"
+                    className="place-btn flex-1 disabled:opacity-30"
                 >
-                    {isSaving ? "Encrypting..." : "Activate"}
+                    {isSaving ? "Saving..." : "Save Method"}
                 </button>
             </div>
         </form>
@@ -135,13 +135,13 @@ export default function WalletUI({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="bg-[#131313] border border-white/5 p-8 rounded-[2rem] relative overflow-hidden font-barlow-cond min-h-[300px]">
-            <div className="flex justify-between items-center mb-8">
+        <div className="relative min-h-[260px] rounded-2xl border border-white/10 bg-black/25 p-6 md:p-8">
+            <div className="mb-6 flex items-center justify-between">
                 <div>
-                    <h3 className="font-bebas text-white text-3xl uppercase italic leading-none tracking-wider">Digital <span className="text-[#e8a230]">Wallet</span></h3>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5A5550] mt-2 italic">Secured Assets</p>
+                    <p className="food-kicker mb-2">Digital Wallet</p>
+                    <h3 className="food-heading !text-[32px]">Saved Cards</h3>
                 </div>
-                <div className="w-12 h-12 bg-[#1C1C1C] border border-white/5 rounded-2xl flex items-center justify-center text-xl shadow-inner">💳</div>
+                <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-white/70">Secure</div>
             </div>
 
             {error && (
@@ -158,9 +158,9 @@ export default function WalletUI({ userId }: { userId: string }) {
             ) : (
                 <div className="space-y-4">
                     {methods.length === 0 ? (
-                        <div className="text-center py-10 bg-[#1C1C1C]/50 border border-white/5 border-dashed rounded-2xl">
-                            <span className="text-4xl opacity-20 mb-4 block">🏦</span>
-                            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Vault Empty</p>
+                        <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] py-10 text-center">
+                            <span className="mb-3 block text-3xl opacity-30">💳</span>
+                            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400">No Saved Payment Methods</p>
                         </div>
                     ) : (
                         methods.map(pm => (
@@ -192,9 +192,9 @@ export default function WalletUI({ userId }: { userId: string }) {
             {!isAddingCard ? (
                 <button
                     onClick={handleAddClick}
-                    className={`w-full mt-8 py-5 text-[12px] font-bebas uppercase tracking-widest transition-all bg-[#e8a230] text-black hover:opacity-90 shadow-[0_0_30px_rgba(232,162,48,0.1)] rounded-2xl ${isLoading ? 'opacity-30 pointer-events-none' : ''}`}
+                    className={`place-btn mt-7 ${isLoading ? 'opacity-30 pointer-events-none' : ''}`}
                 >
-                    + Establish Secure Link
+                    Add Payment Method
                 </button>
             ) : clientSecret && stripePromise ? (
                 <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#e8a230', colorBackground: '#0c0e13', colorText: '#f8fafc', fontFamily: 'DM Sans, sans-serif' } } }}>
@@ -212,7 +212,7 @@ export default function WalletUI({ userId }: { userId: string }) {
                     />
                 </Elements>
             ) : (
-                <div className="mt-8 flex flex-col items-center py-10 bg-[#1C1C1C] border border-white/5 rounded-2xl">
+                <div className="mt-8 flex flex-col items-center py-10 bg-black/30 border border-white/5 rounded-2xl">
                     <div className="w-6 h-6 border-t-2 border-[#e8a230] rounded-full animate-spin mb-4"></div>
                     <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5A5550]">Encrypting...</span>
                 </div>
