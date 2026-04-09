@@ -17,6 +17,21 @@ function RestaurantFinderContent() {
 
   useEffect(() => {
     async function fetchRestaurants() {
+      const TEST_DATA_PATTERN = /\b(mock|test|demo|preview|sandbox|sample|qa|staging|seed)\b/i;
+      const isLiveRestaurant = (restaurant: any) => {
+        const visibility = typeof restaurant.visibility === "string" ? restaurant.visibility.toUpperCase() : "";
+        const searchableText = `${restaurant.name || ""} ${restaurant.address || ""} ${restaurant.city || ""} ${restaurant.description || ""}`;
+        const hasMerchantOwner = Boolean(restaurant.ownerId || restaurant.merchantId);
+        const isMock = restaurant.isMock === true;
+        const isLikelyTestRecord =
+          TEST_DATA_PATTERN.test(searchableText) ||
+          searchableText.toLowerCase().includes("(mock)");
+        const isVisible = !visibility || visibility === "VISIBLE";
+        const isApproved = restaurant.isApproved === true;
+
+        return hasMerchantOwner && !isMock && !isLikelyTestRecord && isVisible && isApproved;
+      };
+
       const extractStateCode = (value: string) => {
         const match = value.toUpperCase().match(/\b([A-Z]{2})\b/);
         return match ? match[1] : null;
@@ -33,12 +48,7 @@ function RestaurantFinderContent() {
         .select('*');
       
       if (!error && data) {
-        const liveRestaurants = data.filter((restaurant: any) => {
-          const isMock = restaurant.isMock === true || (restaurant.name || "").toLowerCase().includes("(mock)");
-          const isVisible = !restaurant.visibility || restaurant.visibility === "VISIBLE";
-          const isApproved = restaurant.isApproved !== false;
-          return !isMock && isVisible && isApproved;
-        });
+        const liveRestaurants = data.filter(isLiveRestaurant);
 
         const withDistance = liveRestaurants.map((restaurant: any) => {
           const hasCoords = typeof restaurant.lat === "number" && typeof restaurant.lng === "number";
@@ -114,12 +124,11 @@ function RestaurantFinderContent() {
           ) : (
             <div className="rest-grid">
               {restaurants.map(r => {
-                const hasGHL = r.name.toLowerCase().includes('dhan') || r.ghlUrl;
+                const hasGHL = Boolean(r.ghlUrl);
                 const googleQuery = encodeURIComponent(`${r.name || ""} ${r.address || ""} ${r.city || ""} ${r.state || ""}`);
                 return (
                   <Link key={r.id} href={`/restaurants/${r.id}`} className="rest-card">
                     <div className="rc-img" style={{ backgroundImage: `url('${r.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'}')` }}>
-                      <div className="rc-badge">Pilot Partner</div>
                       {hasGHL && (
                         <div style={{ position:'absolute', bottom:12, right:12, background:'rgba(12,14,19,.85)', color:'#fff', padding:'7px 10px', borderRadius:999, fontSize:9, fontWeight:900, display:'flex', alignItems:'center', gap:6, zIndex:1, border:'1px solid rgba(255,255,255,.08)', letterSpacing:'.12em' }}>
                           <span style={{ color: 'var(--gold)' }}>●</span> FAST ASSIST
