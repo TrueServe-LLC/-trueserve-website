@@ -80,6 +80,13 @@ export default function DriverLoginPage() {
             >
               Preview Driver Portal Mock
             </Link>
+
+            <Link
+              href="/driver/tutorial-preview"
+              className="mt-3 inline-flex w-full items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-3 text-[12px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
+            >
+              View Animated Tutorial
+            </Link>
           </section>
         </div>
       </main>
