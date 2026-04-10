@@ -198,7 +198,7 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
             )}
 
             {!isOpen && (
-                <button className="float-btn" onClick={() => setIsOpen(true)}>
+                <button className="float-btn" data-tour="support-fab" onClick={() => setIsOpen(true)}>
                     <svg width="24" height="24" viewBox="0 0 18 18" fill="none"><path d="M2 3a1 1 0 011-1h12a1 1 0 011 1v8a1 1 0 01-1 1H6l-4 3V3z" fill="currentColor"/></svg>
                 </button>
             )}
