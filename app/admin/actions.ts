@@ -219,8 +219,6 @@ export async function approveMerchant(restaurantId: string) {
         const { error } = await supabaseAdmin
             .from('Restaurant')
             .update({
-                isApproved: true,
-                isActive: true,
                 visibility: 'VISIBLE',
                 updatedAt: new Date().toISOString()
             })
@@ -232,8 +230,8 @@ export async function approveMerchant(restaurantId: string) {
             action: "APPROVE_MERCHANT",
             targetId: restaurantId,
             entityType: "Restaurant",
-            before: { isApproved: false },
-            after: { isApproved: true, visibility: "VISIBLE" }
+            before: { visibility: "HIDDEN" },
+            after: { visibility: "VISIBLE" }
         });
 
         const owner = restaurant.owner as any;
@@ -279,8 +277,6 @@ export async function rejectMerchant(restaurantId: string) {
         const { error } = await supabaseAdmin
             .from('Restaurant')
             .update({
-                isApproved: false,
-                isActive: false,
                 visibility: 'HIDDEN',
                 updatedAt: new Date().toISOString()
             })
@@ -292,7 +288,7 @@ export async function rejectMerchant(restaurantId: string) {
             action: "REJECT_MERCHANT",
             targetId: restaurantId,
             entityType: "Restaurant",
-            before: { isApproved: false },
+            before: { visibility: "HIDDEN" },
             after: { visibility: "HIDDEN" }
         });
 

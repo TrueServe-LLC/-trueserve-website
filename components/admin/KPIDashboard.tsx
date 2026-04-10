@@ -40,7 +40,7 @@ export default function KPIDashboard({ orders, drivers, restaurants }: KPIDashbo
             ratedOrders.length > 0
                 ? ratedOrders.reduce((acc, o) => acc + Number(o.customerRating), 0) / ratedOrders.length
                 : null;
-        const activeMerchants = restaurants.filter(r => r.isApproved).length;
+        const activeMerchants = restaurants.filter((r: any) => r.visibility === 'VISIBLE').length;
         const activeDrivers = drivers.filter((d: any) => d.status === 'ONLINE' || d.status === 'ACTIVE').length;
 
         return {

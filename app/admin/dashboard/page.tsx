@@ -127,10 +127,10 @@ async function getPendingMerchants() {
                 plan,
                 posSystem,
                 createdAt,
-                isApproved,
+                visibility,
                 owner:User(name, email, phone)
             `)
-            .eq('isApproved', false)
+            .neq('visibility', 'VISIBLE')
             .order('createdAt', { ascending: false });
 
         if (error) {
@@ -147,7 +147,7 @@ async function getPendingMerchants() {
 
 async function getAllRestaurants() {
     try {
-        const { data, error } = await supabase.from('Restaurant').select('id, name, isActive, isApproved, createdAt');
+        const { data, error } = await supabase.from('Restaurant').select('id, name, visibility, createdAt');
         if (error) return [];
         return data || [];
     } catch { return []; }
@@ -449,7 +449,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20 px-2">
                     {restaurants.map(r => (
                         <div key={r.id} className="panel !border-[#1c1f28]">
-                            <div className="panel-hd">{r.name} <span className={r.isApproved ? 'badge badge-ok' : 'badge badge-warn'}>{r.isApproved ? 'LIVE' : 'PENDING'}</span></div>
+                            <div className="panel-hd">{r.name} <span className={r.visibility === 'VISIBLE' ? 'badge badge-ok' : 'badge badge-warn'}>{r.visibility === 'VISIBLE' ? 'LIVE' : 'PENDING'}</span></div>
                             <div className="text-[10px] text-[#555] mb-3 uppercase tracking-[0.1em]">Payout Status: NOT CONNECTED</div>
                             <form action={async () => { "use server"; const { generateMerchantStripeLink } = await import('../actions'); await generateMerchantStripeLink(r.id); }}>
                                 <button className="nav-cta w-full !text-[10px]">⚡ Send Onboarding Link</button>

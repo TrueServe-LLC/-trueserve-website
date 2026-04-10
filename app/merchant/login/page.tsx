@@ -39,7 +39,7 @@ export default function MerchantLoginPage() {
 
     const { data: merchantRestaurant, error: merchantError } = await supabase
       .from("Restaurant")
-      .select("id, isApproved")
+      .select("id, visibility")
       .eq("ownerId", data.user.id)
       .maybeSingle();
 
@@ -50,7 +50,7 @@ export default function MerchantLoginPage() {
       return;
     }
 
-    if (!merchantRestaurant.isApproved) {
+    if (merchantRestaurant.visibility !== "VISIBLE") {
       await supabase.auth.signOut();
       setErrorText("Your merchant application is pending admin approval.");
       setIsLoading(false);
