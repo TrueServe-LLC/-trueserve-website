@@ -2,13 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 
 export default function MerchantLoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +57,9 @@ export default function MerchantLoginPage() {
       return;
     }
 
-    const forceTour = searchParams.get("tour") === "1";
+    const forceTour =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("tour") === "1";
     router.push(forceTour ? "/merchant/dashboard?tour=1" : "/merchant/dashboard");
     router.refresh();
   };

@@ -2,18 +2,18 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import DriverLoginForm from "./DriverLoginForm";
 
 export default function DriverLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const searchParams = useSearchParams();
 
   const signInWithProvider = async (provider: 'google') => {
     setIsLoading(true);
-    const wantsTour = searchParams.get("tour") === "1";
+    const wantsTour =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("tour") === "1";
     const nextPath = wantsTour ? "/driver/dashboard?tour=1" : "/driver/dashboard";
     const { error } = await supabase.auth.signInWithOAuth({
         provider,
