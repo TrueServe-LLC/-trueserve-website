@@ -168,6 +168,12 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         }
     };
 
+    const openSupport = (prefill?: string) => {
+        try {
+            window.dispatchEvent(new CustomEvent("ts:support:open", { detail: { prefill } }));
+        } catch { }
+    };
+
     return (
         <main id="view-tracking" className="active">
             <div className="track-top">
@@ -175,9 +181,18 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     <div className="track-label">Order #{currentOrder.id.slice(-6).toUpperCase()} · {currentOrder.restaurant.name}</div>
                     <h2>Track Your Order</h2>
                 </div>
-                {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
-                    <button className="btn btn-red" onClick={() => setIsCancelModalOpen(true)}>Cancel Order</button>
-                )}
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    <button
+                        type="button"
+                        className="btn btn-ghost"
+                        onClick={() => openSupport(`Hi TrueServe Support — I need help with order ${currentOrder.id}.`)}
+                    >
+                        Contact Support
+                    </button>
+                    {['PENDING', 'PREPARING'].includes(currentOrder.status) && (
+                        <button className="btn btn-red" onClick={() => setIsCancelModalOpen(true)}>Cancel Order</button>
+                    )}
+                </div>
             </div>
 
             <div className="track-grid">
@@ -301,6 +316,14 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                     disabled={isSubmittingIssue}
                                 >
                                     {isSubmittingIssue ? "Submitting..." : "Submit Issue Report"}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-ghost"
+                                    style={{ width: "100%", marginTop: "10px" }}
+                                    onClick={() => openSupport(`I just submitted an issue for order ${currentOrder.id}. I’d like to speak to a human agent.`)}
+                                >
+                                    Talk to a Human
                                 </button>
                             </div>
                         )}

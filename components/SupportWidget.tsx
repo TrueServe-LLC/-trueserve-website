@@ -5,6 +5,7 @@ import { sendMessageToSupport, getActiveSupportChat } from "@/app/support/action
 import { MessageCircle, X, Send, Bot, User, ShieldAlert } from "lucide-react";
 
 export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER" | "DRIVER" | "MERCHANT" }) {
+    const SUPPORT_OPEN_EVENT = "ts:support:open";
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
     const [chatId, setChatId] = useState<string | null>(null);
@@ -12,20 +13,7 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-
-    // Initial load
-    useEffect(() => {
-        if (isOpen && messages.length === 0) {
-            loadChat();
-        }
-    }, [isOpen]);
-
-    // Scroll to bottom
-    useEffect(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-    }, [messages, isTyping]);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const loadChat = async () => {
         setIsTyping(true);
@@ -34,6 +22,13 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
             setChatId(res.chat.id);
             setBotStatus(res.chat.status);
             setMessages(res.messages || []);
+        } else if (!res.success && res.error === "Not logged in") {
+            setBotStatus("LOGIN_REQUIRED");
+            setMessages([{
+                id: 'login-required',
+                sender: 'BOT',
+                content: `Please sign in to contact support so we can securely help with your order.`,
+            }]);
         } else {
             setMessages([{
                 id: 'welcome',
@@ -43,6 +38,37 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
         }
         setIsTyping(false);
     };
+
+    // Initial load
+    useEffect(() => {
+        if (isOpen && messages.length === 0) {
+            loadChat();
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        const onOpen = (event: Event) => {
+            const custom = event as CustomEvent<{ prefill?: string }>;
+            setIsOpen(true);
+            const prefill = custom?.detail?.prefill;
+            if (typeof prefill === "string" && prefill.trim()) {
+                setInput(prefill);
+            }
+            setTimeout(() => inputRef.current?.focus(), 50);
+        };
+
+        window.addEventListener(SUPPORT_OPEN_EVENT, onOpen as EventListener);
+        return () => {
+            window.removeEventListener(SUPPORT_OPEN_EVENT, onOpen as EventListener);
+        };
+    }, []);
+
+    // Scroll to bottom
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages, isTyping]);
 
     const handleSend = async (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -67,7 +93,9 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
                 setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'BOT', content: "An agent will be with you shortly." }]);
             }
         } else {
-            setMessages(prev => [...prev, { id: 'error', sender: 'BOT', content: "Failed to send message. Please try again." }]);
+            const msg = String((res as any).error || "");
+            const isLogin = msg.toLowerCase().includes("logged in");
+            setMessages(prev => [...prev, { id: 'error', sender: 'BOT', content: isLogin ? "Please sign in to contact support." : "Failed to send message. Please try again." }]);
         }
         setIsTyping(false);
     };
@@ -159,6 +187,7 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
                             type="text" 
                             placeholder="Type a message..." 
                             value={input}
+                            ref={inputRef}
                             onChange={(e) => setInput(e.target.value)}
                         />
                         <button className="send-btn" type="submit">
