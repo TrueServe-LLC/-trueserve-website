@@ -54,6 +54,24 @@ export default async function DriverAccount() {
                 .stripe-txt-sub { font-size: 11px; font-weight: 600; color: #333; text-transform: uppercase; letter-spacing: 0.1em; }
                 .btn-connect { padding: 12px 24px; border: 1.5px solid #e8a230; color: #e8a230; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .2s; border-radius: 10px; font-style: italic; }
                 .btn-connect:hover { background: #e8a230; color: #000; }
+
+                @media (max-width: 900px) {
+                    .page-wrap { padding: 20px 16px; }
+                    .page-title { font-size: 38px; margin-bottom: 20px; }
+                    .acct-panel { padding: 20px; }
+                    .profile-hero { padding: 20px; gap: 16px; margin-bottom: 20px; }
+                    .profile-av { width: 64px; height: 64px; font-size: 24px; }
+                    .profile-name { font-size: 30px; }
+                }
+
+                @media (max-width: 640px) {
+                    .profile-hero { flex-direction: column; align-items: flex-start; }
+                    .profile-hero::before { left: 16px; top: 0; bottom: auto; width: calc(100% - 32px); height: 3px; border-radius: 0 0 4px 4px; }
+                    .info-row { padding: 14px 16px; gap: 10px; }
+                    .info-value { font-size: 11px; text-align: right; }
+                    .stripe-left { align-items: flex-start; }
+                    .btn-connect { width: 100%; }
+                }
             ` }} />
             
             <div className="page-wrap animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -61,7 +79,7 @@ export default async function DriverAccount() {
                 
                 <div className="acct-grid">
                     {/* LEFT PANEL: PUBLIC INFO */}
-                    <div className="acct-panel border-r border-[#1c1f28]">
+                    <div className="acct-panel border-b border-[#1c1f28] lg:border-b-0 lg:border-r">
                         <div className="profile-hero">
                             <div className="profile-av">{initials}</div>
                             <div>

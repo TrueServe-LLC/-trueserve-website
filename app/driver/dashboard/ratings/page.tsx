@@ -36,6 +36,22 @@ export default async function DriverRatings() {
                 .feedback-block { background: #0c0c0e; border: 1px solid #1c1f28; padding: 32px; border-radius: 0; }
                 .feedback-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.1em; margin-bottom: 24px; }
                 .feedback-empty { background: #080808; border: 1px solid #131720; padding: 48px; text-align: center; font-size: 11px; font-weight: 800; tracking-widest uppercase color: #222; font-style: italic; }
+
+                @media (max-width: 900px) {
+                    .page-wrap { padding: 20px 16px; }
+                    .page-title { font-size: 38px; margin-bottom: 20px; }
+                    .rating-hero { padding: 28px 20px; }
+                    .rating-na { font-size: 74px; margin-bottom: 8px; }
+                    .stat-quad-cell { padding: 20px; }
+                    .sq-val { font-size: 34px; }
+                    .feedback-block { padding: 20px; }
+                }
+
+                @media (max-width: 640px) {
+                    .rating-na { font-size: 58px; }
+                    .rating-tier { letter-spacing: 0.22em; }
+                    .feedback-empty { padding: 28px 16px; font-size: 10px; }
+                }
             ` }} />
             
             <div className="page-wrap">

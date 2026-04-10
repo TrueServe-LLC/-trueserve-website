@@ -42,29 +42,30 @@ export default async function MerchantDashboardLayout({ children }: { children: 
     return (
         <div className="food-app-shell min-h-screen">
             <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
-                <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] items-center justify-between gap-4 py-3">
-                    <div className="flex items-center gap-3">
+                <div className="portal-header-inner mx-auto w-[min(1240px,calc(100%-24px))] py-3">
+                    <div className="portal-brand">
                         <Logo size="sm" />
                         <span className="hidden text-[10px] font-black uppercase tracking-[0.18em] text-[#68c7cc] md:inline-flex">
                             Merchant Portal
                         </span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="portal-controls">
                         <MerchantModeToggle />
-                        <PortalTourButton portal="MERCHANT" />
-                        <div className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#e8a230]/45 bg-[radial-gradient(circle_at_30%_30%,#f2c15f_0%,#e8a230_55%,#cb8611_100%)] text-[11px] font-black text-black shadow-[0_10px_24px_rgba(232,162,48,0.35)]">
+                        <PortalTourButton
+                            portal="MERCHANT"
+                            className="portal-btn-compact"
+                        />
+                        <div className="portal-avatar border border-[#e8a230]/45 bg-[radial-gradient(circle_at_30%_30%,#f2c15f_0%,#e8a230_55%,#cb8611_100%)] text-black shadow-[0_10px_24px_rgba(232,162,48,0.35)]">
                             {merchantInitials}
                             <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border border-black/50 bg-[#3dd68c]" />
                         </div>
-                        <div className="text-xs uppercase tracking-[0.14em] text-white/70">
-                            <LogoutButton />
-                        </div>
+                        <LogoutButton className="portal-btn-compact" />
                     </div>
                 </div>
-                <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] gap-2 overflow-x-auto pb-3">
-                    <Link data-tour="merchant-nav-dashboard" href="/merchant/dashboard" className="rounded-full border border-[#e8a230]/35 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#e8a230]">Dashboard</Link>
-                    <Link data-tour="merchant-nav-integrations" href="/merchant/dashboard/integrations" className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70 hover:text-white">Integrations</Link>
-                    <Link data-tour="merchant-nav-storefront" href="/restaurants" target="_blank" className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70 hover:text-white">Storefront</Link>
+                <div className="portal-nav-row mx-auto w-[min(1240px,calc(100%-24px))]">
+                    <Link data-tour="merchant-nav-dashboard" href="/merchant/dashboard" className="portal-pill portal-pill-active">Dashboard</Link>
+                    <Link data-tour="merchant-nav-integrations" href="/merchant/dashboard/integrations" className="portal-pill">Integrations</Link>
+                    <Link data-tour="merchant-nav-storefront" href="/restaurants" target="_blank" className="portal-pill">Storefront</Link>
                 </div>
             </header>
             <main>{children}</main>

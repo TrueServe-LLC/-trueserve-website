@@ -215,8 +215,8 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                             )}
                         </div>
 
-                        <div className="chat-box" style={{ height: '320px' }}>
-                             <ChatWindow orderId={currentOrder.id} role="CUSTOMER" />
+                        <div style={{ height: '340px' }}>
+                             <ChatWindow orderId={currentOrder.id} role="CUSTOMER" fitContainer />
                         </div>
                     </div>
 

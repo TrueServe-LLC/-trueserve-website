@@ -23,6 +23,7 @@ export default async function DriverEarnings() {
                 .section-hd-title span { color: #e8a230; }
                 .section-hd-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 32px; display: block; }
 
+                .ledger-table-wrap { overflow-x: auto; }
                 .ledger-table { width: 100%; border-collapse: collapse; border: 1px solid #1c1f28; margin-bottom: 14px; }
                 .ledger-table th { background: #0f1219; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #444; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1c1f28; }
                 .ledger-table td { padding: 11px 14px; border-bottom: 1px solid #131720; font-size: 12px; font-family: 'DM Mono', monospace; color: #888; }
@@ -64,6 +65,20 @@ export default async function DriverEarnings() {
                 .liq-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; }
                 .liq-balance-val { font-size: 32px; font-weight: 700; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; margin-bottom: 12px; }
                 .cash-out-btn { width: 100%; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px; background: #e8a230; border: none; color: #000; cursor: pointer; }
+
+                @media (max-width: 768px) {
+                    .ledger-left, .ledger-right { padding: 18px; }
+                    .section-hd-title { font-size: 34px; }
+                    .section-hd-sub { margin-bottom: 20px; letter-spacing: 0.14em; }
+                    .pickup-actions { grid-template-columns: 1fr; }
+                }
+
+                @media (max-width: 480px) {
+                    .section-hd-title { font-size: 30px; }
+                    .ledger-table th, .ledger-table td { padding: 9px 10px; }
+                    .heatmap-visual { height: 200px; }
+                    .liq-balance-val { font-size: 26px; }
+                }
             ` }} />
             
             <div className="two-col-ledger">
@@ -71,14 +86,16 @@ export default async function DriverEarnings() {
                     <div className="section-hd-title">Ledger <span>&amp; Mesh</span></div>
                     <div className="section-hd-sub">Historical yield and sector forecasting</div>
                     
-                    <table className="ledger-table">
-                        <thead><tr><th>Timeline</th><th>Dispatch</th><th>Yield</th><th>Settlement</th></tr></thead>
-                        <tbody>
-                            <tr><td className="log-name">Sync Log 26</td><td>2.5 MI Link</td><td>$3.25</td><td className="settlement">$8.95</td></tr>
-                            <tr><td className="log-name">Sync Log 25</td><td>5 MI Link</td><td>$3.50</td><td className="settlement">$13.30</td></tr>
-                            <tr><td className="log-name">Sync Log 24</td><td>7.5 MI Link</td><td>$3.75</td><td className="settlement">$13.85</td></tr>
-                        </tbody>
-                    </table>
+                    <div className="ledger-table-wrap">
+                        <table className="ledger-table">
+                            <thead><tr><th>Timeline</th><th>Dispatch</th><th>Yield</th><th>Settlement</th></tr></thead>
+                            <tbody>
+                                <tr><td className="log-name">Sync Log 26</td><td>2.5 MI Link</td><td>$3.25</td><td className="settlement">$8.95</td></tr>
+                                <tr><td className="log-name">Sync Log 25</td><td>5 MI Link</td><td>$3.50</td><td className="settlement">$13.30</td></tr>
+                                <tr><td className="log-name">Sync Log 24</td><td>7.5 MI Link</td><td>$3.75</td><td className="settlement">$13.85</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div className="heatmap-block">
                         <div className="heatmap-hd"><div className="heatmap-dot"></div><div className="heatmap-title">Smart Heatmap</div></div>

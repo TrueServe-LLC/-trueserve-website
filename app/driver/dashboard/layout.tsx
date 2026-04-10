@@ -30,29 +30,27 @@ export default async function DriverDashboardLayout({ children }: { children: Re
     return (
         <div className="food-app-shell min-h-screen text-white">
             <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
-                <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] items-center justify-between gap-4 py-3">
-                    <div className="flex items-center gap-3">
+                <div className="portal-header-inner mx-auto w-[min(1240px,calc(100%-24px))] py-3">
+                    <div className="portal-brand">
                         <Logo size="sm" />
                         <span className="hidden text-[10px] font-black uppercase tracking-[0.18em] text-[#68c7cc] md:inline-flex">
                             Driver Portal
                         </span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <div className="hidden rounded-full border border-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-white/70 sm:inline-flex">
+                    <div className="portal-controls">
+                        <div className="portal-btn-compact hidden sm:inline-flex">
                             Balance ${balance.toFixed(2)}
                         </div>
-                        <PortalTourButton portal="DRIVER" />
-                        <div className="rounded-full bg-[#e8a230] px-3 py-1 text-xs font-black text-black">{driverInitials}</div>
-                        <div className="text-xs uppercase tracking-[0.14em] text-white/70">
-                            <LogoutButton />
-                        </div>
+                        <PortalTourButton portal="DRIVER" className="portal-btn-compact" />
+                        <div className="portal-avatar bg-[#e8a230] text-black">{driverInitials}</div>
+                        <LogoutButton className="portal-btn-compact" />
                     </div>
                 </div>
-                <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] gap-2 overflow-x-auto pb-3">
-                    <Link data-tour="driver-nav-dashboard" href="/driver/dashboard" className="rounded-full border border-[#e8a230]/35 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#e8a230]">Dashboard</Link>
-                    <Link data-tour="driver-nav-earnings" href="/driver/dashboard/earnings" className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70 hover:text-white">Settlements</Link>
-                    <Link data-tour="driver-nav-ratings" href="/driver/dashboard/ratings" className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70 hover:text-white">Reputation</Link>
-                    <Link data-tour="driver-nav-account" href="/driver/dashboard/account" className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70 hover:text-white">Profile</Link>
+                <div className="portal-nav-row mx-auto w-[min(1240px,calc(100%-24px))]">
+                    <Link data-tour="driver-nav-dashboard" href="/driver/dashboard" className="portal-pill portal-pill-active">Dashboard</Link>
+                    <Link data-tour="driver-nav-earnings" href="/driver/dashboard/earnings" className="portal-pill">Settlements</Link>
+                    <Link data-tour="driver-nav-ratings" href="/driver/dashboard/ratings" className="portal-pill">Reputation</Link>
+                    <Link data-tour="driver-nav-account" href="/driver/dashboard/account" className="portal-pill">Profile</Link>
                 </div>
             </header>
 

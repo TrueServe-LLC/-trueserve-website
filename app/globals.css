@@ -106,6 +106,102 @@ nav {
   backdrop-filter: blur(18px);
 }
 
+.portal-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.portal-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.portal-btn-compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 9px 14px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  color: rgba(255, 255, 255, 0.78);
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+
+.portal-btn-compact:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.portal-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.portal-nav-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.portal-nav-row::-webkit-scrollbar {
+  display: none;
+}
+
+.portal-pill {
+  flex-shrink: 0;
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(255, 255, 255, 0.72);
+  transition: all .15s ease;
+}
+
+.portal-pill:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.portal-pill-active {
+  border-color: rgba(232, 162, 48, 0.35);
+  background: rgba(232, 162, 48, 0.1);
+  color: var(--gold);
+}
+
 .food-app-main {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
@@ -832,6 +928,19 @@ nav {
   .rest-grid { grid-template-columns: 1fr; }
   .md-stat-grid { grid-template-columns: 1fr; }
   .md-two-col, .md-bottom-grid { grid-template-columns: 1fr; }
+  .portal-header-inner { width: min(1240px, calc(100% - 16px)); align-items: flex-start; }
+  .portal-brand { width: 100%; }
+  .portal-controls { width: 100%; justify-content: flex-start; gap: 6px; }
+  .portal-btn-compact { padding: 8px 12px; font-size: 10px; }
+  .portal-avatar { width: 34px; height: 34px; font-size: 10px; }
+  .portal-nav-row { width: min(1240px, calc(100% - 16px)); padding-bottom: 8px; }
+  .portal-pill { padding: 8px 12px; font-size: 10px; letter-spacing: .11em; }
+  .md-page-hd { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+  .md-hd-right { width: 100%; justify-content: flex-start; gap: 8px; }
+  .md-stripe-banner { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .md-stripe-left { width: 100%; align-items: flex-start; }
+  .md-stripe-btn { width: 100%; }
+  .ml-mode-tab { padding: 8px 10px; }
 
   /* Menu & Checkout View */
   .menu-hd { flex-direction: column; align-items: flex-start; padding: 20px; }
@@ -854,6 +963,9 @@ nav {
     .food-title { font-size: 40px; line-height: 0.98; }
     .food-heading { font-size: 30px; }
     .home-bg-img { filter: none; }
+    .portal-controls { gap: 5px; }
+    .portal-btn-compact { padding: 7px 10px; font-size: 9px; }
+    .portal-pill { padding: 7px 10px; font-size: 9px; }
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

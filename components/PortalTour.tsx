@@ -53,7 +53,7 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
         },
         {
           title: "Integrations",
-          body: "Connect POS and payment tools here. This is where your operational setup lives.",
+          body: "Connect Toast POS and payment tools here. This is where your operational setup lives.",
           selector: "[data-tour='merchant-nav-integrations']",
         },
         {

@@ -76,9 +76,9 @@ export default function DriverLoginPage() {
 
             <Link
               href="/driver/portal-preview"
-              className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 hover:text-white"
+              className="mt-3 inline-flex w-full items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-3 text-[12px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
             >
-              Preview Portal Mockup
+              Preview Driver Portal Mock
             </Link>
           </section>
         </div>

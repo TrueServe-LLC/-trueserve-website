@@ -29,6 +29,20 @@ export default async function DriverPreferences() {
 
                 .nav-option { padding: 10px; border: 1px solid #2a2f3a; text-align: center; cursor: pointer; font-size: 12px; font-weight: 700; color: #555; letter-spacing: 0.06em; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
                 .nav-option.active { background: #1a1200; border-color: #e8a230; color: #e8a230; }
+
+                @media (max-width: 900px) {
+                    .page-wrap { padding: 18px 14px; }
+                    .page-title { font-size: 26px; margin-bottom: 14px; }
+                    .prefs-grid { grid-template-columns: 1fr; }
+                    .prefs-sec-hd { padding: 10px 12px; }
+                    .pref-row { padding: 12px; }
+                }
+
+                @media (max-width: 520px) {
+                    .pref-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+                    .toggle-sw { margin-top: 4px; }
+                    .nav-option { font-size: 10px; padding: 8px; }
+                }
             ` }} />
             
             <div className="page-wrap">

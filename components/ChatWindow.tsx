@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { translateText } from "@/app/actions/translate";
 import { createClient } from "@/lib/supabase/client";
 
@@ -14,11 +14,20 @@ interface Message {
     isTranslated?: boolean;
 }
 
-export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: string, role?: "CUSTOMER" | "DRIVER" }) {
+export default function ChatWindow({
+    orderId,
+    role = "CUSTOMER",
+    fitContainer = false
+}: {
+    orderId: string,
+    role?: "CUSTOMER" | "DRIVER",
+    fitContainer?: boolean
+}) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [translating, setTranslating] = useState<string | null>(null);
-    const supabase = createClient();
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const supabase = useMemo(() => createClient(), []);
 
     // Fetch initial messages and subscribe
     useEffect(() => {
@@ -66,7 +75,11 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [orderId]);
+    }, [orderId, supabase]);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, [messages.length]);
 
     const sendMessage = async () => {
         if (!input.trim()) return;
@@ -102,18 +115,18 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
     };
 
     return (
-        <div className="card bg-white/5 border-white/10 p-0 flex flex-col h-96 overflow-hidden">
+        <div className={`card bg-white/5 border-white/10 p-0 flex flex-col overflow-hidden ${fitContainer ? "h-full min-h-0" : "h-96"}`}>
             <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
                 <h3 className="font-bold text-sm">Chat with {role === "CUSTOMER" ? "Driver" : "Customer"}</h3>
                 <span className="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded border border-primary/20 font-black uppercase tracking-widest italic">Claude AI Powered</span>
             </div>
-            <div className="flex-grow p-4 overflow-y-auto space-y-4 flex flex-col">
+            <div className="flex-1 min-h-0 p-4 overflow-y-auto space-y-4 flex flex-col">
                 {messages.map(m => (
                     <div key={m.id} className={`max-w-[85%] flex flex-col ${m.sender === role ? "self-end items-end" : "self-start items-start"}`}>
                         <div className={`p-3 rounded-2xl text-sm relative group ${m.sender === role
                             ? "bg-primary text-white rounded-tr-none"
                             : "bg-white/10 text-slate-200 rounded-tl-none"
-                            }`}>
+                            } break-words whitespace-pre-wrap`}>
                             {m.content}
                             {m.isTranslated && (
                                 <p className="text-[10px] opacity-60 italic mt-1 border-t border-white/10 pt-1">
@@ -137,13 +150,14 @@ export default function ChatWindow({ orderId, role = "CUSTOMER" }: { orderId: st
                         </div>
                     </div>
                 ))}
+                <div ref={messagesEndRef} />
             </div>
-            <div className="p-4 border-t border-white/10 flex gap-2">
+            <div className="p-4 border-t border-white/10 flex gap-2 shrink-0">
                 <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                    className="flex-grow bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-primary placeholder:text-slate-600"
+                    className="flex-grow min-w-0 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-primary placeholder:text-slate-600"
                     placeholder="Type a message..."
                 />
                 <button onClick={sendMessage} className="btn btn-primary text-xs py-2">Send</button>

@@ -13,19 +13,25 @@ export default function DriverPortalMockPage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/driver/tutorial-preview" className="rounded-full border border-[#e8a230]/35 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-[#e8a230] hover:bg-[#e8a230]/15">
+            <Link
+              href="/driver/tutorial-preview"
+              className="inline-flex items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
+            >
               View Animated Tutorial
             </Link>
-            <Link href="/driver/login" className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-white/75 hover:bg-white/10 hover:text-white">
+            <Link
+              href="/driver/login"
+              className="inline-flex items-center justify-center rounded-[12px] border border-white/15 bg-white/[0.06] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-white/80 transition-all hover:border-white/30 hover:bg-white/10 hover:text-white"
+            >
               Back to Login
             </Link>
           </div>
         </div>
         <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] gap-2 overflow-x-auto pb-3">
           <span className="rounded-full border border-[#e8a230]/35 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#e8a230]">Dashboard</span>
-          <span className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Settlements</span>
-          <span className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Reputation</span>
-          <span className="rounded-full border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Profile</span>
+          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Settlements</span>
+          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Reputation</span>
+          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Profile</span>
         </div>
       </header>
 
@@ -62,4 +68,3 @@ export default function DriverPortalMockPage() {
     </div>
   );
 }
-

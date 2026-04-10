@@ -115,6 +115,25 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 
                 .divider { height: 1px; background: #1c1f28; margin: 16px 0; }
                 .action-row { display: flex; align-items: center; gap: 8px; }
+
+                @media (max-width: 1100px) {
+                    .two-col { grid-template-columns: 1fr; }
+                    .col { padding: 18px; }
+                }
+
+                @media (max-width: 700px) {
+                    .section-hd { padding: 12px 14px; }
+                    .section-title-text { font-size: 16px; }
+                    .section-sub-text { font-size: 10px; }
+                    .platform-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                    .platform-btn { padding: 10px 10px; font-size: 10px; }
+                    .platform-btn.none { grid-column: span 2; }
+                    .key-block { border-radius: 12px; }
+                    .key-value { word-break: break-all; }
+                    .action-row { flex-direction: column; align-items: stretch; }
+                    .outline-btn, .danger-btn { width: 100%; text-align: center; }
+                    .api-watermark { display: none; }
+                }
             `}</style>
 
             {/* SYSTEM HOOKS */}
