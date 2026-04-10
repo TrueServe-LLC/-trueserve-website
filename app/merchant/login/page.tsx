@@ -128,6 +128,13 @@ export default function MerchantLoginPage() {
               </button>
             </form>
 
+            <Link
+              href="/merchant/tutorial-preview"
+              className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              Preview Portal Tutorial
+            </Link>
+
             <div className="login-foot">New to network? <Link href="/merchant/signup">Apply for partnership</Link></div>
           </section>
         </div>
