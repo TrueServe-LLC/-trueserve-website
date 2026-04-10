@@ -21,6 +21,7 @@ function RestaurantFinderContent() {
   useEffect(() => {
     async function fetchRestaurants() {
       const TEST_DATA_PATTERN = /\b(mock|test|demo|preview|sandbox|sample|qa|staging|seed)\b/i;
+      const EXCLUDED_CITIES = new Set(["mount airy"]);
       const isLiveRestaurant = (restaurant: any) => {
         const visibility = typeof restaurant.visibility === "string" ? restaurant.visibility.toUpperCase() : "";
         const searchableText = `${restaurant.name || ""} ${restaurant.address || ""} ${restaurant.city || ""} ${restaurant.description || ""}`;
@@ -28,11 +29,12 @@ function RestaurantFinderContent() {
         const isLikelyTestRecord =
           TEST_DATA_PATTERN.test(searchableText) ||
           searchableText.toLowerCase().includes("(mock)");
+        const isExcludedCity = EXCLUDED_CITIES.has(String(restaurant.city || "").trim().toLowerCase());
         const isVisible = !visibility || visibility === "VISIBLE";
         const hasApprovalColumn = Object.prototype.hasOwnProperty.call(restaurant, "isApproved");
         const isApproved = !hasApprovalColumn || restaurant.isApproved !== false;
 
-        return !isMock && !isLikelyTestRecord && isVisible && isApproved;
+        return !isMock && !isLikelyTestRecord && !isExcludedCity && isVisible && isApproved;
       };
 
       const extractStateCode = (value: string) => {

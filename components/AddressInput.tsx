@@ -5,7 +5,7 @@ import { useJsApiLoader } from '@react-google-maps/api';
 import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
 interface AddressInputProps {
-    onAddressSelect: (address: string, lat: number, lng: number) => void;
+    onAddressSelect: (address: string, lat: number | null, lng: number | null) => void;
     initialAddress?: string;
 }
 
@@ -44,7 +44,7 @@ export default function AddressInput({ onAddressSelect, initialAddress = "" }: A
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setInputValue(val);
-        onAddressSelect(val, 0, 0);
+        onAddressSelect(val, null, null);
 
         if (!val) {
             setPredictions([]);

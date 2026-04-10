@@ -31,7 +31,9 @@ export default async function PricingAdminPage() {
                         <div className="hidden md:flex gap-6">
                             <Link href="/admin/dashboard" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Dashboard</Link>
                             <Link href="/admin/pricing" className="text-[10px] font-black uppercase tracking-widest text-primary border-b border-primary pb-1">Pricing Rules</Link>
-                            <Link href="/admin/dashboard#audit" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Audit Logs</Link>
+                            <Link href="/admin/feature-switches" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Feature Switches</Link>
+                            <Link href="/admin/team" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Team</Link>
+                            <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Asana</a>
                         </div>
                     </div>
                     <div className="flex gap-4">

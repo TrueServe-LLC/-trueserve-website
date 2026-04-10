@@ -42,9 +42,10 @@ export default async function SettingsPage() {
                 <div className="nav-links">
                     {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="nav-link">Pricing</Link>}
                     {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="nav-link active">Settings</Link>}
+                    {hasPermission(role, 'manage_system_settings') && <Link href="/admin/feature-switches" className="nav-link">Feature Switches</Link>}
                     <Link href="/admin/content" className="nav-link">CMS</Link>
                     <Link href="/admin/team" className="nav-link">Team</Link>
-                    <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="nav-link alert">● Asana</a>
+                    <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="nav-link">Asana</a>
                     {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="nav-link">Dashboard</Link>}
                     <a href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer" className="nav-link alert">● Triage Center</a>
                     <form action={async () => { "use server"; await logout(); }}>

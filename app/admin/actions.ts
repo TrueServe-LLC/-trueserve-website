@@ -11,6 +11,8 @@ import { sendEmail } from "@/lib/email";
 import { sendSMS } from "@/lib/sms";
 import { getAuthSession } from "@/app/auth/actions";
 import { logAuditAction } from "@/lib/audit";
+import { normalizePhoneNumber } from "@/lib/phoneUtils";
+import type { ConfigEnvironment, ConfigKey } from "@/lib/system";
 
 // Removed local logAuditAction, using shared version from @/lib/audit
 
@@ -94,12 +96,17 @@ export async function approveDriver(id: string) {
         const email = driver.user.email;
         const name = driver.user.name;
         const phone = driver.user.phone;
+        const normalizedPhone = normalizePhoneNumber(phone || "");
+
+        if (!normalizedPhone) {
+            throw new Error("Driver phone number is missing. Add a valid phone before approval.");
+        }
         const tempPassword = `TrueServe!${Math.random().toString(36).slice(-8)}`;
 
         // 2. Create Auth User if not exists
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
-            phone,
+            phone: normalizedPhone,
             password: tempPassword,
             email_confirm: true,
             phone_confirm: true,
@@ -116,10 +123,17 @@ export async function approveDriver(id: string) {
 
         if (authError?.message.includes("already exists")) {
             const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(driver.userId, {
+                phone: normalizedPhone,
+                phone_confirm: true,
                 user_metadata: { role: 'DRIVER', displayName: name }
             });
             if (updateError) console.error("Failed to sync role for existing driver:", updateError);
         }
+
+        await supabaseAdmin
+            .from('User')
+            .update({ phone: normalizedPhone, updatedAt: new Date().toISOString() })
+            .eq('id', driver.userId);
 
         const { error: statusError } = await supabaseAdmin
             .from('Driver')
@@ -142,7 +156,7 @@ export async function approveDriver(id: string) {
         );
 
         await sendSMS(
-            phone,
+            normalizedPhone,
             `TrueServe: Your driver application is approved! You can now log in using this phone number at driver.trueservedelivery.com/login`
         );
 
@@ -189,6 +203,117 @@ export async function rejectDriver(id: string) {
     } catch (e: any) {
         console.error("Failed to reject driver:", e);
         return { success: false, error: e.message || "Failed to reject driver." };
+    }
+}
+
+export async function approveMerchant(restaurantId: string) {
+    try {
+        const { data: restaurant, error: fetchError } = await supabaseAdmin
+            .from('Restaurant')
+            .select('id, name, ownerId, owner:User(email, name, phone)')
+            .eq('id', restaurantId)
+            .single();
+
+        if (fetchError || !restaurant) throw new Error("Merchant application not found");
+
+        const { error } = await supabaseAdmin
+            .from('Restaurant')
+            .update({
+                isApproved: true,
+                isActive: true,
+                visibility: 'VISIBLE',
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', restaurantId);
+
+        if (error) throw error;
+
+        await logAuditAction({
+            action: "APPROVE_MERCHANT",
+            targetId: restaurantId,
+            entityType: "Restaurant",
+            before: { isApproved: false },
+            after: { isApproved: true, visibility: "VISIBLE" }
+        });
+
+        const owner = restaurant.owner as any;
+        if (owner?.email) {
+            await sendEmail(
+                owner.email,
+                "Your TrueServe Merchant Account Is Approved",
+                `<h1>You're Approved 🎉</h1>
+                <p>Hi ${owner.name || "Partner"},</p>
+                <p>Your restaurant <strong>${restaurant.name}</strong> is now approved on TrueServe.</p>
+                <p>You can now log in to your merchant portal and complete setup.</p>
+                <a href="https://trueserve.delivery/merchant/login" class="button">Log In to Merchant Portal</a>
+                <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`
+            );
+        }
+
+        if (owner?.phone) {
+            await sendSMS(
+                owner.phone,
+                `TrueServe: ${restaurant.name} has been approved. Log in at trueserve.delivery/merchant/login to complete onboarding.`
+            );
+        }
+
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/restaurants");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to approve merchant:", e);
+        return { success: false, error: e.message || "Failed to approve merchant." };
+    }
+}
+
+export async function rejectMerchant(restaurantId: string) {
+    try {
+        const { data: restaurant, error: fetchError } = await supabaseAdmin
+            .from('Restaurant')
+            .select('id, name, owner:User(email, name)')
+            .eq('id', restaurantId)
+            .single();
+
+        if (fetchError || !restaurant) throw new Error("Merchant application not found");
+
+        const { error } = await supabaseAdmin
+            .from('Restaurant')
+            .update({
+                isApproved: false,
+                isActive: false,
+                visibility: 'HIDDEN',
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', restaurantId);
+
+        if (error) throw error;
+
+        await logAuditAction({
+            action: "REJECT_MERCHANT",
+            targetId: restaurantId,
+            entityType: "Restaurant",
+            before: { isApproved: false },
+            after: { visibility: "HIDDEN" }
+        });
+
+        const owner = restaurant.owner as any;
+        if (owner?.email) {
+            await sendEmail(
+                owner.email,
+                "Update on Your TrueServe Merchant Application",
+                `<h1>Application Update</h1>
+                <p>Hi ${owner.name || "Partner"},</p>
+                <p>Thank you for applying to TrueServe for <strong>${restaurant.name}</strong>.</p>
+                <p>At this time we cannot approve the application. You can reply to this message if you’d like a follow-up review.</p>
+                <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`
+            );
+        }
+
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to reject merchant:", e);
+        return { success: false, error: e.message || "Failed to reject merchant." };
     }
 }
 
@@ -252,6 +377,7 @@ export async function toggleOrderingStatus(enabled: boolean) {
 
         revalidatePath("/admin/dashboard");
         revalidatePath("/admin/settings");
+        revalidatePath("/admin/feature-switches");
         return { success: true };
     } catch (e: any) {
         return { error: e.message };
@@ -263,6 +389,7 @@ export async function toggleAiScanner(enabled: boolean) {
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('AI_MENU_SCANNER_ENABLED', enabled);
         revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/feature-switches");
         return { success: true };
     } catch (e: any) { return { error: e.message }; }
 }
@@ -272,6 +399,7 @@ export async function toggleGoogleRatings(enabled: boolean) {
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('GOOGLE_RATINGS_SYNC_ENABLED', enabled);
         revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/feature-switches");
         return { success: true };
     } catch (e: any) { return { error: e.message }; }
 }
@@ -281,6 +409,7 @@ export async function toggleInstantPayouts(enabled: boolean) {
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('INSTANT_PAYOUTS_ENABLED', enabled);
         revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/feature-switches");
         return { success: true };
     } catch (e: any) { return { error: e.message }; }
 }
@@ -290,6 +419,7 @@ export async function toggleExpressCheckout(enabled: boolean) {
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('EXPRESS_CHECKOUT_ACTIVE', enabled);
         revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/feature-switches");
         return { success: true };
     } catch (e: any) { return { error: e.message }; }
 }
@@ -300,9 +430,51 @@ export async function updateConfigParam(key: any, value: any) {
         await updateSystemConfig(key, value);
 
         revalidatePath("/admin/settings");
+        revalidatePath("/admin/feature-switches");
         return { success: true };
     } catch (e: any) {
         return { error: e.message };
+    }
+}
+
+const ALLOWED_FEATURE_SWITCHES: ConfigKey[] = [
+    "ORDERING_SYSTEM_ENABLED",
+    "AI_MENU_SCANNER_ENABLED",
+    "GOOGLE_RATINGS_SYNC_ENABLED",
+    "EXPRESS_CHECKOUT_ACTIVE",
+    "INSTANT_PAYOUTS_ENABLED",
+    "MARKETPLACE_EMERGENCY_LOCK",
+];
+
+export async function updateEnvironmentFeatureSwitch(
+    key: ConfigKey,
+    enabled: boolean,
+    environment: ConfigEnvironment | "global"
+) {
+    try {
+        const cookieStore = await cookies();
+        const hasAdminSession = !!cookieStore.get("admin_session");
+        const { isAuth, role } = await getAuthSession();
+        const isStaff = role ? ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role) : false;
+
+        if (!hasAdminSession && !(isAuth && isStaff)) {
+            throw new Error("Unauthorized");
+        }
+
+        if (!ALLOWED_FEATURE_SWITCHES.includes(key)) {
+            throw new Error("Unsupported feature switch");
+        }
+
+        const { updateSystemConfig } = await import("@/lib/system");
+        const envScope = environment === "global" ? undefined : environment;
+        await updateSystemConfig(key, enabled, undefined, envScope);
+
+        revalidatePath("/admin/dashboard");
+        revalidatePath("/admin/settings");
+        revalidatePath("/admin/feature-switches");
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message || "Failed to update feature switch." };
     }
 }
 

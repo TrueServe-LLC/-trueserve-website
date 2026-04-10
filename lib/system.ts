@@ -23,16 +23,54 @@ export type ConfigKey =
     | 'INSTANT_PAYOUTS_ENABLED'
     | 'EXPRESS_CHECKOUT_ACTIVE';
 
-export async function getSystemConfig(key: ConfigKey, defaultValue?: any): Promise<any> {
+export type ConfigEnvironment = 'development' | 'preview' | 'production';
+
+const ENVIRONMENT_PREFIX: Record<ConfigEnvironment, string> = {
+    development: "DEVELOPMENT__",
+    preview: "PREVIEW__",
+    production: "PRODUCTION__",
+};
+
+function resolveRuntimeEnvironment(): ConfigEnvironment {
+    const vercelEnv = (process.env.VERCEL_ENV || "").toLowerCase();
+    if (vercelEnv === "preview" || vercelEnv === "production" || vercelEnv === "development") {
+        return vercelEnv;
+    }
+
+    if (process.env.NODE_ENV === "production") {
+        return "production";
+    }
+
+    return "development";
+}
+
+export function buildScopedConfigKey(key: ConfigKey, environment: ConfigEnvironment): string {
+    return `${ENVIRONMENT_PREFIX[environment]}${key}`;
+}
+
+export async function getSystemConfig(
+    key: ConfigKey,
+    defaultValue?: any,
+    environment?: ConfigEnvironment
+): Promise<any> {
     try {
+        const resolvedEnvironment = environment || resolveRuntimeEnvironment();
+        const scopedKey = buildScopedConfigKey(key, resolvedEnvironment);
+
         const { data, error } = await supabase
             .from('SystemConfig')
-            .select('value')
-            .eq('key', key)
-            .maybeSingle();
+            .select('key, value')
+            .in('key', [scopedKey, key]);
 
-        if (error || !data) return defaultValue;
-        return data.value;
+        if (error || !data || data.length === 0) return defaultValue;
+
+        const scoped = data.find((entry: any) => entry.key === scopedKey);
+        if (scoped) return scoped.value;
+
+        const global = data.find((entry: any) => entry.key === key);
+        if (global) return global.value;
+
+        return defaultValue;
     } catch (e) {
         console.error(`Error fetching config ${key}:`, e);
         return defaultValue;
@@ -101,11 +139,40 @@ export async function isExpressCheckoutActive(): Promise<boolean> {
     return ld && db;
 }
 
-export async function updateSystemConfig(key: ConfigKey, value: any, actorId?: string) {
-    const { error } = await supabase
+export async function updateSystemConfig(
+    key: ConfigKey,
+    value: any,
+    actorId?: string,
+    environment?: ConfigEnvironment
+) {
+    const storedKey = environment ? buildScopedConfigKey(key, environment) : key;
+
+    const upsertBase = await supabase
         .from('SystemConfig')
-        .update({ value, updatedAt: new Date().toISOString() })
-        .eq('key', key);
+        .upsert(
+            {
+                key: storedKey,
+                value,
+                updatedAt: new Date().toISOString()
+            },
+            { onConflict: 'key' }
+        );
+
+    let error = upsertBase.error;
+    if (error && error.message?.toLowerCase().includes("createdat")) {
+        const withCreatedAt = await supabase
+            .from('SystemConfig')
+            .upsert(
+                {
+                    key: storedKey,
+                    value,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { onConflict: 'key' }
+            );
+        error = withCreatedAt.error;
+    }
 
     if (error) throw error;
 
@@ -113,9 +180,9 @@ export async function updateSystemConfig(key: ConfigKey, value: any, actorId?: s
     const { logAuditAction } = await import('./audit');
     await logAuditAction({
         action: "UPDATE_SYSTEM_CONFIG",
-        targetId: key,
+        targetId: storedKey,
         entityType: "SystemConfig",
         after: { value },
-        message: `System config ${key} updated.`
+        message: `System config ${storedKey} updated.`
     });
 }

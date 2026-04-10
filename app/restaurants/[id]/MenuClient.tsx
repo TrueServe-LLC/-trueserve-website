@@ -9,6 +9,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "@/components/CheckoutForm";
 import OrderConfirmAnimation from "@/components/OrderConfirmAnimation";
 import AddressInput from "@/components/AddressInput";
+import MapWithDirections from "@/components/MapWithDirections";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -38,6 +39,8 @@ export default function MenuClient({
     items,
     orderingEnabled,
     initialAddress = undefined,
+    initialLat = undefined,
+    initialLng = undefined,
 }: MenuClientProps) {
     const router = useRouter();
     const [cart, setCart] = useState<{ [key: string]: number }>({});
@@ -45,11 +48,16 @@ export default function MenuClient({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [deliveryAddress, setDeliveryAddress] = useState<string | null>(initialAddress || null);
-    const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
-    const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
+    const [deliveryLat, setDeliveryLat] = useState<number | null>(
+        typeof initialLat === "number" && Number.isFinite(initialLat) ? initialLat : null
+    );
+    const [deliveryLng, setDeliveryLng] = useState<number | null>(
+        typeof initialLng === "number" && Number.isFinite(initialLng) ? initialLng : null
+    );
     const [deliveryInstructions, setDeliveryInstructions] = useState("");
     const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
     const [redeemPoints, setRedeemPoints] = useState(false);
+    const [checkoutEta, setCheckoutEta] = useState<string>("Calculating...");
     
     // GHL State
     const [isGHLOpen, setIsGHLOpen] = useState(false);
@@ -81,6 +89,16 @@ export default function MenuClient({
     const pointsValue = Math.min(Math.floor(truePointsBalance / 100) * 100, Math.max(0, Math.floor((subtotal + tip - 0.50) * 100)));
     const pointsDiscount = redeemPoints ? pointsValue * 0.01 : 0;
     const total = subtotal + 2.99 + tax + tip - pointsDiscount;
+    const locationLabel = deliveryAddress
+        ? deliveryAddress.split(",").slice(0, 2).join(", ").trim()
+        : "Select delivery address";
+    const restaurantLat = typeof restaurant.lat === "number" ? restaurant.lat : Number(restaurant.lat);
+    const restaurantLng = typeof restaurant.lng === "number" ? restaurant.lng : Number(restaurant.lng);
+    const hasCheckoutRoute =
+        Number.isFinite(restaurantLat) &&
+        Number.isFinite(restaurantLng) &&
+        deliveryLat !== null &&
+        deliveryLng !== null;
 
     const handleCartChange = (newCart: { [key: string]: number }) => {
         setCart(newCart);
@@ -122,6 +140,9 @@ export default function MenuClient({
 
     const handlePaymentSuccess = async (paymentIntentId: string) => {
         if (!deliveryAddress) return alert("Please set a delivery address");
+        if (deliveryLat === null || deliveryLng === null) {
+            return alert("Please select a suggested address so we can route your order accurately.");
+        }
         setIsSubmitting(true);
         const res = await placeOrder(
             restaurant.id,
@@ -261,15 +282,40 @@ export default function MenuClient({
                         {/* Address Selection */}
                         {!isSubmitting && (
                             <div style={{ marginTop: '16px' }}>
-                                <AddressInput 
-                                    initialAddress={deliveryAddress || ""} 
-                                    onAddressSelect={(addr, lat, lng) => {
-                                        setDeliveryAddress(addr);
-                                        setDeliveryLat(lat);
-                                        setDeliveryLng(lng);
-                                    }}
-                                />
-                            </div>
+                                    <AddressInput 
+                                        initialAddress={deliveryAddress || ""} 
+                                        onAddressSelect={(addr, lat, lng) => {
+                                            setDeliveryAddress(addr);
+                                            setDeliveryLat(typeof lat === "number" && Number.isFinite(lat) ? lat : null);
+                                            setDeliveryLng(typeof lng === "number" && Number.isFinite(lng) ? lng : null);
+                                        }}
+                                    />
+                                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                                        <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                                            <div>
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Delivery Route</div>
+                                                <div className="text-[11px] font-semibold text-white/70 mt-1">{locationLabel}</div>
+                                            </div>
+                                            <div className="text-[10px] font-black uppercase tracking-widest text-[#e8a230]">
+                                                {hasCheckoutRoute ? `ETA ${checkoutEta}` : "Awaiting Address"}
+                                            </div>
+                                        </div>
+                                        {hasCheckoutRoute ? (
+                                            <MapWithDirections
+                                                height={220}
+                                                routeOrigin={{ lat: restaurantLat, lng: restaurantLng }}
+                                                origin={{ lat: restaurantLat, lng: restaurantLng }}
+                                                destination={{ lat: deliveryLat, lng: deliveryLng }}
+                                                showDriver={false}
+                                                onDurationUpdate={setCheckoutEta}
+                                            />
+                                        ) : (
+                                            <div className="h-[220px] flex items-center justify-center text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                                                Choose an address from Google suggestions to preview the route.
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                         )}
 
                         {userId ? (

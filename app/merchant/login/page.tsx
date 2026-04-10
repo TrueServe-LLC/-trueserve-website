@@ -4,12 +4,62 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import { supabase } from "@/lib/supabase";
 
 export default function MerchantLoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorText, setErrorText] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorText("");
+    setIsLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    if (error) {
+      setErrorText(error.message || "Failed to sign in.");
+      setIsLoading(false);
+      return;
+    }
+
+    const role = data.user?.user_metadata?.role;
+    if (role && role !== "MERCHANT") {
+      await supabase.auth.signOut();
+      setErrorText("This account is not a merchant account.");
+      setIsLoading(false);
+      return;
+    }
+
+    const { data: merchantRestaurant, error: merchantError } = await supabase
+      .from("Restaurant")
+      .select("id, isApproved")
+      .eq("ownerId", data.user.id)
+      .maybeSingle();
+
+    if (merchantError || !merchantRestaurant) {
+      await supabase.auth.signOut();
+      setErrorText("Merchant profile not found. Contact support.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!merchantRestaurant.isApproved) {
+      await supabase.auth.signOut();
+      setErrorText("Your merchant application is pending admin approval.");
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/merchant/dashboard");
+    router.refresh();
+  };
 
   return (
     <div className="food-app-shell">
@@ -43,13 +93,15 @@ export default function MerchantLoginPage() {
             <h1 className="food-heading !text-[36px]">Sign In</h1>
             <p className="lead mt-2">Secure merchant access for your partnership portal.</p>
 
+            {errorText && (
+              <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-bold uppercase tracking-[0.11em] text-red-300">
+                {errorText}
+              </div>
+            )}
+
             <form
               className="mt-6"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setIsLoading(true);
-                setTimeout(() => router.push("/merchant/dashboard"), 800);
-              }}
+              onSubmit={handleSubmit}
             >
               <div className="fg">
                 <label>Email</label>

@@ -5,7 +5,7 @@ import { sendSMS } from "@/lib/sms";
 import AdminStyles from "@/components/admin/AdminStyles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout } from "../actions";
+import { approveMenuItem, rejectMenuItem, flagMenuItem, connectStripe, logout, approveMerchant, rejectMerchant } from "../actions";
 import { getAuthSession } from "@/app/auth/actions";
 import KPIDashboard from "@/components/admin/KPIDashboard";
 import ScenarioEngine from "@/components/admin/ScenarioEngine";
@@ -115,6 +115,36 @@ async function getActiveOrders() {
     }
 }
 
+async function getPendingMerchants() {
+    try {
+        const { data, error } = await supabase
+            .from('Restaurant')
+            .select(`
+                id,
+                name,
+                city,
+                state,
+                plan,
+                posSystem,
+                createdAt,
+                isApproved,
+                owner:User(name, email, phone)
+            `)
+            .eq('isApproved', false)
+            .order('createdAt', { ascending: false });
+
+        if (error) {
+            console.error("Supabase Error (getPendingMerchants):", error);
+            return [];
+        }
+
+        return data || [];
+    } catch (e) {
+        console.log("Admin Dashboard - Error fetching pending merchants:", e);
+        return [];
+    }
+}
+
 async function getAllRestaurants() {
     try {
         const { data, error } = await supabase.from('Restaurant').select('id, name, isActive, isApproved, createdAt');
@@ -140,6 +170,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     const pendingItems = await getPendingItems();
     const drivers = await getPendingDrivers();
     const activeOrders = await getActiveOrders();
+    const pendingMerchants = await getPendingMerchants();
     const allOrders = await getAllOrders();
     const restaurants = await getAllRestaurants();
     const auditLogs = await getAuditLogs();
@@ -155,9 +186,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <div className="nav-links">
                     {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="nav-link">Pricing</Link>}
                     {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="nav-link">Settings</Link>}
+                    {hasPermission(role, 'manage_system_settings') && <Link href="/admin/feature-switches" className="nav-link">Feature Switches</Link>}
                     <Link href="/admin/content" className="nav-link">CMS</Link>
                     <Link href="/admin/team" className="nav-link">Team</Link>
-                    <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="nav-link alert">● Asana</a>
+                    <a href="https://app.asana.com/0/1213802368265152/board" target="_blank" rel="noopener noreferrer" className="nav-link">Asana</a>
                     {hasPermission(role, 'view_dashboard') && <Link href="/admin/dashboard" className="nav-link active">Dashboard</Link>}
                     <a href="https://lcking992-1774309654202.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer" className="nav-link alert">● Triage Center</a>
                     <form action={async () => { "use server"; await logout(); }}>
@@ -184,29 +216,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <div className="registry-sub">Control Center Configuration</div>
                 </div>
                 <div className="toggles-row">
-                    {await (async () => {
-                        const { isOrderingEnabled, isAiScannerEnabled, isGoogleRatingSyncEnabled, isExpressCheckoutActive } = await import('@/lib/system');
-                        const { toggleOrderingStatus, toggleAiScanner, toggleGoogleRatings, toggleExpressCheckout } = await import('../actions');
-                        
-                        const flags = [
-                            { label: 'Marketplace', state: await isOrderingEnabled(), action: toggleOrderingStatus },
-                            { label: 'AI Scanner', state: await isAiScannerEnabled(), action: toggleAiScanner },
-                            { label: 'Google Sync', state: await isGoogleRatingSyncEnabled(), action: toggleGoogleRatings },
-                            { label: 'Express Checkout', state: await isExpressCheckoutActive(), action: toggleExpressCheckout }
-                        ];
-
-                        return flags.map(f => (
-                            <form key={f.label} className="toggle-block" action={async () => { "use server"; await f.action(!f.state); }}>
-                                <span className="toggle-label">{f.label}</span>
-                                <button 
-                                    className={`toggle-switch ${f.state ? 'on' : 'off'}`}
-                                    aria-label={`Toggle ${f.label}`}
-                                >
-                                    <div className="toggle-knob"></div>
-                                </button>
-                            </form>
-                        ));
-                    })()}
+                    <Link href="/admin/feature-switches" className="nav-cta !no-underline">
+                        Manage Feature Switches
+                    </Link>
                     
                     {!isStripeConnected && (
                         <a href="https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create" target="_blank" rel="noopener noreferrer" className="nav-cta !no-underline">
@@ -264,6 +276,37 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                            ))}
                        </div>
                    )}
+                    </div>
+                </div>
+
+                <div className="divider" />
+
+                <div className="sec-hd">
+                    <div className="sec-title">🏪 Merchant Applications <span className="badge badge-warn">{pendingMerchants.length} Pending</span></div>
+                </div>
+                <div className="two-col">
+                    <div className="panel" style={{ gridColumn: 'span 2' }}>
+                        {pendingMerchants.length === 0 ? (
+                            <div className="empty-panel">No merchants pending manual approval.</div>
+                        ) : (
+                            <div className="space-y-3 pt-2">
+                                {pendingMerchants.map((merchant: any) => (
+                                    <div key={merchant.id} className="bg-[#0c0e13] border border-[#1c1f28] p-4 rounded-xl">
+                                        <div className="flex flex-wrap items-start justify-between gap-3">
+                                            <div>
+                                                <div className="text-[15px] font-bold text-white">{merchant.name}</div>
+                                                <div className="text-[11px] text-[#7f8799]">{merchant.city}, {merchant.state} · {merchant.plan || 'Flex'} · POS: {merchant.posSystem || 'Not set'}</div>
+                                                <div className="text-[10px] text-[#555] mt-1">Owner: {merchant.owner?.name || 'Unknown'} · {merchant.owner?.email || 'No email'}</div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <FastActionBtn action={async () => { "use server"; await approveMerchant(merchant.id); }} className="nav-cta" loadingText="...">Approve</FastActionBtn>
+                                                <FastActionBtn action={async () => { "use server"; await rejectMerchant(merchant.id); }} className="nav-cta border-red-900 text-red-400" loadingText="...">Reject</FastActionBtn>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 

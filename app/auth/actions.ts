@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { sendEmail } from "@/lib/email";
 
 export type AuthState = {
     message: string;
@@ -94,7 +95,8 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
     }
 }
 
-export async function signupWithPassword(formData: FormData): Promise<AuthState> {
+export async function signupWithPassword(prevStateOrFormData: AuthState | FormData, maybeFormData?: FormData): Promise<AuthState> {
+    const formData = maybeFormData ?? (prevStateOrFormData as FormData);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const role = (formData.get("role") as string) || 'CUSTOMER';
@@ -156,7 +158,30 @@ export async function signupWithPassword(formData: FormData): Promise<AuthState>
                 path: '/' 
             });
 
-            // 3. STRIPE REDIRECTION FOR PLUS/PREMIUM
+            // 3. Send customer onboarding email with next-step guidance.
+            // Do not block account creation if email provider is temporarily unavailable.
+            await sendEmail(
+                email,
+                "Welcome to TrueServe! Your account is ready",
+                `<h1>Welcome to TrueServe, ${name}! 👋</h1>
+                <p>Your customer account has been created successfully.</p>
+                <p>Next steps:</p>
+                <ul>
+                    <li>Browse nearby restaurants and start your first order.</li>
+                    <li>Add your saved payment method in Account Settings for faster checkout.</li>
+                    <li>Track orders live and manage rewards from your dashboard.</li>
+                </ul>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://trueserve.delivery/restaurants" class="button">Start Ordering</a>
+                </div>
+                <p>You can also manage your profile and wallet here:</p>
+                <p><a href="https://trueserve.delivery/user/settings">trueserve.delivery/user/settings</a></p>
+                <p>Thanks for joining TrueServe.</p>`
+            ).catch((mailErr) => {
+                console.error("Customer welcome email failed:", mailErr);
+            });
+
+            // 4. STRIPE REDIRECTION FOR PLUS/PREMIUM
             if (role === 'CUSTOMER' && (plan === 'Plus' || plan === 'Premium')) {
                 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
                 const amount = plan === 'Plus' ? 999 : 1999;
@@ -201,7 +226,6 @@ export async function resetPassword(formData: FormData): Promise<AuthState> {
     const supabase = await createClient();
 
     if (!email) return { message: "Email is required", error: true };
-    const { sendEmail } = await import("@/lib/email");
 
     try {
         // 1. Generate a secure recovery link via Supabase Admin

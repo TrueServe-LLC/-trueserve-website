@@ -34,6 +34,7 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
     });
 
     const [map, setMap] = useState<google.maps.Map | null>(null);
+    const [authError, setAuthError] = useState<string | null>(null);
 
     const onLoad = useCallback((map: google.maps.Map) => {
         setMap(map);
@@ -41,6 +42,23 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
 
     const onUnmount = useCallback(() => {
         setMap(null);
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const win = window as any;
+        const previousAuthFailure = win.gm_authFailure;
+
+        win.gm_authFailure = () => {
+            setAuthError("Google Maps authorization failed for this domain. Allow this host in your Google Maps key restrictions.");
+            if (typeof previousAuthFailure === "function") {
+                previousAuthFailure();
+            }
+        };
+
+        return () => {
+            win.gm_authFailure = previousAuthFailure;
+        };
     }, []);
 
     // Handle updates to center or restaurants
@@ -70,6 +88,16 @@ function GoogleMapsMap({ center, zoom = 13, restaurants = [] }: MapProps) {
                 <span className="text-2xl mb-2">🗺️</span>
                 <span>Error: Missing Google Maps API Key</span>
                 <span className="text-sm font-normal text-slate-400 mt-2">Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env file</span>
+            </div>
+        );
+    }
+
+    if (authError) {
+        return (
+            <div className="h-full w-full bg-slate-900 rounded-xl flex items-center justify-center flex-col text-red-500 p-4 border border-red-500/20 text-center font-bold">
+                <span className="text-2xl mb-2">🗺️</span>
+                <span>Google Maps authorization failed</span>
+                <span className="text-sm font-normal text-slate-400 mt-2">{authError}</span>
             </div>
         );
     }

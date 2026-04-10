@@ -5,9 +5,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, Marker, OverlayView } from '@react-google-maps/api';
 import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
-const containerStyle = {
+const baseContainerStyle = {
     width: '100%',
-    height: '400px',
     borderRadius: '1rem'
 };
 
@@ -17,11 +16,21 @@ interface MapWithDirectionsProps {
     routeOrigin?: string | google.maps.LatLngLiteral; // For calculating the blue line (stable)
     driverRotation?: number;
     showDriver?: boolean;
+    height?: number | string;
     onDurationUpdate?: (duration: string) => void;
     onStepsUpdate?: (steps: any[]) => void;
 }
 
-export default function MapWithDirections({ origin, destination, routeOrigin, driverRotation = 0, showDriver = true, onDurationUpdate, onStepsUpdate }: MapWithDirectionsProps) {
+export default function MapWithDirections({
+    origin,
+    destination,
+    routeOrigin,
+    driverRotation = 0,
+    showDriver = true,
+    height = 400,
+    onDurationUpdate,
+    onStepsUpdate
+}: MapWithDirectionsProps) {
     const { isLoaded } = useJsApiLoader({
         id: GOOGLE_MAPS_SCRIPT_ID,
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -32,6 +41,27 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
 
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [tilesLoaded, setTilesLoaded] = useState(false);
+    const mapHeight = typeof height === "number" ? `${height}px` : height;
+    const containerStyle = { ...baseContainerStyle, height: mapHeight };
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const win = window as any;
+        const previousAuthFailure = win.gm_authFailure;
+
+        win.gm_authFailure = () => {
+            setError("Google Maps authorization failed for this domain. Allow this host in your Google Maps key restrictions.");
+            if (typeof previousAuthFailure === "function") {
+                previousAuthFailure();
+            }
+        };
+
+        return () => {
+            win.gm_authFailure = previousAuthFailure;
+        };
+    }, []);
 
     // Use routeOrigin (Restaurant) for the path if provided, otherwise stick to origin (Driver)
     // This allows the path to be stable (Restaurant -> Customer) while the car moves
@@ -44,6 +74,7 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
         }
 
         setError(null); // Reset error
+        setDirections(null);
         const directionsService = new window.google.maps.DirectionsService();
         directionsService.route({
             origin: startPoint,
@@ -71,6 +102,10 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
     const mapRef = React.useRef<google.maps.Map | null>(null);
     const onLoad = useCallback((map: google.maps.Map) => {
         mapRef.current = map;
+        setTilesLoaded(false);
+        window.google.maps.event.addListenerOnce(map, "tilesloaded", () => {
+            setTilesLoaded(true);
+        });
     }, []);
 
     // Fit bounds when directions load
@@ -88,11 +123,21 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
         }
     }, [directions, startPoint, destination]);
 
+    useEffect(() => {
+        if (!isLoaded || !startPoint || !destination || directions || error || tilesLoaded) return;
+
+        const timeoutId = window.setTimeout(() => {
+            setError("Route preview is temporarily unavailable. Please continue checkout or open full maps tracking after order placement.");
+        }, 8000);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [destination, directions, error, isLoaded, startPoint, tilesLoaded]);
+
 
     // Guard: show clear error if API key is missing
     if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
         return (
-            <div className="h-full w-full min-h-[300px] bg-slate-900 rounded-2xl flex flex-col items-center justify-center gap-4 border border-red-500/30 p-6 text-center">
+            <div className="h-full w-full min-h-[300px] bg-slate-900 rounded-2xl flex flex-col items-center justify-center gap-4 border border-red-500/30 p-6 text-center" style={{ height: mapHeight }}>
                 <span className="text-4xl">🗺️</span>
                 <div>
                     <p className="font-black text-red-400 text-sm mb-1">Google Maps API Key Missing</p>
@@ -112,11 +157,11 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
         );
     }
 
-    if (!isLoaded) return <div className="h-[400px] w-full bg-slate-900 animate-pulse rounded-2xl flex items-center justify-center text-slate-500">Loading Map...</div>;
+    if (!isLoaded) return <div className="w-full bg-slate-900 animate-pulse rounded-2xl flex items-center justify-center text-slate-500" style={{ height: mapHeight }}>Loading Map...</div>;
 
     if (error) {
         return (
-            <div className="h-[400px] w-full bg-slate-100 rounded-2xl flex flex-col items-center justify-center text-red-500 p-4 border border-red-300">
+            <div className="w-full bg-slate-100 rounded-2xl flex flex-col items-center justify-center text-red-500 p-4 border border-red-300" style={{ height: mapHeight }}>
                 <p className="font-bold mb-2">Map Error</p>
                 <p className="text-sm">{error}</p>
                 <p className="text-xs text-slate-500 mt-4 max-w-xs text-center">Check console for details or ensure API key has Directions API enabled.</p>
@@ -139,7 +184,7 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
 
     if (!mapCenter) {
         return (
-            <div className="h-[400px] w-full bg-slate-900 rounded-2xl flex items-center justify-center text-slate-500 text-sm">
+            <div className="w-full bg-slate-900 rounded-2xl flex items-center justify-center text-slate-500 text-sm" style={{ height: mapHeight }}>
                 Waiting for live route coordinates...
             </div>
         );
@@ -250,4 +295,3 @@ export default function MapWithDirections({ origin, destination, routeOrigin, dr
         </GoogleMap>
     );
 }
-

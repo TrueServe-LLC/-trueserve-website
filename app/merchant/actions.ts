@@ -470,7 +470,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             }
         } catch (e) { console.error("Geocoding failed", e); }
 
-        // Create Restaurant
+        // Create Restaurant (pending manual admin approval)
         const restaurantId = uuidv4();
         const { error: restError } = await supabaseAdmin.from('Restaurant').insert({
             id: restaurantId,
@@ -487,8 +487,9 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             posClientId,
             posClientSecret,
             phone,
-            isApproved: true,
-            visibility: 'VISIBLE',
+            isApproved: false,
+            isActive: false,
+            visibility: 'HIDDEN',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
@@ -500,31 +501,6 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         const cookieStore = await cookies();
         cookieStore.set("userId", userId, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
-        // Stripe
-        if (plan === 'Pro Subscription') {
-            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://trueservedelivery.com";
-            const session = await getStripe().checkout.sessions.create({
-                payment_method_types: ['card'],
-                line_items: [{
-                    price_data: {
-                        currency: 'usd',
-                        product_data: { name: 'TrueServe Pro Plan' },
-                        unit_amount: 19900,
-                        recurring: { interval: 'month' }
-                    },
-                    quantity: 1,
-                }],
-                mode: 'subscription',
-                success_url: `${baseUrl}/merchant/onboarding-success?session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${baseUrl}/merchant/dashboard`,
-                metadata: { restaurantId, userId }
-            });
-            if (session.url) redirect(session.url);
-        }
-
-        // Standard logic for Flex
-        await createStripeAccount(userId);
-        
         // Notify Team of NEW MERCHANT
         const { data: staffMembers } = await supabaseAdmin
             .from('User')
@@ -549,14 +525,11 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         notificationPromises.push(
             sendEmail(
                 email,
-                "Welcome to TrueServe! Your Merchant Account is Ready",
-                `<h1>Welcome to the Network, ${contactName}! 🍴</h1>
-                <p>We're excited to have <strong>${restaurantName}</strong> as a part of the TrueServe family.</p>
-                <p>Your application is approved and your store is now initialized. You can now log in to your Merchant Dashboard to upload your menu, set operational hours, and start receiving premium delivery orders.</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://trueserve.delivery/merchant/login" class="button">Log In to Dashboard</a>
-                </div>
-                <p>If you're using our <strong>Pro Subscription</strong>, our concierge team will reach out shortly for your POS integration walkthrough.</p>
+                "TrueServe Merchant Application Received",
+                `<h1>Application Received, ${contactName}! 🍴</h1>
+                <p>Thanks for applying with <strong>${restaurantName}</strong>.</p>
+                <p>Your merchant account is now in <strong>pending review</strong>. An admin will manually verify and approve your onboarding before you can log into the merchant dashboard.</p>
+                <p>We’ll email you immediately when approved, with next steps for Stripe, POS integration, and launch readiness.</p>
                 <p>Best,<br>The TrueServe Team</p>`
             )
         );
@@ -582,7 +555,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         await Promise.allSettled(notificationPromises);
         
-        return { success: true, message: "Signup complete!" };
+        return { success: true, message: "Application submitted. We’ll notify you once approved." };
 
     } catch (e: any) {
         if (e.message?.includes('NEXT_REDIRECT')) throw e;

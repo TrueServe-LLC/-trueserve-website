@@ -265,7 +265,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                     <p>Hi <span class="accent">${name}</span>,</p>
                     <p>Great news! Our automated integration system has verified your documents and you are <strong>approved to drive</strong> with TrueServe immediately.</p>
                     <p>Please find the attached <strong>Onboarding Process</strong> document for your review. It contains everything you need to know about our premium service standards.</p>
-                    <p>You can now log in using your email to set a password and start accepting deliveries!</p>
+                    <p>You can now log in using your phone number and OTP at the driver portal to start accepting deliveries.</p>
                     <a href="https://www.trueserve.delivery/driver/login" class="button">Log In & Start Driving</a>
                     <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`,
                     attachments

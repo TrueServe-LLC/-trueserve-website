@@ -39,7 +39,7 @@ export default async function UserSettings() {
                             <h1 className="food-heading">Account Settings</h1>
                             <p className="food-subtitle !max-w-none mt-2">{user?.email}</p>
                             <div className="food-chip-row mt-4">
-                                <div className="food-chip"><span className="food-chip-dot" /> Click avatar to edit photo or color</div>
+                                <div className="food-chip"><span className="food-chip-dot" /> Click avatar to upload photo or choose a preset</div>
                                 <div className="food-chip"><span className="food-chip-dot" /> Wallet and cards managed below</div>
                             </div>
                         </div>

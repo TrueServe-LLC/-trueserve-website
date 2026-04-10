@@ -9,6 +9,62 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
+const CATEGORY_NORMALIZATION: Record<string, string> = {
+    appetizer: "Starters",
+    appetizers: "Starters",
+    starter: "Starters",
+    starters: "Starters",
+    entree: "Mains",
+    entrees: "Mains",
+    main: "Mains",
+    mains: "Mains",
+    burger: "Mains",
+    burgers: "Mains",
+    sandwich: "Sandwiches",
+    sandwiches: "Sandwiches",
+    dessert: "Desserts",
+    desserts: "Desserts",
+    drink: "Drinks",
+    drinks: "Drinks",
+    beverage: "Drinks",
+    beverages: "Drinks",
+    side: "Sides",
+    sides: "Sides",
+    salad: "Salads",
+    salads: "Salads",
+};
+
+function normalizeCategory(category: unknown): string {
+    if (typeof category !== "string" || !category.trim()) return "Uncategorized";
+    const cleaned = category.trim().toLowerCase().replace(/[^\w\s]/g, "");
+    return CATEGORY_NORMALIZATION[cleaned] || category.trim();
+}
+
+function normalizePrice(price: unknown): number | null {
+    if (typeof price === "number" && Number.isFinite(price)) return Number(price.toFixed(2));
+    if (typeof price !== "string") return null;
+    const parsed = Number(price.replace(/[^0-9.]/g, ""));
+    if (!Number.isFinite(parsed)) return null;
+    return Number(parsed.toFixed(2));
+}
+
+function sanitizeScannedItems(rawItems: unknown[]): any[] {
+    return rawItems
+        .map((item: any) => {
+            const name = typeof item?.name === "string" ? item.name.trim() : "";
+            const price = normalizePrice(item?.price);
+            if (!name || price === null) return null;
+
+            return {
+                name,
+                price,
+                description: typeof item?.description === "string" ? item.description.trim() : "",
+                category: normalizeCategory(item?.category),
+            };
+        })
+        .filter(Boolean);
+}
+
 /**
  * AI Menu Importer (Production)
  * Parses an image or text and returns a JSON menu using Gemini 1.5 Flash
@@ -99,13 +155,29 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
             cleanedText = cleanedText.substring(start, end + 1);
         }
         
-        const items = JSON.parse(cleanedText);
+        const parsedItems = JSON.parse(cleanedText);
+        if (!Array.isArray(parsedItems)) {
+            return { success: false, error: "AI response format invalid. Please retry with a clearer menu image." };
+        }
+
+        const items = sanitizeScannedItems(parsedItems);
+        if (items.length === 0) {
+            return { success: false, error: "No valid menu items were detected. Try a higher quality image or PDF." };
+        }
 
         // --- SMART SYNC LOGIC ---
-        const { data: currentItems } = await supabase
+        let { data: currentItems } = await supabase
             .from('MenuItem')
-            .select('name, price, description')
+            .select('name, price, description, category')
             .eq('restaurantId', restaurantId);
+
+        if (!currentItems) {
+            const fallback = await supabase
+                .from('MenuItem')
+                .select('name, price, description')
+                .eq('restaurantId', restaurantId);
+            currentItems = fallback.data || [];
+        }
 
         const currentMap = new Map(currentItems?.map(i => [i.name.toLowerCase(), i]));
 
@@ -117,7 +189,8 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
             }
 
             const hasChanged = Number(existing.price) !== Number(item.price) ||
-                existing.description !== item.description;
+                existing.description !== item.description ||
+                normalizeCategory((existing as any).category) !== item.category;
 
             return {
                 ...item,
@@ -183,6 +256,7 @@ export async function confirmAIImport(restaurantId: string, items: any[]) {
                     name: item.name,
                     price: Number(item.price) || 0,
                     description: item.description,
+                    category: normalizeCategory(item.category),
                     status: 'APPROVED',
                     updatedAt: new Date().toISOString(),
                     createdAt: existingId ? undefined : new Date().toISOString() // Only set created_at on new
@@ -197,7 +271,15 @@ export async function confirmAIImport(restaurantId: string, items: any[]) {
             .from('MenuItem')
             .upsert(itemsToUpsert, { onConflict: 'id' });
 
-        if (error) throw error;
+        if (error && error.message?.toLowerCase().includes("category")) {
+            const withoutCategory = itemsToUpsert.map(({ category, ...rest }) => rest);
+            const fallbackRes = await supabase
+                .from('MenuItem')
+                .upsert(withoutCategory, { onConflict: 'id' });
+            if (fallbackRes.error) throw fallbackRes.error;
+        } else if (error) {
+            throw error;
+        }
 
         revalidatePath('/merchant/dashboard');
         return { success: true };
