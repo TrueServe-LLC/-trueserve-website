@@ -69,13 +69,12 @@ export default async function UserSettings() {
                     </article>
 
                     <article className="food-card">
-                        <p className="food-kicker mb-2">Partnerships</p>
-                        <h3 className="food-heading !text-[30px] mb-2">Business Portals</h3>
-                        <p className="text-sm leading-7 text-white/70 mb-4">Access merchant and driver tools from one place.</p>
-                        <div className="flex flex-wrap gap-2">
-                            <Link href="/merchant/login" className="btn btn-ghost">For Merchants</Link>
-                            <Link href="/driver/login" className="btn btn-ghost">For Drivers</Link>
-                        </div>
+                        <p className="food-kicker mb-2">Loyalty</p>
+                        <h3 className="food-heading !text-[30px] mb-2">TrueServe Rewards</h3>
+                        <p className="text-sm leading-7 text-white/70 mb-4">
+                            Current tier: <span className="text-[#e8a230] font-bold">{user.plan || "Basic"}</span>. Manage points and membership here.
+                        </p>
+                        <Link href="/rewards" className="btn btn-gold">Open Rewards</Link>
                     </article>
                 </section>
 
