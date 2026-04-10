@@ -16,7 +16,7 @@ export default function DriverTutorialPreviewPage() {
           </div>
           <Link
             href="/driver/login"
-            className="inline-flex items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
+            className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
           >
             Back to Login
           </Link>

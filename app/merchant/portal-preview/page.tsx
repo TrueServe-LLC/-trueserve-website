@@ -30,13 +30,13 @@ export default function MerchantPortalMockPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/merchant/tutorial-preview"
-              className="inline-flex items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
+              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
             >
               View Animated Tutorial
             </Link>
             <Link
               href="/merchant/login"
-              className="inline-flex items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
+              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
             >
               Back to Login
             </Link>
@@ -146,7 +146,7 @@ export default function MerchantPortalMockPage() {
           <div className="mt-3 grid gap-2">
             <Link
               href="/merchant/tutorial-preview"
-              className="inline-flex items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18"
+              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
             >
               Watch Animated Tour
             </Link>
