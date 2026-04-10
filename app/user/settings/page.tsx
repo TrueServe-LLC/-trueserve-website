@@ -32,7 +32,7 @@ export default async function UserSettings() {
                             initialName={user?.name || ""}
                             initialColor={user?.avatarColor || "#E8A230"}
                             initialUrl={user?.avatarUrl}
-                            className="h-32 w-32 rounded-full border border-white/10 shadow-2xl md:h-36 md:w-36"
+                            className="h-32 w-32 md:h-36 md:w-36"
                         />
                         <div className="w-full text-center md:text-left">
                             <p className="food-kicker mb-3">Customer Profile</p>

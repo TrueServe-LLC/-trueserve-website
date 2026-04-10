@@ -25,6 +25,7 @@ export default function ProfileAvatar({
     const [isUploading, setIsUploading] = useState(false);
     
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const wrapperSizeClass = className?.trim() ? className : "h-16 w-16";
 
     const colors = [
         "bg-primary/20", "bg-orange-500", "bg-blue-500", 
@@ -80,7 +81,7 @@ export default function ProfileAvatar({
     };
 
     return (
-        <div className={`relative ${className}`}>
+        <div className={`relative inline-flex items-center justify-center ${wrapperSizeClass}`}>
             <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -92,7 +93,7 @@ export default function ProfileAvatar({
             <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 disabled={isUploading}
-                className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold border transition-transform hover:scale-105 overflow-hidden hover:ring-2 hover:ring-white/20 relative group
+                className={`h-full w-full rounded-full flex items-center justify-center text-[clamp(1rem,2.5vw,2rem)] font-bold border transition-transform hover:scale-[1.02] overflow-hidden hover:ring-2 hover:ring-white/20 relative group
                     ${url ? 'border-white/20' : `${color} ${textColorClass(color)} border-white/10`}
                 `}
                 style={{
@@ -114,7 +115,10 @@ export default function ProfileAvatar({
             </button>
 
             {isMenuOpen && (
-                <div className="absolute top-20 left-0 w-64 bg-slate-900 border border-white/10 rounded-2xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2">
+                <div
+                    className="absolute left-0 w-64 bg-slate-900 border border-white/10 rounded-2xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2"
+                    style={{ top: "calc(100% + 12px)" }}
+                >
                     <h4 className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3 border-b border-white/5 pb-2">Profile Icon</h4>
                     
                     <button 
