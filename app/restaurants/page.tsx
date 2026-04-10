@@ -22,6 +22,8 @@ function RestaurantFinderContent() {
     async function fetchRestaurants() {
       const TEST_DATA_PATTERN = /\b(mock|test|demo|preview|sandbox|sample|qa|staging|seed)\b/i;
       const EXCLUDED_CITIES = new Set(["mount airy"]);
+      const normalizeSearchText = (value: string) =>
+        value.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
       const isLiveRestaurant = (restaurant: any) => {
         const visibility = typeof restaurant.visibility === "string" ? restaurant.visibility.toUpperCase() : "";
         const searchableText = `${restaurant.name || ""} ${restaurant.address || ""} ${restaurant.city || ""} ${restaurant.description || ""}`;
@@ -46,6 +48,10 @@ function RestaurantFinderContent() {
       const targetLat = latParam ? Number(latParam) : null;
       const targetLng = lngParam ? Number(lngParam) : null;
       const targetSearch = targetRaw.toLowerCase();
+      const targetTokens = normalizeSearchText(targetRaw)
+        .split(" ")
+        .filter((token) => token.length > 2);
+      const targetCityToken = normalizeSearchText(targetRaw.split(",")[0] || "");
       const targetState = extractStateCode(targetRaw);
       const shouldFilterByLocation = Boolean(targetRaw || (targetLat !== null && targetLng !== null));
 
@@ -89,7 +95,15 @@ function RestaurantFinderContent() {
             if (!targetSearch) return true;
 
             const haystack = `${restaurant.name || ""} ${restaurant.city || ""} ${restaurant.state || ""} ${restaurant.address || ""}`.toLowerCase();
-            return haystack.includes(targetSearch);
+            const haystackNormalized = normalizeSearchText(haystack);
+
+            if (haystack.includes(targetSearch)) return true;
+            if (targetCityToken && haystackNormalized.includes(targetCityToken)) return true;
+            if (targetTokens.length === 0) return true;
+
+            const matchingTokens = targetTokens.filter((token) => haystackNormalized.includes(token)).length;
+            const requiredMatches = Math.min(2, targetTokens.length);
+            return matchingTokens >= requiredMatches;
           })
           .sort((a: any, b: any) => {
             if (a.distanceMiles === null || b.distanceMiles === null) return 0;
