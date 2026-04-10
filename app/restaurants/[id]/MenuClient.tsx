@@ -13,6 +13,12 @@ import MapWithDirections from "@/components/MapWithDirections";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
+const DELIVERY_STORAGE_KEYS = {
+    address: "ts.delivery.address",
+    lat: "ts.delivery.lat",
+    lng: "ts.delivery.lng",
+} as const;
+
 interface MenuItem {
     id: string;
     name: string;
@@ -102,6 +108,25 @@ export default function MenuClient({
         deliveryLat !== null &&
         deliveryLng !== null;
     const isDhansKitchen = Boolean(restaurant?.name?.toLowerCase?.().includes("dhan"));
+
+    useEffect(() => {
+        try {
+            const savedAddress = localStorage.getItem(DELIVERY_STORAGE_KEYS.address);
+            const savedLat = localStorage.getItem(DELIVERY_STORAGE_KEYS.lat);
+            const savedLng = localStorage.getItem(DELIVERY_STORAGE_KEYS.lng);
+
+            if (!deliveryAddress && savedAddress && savedAddress.trim()) {
+                setDeliveryAddress(savedAddress.trim());
+            }
+            if (deliveryLat === null && savedLat && Number.isFinite(Number(savedLat))) {
+                setDeliveryLat(Number(savedLat));
+            }
+            if (deliveryLng === null && savedLng && Number.isFinite(Number(savedLng))) {
+                setDeliveryLng(Number(savedLng));
+            }
+        } catch { }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleCartChange = (newCart: { [key: string]: number }) => {
         setCart(newCart);
@@ -384,6 +409,24 @@ export default function MenuClient({
                                             setDeliveryLng(typeof lng === "number" && Number.isFinite(lng) ? lng : null);
                                             setCheckoutEta("Calculating...");
                                             setCheckoutDistance("");
+                                            try {
+                                                const nextAddress = String(addr || "").trim();
+                                                if (nextAddress) {
+                                                    localStorage.setItem(DELIVERY_STORAGE_KEYS.address, nextAddress);
+                                                } else {
+                                                    localStorage.removeItem(DELIVERY_STORAGE_KEYS.address);
+                                                }
+                                                if (typeof lat === "number" && Number.isFinite(lat)) {
+                                                    localStorage.setItem(DELIVERY_STORAGE_KEYS.lat, String(lat));
+                                                } else {
+                                                    localStorage.removeItem(DELIVERY_STORAGE_KEYS.lat);
+                                                }
+                                                if (typeof lng === "number" && Number.isFinite(lng)) {
+                                                    localStorage.setItem(DELIVERY_STORAGE_KEYS.lng, String(lng));
+                                                } else {
+                                                    localStorage.removeItem(DELIVERY_STORAGE_KEYS.lng);
+                                                }
+                                            } catch { }
                                         }}
                                     />
                                     <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 overflow-hidden">

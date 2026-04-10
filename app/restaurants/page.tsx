@@ -156,8 +156,19 @@ function RestaurantFinderContent() {
               {restaurants.map(r => {
                 const hasGHL = Boolean(r.ghlUrl);
                 const googleQuery = encodeURIComponent(`${r.name || ""} ${r.address || ""} ${r.city || ""} ${r.state || ""}`);
+                const menuQuery = (() => {
+                  const params = new URLSearchParams();
+                  const addressText = (address || search || "").trim();
+                  if (addressText) params.set("address", addressText);
+                  if (latParam && lngParam) {
+                    params.set("lat", String(latParam));
+                    params.set("lng", String(lngParam));
+                  }
+                  const qs = params.toString();
+                  return qs ? `?${qs}` : "";
+                })();
                 return (
-                  <Link key={r.id} href={`/restaurants/${r.id}`} className="rest-card">
+                  <Link key={r.id} href={`/restaurants/${r.id}${menuQuery}`} className="rest-card">
                     <div className="rc-img" style={{ backgroundImage: `url('${r.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'}')` }}>
                       {hasGHL && (
                         <div style={{ position:'absolute', bottom:12, right:12, background:'rgba(12,14,19,.85)', color:'#fff', padding:'7px 10px', borderRadius:999, fontSize:9, fontWeight:900, display:'flex', alignItems:'center', gap:6, zIndex:1, border:'1px solid rgba(255,255,255,.08)', letterSpacing:'.12em' }}>

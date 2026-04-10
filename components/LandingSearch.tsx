@@ -97,6 +97,12 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                         sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
 
+                        try {
+                            localStorage.setItem("ts.delivery.address", address);
+                            localStorage.setItem("ts.delivery.lat", String(lat));
+                            localStorage.setItem("ts.delivery.lng", String(lng));
+                        } catch { }
+
                         router.push(`/restaurants?lat=${lat}&lng=${lng}&address=${encodeURIComponent(address)}`);
                     } else {
                         console.warn("Places Details failed or missing geometry:", status);
@@ -114,6 +120,14 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
     const handleManualSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        try {
+            const addressText = inputValue.trim();
+            if (addressText) {
+                localStorage.setItem("ts.delivery.address", addressText);
+                localStorage.removeItem("ts.delivery.lat");
+                localStorage.removeItem("ts.delivery.lng");
+            }
+        } catch { }
         router.push(`/restaurants?search=${encodeURIComponent(inputValue)}`);
     };
 
