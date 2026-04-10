@@ -18,6 +18,7 @@ interface MapWithDirectionsProps {
     showDriver?: boolean;
     height?: number | string;
     onDurationUpdate?: (duration: string) => void;
+    onDistanceUpdate?: (distance: string) => void;
     onStepsUpdate?: (steps: any[]) => void;
 }
 
@@ -29,6 +30,7 @@ export default function MapWithDirections({
     showDriver = true,
     height = 400,
     onDurationUpdate,
+    onDistanceUpdate,
     onStepsUpdate
 }: MapWithDirectionsProps) {
     const { isLoaded } = useJsApiLoader({
@@ -87,6 +89,9 @@ export default function MapWithDirections({
                 if (onDurationUpdate && result.routes[0]?.legs[0]?.duration?.text) {
                     onDurationUpdate(result.routes[0].legs[0].duration.text);
                 }
+                if (onDistanceUpdate && result.routes[0]?.legs[0]?.distance?.text) {
+                    onDistanceUpdate(result.routes[0].legs[0].distance.text);
+                }
                 if (onStepsUpdate && result.routes[0]?.legs[0]?.steps) {
                     onStepsUpdate(result.routes[0].legs[0].steps);
                 }
@@ -96,7 +101,7 @@ export default function MapWithDirections({
             }
         });
 
-    }, [destination, isLoaded, onDurationUpdate, onStepsUpdate, startPoint]);
+    }, [destination, isLoaded, onDistanceUpdate, onDurationUpdate, onStepsUpdate, startPoint]);
 
 
     const mapRef = React.useRef<google.maps.Map | null>(null);

@@ -19,6 +19,7 @@ interface MenuItem {
     description: string | null;
     price: number;
     imageUrl: string | null;
+    category?: string | null;
 }
 
 interface MenuClientProps {
@@ -58,6 +59,7 @@ export default function MenuClient({
     const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
     const [redeemPoints, setRedeemPoints] = useState(false);
     const [checkoutEta, setCheckoutEta] = useState<string>("Calculating...");
+    const [checkoutDistance, setCheckoutDistance] = useState<string>("");
     
     // GHL State
     const [isGHLOpen, setIsGHLOpen] = useState(false);
@@ -99,6 +101,7 @@ export default function MenuClient({
         Number.isFinite(restaurantLng) &&
         deliveryLat !== null &&
         deliveryLng !== null;
+    const isDhansKitchen = Boolean(restaurant?.name?.toLowerCase?.().includes("dhan"));
 
     const handleCartChange = (newCart: { [key: string]: number }) => {
         setCart(newCart);
@@ -115,11 +118,18 @@ export default function MenuClient({
         handleCartChange(newCart);
     };
 
+    const removeItem = (id: string) => {
+        const newCart = { ...cart };
+        delete newCart[id];
+        handleCartChange(newCart);
+    };
+
     useEffect(() => {
         const syncPaymentIntent = async () => {
             const nextCartItems = Object.entries(cart).filter(([_, qty]) => qty > 0);
             if (!nextCartItems.length) {
                 setClientSecret(null);
+                setCheckoutDistance("");
                 return;
             }
 
@@ -137,6 +147,77 @@ export default function MenuClient({
 
         syncPaymentIntent();
     }, [cart, pointsValue, redeemPoints, restaurant.id, tip]);
+
+    const normalizedItems = items.map((item) => ({
+        ...item,
+        category: typeof item.category === "string" ? item.category : (item as any).category ?? null,
+    }));
+
+    const categoryLabelFor = (item: MenuItem) => {
+        const raw = typeof item.category === "string" ? item.category.trim() : "";
+        return raw.length ? raw : "Main Menu";
+    };
+
+    const categoryOrder = (() => {
+        if (isDhansKitchen) {
+            return ["Doubles", "Curry Platters", "Vegan", "Sides", "Drinks", "Dessert", "Main Menu"];
+        }
+        return [];
+    })();
+
+    const menuSections = (() => {
+        const buckets = new Map<string, MenuItem[]>();
+        for (const item of normalizedItems) {
+            const inferredLabel = (() => {
+                if (!isDhansKitchen) return null;
+                if (typeof item.category === "string" && item.category.trim().length) return null;
+                const name = String(item.name || "").toLowerCase();
+                if (name.includes("doubles")) return "Doubles";
+                if (name.includes("curry")) return "Curry Platters";
+                if (name.includes("vegan")) return "Vegan";
+                return null;
+            })();
+
+            const label = inferredLabel || categoryLabelFor(item);
+            if (!buckets.has(label)) buckets.set(label, []);
+            buckets.get(label)!.push(item);
+        }
+
+        const sortKey = (label: string) => {
+            const idx = categoryOrder.indexOf(label);
+            if (idx >= 0) return `0_${idx.toString().padStart(3, "0")}_${label.toLowerCase()}`;
+            return `1_${label.toLowerCase()}`;
+        };
+
+        return Array.from(buckets.entries())
+            .sort(([a], [b]) => sortKey(a).localeCompare(sortKey(b)))
+            .map(([label, sectionItems]) => ({
+                label,
+                items: sectionItems.sort((a, b) => a.name.localeCompare(b.name)),
+            }));
+    })();
+
+    const hasCategories =
+        menuSections.length > 1 ||
+        (menuSections.length === 1 && menuSections[0]?.label !== "Main Menu");
+
+    const fallbackDistanceText = (() => {
+        if (!hasCheckoutRoute) return "";
+        const toRad = (value: number) => (value * Math.PI) / 180;
+        const earthMiles = 3958.8;
+        const dLat = toRad(restaurantLat - deliveryLat!);
+        const dLng = toRad(restaurantLng - deliveryLng!);
+        const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(deliveryLat!)) *
+                Math.cos(toRad(restaurantLat)) *
+                Math.sin(dLng / 2) ** 2;
+        const miles = 2 * earthMiles * Math.asin(Math.sqrt(a));
+        if (!Number.isFinite(miles)) return "";
+        return `~${miles.toFixed(1)} mi`;
+    })();
+
+    const checkoutDistanceText = checkoutDistance || fallbackDistanceText;
 
     const handlePaymentSuccess = async (paymentIntentId: string) => {
         if (!deliveryAddress) return alert("Please set a delivery address");
@@ -199,22 +280,27 @@ export default function MenuClient({
             
             <div className="menu-items">
                 {ghlUrl && (
-                    <button className="ghl-btn !bg-[#e8a230] !text-black shadow-lg" onClick={openGHL}>
+                    <button type="button" className="ghl-btn !bg-[#e8a230] !text-black shadow-lg" onClick={openGHL}>
                         <span style={{ fontSize: '16px' }}>⚡️</span> 
                         Order with Fast Assist
                     </button>
                 )}
-                <div className="cat">Main Menu</div>
-                {items.map(item => (
-                    <div key={item.id} className="m-item">
-                        <div>
-                            <div className="m-name">{item.name}</div>
-                            <div className="m-desc">{item.description}</div>
-                        </div>
-                        <div className="m-r">
-                            <span className="m-price">${item.price.toFixed(2)}</span>
-                            <button className="add-btn" onClick={() => addItem(item.id)}>+</button>
-                        </div>
+                {!hasCategories ? <div className="cat">Main Menu</div> : null}
+                {menuSections.map((section) => (
+                    <div key={section.label}>
+                        {hasCategories ? <div className="cat">{section.label}</div> : null}
+                        {section.items.map(item => (
+                            <div key={item.id} className="m-item">
+                                <div>
+                                    <div className="m-name">{item.name}</div>
+                                    <div className="m-desc">{item.description}</div>
+                                </div>
+                                <div className="m-r">
+                                    <span className="m-price">${item.price.toFixed(2)}</span>
+                                    <button type="button" className="add-btn" onClick={() => addItem(item.id)}>+</button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ))}
             </div>
@@ -232,11 +318,19 @@ export default function MenuClient({
                                 <div className="ci" key={id}>
                                     <div className="ci-name">{item.name}</div>
                                     <div className="qc">
-                                        <button className="qb" onClick={() => chgQty(id, -1)}>−</button>
+                                        <button type="button" className="qb" onClick={() => chgQty(id, -1)}>−</button>
                                         <span style={{ fontSize: '12px', fontWeight: 700 }}>{qty}</span>
-                                        <button className="qb" onClick={() => chgQty(id, 1)}>+</button>
+                                        <button type="button" className="qb" onClick={() => chgQty(id, 1)}>+</button>
                                     </div>
                                     <span className="ci-p">${(item.price * qty).toFixed(2)}</span>
+                                    <button
+                                        type="button"
+                                        className="ci-remove"
+                                        aria-label={`Remove ${item.name} from order`}
+                                        onClick={() => removeItem(id)}
+                                    >
+                                        ✕
+                                    </button>
                                 </div>
                             );
                         })
@@ -288,6 +382,8 @@ export default function MenuClient({
                                             setDeliveryAddress(addr);
                                             setDeliveryLat(typeof lat === "number" && Number.isFinite(lat) ? lat : null);
                                             setDeliveryLng(typeof lng === "number" && Number.isFinite(lng) ? lng : null);
+                                            setCheckoutEta("Calculating...");
+                                            setCheckoutDistance("");
                                         }}
                                     />
                                     <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
@@ -296,8 +392,17 @@ export default function MenuClient({
                                                 <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Delivery Route</div>
                                                 <div className="text-[11px] font-semibold text-white/70 mt-1">{locationLabel}</div>
                                             </div>
-                                            <div className="text-[10px] font-black uppercase tracking-widest text-[#e8a230]">
-                                                {hasCheckoutRoute ? `ETA ${checkoutEta}` : "Awaiting Address"}
+                                            <div className="text-[10px] font-black uppercase tracking-widest text-[#e8a230] text-right">
+                                                {hasCheckoutRoute ? (
+                                                    <>
+                                                        <div>{`ETA ${checkoutEta}`}</div>
+                                                        {checkoutDistanceText ? (
+                                                            <div className="mt-1 text-[9px] text-slate-400">{checkoutDistanceText} away</div>
+                                                        ) : null}
+                                                    </>
+                                                ) : (
+                                                    "Awaiting Address"
+                                                )}
                                             </div>
                                         </div>
                                         {hasCheckoutRoute ? (
@@ -308,10 +413,17 @@ export default function MenuClient({
                                                 destination={{ lat: deliveryLat, lng: deliveryLng }}
                                                 showDriver={false}
                                                 onDurationUpdate={setCheckoutEta}
+                                                onDistanceUpdate={setCheckoutDistance}
                                             />
                                         ) : (
-                                            <div className="h-[220px] flex items-center justify-center text-[11px] uppercase tracking-[0.16em] text-slate-500">
-                                                Choose an address from Google suggestions to preview the route.
+                                            <div className="h-[220px] px-6 py-6 flex items-center justify-center text-center">
+                                                <div className="max-w-[280px]">
+                                                    <div className="text-2xl mb-3 opacity-70">🗺️</div>
+                                                    <div className="text-sm font-semibold text-white/70">Select a suggested address</div>
+                                                    <div className="mt-2 text-xs text-slate-500">
+                                                        Choose an address from Google suggestions to preview the route and distance.
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

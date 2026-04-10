@@ -108,7 +108,7 @@ export default function AddressInput({ onAddressSelect, initialAddress = "" }: A
                 <input
                     type="text"
                     placeholder="ENTER STREET ADDRESS..."
-                    className="flex-1 min-w-0 w-full bg-transparent border-none focus:outline-none text-white placeholder:text-slate-700 px-8 py-5 text-sm font-sans pr-4 uppercase tracking-widest italic"
+                    className="flex-1 min-w-0 w-full bg-transparent border-none focus:outline-none text-white placeholder:text-white/30 px-6 py-4 text-[13px] font-bold pr-4 uppercase tracking-[0.14em] leading-[1.2]"
                     value={inputValue}
                     onChange={handleInput}
                     onFocus={() => {

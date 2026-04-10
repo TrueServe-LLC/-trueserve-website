@@ -21,9 +21,43 @@ async function getRestaurant(id: string) {
             `)
             .eq('visibility', 'VISIBLE');
 
-        const { data: restaurant, error } = isUuid 
-            ? await query.eq('id', id).single() 
-            : await query.eq('slug', id).single();
+        const slugify = (value: string) =>
+            value
+                .toLowerCase()
+                .replace(/['’]/g, "")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+
+        let restaurant: any = null;
+        let error: any = null;
+
+        if (isUuid) {
+            const res = await query.eq('id', id).single();
+            restaurant = res.data;
+            error = res.error;
+        } else {
+            // Some environments don't have a `Restaurant.slug` column yet.
+            // For those, fall back to slugifying the restaurant name.
+            const lookup = await supabase
+                .from('Restaurant')
+                .select('id, name')
+                .eq('visibility', 'VISIBLE')
+                .limit(500);
+
+            if (lookup.error) {
+                error = lookup.error;
+            } else {
+                const match = (lookup.data || []).find((r: any) => slugify(String(r.name || "")) === id);
+                if (match?.id) {
+                    const res = await query.eq('id', match.id).single();
+                    restaurant = res.data;
+                    error = res.error;
+                } else {
+                    restaurant = null;
+                    error = null;
+                }
+            }
+        }
 
         if (error || !restaurant) {
             if (error) console.error("Supabase Error (getRestaurant):", error);

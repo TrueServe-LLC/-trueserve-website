@@ -649,6 +649,9 @@ nav {
 .qb{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.08);color:var(--t1);
   border:none;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .ci-p{font-size:13px;font-weight:800;color:var(--gold);white-space:nowrap}
+.ci-remove{width:28px;height:28px;border-radius:10px;background:rgba(226,75,74,.12);border:1px solid rgba(226,75,74,.28);
+  color:rgba(226,75,74,.92);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s,border-color .15s,color .15s}
+.ci-remove:hover{background:rgba(226,75,74,.22);border-color:rgba(226,75,74,.42);color:#ff7b7a}
 .cart-ft{padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)}
 .tr{display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.68);padding:4px 0}
 .tr.big{font-size:16px;font-weight:800;color:var(--t1);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08)}
