@@ -159,6 +159,8 @@ export async function middleware(request: NextRequest) {
       path === '/driver' || 
       path === '/merchant/login' || 
       path === '/driver/login' || 
+      path === '/merchant/tutorial-preview' ||
+      path === '/driver/tutorial-preview' ||
       path === '/merchant/signup' || 
       path === '/driver/signup' || 
       path === '/admin/login';
