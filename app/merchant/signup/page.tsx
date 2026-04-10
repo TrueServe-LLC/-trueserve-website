@@ -202,7 +202,7 @@ export default function MerchantSignupPage() {
                   <div className="done-ico">🎉</div>
                   <h3>You're in! Application Submitted.</h3>
                   <p>We'll review your application within 24 hours and send setup instructions straight to your inbox.</p>
-                  <button className="place-btn" onClick={() => router.push('/merchant/dashboard')}>Go to Portal</button>
+                  <button className="place-btn" onClick={() => router.push('/merchant/dashboard?tour=1')}>Go to Portal</button>
                 </div>
               </div>
             )}

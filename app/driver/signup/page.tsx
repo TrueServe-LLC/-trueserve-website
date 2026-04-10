@@ -208,7 +208,7 @@ export default function DriverSignupPage() {
                     <div className="done-ico">🚚</div>
                     <h3>Application Received</h3>
                     <p>We sent your next-step instructions by email and SMS. Once approved, you can log in with phone OTP at the driver portal.</p>
-                    <Link href="/driver/login" className="place-btn inline-flex items-center justify-center">Go to Driver Login</Link>
+                    <Link href="/driver/login?tour=1" className="place-btn inline-flex items-center justify-center">Go to Driver Login</Link>
                   </div>
                 </div>
               )}

@@ -2,19 +2,23 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import DriverLoginForm from "./DriverLoginForm";
 
 export default function DriverLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
 
   const signInWithProvider = async (provider: 'google') => {
     setIsLoading(true);
+    const wantsTour = searchParams.get("tour") === "1";
+    const nextPath = wantsTour ? "/driver/dashboard?tour=1" : "/driver/dashboard";
     const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
+            redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
             queryParams: {
                 prompt: 'select_account',
             }
@@ -71,10 +75,10 @@ export default function DriverLoginPage() {
             </div>
 
             <Link
-              href="/driver/tutorial-preview"
+              href="/driver/portal-preview"
               className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 hover:text-white"
             >
-              Preview Portal Tutorial
+              Preview Portal Mockup
             </Link>
           </section>
         </div>

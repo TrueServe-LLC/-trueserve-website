@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 
 export default function MerchantLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,7 +58,8 @@ export default function MerchantLoginPage() {
       return;
     }
 
-    router.push("/merchant/dashboard");
+    const forceTour = searchParams.get("tour") === "1";
+    router.push(forceTour ? "/merchant/dashboard?tour=1" : "/merchant/dashboard");
     router.refresh();
   };
 
@@ -129,10 +131,10 @@ export default function MerchantLoginPage() {
             </form>
 
             <Link
-              href="/merchant/tutorial-preview"
+              href="/merchant/portal-preview"
               className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 hover:text-white"
             >
-              Preview Portal Tutorial
+              Preview Portal Mockup
             </Link>
 
             <div className="login-foot">New to network? <Link href="/merchant/signup">Apply for partnership</Link></div>

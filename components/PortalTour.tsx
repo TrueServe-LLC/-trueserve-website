@@ -33,6 +33,15 @@ function computeSpotlightRect(target: HTMLElement): DOMRect {
 
 export default function PortalTour({ portal }: { portal: PortalType }) {
   const storageKey = useMemo(() => `ts.portalTour.${portal}.v1`, [portal]);
+  const forceTour = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("tour") === "1";
+    } catch {
+      return false;
+    }
+  }, []);
 
   const steps: PortalTourStep[] = useMemo(() => {
     if (portal === "MERCHANT") {
@@ -108,6 +117,11 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
   };
 
   useEffect(() => {
+    if (forceTour) {
+      const t = window.setTimeout(() => setIsOpen(true), 300);
+      return () => window.clearTimeout(t);
+    }
+
     try {
       const alreadyDone = localStorage.getItem(storageKey) === "done";
       if (!alreadyDone) {
@@ -116,7 +130,7 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
       }
     } catch { }
     return;
-  }, [storageKey]);
+  }, [forceTour, storageKey]);
 
   useEffect(() => {
     const handler = (event: Event) => {

@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function DriverLoginForm() {
     const supabase = createClient();
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const [phone, setPhone] = useState("");
     const [token, setToken] = useState("");
@@ -77,7 +78,8 @@ export default function DriverLoginForm() {
             if (error) throw error;
 
             if (data?.session) {
-                router.push("/driver/dashboard");
+                const forceTour = searchParams.get("tour") === "1";
+                router.push(forceTour ? "/driver/dashboard?tour=1" : "/driver/dashboard");
                 router.refresh();
             }
         } catch (err: any) {
