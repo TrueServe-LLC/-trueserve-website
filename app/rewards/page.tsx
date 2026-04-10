@@ -119,8 +119,9 @@ function TierCard({
 export default async function RewardsPage({
     searchParams
 }: {
-    searchParams?: { update?: string; tier?: string };
+    searchParams?: Promise<{ update?: string; tier?: string }>;
 }) {
+    const resolvedSearchParams = searchParams ? await searchParams : undefined;
     const { isAuth, userId } = await getAuthSession();
     const snapshot = await getSnapshot(userId);
     const currentPlan = snapshot?.plan || "Basic";
@@ -140,7 +141,7 @@ export default async function RewardsPage({
             </nav>
 
             <main className="food-app-main">
-                <MessageBanner update={searchParams?.update} tier={searchParams?.tier} />
+                <MessageBanner update={resolvedSearchParams?.update} tier={resolvedSearchParams?.tier} />
 
                 <section className="food-panel">
                     <p className="food-kicker mb-3">Customer Loyalty</p>
