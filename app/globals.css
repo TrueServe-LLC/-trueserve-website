@@ -73,6 +73,17 @@ nav {
 .btn-red { background: rgba(226, 75, 74, 0.12); border: 1px solid rgba(226, 75, 74, 0.3); color: var(--red); }
 .btn-red:hover { background: rgba(226, 75, 74, 0.22); }
 
+@media (prefers-reduced-motion: no-preference) {
+  .ts-animate-fade-up { animation: ts-fade-up 520ms cubic-bezier(.2,.8,.2,1) both; }
+  .ts-animate-delay-1 { animation-delay: 90ms; }
+  .ts-animate-delay-2 { animation-delay: 180ms; }
+}
+
+@keyframes ts-fade-up {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
 .logo {
   font-family: var(--font-bebas), sans-serif;
   text-transform: uppercase;
@@ -86,6 +97,7 @@ nav {
     radial-gradient(circle at top right, rgba(255, 122, 45, 0.14), transparent 26%),
     linear-gradient(180deg, #120f0c 0%, #0c0e13 48%, #090b10 100%);
   color: var(--t1);
+  overflow-x: hidden;
 }
 
 .food-app-nav {
@@ -112,6 +124,7 @@ nav {
   position: relative;
   overflow: hidden;
   border-radius: 32px;
+  isolation: isolate;
 }
 
 .food-hero-card::before {
@@ -161,6 +174,8 @@ nav {
   font-weight: 800;
   letter-spacing: .18em;
   text-transform: uppercase;
+  position: relative;
+  z-index: 2;
 }
 
 .food-title {
@@ -415,11 +430,13 @@ nav {
   position: absolute; inset: 0;
   background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80') center/cover no-repeat;
   opacity: .18; filter: blur(1px); z-index: 0;
+  pointer-events: none;
 }
 .home-bg-grad {
   position: absolute; inset: 0;
   background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232, 162, 48, 0.08) 0%, rgba(12, 14, 19, 0.85) 70%);
   z-index: 1;
+  pointer-events: none;
 }
 .home-inner { text-align: center; max-width: 560px; width: 100%; position: relative; z-index: 2; }
 
@@ -776,10 +793,16 @@ nav {
   nav { padding: 0 16px; min-height: 70px; height: auto; flex-wrap: wrap; justify-content: center; gap: 10px; }
   .nav-links { display: flex; gap: 15px; font-size: 10px; order: 2; width: 100%; justify-content: center; padding-bottom: 10px; }
   .nav-r { order: 1; }
-  .food-app-main { width: min(100% - 24px, 1180px); padding-top: 20px; }
+  .food-app-main { width: min(1180px, calc(100% - 24px)); padding-top: 20px; }
   .food-grid-2, .food-auth-grid, .track-grid, .menu-body { grid-template-columns: 1fr; }
   .food-panel, .food-card, .food-auth-form, .food-auth-hero, .menu-items, .cart, .status-box, .driver-box { padding: 20px; }
   .food-auth-hero { min-height: 420px; }
+
+  /* Preserve Tailwind's `hidden` on mobile for the public nav */
+  .food-app-nav .nav-links.hidden { display: none; }
+
+  /* Reduce mobile GPU artifacts from filtered hero background */
+  .home-bg-img { filter: none; }
   
   /* Home Page Scaling */
   .home-h1 { font-size: 32px; }
@@ -825,8 +848,9 @@ nav {
     .login-box { padding: 24px 20px; }
     .role-tab { font-size: 11px; padding: 7px; }
     .food-auth-wrap { padding-top: 20px; }
-    .food-title { font-size: 42px; }
+    .food-title { font-size: 40px; line-height: 0.98; }
     .food-heading { font-size: 30px; }
+    .home-bg-img { filter: none; }
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

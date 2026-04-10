@@ -38,7 +38,7 @@ export default function Home() {
           <div className="home-bg-img"></div>
           <div className="home-bg-grad"></div>
           <div className="relative z-[2] grid gap-8 px-6 py-12 md:grid-cols-[minmax(0,1.1fr)_360px] md:px-10 md:py-14">
-            <div className="space-y-7">
+            <div className="space-y-7 ts-animate-fade-up">
               <div className="food-eyebrow">Fresh meals. Fast drop-offs. One clear brand.</div>
               <div className="space-y-4">
                 <h1 className="food-title">Food Delivery<br /><span className="accent">That Feels Premium.</span></h1>
@@ -63,7 +63,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="food-panel flex flex-col justify-between gap-6">
+            <div className="food-panel flex flex-col justify-between gap-6 ts-animate-fade-up ts-animate-delay-1">
               <div className="space-y-4">
                 <p className="food-kicker">Tonight's vibe</p>
                 <h2 className="food-heading">Browse. Order. <span className="accent">Relax.</span></h2>
@@ -83,9 +83,19 @@ export default function Home() {
                 </div>
               </div>
 
-              <Link href="/signup" className="place-btn text-center">
-                Create Customer Account
-              </Link>
+              <div className="grid gap-2">
+                <Link href="/restaurants" className="place-btn text-center">
+                  Start Ordering
+                </Link>
+                {!userId ? (
+                  <Link
+                    href="/signup"
+                    className="text-center text-xs font-semibold text-gray-400 transition-colors hover:text-[#e8a230]"
+                  >
+                    New here? Create an account
+                  </Link>
+                ) : null}
+              </div>
             </div>
           </div>
         </section>
@@ -93,7 +103,7 @@ export default function Home() {
         <section className="mt-8 grid gap-8 md:grid-cols-3">
           {[
             { title: "Start ordering", desc: "Search by address, discover nearby restaurants, and jump straight into menu browsing.", link: "/restaurants" },
-            { title: "Save your details", desc: "Keep addresses, payment details, and order history in one familiar interface.", link: "/signup" },
+            { title: "Save your details", desc: "Keep addresses, payment details, and order history in one familiar interface.", link: "/restaurants" },
             { title: "Track every delivery", desc: "Follow prep, pickup, and arrival inside the same visual system.", link: "/orders" }
           ].map((card) => (
             <Link key={card.title} href={card.link} className="food-card transition-transform hover:-translate-y-1">
@@ -110,7 +120,7 @@ export default function Home() {
               <p className="food-kicker mb-3">Built For Daily Orders</p>
               <h2 className="food-heading">A more <span className="accent">linear</span> experience.</h2>
             </div>
-            <Link href="/login" className="btn btn-ghost">Sign In</Link>
+            <Link href="/restaurants" className="btn btn-ghost">Explore Restaurants</Link>
           </div>
           <div className="food-grid-2">
             <div className="space-y-4">
@@ -130,7 +140,21 @@ export default function Home() {
                 {userId ? (
                   <Link href="/orders" className="btn btn-ghost justify-center">View Orders</Link>
                 ) : (
-                  <Link href="/login" className="btn btn-ghost justify-center">Sign In to View Orders</Link>
+                  <div className="grid gap-2 rounded-xl border border-white/5 bg-white/0 px-4 py-3 text-center text-xs text-gray-400">
+                    <div>
+                      <Link href="/login" className="font-semibold text-gray-300 transition-colors hover:text-[#e8a230]">
+                        Sign in
+                      </Link>{" "}
+                      to view past orders.
+                    </div>
+                    <div>
+                      New?{" "}
+                      <Link href="/signup" className="font-semibold text-gray-300 transition-colors hover:text-[#e8a230]">
+                        Create an account
+                      </Link>
+                      .
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
