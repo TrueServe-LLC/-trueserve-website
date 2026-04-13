@@ -25,16 +25,24 @@ export default async function MerchantDashboardLayout({ children }: { children: 
     }
 
     let restaurant: any = null;
+    let restaurants: any[] = [];
+    let isMultiLocation = false;
+
     if (isPreview) {
         restaurant = { name: "Pilot Kitchen" };
+        restaurants = [restaurant];
+        isMultiLocation = false; // Don't show for preview
     } else {
         const supabase = await createClient();
-        const { data } = await supabase
+        const { data: allRestaurants } = await supabase
             .from('Restaurant')
-            .select('*')
+            .select('id, name')
             .eq('ownerId', activeUserId)
-            .maybeSingle();
-        restaurant = data;
+            .order('createdAt', { ascending: true });
+
+        restaurants = allRestaurants || [];
+        restaurant = restaurants[0];
+        isMultiLocation = restaurants.length > 1;
     }
 
     const merchantInitials = restaurant?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'M';
@@ -66,6 +74,9 @@ export default async function MerchantDashboardLayout({ children }: { children: 
                     <Link data-tour="merchant-nav-dashboard" href="/merchant/dashboard" className="ts-pill-chip ts-pill-chip-active">Dashboard</Link>
                     <Link data-tour="merchant-nav-integrations" href="/merchant/dashboard/integrations" className="ts-pill-chip">Integrations</Link>
                     <Link data-tour="merchant-nav-compliance" href="/merchant/dashboard/compliance" className="ts-pill-chip">Compliance</Link>
+                    {isMultiLocation && (
+                        <Link href="/merchant/dashboard/franchise" className="ts-pill-chip">Franchise</Link>
+                    )}
                     <Link data-tour="merchant-nav-storefront" href="/merchant/dashboard/storefront" className="ts-pill-chip">Storefront</Link>
                 </div>
             </header>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import LandingSearch from "@/components/LandingSearch";
+import RestaurantCard from "./RestaurantCard";
 
 function RestaurantFinderContent() {
   const searchParams = useSearchParams();
@@ -77,7 +78,7 @@ function RestaurantFinderContent() {
 
       const { data, error } = await supabase
         .from('Restaurant')
-        .select('*');
+        .select('*, healthGrade, complianceStatus');
       
       if (!error && data) {
         const liveRestaurants = data.filter(isLiveRestaurant);
@@ -166,55 +167,16 @@ function RestaurantFinderContent() {
             <div className="food-panel text-center py-20 opacity-60 font-bold text-[#e8a230] animate-pulse">Loading nearby restaurants...</div>
           ) : (
             <div className="rest-grid">
-              {restaurants.map(r => {
-                const hasGHL = Boolean(r.ghlUrl);
-                const googleQuery = encodeURIComponent(`${r.name || ""} ${r.address || ""} ${r.city || ""} ${r.state || ""}`);
-                const menuQuery = (() => {
-                  const params = new URLSearchParams();
-                  const addressText = (address || search || "").trim();
-                  if (addressText) params.set("address", addressText);
-                  if (latParam && lngParam) {
-                    params.set("lat", String(latParam));
-                    params.set("lng", String(lngParam));
-                  }
-                  const qs = params.toString();
-                  return qs ? `?${qs}` : "";
-                })();
-                return (
-                  <Link key={r.id} href={`/restaurants/${r.id}${menuQuery}`} className="rest-card">
-                    <div className="rc-img" style={{ backgroundImage: `url('${r.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'}')` }}>
-                      {hasGHL && (
-                        <div style={{ position:'absolute', bottom:12, right:12, background:'rgba(12,14,19,.85)', color:'#fff', padding:'7px 10px', borderRadius:999, fontSize:9, fontWeight:900, display:'flex', alignItems:'center', gap:6, zIndex:1, border:'1px solid rgba(255,255,255,.08)', letterSpacing:'.12em' }}>
-                          <span style={{ color: 'var(--gold)' }}>●</span> FAST ASSIST
-                        </div>
-                      )}
-                    </div>
-                    <div className="rc-info">
-                      <div className="rc-name">{r.name}</div>
-                      <div className="rc-meta">
-                        <div className="rc-rating"><span>★</span> {r.rating || '4.9'}</div>
-                        <div>•</div>
-                        <div>
-                          {typeof r.distanceMiles === "number" ? `${r.distanceMiles.toFixed(1)} mi` : "18-24 mins"}
-                        </div>
-                        <div>•</div>
-                        <div>{r.city}, {r.state}</div>
-                      </div>
-                      <button
-                        type="button"
-                        className="mt-2 inline-flex text-[11px] uppercase tracking-[0.14em] font-bold text-[#e8a230] hover:text-white transition-colors"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          window.open(`https://www.google.com/search?q=${googleQuery}+reviews`, "_blank", "noopener,noreferrer");
-                        }}
-                      >
-                        View Google Reviews
-                      </button>
-                    </div>
-                  </Link>
-                );
-              })}
+              {restaurants.map((r) => (
+                <RestaurantCard
+                  key={r.id}
+                  r={r}
+                  address={address}
+                  search={search}
+                  latParam={latParam}
+                  lngParam={lngParam}
+                />
+              ))}
               {restaurants.length === 0 && (
                 <div className="food-panel col-span-full text-center py-20 opacity-50">
                   {hasLocationInput ? "No restaurants matched that area yet." : "Add your address to start browsing restaurants."}

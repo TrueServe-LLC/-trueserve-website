@@ -53,7 +53,7 @@ export default async function MerchantDashboard({
         };
     } else {
         const supabase = await createClient();
-        const { data, error } = await supabase
+        const { data: restaurants, error } = await supabase
             .from("Restaurant")
             .select(`
                 *,
@@ -61,14 +61,16 @@ export default async function MerchantDashboard({
                 orders:Order(*, user:User(*)),
                 schedules:MerchantSchedule(*)
             `)
-            .eq("ownerId", activeUserId!)
-            .single();
+            .eq("ownerId", activeUserId!);
 
-        if (error || !data) {
+        if (error || !restaurants || restaurants.length === 0) {
             console.error("Dashboard Fetch Error:", error);
             redirect("/merchant/signup");
         }
-        restaurant = data;
+
+        // For now, use the first restaurant (primary location)
+        // TODO: Add restaurant selector if multiple locations
+        restaurant = restaurants[0];
     }
 
     const pendingOrders = (restaurant.orders || []).filter(

@@ -1053,3 +1053,42 @@ export async function sendKitchenReassurance(orderId: string, message: string) {
         return { error: e.message };
     }
 }
+
+/**
+ * Get all restaurants owned by a merchant
+ * Supports multi-location merchants with flexible ownership
+ */
+export async function getMerchantRestaurants() {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            return { error: "Unauthorized", restaurants: [] };
+        }
+
+        const { data, error } = await supabase
+            .from('Restaurant')
+            .select(`
+                id,
+                name,
+                city,
+                state,
+                complianceScore,
+                healthGrade,
+                complianceStatus,
+                lastInspectionAt,
+                updatedAt
+            `)
+            .eq('ownerId', user.id)
+            .order('createdAt', { ascending: true });
+
+        if (error) {
+            return { error: error.message, restaurants: [] };
+        }
+
+        return { success: true, restaurants: data || [] };
+    } catch (e: any) {
+        return { error: e.message, restaurants: [] };
+    }
+}
