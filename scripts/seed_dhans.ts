@@ -15,42 +15,82 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 /**
  * QA TEST SCRIPT: seed_dhans.ts
- * 
- * PURPOSE: 
- * Seeds the authentic Fayetteville Caribbean merchant "Dhan's Kitchen". 
- * This includes high-res menu images and specific Trinidadian 
+ *
+ * PURPOSE:
+ * Seeds the authentic Fayetteville Caribbean merchant "Dhan's Kitchen".
+ * This includes high-res menu images and specific Trinidadian
  * categories (Vegan, Doubles, Curry Platters).
- * 
+ * Creates a real Supabase Auth account for login.
+ *
  * HOW TO RUN:
  * `npx ts-node scripts/seed_dhans.ts`
- * 
+ *
+ * LOGIN CREDENTIALS:
+ * Email: dhanskitchen@trueserve.test
+ * Password: DhansKitchen2026!
+ *
  * VERIFICATION:
- * 1. Log in to the customer app and select "Fayetteville" (if location filtering active).
- * 2. Search for "Dhan's Kitchen".
- * 3. Verify all 23 items appear with their high-res images (e.g. Doubles, Jerk Chicken).
+ * 1. Go to /merchant/login and sign in with above credentials
+ * 2. Navigate to the merchant dashboard and storefront
+ * 3. Search for "Dhan's Kitchen" in the customer app
+ * 4. Verify all 23 items appear with their high-res images (e.g. Doubles, Jerk Chicken).
  */
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
 async function addDhansKitchen() {
     console.log("Adding Dhan's Kitchen to Fayetteville...")
     const now = new Date().toISOString()
-    
-    // 1. Find or Create Merchant User
     const merchantEmail = 'dhanskitchen@trueserve.test'
+    const merchantPassword = 'DhansKitchen2026!'
+
+    // 1. Create or Update Supabase Auth Account
     let merchantId = ''
-    
-    const { data: existingUser } = await supabase
+    const { data: { users: existingAuthUsers } } = await supabaseAdmin.auth.admin.listUsers()
+    const existingAuthUser = existingAuthUsers.find(u => u.email?.toLowerCase() === merchantEmail.toLowerCase())
+
+    if (existingAuthUser) {
+        merchantId = existingAuthUser.id
+        console.log('✅ Auth account exists for:', merchantEmail)
+        // Update password in case it changed
+        await supabaseAdmin.auth.admin.updateUserById(existingAuthUser.id, {
+            password: merchantPassword,
+            email_confirm: true,
+            user_metadata: {
+                displayName: 'Dhan Griffin',
+                role: 'MERCHANT'
+            }
+        })
+        console.log('   Password updated.')
+    } else {
+        // Create new auth account
+        const { data: { user: newAuthUser }, error: authError } = await supabaseAdmin.auth.admin.createUser({
+            email: merchantEmail,
+            password: merchantPassword,
+            email_confirm: true,
+            user_metadata: {
+                displayName: 'Dhan Griffin',
+                role: 'MERCHANT'
+            }
+        })
+        if (authError) {
+            console.error('❌ Auth creation error:', authError)
+            return
+        }
+        merchantId = newAuthUser!.id
+        console.log('✅ Auth account created:', merchantEmail)
+    }
+
+    // 2. Create or Update User Table Record
+    const { data: existingUser } = await supabaseAdmin
         .from('User')
         .select('id')
-        .eq('email', merchantEmail)
+        .eq('id', merchantId)
         .single()
-        
+
     if (existingUser) {
-        merchantId = existingUser.id
-        console.log('Using existing merchant account:', merchantId)
+        console.log('✅ User record exists:', merchantId)
     } else {
-        merchantId = uuidv4()
-        const { error: userError } = await supabase.from('User').insert({
+        const { error: userError } = await supabaseAdmin.from('User').insert({
             id: merchantId,
             name: 'Dhan Griffin',
             email: merchantEmail,
@@ -61,28 +101,28 @@ async function addDhansKitchen() {
             updatedAt: now
         })
         if (userError) {
-            console.error('User creation error:', userError)
+            console.error('❌ User table creation error:', userError)
             return
         }
-        console.log('New merchant account created.')
+        console.log('✅ User record created.')
     }
 
-    // 2. Find or Create Restaurant
+    // 3. Find or Create Restaurant
     let restaurantId = ''
-    const { data: existingRest } = await supabase
+    const { data: existingRest } = await supabaseAdmin
         .from('Restaurant')
         .select('id')
         .eq('name', "Dhan's Kitchen")
         .single()
-        
+
     if (existingRest) {
         restaurantId = existingRest.id
-        console.log('Updating existing restaurant:', restaurantId)
+        console.log('✅ Updating existing restaurant:', restaurantId)
     } else {
         restaurantId = uuidv4()
     }
 
-    const { error: restError } = await supabase.from('Restaurant').upsert({
+    const { error: restError } = await supabaseAdmin.from('Restaurant').upsert({
         id: restaurantId,
         name: "Dhan's Kitchen",
         address: '432 Chatham St',
@@ -101,12 +141,12 @@ async function addDhansKitchen() {
     })
 
     if (restError) {
-        console.error('Restaurant upsert error:', restError)
+        console.error('❌ Restaurant upsert error:', restError)
         return
     }
-    console.log('Restaurant profile updated with real cover photo.')
+    console.log('✅ Restaurant profile set.')
 
-    // 3. Menu Items
+    // 4. Menu Items
     const menuItems = [
         // Combo Meals
         { name: "Veggie Combo", price: 13.99, description: "All combos served with Rice & Beans, White Rice, or Roti. Includes two sides.", imageUrl: 'https://s3-media0.fl.yelpcdn.com/bphoto/d_rlrAXrGbFE6xS_3n2fYA/o.jpg' },
@@ -143,7 +183,7 @@ async function addDhansKitchen() {
     ]
 
     // Clear existing menu items first for clean re-seed
-    await supabase.from('MenuItem').delete().eq('restaurantId', restaurantId)
+    await supabaseAdmin.from('MenuItem').delete().eq('restaurantId', restaurantId)
 
     const fullMenuItems = menuItems.map(item => ({
         id: uuidv4(),
@@ -151,21 +191,24 @@ async function addDhansKitchen() {
         name: item.name,
         price: item.price,
         description: item.description,
-        imageUrl: item.imageUrl, // 👈 KEY FIX: Added missing imageUrl mapping
+        imageUrl: item.imageUrl,
         status: 'APPROVED',
         inventory: 100,
         createdAt: now,
         updatedAt: now
     }))
 
-    const { error: menuError } = await supabase.from('MenuItem').insert(fullMenuItems)
+    const { error: menuError } = await supabaseAdmin.from('MenuItem').insert(fullMenuItems)
     if (menuError) {
-        console.error('Menu items insertion error:', menuError)
+        console.error('❌ Menu items insertion error:', menuError)
     } else {
-        console.log('Full menu re-seeded (23 items).')
+        console.log('✅ Full menu seeded (23 items).')
     }
 
-    console.log('Seed process finished.')
+    console.log('\n🎉 Dhan\'s Kitchen is ready to login!')
+    console.log('   Email: dhanskitchen@trueserve.test')
+    console.log('   Password: DhansKitchen2026!')
+    console.log('   URL: http://localhost:3000/merchant/login')
 }
 
 addDhansKitchen()
