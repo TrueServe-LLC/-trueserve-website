@@ -83,7 +83,7 @@ export default function MerchantTutorialPreviewPage() {
           justify-content: center;
           min-height: 32px;
           padding: 7px 12px;
-          border-radius: 999px;
+          border-radius: 8px;
           border: 1px solid #252b1e;
           background: #161a13;
           color: #5a6052;

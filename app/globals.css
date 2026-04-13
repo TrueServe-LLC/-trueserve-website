@@ -217,7 +217,7 @@ nav {
   justify-content: center;
   min-height: 40px;
   padding: 10px 16px;
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid rgba(232, 162, 48, 0.85);
   background: linear-gradient(180deg, #efbb5c 0%, #e8a230 100%);
   color: #120c01;
@@ -257,7 +257,7 @@ nav {
   justify-content: center;
   min-height: 34px;
   padding: 7px 12px;
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid rgba(232, 162, 48, 0.82);
   background: linear-gradient(180deg, #efbb5c 0%, #e8a230 100%);
   color: #120c01;
