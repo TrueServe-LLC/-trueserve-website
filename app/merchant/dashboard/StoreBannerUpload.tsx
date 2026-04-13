@@ -12,52 +12,70 @@ const initialState: MerchantActionState = {
 export default function StoreBannerUpload({ currentImageUrl }: { currentImageUrl: string }) {
     const [state, formAction, isPending] = useActionState(updateStoreBanner, initialState);
     const [previewUrl, setPreviewUrl] = useState(currentImageUrl || '/restaurant1.jpg');
+    const [fileName, setFileName] = useState("No file chosen");
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setPreviewUrl(URL.createObjectURL(file));
+            setFileName(file.name);
+        } else {
+            setFileName("No file chosen");
         }
     };
 
     return (
-        <div className="card p-6 border border-white/20 bg-slate-900/90 mb-8 w-full md:col-span-2">
-            <h3 className="text-xl font-bold mb-4">Store Banner</h3>
+        <div className="md-stat-block" style={{ marginBottom: "24px" }}>
+            <div className="md-stat-name">Store Banner</div>
 
             {state.success && (
-                <div className="mb-4 p-3 bg-emerald-500/20 text-emerald-400 rounded text-sm">
+                <div style={{ marginBottom: "14px", padding: "10px 14px", background: "rgba(61,214,140,.1)", color: "var(--green)", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "1px solid rgba(61,214,140,.2)" }}>
                     {state.message}
                 </div>
             )}
-
             {state.error && (
-                <div className="mb-4 p-3 bg-red-500/20 text-red-400 rounded text-sm">
+                <div style={{ marginBottom: "14px", padding: "10px 14px", background: "rgba(226,75,74,.1)", color: "#f87171", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "1px solid rgba(226,75,74,.2)" }}>
                     {state.message}
                 </div>
             )}
 
-            <form action={formAction} className="flex flex-col md:flex-row gap-6 items-start">
-                <div className="w-full md:w-1/3 aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/10 shrink-0">
-                    <img src={previewUrl} alt="Store Banner Preview" className="w-full h-full object-cover" />
-                </div>
-
-                <div className="flex flex-col gap-4 w-full">
-                    <div>
-                        <label className="block text-sm text-slate-400 mb-2">Upload New Banner</label>
-                        <input
-                            name="image"
-                            type="file"
-                            accept="image/*"
-                            required
-                            onChange={handleImageChange}
-                            className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-primary/20 file:text-primary hover:file:bg-primary/30"
-                        />
-                        <p className="text-xs text-slate-500 mt-2">Recommended size: 1200x800px. Max size: 5MB. This will be the main image customers see when browsing restaurants.</p>
+            <form action={formAction}>
+                <div style={{ display: "grid", gridTemplateColumns: "400px 1fr", gap: 0, borderRadius: "10px", overflow: "hidden", border: "1px solid var(--border)" }}>
+                    <div style={{ position: "relative", minHeight: "240px", background: "var(--card2)", borderRight: "1px solid var(--border)" }}>
+                        <img src={previewUrl} alt="Store Banner Preview" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", minHeight: "240px" }} />
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.14)", pointerEvents: "none" }} />
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                            <span style={{ background: "rgba(0,0,0,.35)", padding: "4px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", color: "rgba(255,255,255,.6)" }}>Banner Preview</span>
+                        </div>
                     </div>
 
-                    <button type="submit" disabled={isPending} className="btn bg-primary text-black font-bold text-sm py-2 px-6 self-start rounded-full uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                        {isPending ? "Uploading..." : "Save Banner"}
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "24px", background: "var(--card2)" }}>
+                        <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, margin: 0 }}>
+                            Recommended: 1200×800px · Max 5MB.<br />
+                            This is the first image customers see when browsing your storefront.
+                        </p>
+                        <div style={{ overflow: "hidden", borderRadius: "8px", border: "1px solid var(--border)" }}>
+                            <div style={{ display: "flex", alignItems: "stretch" }}>
+                                <label style={{ cursor: "pointer", background: "var(--gold)", padding: "10px 18px", fontSize: "11px", fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", color: "#000", whiteSpace: "nowrap" }}>
+                                    Choose File
+                                    <input
+                                        name="image"
+                                        type="file"
+                                        accept="image/*"
+                                        required
+                                        onChange={handleImageChange}
+                                        style={{ display: "none" }}
+                                    />
+                                </label>
+                                <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 14px", fontSize: "13px", color: "var(--t3)", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                    {fileName}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" disabled={isPending} className="btn btn-gold" style={{ width: "fit-content" }}>
+                            {isPending ? "Uploading..." : "Save Banner"}
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

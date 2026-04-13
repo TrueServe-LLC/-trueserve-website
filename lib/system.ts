@@ -21,7 +21,8 @@ export type ConfigKey =
     | 'AI_MENU_SCANNER_ENABLED'
     | 'GOOGLE_RATINGS_SYNC_ENABLED'
     | 'INSTANT_PAYOUTS_ENABLED'
-    | 'EXPRESS_CHECKOUT_ACTIVE';
+    | 'EXPRESS_CHECKOUT_ACTIVE'
+    | 'COMPLIANCE_LAYER_ENABLED';
 
 export type ConfigEnvironment = 'development' | 'preview' | 'production';
 
@@ -137,6 +138,11 @@ export async function isExpressCheckoutActive(): Promise<boolean> {
     const ld = await getFeatureFlag('express-checkout', true);
     const db = await getSystemConfig('EXPRESS_CHECKOUT_ACTIVE', true);
     return ld && db;
+}
+
+export async function isComplianceLayerEnabled(): Promise<boolean> {
+    const db = await getSystemConfig('COMPLIANCE_LAYER_ENABLED', process.env.NODE_ENV !== 'production');
+    return db === true || db === 'true';
 }
 
 export async function updateSystemConfig(

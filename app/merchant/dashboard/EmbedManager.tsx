@@ -10,17 +10,17 @@ interface EmbedManagerProps {
 
 export default function EmbedManager({ restaurantId, restaurantName, slug }: EmbedManagerProps) {
     const [copied, setCopied] = useState(false);
-    const [primaryColor, setPrimaryColor] = useState("10B981"); // Default Emerald
-    
+    const [primaryColor, setPrimaryColor] = useState("10B981");
+
     const embedId = slug || restaurantId;
     const embedUrl = `https://trueserve.delivery/restaurants/${embedId}?embed=true&primary=${primaryColor.replace('#', '')}`;
-    
+
     const snippet = `<div style="width:100%; overflow:hidden;">
-  <iframe 
-    src="${embedUrl}" 
-    width="100%" 
-    height="1000px" 
-    frameborder="0" 
+  <iframe
+    src="${embedUrl}"
+    width="100%"
+    height="1000px"
+    frameborder="0"
     style="border:none; border-radius:32px; box-shadow:0 20px 50px rgba(0,0,0,0.5);"
     allow="payment"
   ></iframe>
@@ -33,43 +33,34 @@ export default function EmbedManager({ restaurantId, restaurantName, slug }: Emb
     };
 
     return (
-        <div className="p-8 bg-white/[0.03] border border-white/5 rounded-[2.5rem] space-y-8 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 text-6xl opacity-5 group-hover:scale-110 transition-transform font-sans">🌐</div>
-            
-            <div className="relative z-10 flex items-center justify-between">
-                <div>
-                    <h3 className="text-2xl font-black text-white italic tracking-tight uppercase mb-2">GHL Integration Hub</h3>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed">Generated exclusively for the {restaurantName} terminal</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest">Brand Accent:</label>
-                    <input 
-                        type="color" 
-                        value={`#${primaryColor}`} 
-                        onChange={(e) => setPrimaryColor(e.target.value)}
-                        className="w-8 h-8 rounded-full bg-transparent border-none cursor-pointer"
+        <div className="md-stat-block">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                <div className="md-stat-name" style={{ marginBottom: 0 }}>Storefront Embed</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".12em", color: "var(--t3)" }}>Brand Accent</span>
+                    <input
+                        type="color"
+                        value={`#${primaryColor}`}
+                        onChange={(e) => setPrimaryColor(e.target.value.replace('#', ''))}
+                        style={{ height: "28px", width: "28px", cursor: "pointer", borderRadius: "6px", border: "2px solid var(--border2)", background: "transparent", padding: 0 }}
                     />
                 </div>
             </div>
 
-            <div className="relative z-10 bg-black/40 border border-white/10 rounded-2xl p-6 font-mono text-[11px] text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed group-hover:border-emerald-500/30 transition-colors">
-                {snippet}
-            </div>
+            <p style={{ color: "var(--t3)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: "12px" }}>
+                Generated exclusively for {restaurantName}
+            </p>
 
-            <div className="relative z-10 flex gap-4">
-                <button 
-                    onClick={handleCopy}
-                    className="flex-1 badge-solid-emerald py-4 flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]"
-                >
-                    {copied ? "✓" : "📋"}
-                    {copied ? "Copied" : "Copy GHL Snippet"}
+            <pre style={{ overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "12px", lineHeight: 1.8, color: "var(--green)", background: "var(--card2)", padding: "16px", borderRadius: "10px", border: "1px solid var(--border)", marginBottom: "16px", fontFamily: "monospace" }}>
+                {snippet}
+            </pre>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <button onClick={handleCopy} className="btn btn-ghost" style={{ justifyContent: "center", gap: "8px" }}>
+                    {copied ? "✓ Copied" : "Copy GHL Snippet"}
                 </button>
-                <a 
-                    href={embedUrl}
-                    target="_blank"
-                    className="px-8 py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white hover:bg-white/10 transition-all flex items-center gap-2 uppercase italic tracking-widest"
-                >
-                    ↗️ Preview Menu
+                <a href={embedUrl} target="_blank" rel="noreferrer" className="btn btn-gold" style={{ justifyContent: "center", textDecoration: "none" }}>
+                    Preview Storefront ↗
                 </a>
             </div>
         </div>

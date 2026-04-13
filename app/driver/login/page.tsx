@@ -44,7 +44,7 @@ export default function DriverLoginPage() {
             <div className="food-auth-hero-inner">
               <div className="food-eyebrow">Driver access</div>
               <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[56px]">Driver <span className="accent">Portal Login.</span></h1>
+                <h1 className="food-heading !text-[52px] md:!text-[56px]">Driver <span className="accent">Portal Login.</span></h1>
                 <p className="food-subtitle !max-w-[520px]">
                   Access your delivery workspace, claim nearby routes, and manage active orders using the same linear design system as signup and customer flows.
                 </p>
@@ -58,10 +58,10 @@ export default function DriverLoginPage() {
           </section>
 
           <section className="food-panel food-auth-form">
-            <Link href="/" className="su-back">← Back to Home</Link>
+            <Link href="/" className="portal-btn-outline portal-btn-outline-block !w-auto !px-4 !py-2">← Back to Home</Link>
             <p className="food-kicker mb-3">Driver account</p>
-            <h1 className="food-heading !text-[36px]">Sign In</h1>
-            <p className="lead mt-2">Secure mobile access to your driver dashboard.</p>
+            <h1 className="food-heading !text-[32px] md:!text-[36px]">Sign In</h1>
+            <p className="lead mt-2 max-w-[360px]">Secure mobile access to your driver dashboard.</p>
 
             <div className="mt-6">
               <DriverLoginForm />
@@ -69,24 +69,35 @@ export default function DriverLoginPage() {
 
             <div className="login-or">or continue with</div>
             <div className="grid grid-cols-1 gap-3">
-              <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading}>
+              <button
+                className="portal-btn-outline portal-btn-outline-block gap-2 disabled:opacity-70"
+                onClick={() => signInWithProvider('google')}
+                disabled={isLoading}
+              >
                 <span style={{ fontSize: '16px' }}>G</span> Continue with Google
               </button>
             </div>
 
-            <Link
-              href="/driver/portal-preview"
-              className="mt-3 inline-flex w-full items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-3 text-[12px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
-            >
-              Preview Driver Portal Mock
-            </Link>
-
-            <Link
-              href="/driver/tutorial-preview"
-              className="mt-3 inline-flex w-full items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-3 text-[12px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
-            >
-              View Animated Tutorial
-            </Link>
+            <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="text-[11px] font-black uppercase tracking-[0.1em] text-white/60">Portal preview tools</div>
+              <p className="mt-1.5 text-[12px] font-semibold leading-relaxed text-white/70">
+                Preview the driver portal and walkthrough before signing in.
+              </p>
+              <div className="mt-3 grid gap-2">
+                <Link
+                  href="/driver/portal-preview"
+                  className="ts-pill-btn ts-pill-btn-block"
+                >
+                  Preview Driver Portal Mock
+                </Link>
+                <Link
+                  href="/driver/tutorial-preview"
+                  className="ts-pill-btn ts-pill-btn-block"
+                >
+                  View Animated Tutorial
+                </Link>
+              </div>
+            </div>
           </section>
         </div>
       </main>

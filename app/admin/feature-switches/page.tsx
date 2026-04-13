@@ -47,6 +47,12 @@ const FEATURE_DEFINITIONS: FeatureDefinition[] = [
         defaultValue: true,
     },
     {
+        key: "COMPLIANCE_LAYER_ENABLED",
+        label: "Compliance Layer",
+        description: "Toggle the TrueServe compliance dashboards, inspections, and driver attestations.",
+        defaultValue: false,
+    },
+    {
         key: "MARKETPLACE_EMERGENCY_LOCK",
         label: "Emergency Lock",
         description: "Hard stop for marketplace traffic in emergencies.",

@@ -33,7 +33,7 @@ export default async function IntegrationsPage() {
             .single();
 
         if (error || !data) {
-            redirect("/merchant-signup");
+            redirect("/merchant/signup");
         }
         restaurant = data;
     }

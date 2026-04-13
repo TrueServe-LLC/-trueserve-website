@@ -18,6 +18,7 @@ import { createNotification } from "@/lib/notifications";
 import { scanDocumentWithAI } from "@/lib/aiScanner";
 import { calculateDistance } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/phoneUtils";
+import { getAppBaseUrl } from "@/lib/app-url";
 
 export type DriverApplicationState = {
     message: string;
@@ -874,21 +875,23 @@ export async function createDriverStripeAccount() {
 
         let stripeAccountId = (driver as any).stripeAccountId;
 
-        // Base URL handling for Vercel/Local
-        // PRIORITY: If we are on Vercel, use VERCEL_URL. Otherwise use APP_URL or localhost.
-        const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-            ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-            : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const baseUrl = getAppBaseUrl();
 
         // 2. Create Stripe Account if missing
         if (!stripeAccountId) {
-            console.log(`[Stripe] Creating Express account for ${user.email}`);
-            const account = await getStripe().accounts.create({
-                type: 'express',
-                country: 'US',
-                email: user.email || undefined,
-                capabilities: {
-                    transfers: { requested: true },
+            console.log(`[Stripe] Creating recipient account for ${user.email}`);
+            const account = await getStripe().v2.core.accounts.create({
+                contact_email: user.email || undefined,
+                display_name: driver.name || user.email || "Driver",
+                dashboard: 'express',
+                configuration: {
+                    recipient: {
+                        capabilities: {
+                            stripe_balance: {
+                                stripe_transfers: { requested: true }
+                            }
+                        }
+                    }
                 },
                 metadata: {
                     driverId: driver.id,
@@ -913,11 +916,17 @@ export async function createDriverStripeAccount() {
 
         // 3. Create Account Link
         console.log(`[Stripe] Creating Link for ${stripeAccountId} with baseUrl ${baseUrl}`);
-        const accountLink = await getStripe().accountLinks.create({
+        const accountLink = await getStripe().v2.core.accountLinks.create({
             account: stripeAccountId,
-            refresh_url: `${baseUrl}/driver/dashboard/account?stripe=refresh`,
-            return_url: `${baseUrl}/driver/dashboard/account?stripe=success`,
-            type: 'account_onboarding',
+            use_case: {
+                type: 'account_onboarding',
+                account_onboarding: {
+                    configurations: ['recipient'],
+                    collection_options: { fields: 'eventually_due' },
+                    refresh_url: `${baseUrl}/driver/dashboard/account?stripe=refresh`,
+                    return_url: `${baseUrl}/driver/dashboard/account?stripe=success`,
+                },
+            },
         });
 
         url = accountLink.url;

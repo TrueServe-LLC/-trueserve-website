@@ -71,7 +71,7 @@ export default function LoginPage() {
             <div className="food-auth-hero-inner">
               <div className="food-eyebrow">Customer and team access</div>
               <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[56px]">Welcome Back To <span className="accent">Dinner Mode.</span></h1>
+                <h1 className="food-heading !text-[52px] md:!text-[56px]">Welcome Back To <span className="accent">Dinner Mode.</span></h1>
                 <p className="food-subtitle !max-w-[520px]">
                   The sign-in experience now matches the rest of the food app: warm dark surfaces, clear hierarchy, and straightforward next steps.
                 </p>
@@ -95,12 +95,12 @@ export default function LoginPage() {
           </section>
 
           <section className="food-panel food-auth-form">
-            <Link href="/" className="back">← Home</Link>
+            <Link href="/" className="portal-btn-outline portal-btn-outline-block !w-auto !px-4 !py-2">← Home</Link>
             <p className="food-kicker mb-3">Account access</p>
-            <h2 className="food-heading !text-[36px]">Sign In</h2>
-            <p className="lead mt-2">Access your TrueServe account and continue your order flow.</p>
+            <h2 className="food-heading !text-[32px] md:!text-[36px]">Sign In</h2>
+            <p className="lead mt-2 max-w-[360px]">Access your TrueServe account and continue your order flow.</p>
 
-            <div className="role-tabs mt-6">
+            <div className="role-tabs mt-6 overflow-x-auto">
               <button
                 className={`role-tab ${role === 'customer' ? 'on' : ''}`}
                 onClick={() => setRole('customer')}
@@ -148,7 +148,7 @@ export default function LoginPage() {
             </div>
 
             <button
-              className="place-btn"
+              className="ts-pill-btn ts-pill-btn-block mt-4"
               style={{ marginTop: 0 }}
               onClick={doLogin}
               disabled={isLoading}
@@ -159,8 +159,8 @@ export default function LoginPage() {
             <div className="login-or">or continue with</div>
 
             <div className="grid grid-cols-1 gap-3">
-              <button className="social-btn" onClick={() => signInWithProvider('google')} disabled={isLoading}>
-                <span style={{ fontSize: '16px' }}>G</span> Continue with Google
+              <button className="portal-btn-outline portal-btn-outline-block" onClick={() => signInWithProvider('google')} disabled={isLoading}>
+                <span style={{ fontSize: '16px', marginRight: '8px' }}>G</span> Continue with Google
               </button>
             </div>
 

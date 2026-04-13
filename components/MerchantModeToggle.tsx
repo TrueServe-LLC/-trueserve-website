@@ -18,7 +18,7 @@ export default function MerchantModeToggle() {
     };
 
     return (
-        <div className="ml-mode-tabs" role="tablist" aria-label="Merchant order mode">
+        <div className="flex items-center gap-2" role="tablist" aria-label="Merchant order mode">
             {(["delivery", "pickup"] as const).map((m) => (
                 <button
                     key={m}
@@ -26,7 +26,9 @@ export default function MerchantModeToggle() {
                     role="tab"
                     aria-selected={mode === m}
                     onClick={() => setMode(m)}
-                    className={`ml-mode-tab${mode === m ? " active" : ""}`}
+                    className={`ts-pill-btn ts-pill-btn-sm ${
+                        mode === m ? "ring-2 ring-[#e8a230]/35" : "opacity-85"
+                    }`}
                 >
                     {m.charAt(0).toUpperCase() + m.slice(1)}
                 </button>

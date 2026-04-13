@@ -13,6 +13,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createNotification } from "@/lib/notifications";
 import { logAuditAction } from "@/lib/audit";
 import { pushMenuItemToGHL } from "@/lib/ghl-sync";
+import { getAppBaseUrl } from "@/lib/app-url";
 
 export type MerchantActionState = {
     message: string;
@@ -572,7 +573,6 @@ export async function createStripeAccount(providedId?: string | FormData) {
     if (!userId) redirect("/login");
 
     try {
-        // Use ADMIN to ensure we find the restaurant even if RLS/Cookies are in transition
         const { data: restaurant } = await supabaseAdmin
             .from('Restaurant')
             .select('*')
@@ -582,33 +582,83 @@ export async function createStripeAccount(providedId?: string | FormData) {
         if (!restaurant) throw new Error("Restaurant not found");
 
         let stripeAccountId = restaurant.stripeAccountId;
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://trueservedelivery.com";
+        const baseUrl = getAppBaseUrl();
+        const stripe = getStripe();
+        const metadata = { restaurantId: restaurant.id, userId, role: 'merchant' };
 
         if (!stripeAccountId) {
             const { data: user } = await supabaseAdmin.from('User').select('email').eq('id', userId).single();
-            const account = await getStripe().accounts.create({
-                type: 'express',
-                country: 'US',
-                email: user?.email,
-                capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
-                metadata: { restaurantId: restaurant.id, userId }
-            });
-            stripeAccountId = account.id;
+            try {
+                const account = await stripe.v2.core.accounts.create({
+                    contact_email: user?.email,
+                    display_name: restaurant.name,
+                    dashboard: 'express',
+                    configuration: {
+                        recipient: {
+                            capabilities: {
+                                stripe_balance: {
+                                    stripe_transfers: { requested: true }
+                                }
+                            }
+                        }
+                    },
+                    metadata,
+                });
+                stripeAccountId = account.id;
+            } catch (v2CreateError) {
+                console.error("Stripe v2 account creation failed, falling back to v1:", v2CreateError);
+                const account = await stripe.accounts.create({
+                    type: 'express',
+                    email: user?.email || undefined,
+                    metadata,
+                    capabilities: {
+                        transfers: { requested: true },
+                    },
+                });
+                stripeAccountId = account.id;
+            }
+
             await supabaseAdmin.from('Restaurant').update({ stripeAccountId }).eq('id', restaurant.id);
         }
 
-        const accountLink = await getStripe().accountLinks.create({
-            account: stripeAccountId,
-            refresh_url: `${baseUrl}/merchant/dashboard`,
-            return_url: `${baseUrl}/merchant/onboarding-success`,
-            type: 'account_onboarding',
-        });
+        let onboardingUrl: string | null = null;
 
-        redirect(accountLink.url);
+        try {
+            const accountLink = await stripe.v2.core.accountLinks.create({
+                account: stripeAccountId,
+                use_case: {
+                    type: 'account_onboarding',
+                    account_onboarding: {
+                        configurations: ['recipient'],
+                        collection_options: { fields: 'eventually_due' },
+                        refresh_url: `${baseUrl}/merchant/dashboard`,
+                        return_url: `${baseUrl}/merchant/onboarding-success`,
+                    },
+                },
+            });
+            onboardingUrl = accountLink.url;
+        } catch (v2LinkError) {
+            console.error("Stripe v2 account link failed, falling back to v1:", v2LinkError);
+            const accountLink = await stripe.accountLinks.create({
+                account: stripeAccountId,
+                refresh_url: `${baseUrl}/merchant/dashboard`,
+                return_url: `${baseUrl}/merchant/onboarding-success`,
+                type: 'account_onboarding',
+            });
+            onboardingUrl = accountLink.url;
+        }
+
+        if (!onboardingUrl) throw new Error("Stripe onboarding URL missing");
+        redirect(onboardingUrl);
     } catch (e: any) {
         if (e.message?.includes('NEXT_REDIRECT')) throw e;
         console.error("Stripe Error:", e);
-        throw e;
+        const stripeCode = String(e?.code || e?.raw?.code || "");
+        const stripeMessage = String(e?.raw?.message || e?.message || "").toLowerCase();
+        if (stripeCode === "v2_api_not_supported_in_testmode" || stripeMessage.includes("signed up for connect")) {
+            redirect('/merchant/dashboard?stripe_connect=setup_required');
+        }
+        redirect('/merchant/dashboard?stripe_connect=error');
     }
 }
 

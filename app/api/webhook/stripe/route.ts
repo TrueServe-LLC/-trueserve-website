@@ -1,6 +1,6 @@
 
 import { getStripe } from "@/lib/stripe";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdminAdmin } from "@/lib/supabaseAdmin-admin";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
@@ -33,36 +33,32 @@ export async function POST(req: Request) {
             // Here you could update order status if you weren't doing it in the action
             break;
 
-        case "account.updated":
+        case "account.updated": {
             const account = event.data.object as any;
-            if (account.details_submitted) {
-                if (account.metadata?.role === 'driver') {
-                     // Update driver status
-                    const { error } = await supabase
-                        .from('Driver')
-                        .update({ stripeOnboardingComplete: true })
-                        .eq('stripeAccountId', account.id);
-                    if (error) {
-                        logger.error({ err: error, accountId: account.id }, "Failed to update driver onboarding status");
-                    } else {
-                        logger.info({ accountId: account.id }, `Driver account verified.`);
-                    }
+            if (account.details_submitted && account.metadata?.role === 'driver') {
+                const { error } = await supabaseAdmin
+                    .from('Driver')
+                    .update({ stripeOnboardingComplete: true })
+                    .eq('stripeAccountId', account.id);
+                if (error) {
+                    logger.error({ err: error, accountId: account.id }, "Failed to update driver onboarding status");
                 } else {
-                    // Update restaurant status to onboarding complete
-                    const { error } = await supabase
-                        .from('Restaurant')
-                        .update({ stripeOnboardingComplete: true })
-                        .eq('stripeAccountId', account.id);
-
-                    if (error) {
-                        logger.error({ err: error, accountId: account.id }, "Failed to update merchant onboarding status");
-                        Sentry.captureException(error, { extra: { accountId: account.id } });
-                    } else {
-                        logger.info({ accountId: account.id }, `Merchant account verified.`);
-                    }
+                    logger.info({ accountId: account.id }, `Driver account verified.`);
+                }
+            } else if (account.details_submitted) {
+                const { error } = await supabaseAdmin
+                    .from('Restaurant')
+                    .update({ stripeOnboardingComplete: true })
+                    .eq('stripeAccountId', account.id);
+                if (error) {
+                    logger.error({ err: error, accountId: account.id }, "Failed to update merchant onboarding status");
+                    Sentry.captureException(error, { extra: { accountId: account.id } });
+                } else {
+                    logger.info({ accountId: account.id }, `Merchant account verified.`);
                 }
             }
             break;
+        }
 
         case "charge.refunded":
             // Handle order cancellation/refund in DB

@@ -2,11 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Share2 } from "lucide-react";
 import Logo from "@/components/Logo";
 import LandingSearch from "@/components/LandingSearch";
 
 export default function Home() {
   const [userId, setUserId] = useState<string | null>(null);
+  const socialLinks = [
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/company/112360123/admin/dashboard/",
+      icon: Share2,
+    },
+  ];
 
   useEffect(() => {
     // Basic client-side check for userId cookie
@@ -37,8 +45,8 @@ export default function Home() {
         <section className="food-hero-card">
           <div className="home-bg-img"></div>
           <div className="home-bg-grad"></div>
-          <div className="relative z-[2] grid gap-8 px-6 py-12 md:grid-cols-[minmax(0,1.1fr)_360px] md:px-10 md:py-14">
-            <div className="space-y-7 ts-animate-fade-up">
+          <div className="relative z-[2] grid gap-7 px-6 py-12 md:grid-cols-[minmax(0,1.1fr)_360px] md:gap-10 md:px-10 md:py-14">
+            <div className="space-y-8 ts-animate-fade-up">
               <div className="food-eyebrow">Fresh meals. Fast drop-offs. One clear brand.</div>
               <div className="space-y-4">
                 <h1 className="food-title">Food Delivery<br /><span className="accent">That Feels Premium.</span></h1>
@@ -63,7 +71,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="food-panel flex flex-col justify-between gap-6 ts-animate-fade-up ts-animate-delay-1">
+            <div className="food-panel flex flex-col gap-5 ts-animate-fade-up ts-animate-delay-1">
               <div className="space-y-4">
                 <p className="food-kicker">Tonight's vibe</p>
                 <h2 className="food-heading">Browse. Order. <span className="accent">Relax.</span></h2>
@@ -72,7 +80,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="food-stat-row">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div className="food-stat">
                   <strong>Live</strong>
                   <span>Delivery ETAs update in real time</span>
@@ -83,24 +91,33 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid gap-2">
-                <Link href="/restaurants" className="place-btn text-center">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Link href="/restaurants" className="portal-btn-gold portal-btn-gold-block">
                   Start Ordering
                 </Link>
                 {!userId ? (
                   <Link
                     href="/signup"
-                    className="text-center text-xs font-semibold text-gray-400 transition-colors hover:text-[#e8a230]"
+                    className="portal-btn-outline portal-btn-outline-block"
                   >
-                    New here? Create an account
+                    Create Account
                   </Link>
-                ) : null}
+                ) : (
+                  <Link href="/orders" className="portal-btn-outline portal-btn-outline-block">
+                    View Orders
+                  </Link>
+                )}
               </div>
+              {!userId ? (
+                <p className="text-center text-[11px] text-gray-400">
+                  New here? Create an account to save addresses and track orders.
+                </p>
+              ) : null}
             </div>
           </div>
         </section>
 
-        <section className="mt-8 grid gap-8 md:grid-cols-3">
+        <section className="mt-10 grid gap-8 md:grid-cols-3">
           {[
             { title: "Start ordering", desc: "Search by address, discover nearby restaurants, and jump straight into menu browsing.", link: "/restaurants" },
             { title: "Save your details", desc: "Keep addresses, payment details, and order history in one familiar interface.", link: "/restaurants" },
@@ -114,13 +131,15 @@ export default function Home() {
           ))}
         </section>
 
-        <section className="mt-8 food-panel">
-          <div className="food-section-head">
+        <section className="mt-10 food-panel">
+          <div className="food-section-head flex-col items-start md:flex-row md:items-end">
             <div>
               <p className="food-kicker mb-3">Built For Daily Orders</p>
               <h2 className="food-heading">A more <span className="accent">linear</span> experience.</h2>
             </div>
-            <Link href="/restaurants" className="btn btn-ghost">Explore Restaurants</Link>
+            <Link href="/restaurants" className="portal-btn-outline portal-btn-outline-block md:w-auto">
+              Explore Restaurants
+            </Link>
           </div>
           <div className="food-grid-2">
             <div className="space-y-4">
@@ -136,9 +155,13 @@ export default function Home() {
             <div className="food-card">
               <p className="food-kicker mb-3">Quick Access</p>
               <div className="grid gap-3 text-sm">
-                <Link href="/restaurants" className="btn btn-gold justify-center">Order Food</Link>
+                <Link href="/restaurants" className="portal-btn-gold portal-btn-gold-block">
+                  Order Food
+                </Link>
                 {userId ? (
-                  <Link href="/orders" className="btn btn-ghost justify-center">View Orders</Link>
+                  <Link href="/orders" className="portal-btn-outline portal-btn-outline-block">
+                    View Orders
+                  </Link>
                 ) : (
                   <div className="grid gap-2 rounded-xl border border-white/5 bg-white/0 px-4 py-3 text-center text-xs text-gray-400">
                     <div>
@@ -164,6 +187,29 @@ export default function Home() {
         <footer className="mt-8 border-t border-white/5 px-2 pt-12 text-center">
           <div className="mx-auto flex max-w-7xl flex-col items-center">
             <Logo size="md" className="mb-8" />
+            <div className="mb-6 rounded-3xl border border-white/10 bg-white/[0.03] px-5 py-4">
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
+                Social
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                {socialLinks.map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-[#e8a230] hover:text-white"
+                      aria-label={social.label}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {social.label}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
             <div className="mb-8 flex flex-wrap justify-center gap-10 text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="/merchant/signup" className="hover:text-[#e8a230] transition-colors">Merchants</Link>

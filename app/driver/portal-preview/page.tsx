@@ -1,70 +1,266 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 
-export default function DriverPortalMockPage() {
+const availableTrips = [
+  { restaurant: "Pilot Restaurant A", address: "100 Main St", payout: "$8.40", distance: "1.2 mi" },
+  { restaurant: "Pilot Restaurant B", address: "200 Lake St", payout: "$11.50", distance: "2.8 mi" },
+  { restaurant: "Pilot Restaurant C", address: "300 Pine Rd", payout: "$9.10", distance: "0.9 mi" },
+];
+
+const routeRows = [
+  { label: "Balance", value: "$84.25" },
+  { label: "Weather", value: "74°F · Clear" },
+  { label: "Trip Count", value: "7 deliveries" },
+  { label: "Rating", value: "4.9 stars" },
+];
+
+export default function DriverPortalPreviewPage() {
   return (
-    <div className="food-app-shell min-h-screen">
-      <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
-        <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] items-center justify-between gap-4 py-3">
-          <div className="flex items-center gap-3">
-            <Logo size="sm" />
-            <span className="hidden text-[10px] font-black uppercase tracking-[0.18em] text-[#68c7cc] md:inline-flex">
-              Driver Portal Mock
-            </span>
+    <div className="md-body min-h-screen">
+      <div className="md-page-hd">
+        <div className="flex items-center gap-4">
+          <Logo size="sm" />
+          <div>
+            <div className="md-page-title">Driver Dashboard Preview</div>
+            <div className="md-page-sub">Portal preview · mirrors the live driver dashboard</div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/driver/tutorial-preview"
-              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
-            >
-              View Animated Tutorial
+        </div>
+        <div className="md-hd-right flex-wrap">
+          <div className="md-terminal-btn">
+            <span className="md-terminal-dot"></span>
+            Live Routes
+          </div>
+          <div className="md-online-badge">Online</div>
+          <div className="md-online-badge" style={{ background: "#0d1a10", color: "#3dd68c", borderColor: "#1a4a2a" }}>
+            Payouts Active
+          </div>
+          <Link href="/driver/tutorial-preview" className="btn btn-gold">
+            View Animated Tutorial
+          </Link>
+          <Link href="/driver/login" className="btn btn-ghost">
+            Back to Login
+          </Link>
+        </div>
+      </div>
+
+      <div className="md-stat-grid">
+        <div className="md-stat-block">
+          <div className="md-stat-name">Daily Yield</div>
+          <div className="md-stat-value gold">$126</div>
+        </div>
+        <div className="md-stat-block">
+          <div className="md-stat-name">Trips</div>
+          <div className="md-stat-value">7</div>
+        </div>
+        <div className="md-stat-block">
+          <div className="md-stat-name">Rating</div>
+          <div className="md-stat-value">4.9 ★</div>
+        </div>
+        <div className="md-stat-block">
+          <div className="md-stat-name">Weather</div>
+          <div className="md-stat-value grn">74°F</div>
+        </div>
+      </div>
+
+      <div className="md-stripe-banner" style={{ background: "#0d1a10", borderColor: "#1a4a2a" }}>
+        <div className="md-stripe-left">
+          <div className="md-stripe-icon" style={{ borderColor: "#1a4a2a", background: "#0d2a1a" }}>
+            <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+              <rect x="1" y="1" width="18" height="12" rx="1" stroke="#3dd68c" strokeWidth="1.3" />
+              <path d="M1 5h18" stroke="#3dd68c" strokeWidth="1.3" />
+            </svg>
+          </div>
+          <div>
+            <div className="md-stripe-title" style={{ fontStyle: "normal" }}>
+              Stripe payouts active.
+            </div>
+            <div className="md-stripe-desc">This preview mirrors the live driver layout for routes, earnings, and payout status.</div>
+          </div>
+        </div>
+        <div className="md-stripe-connected">✓ Active</div>
+      </div>
+
+      <div className="md-two-col">
+        <div className="md-stat-block">
+          <div className="md-stat-name">Active Mission</div>
+          <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Current Route</div>
+
+          <div className="mt-5 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-[11px] uppercase tracking-[0.14em] text-[#e8a230]">Picked Up</div>
+                  <h3 className="mt-1 text-[22px] font-black">Pilot Restaurant A</h3>
+                </div>
+                <div className="text-[11px] uppercase tracking-[0.14em] text-white/45">#TRV-4821</div>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-white/10 bg-[#0b0f17] p-4">
+                  <div className="text-[10px] uppercase tracking-[0.14em] text-white/55">Pickup</div>
+                  <div className="mt-1 font-bold">142 W Main St</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-[#0b0f17] p-4">
+                  <div className="text-[10px] uppercase tracking-[0.14em] text-white/55">Drop-off</div>
+                  <div className="mt-1 font-bold">400 Market St, Apt 3C</div>
+                  <div className="mt-1 text-xs text-[#68c7cc]">Customer: Pilot Customer</div>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-white/10 bg-[#0b0f17] p-4">
+                <div className="text-[10px] uppercase tracking-[0.14em] text-white/55">Progress</div>
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                    <div className="h-full w-[68%] rounded-full bg-[#e8a230]" />
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#e8a230]">En route</div>
+                </div>
+                <p className="mt-3 text-sm leading-6 text-white/65">
+                  Complete the drop-off once you arrive at the customer address.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="text-[10px] font-black uppercase tracking-[0.16em] text-white/40">Route Snapshot</div>
+              <div className="mt-4 rounded-[24px] border border-white/10 bg-[#0b0f17] p-4">
+                <div
+                  className="relative h-44 overflow-hidden rounded-[18px] border border-white/10"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 20% 25%, rgba(232,162,48,.18), transparent 28%), radial-gradient(circle at 80% 75%, rgba(61,214,140,.16), transparent 24%), linear-gradient(180deg, rgba(10,14,20,.96), rgba(6,9,14,.98))",
+                  }}
+                >
+                  <div
+                    className="absolute inset-0 opacity-25"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)",
+                      backgroundSize: "28px 28px",
+                    }}
+                  />
+                  <div className="absolute left-6 top-6 rounded-full border border-[#e8a230]/30 bg-[#e8a230]/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#e8a230]">
+                    Pickup
+                  </div>
+                  <div className="absolute right-6 bottom-6 rounded-full border border-emerald-300/30 bg-emerald-300/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-300">
+                    Drop-off
+                  </div>
+                  <div className="absolute left-[18%] top-[58%] h-[2px] w-[64%] rounded-full bg-gradient-to-r from-[#e8a230] via-white to-emerald-300" />
+                  <div className="absolute left-[21%] top-[54%] h-5 w-5 rounded-full border-4 border-white bg-[#e8a230] shadow-[0_0_20px_rgba(232,162,48,.45)]" />
+                  <div className="absolute right-[17%] top-[58%] h-5 w-5 rounded-full border-4 border-white bg-emerald-300 shadow-[0_0_20px_rgba(61,214,140,.35)]" />
+                </div>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">ETA</div>
+                    <div className="mt-1 text-lg font-black">4 min</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Route</div>
+                    <div className="mt-1 text-lg font-black">2.1 mi</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Payout</div>
+                    <div className="mt-1 text-lg font-black text-[#e8a230]">$8.40</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div className="md-stat-block">
+            <div className="md-stat-name">Driver Essentials</div>
+            <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Payments and Tools</div>
+            <div className="mt-5 grid gap-2 sm:grid-cols-2">
+              <Link href="/driver/dashboard/account" className="btn btn-gold justify-center">
+                Stripe Payout Setup
+              </Link>
+              <Link href="/driver/dashboard/compliance" className="btn btn-gold justify-center">
+                Compliance Checklist
+              </Link>
+              <Link href="/driver/dashboard/earnings" className="btn btn-ghost justify-center">
+                Settlement History
+              </Link>
+              <Link href="/driver/dashboard/help" className="btn btn-ghost justify-center">
+                TrueServe AI Support
+              </Link>
+            </div>
+          </div>
+
+          <div className="md-stat-block">
+            <div className="md-stat-name">Navigation</div>
+            <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Live Map + Heatmap</div>
+            <div className="mt-5 rounded-[22px] border border-white/10 bg-[#0b0f17] p-4">
+              <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.12em] text-white/40">
+                <span>Route View</span>
+                <span>Driver preview</span>
+              </div>
+              <div className="mt-4 space-y-3">
+                {[
+                  { stop: "Pickup", place: "Pilot Restaurant A", detail: "100 Main St · 0.4 mi" },
+                  { stop: "Drop-off", place: "400 Market St, Apt 3C", detail: "Customer: Pilot Customer · 1.2 mi" },
+                ].map((stop) => (
+                  <div key={stop.stop} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">{stop.stop}</div>
+                    <div className="mt-1 text-[13px] font-semibold text-white/90">{stop.place}</div>
+                    <div className="mt-0.5 text-xs text-white/50">{stop.detail}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="md-bottom-grid">
+        <div className="md-stat-block">
+          <div className="md-stat-name">Available Orders</div>
+          <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Nearby Opportunities</div>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {availableTrips.map((trip) => (
+              <div key={trip.restaurant} className="rounded-2xl border border-white/10 bg-[#0b0f17] p-5">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-black">{trip.restaurant}</h3>
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#68c7cc]">Live</span>
+                </div>
+                <p className="mb-4 text-sm leading-6 text-white/65">{trip.address}</p>
+                <div className="mb-4 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full border border-[#3dd68c]/30 bg-[#3dd68c]/10 px-3 py-1 text-xs font-bold text-[#3dd68c]">
+                    {trip.payout} payout
+                  </span>
+                  <span className="rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-white/65">{trip.distance}</span>
+                </div>
+                <button className="btn btn-gold w-full justify-center">Accept Order</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="md-stat-block">
+          <div className="md-stat-name">Route Summary</div>
+          <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Today at a glance</div>
+          <div className="mt-5 space-y-3">
+            {routeRows.map((row) => (
+              <div key={row.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                <span className="text-xs uppercase tracking-[0.12em] text-white/45">{row.label}</span>
+                <span className="text-sm font-bold text-white/80">{row.value}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 grid gap-2">
+            <Link href="/driver/dashboard/compliance" className="btn btn-gold justify-center">
+              Open Compliance
             </Link>
-            <Link
-              href="/driver/login"
-              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
-            >
-              Back to Login
+            <Link href="/driver/dashboard/earnings" className="btn btn-ghost justify-center">
+              View Settlements
+            </Link>
+            <Link href="/driver/dashboard/help" className="btn btn-ghost justify-center">
+              Get Support
             </Link>
           </div>
         </div>
-        <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] gap-2 overflow-x-auto pb-3">
-          <span className="rounded-full border border-[#e8a230]/35 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#e8a230]">Dashboard</span>
-          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Settlements</span>
-          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Reputation</span>
-          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Profile</span>
-        </div>
-      </header>
-
-      <main className="mx-auto grid w-[min(1240px,calc(100%-24px))] grid-cols-1 gap-4 py-8 md:grid-cols-3">
-        <section className="food-panel md:col-span-2">
-          <p className="food-kicker mb-2">Mockup</p>
-          <h1 className="food-heading !text-[34px]">Driver Dashboard Preview</h1>
-          <p className="lead mt-2">
-            This is a static preview of the driver portal layout and navigation experience.
-          </p>
-          <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-              <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/50">Available Trips</div>
-              <div className="mt-2 text-3xl font-black text-white">8</div>
-              <div className="mt-1 text-xs text-white/60">Nearby order offers</div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-              <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/50">Today</div>
-              <div className="mt-2 text-3xl font-black text-[#e8a230]">$126</div>
-              <div className="mt-1 text-xs text-white/60">Estimated earnings</div>
-            </div>
-          </div>
-        </section>
-
-        <aside className="food-panel">
-          <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/50">Quick Actions</div>
-          <div className="mt-3 grid gap-2">
-            <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-white/75">Go Online</span>
-            <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-white/75">Payout Setup</span>
-            <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-white/75">Support</span>
-          </div>
-        </aside>
-      </main>
+      </div>
     </div>
   );
 }

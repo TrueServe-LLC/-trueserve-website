@@ -58,7 +58,7 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
         },
         {
           title: "Storefront",
-          body: "Preview the customer-facing ordering experience for your restaurant.",
+          body: "Manage your banner, embed, and customer-facing storefront preview here.",
           selector: "[data-tour='merchant-nav-storefront']",
         },
         {
@@ -155,7 +155,12 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
       }
 
       try {
-        target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        const isMobile = window.innerWidth < 640;
+        target.scrollIntoView({
+          behavior: isMobile ? "auto" : "smooth",
+          block: isMobile ? "nearest" : "center",
+          inline: "center",
+        });
       } catch { }
 
       setSpotlightRect(computeSpotlightRect(target));
@@ -179,6 +184,7 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
   const stepNumber = Math.min(stepIndex + 1, steps.length);
   const viewportWidth = typeof window === "undefined" ? 1024 : window.innerWidth;
   const viewportHeight = typeof window === "undefined" ? 768 : window.innerHeight;
+  const isMobileViewport = viewportWidth < 640;
 
   return (
     <div
@@ -195,19 +201,19 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
         }}
       />
 
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-[1px]" onClick={markDoneAndClose} />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-[0.5px]" onClick={markDoneAndClose} />
 
       {spotlightRect && (
         <div
           aria-hidden="true"
           style={{
             position: "fixed",
-            left: Math.max(8, spotlightRect.left),
-            top: Math.max(8, spotlightRect.top),
-            width: Math.min(viewportWidth - 16, spotlightRect.width),
-            height: Math.min(viewportHeight - 16, spotlightRect.height),
-            borderRadius: 14,
-            boxShadow: "0 0 0 9999px rgba(0,0,0,.72)",
+            left: Math.max(isMobileViewport ? 6 : 8, spotlightRect.left),
+            top: Math.max(isMobileViewport ? 6 : 8, spotlightRect.top),
+            width: Math.min(viewportWidth - (isMobileViewport ? 12 : 16), spotlightRect.width),
+            height: Math.min(viewportHeight - (isMobileViewport ? 12 : 16), spotlightRect.height),
+            borderRadius: isMobileViewport ? 12 : 14,
+            boxShadow: `0 0 0 9999px rgba(0,0,0,${isMobileViewport ? 0.28 : 0.34})`,
             border: "1px solid rgba(232,162,48,.65)",
             background: "rgba(232,162,48,.06)",
             animation: "tsTourPulse 1.9s ease-in-out infinite",
@@ -217,52 +223,67 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
       )}
 
       <div
-        className="fixed bottom-5 left-1/2 w-[min(560px,calc(100%-24px))] -translate-x-1/2 rounded-[22px] border border-white/10 bg-[#0a0a0b]/95 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
-        style={{ animation: "tsTourFadeIn .22s ease-out" }}
+        className="fixed left-1/2 w-[calc(100%-12px)] -translate-x-1/2 rounded-[18px] border border-white/10 bg-[#0a0a0b]/95 p-4 shadow-[0_24px_60px_rgba(0,0,0,0.6)] sm:bottom-5 sm:w-[min(560px,calc(100%-24px))] sm:rounded-[22px] sm:p-5 sm:shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+        style={{
+          animation: "tsTourFadeIn .22s ease-out",
+          bottom: isMobileViewport ? "max(12px, env(safe-area-inset-bottom))" : "20px",
+        }}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/55 sm:text-[11px] sm:tracking-[0.16em]">
               Tutorial {stepNumber} / {steps.length}
             </div>
-            <div className="mt-2 text-[20px] font-black tracking-tight text-white">
+            <div className="mt-2 text-[20px] font-black tracking-tight text-white sm:text-[22px]">
               {currentStep?.title}
             </div>
-            <div className="mt-1 text-[13px] font-semibold leading-relaxed text-white/70">
+            <div className="mt-1 text-[13px] font-semibold leading-relaxed text-white/80 sm:text-[14px]">
               {currentStep?.body}
+            </div>
+            <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] font-semibold leading-relaxed text-white/70">
+              Direction: follow the gold highlight, then tap <span className="text-[#e8a230] font-black">Next</span>.
             </div>
           </div>
           <button
             type="button"
             onClick={markDoneAndClose}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white/70 hover:bg-white/10 hover:text-white"
+            className="ts-pill-btn ts-pill-btn-sm shrink-0"
           >
             Skip
           </button>
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="mt-3 flex items-center gap-1.5">
+          {steps.map((_, index) => (
+            <span
+              key={`${portal}-dot-${index}`}
+              className={`h-1.5 rounded-full transition-all ${index === stepIndex ? "w-6 bg-[#e8a230]" : "w-3 bg-white/20"}`}
+            />
+          ))}
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <button
             type="button"
             onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
             disabled={stepIndex === 0}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-white/70 disabled:opacity-30"
+            className="ts-pill-btn ts-pill-btn-sm w-full disabled:opacity-30 sm:w-auto"
           >
             Back
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
             <button
               type="button"
               onClick={markDoneAndClose}
-              className="rounded-full border border-white/10 bg-transparent px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-white/65 hover:bg-white/5 hover:text-white"
+              className="ts-pill-btn ts-pill-btn-sm"
             >
               Dismiss
             </button>
             <button
               type="button"
               onClick={() => (isLast ? markDoneAndClose() : setStepIndex((i) => Math.min(steps.length - 1, i + 1)))}
-              className="rounded-full border border-[#e8a230]/35 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-[#e8a230] hover:bg-[#e8a230]/15"
+              className="ts-pill-btn ts-pill-btn-sm"
             >
               {isLast ? "Done" : "Next"}
             </button>

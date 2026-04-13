@@ -19,10 +19,12 @@ export const dynamic = "force-dynamic";
 export default async function MerchantDashboard({
     searchParams,
 }: {
-    searchParams?: Promise<{ mode?: string }>;
+    searchParams?: Promise<{ mode?: string; stripe_connect?: string }>;
 }) {
     const params = searchParams ? await searchParams : undefined;
     const activeMode = params?.mode === "pickup" ? "pickup" : "delivery";
+    const stripeConnectError = params?.stripe_connect === "error";
+    const stripeSetupRequired = params?.stripe_connect === "setup_required";
     const cookieStore = await cookies();
     const isPreview = cookieStore.get("preview_mode")?.value === "true";
     const cookieUserId = cookieStore.get("userId")?.value;
@@ -38,7 +40,7 @@ export default async function MerchantDashboard({
     if (isPreview) {
         restaurant = {
             id: "preview",
-            name: "Emerald Kitchen (Preview)",
+            name: "Pilot Kitchen",
             stripeAccountId: null,
             isBusy: false,
             busyUntil: null,
@@ -64,7 +66,7 @@ export default async function MerchantDashboard({
 
         if (error || !data) {
             console.error("Dashboard Fetch Error:", error);
-            redirect("/merchant-signup");
+            redirect("/merchant/signup");
         }
         restaurant = data;
     }
@@ -88,7 +90,7 @@ export default async function MerchantDashboard({
                 {/* PAGE HEADER */}
                 <div className="md-page-hd">
                     <div>
-                        <div className="md-page-title">Orders Dashboard</div>
+                        <div className="md-page-title">Merchant Dashboard</div>
                         <div className="md-page-sub">
                             {activeMode === "pickup" ? "Pickup Operations" : "Delivery Operations"} · {restaurant.name}
                         </div>
@@ -162,6 +164,38 @@ export default async function MerchantDashboard({
                         <div className="md-stripe-connected">✓ Payouts Active</div>
                     </div>
                 )}
+                {stripeConnectError && !hasStripe && (
+                    <div className="md-stripe-banner" style={{ borderColor: "#4a1a1a", background: "#1a0d10" }}>
+                        <div className="md-stripe-left">
+                            <div className="md-stripe-icon" style={{ borderColor: "#4a1a1a", background: "#2a0d12" }}>
+                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#f87171" strokeWidth="1.3"/>
+                                    <path d="M1 5h18" stroke="#f87171" strokeWidth="1.3"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div className="md-stripe-title" style={{ fontStyle: "normal" }}>Stripe onboarding couldn’t start.</div>
+                                <div className="md-stripe-desc">We logged the issue. Please try again in a moment, or contact support if it keeps happening.</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {stripeSetupRequired && !hasStripe && (
+                    <div className="md-stripe-banner" style={{ borderColor: "#57400f", background: "#1c1508" }}>
+                        <div className="md-stripe-left">
+                            <div className="md-stripe-icon" style={{ borderColor: "#6b4e16", background: "#2b1f0a" }}>
+                                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                                    <rect x="1" y="1" width="18" height="12" rx="1" stroke="#f1b243" strokeWidth="1.3"/>
+                                    <path d="M1 5h18" stroke="#f1b243" strokeWidth="1.3"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div className="md-stripe-title" style={{ fontStyle: "normal" }}>Stripe Connect setup is still required.</div>
+                                <div className="md-stripe-desc">Enable Connect in your Stripe account first, then retry onboarding from this button.</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* PREP TIMING + TERMINAL STATUS */}
                 <div className="md-two-col">
@@ -186,22 +220,23 @@ export default async function MerchantDashboard({
                     <div className="md-stat-block">
                         <div className="md-stat-name">Merchant Integration Hub</div>
                         <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, marginBottom: "14px" }}>
-                            Manage Toast or other POS credentials, Go High Level iframe ordering, Stripe payouts, and launch onboarding controls in one place.
+                            Keep POS, compliance, Stripe, and storefront setup in one clear place.
                         </p>
-                        <div className="flex flex-wrap gap-2">
-                            <Link href="/merchant/dashboard/integrations" className="btn btn-gold">POS + API</Link>
-                            <Link href="/merchant/dashboard/integrations" className="btn btn-ghost">Go High Level Iframe</Link>
-                            <button className="btn btn-ghost" type="button">{hasStripe ? "Stripe Connected" : "Connect Stripe"}</button>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                            <Link href="/merchant/dashboard/integrations" className="btn btn-gold justify-center">POS + API</Link>
+                            <Link href="/merchant/dashboard/compliance" className="btn btn-gold justify-center">Compliance</Link>
+                            <Link href="/merchant/dashboard/storefront" className="btn btn-ghost justify-center">Storefront</Link>
+                            <button className="btn btn-ghost justify-center" type="button">{hasStripe ? "Stripe Connected" : "Connect Stripe"}</button>
                         </div>
                     </div>
                     <div className="md-stat-block">
                         <div className="md-stat-name">Operations Assistant</div>
                         <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, marginBottom: "14px" }}>
-                            Welcome animation is active at dashboard entry and Claude-powered TrueServe AI Support is available from the floating help widget.
+                            Guided onboarding, tutorial prompts, and support are always available from the portal header.
                         </p>
-                        <div className="flex flex-wrap gap-2">
-                            <button className="btn btn-ghost" type="button">Welcome Animation Enabled</button>
-                            <button className="btn btn-ghost" type="button">Claude Support Active</button>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                            <button className="btn btn-ghost justify-center" type="button">Tutorials On</button>
+                            <button className="btn btn-ghost justify-center" type="button">Support Ready</button>
                         </div>
                     </div>
                 </div>

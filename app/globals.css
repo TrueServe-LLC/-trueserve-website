@@ -136,11 +136,14 @@ nav {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.05);
+  min-height: 36px;
   padding: 9px 14px;
   font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: .13em;
+  line-height: 1;
+  text-align: center;
   color: rgba(255, 255, 255, 0.78);
   transition: all .15s ease;
   white-space: nowrap;
@@ -182,11 +185,17 @@ nav {
   white-space: nowrap;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 34px;
   padding: 8px 14px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .12em;
+  line-height: 1;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: rgba(255, 255, 255, 0.72);
   transition: all .15s ease;
 }
@@ -200,6 +209,130 @@ nav {
   border-color: rgba(232, 162, 48, 0.35);
   background: rgba(232, 162, 48, 0.1);
   color: var(--gold);
+}
+
+.ts-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 162, 48, 0.85);
+  background: linear-gradient(180deg, #efbb5c 0%, #e8a230 100%);
+  color: #120c01;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(232, 162, 48, 0.28);
+  transition: filter .16s ease, transform .16s ease, box-shadow .16s ease;
+}
+
+.ts-pill-btn:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 12px 28px rgba(232, 162, 48, 0.32);
+}
+
+.ts-pill-btn:active {
+  transform: translateY(1px);
+}
+
+.ts-pill-btn-block {
+  width: 100%;
+}
+
+.ts-pill-btn-sm {
+  min-height: 34px;
+  padding: 8px 12px;
+  font-size: 10px;
+  letter-spacing: .07em;
+}
+
+.ts-pill-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 162, 48, 0.82);
+  background: linear-gradient(180deg, #efbb5c 0%, #e8a230 100%);
+  color: #120c01;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(232, 162, 48, 0.22);
+}
+
+.ts-pill-chip-active {
+  box-shadow: 0 0 0 2px rgba(232, 162, 48, 0.35), 0 10px 22px rgba(232, 162, 48, 0.26);
+}
+
+.portal-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  border-radius: 14px;
+  background: #e8a230;
+  color: #000;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  line-height: 1;
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(232, 162, 48, 0.35);
+  transition: filter .15s ease, transform .15s ease;
+}
+
+.portal-btn-gold:hover {
+  filter: brightness(1.05);
+}
+
+.portal-btn-gold:active {
+  transform: translateY(1px);
+}
+
+.portal-btn-gold-block {
+  width: 100%;
+}
+
+.portal-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(232, 162, 48, 0.45);
+  background: rgba(232, 162, 48, 0.1);
+  color: #f0bd63;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  line-height: 1.1;
+  text-align: center;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.portal-btn-outline:hover {
+  border-color: rgba(232, 162, 48, 0.65);
+  background: rgba(232, 162, 48, 0.18);
+  color: #ffd286;
+}
+
+.portal-btn-outline-block {
+  width: 100%;
 }
 
 .food-app-main {
@@ -236,11 +369,13 @@ nav {
 .food-panel {
   border-radius: 28px;
   padding: 28px;
+  min-width: 0;
 }
 
 .food-card {
   border-radius: 24px;
   padding: 22px;
+  min-width: 0;
 }
 
 .food-grid-2 {
@@ -280,6 +415,7 @@ nav {
   line-height: 0.92;
   letter-spacing: .02em;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .food-title .accent,
@@ -293,6 +429,7 @@ nav {
   line-height: 0.95;
   text-transform: uppercase;
   letter-spacing: .03em;
+  text-wrap: balance;
 }
 
 .food-subtitle {
@@ -300,6 +437,7 @@ nav {
   font-size: 15px;
   line-height: 1.7;
   max-width: 620px;
+  overflow-wrap: anywhere;
 }
 
 .food-stat-row,
@@ -314,6 +452,7 @@ nav {
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
+  min-width: 0;
 }
 
 .food-stat {
@@ -333,6 +472,7 @@ nav {
 .food-card p,
 .food-kicker {
   color: rgba(255, 255, 255, 0.68);
+  overflow-wrap: anywhere;
 }
 
 .food-kicker {
@@ -399,6 +539,14 @@ nav {
   background-position: center;
   background-size: cover;
   opacity: 0.34;
+}
+
+.food-app-shell h1,
+.food-app-shell h2,
+.food-app-shell h3,
+.food-app-shell p,
+.food-app-shell li {
+  overflow-wrap: anywhere;
 }
 
 .food-auth-hero-inner {
@@ -840,6 +988,7 @@ nav {
 .md-stat-name{font-size:11px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px}
 .md-stat-value{font-size:32px;font-weight:900;letter-spacing:-.03em}
 .md-stat-value.gold{color:var(--gold)}
+.md-stat-value.grn{color:var(--green)}
 
 .md-stripe-banner{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
   padding:20px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center}
@@ -935,6 +1084,11 @@ nav {
   .portal-avatar { width: 34px; height: 34px; font-size: 10px; }
   .portal-nav-row { width: min(1240px, calc(100% - 16px)); padding-bottom: 8px; }
   .portal-pill { padding: 8px 12px; font-size: 10px; letter-spacing: .11em; }
+  .ts-pill-btn { min-height: 38px; padding: 9px 14px; font-size: 10px; letter-spacing: .07em; }
+  .ts-pill-btn-sm { min-height: 32px; padding: 7px 10px; font-size: 9px; letter-spacing: .06em; }
+  .ts-pill-chip { min-height: 32px; padding: 7px 10px; font-size: 9px; letter-spacing: .06em; }
+  .portal-btn-gold { min-height: 36px; padding: 9px 12px; font-size: 10px; letter-spacing: .11em; }
+  .portal-btn-outline { min-height: 36px; padding: 9px 12px; font-size: 10px; letter-spacing: .11em; }
   .md-page-hd { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
   .md-hd-right { width: 100%; justify-content: flex-start; gap: 8px; }
   .md-stripe-banner { flex-direction: column; align-items: flex-start; gap: 14px; }
@@ -954,18 +1108,27 @@ nav {
   .tracking-wrap { flex-direction: column; height: auto; }
   .tracking-info { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 20px; height: auto; }
   .tracking-map { height: 300px; width: 100%; }
+
+  .food-title { font-size: 38px; line-height: 1; }
+  .food-heading { font-size: 30px; line-height: 1.04; }
+  .food-subtitle { line-height: 1.65; }
 }
 
 @media (max-width: 480px) {
     .login-box { padding: 24px 20px; }
     .role-tab { font-size: 11px; padding: 7px; }
     .food-auth-wrap { padding-top: 20px; }
-    .food-title { font-size: 40px; line-height: 0.98; }
-    .food-heading { font-size: 30px; }
+    .food-title { font-size: 38px; line-height: 1; }
+    .food-heading { font-size: 28px; line-height: 1.04; }
     .home-bg-img { filter: none; }
     .portal-controls { gap: 5px; }
     .portal-btn-compact { padding: 7px 10px; font-size: 9px; }
     .portal-pill { padding: 7px 10px; font-size: 9px; }
+    .ts-pill-btn { min-height: 36px; padding: 8px 12px; font-size: 10px; letter-spacing: .05em; }
+    .ts-pill-btn-sm { min-height: 31px; padding: 7px 9px; font-size: 9px; letter-spacing: .05em; }
+    .ts-pill-chip { min-height: 31px; padding: 7px 9px; font-size: 9px; letter-spacing: .05em; }
+    .portal-btn-gold { min-height: 34px; padding: 8px 10px; font-size: 9px; }
+    .portal-btn-outline { min-height: 34px; padding: 8px 10px; font-size: 9px; }
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

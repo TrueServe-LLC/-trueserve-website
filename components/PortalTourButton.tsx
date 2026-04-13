@@ -19,11 +19,10 @@ export default function PortalTourButton({
       }}
       className={
         className ||
-        "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-white/70 hover:bg-white/10 hover:text-white"
+        "ts-pill-btn ts-pill-btn-sm"
       }
     >
       Tutorial
     </button>
   );
 }
-

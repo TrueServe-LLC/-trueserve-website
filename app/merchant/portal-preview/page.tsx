@@ -1,168 +1,168 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 
-export default function MerchantPortalMockPage() {
+const incomingOrders = [
+  { name: "Pilot Order A", status: "PREPARING", total: "$34.20", note: "2 items · 12 min" },
+  { name: "Pilot Order B", status: "READY FOR PICKUP", total: "$19.75", note: "1 item · 6 min" },
+  { name: "Pilot Order C", status: "PENDING", total: "$28.10", note: "4 items · 3 min" },
+];
+
+const opsRows = [
+  { label: "Prep Time", value: "15 min" },
+  { label: "Terminal", value: "Online" },
+  { label: "Capacity", value: "10 orders" },
+  { label: "Support", value: "Ready" },
+];
+
+export default function MerchantPortalPreviewPage() {
   return (
-    <div className="food-app-shell min-h-screen">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes tsPosSweep {
-              0% { transform: translateX(-140%); }
-              100% { transform: translateX(260%); }
-            }
-            @keyframes tsGlowPulse {
-              0%, 100% { opacity: .62; }
-              50% { opacity: 1; }
-            }
-          `,
-        }}
-      />
-
-      <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
-        <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] items-center justify-between gap-4 py-3">
-          <div className="flex items-center gap-3">
-            <Logo size="sm" />
-            <span className="hidden text-[10px] font-black uppercase tracking-[0.18em] text-[#68c7cc] md:inline-flex">
-              Merchant POS Preview
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/merchant/tutorial-preview"
-              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
-            >
-              View Animated Tutorial
-            </Link>
-            <Link
-              href="/merchant/login"
-              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
-            >
-              Back to Login
-            </Link>
+    <div className="md-body min-h-screen">
+      <div className="md-page-hd">
+        <div className="flex items-center gap-4">
+          <Logo size="sm" />
+          <div>
+            <div className="md-page-title">Merchant Dashboard Preview</div>
+            <div className="md-page-sub">Portal preview · mirrors the live merchant dashboard</div>
           </div>
         </div>
-        <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] gap-2 overflow-x-auto pb-3">
-          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Dashboard</span>
-          <span className="rounded-full border border-[#e8a230]/35 bg-[#e8a230]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#e8a230]">Integrations</span>
-          <span className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/70">Storefront</span>
+        <div className="md-hd-right flex-wrap">
+          <div className="md-terminal-btn">
+            <span className="md-terminal-dot"></span>
+            Kitchen Terminal
+          </div>
+          <div className="md-online-badge">Delivery Mode</div>
+          <div className="md-online-badge">Online</div>
+              <Link href="/merchant/tutorial-preview" className="btn btn-gold">
+            View Animated Tutorial
+          </Link>
+          <Link href="/merchant/login" className="btn btn-ghost">
+            Back to Login
+          </Link>
         </div>
-      </header>
+      </div>
 
-      <main className="mx-auto grid w-[min(1240px,calc(100%-24px))] grid-cols-1 gap-4 py-8 md:grid-cols-[minmax(0,1.7fr)_minmax(280px,0.9fr)]">
-        <section className="food-panel">
-          <p className="food-kicker mb-2">Merchant preview</p>
-          <h1 className="food-heading !text-[34px]">How POS Connection Looks (Toast)</h1>
-          <p className="lead mt-2">
-            This mock shows the exact portal area where merchants connect Toast, validate credentials, and sync their menu.
+      <div className="md-stat-grid">
+        <div className="md-stat-block">
+          <div className="md-stat-name">Incoming Orders</div>
+          <div className="md-stat-value">3</div>
+        </div>
+        <div className="md-stat-block">
+          <div className="md-stat-name">Menu Items</div>
+          <div className="md-stat-value">42</div>
+        </div>
+        <div className="md-stat-block">
+          <div className="md-stat-name">Net Revenue</div>
+          <div className="md-stat-value gold">$82.05</div>
+        </div>
+      </div>
+
+      <div className="md-stripe-banner" style={{ background: "#0d1a10", borderColor: "#1a4a2a" }}>
+        <div className="md-stripe-left">
+          <div className="md-stripe-icon" style={{ borderColor: "#1a4a2a", background: "#0d2a1a" }}>
+            <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+              <rect x="1" y="1" width="18" height="12" rx="1" stroke="#3dd68c" strokeWidth="1.3" />
+              <path d="M1 5h18" stroke="#3dd68c" strokeWidth="1.3" />
+            </svg>
+          </div>
+          <div>
+            <div className="md-stripe-title" style={{ fontStyle: "normal" }}>
+              Stripe account connected.
+            </div>
+            <div className="md-stripe-desc">This preview mirrors the live merchant workflow for orders, automation, and payouts.</div>
+          </div>
+        </div>
+        <div className="md-stripe-connected">✓ Payouts Active</div>
+      </div>
+
+      <div className="md-two-col">
+        <div className="md-stat-block">
+          <div className="md-stat-name">Merchant Integration Hub</div>
+          <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Keep Everything Connected</div>
+          <p className="mt-4 text-sm leading-6 text-white/65">
+            POS, compliance, storefront, and payments are grouped into one control area so the portal stays simple.
           </p>
-
-          <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
-            <div className="rounded-2xl border border-white/12 bg-black/25 p-4">
-              <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/55">Connection Sequence</div>
-              <ol className="mt-4 space-y-3">
-                <li className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3">
-                  <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#e8a230]">Step 1</div>
-                  <div className="mt-1 text-sm font-extrabold text-white">Choose POS Provider: Toast</div>
-                  <div className="mt-1 text-xs text-white/65">Merchant selects Toast in Integrations and opens credentials panel.</div>
-                </li>
-                <li className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3">
-                  <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#e8a230]">Step 2</div>
-                  <div className="mt-1 text-sm font-extrabold text-white">Enter API Credentials</div>
-                  <div className="mt-1 text-xs text-white/65">Client ID, Client Secret, and location details are entered securely.</div>
-                </li>
-                <li className="rounded-xl border border-[#e8a230]/35 bg-[#e8a230]/10 px-3 py-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#e8a230]">Step 3</div>
-                      <div className="mt-1 text-sm font-extrabold text-white">Run Connection Test</div>
-                    </div>
-                    <span
-                      className="rounded-full border border-emerald-300/40 bg-emerald-300/10 px-2 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-emerald-200"
-                      style={{ animation: "tsGlowPulse 1.6s ease-in-out infinite" }}
-                    >
-                      Checking
-                    </span>
-                  </div>
-                  <div className="relative mt-3 h-2 overflow-hidden rounded-full bg-white/12">
-                    <span className="absolute inset-y-0 left-0 w-[45%] rounded-full bg-[#e8a230]/85" />
-                    <span
-                      className="absolute inset-y-0 left-0 w-[28%] rounded-full bg-white/90 opacity-75"
-                      style={{ animation: "tsPosSweep 2s linear infinite" }}
-                    />
-                  </div>
-                </li>
-                <li className="rounded-xl border border-emerald-300/35 bg-emerald-300/10 px-3 py-3">
-                  <div className="text-[10px] font-black uppercase tracking-[0.14em] text-emerald-200">Step 4</div>
-                  <div className="mt-1 text-sm font-extrabold text-white">Connection Verified</div>
-                  <div className="mt-1 text-xs text-white/70">Menu sync and order webhooks become available immediately.</div>
-                </li>
-              </ol>
-            </div>
-
-            <div className="rounded-2xl border border-white/12 bg-black/25 p-4">
-              <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/55">Toast Credentials (Mock)</div>
-              <div className="mt-3 space-y-2">
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/45">Client ID</div>
-                  <div className="mt-1 text-sm font-semibold text-white/85">toast_client_live_******</div>
-                </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/45">Client Secret</div>
-                  <div className="mt-1 text-sm font-semibold text-white/85">••••••••••••••••</div>
-                </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/45">Toast Location</div>
-                  <div className="mt-1 text-sm font-semibold text-white/85">Downtown / POS-0042</div>
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <button type="button" className="inline-flex items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#f0bd63]">
-                  Test Connection
-                </button>
-                <button type="button" className="inline-flex items-center justify-center rounded-[12px] border border-white/15 bg-white/[0.06] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/80">
-                  Sync Menu
-                </button>
-              </div>
-              <div className="mt-3 rounded-xl border border-emerald-300/35 bg-emerald-300/10 px-3 py-2 text-[11px] font-semibold text-emerald-100">
-                Connected: Toast menu sync and order ingestion are active.
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-2xl border border-white/12 bg-white/[0.03] p-4">
-            <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/55">What This Preview Demonstrates</div>
-            <div className="mt-3 grid grid-cols-1 gap-2 text-sm text-white/75 md:grid-cols-3">
-              <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Where Toast is selected inside Integrations.</div>
-              <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">How credentials are entered and validated.</div>
-              <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">How merchants confirm successful sync status.</div>
-            </div>
-          </div>
-        </section>
-
-        <aside className="food-panel">
-          <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/50">Preview Controls</div>
-          <div className="mt-3 grid gap-2">
-            <Link
-              href="/merchant/tutorial-preview"
-              className="inline-flex items-center justify-center rounded-[14px] bg-[#e8a230] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-black shadow-[0_8px_22px_rgba(232,162,48,0.35)] transition-all hover:brightness-105"
-            >
-              Watch Animated Tour
+          <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            <Link href="/merchant/dashboard/integrations" className="btn btn-gold justify-center">
+              POS + API
             </Link>
-            <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-white/75">POS: Toast</span>
-            <span className="rounded-xl border border-emerald-300/35 bg-emerald-300/10 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-emerald-200">Status: Connected</span>
-            <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-white/75">Webhook Health: Good</span>
+            <Link href="/merchant/dashboard/compliance" className="btn btn-gold justify-center">
+              Compliance
+            </Link>
+            <Link href="/merchant/dashboard/storefront" className="btn btn-ghost justify-center">
+              Storefront
+            </Link>
+            <button className="btn btn-ghost justify-center" type="button">
+              Stripe Connected
+            </button>
           </div>
+        </div>
 
-          <div className="mt-4 rounded-2xl border border-white/12 bg-black/25 p-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/50">Note</div>
-            <p className="mt-2 text-sm text-white/70">
-              This is visual-only and does not save credentials. It mirrors the merchant integration workflow so teammates can review before launch.
+        <div className="md-stat-block">
+          <div className="md-stat-name">Operations Assistant</div>
+          <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Support + Guidance</div>
+          <div className="mt-5 space-y-3">
+            {[
+              { label: "Tutorials", value: "Available" },
+              { label: "AI Support", value: "Ready" },
+              { label: "Preview Mode", value: "Pilot build" },
+            ].map((row) => (
+              <div key={row.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                <span className="text-xs uppercase tracking-[0.12em] text-white/45">{row.label}</span>
+                <span className="text-sm font-bold text-white/80">{row.value}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            <button className="btn btn-gold justify-center" type="button">
+              Tutorials On
+            </button>
+            <button className="btn btn-ghost justify-center" type="button">
+              Support Ready
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="md-bottom-grid">
+        <div className="md-stat-block">
+          <div className="md-stat-name">Live Orders</div>
+          <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Incoming Kitchen Queue</div>
+          <div className="mt-5 space-y-3">
+            {incomingOrders.map((order) => (
+              <div key={order.name} className="rounded-2xl border border-white/10 bg-[#0b0f17] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-[0.14em] text-white/45">{order.status}</div>
+                    <div className="mt-1 text-[15px] font-bold text-white">{order.name}</div>
+                    <div className="mt-1 text-xs text-white/50">{order.note}</div>
+                  </div>
+                  <div className="text-[15px] font-black text-[#e8a230]">{order.total}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="md-stat-block">
+          <div className="md-stat-name">Operations Snapshot</div>
+          <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Prep, Terminal, and Capacity</div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {opsRows.map((row) => (
+              <div key={row.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">{row.label}</div>
+                <div className="mt-1 text-lg font-black text-white">{row.value}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 rounded-2xl border border-white/10 bg-[#0b0f17] p-4">
+            <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Automation</div>
+            <div className="mt-1 text-[15px] font-bold text-white">AutoPilot enabled with a 10 order capacity threshold.</div>
+            <p className="mt-2 text-sm leading-6 text-white/65">
+              Busy windows and support controls stay visible so the merchant portal feels organized and easy to scan.
             </p>
           </div>
-        </aside>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }

@@ -22,21 +22,27 @@ function RestaurantFinderContent() {
     async function fetchRestaurants() {
       const TEST_DATA_PATTERN = /\b(mock|test|demo|preview|sandbox|sample|qa|staging|seed)\b/i;
       const EXCLUDED_CITIES = new Set(["mount airy"]);
+      const EXCLUDED_RESTAURANT_NAMES = new Set([
+        "costa del sol",
+        "costo del sol",
+      ]);
       const normalizeSearchText = (value: string) =>
         value.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
       const isLiveRestaurant = (restaurant: any) => {
         const visibility = typeof restaurant.visibility === "string" ? restaurant.visibility.toUpperCase() : "";
         const searchableText = `${restaurant.name || ""} ${restaurant.address || ""} ${restaurant.city || ""} ${restaurant.description || ""}`;
+        const normalizedName = normalizeSearchText(String(restaurant.name || ""));
         const isMock = restaurant.isMock === true;
         const isLikelyTestRecord =
           TEST_DATA_PATTERN.test(searchableText) ||
           searchableText.toLowerCase().includes("(mock)");
         const isExcludedCity = EXCLUDED_CITIES.has(String(restaurant.city || "").trim().toLowerCase());
+        const isExcludedRestaurant = EXCLUDED_RESTAURANT_NAMES.has(normalizedName);
         const isVisible = !visibility || visibility === "VISIBLE";
         const hasApprovalColumn = Object.prototype.hasOwnProperty.call(restaurant, "isApproved");
         const isApproved = !hasApprovalColumn || restaurant.isApproved !== false;
 
-        return !isMock && !isLikelyTestRecord && !isExcludedCity && isVisible && isApproved;
+        return !isMock && !isLikelyTestRecord && !isExcludedCity && !isExcludedRestaurant && isVisible && isApproved;
       };
 
       const extractStateCode = (value: string) => {
@@ -54,6 +60,20 @@ function RestaurantFinderContent() {
       const targetCityToken = normalizeSearchText(targetRaw.split(",")[0] || "");
       const targetState = extractStateCode(targetRaw);
       const shouldFilterByLocation = Boolean(targetRaw || (targetLat !== null && targetLng !== null));
+      const matchesSearchText = (restaurant: any) => {
+        if (!targetSearch) return false;
+
+        const haystack = `${restaurant.name || ""} ${restaurant.city || ""} ${restaurant.state || ""} ${restaurant.address || ""}`.toLowerCase();
+        const haystackNormalized = normalizeSearchText(haystack);
+
+        if (haystack.includes(targetSearch)) return true;
+        if (targetCityToken && haystackNormalized.includes(targetCityToken)) return true;
+        if (targetTokens.length === 0) return false;
+
+        const matchingTokens = targetTokens.filter((token) => haystackNormalized.includes(token)).length;
+        const requiredMatches = Math.min(2, targetTokens.length);
+        return matchingTokens >= requiredMatches;
+      };
 
       const { data, error } = await supabase
         .from('Restaurant')
@@ -84,6 +104,10 @@ function RestaurantFinderContent() {
           .filter((restaurant: any) => {
             if (!shouldFilterByLocation) return false;
 
+            if (matchesSearchText(restaurant)) {
+              return true;
+            }
+
             if (targetLat !== null && targetLng !== null && restaurant.distanceMiles !== null) {
               return restaurant.distanceMiles <= 20;
             }
@@ -92,18 +116,7 @@ function RestaurantFinderContent() {
               return false;
             }
 
-            if (!targetSearch) return true;
-
-            const haystack = `${restaurant.name || ""} ${restaurant.city || ""} ${restaurant.state || ""} ${restaurant.address || ""}`.toLowerCase();
-            const haystackNormalized = normalizeSearchText(haystack);
-
-            if (haystack.includes(targetSearch)) return true;
-            if (targetCityToken && haystackNormalized.includes(targetCityToken)) return true;
-            if (targetTokens.length === 0) return true;
-
-            const matchingTokens = targetTokens.filter((token) => haystackNormalized.includes(token)).length;
-            const requiredMatches = Math.min(2, targetTokens.length);
-            return matchingTokens >= requiredMatches;
+            return Boolean(targetSearch);
           })
           .sort((a: any, b: any) => {
             if (a.distanceMiles === null || b.distanceMiles === null) return 0;

@@ -1,68 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
-import { supabase } from "@/lib/supabase";
+import { loginWithPassword, type AuthState } from "@/app/auth/actions";
 
 export default function MerchantLoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [state, formAction, isPending] = useActionState(
+    async (_prevState: AuthState, formData: FormData) => loginWithPassword(formData),
+    { message: "" }
+  );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorText("");
-    setIsLoading(true);
+  useEffect(() => {
+    if (!state?.message) return;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
-
-    if (error) {
-      setErrorText(error.message || "Failed to sign in.");
-      setIsLoading(false);
+    if (state.success && state.role === "MERCHANT") {
+      const forceTour =
+        typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("tour") === "1";
+      router.push(forceTour ? "/merchant/dashboard?tour=1" : "/merchant/dashboard");
+      router.refresh();
       return;
     }
 
-    const role = data.user?.user_metadata?.role;
-    if (role && role !== "MERCHANT") {
-      await supabase.auth.signOut();
+    if (state.success && state.role && state.role !== "MERCHANT") {
       setErrorText("This account is not a merchant account.");
-      setIsLoading(false);
       return;
     }
 
-    const { data: merchantRestaurant, error: merchantError } = await supabase
-      .from("Restaurant")
-      .select("id, visibility")
-      .eq("ownerId", data.user.id)
-      .maybeSingle();
-
-    if (merchantError || !merchantRestaurant) {
-      await supabase.auth.signOut();
-      setErrorText("Merchant profile not found. Contact support.");
-      setIsLoading(false);
-      return;
+    if (state.error) {
+      setErrorText(state.message);
     }
-
-    if (merchantRestaurant.visibility !== "VISIBLE") {
-      await supabase.auth.signOut();
-      setErrorText("Your merchant application is pending admin approval.");
-      setIsLoading(false);
-      return;
-    }
-
-    const forceTour =
-      typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).get("tour") === "1";
-    router.push(forceTour ? "/merchant/dashboard?tour=1" : "/merchant/dashboard");
-    router.refresh();
-  };
+  }, [state, router]);
 
   return (
     <div className="food-app-shell">
@@ -77,7 +49,7 @@ export default function MerchantLoginPage() {
             <div className="food-auth-hero-inner">
               <div className="food-eyebrow">Merchant access</div>
               <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[56px]">Merchant <span className="accent">Portal Login.</span></h1>
+                <h1 className="food-heading !text-[52px] md:!text-[56px]">Merchant <span className="accent">Portal Login.</span></h1>
                 <p className="food-subtitle !max-w-[520px]">
                   Sign in to manage POS integrations, orders, restaurant settings, and operations in the same consistent interface used across the platform.
                 </p>
@@ -91,10 +63,10 @@ export default function MerchantLoginPage() {
           </section>
 
           <section className="food-panel food-auth-form">
-            <Link href="/" className="su-back">← Back to Home</Link>
+            <Link href="/" className="portal-btn-outline portal-btn-outline-block !w-auto !px-4 !py-2">← Back to Home</Link>
             <p className="food-kicker mb-3">Restaurant account</p>
-            <h1 className="food-heading !text-[36px]">Sign In</h1>
-            <p className="lead mt-2">Secure merchant access for your partnership portal.</p>
+            <h1 className="food-heading !text-[32px] md:!text-[36px]">Sign In</h1>
+            <p className="lead mt-2 max-w-[360px]">Secure merchant access for your partnership portal.</p>
 
             {errorText && (
               <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-bold uppercase tracking-[0.11em] text-red-300">
@@ -102,41 +74,52 @@ export default function MerchantLoginPage() {
               </div>
             )}
 
-            <form
-              className="mt-6"
-              onSubmit={handleSubmit}
-            >
+            <form className="mt-6" action={formAction}>
               <div className="fg">
                 <label>Email</label>
                 <input
+                  name="email"
                   type="email"
                   placeholder="partner@yourplace.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  defaultValue=""
                   required
                 />
               </div>
               <div className="fg">
                 <label>Password</label>
                 <input
+                  name="password"
                   type="password"
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  defaultValue=""
                   required
                 />
               </div>
-              <button className="place-btn mt-4" disabled={isLoading}>
-                {isLoading ? "Authorizing..." : "Establish Session"}
+              <button className="ts-pill-btn ts-pill-btn-block mt-4" disabled={isPending}>
+                {isPending ? "Authorizing..." : "Establish Session"}
               </button>
             </form>
 
-            <Link
-              href="/merchant/portal-preview"
-              className="mt-3 inline-flex w-full items-center justify-center rounded-[12px] border border-[#e8a230]/45 bg-[#e8a230]/10 px-4 py-3 text-[12px] font-black uppercase tracking-[0.13em] text-[#f0bd63] transition-all hover:border-[#e8a230]/65 hover:bg-[#e8a230]/18 hover:text-[#ffd286]"
-            >
-              Preview POS Setup (Toast Mock)
-            </Link>
+            <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="text-[11px] font-black uppercase tracking-[0.1em] text-white/60">Portal preview tools</div>
+              <p className="mt-1.5 text-[12px] font-semibold leading-relaxed text-white/70">
+                Preview the merchant portal setup and guided walkthrough before logging in.
+              </p>
+              <div className="mt-3 grid gap-2">
+                <Link
+                  href="/merchant/portal-preview"
+                  className="ts-pill-btn ts-pill-btn-block"
+                >
+                  Preview POS Setup (Toast Mock)
+                </Link>
+                <Link
+                  href="/merchant/tutorial-preview"
+                  className="ts-pill-btn ts-pill-btn-block"
+                >
+                  View Animated Tutorial
+                </Link>
+              </div>
+            </div>
 
             <div className="login-foot">New to network? <Link href="/merchant/signup">Apply for partnership</Link></div>
           </section>

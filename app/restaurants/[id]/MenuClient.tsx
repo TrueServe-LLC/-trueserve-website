@@ -187,6 +187,12 @@ export default function MenuClient({
         if (isDhansKitchen) {
             return ["Doubles", "Curry Platters", "Vegan", "Sides", "Drinks", "Dessert", "Main Menu"];
         }
+        if (restaurant?.name?.toLowerCase?.().includes("pimento")) {
+            return ["Appetizers", "Entrees", "Roti", "Sides", "Drinks", "Desserts", "Main Menu"];
+        }
+        if (restaurant?.name?.toLowerCase?.().includes("krave 489")) {
+            return ["Small Plates", "Salads", "Entrees", "Seafood Boil", "Sides", "Desserts", "Kids Cravings", "Main Menu"];
+        }
         return [];
     })();
 
@@ -203,7 +209,70 @@ export default function MenuClient({
                 return null;
             })();
 
-            const label = inferredLabel || categoryLabelFor(item);
+            const pimentoLabel = (() => {
+                if (!restaurant?.name?.toLowerCase?.().includes("pimento")) return null;
+                if (typeof item.category === "string" && item.category.trim().length) return null;
+                const name = String(item.name || "").toLowerCase();
+                if (name.includes("patty") || name.includes("coco bread")) return "Appetizers";
+                if (name.includes("roti")) return "Roti";
+                if (name.includes("sorrel") || name.includes("ginger beer") || name.includes("juice")) return "Drinks";
+                if (name.includes("rice and peas") || name.includes("mac and cheese") || name.includes("cabbage") || name.includes("plantain") || name.includes("festival")) return "Sides";
+                return "Entrees";
+            })();
+
+            const kraveLabel = (() => {
+                if (!restaurant?.name?.toLowerCase?.().includes("krave 489")) return null;
+                if (typeof item.category === "string" && item.category.trim().length) return null;
+                const name = String(item.name || "").toLowerCase();
+                if (
+                    [
+                        "seasonal hummus",
+                        "street corn ribs",
+                        "burrata",
+                        "antipasti skewers",
+                        "whipped feta dip",
+                        "tuna nacho",
+                        "wagyu beef meatballs",
+                        "scallops",
+                        "mussels",
+                        "blood orange ceviche",
+                        "sausage and peppers",
+                        "crab cakes",
+                        "teriyaki shrimp skewers",
+                        "crispy calamari",
+                    ].some((needle) => name.includes(needle))
+                ) {
+                    return "Small Plates";
+                }
+                if (name.includes("watermelon and feta") || name.includes("southern caesar") || name.includes("gardenia") || name.includes("krave cobb")) {
+                    return "Salads";
+                }
+                if (name.includes("boil") || name.startsWith("add ")) {
+                    return "Seafood Boil";
+                }
+                if (
+                    name.includes("twice baked sweet potatoes") ||
+                    name.includes("rosemary parmesan fries") ||
+                    name.includes("lime slaw") ||
+                    name.includes("brussel sprouts") ||
+                    name.includes("mushroom pilaf") ||
+                    name.includes("mashed potatoes") ||
+                    name.includes("asparagus") ||
+                    name.includes("roasted vegetable medley") ||
+                    name.includes("mac and cheese")
+                ) {
+                    return "Sides";
+                }
+                if (name.includes("pie") || name.includes("cobbler") || name.includes("bread pudding") || name.includes("cake")) {
+                    return "Desserts";
+                }
+                if (name.startsWith("kids ")) {
+                    return "Kids Cravings";
+                }
+                return "Entrees";
+            })();
+
+            const label = inferredLabel || pimentoLabel || kraveLabel || categoryLabelFor(item);
             if (!buckets.has(label)) buckets.set(label, []);
             buckets.get(label)!.push(item);
         }
