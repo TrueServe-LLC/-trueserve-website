@@ -23,8 +23,8 @@ export default async function DriverDashboardLayout({ children }: { children: Re
     const supabase = await createClient();
     const { data: driverData } = isPreview
         ? { data: {
-            name: "Pilot Driver",
-            balance: 126.4,
+            name: "Driver",
+            balance: 0,
             userId: "preview",
         } }
         : await supabase

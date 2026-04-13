@@ -16,14 +16,14 @@ export default async function DriverDashboard() {
     const driver = isPreview
         ? {
             id: "preview",
-            name: "Pilot Driver",
+            name: "Driver",
             currentLat: 28.5383,
             currentLng: -81.3792,
-            totalEarnings: 126,
-            balance: 84.25,
+            totalEarnings: 0,
+            balance: 0,
             stripeAccountId: null,
-            orders: Array.from({ length: 7 }),
-            rating: 4.9,
+            orders: [],
+            rating: 0,
         }
         : await getDriverOrRedirect();
     const driverLat = typeof driver?.currentLat === "number" ? driver.currentLat : null;
@@ -35,31 +35,8 @@ export default async function DriverDashboard() {
     let stats = { totalEarnings: 0, balance: 0, trips: 0, rating: 0 };
 
     if (isPreview) {
-        weather = { temperature: 74, condition: "Clear", multiplier: 1.0 };
-        availableOrders = [
-            {
-                id: "preview-order-1",
-                restaurant: { name: "Pilot Restaurant A", address: "100 Main St" },
-                totalPay: 8.4,
-                distance: 1.2,
-            },
-            {
-                id: "preview-order-2",
-                restaurant: { name: "Pilot Restaurant B", address: "200 Lake St" },
-                totalPay: 11.5,
-                distance: 2.8,
-            },
-        ];
-        myActiveOrders = [
-            {
-                id: "preview-active-1",
-                status: "PICKED_UP",
-                restaurant: { name: "Pilot Restaurant A", address: "100 Main St" },
-                deliveryAddress: "400 Market St, Apt 4B",
-                customerName: "Pilot Customer",
-                deliveryInstructions: "Leave at door",
-            },
-        ];
+        availableOrders = [];
+        myActiveOrders = [];
     } else {
         const supabase = await createClient();
 

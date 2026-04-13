@@ -2,16 +2,16 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 
 const availableTrips = [
-  { restaurant: "Pilot Restaurant A", address: "100 Main St", payout: "$8.40", distance: "1.2 mi" },
-  { restaurant: "Pilot Restaurant B", address: "200 Lake St", payout: "$11.50", distance: "2.8 mi" },
-  { restaurant: "Pilot Restaurant C", address: "300 Pine Rd", payout: "$9.10", distance: "0.9 mi" },
+  { restaurant: "Nearby Restaurant", address: "Your area", payout: "Varies", distance: "— mi" },
+  { restaurant: "Nearby Restaurant", address: "Your area", payout: "Varies", distance: "— mi" },
+  { restaurant: "Nearby Restaurant", address: "Your area", payout: "Varies", distance: "— mi" },
 ];
 
 const routeRows = [
-  { label: "Balance", value: "$84.25" },
-  { label: "Weather", value: "74°F · Clear" },
-  { label: "Trip Count", value: "7 deliveries" },
-  { label: "Rating", value: "4.9 stars" },
+  { label: "Balance", value: "—" },
+  { label: "Weather", value: "—" },
+  { label: "Trip Count", value: "—" },
+  { label: "Rating", value: "—" },
 ];
 
 export default function DriverPortalPreviewPage() {
@@ -46,19 +46,19 @@ export default function DriverPortalPreviewPage() {
       <div className="md-stat-grid">
         <div className="md-stat-block">
           <div className="md-stat-name">Daily Yield</div>
-          <div className="md-stat-value gold">$126</div>
+          <div className="md-stat-value gold">$—</div>
         </div>
         <div className="md-stat-block">
           <div className="md-stat-name">Trips</div>
-          <div className="md-stat-value">7</div>
+          <div className="md-stat-value">—</div>
         </div>
         <div className="md-stat-block">
           <div className="md-stat-name">Rating</div>
-          <div className="md-stat-value">4.9 ★</div>
+          <div className="md-stat-value">— ★</div>
         </div>
         <div className="md-stat-block">
           <div className="md-stat-name">Weather</div>
-          <div className="md-stat-value grn">74°F</div>
+          <div className="md-stat-value grn">—</div>
         </div>
       </div>
 
@@ -90,20 +90,20 @@ export default function DriverPortalPreviewPage() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.14em] text-[#e8a230]">Picked Up</div>
-                  <h3 className="mt-1 text-[22px] font-black">Pilot Restaurant A</h3>
+                  <h3 className="mt-1 text-[22px] font-black">Active Restaurant</h3>
                 </div>
-                <div className="text-[11px] uppercase tracking-[0.14em] text-white/45">#TRV-4821</div>
+                <div className="text-[11px] uppercase tracking-[0.14em] text-white/45">#TRV-XXXX</div>
               </div>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-white/10 bg-[#0b0f17] p-4">
                   <div className="text-[10px] uppercase tracking-[0.14em] text-white/55">Pickup</div>
-                  <div className="mt-1 font-bold">142 W Main St</div>
+                  <div className="mt-1 font-bold">Restaurant Address</div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-[#0b0f17] p-4">
                   <div className="text-[10px] uppercase tracking-[0.14em] text-white/55">Drop-off</div>
-                  <div className="mt-1 font-bold">400 Market St, Apt 3C</div>
-                  <div className="mt-1 text-xs text-[#68c7cc]">Customer: Pilot Customer</div>
+                  <div className="mt-1 font-bold">Customer Address</div>
+                  <div className="mt-1 text-xs text-[#68c7cc]">Customer: —</div>
                 </div>
               </div>
 
@@ -152,15 +152,15 @@ export default function DriverPortalPreviewPage() {
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">ETA</div>
-                    <div className="mt-1 text-lg font-black">4 min</div>
+                    <div className="mt-1 text-lg font-black">— min</div>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Route</div>
-                    <div className="mt-1 text-lg font-black">2.1 mi</div>
+                    <div className="mt-1 text-lg font-black">— mi</div>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Payout</div>
-                    <div className="mt-1 text-lg font-black text-[#e8a230]">$8.40</div>
+                    <div className="mt-1 text-lg font-black text-[#e8a230]">$—</div>
                   </div>
                 </div>
               </div>
@@ -198,8 +198,8 @@ export default function DriverPortalPreviewPage() {
               </div>
               <div className="mt-4 space-y-3">
                 {[
-                  { stop: "Pickup", place: "Pilot Restaurant A", detail: "100 Main St · 0.4 mi" },
-                  { stop: "Drop-off", place: "400 Market St, Apt 3C", detail: "Customer: Pilot Customer · 1.2 mi" },
+                  { stop: "Pickup", place: "Restaurant Name", detail: "Restaurant Address · — mi" },
+                  { stop: "Drop-off", place: "Customer Address", detail: "Customer: — · — mi" },
                 ].map((stop) => (
                   <div key={stop.stop} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">{stop.stop}</div>
