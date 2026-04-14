@@ -82,16 +82,36 @@ export default function MerchantPortalPreviewPage() {
             POS, compliance, storefront, and payments are grouped into one control area so the portal stays simple.
           </p>
           <div className="mt-5 grid gap-2 sm:grid-cols-2">
-            <Link href="/merchant/dashboard/integrations" className="btn btn-gold justify-center">
+            <button
+              disabled
+              className="btn btn-gold justify-center opacity-50 cursor-not-allowed"
+              title="Preview mode: View the full portal preview to explore integrations"
+              type="button"
+            >
               POS + API
-            </Link>
-            <Link href="/merchant/dashboard/compliance" className="btn btn-gold justify-center">
+            </button>
+            <button
+              disabled
+              className="btn btn-gold justify-center opacity-50 cursor-not-allowed"
+              title="Preview mode: View the full portal preview to explore compliance"
+              type="button"
+            >
               Compliance
-            </Link>
-            <Link href="/merchant/dashboard/storefront" className="btn btn-ghost justify-center">
+            </button>
+            <button
+              disabled
+              className="btn btn-ghost justify-center opacity-50 cursor-not-allowed"
+              title="Preview mode: View the full portal preview to explore storefront"
+              type="button"
+            >
               Storefront
-            </Link>
-            <button className="btn btn-ghost justify-center" type="button">
+            </button>
+            <button
+              disabled
+              className="btn btn-ghost justify-center opacity-50 cursor-not-allowed"
+              type="button"
+              title="Preview mode: This is a demo environment"
+            >
               Stripe Connected
             </button>
           </div>

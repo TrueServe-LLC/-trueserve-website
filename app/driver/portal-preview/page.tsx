@@ -173,18 +173,38 @@ export default function DriverPortalPreviewPage() {
             <div className="md-stat-name">Driver Essentials</div>
             <div className="mt-2 text-[28px] font-black tracking-[-0.03em] text-white">Payments and Tools</div>
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
-              <Link href="/driver/dashboard/account" className="btn btn-gold justify-center">
+              <button
+                disabled
+                className="btn btn-gold justify-center opacity-50 cursor-not-allowed"
+                title="Preview mode: View the full portal preview to set up Stripe"
+                type="button"
+              >
                 Stripe Payout Setup
-              </Link>
-              <Link href="/driver/dashboard/compliance" className="btn btn-gold justify-center">
+              </button>
+              <button
+                disabled
+                className="btn btn-gold justify-center opacity-50 cursor-not-allowed"
+                title="Preview mode: View the full portal preview to see compliance checklist"
+                type="button"
+              >
                 Compliance Checklist
-              </Link>
-              <Link href="/driver/dashboard/earnings" className="btn btn-ghost justify-center">
+              </button>
+              <button
+                disabled
+                className="btn btn-ghost justify-center opacity-50 cursor-not-allowed"
+                title="Preview mode: View the full portal preview to see settlements"
+                type="button"
+              >
                 Settlement History
-              </Link>
-              <Link href="/driver/dashboard/help" className="btn btn-ghost justify-center">
+              </button>
+              <button
+                disabled
+                className="btn btn-ghost justify-center opacity-50 cursor-not-allowed"
+                title="Preview mode: This is a demo environment"
+                type="button"
+              >
                 TrueServe AI Support
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -249,15 +269,30 @@ export default function DriverPortalPreviewPage() {
             ))}
           </div>
           <div className="mt-5 grid gap-2">
-            <Link href="/driver/dashboard/compliance" className="btn btn-gold justify-center">
+            <button
+              disabled
+              className="btn btn-gold justify-center opacity-50 cursor-not-allowed"
+              title="Preview mode: View the full portal preview to access compliance"
+              type="button"
+            >
               Open Compliance
-            </Link>
-            <Link href="/driver/dashboard/earnings" className="btn btn-ghost justify-center">
+            </button>
+            <button
+              disabled
+              className="btn btn-ghost justify-center opacity-50 cursor-not-allowed"
+              title="Preview mode: View the full portal preview to view settlements"
+              type="button"
+            >
               View Settlements
-            </Link>
-            <Link href="/driver/dashboard/help" className="btn btn-ghost justify-center">
+            </button>
+            <button
+              disabled
+              className="btn btn-ghost justify-center opacity-50 cursor-not-allowed"
+              title="Preview mode: View the full portal preview to get support"
+              type="button"
+            >
               Get Support
-            </Link>
+            </button>
           </div>
         </div>
       </div>
