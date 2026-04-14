@@ -3,6 +3,7 @@ import { getAuthSession } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import AdminStyles from "@/components/admin/AdminStyles";
 import CostDashboard from "@/components/admin/CostDashboard";
+import CostSyncManager from "@/components/admin/CostSyncManager";
 import { analyzeCosts, checkBudgetAlerts } from "@/lib/costAnalytics";
 import type { MonthlyCost } from "@/lib/costAnalytics";
 
@@ -152,6 +153,11 @@ export default async function CostManagementPage() {
             </header>
 
             <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                {/* Sync Manager */}
+                <div className="mb-8">
+                    <CostSyncManager />
+                </div>
+
                 <CostDashboard
                     analysis={analysis}
                     currentMonth={currentMonth}
