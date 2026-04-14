@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Management Dashboard - Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    <style>
+        body {
+            background: #0a0c09;
+            color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .cost-card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #10131b;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .gold-text {
+            color: #e8a230;
+        }
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #6d6ff3, #8b85ff, #e8a230);
+            height: 100%;
+        }
+        .sync-button {
+            background: #e8a230;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: none;
+        }
+        .sync-button:hover {
+            background: #d89020;
+        }
+        .success-box {
+            border: 1px solid rgba(46, 229, 160, 0.3);
+            background: rgba(46, 229, 160, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #baf7dd;
+            font-size: 0.875rem;
+        }
+        @media (max-width: 768px) {
+            .cost-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen" style="background: #0a0c09;">
+        <!-- Header -->
+        <header class="border-b" style="border-color: rgba(255,255,255,0.1); background: #0f1117; position: sticky; top: 0; z-index: 40;">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-black text-white">Cost Management</h1>
+                <p class="mt-2 text-sm" style="color: rgba(255,255,255,0.5);">
+                    Track and manage spending across all services
+                </p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <!-- Sync Manager Section -->
+            <div class="cost-card mb-8">
+                <div class="flex items-start justify-between gap-6 flex-wrap">
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-lg font-bold text-white mb-2">Data Synchronization</h2>
+                        <p class="text-sm" style="color: rgba(255,255,255,0.6);">
+                            Sync cost data from connected service APIs (Stripe, Google Cloud, Supabase, Mapbox, Resend, Vonage)
+                        </p>
+                        <div class="mt-3 flex items-center gap-2 text-xs" style="color: rgba(255,255,255,0.5);">
+                            ⏰ Last synced: April 14, 2026 at 3:21 PM
+                        </div>
+                    </div>
+                    <div class="flex gap-3 flex-wrap">
+                        <button class="sync-button">🔄 Sync Costs</button>
+                        <button style="background: rgba(255,255,255,0.1); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; font-size: 0.875rem; cursor: pointer; border: none;">⚠️ Check Anomalies</button>
+                    </div>
+                </div>
+
+                <!-- Success Message -->
+                <div class="success-box mt-4">
+                    <div class="flex items-start gap-3">
+                        <span style="color: #2ee5a0; font-size: 1.2rem;">✓</span>
+                        <div>
+                            <p style="font-weight: bold; color: #2ee5a0;">Sync Successful</p>
+                            <p>Synced 1 service costs for 2026-04</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Config Info -->
+                <div style="border: 1px solid rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 1rem; margin-top: 1.5rem;">
+                    <h3 style="color: #93c5fd; font-weight: bold; margin-bottom: 0.5rem;">📋 Setup Required</h3>
+                    <p style="color: rgba(191, 219, 254, 0.8); font-size: 0.875rem; margin-bottom: 0.75rem;">
+                        To enable real API integrations, add these environment variables:
+                    </p>
+                    <div style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 4px; font-family: monospace; font-size: 0.75rem; color: rgba(191, 219, 254, 0.6); line-height: 1.5;">
+                        STRIPE_SECRET_KEY=sk_...<br>
+                        GCP_PROJECT_ID=your-project-id<br>
+                        SUPABASE_PROJECT_ID=your-project-id<br>
+                        SUPABASE_ACCESS_TOKEN=sbpa_...<br>
+                        MAPBOX_ACCESS_TOKEN=pk_...<br>
+                        RESEND_API_KEY=re_...<br>
+                        VONAGE_API_KEY=your-api-key
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+                <!-- Current Month Cost -->
+                <div class="cost-card">
+                    <div style="font-size: 0.75rem; font-weight: bold; letter-spacing: 0.08em; color: rgba(138, 147, 167, 1); text-transform: uppercase;">
+                        2026-04 Cost
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 1.5rem; font-weight: bold; color: white;">
+                        $842.50
+                    </div>
+                    <div style="margin-top: 0.25rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">
+                        📈 <span>Increasing</span>
+                    </div>
+                </div>
+
+                <!-- Monthly Average -->
+                <div class="cost-card">
+                    <div style="font-size: 0.75rem; font-weight: bold; letter-spacing: 0.08em; color: rgba(138, 147, 167, 1); text-transform: uppercase;">
+                        Monthly Average
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 1.5rem; font-weight: bold; color: white;">
+                        $756.33
+                    </div>
+                    <div style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">
+                        Last 12 months
+                    </div>
+                </div>
+
+                <!-- YTD Cost -->
+                <div class="cost-card">
+                    <div style="font-size: 0.75rem; font-weight: bold; letter-spacing: 0.08em; color: rgba(138, 147, 167, 1); text-transform: uppercase;">
+                        Year-to-Date
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 1.5rem; font-weight: bold; color: white;">
+                        $2,283.98
+                    </div>
+                    <div style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">
+                        Cumulative 2026
+                    </div>
+                </div>
+
+                <!-- Projected Annual -->
+                <div class="cost-card">
+                    <div style="font-size: 0.75rem; font-weight: bold; letter-spacing: 0.08em; color: rgba(138, 147, 167, 1); text-transform: uppercase;">
+                        Projected Annual
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 1.5rem; font-weight: bold; color: white;">
+                        $9,075.96
+                    </div>
+                    <div style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">
+                        At current rate
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Services by Cost -->
+            <div class="cost-card mb-8">
+                <h3 style="font-size: 0.75rem; font-weight: bold; letter-spacing: 0.08em; color: rgba(138, 147, 167, 1); text-transform: uppercase; margin-bottom: 1rem;">
+                    Top Services by Cost
+                </h3>
+                <div style="space-y: 0.75rem;">
+                    <!-- Stripe -->
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                        <div style="background: #e8a230; width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;"></div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: white;">Stripe</span>
+                                <span style="font-size: 0.875rem; font-weight: bold; color: #e8a230;">$842.50</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                            <div style="margin-top: 0.25rem; font-size: 0.625rem; color: rgba(255,255,255,0.4);">
+                                100% of total
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder for other services -->
+                    <div style="padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+                        Other services will appear after API integrations are configured
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Forecast (Future Data) -->
+            <div class="cost-card">
+                <h3 style="font-size: 0.75rem; font-weight: bold; letter-spacing: 0.08em; color: rgba(138, 147, 167, 1); text-transform: uppercase; margin-bottom: 1rem;">
+                    Cost Forecast (Next 3 Months)
+                </h3>
+                <div style="color: rgba(138, 147, 167, 1); font-size: 0.875rem; text-align: center; padding: 2rem 1rem;">
+                    📊 Forecast data will appear after 2+ months of historical cost data
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div style="border: 1px solid rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 1rem; margin-top: 2rem;">
+                <h3 style="font-weight: bold; color: #93c5fd; margin-bottom: 0.5rem;">📊 About Cost Data</h3>
+                <p style="font-size: 0.875rem; color: rgba(191, 219, 254, 0.8);">
+                    This dashboard shows estimated costs based on service usage. For accurate billing information, check each service's dashboard directly.
+                    Forecasts use historical trends and may change with usage patterns.
+                </p>
+            </div>
+
+            <!-- Services Guide -->
+            <div class="mt-8">
+                <h2 style="font-size: 1.25rem; font-weight: bold; color: white; margin-bottom: 1rem;">Services Overview</h2>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <!-- Stripe -->
+                    <div class="cost-card" style="cursor: pointer; transition: all 0.3s;">
+                        <h3 style="font-weight: bold; color: white;">Stripe Payments</h3>
+                        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">Payment processing and order management</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #68c7cc;">Open dashboard →</p>
+                    </div>
+
+                    <!-- Supabase -->
+                    <div class="cost-card" style="cursor: pointer; transition: all 0.3s;">
+                        <h3 style="font-weight: bold; color: white;">Supabase Database</h3>
+                        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">PostgreSQL database and real-time data</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #68c7cc;">Open dashboard →</p>
+                    </div>
+
+                    <!-- Google Cloud -->
+                    <div class="cost-card" style="cursor: pointer; transition: all 0.3s;">
+                        <h3 style="font-weight: bold; color: white;">Google Cloud</h3>
+                        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">APIs for maps, translation, and AI</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #68c7cc;">Open dashboard →</p>
+                    </div>
+
+                    <!-- Mapbox -->
+                    <div class="cost-card" style="cursor: pointer; transition: all 0.3s;">
+                        <h3 style="font-weight: bold; color: white;">Mapbox Maps</h3>
+                        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">Location services and mapping</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #68c7cc;">Open dashboard →</p>
+                    </div>
+
+                    <!-- Resend -->
+                    <div class="cost-card" style="cursor: pointer; transition: all 0.3s;">
+                        <h3 style="font-weight: bold; color: white;">Resend Email</h3>
+                        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">Email delivery service</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #68c7cc;">Open dashboard →</p>
+                    </div>
+
+                    <!-- Vonage -->
+                    <div class="cost-card" style="cursor: pointer; transition: all 0.3s;">
+                        <h3 style="font-weight: bold; color: white;">Vonage SMS</h3>
+                        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">SMS notification delivery</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #68c7cc;">Open dashboard →</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Responsive design demo
+        console.log('Cost Management Dashboard Preview loaded');
+
+        // Show screen size indicator
+        function updateScreenSize() {
+            const width = window.innerWidth;
+            let size = 'Desktop (1280px+)';
+            if (width < 640) size = 'Mobile (375px)';
+            else if (width < 1024) size = 'Tablet (768px)';
+            console.log(`Current screen size: ${size} (${width}px)`);
+        }
+
+        window.addEventListener('resize', updateScreenSize);
+        updateScreenSize();
+    </script>
+</body>
+</html>
