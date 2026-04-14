@@ -70,17 +70,22 @@ export async function middleware(request: NextRequest) {
     cookieDomain = `.${pieces.slice(-2).join('.')}`
   }
 
-  let isSub = isVercel 
-    ? pieces.length > 3 
+  let isSub = isVercel
+    ? pieces.length > 3
     : pieces.length > (isLocal ? 1 : 2)
-  
+
+  // FIX: Handle admin.trueserve, merchant.trueserve, driver.trueserve (2-piece domains)
+  if (pieces.length === 2 && ['admin', 'merchant', 'driver'].includes(pieces[0].toLowerCase())) {
+    isSub = true
+  }
+
   let subdomainPiece = pieces[0].toLowerCase()
   // Handle www prefix for subdomains (e.g., www.admin.domain.com)
   if (subdomainPiece === 'www' && pieces.length > (isLocal ? 2 : 3)) {
     subdomainPiece = pieces[1].toLowerCase()
     isSub = true
   }
-  
+
   const subdomain = isSub && !['www', 'localhost', 'trueserve'].includes(subdomainPiece) ? subdomainPiece : ""
 
   // --- 2. SUPABASE SESSION SYNC ---
