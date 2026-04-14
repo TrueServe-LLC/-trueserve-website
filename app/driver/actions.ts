@@ -1159,53 +1159,9 @@ export async function initiateMaskedCall(orderId: string) {
         return { error: "Driver phone not available or missing" };
     }
 
-    try {
-        const accountSid = process.env.TWILIO_ACCOUNT_SID;
-        const authToken = process.env.TWILIO_AUTH_TOKEN;
-        const proxyServiceSid = process.env.TWILIO_PROXY_SERVICE_SID;
-
-        if (!accountSid || !authToken || !proxyServiceSid) {
-            return { error: "Twilio proxy credentials missing from environment" };
-        }
-
-        const twilio = require('twilio');
-        const client = twilio(accountSid, authToken);
-
-        // 1. Create a dynamic Proxy Session for this specific delivery
-        const session = await client.proxy.v1
-            .services(proxyServiceSid)
-            .sessions.create({
-                uniqueName: `delivery_${orderId}_${Date.now()}`,
-                ttl: 3600 // Expire after 60 mins exactly like Uber/DoorDash
-            });
-
-        // 2. Add Customer as a Participant
-        await client.proxy.v1
-            .services(proxyServiceSid)
-            .sessions(session.sid)
-            .participants.create({
-                identifier: (order.user as any).phone,
-                friendlyName: 'Customer'
-            });
-
-        // 3. Add Driver as a Participant
-        const driverParticipant = await client.proxy.v1
-            .services(proxyServiceSid)
-            .sessions(session.sid)
-            .participants.create({
-                identifier: driver.phone,
-                friendlyName: 'Driver'
-            });
-
-        const proxyNumber = driverParticipant.proxyIdentifier;
-        if (!proxyNumber) return { error: "Failed to allocate proxy number" };
-
-        const telUri = `tel:${proxyNumber}`;
-        return { success: true, maskedUri: telUri };
-    } catch (e: any) {
-        console.error("Proxy Call Error", e);
-        return { error: e.message || "Failed to initiate masked call" };
-    }
+    // Phone masking via Twilio has been replaced with direct SMS-based communication
+    // Drivers and customers can message through the order details
+    return { error: "Phone masking feature not available - use direct SMS communication" };
 }
 
 // ============================================================================
