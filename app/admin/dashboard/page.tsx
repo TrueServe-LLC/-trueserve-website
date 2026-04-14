@@ -185,6 +185,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <div className="nav-brand">True <span>SERVE</span></div>
                 <div className="nav-links">
                     {hasPermission(role, 'manage_pricing') && <Link href="/admin/pricing" className="nav-link">Pricing</Link>}
+                    {hasPermission(role, 'manage_system_settings') && <Link href="/admin/cost-management" className="nav-link">Cost Management</Link>}
                     {hasPermission(role, 'manage_system_settings') && <Link href="/admin/settings" className="nav-link">Settings</Link>}
                     {hasPermission(role, 'manage_system_settings') && <Link href="/admin/feature-switches" className="nav-link">Feature Switches</Link>}
                     <Link href="/admin/content" className="nav-link">CMS</Link>

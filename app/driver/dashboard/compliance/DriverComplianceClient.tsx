@@ -2,6 +2,9 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { getComplianceHelp } from "@/lib/complianceHelpBot";
+import ChatBot from "@/components/ChatBot";
+import type { BotMessage, ComplianceContext } from "@/lib/complianceHelpBot";
 
 type DriverComplianceSnapshot = {
     id: string;
@@ -38,6 +41,20 @@ export default function DriverComplianceClient({
     const [notes, setNotes] = useState(driver.notes || "");
     const [message, setMessage] = useState("");
     const [isPending, startTransition] = useTransition();
+    const [chatOpen, setChatOpen] = useState(false);
+
+    const handleBotMessage = async (userMessage: string): Promise<BotMessage> => {
+        return getComplianceHelp(userMessage, {
+            userType: 'DRIVER',
+            complianceScore: driver.complianceScore,
+            complianceStatus: driver.complianceStatus,
+            incompleteItems: [
+                !trainingComplete && 'Food Safety Training',
+                !bagAck && 'Bag Sanitation',
+                !tempAck && 'Temperature Control',
+            ].filter(Boolean) as string[],
+        } as ComplianceContext);
+    };
 
     const estimatedScore = useMemo(() => {
         let score = 0;
@@ -254,6 +271,27 @@ export default function DriverComplianceClient({
                             </aside>
                         </div>
                     </section>
+
+                    {/* Help Bot Section */}
+                    <div className="mt-8">
+                        <button
+                            onClick={() => setChatOpen(!chatOpen)}
+                            className="w-full rounded-full bg-[#f1b243] hover:bg-[#e8a230] text-black px-6 py-3 font-bold transition-colors text-sm md:text-base"
+                        >
+                            {chatOpen ? '✕ Close Help' : '💬 Ask Compliance Help'}
+                        </button>
+                    </div>
+
+                    {chatOpen && (
+                        <div className="mt-4 rounded-[24px] border border-white/10 overflow-hidden h-96 md:h-[500px]">
+                            <ChatBot
+                                title="Compliance Help"
+                                placeholder="Ask about food safety, bag sanitation, temperature control..."
+                                onSendMessage={handleBotMessage}
+                                initialMessage="Hi! I'm your compliance assistant. Ask me about food safety training, proper bag sanitation, temperature control, or anything else to help you pass compliance checks."
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
