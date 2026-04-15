@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Compliance - Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #0a0c09;
+            color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #10131b;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .grade-a {
+            background: rgba(46, 229, 160, 0.2);
+            border-color: rgba(46, 229, 160, 0.5);
+            color: #2ee5a0;
+        }
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #6d6ff3, #e8a230);
+            height: 100%;
+        }
+        .bot-button {
+            background: #e8a230;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        .bot-button:hover {
+            background: #d89020;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header style="background: #0f1117; border-bottom: 1px solid rgba(255,255,255,0.1);" class="sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold text-white">Restaurant Compliance</h1>
+                <p class="text-sm text-gray-400 mt-2">Track your restaurant's health grade, inspection history, and driver compliance</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <!-- Health Grade Card -->
+            <div class="card mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-white mb-2">Current Health Grade</h2>
+                        <p class="text-sm text-gray-400">Based on most recent inspection</p>
+                    </div>
+                    <div class="text-6xl font-bold grade-a px-8 py-4 rounded-lg">A</div>
+                </div>
+            </div>
+
+            <!-- Compliance Score -->
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="card">
+                    <div class="text-sm text-gray-400 mb-2">Compliance Score</div>
+                    <div class="text-3xl font-bold text-white mb-2">85%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="text-sm text-gray-400 mb-2">Status</div>
+                    <div class="text-lg font-bold text-green-300">✓ COMPLIANT</div>
+                    <div class="text-xs text-gray-400 mt-2">All requirements met</div>
+                </div>
+                <div class="card">
+                    <div class="text-sm text-gray-400 mb-2">Last Inspection</div>
+                    <div class="text-lg font-bold text-white">30 days ago</div>
+                    <div class="text-xs text-gray-400 mt-2">April 14, 2026</div>
+                </div>
+            </div>
+
+            <!-- Inspection History -->
+            <div class="card mb-8">
+                <h3 class="text-lg font-bold text-white mb-4">Inspection History</h3>
+                <div class="space-y-3">
+                    <div class="border border-gray-700 rounded p-3 cursor-pointer hover:border-gray-600 transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-white">Health Department Inspection</h4>
+                                <p class="text-sm text-gray-400 mt-1">April 14, 2026</p>
+                            </div>
+                            <div class="text-2xl font-bold text-green-300">A</div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">✓ No violations found</p>
+                    </div>
+
+                    <div class="border border-gray-700 rounded p-3 cursor-pointer hover:border-gray-600 transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-white">Follow-up Inspection</h4>
+                                <p class="text-sm text-gray-400 mt-1">March 10, 2026</p>
+                            </div>
+                            <div class="text-2xl font-bold text-blue-300">B+</div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">⚠️ 1 minor violation corrected</p>
+                    </div>
+
+                    <div class="border border-gray-700 rounded p-3 cursor-pointer hover:border-gray-600 transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-white">Routine Inspection</h4>
+                                <p class="text-sm text-gray-400 mt-1">February 1, 2026</p>
+                            </div>
+                            <div class="text-2xl font-bold text-yellow-300">B</div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">⚠️ Minor temperature control issue (corrected)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver Compliance Summary -->
+            <div class="grid grid-cols-4 gap-4 mb-8">
+                <div class="card">
+                    <div class="text-sm text-gray-400 mb-2">Total Drivers</div>
+                    <div class="text-3xl font-bold text-white">12</div>
+                </div>
+                <div class="card">
+                    <div class="text-sm text-gray-400 mb-2">Active</div>
+                    <div class="text-3xl font-bold text-green-300">10</div>
+                </div>
+                <div class="card">
+                    <div class="text-sm text-gray-400 mb-2">Pending Training</div>
+                    <div class="text-3xl font-bold text-yellow-300">2</div>
+                </div>
+                <div class="card">
+                    <div class="text-sm text-gray-400 mb-2">Suspended</div>
+                    <div class="text-3xl font-bold text-red-300">0</div>
+                </div>
+            </div>
+
+            <!-- AI Compliance Help Bot -->
+            <div class="card mb-8" style="background: linear-gradient(135deg, rgba(109, 111, 243, 0.1), rgba(232, 162, 48, 0.1)); border-color: rgba(232, 162, 48, 0.3);">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">💬 Compliance Help</h3>
+                        <p class="text-sm text-gray-400">Ask AI for help with compliance questions, requirements, and best practices</p>
+                    </div>
+                    <button class="bot-button">Ask Compliance Help</button>
+                </div>
+            </div>
+
+            <!-- Resources -->
+            <div class="card">
+                <h3 class="text-lg font-bold text-white mb-4">Compliance Resources</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="#" class="block p-3 rounded border border-gray-700 hover:border-gray-600 transition">
+                        <h4 class="font-bold text-white mb-1">📋 Health Code Requirements</h4>
+                        <p class="text-xs text-gray-400">Review local health codes and regulations</p>
+                    </a>
+                    <a href="#" class="block p-3 rounded border border-gray-700 hover:border-gray-600 transition">
+                        <h4 class="font-bold text-white mb-1">📝 Inspection Checklist</h4>
+                        <p class="text-xs text-gray-400">Prepare for upcoming inspections</p>
+                    </a>
+                    <a href="#" class="block p-3 rounded border border-gray-700 hover:border-gray-600 transition">
+                        <h4 class="font-bold text-white mb-1">🚗 Driver Requirements</h4>
+                        <p class="text-xs text-gray-400">Ensure all drivers meet compliance</p>
+                    </a>
+                    <a href="#" class="block p-3 rounded border border-gray-700 hover:border-gray-600 transition">
+                        <h4 class="font-bold text-white mb-1">🎓 Training Programs</h4>
+                        <p class="text-xs text-gray-400">Enroll in compliance training</p>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

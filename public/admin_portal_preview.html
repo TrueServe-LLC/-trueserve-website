@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #0a0c09;
+            color: #fff;
+        }
+        .admin-card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #10131b;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .gold { color: #e8a230; }
+        .sidebar {
+            background: #0f1117;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 p-6 overflow-y-auto">
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-white mb-6">Admin Portal</h2>
+                <nav class="space-y-2">
+                    <a href="#" class="block px-4 py-2 rounded gold font-semibold">📊 Dashboard</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">💰 Cost Management</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">💵 Pricing</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">🎛️ Feature Switches</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">👥 Team</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">🛟 Support</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">💬 Live Chats</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">📝 Content</a>
+                    <a href="#" class="block px-4 py-2 rounded text-gray-400 hover:text-white">⚙️ Settings</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="mb-8">
+                    <h1 class="text-4xl font-bold text-white mb-2">Welcome to Admin Portal</h1>
+                    <p class="text-gray-400">Manage TrueServe operations and analytics</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <div class="admin-card">
+                        <div class="text-sm text-gray-400 mb-2">🏪 Active Merchants</div>
+                        <div class="text-3xl font-bold text-white">248</div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="text-sm text-gray-400 mb-2">🚗 Active Drivers</div>
+                        <div class="text-3xl font-bold text-white">1,847</div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="text-sm text-gray-400 mb-2">📦 Orders Today</div>
+                        <div class="text-3xl font-bold text-white">3,204</div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="text-sm text-gray-400 mb-2">💵 Revenue (Today)</div>
+                        <div class="text-3xl font-bold text-white">$12,847</div>
+                    </div>
+                </div>
+
+                <!-- Featured Sections -->
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="admin-card cursor-pointer hover:border-yellow-500/50 transition">
+                        <h3 class="text-xl font-bold text-white mb-2">💰 Cost Management</h3>
+                        <p class="text-sm text-gray-400 mb-4">Track spending across all services (AWS, Google Cloud, Stripe, Supabase, Mapbox, Resend, Vonage)</p>
+                        <div class="text-gold font-semibold">View Dashboard →</div>
+                    </div>
+
+                    <div class="admin-card cursor-pointer hover:border-yellow-500/50 transition">
+                        <h3 class="text-xl font-bold text-white mb-2">📊 Analytics</h3>
+                        <p class="text-sm text-gray-400 mb-4">Real-time metrics on orders, drivers, merchants, and platform health</p>
+                        <div class="text-gold font-semibold">View Analytics →</div>
+                    </div>
+
+                    <div class="admin-card cursor-pointer hover:border-yellow-500/50 transition">
+                        <h3 class="text-xl font-bold text-white mb-2">👥 User Management</h3>
+                        <p class="text-sm text-gray-400 mb-4">Manage drivers, merchants, and customer accounts</p>
+                        <div class="text-gold font-semibold">Manage Users →</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="admin-card mt-8">
+                    <h3 class="text-lg font-bold text-white mb-4">Recent Activity</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-700">
+                            <span>New merchant registered: "Urban Eats"</span>
+                            <span class="text-gray-500">2 minutes ago</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-700">
+                            <span>Driver compliance alert: 5 drivers need training</span>
+                            <span class="text-gray-500">15 minutes ago</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-700">
+                            <span>Cost spike detected: Google Cloud +32%</span>
+                            <span class="text-gray-500">1 hour ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
