@@ -4,7 +4,8 @@ export const ADMIN_EMAILS = [
     "leon@trueservedelivery.com",
     "admin@true-serve.com",
     "eric.mcduffie@thetieredconsulting.com",
-    "ericmcduffie7@gmail.com"
+    "ericmcduffie7@gmail.com",
+    "providantconsulting@gmail.com"
 ];
 
 export const isStaffEmail = (email?: string) => {
