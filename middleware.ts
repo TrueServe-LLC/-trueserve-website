@@ -115,7 +115,7 @@ export async function middleware(request: NextRequest) {
     // SECURITY GATE: Only allow internal staff on admin subdomain
     if (subdomain === 'admin') {
       const isAllowedPath = path === '/login' || path.startsWith('/admin/login') || path.startsWith('/auth/callback')
-      if (!user && !isAllowedPath) return NextResponse.redirect(new URL('/login', request.url))
+      if (!user && !isAllowedPath) return NextResponse.redirect(new URL('/admin/login', request.url))
       
       if (user && !isAllowedPath) {
         const roleResponse = await fetch(
