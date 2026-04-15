@@ -7,8 +7,9 @@ import { refreshStateInspectionsAction } from "./actions";
 import ChatBot from "@/components/ChatBot";
 import type { BotMessage, ComplianceContext } from "@/lib/complianceHelpBot";
 import type { InspectionDataWithMetadata, InspectionMetadata } from "@/lib/stateInspectionQueries";
-import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink, RefreshCw, Calendar, AlertTriangle, TrendingDown } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink, RefreshCw, Calendar, AlertTriangle, TrendingDown, TrendingUp, Award } from "lucide-react";
 import type { ViolationAggregate } from "@/lib/violationAnalytics";
+import type { BenchmarkComparison } from "@/lib/restaurantBenchmarking";
 
 type InspectionAlertMetadata = {
   nextInspectionDueDate: string | null;
@@ -52,6 +53,7 @@ interface MerchantComplianceClientProps {
     inspectionAlertMetadata?: InspectionAlertMetadata | null;
     driverStats: DriverStats;
     violationAggregate?: ViolationAggregate | null;
+    benchmarkComparison?: BenchmarkComparison | null;
 }
 
 export default function MerchantComplianceClient({
@@ -62,6 +64,7 @@ export default function MerchantComplianceClient({
     inspectionAlertMetadata,
     driverStats,
     violationAggregate,
+    benchmarkComparison,
 }: MerchantComplianceClientProps) {
     const [chatOpen, setChatOpen] = useState(false);
     const [expandedInspection, setExpandedInspection] = useState<string | null>(null);
@@ -426,6 +429,118 @@ export default function MerchantComplianceClient({
                                 </div>
                             </div>
                         )}
+                    </div>
+                )}
+
+                {/* Benchmarking Card */}
+                {benchmarkComparison && (
+                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                        <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <Award className="h-5 w-5" />
+                            📊 Network Benchmarking
+                        </h2>
+
+                        <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-6">
+                            {/* Percentile Rank */}
+                            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Award className="h-4 w-4 text-[#e8a230]" />
+                                    <span className="text-xs font-bold uppercase text-white/70">Percentile Rank</span>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-black text-white">
+                                    {benchmarkComparison.percentileRank}%
+                                </div>
+                                <p className="text-xs text-white/50 mt-1">{benchmarkComparison.percentileLabel}</p>
+                            </div>
+
+                            {/* Network Average */}
+                            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <TrendingUp className="h-4 w-4 text-blue-400" />
+                                    <span className="text-xs font-bold uppercase text-white/70">Network Avg</span>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-black text-blue-300">
+                                    {benchmarkComparison.networkAverage}
+                                </div>
+                                <p className="text-xs text-white/50 mt-1">
+                                    {benchmarkComparison.complianceScore > benchmarkComparison.networkAverage
+                                        ? `+${benchmarkComparison.complianceScore - benchmarkComparison.networkAverage} above`
+                                        : `${benchmarkComparison.complianceScore - benchmarkComparison.networkAverage} below`}
+                                </p>
+                            </div>
+
+                            {/* Peer Comparison */}
+                            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CheckCircle className="h-4 w-4 text-green-400" />
+                                    <span className="text-xs font-bold uppercase text-white/70">Peer Avg</span>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-black text-green-300">
+                                    {benchmarkComparison.similarRestaurantAverage}
+                                </div>
+                                <p className="text-xs text-white/50 mt-1">
+                                    {benchmarkComparison.peerCount} similar restaurants
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Performance Gap */}
+                        {benchmarkComparison.performanceGap !== 0 && (
+                            <div className={`mb-4 p-4 rounded-lg border-l-4 ${
+                                benchmarkComparison.performanceGap > 0
+                                    ? 'bg-green-500/10 border-green-500'
+                                    : 'bg-yellow-500/10 border-yellow-500'
+                            }`}>
+                                <div className="flex items-start gap-3">
+                                    {benchmarkComparison.performanceGap > 0 ? (
+                                        <TrendingUp className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                                    ) : (
+                                        <TrendingDown className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                                    )}
+                                    <div className="flex-1">
+                                        <p className={`text-sm font-bold ${
+                                            benchmarkComparison.performanceGap > 0
+                                                ? 'text-green-300'
+                                                : 'text-yellow-300'
+                                        }`}>
+                                            {benchmarkComparison.performanceGap > 0
+                                                ? `✓ Above Peer Average by ${benchmarkComparison.performanceGap} points`
+                                                : `⚠️ Below Peer Average by ${Math.abs(benchmarkComparison.performanceGap)} points`}
+                                        </p>
+                                        <p className="text-xs text-white/60 mt-1">
+                                            {benchmarkComparison.performanceGap > 0
+                                                ? `You're performing better than ${benchmarkComparison.peerCount} similar restaurants in ${restaurant.state}.`
+                                                : `There's room for improvement. Focus on what similar restaurants are doing well.`}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Top Performers to Learn From */}
+                        {benchmarkComparison.topPerformers.length > 0 && (
+                            <div className="mb-4">
+                                <h3 className="text-sm font-bold text-white mb-3">🏆 Learn from Top Performers</h3>
+                                <div className="space-y-2">
+                                    {benchmarkComparison.topPerformers.map((performer, idx) => (
+                                        <div key={performer.id} className="flex items-center justify-between p-2 rounded bg-white/5 border border-white/10">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-xs md:text-sm font-bold text-[#e8a230]">#{idx + 1}</span>
+                                                <div>
+                                                    <p className="text-xs md:text-sm font-bold text-white">{performer.name}</p>
+                                                    <p className="text-xs text-white/50">{performer.state}</p>
+                                                </div>
+                                            </div>
+                                            <span className="text-sm font-black text-green-300">{performer.score}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="p-3 rounded bg-blue-500/10 border border-blue-500/30 text-xs text-blue-200">
+                            💡 <strong>Tip:</strong> Focus on matching or exceeding your peer group's average score. Review the top performers' practices to identify improvement opportunities.
+                        </div>
                     </div>
                 )}
 

@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getRestaurantInspections } from "@/lib/stateInspectionQueries";
 import { getInspectionAlertMetadata } from "@/lib/inspectionAlertQueries";
 import { aggregateViolationsBySeverity } from "@/lib/violationAnalytics";
+import { getBenchmarkComparison } from "@/lib/restaurantBenchmarking";
 import MerchantComplianceClient from "./MerchantComplianceClient";
 
 export const dynamic = "force-dynamic";
@@ -74,6 +75,22 @@ export default async function MerchantCompliancePage() {
                     criticalPercentage: 20,
                     lastUpdatedAt: new Date().toISOString(),
                 }}
+                benchmarkComparison={{
+                    restaurantId: "preview",
+                    restaurantName: "Pilot Restaurant",
+                    complianceScore: 85,
+                    percentileRank: 72,
+                    percentileLabel: "Above Average",
+                    networkAverage: 74,
+                    similarRestaurantAverage: 78,
+                    performanceGap: 7,
+                    peerCount: 24,
+                    topPerformers: [
+                        { id: "1", name: "The Great Kitchen", score: 98, state: "NC" },
+                        { id: "2", name: "Fresh Fare Bistro", score: 95, state: "NC" },
+                        { id: "3", name: "Quality Diner", score: 92, state: "NC" },
+                    ],
+                }}
             />
         );
     }
@@ -119,6 +136,9 @@ export default async function MerchantCompliancePage() {
     // Fetch violation severity aggregate
     const violationAggregate = await aggregateViolationsBySeverity(restaurant.id);
 
+    // Fetch benchmarking comparison
+    const benchmarkComparison = await getBenchmarkComparison(restaurant.id);
+
     // Fetch driver compliance stats
     const { data: drivers } = await supabaseAdmin
         .from("Driver")
@@ -156,6 +176,7 @@ export default async function MerchantCompliancePage() {
             inspectionAlertMetadata={inspectionAlertMetadata}
             driverStats={driverStats}
             violationAggregate={violationAggregate}
+            benchmarkComparison={benchmarkComparison}
         />
     );
 }
