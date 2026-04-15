@@ -1,6 +1,8 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getAuthSession } from "@/app/auth/actions";
+import { isInternalStaff } from "@/lib/rbac";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import AdminStyles from "@/components/admin/AdminStyles";
 import CostDashboard from "@/components/admin/CostDashboard";
 import CostSyncManager from "@/components/admin/CostSyncManager";
@@ -74,11 +76,11 @@ function generateMockCosts(): MonthlyCost[] {
 }
 
 export default async function CostManagementPage() {
-    // Check if user is admin
-    const session = await getAuthSession();
-    if (!session?.adminId) {
-        redirect("/admin/login");
-    }
+    const cookieStore = await cookies();
+    const adminSession = cookieStore.get("admin_session");
+    const { isAuth, role } = await getAuthSession();
+    const isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
+    if (!isAuthorized) redirect("/admin/login");
 
     const realCosts = await getServiceCosts();
     const budgets = await getBudgetAlerts();
