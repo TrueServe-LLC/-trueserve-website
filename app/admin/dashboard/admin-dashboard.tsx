@@ -34,141 +34,181 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0c09] flex">
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0a0c09' }}>
       {/* SIDEBAR */}
-      <div className="w-64 bg-[#0f1210] border-r border-white/10 min-h-screen sticky top-0">
-        <div className="p-6">
-          <h1 className="text-2xl font-black text-white mb-8">Admin Portal</h1>
+      <div style={{
+        width: '256px',
+        backgroundColor: '#0f1210',
+        borderRight: '1px solid rgba(255,255,255,0.1)',
+        minHeight: '100vh',
+        position: 'sticky',
+        top: 0,
+        padding: '24px',
+        boxSizing: 'border-box',
+        overflowY: 'auto'
+      }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'white', marginBottom: '32px' }}>
+          Admin Portal
+        </h1>
 
-          <nav className="space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  pathname === item.href
-                    ? 'bg-orange-500 text-black font-bold'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span className="text-sm">{item.label}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                transition: 'all 200ms',
+                textDecoration: 'none',
+                backgroundColor: pathname === item.href ? '#f97316' : 'transparent',
+                color: pathname === item.href ? 'black' : 'rgba(255,255,255,0.7)',
+                fontWeight: pathname === item.href ? 'bold' : 'normal'
+              }}
+              onMouseEnter={(e) => {
+                if (pathname !== item.href) {
+                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (pathname !== item.href) {
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              <span style={{ fontSize: '18px' }}>{item.icon}</span>
+              <span style={{ fontSize: '14px' }}>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* HEADER */}
-        <div className="bg-[#0a0c09] border-b border-white/10 px-8 py-6">
-          <h2 className="text-4xl font-black text-white mb-2">Welcome to Admin Portal</h2>
-          <p className="text-white/60">Manage TrueServe operations and analytics</p>
+        <div style={{
+          backgroundColor: '#0a0c09',
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          padding: '24px 32px',
+        }}>
+          <h2 style={{ fontSize: '32px', fontWeight: 900, color: 'white', marginBottom: '8px' }}>
+            Welcome to Admin Portal
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}>
+            Manage TrueServe operations and analytics
+          </p>
         </div>
 
         {/* CONTENT AREA */}
-        <div className="p-8 space-y-8">
+        <div style={{ padding: '32px', overflow: 'auto' }}>
           {/* KPI CARDS */}
-          <div className="grid grid-cols-4 gap-6">
-            <div className="bg-[#10131b] border border-white/10 rounded-lg p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">👨‍💼</span>
-                <p className="text-sm text-white/60 font-semibold">Active Merchants</p>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '24px',
+            marginBottom: '32px'
+          }}>
+            {[
+              { icon: '👨‍💼', label: 'Active Merchants', value: stats.activeMerchants },
+              { icon: '🚗', label: 'Active Drivers', value: stats.activeDrivers },
+              { icon: '📦', label: 'Orders Today', value: stats.ordersToday },
+              { icon: '💵', label: 'Revenue (Today)', value: `$${stats.revenueToday.toLocaleString()}` }
+            ].map((card, idx) => (
+              <div key={idx} style={{
+                backgroundColor: '#10131b',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '8px',
+                padding: '24px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '24px' }}>{card.icon}</span>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', fontWeight: 'bold' }}>
+                    {card.label}
+                  </p>
+                </div>
+                <p style={{ fontSize: '36px', fontWeight: 900, color: 'white' }}>
+                  {card.value}
+                </p>
               </div>
-              <p className="text-4xl font-black text-white">{stats.activeMerchants.toLocaleString()}</p>
-            </div>
-
-            <div className="bg-[#10131b] border border-white/10 rounded-lg p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🚗</span>
-                <p className="text-sm text-white/60 font-semibold">Active Drivers</p>
-              </div>
-              <p className="text-4xl font-black text-white">{stats.activeDrivers.toLocaleString()}</p>
-            </div>
-
-            <div className="bg-[#10131b] border border-white/10 rounded-lg p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">📦</span>
-                <p className="text-sm text-white/60 font-semibold">Orders Today</p>
-              </div>
-              <p className="text-4xl font-black text-white">{stats.ordersToday.toLocaleString()}</p>
-            </div>
-
-            <div className="bg-[#10131b] border border-white/10 rounded-lg p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">💵</span>
-                <p className="text-sm text-white/60 font-semibold">Revenue (Today)</p>
-              </div>
-              <p className="text-4xl font-black text-white">${stats.revenueToday.toLocaleString()}</p>
-            </div>
+            ))}
           </div>
 
           {/* FEATURE CARDS */}
-          <div className="grid grid-cols-3 gap-6">
-            <Link
-              href="/admin/cost-management"
-              className="bg-[#10131b] border border-white/10 rounded-lg p-6 hover:border-orange-500/50 transition-colors group"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-3xl">💰</span>
-                <p className="text-lg font-bold text-white">Cost Management</p>
-              </div>
-              <p className="text-sm text-white/60 mb-4">
-                Track spending across all services (AWS, Google Cloud, Stripe, Supabase, Mailbox, Resend, Vonage)
-              </p>
-              <p className="text-sm text-orange-500 font-bold group-hover:translate-x-1 transition-transform inline-block">
-                View Dashboard →
-              </p>
-            </Link>
-
-            <Link
-              href="/admin/analytics"
-              className="bg-[#10131b] border border-white/10 rounded-lg p-6 hover:border-orange-500/50 transition-colors group"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-3xl">📊</span>
-                <p className="text-lg font-bold text-white">Analytics</p>
-              </div>
-              <p className="text-sm text-white/60 mb-4">
-                Real-time metrics on orders, drivers, merchants, and platform health
-              </p>
-              <p className="text-sm text-orange-500 font-bold group-hover:translate-x-1 transition-transform inline-block">
-                View Analytics →
-              </p>
-            </Link>
-
-            <Link
-              href="/admin/users"
-              className="bg-[#10131b] border border-white/10 rounded-lg p-6 hover:border-orange-500/50 transition-colors group"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-3xl">👥</span>
-                <p className="text-lg font-bold text-white">User Management</p>
-              </div>
-              <p className="text-sm text-white/60 mb-4">
-                Manage drivers, merchants, and customer accounts
-              </p>
-              <p className="text-sm text-orange-500 font-bold group-hover:translate-x-1 transition-transform inline-block">
-                Manage Users →
-              </p>
-            </Link>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '24px',
+            marginBottom: '32px'
+          }}>
+            {[
+              { icon: '💰', title: 'Cost Management', desc: 'Track spending across all services', href: '/admin/cost-management' },
+              { icon: '📊', title: 'Analytics', desc: 'Real-time metrics on orders, drivers, merchants', href: '/admin/analytics' },
+              { icon: '👥', title: 'User Management', desc: 'Manage drivers, merchants, and accounts', href: '/admin/users' }
+            ].map((card, idx) => (
+              <Link key={idx} href={card.href} style={{
+                backgroundColor: '#10131b',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '8px',
+                padding: '24px',
+                textDecoration: 'none',
+                transition: 'all 200ms',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(249,115,22,0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '28px' }}>{card.icon}</span>
+                  <p style={{ fontSize: '18px', fontWeight: 'bold', color: 'white' }}>
+                    {card.title}
+                  </p>
+                </div>
+                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '16px' }}>
+                  {card.desc}
+                </p>
+                <p style={{ fontSize: '14px', color: '#f97316', fontWeight: 'bold' }}>
+                  View →
+                </p>
+              </Link>
+            ))}
           </div>
 
           {/* RECENT ACTIVITY */}
-          <div className="bg-[#10131b] border border-white/10 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-6">Recent Activity</h3>
-            <div className="space-y-4">
+          <div style={{
+            backgroundColor: '#10131b',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '8px',
+            padding: '24px'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'white', marginBottom: '24px' }}>
+              Recent Activity
+            </h3>
+            <div>
               {recentActivity.length === 0 ? (
-                <p className="text-white/50 text-sm">No recent activity</p>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>No recent activity</p>
               ) : (
                 recentActivity.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center justify-between py-3 border-b border-white/5 last:border-0"
-                  >
-                    <p className="text-sm text-white/80">{activity.message}</p>
-                    <p className="text-xs text-white/40">{activity.timestamp}</p>
+                  <div key={activity.id} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '12px 0',
+                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  }}>
+                    <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
+                      {activity.message}
+                    </p>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                      {activity.timestamp}
+                    </p>
                   </div>
                 ))
               )}
