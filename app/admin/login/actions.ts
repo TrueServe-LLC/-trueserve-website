@@ -1,160 +1,84 @@
 "use server";
 
 import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { isStaffEmail } from "@/lib/admin-config";
 
 export async function login(formData: FormData) {
     try {
-        const email = formData.get("email") as string;
-        const password = formData.get("password") as string;
+        const email = (formData.get("email") as string)?.trim() || "";
+        const password = (formData.get("password") as string)?.trim() || "";
 
+        console.log("[Server] Login attempt for email:", email);
+
+        // Validate input
         if (!email || !password) {
+            console.log("[Server] Missing email or password");
             return { error: "Email and password are required." };
         }
 
-        // PRIMARY: Legacy Env Fallback (for initial admin setup)
+        // Get admin credentials from environment
         const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim();
         const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD?.trim();
 
-        const emailMatch = email.toLowerCase() === ADMIN_EMAIL?.toLowerCase();
+        console.log("[Server] Credentials check:", {
+            emailMatch: email.toLowerCase() === ADMIN_EMAIL?.toLowerCase(),
+            passwordMatch: password === ADMIN_PASSWORD,
+            hasEmail: !!ADMIN_EMAIL,
+            hasPassword: !!ADMIN_PASSWORD,
+        });
+
+        // Check credentials
+        if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+            console.error("[Server] Admin credentials not configured in environment");
+            return { error: "Server configuration error. Please contact support." };
+        }
+
+        const emailMatch = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
         const passwordMatch = password === ADMIN_PASSWORD;
 
-        console.log("[Server] Admin Login Attempt:", {
-            email,
-            passwordLength: password.length,
-            hasAdminEmail: !!ADMIN_EMAIL,
-            hasAdminPassword: !!ADMIN_PASSWORD,
-            emailMatch,
-            passwordMatch
-        });
-
-        if (ADMIN_EMAIL && ADMIN_PASSWORD && emailMatch && passwordMatch) {
-            try {
-                const cookieStore = await cookies();
-                const headersList = await headers();
-                const host = headersList.get('host') || "";
-                const cleanHost = host.split(':')[0];
-                const isLocal = cleanHost.includes("localhost");
-                const isVercel = cleanHost.endsWith(".vercel.app");
-
-                let cookieDomain = "";
-                const pieces = cleanHost.split('.');
-                if (!isLocal && !isVercel && pieces.length >= 2) {
-                    cookieDomain = `.${pieces.slice(-2).join('.')}`;
-                }
-
-                const isProd = process.env.NODE_ENV === "production";
-
-                cookieStore.set("admin_session", "true", {
-                    httpOnly: true,
-                    secure: isProd,
-                    path: "/",
-                    domain: cookieDomain ? cookieDomain : undefined,
-                    maxAge: 60 * 60 * 24 * 7, // 7 days
-                    sameSite: 'lax'
-                });
-
-                console.log("[Server] Admin session created successfully");
-                return { success: true };
-            } catch (err) {
-                console.error("[Server] Session creation error:", err);
-                return { error: "Failed to create session. Please try again." };
-            }
+        if (!emailMatch || !passwordMatch) {
+            console.log("[Server] Credentials do not match");
+            return { error: "Invalid email or password." };
         }
 
-        // SECONDARY: Supabase Auth (for registered admin users)
+        // Credentials are valid - create session
+        console.log("[Server] Credentials valid, creating session...");
+
         try {
-        const supabase = await createClient();
+            const cookieStore = await cookies();
+            const headersList = await headers();
+            const host = headersList.get("host") || "";
+            const cleanHost = host.split(":")[0];
 
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+            // Determine cookie domain for subdomain sharing
+            let cookieDomain = "";
+            const pieces = cleanHost.split(".");
+            const isLocal = cleanHost.includes("localhost");
+            const isVercel = cleanHost.endsWith(".vercel.app");
 
-        if (authData?.user && !authError) {
-            // Check if user has admin role
-            const { supabaseAdmin } = await import("@/lib/supabase-admin");
-            const { data: userData } = await supabaseAdmin
-                .from('User')
-                .select('role')
-                .eq('email', email)
-                .maybeSingle();
-
-            let userRole = userData?.role;
-
-            // AUTO-GRANT admin role if they're a whitelisted staff email
-            if ((!userRole || userRole === 'CUSTOMER') && isStaffEmail(email)) {
-                userRole = 'ADMIN';
-                await supabaseAdmin.from('User').upsert({
-                    id: authData.user.id,
-                    email: email,
-                    role: 'ADMIN',
-                    updatedAt: new Date().toISOString()
-                });
+            if (!isLocal && !isVercel && pieces.length >= 2) {
+                cookieDomain = `.${pieces.slice(-2).join(".")}`;
             }
 
-            // Check if user is admin
-            if (userRole && ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userRole)) {
-                const cookieStore = await cookies();
-                const headersList = await headers();
-                const host = headersList.get('host') || "";
-                const cleanHost = host.split(':')[0];
-                const isLocal = cleanHost.includes("localhost");
-                const isVercel = cleanHost.endsWith(".vercel.app");
+            const isProd = process.env.NODE_ENV === "production";
 
-                let cookieDomain = "";
-                const pieces = cleanHost.split('.');
-                if (!isLocal && !isVercel && pieces.length >= 2) {
-                    cookieDomain = `.${pieces.slice(-2).join('.')}`;
-                }
+            // Set admin session cookie
+            cookieStore.set("admin_session", "true", {
+                httpOnly: true,
+                secure: isProd,
+                path: "/",
+                ...(cookieDomain && { domain: cookieDomain }),
+                maxAge: 60 * 60 * 24 * 7, // 7 days
+                sameSite: "lax",
+            });
 
-                const isProd = process.env.NODE_ENV === "production";
-
-                cookieStore.set("admin_session", "true", {
-                    httpOnly: true,
-                    secure: isProd,
-                    path: "/",
-                    domain: cookieDomain ? cookieDomain : undefined
-                });
-
-                return { success: true };
-            } else {
-                return { error: "Access denied. Admin role required." };
-            }
-        } else if (authError) {
-            console.error("Supabase auth error:", authError.message);
-            // Don't expose Supabase errors, they're not helpful
+            console.log("[Server] Admin session cookie set successfully");
+            return { success: true };
+        } catch (err) {
+            console.error("[Server] Failed to set cookie:", err);
+            return { error: "Failed to create session. Please try again." };
         }
-        } catch (error) {
-            console.error("Database login error:", error);
-        }
-
-        return { error: "Invalid email or password. Please check your credentials and try again." };
-    } catch (mainErr) {
-        console.error("[Server] Unexpected login error:", mainErr);
+    } catch (err) {
+        console.error("[Server] Unexpected login error:", err);
         return { error: "An unexpected error occurred. Please try again." };
-    }
-}
-
-export async function resetAdminPassword(formData: FormData) {
-    const email = formData.get("email") as string;
-    if (!email) return { error: "Email is required" };
-
-    try {
-        const supabase = await createClient();
-
-        const { error } = await supabase.auth.resetPasswordForEmail(email);
-
-        if (error) {
-            console.error("Password reset error:", error);
-            return { error: "Failed to send reset email. Please try again." };
-        }
-
-        return { success: true };
-    } catch (error) {
-        console.error("Reset password error:", error);
-        return { error: "An error occurred. Please try again." };
     }
 }
