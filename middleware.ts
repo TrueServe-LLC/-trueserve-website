@@ -155,22 +155,38 @@ export async function middleware(request: NextRequest) {
 
   if (matchedPortal) {
     // PUBLIC PATHS for Portals: Landing pages and enrollment should NOT require login
-    const isPublicPortalPath = 
-      path === '/merchant' || 
-      path === '/driver' || 
-      path === '/merchant/login' || 
-      path === '/driver/login' || 
+    const isPublicPortalPath =
+      path === '/merchant' ||
+      path === '/driver' ||
+      path === '/merchant/login' ||
+      path === '/driver/login' ||
       path === '/merchant/tutorial-preview' ||
       path === '/driver/tutorial-preview' ||
       path === '/merchant/portal-preview' ||
       path === '/driver/portal-preview' ||
-      path === '/merchant/signup' || 
-      path === '/driver/signup' || 
+      path === '/merchant/signup' ||
+      path === '/driver/signup' ||
       path === '/admin/login';
-    
+
     // If it's the admin portal and they have a manual admin_session cookie, let the page-layer auth guard handle it
-    if (path.startsWith('/admin') && request.cookies.has("admin_session")) {
-        // Do nothing, let it pass through to the page
+    if (path.startsWith('/admin')) {
+      const hasAdminSession = request.cookies.has("admin_session");
+      if (hasAdminSession) {
+        // Ensure the cookie is passed through response with proper domain
+        const adminSessionCookie = request.cookies.get("admin_session");
+        if (adminSessionCookie) {
+          response.cookies.set("admin_session", adminSessionCookie.value, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            path: "/",
+            domain: cookieDomain || undefined,
+            maxAge: 60 * 60 * 24 * 7 // 7 days
+          });
+        }
+      }
+      if (!hasAdminSession && !isPublicPortalPath) {
+        return NextResponse.redirect(new URL('/admin/login', request.url))
+      }
     } else if (isPublicPortalPath) {
         // Do nothing, let them see the landing/enrollment page
     } else {

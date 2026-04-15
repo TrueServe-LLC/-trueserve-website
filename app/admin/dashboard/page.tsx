@@ -73,12 +73,16 @@ async function getAuditLogs() {
 
 async function getPendingDrivers() {
     try {
+        // Filter out mock drivers unless explicitly showing them
+        const showMockData = process.env.SHOW_MOCK_DATA === 'true';
+
         const { data, error } = await supabase
             .from('Driver')
             .select(`
                 *,
                 user:User(*)
-            `);
+            `)
+            .eq('isMock', showMockData); // Only show real drivers in prod
 
         if (error) {
             console.error("Supabase Error (getPendingDrivers):", error);

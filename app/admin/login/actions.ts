@@ -38,7 +38,9 @@ export async function login(formData: FormData) {
                 httpOnly: true,
                 secure: isProd,
                 path: "/",
-                domain: cookieDomain ? cookieDomain : undefined
+                domain: cookieDomain ? cookieDomain : undefined,
+                maxAge: 60 * 60 * 24 * 7, // 7 days
+                sameSite: 'lax'
             });
 
             return { success: true };
