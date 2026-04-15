@@ -14,19 +14,23 @@ export async function login(formData: FormData) {
     }
 
     // PRIMARY: Legacy Env Fallback (for initial admin setup)
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim();
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD?.trim();
 
-    console.log("Login attempt:", {
-        email,
-        emailMatch: email.toLowerCase() === ADMIN_EMAIL?.toLowerCase(),
-        passwordMatch: password === ADMIN_PASSWORD,
-        hasEnvEmail: !!ADMIN_EMAIL,
-        hasEnvPassword: !!ADMIN_PASSWORD,
-        adminEmailEnv: ADMIN_EMAIL
+    const emailMatch = email.toLowerCase() === ADMIN_EMAIL?.toLowerCase();
+    const passwordMatch = password === ADMIN_PASSWORD;
+
+    console.log("[Admin Login]", {
+        attemptedEmail: email,
+        attemptedPasswordLength: password.length,
+        expectedEmailSet: !!ADMIN_EMAIL,
+        expectedPasswordSet: !!ADMIN_PASSWORD,
+        emailMatch,
+        passwordMatch,
+        timestamp: new Date().toISOString()
     });
 
-    if (ADMIN_EMAIL && ADMIN_PASSWORD && email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD) {
+    if (ADMIN_EMAIL && ADMIN_PASSWORD && emailMatch && passwordMatch) {
         try {
             const cookieStore = await cookies();
             const headersList = await headers();
