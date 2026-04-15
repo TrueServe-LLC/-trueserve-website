@@ -107,3 +107,37 @@ async function createAdminSession() {
         return { error: "Failed to create session. Please try again." };
     }
 }
+
+export async function loginWithGoogle() {
+    try {
+        const supabase = await createClient();
+        const headersList = await headers();
+        const host = headersList.get("host") || "";
+        const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+        const redirectUrl = `${protocol}://${host}/auth/callback`;
+
+        console.log("[Admin Google] Initiating OAuth with redirect:", redirectUrl);
+
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: redirectUrl,
+                queryParams: {
+                    prompt: 'select_account',
+                    access_type: 'offline'
+                },
+                scopes: 'profile email'
+            }
+        });
+
+        if (error) {
+            console.error("[Admin Google] OAuth error:", error.message);
+            return { error: `OAuth error: ${error.message}` };
+        }
+
+        return { url: data.url };
+    } catch (err) {
+        console.error("[Server] OAuth initialization error:", err);
+        return { error: "Failed to initialize Google login. Please try again." };
+    }
+}
