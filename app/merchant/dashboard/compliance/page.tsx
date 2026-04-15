@@ -3,6 +3,7 @@ import { getMerchantOrRedirect } from "@/lib/merchant-auth";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getRestaurantInspections } from "@/lib/stateInspectionQueries";
 import { getInspectionAlertMetadata } from "@/lib/inspectionAlertQueries";
+import { aggregateViolationsBySeverity } from "@/lib/violationAnalytics";
 import MerchantComplianceClient from "./MerchantComplianceClient";
 
 export const dynamic = "force-dynamic";
@@ -63,6 +64,16 @@ export default async function MerchantCompliancePage() {
                     pendingTraining: 2,
                     suspended: 0,
                 }}
+                violationAggregate={{
+                    id: "preview-agg",
+                    restaurantId: "preview",
+                    criticalCount: 2,
+                    majorCount: 3,
+                    minorCount: 5,
+                    totalViolations: 10,
+                    criticalPercentage: 20,
+                    lastUpdatedAt: new Date().toISOString(),
+                }}
             />
         );
     }
@@ -105,6 +116,9 @@ export default async function MerchantCompliancePage() {
     // Fetch inspection due alert metadata
     const inspectionAlertMetadata = await getInspectionAlertMetadata(restaurant.id);
 
+    // Fetch violation severity aggregate
+    const violationAggregate = await aggregateViolationsBySeverity(restaurant.id);
+
     // Fetch driver compliance stats
     const { data: drivers } = await supabaseAdmin
         .from("Driver")
@@ -141,6 +155,7 @@ export default async function MerchantCompliancePage() {
             inspectionMetadata={inspectionMetadata}
             inspectionAlertMetadata={inspectionAlertMetadata}
             driverStats={driverStats}
+            violationAggregate={violationAggregate}
         />
     );
 }

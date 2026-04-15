@@ -7,7 +7,8 @@ import { refreshStateInspectionsAction } from "./actions";
 import ChatBot from "@/components/ChatBot";
 import type { BotMessage, ComplianceContext } from "@/lib/complianceHelpBot";
 import type { InspectionDataWithMetadata, InspectionMetadata } from "@/lib/stateInspectionQueries";
-import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink, RefreshCw, Calendar } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink, RefreshCw, Calendar, AlertTriangle, TrendingDown } from "lucide-react";
+import type { ViolationAggregate } from "@/lib/violationAnalytics";
 
 type InspectionAlertMetadata = {
   nextInspectionDueDate: string | null;
@@ -50,6 +51,7 @@ interface MerchantComplianceClientProps {
     inspectionMetadata: InspectionMetadata;
     inspectionAlertMetadata?: InspectionAlertMetadata | null;
     driverStats: DriverStats;
+    violationAggregate?: ViolationAggregate | null;
 }
 
 export default function MerchantComplianceClient({
@@ -59,6 +61,7 @@ export default function MerchantComplianceClient({
     inspectionMetadata,
     inspectionAlertMetadata,
     driverStats,
+    violationAggregate,
 }: MerchantComplianceClientProps) {
     const [chatOpen, setChatOpen] = useState(false);
     const [expandedInspection, setExpandedInspection] = useState<string | null>(null);
@@ -311,6 +314,118 @@ export default function MerchantComplianceClient({
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* Violation Severity Breakdown */}
+                {violationAggregate && violationAggregate.totalViolations > 0 && (
+                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                        <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            {violationAggregate.criticalCount > 0 ? '⚠️' : '📊'} Violation Severity Breakdown
+                        </h2>
+
+                        <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 mb-6">
+                            {/* Critical Violations */}
+                            <div className={`rounded-lg border p-4 ${
+                                violationAggregate.criticalCount > 0
+                                    ? 'bg-red-500/20 border-red-500/40'
+                                    : 'bg-white/5 border-white/10'
+                            }`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <AlertCircle className={`h-5 w-5 ${
+                                        violationAggregate.criticalCount > 0 ? 'text-red-400' : 'text-white/50'
+                                    }`} />
+                                    <span className="text-xs md:text-sm font-bold uppercase text-white/70">Critical</span>
+                                </div>
+                                <div className={`text-2xl md:text-3xl font-black ${
+                                    violationAggregate.criticalCount > 0 ? 'text-red-300' : 'text-green-300'
+                                }`}>
+                                    {violationAggregate.criticalCount}
+                                </div>
+                                <p className="text-xs text-white/50 mt-1">Food safety hazards</p>
+                            </div>
+
+                            {/* Major Violations */}
+                            <div className={`rounded-lg border p-4 ${
+                                violationAggregate.majorCount > 0
+                                    ? 'bg-yellow-500/20 border-yellow-500/40'
+                                    : 'bg-white/5 border-white/10'
+                            }`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <AlertTriangle className={`h-5 w-5 ${
+                                        violationAggregate.majorCount > 0 ? 'text-yellow-400' : 'text-white/50'
+                                    }`} />
+                                    <span className="text-xs md:text-sm font-bold uppercase text-white/70">Major</span>
+                                </div>
+                                <div className={`text-2xl md:text-3xl font-black ${
+                                    violationAggregate.majorCount > 0 ? 'text-yellow-300' : 'text-gray-400'
+                                }`}>
+                                    {violationAggregate.majorCount}
+                                </div>
+                                <p className="text-xs text-white/50 mt-1">Significant non-compliance</p>
+                            </div>
+
+                            {/* Minor Violations */}
+                            <div className={`rounded-lg border p-4 ${
+                                violationAggregate.minorCount > 0
+                                    ? 'bg-blue-500/20 border-blue-500/40'
+                                    : 'bg-white/5 border-white/10'
+                            }`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Clock className={`h-5 w-5 ${
+                                        violationAggregate.minorCount > 0 ? 'text-blue-400' : 'text-white/50'
+                                    }`} />
+                                    <span className="text-xs md:text-sm font-bold uppercase text-white/70">Minor</span>
+                                </div>
+                                <div className={`text-2xl md:text-3xl font-black ${
+                                    violationAggregate.minorCount > 0 ? 'text-blue-300' : 'text-gray-400'
+                                }`}>
+                                    {violationAggregate.minorCount}
+                                </div>
+                                <p className="text-xs text-white/50 mt-1">Low impact issues</p>
+                            </div>
+                        </div>
+
+                        {/* Violation Percentage */}
+                        <div className="mb-4 p-4 rounded-lg bg-white/5 border border-white/10">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-bold text-white">Critical Violations Percentage</span>
+                                <span className={`text-sm font-bold ${
+                                    violationAggregate.criticalPercentage > 25
+                                        ? 'text-red-400'
+                                        : violationAggregate.criticalPercentage > 10
+                                        ? 'text-yellow-400'
+                                        : 'text-green-400'
+                                }`}>
+                                    {violationAggregate.criticalPercentage.toFixed(1)}%
+                                </span>
+                            </div>
+                            <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                                <div
+                                    className={`h-full rounded-full transition-all ${
+                                        violationAggregate.criticalPercentage > 25
+                                            ? 'bg-red-500'
+                                            : violationAggregate.criticalPercentage > 10
+                                            ? 'bg-yellow-500'
+                                            : 'bg-green-500'
+                                    }`}
+                                    style={{ width: `${Math.min(violationAggregate.criticalPercentage, 100)}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Remediation Guidance */}
+                        {violationAggregate.criticalCount > 0 && (
+                            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30">
+                                <div className="flex items-start gap-3">
+                                    <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+                                    <div>
+                                        <p className="text-sm font-bold text-red-300 mb-1">Immediate Action Required</p>
+                                        <p className="text-xs text-red-200">Critical violations must be corrected immediately. Develop an action plan, assign responsibility, and set deadlines for each violation.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
