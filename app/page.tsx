@@ -61,7 +61,6 @@ export default function Home() {
           ) : (
             <Link href="/login" className="btn btn-ghost">Sign In</Link>
           )}
-          <Link href="/merchant/signup" className="btn btn-gold">Join Network</Link>
         </div>
       </nav>
 

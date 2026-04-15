@@ -20,9 +20,16 @@ export default function AdminLogin() {
             return;
         }
 
-        const result = await login(formData);
-        if (result?.error) {
-            setError(result.error);
+        try {
+            const result = await login(formData);
+            if (result?.error) {
+                setError(result.error);
+            } else if (result?.success) {
+                // Redirect after successful login
+                window.location.href = "/admin/dashboard";
+            }
+        } catch (err: any) {
+            setError(err.message || "Login failed. Please try again.");
         }
     };
 

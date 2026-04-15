@@ -95,13 +95,8 @@ export async function login(formData: FormData) {
         const isSub = isVercel ? pieces.length > 3 : pieces.length > (isLocal ? 1 : 2);
         const protocol = isLocal ? "http" : "https";
 
-        // Always force redirect to the admin subdomain for admins ONLY ON LIVE PROD
-        if (isProdDomain && !cleanHost.startsWith("admin.")) {
-            const rootHost = isSub ? pieces.slice(1).join('.') : cleanHost;
-            redirect(`https://admin.${rootHost}/admin/dashboard`);
-        } else {
-            redirect("/admin/dashboard");
-        }
+        // Return success instead of redirecting - let client handle it
+        return { success: true };
     }
 
     // Strategy 2: Legacy Env Fallback (Safety Net)
@@ -115,7 +110,7 @@ export async function login(formData: FormData) {
         const cleanHost = host.split(':')[0];
         const isLocal = cleanHost.includes("localhost");
         const isVercel = cleanHost.endsWith(".vercel.app");
-        
+
         let cookieDomain = "";
         const pieces = cleanHost.split('.');
         if (!isLocal && !isVercel && pieces.length >= 2) {
@@ -123,14 +118,14 @@ export async function login(formData: FormData) {
         }
 
         const isProd = process.env.NODE_ENV === "production";
-        
+
         cookieStore.set("admin_session", "true", {
             httpOnly: true,
             secure: isProd,
             path: "/",
             domain: cookieDomain ? cookieDomain : undefined
         });
-        redirect("/admin/dashboard");
+        return { success: true };
     }
 
     return { error: "Invalid credentials" };
