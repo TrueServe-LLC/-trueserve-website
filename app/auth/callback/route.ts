@@ -86,22 +86,36 @@ export async function GET(request: Request) {
             // Determine the cookie domain for universal sessions (including subdomains)
             const isLocal = cleanHost.includes("localhost")
             const isVercel = cleanHost.endsWith(".vercel.app")
-            
+
             const piecesForCookie = cleanHost.split('.')
             let cookieDomain = ""
             if (!isLocal && !isVercel && piecesForCookie.length >= 2) {
               cookieDomain = `.${piecesForCookie.slice(-2).join('.')}`
             }
 
+            const isProd = process.env.NODE_ENV === "production"
+
             // Set userId cookie for compatibility with existing dashboard logic
             response.cookies.set('userId', data.user.id, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: isProd,
                 sameSite: 'lax',
                 path: '/',
                 domain: cookieDomain ? cookieDomain : undefined,
                 maxAge: 60 * 60 * 24 * 7 // 1 week
             })
+
+            // If user is admin, set admin_session cookie so they can access admin portal
+            if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+                response.cookies.set('admin_session', 'true', {
+                    httpOnly: true,
+                    secure: isProd,
+                    sameSite: 'lax',
+                    path: '/',
+                    domain: cookieDomain ? cookieDomain : undefined,
+                    maxAge: 60 * 60 * 24 * 7 // 1 week
+                })
+            }
 
             return response
         }
