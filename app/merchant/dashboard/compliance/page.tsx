@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { getMerchantOrRedirect } from "@/lib/merchant-auth";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getRestaurantInspections } from "@/lib/stateInspectionQueries";
+import { getInspectionAlertMetadata } from "@/lib/inspectionAlertQueries";
 import MerchantComplianceClient from "./MerchantComplianceClient";
 
 export const dynamic = "force-dynamic";
@@ -49,6 +50,13 @@ export default async function MerchantCompliancePage() {
                     recordCount: 1,
                     isStale: false,
                 }}
+                inspectionAlertMetadata={{
+                    nextInspectionDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    daysUntilDue: 30,
+                    alertStatus: 'PENDING',
+                    isOverdue: false,
+                    requiresAttention: true,
+                }}
                 driverStats={{
                     totalDrivers: 12,
                     activeDrivers: 10,
@@ -94,6 +102,9 @@ export default async function MerchantCompliancePage() {
     const { inspections: liveInspections, metadata: inspectionMetadata } =
         await getRestaurantInspections(restaurant.id, restaurant.state);
 
+    // Fetch inspection due alert metadata
+    const inspectionAlertMetadata = await getInspectionAlertMetadata(restaurant.id);
+
     // Fetch driver compliance stats
     const { data: drivers } = await supabaseAdmin
         .from("Driver")
@@ -128,6 +139,7 @@ export default async function MerchantCompliancePage() {
             }))}
             liveInspections={liveInspections}
             inspectionMetadata={inspectionMetadata}
+            inspectionAlertMetadata={inspectionAlertMetadata}
             driverStats={driverStats}
         />
     );

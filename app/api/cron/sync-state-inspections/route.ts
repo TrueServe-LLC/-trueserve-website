@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isComplianceLayerEnabled } from '@/lib/system';
 import { inspectionCache } from '@/lib/inspectionCache';
+import { calculateAndSaveDueDate } from '@/lib/inspectionAlertQueries';
 import { NorthCarolinaAPI } from '@/lib/stateAPIs/ncAPI';
 import { NewYorkAPI } from '@/lib/stateAPIs/nyAPI';
 import { FloridaAPI } from '@/lib/stateAPIs/flAPI';
@@ -211,6 +212,18 @@ async function syncState(state: string): Promise<SyncResult> {
                 restaurantId: restaurant.id,
                 error: `Could not update restaurant: ${updateError}`,
               });
+            } else {
+              // Calculate and save next inspection due date for predictive alerts
+              try {
+                const inspectionDate = new Date(latest.inspectionDate);
+                await calculateAndSaveDueDate(restaurant.id, state, inspectionDate);
+              } catch (dueDateError: any) {
+                console.error(
+                  `[${state}] Failed to calculate due date for ${restaurant.id}:`,
+                  dueDateError
+                );
+                // Don't fail the sync if due date calculation fails
+              }
             }
           } else {
             recordsFailed++;

@@ -7,7 +7,15 @@ import { refreshStateInspectionsAction } from "./actions";
 import ChatBot from "@/components/ChatBot";
 import type { BotMessage, ComplianceContext } from "@/lib/complianceHelpBot";
 import type { InspectionDataWithMetadata, InspectionMetadata } from "@/lib/stateInspectionQueries";
-import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink, RefreshCw } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink, RefreshCw, Calendar } from "lucide-react";
+
+type InspectionAlertMetadata = {
+  nextInspectionDueDate: string | null;
+  daysUntilDue: number | null;
+  alertStatus: string | null;
+  isOverdue: boolean;
+  requiresAttention: boolean;
+};
 
 type RestaurantInfo = {
     id: string;
@@ -40,6 +48,7 @@ interface MerchantComplianceClientProps {
     inspections: Inspection[];
     liveInspections: InspectionDataWithMetadata[];
     inspectionMetadata: InspectionMetadata;
+    inspectionAlertMetadata?: InspectionAlertMetadata | null;
     driverStats: DriverStats;
 }
 
@@ -48,6 +57,7 @@ export default function MerchantComplianceClient({
     inspections,
     liveInspections,
     inspectionMetadata,
+    inspectionAlertMetadata,
     driverStats,
 }: MerchantComplianceClientProps) {
     const [chatOpen, setChatOpen] = useState(false);
@@ -100,6 +110,16 @@ export default function MerchantComplianceClient({
         } finally {
             setRefreshing(false);
         }
+    };
+
+    const getStateHealthDeptUrl = (state: string): string => {
+        const urls: Record<string, string> = {
+            'NC': 'https://www.dhhs.nc.gov/about/divisions/public-health/food-protection',
+            'NY': 'https://www.health.ny.gov/environmental/food/',
+            'FL': 'https://www.myfloridaeh.com/environmental-health/food-safety/',
+            'PA': 'https://www.dep.pa.gov/Business/Air/Pages/default.aspx',
+        };
+        return urls[state] || '#';
     };
 
     return (
@@ -290,6 +310,93 @@ export default function MerchantComplianceClient({
                                     )}
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Inspection Due Alert - Predictive Alerts */}
+                {inspectionAlertMetadata?.nextInspectionDueDate && (
+                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                        <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <Calendar className="h-5 w-5" />
+                            📅 Next Scheduled Inspection
+                        </h2>
+
+                        <div className={`rounded-lg p-4 border-l-4 ${
+                            inspectionAlertMetadata.isOverdue
+                                ? 'bg-red-500/10 border-red-500'
+                                : inspectionAlertMetadata.daysUntilDue && inspectionAlertMetadata.daysUntilDue <= 7
+                                ? 'bg-yellow-500/10 border-yellow-500'
+                                : inspectionAlertMetadata.daysUntilDue && inspectionAlertMetadata.daysUntilDue <= 30
+                                ? 'bg-blue-500/10 border-blue-500'
+                                : 'bg-green-500/10 border-green-500'
+                        }`}>
+                            <div className="space-y-3">
+                                <div>
+                                    <p className={`text-base md:text-lg font-bold ${
+                                        inspectionAlertMetadata.isOverdue
+                                            ? 'text-red-300'
+                                            : inspectionAlertMetadata.daysUntilDue && inspectionAlertMetadata.daysUntilDue <= 7
+                                            ? 'text-yellow-300'
+                                            : inspectionAlertMetadata.daysUntilDue && inspectionAlertMetadata.daysUntilDue <= 30
+                                            ? 'text-blue-300'
+                                            : 'text-green-300'
+                                    }`}>
+                                        Due: {new Date(inspectionAlertMetadata.nextInspectionDueDate).toLocaleDateString()}
+                                    </p>
+                                    {inspectionAlertMetadata.daysUntilDue !== null && (
+                                        <p className={`text-sm md:text-base font-semibold mt-1 ${
+                                            inspectionAlertMetadata.isOverdue
+                                                ? 'text-red-200'
+                                                : inspectionAlertMetadata.daysUntilDue <= 7
+                                                ? 'text-yellow-200'
+                                                : inspectionAlertMetadata.daysUntilDue <= 30
+                                                ? 'text-blue-200'
+                                                : 'text-green-200'
+                                        }`}>
+                                            {inspectionAlertMetadata.isOverdue
+                                                ? `🚨 OVERDUE by ${Math.abs(inspectionAlertMetadata.daysUntilDue)} ${
+                                                    Math.abs(inspectionAlertMetadata.daysUntilDue) === 1 ? 'day' : 'days'
+                                                }`
+                                                : inspectionAlertMetadata.daysUntilDue === 0
+                                                ? '⚠️ DUE TODAY'
+                                                : `⏱️ In ${inspectionAlertMetadata.daysUntilDue} ${
+                                                    inspectionAlertMetadata.daysUntilDue === 1 ? 'day' : 'days'
+                                                }`}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {inspectionAlertMetadata.isOverdue && (
+                                    <div className="flex items-start gap-2 p-3 rounded bg-red-500/20 border border-red-500/40">
+                                        <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+                                        <p className="text-xs md:text-sm text-red-300">
+                                            Your inspection is overdue. Contact your local health department immediately to schedule.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {!inspectionAlertMetadata.isOverdue && inspectionAlertMetadata.requiresAttention && (
+                                    <div className="flex items-start gap-2 p-3 rounded bg-yellow-500/20 border border-yellow-500/40">
+                                        <AlertCircle className="h-4 w-4 text-yellow-400 flex-shrink-0 mt-0.5" />
+                                        <p className="text-xs md:text-sm text-yellow-300">
+                                            Ensure all documentation and facilities are ready for inspection. Schedule with your health department if not yet arranged.
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-2 flex-wrap">
+                                    <a
+                                        href={getStateHealthDeptUrl(restaurant.state)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-4 py-2 bg-[#e8a230] hover:bg-[#d99620] text-black rounded text-xs md:text-sm font-semibold transition-colors"
+                                    >
+                                        Schedule Now
+                                        <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
