@@ -35,86 +35,83 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
   ];
 
   return (
-    <div className={styles.container}>
+    <div className={styles.portal}>
       {/* SIDEBAR */}
       <div className={styles.sidebar}>
-        <h1 className={styles.sidebarTitle}>Admin Portal</h1>
-        <nav className={styles.nav}>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem} ${pathname === item.href ? styles.active : ''}`}
-            >
-              <span className={styles.navIcon}>{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
+        <div className={styles.sidebarLogo}>
+          <span>📊 Admin Portal</span>
+        </div>
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${styles.navLink} ${pathname === item.href ? styles.active : ''}`}
+          >
+            <span className={styles.navIcon}>{item.icon}</span>
+            {item.label}
+          </Link>
+        ))}
       </div>
 
       {/* MAIN CONTENT */}
-      <div className={styles.mainContent}>
+      <div className={styles.main}>
         {/* HEADER */}
-        <div className={styles.header}>
-          <h2 className={styles.headerTitle}>Welcome to Admin Portal</h2>
-          <p className={styles.headerSubtitle}>Manage TrueServe operations and analytics</p>
+        <div className={styles.hero}>
+          <h1>Welcome to Admin Portal</h1>
+          <p>Manage TrueServe operations and analytics</p>
         </div>
 
-        {/* CONTENT AREA */}
-        <div className={styles.contentArea}>
-          {/* KPI CARDS */}
-          <div className={styles.kpiGrid}>
-            {[
-              { icon: '👨‍💼', label: 'Active Merchants', value: stats.activeMerchants },
-              { icon: '🚗', label: 'Active Drivers', value: stats.activeDrivers },
-              { icon: '📦', label: 'Orders Today', value: stats.ordersToday },
-              { icon: '💵', label: 'Revenue (Today)', value: `$${stats.revenueToday.toLocaleString()}` }
-            ].map((card, idx) => (
-              <div key={idx} className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <span className={styles.cardIcon}>{card.icon}</span>
-                  <p className={styles.cardLabel}>{card.label}</p>
-                </div>
-                <p className={styles.cardValue}>{card.value}</p>
+        {/* STATS GRID */}
+        <div className={styles.stats}>
+          {[
+            { icon: '👨‍💼', label: 'Active Merchants', value: stats.activeMerchants },
+            { icon: '🚗', label: 'Active Drivers', value: stats.activeDrivers },
+            { icon: '📦', label: 'Orders Today', value: stats.ordersToday },
+            { icon: '💵', label: 'Revenue (Today)', value: `$${stats.revenueToday.toLocaleString()}` }
+          ].map((card, idx) => (
+            <div key={idx} className={styles.statCard}>
+              <div className={styles.label}>
+                <span>{card.icon}</span>
+                {card.label}
               </div>
-            ))}
-          </div>
-
-          {/* FEATURE CARDS */}
-          <div className={styles.featureGrid}>
-            {[
-              { icon: '💰', title: 'Cost Management', desc: 'Track spending across all services', href: '/admin/cost-management' },
-              { icon: '📊', title: 'Analytics', desc: 'Real-time metrics on orders, drivers, merchants', href: '/admin/analytics' },
-              { icon: '👥', title: 'User Management', desc: 'Manage drivers, merchants, and accounts', href: '/admin/users' }
-            ].map((card, idx) => (
-              <Link key={idx} href={card.href} className={styles.featureCard}>
-                <div className={styles.cardHeader}>
-                  <span className={styles.featureCardIcon}>{card.icon}</span>
-                  <p className={styles.featureCardTitle}>{card.title}</p>
-                </div>
-                <p className={styles.featureCardDesc}>{card.desc}</p>
-                <p className={styles.featureCardLink}>View →</p>
-              </Link>
-            ))}
-          </div>
-
-          {/* RECENT ACTIVITY */}
-          <div className={styles.activityCard}>
-            <h3 className={styles.activityTitle}>Recent Activity</h3>
-            <div className={styles.activityList}>
-              {recentActivity.length === 0 ? (
-                <p className={styles.emptyState}>No recent activity</p>
-              ) : (
-                recentActivity.map((activity) => (
-                  <div key={activity.id} className={styles.activityItem}>
-                    <p className={styles.activityMessage}>{activity.message}</p>
-                    <p className={styles.activityTime}>{activity.timestamp}</p>
-                  </div>
-                ))
-              )}
+              <div className={styles.value}>{card.value}</div>
             </div>
-          </div>
+          ))}
+        </div>
+
+        {/* FEATURE CARDS */}
+        <div className={styles.cards}>
+          {[
+            { icon: '💰', title: 'Cost Management', desc: 'Track spending across all services (AWS, Google Cloud, Stripe, Supabase, Mailbox, Resend, Vonage)', href: '/admin/cost-management' },
+            { icon: '📊', title: 'Analytics', desc: 'Real-time metrics on orders, drivers, merchants, and platform health', href: '/admin/analytics' },
+            { icon: '👥', title: 'User Management', desc: 'Manage drivers, merchants, and customer accounts', href: '/admin/users' }
+          ].map((card, idx) => (
+            <Link key={idx} href={card.href} className={styles.card}>
+              <div className={styles.cardTitle}>
+                <span>{card.icon}</span>
+                {card.title}
+              </div>
+              <div className={styles.cardDesc}>{card.desc}</div>
+              <a className={styles.cardLink}>View Dashboard →</a>
+            </Link>
+          ))}
+        </div>
+
+        {/* ACTIVITY */}
+        <div className={styles.activity}>
+          <h2>Recent Activity</h2>
+          {recentActivity.length === 0 ? (
+            <p>No recent activity</p>
+          ) : (
+            <div>
+              {recentActivity.map((item) => (
+                <div key={item.id}>
+                  <p>{item.message}</p>
+                  <p>{item.timestamp}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

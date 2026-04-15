@@ -21,34 +21,34 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
   ];
 
   return (
-    <div className={styles.container}>
+    <div className={styles.portal}>
       {/* SIDEBAR */}
       <div className={styles.sidebar}>
-        <h1 className={styles.sidebarTitle}>Merchant Portal</h1>
-        <nav className={styles.nav}>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem} ${pathname === item.href ? styles.active : ''}`}
-            >
-              <span className={styles.navIcon}>{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
+        <div className={styles.sidebarLogo}>
+          <span>🛍️ Merchant Portal</span>
+        </div>
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${styles.navLink} ${pathname === item.href ? styles.active : ''}`}
+          >
+            <span className={styles.navIcon}>{item.icon}</span>
+            {item.label}
+          </Link>
+        ))}
       </div>
 
       {/* MAIN CONTENT */}
-      <div className={styles.mainContent}>
+      <div className={styles.main}>
         {/* HEADER */}
-        <div className={styles.header}>
-          <h2 className={styles.headerTitle}>Merchant Dashboard</h2>
-          <p className={styles.headerSubtitle}>{restaurantName}</p>
+        <div className={styles.hero}>
+          <h1>Merchant Dashboard</h1>
+          <p>{restaurantName}</p>
         </div>
 
         {/* CONTENT AREA */}
-        <div className={styles.contentArea}>
+        <div className={styles.content}>
           {children}
         </div>
       </div>
