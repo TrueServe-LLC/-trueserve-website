@@ -1,22 +1,26 @@
-/* Admin Dashboard Layout */
+/* Admin Dashboard Layout - CSS Module Test */
 .container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #0a0c09;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  display: flex !important;
+  min-height: 100vh !important;
+  background-color: #0a0c09 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+  width: 100% !important;
+  flex-direction: row !important;
 }
 
 .sidebar {
-  width: 256px;
-  background-color: #0f1210;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  min-height: 100vh;
-  position: sticky;
-  top: 0;
-  padding: 24px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  flex-shrink: 0;
+  width: 256px !important;
+  background-color: #0f1210 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  min-height: 100vh !important;
+  position: sticky !important;
+  top: 0 !important;
+  padding: 24px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .sidebarTitle {
@@ -70,10 +74,11 @@
 }
 
 .mainContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
 }
 
 .header {
