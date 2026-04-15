@@ -25,28 +25,39 @@ export default function AdminLogin() {
                 const formData = new FormData();
                 formData.set("email", email);
                 const res = await resetAdminPassword(formData);
-                if (res.error) {
+                if (res?.error) {
                     setError(res.error);
-                } else {
+                } else if (res?.success) {
                     setMsg("Password reset email sent! Please check your inbox.");
                     setEmail("");
+                } else {
+                    setError("Password reset failed. Please try again.");
                 }
             } else {
                 const formData = new FormData();
                 formData.set("email", email);
                 formData.set("password", password);
 
+                console.log("[Login] Attempting login with email:", email);
                 const result = await login(formData);
-                if (result?.error) {
+                console.log("[Login] Server response:", result);
+
+                if (!result) {
+                    setError("No response from server. Please try again.");
+                } else if (result.error) {
                     setError(result.error);
-                } else if (result?.success) {
+                } else if (result.success) {
+                    console.log("[Login] Success! Redirecting to dashboard...");
                     // Redirect after successful login
                     setTimeout(() => {
                         window.location.href = "/admin/dashboard";
                     }, 500);
+                } else {
+                    setError("Login failed. Please check your credentials and try again.");
                 }
             }
         } catch (err: any) {
+            console.error("[Login] Error:", err);
             setError(err.message || "An error occurred. Please try again.");
         } finally {
             setIsPending(false);

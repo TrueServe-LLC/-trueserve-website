@@ -6,65 +6,66 @@ import { createClient } from "@/lib/supabase/server";
 import { isStaffEmail } from "@/lib/admin-config";
 
 export async function login(formData: FormData) {
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    if (!email || !password) {
-        return { error: "Email and password are required." };
-    }
-
-    // PRIMARY: Legacy Env Fallback (for initial admin setup)
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim();
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD?.trim();
-
-    const emailMatch = email.toLowerCase() === ADMIN_EMAIL?.toLowerCase();
-    const passwordMatch = password === ADMIN_PASSWORD;
-
-    console.log("[Admin Login]", {
-        attemptedEmail: email,
-        attemptedPasswordLength: password.length,
-        expectedEmailSet: !!ADMIN_EMAIL,
-        expectedPasswordSet: !!ADMIN_PASSWORD,
-        emailMatch,
-        passwordMatch,
-        timestamp: new Date().toISOString()
-    });
-
-    if (ADMIN_EMAIL && ADMIN_PASSWORD && emailMatch && passwordMatch) {
-        try {
-            const cookieStore = await cookies();
-            const headersList = await headers();
-            const host = headersList.get('host') || "";
-            const cleanHost = host.split(':')[0];
-            const isLocal = cleanHost.includes("localhost");
-            const isVercel = cleanHost.endsWith(".vercel.app");
-
-            let cookieDomain = "";
-            const pieces = cleanHost.split('.');
-            if (!isLocal && !isVercel && pieces.length >= 2) {
-                cookieDomain = `.${pieces.slice(-2).join('.')}`;
-            }
-
-            const isProd = process.env.NODE_ENV === "production";
-
-            cookieStore.set("admin_session", "true", {
-                httpOnly: true,
-                secure: isProd,
-                path: "/",
-                domain: cookieDomain ? cookieDomain : undefined,
-                maxAge: 60 * 60 * 24 * 7, // 7 days
-                sameSite: 'lax'
-            });
-
-            return { success: true };
-        } catch (err) {
-            console.error("Session creation error:", err);
-            return { error: "Failed to create session. Please try again." };
-        }
-    }
-
-    // SECONDARY: Supabase Auth (for registered admin users)
     try {
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+
+        if (!email || !password) {
+            return { error: "Email and password are required." };
+        }
+
+        // PRIMARY: Legacy Env Fallback (for initial admin setup)
+        const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim();
+        const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD?.trim();
+
+        const emailMatch = email.toLowerCase() === ADMIN_EMAIL?.toLowerCase();
+        const passwordMatch = password === ADMIN_PASSWORD;
+
+        console.log("[Server] Admin Login Attempt:", {
+            email,
+            passwordLength: password.length,
+            hasAdminEmail: !!ADMIN_EMAIL,
+            hasAdminPassword: !!ADMIN_PASSWORD,
+            emailMatch,
+            passwordMatch
+        });
+
+        if (ADMIN_EMAIL && ADMIN_PASSWORD && emailMatch && passwordMatch) {
+            try {
+                const cookieStore = await cookies();
+                const headersList = await headers();
+                const host = headersList.get('host') || "";
+                const cleanHost = host.split(':')[0];
+                const isLocal = cleanHost.includes("localhost");
+                const isVercel = cleanHost.endsWith(".vercel.app");
+
+                let cookieDomain = "";
+                const pieces = cleanHost.split('.');
+                if (!isLocal && !isVercel && pieces.length >= 2) {
+                    cookieDomain = `.${pieces.slice(-2).join('.')}`;
+                }
+
+                const isProd = process.env.NODE_ENV === "production";
+
+                cookieStore.set("admin_session", "true", {
+                    httpOnly: true,
+                    secure: isProd,
+                    path: "/",
+                    domain: cookieDomain ? cookieDomain : undefined,
+                    maxAge: 60 * 60 * 24 * 7, // 7 days
+                    sameSite: 'lax'
+                });
+
+                console.log("[Server] Admin session created successfully");
+                return { success: true };
+            } catch (err) {
+                console.error("[Server] Session creation error:", err);
+                return { error: "Failed to create session. Please try again." };
+            }
+        }
+
+        // SECONDARY: Supabase Auth (for registered admin users)
+        try {
         const supabase = await createClient();
 
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -126,11 +127,15 @@ export async function login(formData: FormData) {
             console.error("Supabase auth error:", authError.message);
             // Don't expose Supabase errors, they're not helpful
         }
-    } catch (error) {
-        console.error("Database login error:", error);
-    }
+        } catch (error) {
+            console.error("Database login error:", error);
+        }
 
-    return { error: "Invalid email or password. Please check your credentials and try again." };
+        return { error: "Invalid email or password. Please check your credentials and try again." };
+    } catch (mainErr) {
+        console.error("[Server] Unexpected login error:", mainErr);
+        return { error: "An unexpected error occurred. Please try again." };
+    }
 }
 
 export async function resetAdminPassword(formData: FormData) {
