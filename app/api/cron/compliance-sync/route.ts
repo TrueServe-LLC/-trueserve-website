@@ -38,8 +38,9 @@ export async function GET(request: Request) {
         syncedIntegrations: 0,
         skippedIntegrations: 0,
         notes: [
-            "This endpoint is the scheduled sync entry point for public inspection feeds and vendor polling.",
-            "Phase 1 can operate via SafetyCulture webhooks only; phase 2 adds county/city inspection polling."
+            "This endpoint is the scheduled sync entry point for public inspection feeds and state API polling.",
+            "Phase 1: Hardcoded state health department links for merchant compliance portal.",
+            "Phase 2: Real-time state API integration for automated inspection data syncing."
         ]
     };
 

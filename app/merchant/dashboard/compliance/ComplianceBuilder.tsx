@@ -332,7 +332,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                                 {latestIntegration ? `${latestIntegration.provider} · ${latestIntegration.status || "ACTIVE"}` : "No compliance integration yet"}
                                             </div>
                                             <div className="mt-1 text-xs text-[#aab4c8]">
-                                                {latestIntegration?.lastSyncAt ? `Last sync ${new Date(latestIntegration.lastSyncAt).toLocaleString()}` : "Connect SafetyCulture or another provider to start syncing."}
+                                                {latestIntegration?.lastSyncAt ? `Last sync ${new Date(latestIntegration.lastSyncAt).toLocaleString()}` : "Integration ready for future state API connections."}
                                             </div>
                                         </div>
                                     </div>
