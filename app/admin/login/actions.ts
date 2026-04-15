@@ -124,7 +124,11 @@ export async function loginWithGoogle() {
         const headersList = await headers();
         const host = headersList.get("host") || "";
         const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-        const redirectUrl = `${protocol}://${host}/auth/callback`;
+        // Always use canonical admin domain in production so OAuth callback lands correctly
+        const canonicalHost = process.env.NODE_ENV === "production"
+            ? "admin.trueservedelivery.com"
+            : host;
+        const redirectUrl = `${protocol}://${canonicalHost}/auth/callback`;
 
         console.log("[Admin Google] Initiating OAuth with redirect:", redirectUrl);
 

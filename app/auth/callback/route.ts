@@ -39,6 +39,12 @@ export async function GET(request: Request) {
                 });
             } else {
                 role = profile.role;
+                // Always upgrade to ADMIN if whitelisted staff email, regardless of stored role
+                if (isStaffEmail(data.user.email) && !['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+                    role = 'ADMIN';
+                    const { supabaseAdmin } = await import("@/lib/supabase-admin");
+                    await supabaseAdmin.from('User').update({ role: 'ADMIN', updatedAt: new Date().toISOString() }).eq('id', data.user.id);
+                }
             }
 
             const forwardedHost = request.headers.get('x-forwarded-host')
@@ -49,7 +55,7 @@ export async function GET(request: Request) {
             if (next === '/') {
                 if (role === 'MERCHANT') finalNext = '/merchant/dashboard';
                 else if (role === 'DRIVER') finalNext = '/driver/dashboard';
-                else if (role === 'PM' || role === 'ADMIN' || role === 'QA_TESTER') finalNext = '/admin/dashboard';
+                else if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) finalNext = '/admin/dashboard';
             }
 
             // Success - continue to 'next' path
@@ -62,7 +68,7 @@ export async function GET(request: Request) {
             // Subdomain Redirection Logic for Production
             const host = request.headers.get('host') || "";
             const cleanHost = host.split(':')[0];
-            const isProdDomain = cleanHost.endsWith("trueservedelivery.com");
+            const isProdDomain = cleanHost.endsWith("trueservedelivery.com") || cleanHost.endsWith("trueserve.delivery");
 
             if (isProdDomain) {
                 const pieces = cleanHost.split('.');

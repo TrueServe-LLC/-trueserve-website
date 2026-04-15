@@ -23,6 +23,12 @@ export async function middleware(request: NextRequest) {
   const isInternal = path.startsWith('/_next') || path.startsWith('/api') || path.includes('.')
   if (isInternal) return NextResponse.next()
 
+  // --- CANONICAL ADMIN DOMAIN: Redirect admin.trueserve.delivery → admin.trueservedelivery.com ---
+  const cleanHostCheck = host.split(':')[0]
+  if (cleanHostCheck === 'admin.trueserve.delivery' || cleanHostCheck === 'www.admin.trueserve.delivery') {
+    return NextResponse.redirect(`https://admin.trueservedelivery.com${path}${url.search}`)
+  }
+
   const response = NextResponse.next({
     request: {
       headers: request.headers,
