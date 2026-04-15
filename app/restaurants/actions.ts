@@ -32,13 +32,15 @@ export async function placeOrder(
 
     // ... (inside the insert call) ...
     // 0. Safety Net: Check if ordering is enabled globally
-    const { isOrderingEnabled } = await import('@/lib/system');
+    const {
+        isOrderingEnabled,
+        getRestaurantMinComplianceScore,
+        shouldBlockFlaggedRestaurantOrders
+    } = await import('@/lib/system');
+
     if (!(await isOrderingEnabled())) {
         return { message: "We are currently not accepting orders. Please try again later.", error: true };
     }
-
-
-
 
     // logToFile(`[PlaceOrder] START for Restaurant: ${restaurantId}`);
 
@@ -89,9 +91,29 @@ export async function placeOrder(
     try {
         const { data: restaurant } = await supabase
             .from('Restaurant')
-            .select('lat, lng, openTime, closeTime, isMock, city, phone')
+            .select('lat, lng, openTime, closeTime, isMock, city, phone, complianceScore, complianceStatus')
             .eq('id', restaurantId)
             .single();
+
+        // 2.6 Compliance Gates - Block non-compliant restaurants
+        if (restaurant) {
+            const minScore = await getRestaurantMinComplianceScore();
+            const shouldBlock = await shouldBlockFlaggedRestaurantOrders();
+
+            if (shouldBlock && restaurant.complianceStatus === 'FLAGGED') {
+                return {
+                    message: "This restaurant is currently unable to accept orders due to compliance issues. Please try again later.",
+                    error: true
+                };
+            }
+
+            if ((restaurant.complianceScore || 0) < minScore && shouldBlock) {
+                return {
+                    message: "This restaurant is currently unable to accept orders. Please try another restaurant.",
+                    error: true
+                };
+            }
+        }
 
         if (restaurant) {
             // SCENARIO 1.2: Restaurant Closed Check (Real Logic)

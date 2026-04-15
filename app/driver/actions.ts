@@ -352,14 +352,44 @@ export async function acceptOrder(orderId: string) {
             throw new Error("Not logged in");
         }
 
-        // Get Driver ID
+        // Get Driver ID and compliance status
         const { data: driver } = await supabase
             .from('Driver')
-            .select('id')
+            .select('id, complianceStatus')
             .eq('userId', user.id)
             .single();
 
         if (!driver) throw new Error("Driver profile not found");
+
+        // Check driver compliance status
+        const { isDriverActiveStatusRequired } = await import('@/lib/system');
+        if ((await isDriverActiveStatusRequired()) && driver.complianceStatus !== 'ACTIVE') {
+            throw new Error("Your driver account is not active. Please complete onboarding or contact support.");
+        }
+
+        // Get order details including restaurant information
+        const { data: orderDetails } = await supabase
+            .from('Order')
+            .select('id, status, restaurantId, restaurant:Restaurant(complianceScore, complianceStatus)')
+            .eq('id', orderId)
+            .single();
+
+        if (!orderDetails) {
+            throw new Error("Order not found");
+        }
+
+        // Check restaurant compliance
+        const { shouldBlockFlaggedRestaurantOrders, getRestaurantMinComplianceScore } = await import('@/lib/system');
+        const restaurant = orderDetails.restaurant as any;
+
+        if ((await shouldBlockFlaggedRestaurantOrders()) && restaurant?.complianceStatus === 'FLAGGED') {
+            throw new Error("This restaurant is currently flagged for compliance issues. You cannot accept orders from it.");
+        }
+
+        const minScore = await getRestaurantMinComplianceScore();
+        if ((restaurant?.complianceScore || 0) < minScore && (await shouldBlockFlaggedRestaurantOrders())) {
+            throw new Error("This restaurant does not meet compliance requirements. You cannot accept orders from it.");
+        }
 
         const { error, data: updatedOrder } = await supabase
             .from('Order')

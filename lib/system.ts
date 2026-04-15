@@ -6,7 +6,7 @@ const supabase = createClient(supabaseUrl, serviceKey);
 
 import { getFeatureFlag } from './launchdarkly';
 
-export type ConfigKey = 
+export type ConfigKey =
     | 'MAX_DELIVERY_RADIUS_MILES'
     | 'BASE_SERVICE_FEE_PERCENT'
     | 'DRIVER_SHIFT_MAX_HOURS'
@@ -22,7 +22,10 @@ export type ConfigKey =
     | 'GOOGLE_RATINGS_SYNC_ENABLED'
     | 'INSTANT_PAYOUTS_ENABLED'
     | 'EXPRESS_CHECKOUT_ACTIVE'
-    | 'COMPLIANCE_LAYER_ENABLED';
+    | 'COMPLIANCE_LAYER_ENABLED'
+    | 'RESTAURANT_MIN_COMPLIANCE_SCORE'
+    | 'REQUIRE_DRIVER_ACTIVE_STATUS'
+    | 'BLOCK_FLAGGED_RESTAURANT_ORDERS';
 
 export type ConfigEnvironment = 'development' | 'preview' | 'production';
 
@@ -191,4 +194,22 @@ export async function updateSystemConfig(
         after: { value },
         message: `System config ${storedKey} updated.`
     });
+}
+
+/**
+ * Compliance Gate Checkers
+ */
+export async function getRestaurantMinComplianceScore(): Promise<number> {
+    const score = await getSystemConfig('RESTAURANT_MIN_COMPLIANCE_SCORE', 50);
+    return parseInt(String(score), 10) || 50;
+}
+
+export async function isDriverActiveStatusRequired(): Promise<boolean> {
+    const required = await getSystemConfig('REQUIRE_DRIVER_ACTIVE_STATUS', true);
+    return required === true || required === 'true';
+}
+
+export async function shouldBlockFlaggedRestaurantOrders(): Promise<boolean> {
+    const shouldBlock = await getSystemConfig('BLOCK_FLAGGED_RESTAURANT_ORDERS', true);
+    return shouldBlock === true || shouldBlock === 'true';
 }

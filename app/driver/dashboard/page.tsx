@@ -46,7 +46,7 @@ export default async function DriverDashboard() {
 
         const { data: rawAvailable } = await supabase
             .from("Order")
-            .select("*, restaurant:Restaurant(name, address, lat, lng)")
+            .select("*, restaurant:Restaurant(name, address, lat, lng, complianceScore, complianceStatus)")
             .is("driverId", null)
             .neq("status", "DELIVERED")
             .neq("status", "CANCELLED")
@@ -54,7 +54,7 @@ export default async function DriverDashboard() {
 
         const { data: rawActive } = await supabase
             .from("Order")
-            .select("*, restaurant:Restaurant(name, address, lat, lng), customer:User(name)")
+            .select("*, restaurant:Restaurant(name, address, lat, lng, complianceScore, complianceStatus), customer:User(name)")
             .eq("driverId", driver.id)
             .neq("status", "DELIVERED")
             .neq("status", "CANCELLED");
@@ -273,11 +273,23 @@ export default async function DriverDashboard() {
                                 No nearby opportunities right now.
                             </div>
                         ) : (
-                            availableOrders.slice(0, 4).map((order) => (
+                            availableOrders.slice(0, 4).map((order) => {
+                                const complianceScore = (order.restaurant as any)?.complianceScore || 0;
+                                const complianceStatus = (order.restaurant as any)?.complianceStatus || 'UNKNOWN';
+                                const isCompliant = complianceStatus !== 'FLAGGED' && complianceScore >= 50;
+
+                                return (
                                 <div key={order.id} className="rounded-2xl border border-white/10 bg-[#0b0f17] p-5">
                                     <div className="mb-4 flex items-center justify-between gap-3">
                                         <h3 className="text-lg font-black">{order.restaurant?.name}</h3>
-                                        <span className="text-[11px] uppercase tracking-[0.12em] text-[#68c7cc]">Live</span>
+                                        <div className="flex items-center gap-2">
+                                            {!isCompliant && (
+                                                <span className="text-[11px] uppercase tracking-[0.12em] px-2 py-1 rounded bg-red-500/20 text-red-400 border border-red-500/30">
+                                                    ⚠️ Flagged
+                                                </span>
+                                            )}
+                                            <span className="text-[11px] uppercase tracking-[0.12em] text-[#68c7cc]">Live</span>
+                                        </div>
                                     </div>
                                     <p className="mb-4 text-sm leading-6 text-white/65">{order.restaurant?.address}</p>
                                     <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -287,6 +299,15 @@ export default async function DriverDashboard() {
                                         <span className="rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-white/65">
                                             {order.distance?.toFixed(1) || "1.2"} mi
                                         </span>
+                                        {isCompliant ? (
+                                            <span className="rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs font-bold text-green-400">
+                                                ✓ Pass
+                                            </span>
+                                        ) : (
+                                            <span className="rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-400">
+                                                Cannot Accept
+                                            </span>
+                                        )}
                                     </div>
                                     <form
                                         action={async (formData) => {
@@ -299,7 +320,8 @@ export default async function DriverDashboard() {
                                         <button className="btn btn-gold w-full justify-center">Accept Order</button>
                                     </form>
                                 </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 </div>
