@@ -9,9 +9,46 @@ export async function login(formData: FormData) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    let shouldRedirect = false;
+    if (!email || !password) {
+        return { error: "Email and password are required." };
+    }
 
-    // Strategy 1: Database Auth (IAM)
+    // PRIMARY: Legacy Env Fallback (for initial admin setup)
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+    if (ADMIN_EMAIL && ADMIN_PASSWORD && email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD) {
+        try {
+            const cookieStore = await cookies();
+            const headersList = await headers();
+            const host = headersList.get('host') || "";
+            const cleanHost = host.split(':')[0];
+            const isLocal = cleanHost.includes("localhost");
+            const isVercel = cleanHost.endsWith(".vercel.app");
+
+            let cookieDomain = "";
+            const pieces = cleanHost.split('.');
+            if (!isLocal && !isVercel && pieces.length >= 2) {
+                cookieDomain = `.${pieces.slice(-2).join('.')}`;
+            }
+
+            const isProd = process.env.NODE_ENV === "production";
+
+            cookieStore.set("admin_session", "true", {
+                httpOnly: true,
+                secure: isProd,
+                path: "/",
+                domain: cookieDomain ? cookieDomain : undefined
+            });
+
+            return { success: true };
+        } catch (err) {
+            console.error("Session creation error:", err);
+            return { error: "Failed to create session. Please try again." };
+        }
+    }
+
+    // SECONDARY: Supabase Auth (for registered admin users)
     try {
         const supabase = await createClient();
 
@@ -20,10 +57,10 @@ export async function login(formData: FormData) {
             password,
         });
 
-        if (authData.user && !authError) {
-            // Check Role by Email (To handle ID mismatches) - MUST use Admin client to bypass RLS
+        if (authData?.user && !authError) {
+            // Check if user has admin role
             const { supabaseAdmin } = await import("@/lib/supabase-admin");
-            const { data: userData, error: userError } = await supabaseAdmin
+            const { data: userData } = await supabaseAdmin
                 .from('User')
                 .select('role')
                 .eq('email', email)
@@ -31,10 +68,9 @@ export async function login(formData: FormData) {
 
             let userRole = userData?.role;
 
-            // AUTO-GRANT: If user is in whitelist but role is missing/customer, upgrade them
+            // AUTO-GRANT admin role if they're a whitelisted staff email
             if ((!userRole || userRole === 'CUSTOMER') && isStaffEmail(email)) {
                 userRole = 'ADMIN';
-                const { supabaseAdmin } = await import("@/lib/supabase-admin");
                 await supabaseAdmin.from('User').upsert({
                     id: authData.user.id,
                     email: email,
@@ -43,15 +79,15 @@ export async function login(formData: FormData) {
                 });
             }
 
+            // Check if user is admin
             if (userRole && ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userRole)) {
-                // Success - Set System-wide Cookies manually as fallback
                 const cookieStore = await cookies();
                 const headersList = await headers();
                 const host = headersList.get('host') || "";
                 const cleanHost = host.split(':')[0];
                 const isLocal = cleanHost.includes("localhost");
                 const isVercel = cleanHost.endsWith(".vercel.app");
-                
+
                 let cookieDomain = "";
                 const pieces = cleanHost.split('.');
                 if (!isLocal && !isVercel && pieces.length >= 2) {
@@ -59,76 +95,27 @@ export async function login(formData: FormData) {
                 }
 
                 const isProd = process.env.NODE_ENV === "production";
-                
+
                 cookieStore.set("admin_session", "true", {
                     httpOnly: true,
                     secure: isProd,
                     path: "/",
                     domain: cookieDomain ? cookieDomain : undefined
                 });
-                
-                cookieStore.set("userId", authData.user.id, {
-                    httpOnly: true,
-                    secure: isProd,
-                    path: "/",
-                    domain: cookieDomain ? cookieDomain : undefined
-                });
 
-                shouldRedirect = true;
-            } else if (userData) {
-                return { error: "Access denied. Admin privileges required." };
+                return { success: true };
+            } else {
+                return { error: "Access denied. Admin role required." };
             }
+        } else if (authError) {
+            console.error("Supabase auth error:", authError.message);
+            // Don't expose Supabase errors, they're not helpful
         }
-    } catch (e) {
-        // Fallthrough to legacy check
-        console.error("Supabase Auth Login Error:", e);
+    } catch (error) {
+        console.error("Database login error:", error);
     }
 
-    if (shouldRedirect) {
-        const headersList = await headers();
-        const host = headersList.get('host') || "";
-        const cleanHost = host.split(':')[0];
-        const pieces = cleanHost.split('.');
-        const isLocal = cleanHost.includes("localhost");
-        const isVercel = cleanHost.endsWith(".vercel.app");
-        const isProdDomain = cleanHost.endsWith("trueservedelivery.com");
-        const isSub = isVercel ? pieces.length > 3 : pieces.length > (isLocal ? 1 : 2);
-        const protocol = isLocal ? "http" : "https";
-
-        // Return success instead of redirecting - let client handle it
-        return { success: true };
-    }
-
-    // Strategy 2: Legacy Env Fallback (Safety Net)
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
-    if (ADMIN_EMAIL && ADMIN_PASSWORD && email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        const cookieStore = await cookies();
-        const headersList = await headers();
-        const host = headersList.get('host') || "";
-        const cleanHost = host.split(':')[0];
-        const isLocal = cleanHost.includes("localhost");
-        const isVercel = cleanHost.endsWith(".vercel.app");
-
-        let cookieDomain = "";
-        const pieces = cleanHost.split('.');
-        if (!isLocal && !isVercel && pieces.length >= 2) {
-            cookieDomain = `.${pieces.slice(-2).join('.')}`;
-        }
-
-        const isProd = process.env.NODE_ENV === "production";
-
-        cookieStore.set("admin_session", "true", {
-            httpOnly: true,
-            secure: isProd,
-            path: "/",
-            domain: cookieDomain ? cookieDomain : undefined
-        });
-        return { success: true };
-    }
-
-    return { error: "Invalid credentials" };
+    return { error: "Invalid email or password. Please check your credentials and try again." };
 }
 
 export async function resetAdminPassword(formData: FormData) {
@@ -137,17 +124,17 @@ export async function resetAdminPassword(formData: FormData) {
 
     try {
         const supabase = await createClient();
-        const headersList = await headers();
-        const host = headersList.get('host') || "";
-        const protocol = host.includes('localhost') ? 'http' : 'https';
-        
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${protocol}://${host}/auth/callback?next=/admin/dashboard`
-        });
 
-        if (error) return { error: error.message };
+        const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+        if (error) {
+            console.error("Password reset error:", error);
+            return { error: "Failed to send reset email. Please try again." };
+        }
+
         return { success: true };
-    } catch (e: any) {
-        return { error: e.message };
+    } catch (error) {
+        console.error("Reset password error:", error);
+        return { error: "An error occurred. Please try again." };
     }
 }
