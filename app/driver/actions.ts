@@ -200,9 +200,19 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             scannedAt: new Date().toISOString()
         };
 
+        // Get or create Driver ID
+        const { data: existingDriver2 } = await supabaseAdmin
+            .from('Driver')
+            .select('id')
+            .eq('userId', targetUserId)
+            .maybeSingle();
+
+        const driverId = existingDriver2?.id || uuidv4();
+
         const { error: driverError } = await supabaseAdmin
             .from('Driver')
             .upsert({
+                id: driverId,
                 userId: targetUserId,
                 vehicleType: vehicleType,
                 vehicleMake: vehicleMake,
