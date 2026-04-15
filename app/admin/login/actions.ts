@@ -101,11 +101,21 @@ async function createAdminSession() {
             sameSite: "lax",
         });
 
+        console.log("[Server] admin_session cookie set, domain:", cookieDomain || "default");
         return { success: true };
     } catch (err) {
         console.error("[Server] Failed to set cookie:", err);
         return { error: "Failed to create session. Please try again." };
     }
+}
+
+export async function loginAndRedirect(formData: FormData) {
+    const result = await login(formData);
+    if (result && 'success' in result && result.success) {
+        const { redirect } = await import("next/navigation");
+        redirect("/admin/dashboard");
+    }
+    return result;
 }
 
 export async function loginWithGoogle() {
