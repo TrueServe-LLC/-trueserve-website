@@ -17,6 +17,15 @@ export async function login(formData: FormData) {
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
+    console.log("Login attempt:", {
+        email,
+        emailMatch: email.toLowerCase() === ADMIN_EMAIL?.toLowerCase(),
+        passwordMatch: password === ADMIN_PASSWORD,
+        hasEnvEmail: !!ADMIN_EMAIL,
+        hasEnvPassword: !!ADMIN_PASSWORD,
+        adminEmailEnv: ADMIN_EMAIL
+    });
+
     if (ADMIN_EMAIL && ADMIN_PASSWORD && email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD) {
         try {
             const cookieStore = await cookies();

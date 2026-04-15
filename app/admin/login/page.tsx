@@ -231,19 +231,10 @@ export default function AdminLogin() {
                         )}
                     </button>
  
-                    <div className="space-y-4">
-                        <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-[11px] text-blue-300">
-                            <p className="font-bold mb-2">🔑 Default Admin Credentials</p>
-                            <p className="font-mono text-blue-200 bg-black/30 px-2 py-1 rounded mb-1">Email: lcking992@gmail.com</p>
-                            <p className="font-mono text-blue-200 bg-black/30 px-2 py-1 rounded">Pass: TrueServe123!Admin</p>
-                            <p className="text-blue-300 mt-2 text-[10px]">Change your password after first login in Settings.</p>
-                        </div>
-
-                        <div className="text-center pt-2">
-                            <Link href="/" className="text-[10px] font-black text-slate-600 hover:text-white uppercase tracking-[0.4em] transition-colors italic">
-                                Return to Homepage
-                            </Link>
-                        </div>
+                    <div className="text-center pt-6">
+                        <Link href="/" className="text-[10px] font-black text-slate-600 hover:text-white uppercase tracking-[0.4em] transition-colors italic">
+                            Return to Homepage
+                        </Link>
                     </div>
                 </div>
             </div>
