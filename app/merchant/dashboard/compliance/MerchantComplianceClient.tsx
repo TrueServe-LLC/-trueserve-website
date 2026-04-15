@@ -2,9 +2,10 @@
 
 import { useState, useRef } from "react";
 import { getComplianceHelp } from "@/lib/complianceHelpBot";
+import { getStateInspectionInfo } from "@/lib/stateInspectionReports";
 import ChatBot from "@/components/ChatBot";
 import type { BotMessage, ComplianceContext } from "@/lib/complianceHelpBot";
-import { AlertCircle, CheckCircle, Clock, ChevronDown } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink } from "lucide-react";
 
 type RestaurantInfo = {
     id: string;
@@ -45,6 +46,9 @@ export default function MerchantComplianceClient({
 }: MerchantComplianceClientProps) {
     const [chatOpen, setChatOpen] = useState(false);
     const [expandedInspection, setExpandedInspection] = useState<string | null>(null);
+
+    // Get state-specific inspection info
+    const stateInspectionInfo = getStateInspectionInfo(restaurant.state);
 
     const getStatusColor = (status: string) => {
         if (status === 'PASS') return 'bg-green-500/20 text-green-300 border-green-500/30';
@@ -229,6 +233,60 @@ export default function MerchantComplianceClient({
                         )}
                     </div>
                 </div>
+
+                {/* State Inspection Requirements */}
+                {stateInspectionInfo && (
+                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                        <h2 className="text-lg md:text-xl font-bold text-white mb-4">
+                            {stateInspectionInfo.state} Inspection Requirements
+                        </h2>
+
+                        {/* Health Department Info */}
+                        <div className="mb-6 rounded-lg bg-white/5 p-4 border border-white/10">
+                            <h3 className="font-bold text-white mb-3">Health Department Contact</h3>
+                            <p className="text-sm text-gray-300 mb-2"><strong>{stateInspectionInfo.healthDept}</strong></p>
+                            <p className="text-sm text-gray-300 mb-4">📞 {stateInspectionInfo.phoneNumber}</p>
+
+                            {/* Quick Links */}
+                            <div className="flex flex-col sm:flex-row gap-2">
+                                <a
+                                    href={stateInspectionInfo.inspectionURL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-[#e8a230] hover:bg-[#d99620] text-black px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
+                                >
+                                    📋 View Inspection Reports
+                                    <ExternalLink className="h-3 w-3" />
+                                </a>
+                                <a
+                                    href={stateInspectionInfo.requirementsURL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
+                                >
+                                    📖 View Requirements
+                                    <ExternalLink className="h-3 w-3" />
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Requirements List */}
+                        <h3 className="font-bold text-white mb-3">Key Requirements</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {stateInspectionInfo.requirements.map((req, idx) => (
+                                <div key={idx} className="flex items-start gap-2 text-sm text-gray-300">
+                                    <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
+                                    <span>{req}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Info Box */}
+                        <div className="mt-4 p-3 rounded bg-blue-500/10 border border-blue-500/30 text-xs text-blue-200">
+                            💡 <strong>Tip:</strong> Visit your state's health department website to review the latest inspection standards, complete any required training, and submit documentation.
+                        </div>
+                    </div>
+                )}
 
                 {/* Help Bot Section */}
                 <div className="mt-4">
