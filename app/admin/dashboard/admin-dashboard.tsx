@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface DashboardProps {
   stats: {
@@ -18,6 +19,20 @@ interface DashboardProps {
 }
 
 export default function AdminDashboard({ stats, recentActivity }: DashboardProps) {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
+    { href: '/admin/cost-management', label: 'Cost Management', icon: '💰' },
+    { href: '/admin/pricing', label: 'Pricing', icon: '💳' },
+    { href: '/admin/feature-switches', label: 'Feature Switches', icon: '🔧' },
+    { href: '/admin/team', label: 'Team', icon: '👥' },
+    { href: '/admin/support', label: 'Support', icon: '🆘' },
+    { href: '/admin/live-chats', label: 'Live Chats', icon: '💬' },
+    { href: '/admin/content', label: 'Content', icon: '📝' },
+    { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
+  ];
+
   return (
     <div className="min-h-screen bg-[#0a0c09] flex">
       {/* SIDEBAR */}
@@ -26,22 +41,12 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
           <h1 className="text-2xl font-black text-white mb-8">Admin Portal</h1>
 
           <nav className="space-y-2">
-            {[
-              { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
-              { href: '/admin/cost-management', label: 'Cost Management', icon: '💰' },
-              { href: '/admin/pricing', label: 'Pricing', icon: '💳' },
-              { href: '/admin/feature-switches', label: 'Feature Switches', icon: '🔧' },
-              { href: '/admin/team', label: 'Team', icon: '👥' },
-              { href: '/admin/support', label: 'Support', icon: '🆘' },
-              { href: '/admin/live-chats', label: 'Live Chats', icon: '💬' },
-              { href: '/admin/content', label: 'Content', icon: '📝' },
-              { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
-            ].map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  item.label === 'Dashboard'
+                  pathname === item.href
                     ? 'bg-orange-500 text-black font-bold'
                     : 'text-white/70 hover:text-white hover:bg-white/10'
                 }`}
