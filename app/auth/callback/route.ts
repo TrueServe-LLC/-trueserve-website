@@ -65,25 +65,18 @@ export async function GET(request: Request) {
                     ? `https://${forwardedHost}${finalNext}`
                     : `${origin}${finalNext}`;
             
-            // Subdomain Redirection Logic for Production
+            // Role-based portal routing for production
             const host = request.headers.get('host') || "";
             const cleanHost = host.split(':')[0];
-            const isProdDomain = cleanHost.endsWith("trueservedelivery.com") || cleanHost.endsWith("trueserve.delivery");
+            const isProdHost = cleanHost.endsWith("trueserve.delivery") || cleanHost.endsWith("trueservedelivery.com");
 
-            if (isProdDomain) {
-                const pieces = cleanHost.split('.');
-                const isSub = pieces.length > 2;
-                const subdomainPiece = isSub ? pieces[0] : "";
-                
-                let targetSubdomain = "";
-                if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) targetSubdomain = "admin";
-                else if (role === 'MERCHANT') targetSubdomain = "merchant";
-                else if (role === 'DRIVER') targetSubdomain = "driver";
-
-                // If user has a role but is NOT on the correct subdomain, force a move
-                if (targetSubdomain && subdomainPiece !== targetSubdomain) {
-                    const rootHost = isSub ? pieces.slice(1).join('.') : cleanHost;
-                    redirectUrl = `https://${targetSubdomain}.${rootHost}${finalNext}`;
+            if (isProdHost) {
+                if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+                    redirectUrl = `https://www.admin.trueserve.delivery${finalNext}`;
+                } else if (role === 'MERCHANT') {
+                    redirectUrl = `https://merchant.trueserve.delivery${finalNext}`;
+                } else if (role === 'DRIVER') {
+                    redirectUrl = `https://driver.trueserve.delivery${finalNext}`;
                 }
             }
 

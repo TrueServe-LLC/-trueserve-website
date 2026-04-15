@@ -126,7 +126,7 @@ export async function loginWithGoogle() {
         const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
         // Always use canonical admin domain in production so OAuth callback lands correctly
         const canonicalHost = process.env.NODE_ENV === "production"
-            ? "admin.trueservedelivery.com"
+            ? "www.admin.trueserve.delivery"
             : host;
         const redirectUrl = `${protocol}://${canonicalHost}/auth/callback`;
 
