@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { login, resetAdminPassword } from "./actions";
 import { createClient } from "@/lib/supabase/client";
@@ -10,30 +10,52 @@ export default function AdminLogin() {
     const [error, setError] = useState("");
     const [msg, setMsg] = useState("");
     const [isResetMode, setIsResetMode] = useState(false);
+    const [isPending, setIsPending] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleLogin = async (formData: FormData) => {
-        setError(""); setMsg("");
-        if (isResetMode) {
-            const res = await resetAdminPassword(formData);
-            if (res.error) setError(res.error);
-            else setMsg("Password reset email sent! Please check your inbox.");
-            return;
-        }
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError("");
+        setMsg("");
+        setIsPending(true);
 
         try {
-            const result = await login(formData);
-            if (result?.error) {
-                setError(result.error);
-            } else if (result?.success) {
-                // Redirect after successful login
-                window.location.href = "/admin/dashboard";
+            if (isResetMode) {
+                const formData = new FormData();
+                formData.set("email", email);
+                const res = await resetAdminPassword(formData);
+                if (res.error) {
+                    setError(res.error);
+                } else {
+                    setMsg("Password reset email sent! Please check your inbox.");
+                    setEmail("");
+                }
+            } else {
+                const formData = new FormData();
+                formData.set("email", email);
+                formData.set("password", password);
+
+                const result = await login(formData);
+                if (result?.error) {
+                    setError(result.error);
+                } else if (result?.success) {
+                    // Redirect after successful login
+                    setTimeout(() => {
+                        window.location.href = "/admin/dashboard";
+                    }, 500);
+                }
             }
         } catch (err: any) {
-            setError(err.message || "Login failed. Please try again.");
+            setError(err.message || "An error occurred. Please try again.");
+        } finally {
+            setIsPending(false);
         }
     };
 
     const handleGoogleLogin = async () => {
+        setIsPending(true);
+        setError("");
         try {
             const supabase = createClient();
             const { error } = await supabase.auth.signInWithOAuth({
@@ -48,9 +70,11 @@ export default function AdminLogin() {
 
             if (error) {
                 setError(error.message);
+                setIsPending(false);
             }
         } catch (err: any) {
             setError("Failed to start Google login.");
+            setIsPending(false);
         }
     };
 
@@ -80,57 +104,93 @@ export default function AdminLogin() {
                         <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">Internal Security Protocol</p>
                     </div>
 
-                    <form action={handleLogin} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-6">
                             <div className="space-y-2">
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Identity Terminal</label>
                                 <input
-                                    name="email"
                                     type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     placeholder="operator@trueserve.delivery"
                                     className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all text-white font-medium text-sm placeholder:text-white/20"
                                     required
+                                    disabled={isPending}
                                 />
                             </div>
-                            
+
                             {!isResetMode && (
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center px-1">
                                         <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">Access Key</label>
-                                        <button type="button" onClick={() => setIsResetMode(true)} className="text-[10px] text-primary font-bold uppercase tracking-widest hover:underline">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsResetMode(true);
+                                                setPassword("");
+                                                setError("");
+                                                setMsg("");
+                                            }}
+                                            className="text-[10px] text-primary font-bold uppercase tracking-widest hover:underline"
+                                            disabled={isPending}
+                                        >
                                             Recovery
                                         </button>
                                     </div>
                                     <input
-                                        name="password"
                                         type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••"
                                         className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all text-white font-medium text-sm placeholder:text-white/20"
                                         required
+                                        disabled={isPending}
                                     />
                                 </div>
                             )}
                         </div>
 
                         {error && (
-                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold text-center">
-                                {error}
+                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold text-center animate-pulse">
+                                ⚠️ {error}
                             </div>
                         )}
                         {msg && (
-                            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold text-center">
-                                {msg}
+                            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold text-center animate-pulse">
+                                ✓ {msg}
                             </div>
                         )}
 
-                        <button type="submit" className="w-full badge-solid-primary !py-5 !text-sm group">
-                            {isResetMode ? "Initiate Reset" : "Authorize Access"}
-                            <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                        <button
+                            type="submit"
+                            disabled={isPending || !email || (!isResetMode && !password)}
+                            className="w-full badge-solid-primary !py-5 !text-sm group disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                            {isPending ? (
+                                <>
+                                    <span className="inline-block animate-spin mr-2">⟳</span>
+                                    {isResetMode ? "Sending Reset Email..." : "Verifying..."}
+                                </>
+                            ) : (
+                                <>
+                                    {isResetMode ? "Initiate Reset" : "Authorize Access"}
+                                    <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                                </>
+                            )}
                         </button>
 
                         {isResetMode && (
                             <div className="text-center pt-2">
-                                <button type="button" onClick={() => setIsResetMode(false)} className="text-[10px] text-slate-500 hover:text-white font-bold uppercase tracking-widest transition-colors">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsResetMode(false);
+                                        setPassword("");
+                                        setMsg("");
+                                    }}
+                                    className="text-[10px] text-slate-500 hover:text-white font-bold uppercase tracking-widest transition-colors"
+                                    disabled={isPending}
+                                >
                                     Back to Terminal
                                 </button>
                             </div>
@@ -149,15 +209,25 @@ export default function AdminLogin() {
                     <button
                         type="button"
                         onClick={handleGoogleLogin}
-                        className="w-full flex items-center justify-center gap-3 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] py-4 rounded-full hover:bg-slate-200 transition-all shadow-xl active:scale-95 border-2 border-white"
+                        disabled={isPending}
+                        className="w-full flex items-center justify-center gap-3 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] py-4 rounded-full hover:bg-slate-200 transition-all shadow-xl active:scale-95 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg className="w-4 h-4" viewBox="0 0 24 24">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                        </svg>
-                        Continue with Google
+                        {isPending ? (
+                            <>
+                                <span className="inline-block animate-spin">⟳</span>
+                                Connecting Google...
+                            </>
+                        ) : (
+                            <>
+                                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                </svg>
+                                Continue with Google
+                            </>
+                        )}
                     </button>
  
                     <div className="text-center pt-2">
