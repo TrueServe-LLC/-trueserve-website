@@ -3,9 +3,11 @@
 import { useState, useRef } from "react";
 import { getComplianceHelp } from "@/lib/complianceHelpBot";
 import { getStateInspectionInfo } from "@/lib/stateInspectionReports";
+import { refreshStateInspectionsAction } from "./actions";
 import ChatBot from "@/components/ChatBot";
 import type { BotMessage, ComplianceContext } from "@/lib/complianceHelpBot";
-import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink } from "lucide-react";
+import type { InspectionDataWithMetadata, InspectionMetadata } from "@/lib/stateInspectionQueries";
+import { AlertCircle, CheckCircle, Clock, ChevronDown, ExternalLink, RefreshCw } from "lucide-react";
 
 type RestaurantInfo = {
     id: string;
@@ -36,16 +38,22 @@ type DriverStats = {
 interface MerchantComplianceClientProps {
     restaurant: RestaurantInfo;
     inspections: Inspection[];
+    liveInspections: InspectionDataWithMetadata[];
+    inspectionMetadata: InspectionMetadata;
     driverStats: DriverStats;
 }
 
 export default function MerchantComplianceClient({
     restaurant,
     inspections,
+    liveInspections,
+    inspectionMetadata,
     driverStats,
 }: MerchantComplianceClientProps) {
     const [chatOpen, setChatOpen] = useState(false);
     const [expandedInspection, setExpandedInspection] = useState<string | null>(null);
+    const [refreshing, setRefreshing] = useState(false);
+    const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
 
     // Get state-specific inspection info
     const stateInspectionInfo = getStateInspectionInfo(restaurant.state);
@@ -73,6 +81,25 @@ export default function MerchantComplianceClient({
             recentViolations: inspections[0]?.violations || [],
             lastInspectionDate: restaurant.lastInspectionAt,
         } as ComplianceContext);
+    };
+
+    const handleRefreshInspections = async () => {
+        setRefreshing(true);
+        setRefreshMessage(null);
+        try {
+            const result = await refreshStateInspectionsAction(restaurant.state, restaurant.id);
+            setRefreshMessage(result.message);
+            if (result.status === 'success') {
+                // Refresh the page after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        } catch (error: any) {
+            setRefreshMessage(`Error: ${error?.message || 'Failed to refresh'}`);
+        } finally {
+            setRefreshing(false);
+        }
     };
 
     return (
@@ -164,9 +191,114 @@ export default function MerchantComplianceClient({
                     </div>
                 </div>
 
+                {/* Live State Inspection Data */}
+                {liveInspections.length > 0 && (
+                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                            <div>
+                                <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+                                    <span>🔄 Live State Inspection Data</span>
+                                    {!inspectionMetadata.isStale && (
+                                        <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded border border-green-500/30">
+                                            Live
+                                        </span>
+                                    )}
+                                </h2>
+                                {inspectionMetadata.lastSyncedAt && (
+                                    <p className="text-xs text-white/50 mt-1">
+                                        Last synced: {new Date(inspectionMetadata.lastSyncedAt).toLocaleString()}
+                                    </p>
+                                )}
+                            </div>
+                            <button
+                                onClick={handleRefreshInspections}
+                                disabled={refreshing}
+                                className="flex items-center gap-2 px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/10 hover:bg-white/20 text-white"
+                            >
+                                <RefreshCw className={`h-3 w-3 md:h-4 md:w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                                {refreshing ? 'Refreshing...' : 'Refresh'}
+                            </button>
+                        </div>
+
+                        {refreshMessage && (
+                            <div className={`mb-4 p-3 rounded text-xs md:text-sm border ${
+                                refreshMessage.startsWith('✓') || refreshMessage.startsWith('Error')
+                                    ? 'bg-red-500/10 border-red-500/30 text-red-300'
+                                    : 'bg-green-500/10 border-green-500/30 text-green-300'
+                            }`}>
+                                {refreshMessage}
+                            </div>
+                        )}
+
+                        <div className="space-y-3">
+                            {liveInspections.map((inspection, idx) => (
+                                <div
+                                    key={`live-${idx}`}
+                                    className="border border-white/10 rounded-lg bg-white/5 p-3 md:p-4"
+                                >
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                                <span className="text-xs md:text-sm font-bold text-white/70">
+                                                    {new Date(inspection.inspectionDate).toLocaleDateString()}
+                                                </span>
+                                                {inspection.grade && (
+                                                    <span className={`text-xs md:text-sm font-bold px-2 py-0.5 rounded ${getGradeColor(inspection.grade)}`}>
+                                                        Grade: {inspection.grade}
+                                                    </span>
+                                                )}
+                                                {inspection.score !== null && (
+                                                    <span className="text-xs md:text-sm font-bold text-[#e8a230]">
+                                                        Score: {inspection.score}/100
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="text-xs text-white/50">
+                                                Source: {inspection.sourceAPI} ({inspection.status})
+                                            </div>
+                                        </div>
+                                        {inspection.externalURL && (
+                                            <a
+                                                href={inspection.externalURL}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs md:text-sm text-[#e8a230] hover:text-[#d99620] transition-colors flex-shrink-0"
+                                            >
+                                                View Report
+                                                <ExternalLink className="h-3 w-3" />
+                                            </a>
+                                        )}
+                                    </div>
+                                    {inspection.violations && inspection.violations.length > 0 && (
+                                        <div className="mt-2 pt-2 border-t border-white/10">
+                                            <p className="text-xs md:text-sm text-white/70 font-bold mb-1">Violations:</p>
+                                            <ul className="space-y-0.5 text-white/60 text-xs">
+                                                {inspection.violations.map((violation: any, vidx: number) => (
+                                                    <li key={vidx} className="flex gap-2">
+                                                        <span>•</span>
+                                                        <span>{typeof violation === 'string' ? violation : violation.description || JSON.stringify(violation)}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    {(!inspection.violations || inspection.violations.length === 0) && (
+                                        <div className="mt-2 pt-2 border-t border-white/10 text-xs md:text-sm text-green-400 flex items-center gap-1">
+                                            <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
+                                            No violations found
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Inspection History - Mobile Optimized */}
                 <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
-                    <h2 className="text-lg md:text-xl font-bold text-white mb-4">Inspection History</h2>
+                    <h2 className="text-lg md:text-xl font-bold text-white mb-4">
+                        {liveInspections.length > 0 ? 'Additional' : ''} Inspection History
+                    </h2>
                     <div className="space-y-3">
                         {inspections.length === 0 ? (
                             <p className="text-sm text-white/50">No inspections recorded yet.</p>

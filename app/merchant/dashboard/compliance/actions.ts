@@ -10,6 +10,11 @@ export type ComplianceTemplateActionState = {
     message: string;
 };
 
+export type RefreshInspectionActionState = {
+    status: "idle" | "loading" | "success" | "error";
+    message: string;
+};
+
 export async function saveComplianceTemplateAction(
     _prevState: ComplianceTemplateActionState,
     formData: FormData
@@ -75,4 +80,57 @@ export async function saveComplianceTemplateAction(
         status: "success",
         message: `${payload.title} saved for ${restaurant.name}.`,
     };
+}
+
+/**
+ * Manually trigger state inspection data refresh (admin only)
+ * Calls the cron sync endpoint for a specific state
+ */
+export async function refreshStateInspectionsAction(
+    state: string,
+    restaurantId: string
+): Promise<RefreshInspectionActionState> {
+    try {
+        const cronSecret = process.env.CRON_SECRET;
+        if (!cronSecret) {
+            return {
+                status: "error",
+                message: "Refresh not available - system misconfigured",
+            };
+        }
+
+        // Trigger the cron job to sync this state
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/cron/sync-state-inspections`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${cronSecret}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            return {
+                status: "error",
+                message: `Refresh failed: ${error.error || 'Unknown error'}`,
+            };
+        }
+
+        const result = await response.json();
+
+        revalidatePath("/merchant/dashboard/compliance");
+        return {
+            status: "success",
+            message: `✓ Inspection data refreshed for ${state}. Synced ${result.summary?.totalRestaurantsSynced || 0} records.`,
+        };
+    } catch (error: any) {
+        console.error('[refreshStateInspections] Error:', error);
+        return {
+            status: "error",
+            message: `Refresh failed: ${error?.message || 'Unknown error'}`,
+        };
+    }
 }

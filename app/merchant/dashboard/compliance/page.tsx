@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { getMerchantOrRedirect } from "@/lib/merchant-auth";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getRestaurantInspections } from "@/lib/stateInspectionQueries";
 import MerchantComplianceClient from "./MerchantComplianceClient";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +32,23 @@ export default async function MerchantCompliancePage() {
                         score: 85,
                     },
                 ]}
+                liveInspections={[
+                    {
+                        inspectionDate: new Date().toISOString(),
+                        grade: "A",
+                        score: 95,
+                        status: "PASS",
+                        violations: [],
+                        sourceAPI: "ncAPI",
+                        externalURL: "https://www.nc.gov/food-inspection-reports/demo",
+                        notes: "Sample live inspection data",
+                    },
+                ]}
+                inspectionMetadata={{
+                    lastSyncedAt: new Date().toISOString(),
+                    recordCount: 1,
+                    isStale: false,
+                }}
                 driverStats={{
                     totalDrivers: 12,
                     activeDrivers: 10,
@@ -72,6 +90,10 @@ export default async function MerchantCompliancePage() {
         .order("inspectionDate", { ascending: false })
         .limit(10);
 
+    // Fetch live state inspection data
+    const { inspections: liveInspections, metadata: inspectionMetadata } =
+        await getRestaurantInspections(restaurant.id, restaurant.state);
+
     // Fetch driver compliance stats
     const { data: drivers } = await supabaseAdmin
         .from("Driver")
@@ -104,6 +126,8 @@ export default async function MerchantCompliancePage() {
                 followUpRequired: insp.followUpRequired || false,
                 score: insp.score || 0,
             }))}
+            liveInspections={liveInspections}
+            inspectionMetadata={inspectionMetadata}
             driverStats={driverStats}
         />
     );
