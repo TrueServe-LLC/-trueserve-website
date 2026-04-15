@@ -20,41 +20,78 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0c09] flex">
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0a0c09' }}>
       {/* SIDEBAR */}
-      <div className="w-64 bg-[#0f1210] border-r border-white/10 min-h-screen sticky top-0">
-        <div className="p-6">
-          <h1 className="text-2xl font-black text-white mb-8">Merchant Portal</h1>
+      <div style={{
+        width: '256px',
+        backgroundColor: '#0f1210',
+        borderRight: '1px solid rgba(255,255,255,0.1)',
+        minHeight: '100vh',
+        position: 'sticky',
+        top: 0,
+        padding: '24px',
+        boxSizing: 'border-box',
+        overflowY: 'auto'
+      }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'white', marginBottom: '32px' }}>
+          Merchant Portal
+        </h1>
 
-          <nav className="space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  pathname === item.href
-                    ? 'bg-orange-500 text-black font-bold'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span className="text-sm">{item.label}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                transition: 'all 200ms',
+                textDecoration: 'none',
+                backgroundColor: pathname === item.href ? '#f97316' : 'transparent',
+                color: pathname === item.href ? 'black' : 'rgba(255,255,255,0.7)',
+                fontWeight: pathname === item.href ? 'bold' : 'normal'
+              }}
+              onMouseEnter={(e) => {
+                if (pathname !== item.href) {
+                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (pathname !== item.href) {
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              <span style={{ fontSize: '18px' }}>{item.icon}</span>
+              <span style={{ fontSize: '14px' }}>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* HEADER */}
-        <div className="bg-[#0a0c09] border-b border-white/10 px-8 py-6">
-          <h2 className="text-4xl font-black text-white mb-2">Merchant Dashboard</h2>
-          <p className="text-white/60">{restaurantName}</p>
+        <div style={{
+          backgroundColor: '#0a0c09',
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          padding: '24px 32px',
+        }}>
+          <h2 style={{ fontSize: '32px', fontWeight: 900, color: 'white', marginBottom: '8px' }}>
+            Merchant Dashboard
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}>
+            {restaurantName}
+          </p>
         </div>
 
         {/* CONTENT AREA */}
-        <div className="p-8">
+        <div style={{ padding: '32px', overflow: 'auto' }}>
           {children}
         </div>
       </div>
