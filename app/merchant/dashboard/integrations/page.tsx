@@ -30,7 +30,7 @@ export default async function IntegrationsPage() {
             .from("Restaurant")
             .select('*')
             .eq("ownerId", activeUserId!)
-            .single();
+            .maybeSingle();
 
         if (error || !data) {
             redirect("/merchant/signup");
