@@ -164,7 +164,7 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
             <span>True<span style={{ color: '#f97316' }}>Serve</span></span>
           </div>
 
-          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/driver/dashboard' && pathname.startsWith(item.href));
               return (
@@ -186,7 +186,7 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
           </nav>
 
           <div className="drv-sidebar-footer">
-            <button className="drv-tutorial-btn">
+            <button className="drv-tutorial-btn" onClick={() => window.dispatchEvent(new CustomEvent('ts:portal-tour:open', { detail: { portal: 'DRIVER' } }))}>
               <span className="drv-tutorial-icon">?</span>
               Start tutorial
             </button>

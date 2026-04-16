@@ -183,7 +183,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
             </span>
           </div>
 
-          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -200,7 +200,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
           </nav>
 
           <div className="mch-sidebar-footer">
-            <button className="mch-tutorial-btn">
+            <button className="mch-tutorial-btn" onClick={() => window.dispatchEvent(new CustomEvent('ts:portal-tour:open', { detail: { portal: 'MERCHANT' } }))}>
               <span className="mch-tutorial-icon">?</span>
               Start tutorial
             </button>
