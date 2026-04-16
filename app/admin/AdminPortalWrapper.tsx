@@ -18,7 +18,6 @@ export default function AdminPortalWrapper({ children }: AdminPortalWrapperProps
     { href: '/admin/feature-switches', label: 'Feature Switches', icon: '🔧' },
     { href: '/admin/team',             label: 'Team',             icon: '👥' },
     { href: '/admin/support',          label: 'Support',          icon: '🆘' },
-    { href: '/admin/live-chats',       label: 'Live Chats',       icon: '💬' },
     { href: '/admin/content',          label: 'Content',          icon: '📝' },
     { href: '/admin/analytics',        label: 'Analytics',        icon: '📈' },
     { href: '/admin/users',            label: 'Users',            icon: '👤' },
@@ -155,7 +154,10 @@ export default function AdminPortalWrapper({ children }: AdminPortalWrapperProps
       <div className="adm-portal">
         {/* SIDEBAR */}
         <div className="adm-sidebar">
-          <div className="adm-logo">📊 Admin Portal</div>
+          <div className="adm-logo">
+            <img src="/logo.png" alt="TrueServe" width={28} height={28} style={{ borderRadius: '50%', boxShadow: '0 0 10px rgba(249,115,22,0.4)', flexShrink: 0 }} />
+            <span style={{ color: '#fff', fontWeight: 700 }}>True<span style={{ color: '#f97316' }}>Serve</span></span>
+          </div>
 
           <div className="adm-nav-section">
             {navItems.map((item) => (

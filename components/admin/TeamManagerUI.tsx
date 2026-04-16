@@ -3,20 +3,26 @@
 import React, { useState, useTransition } from "react";
 import { inviteTeamMember, sendPasswordReset, revokeAccess } from "@/app/admin/team/actions";
 
+const ROLE_COLORS: Record<string, { bg: string; color: string }> = {
+    ADMIN:   { bg: 'rgba(249,115,22,0.12)', color: '#f97316' },
+    PM:      { bg: 'rgba(249,115,22,0.12)', color: '#f97316' },
+    OPS:     { bg: 'rgba(99,102,241,0.12)', color: '#818cf8' },
+    SUPPORT: { bg: 'rgba(52,211,153,0.12)', color: '#34d399' },
+    FINANCE: { bg: 'rgba(251,191,36,0.12)', color: '#fbbf24' },
+    QA_TESTER: { bg: 'rgba(156,163,175,0.12)', color: '#9ca3af' },
+};
+
 export default function TeamManagerUI({ initialMembers }: { initialMembers: any[] }) {
     const [isPending, startTransition] = useTransition();
-    const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+    const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
     const handleAction = async (actionFn: () => Promise<any>) => {
         setMessage(null);
         startTransition(async () => {
             try {
                 const res = await actionFn();
-                if (res?.error) {
-                    setMessage({ text: res.error, type: 'error' });
-                } else if (res?.success) {
-                    setMessage({ text: res.success, type: 'success' });
-                }
+                if (res?.error) setMessage({ text: res.error, type: 'error' });
+                else if (res?.success) setMessage({ text: res.success, type: 'success' });
             } catch (e: any) {
                 setMessage({ text: e.message || "An error occurred", type: 'error' });
             }
@@ -31,87 +37,111 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
     };
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-white/10 pb-6">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Identity & Access</h1>
-                    <p className="text-slate-400 text-xs md:text-sm mt-1">Manage admin roles, API permissions, and internal team members.</p>
-                </div>
-                <div className="bg-slate-800/50 p-4 border border-white/5 rounded-2xl w-full lg:max-w-md relative">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Invite New Team Member</h3>
-                    <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-2 relative z-10">
-                        <input required name="email" type="email" placeholder="Employee Email..." className="flex-1 bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors disabled:opacity-50" disabled={isPending} />
-                        <div className="flex gap-2">
-                            <select required name="role" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors cursor-pointer flex-1 sm:w-[110px] disabled:opacity-50" disabled={isPending}>
-                                <option value="OPS">Ops</option>
-                                <option value="SUPPORT">Support</option>
-                                <option value="FINANCE">Finance</option>
-                                <option value="ADMIN">Admin</option>
-                            </select>
-                            <button type="submit" disabled={isPending} className="bg-primary text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded hover:brightness-110 transition-all shadow-lg shadow-primary/20 disabled:grayscale disabled:opacity-50 min-w-[80px]">
-                                {isPending ? "..." : "Invite"}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+        <>
+            <style>{`
+                .iam-invite { background: #141a18; border: 1px solid #1e2420; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+                .iam-invite-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 12px; }
+                .iam-invite-row { display: flex; gap: 10px; flex-wrap: wrap; }
+                .iam-input { background: #0f1210; border: 1px solid #2e3830; color: #fff; font-size: 13px; padding: 8px 12px; border-radius: 6px; outline: none; flex: 1; min-width: 200px; }
+                .iam-input:focus { border-color: #f97316; }
+                .iam-select { background: #0f1210; border: 1px solid #2e3830; color: #fff; font-size: 13px; padding: 8px 12px; border-radius: 6px; outline: none; cursor: pointer; }
+                .iam-select:focus { border-color: #f97316; }
+                .iam-btn { background: #f97316; color: #000; font-size: 12px; font-weight: 700; padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap; }
+                .iam-btn:hover { background: #fb923c; }
+                .iam-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+                .iam-msg { padding: 10px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; margin-bottom: 16px; }
+                .iam-msg.success { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+                .iam-msg.error { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+                .iam-table-wrap { background: #141a18; border: 1px solid #1e2420; border-radius: 8px; overflow-x: auto; }
+                .iam-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+                .iam-table th { padding: 10px 16px; text-align: left; color: #555; font-weight: 500; border-bottom: 1px solid #1e2420; }
+                .iam-table td { padding: 12px 16px; color: #aaa; border-bottom: 1px solid #1e2420; }
+                .iam-table tr:last-child td { border-bottom: none; }
+                .iam-table tr:hover td { background: rgba(255,255,255,0.01); }
+                .iam-name { color: #fff; font-weight: 500; }
+                .iam-email { font-size: 12px; color: #555; margin-top: 2px; }
+                .iam-role { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+                .iam-actions { display: flex; gap: 8px; justify-content: flex-end; }
+                .iam-action-btn { font-size: 12px; padding: 5px 12px; border-radius: 4px; border: 1px solid #2e3830; background: #1e2420; color: #aaa; cursor: pointer; white-space: nowrap; }
+                .iam-action-btn:hover { border-color: #f97316; color: #f97316; }
+                .iam-action-btn.danger { border-color: rgba(248,113,113,0.3); color: #f87171; background: rgba(248,113,113,0.08); }
+                .iam-action-btn.danger:hover { background: rgba(248,113,113,0.15); }
+                .iam-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+                .iam-empty { color: #555; padding: 32px 16px; text-align: center; }
+                .iam-count { font-size: 12px; color: #555; padding: 10px 16px; border-top: 1px solid #1e2420; }
+            `}</style>
+
+            {/* Invite Form */}
+            <div className="iam-invite">
+                <div className="iam-invite-title">Invite Team Member</div>
+                <form onSubmit={handleInvite}>
+                    <div className="iam-invite-row">
+                        <input
+                            required
+                            name="email"
+                            type="email"
+                            placeholder="employee@trueserve.delivery"
+                            className="iam-input"
+                            disabled={isPending}
+                        />
+                        <select required name="role" className="iam-select" disabled={isPending}>
+                            <option value="OPS">Ops</option>
+                            <option value="SUPPORT">Support</option>
+                            <option value="FINANCE">Finance</option>
+                            <option value="PM">PM</option>
+                            <option value="QA_TESTER">QA Tester</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
+                        <button type="submit" className="iam-btn" disabled={isPending}>
+                            {isPending ? "Sending..." : "Send Invite"}
+                        </button>
+                    </div>
+                </form>
             </div>
 
+            {/* Message */}
             {message && (
-                <div className={`p-4 rounded-xl text-sm font-bold border animate-in fade-in slide-in-from-top-2 ${
-                    message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'
-                }`}>
-                    {message.text}
-                </div>
+                <div className={`iam-msg ${message.type}`}>{message.text}</div>
             )}
 
-            <div className="card">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-bold flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-blue-500"></span>
-                        Active Staff ({initialMembers.length})
-                    </h2>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-800/50 text-slate-300">
-                            <tr>
-                                <th className="px-6 py-4 font-semibold rounded-tl-lg">Member</th>
-                                <th className="px-6 py-4 font-semibold">Role</th>
-                                <th className="px-6 py-4 font-semibold text-right rounded-tr-lg">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {initialMembers.map((member: any) => (
-                                <tr key={member.id} className="hover:bg-white/[0.02] transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="font-semibold text-white">{member.name || 'Unknown'}</div>
-                                        <div className="text-slate-400 text-xs">{member.email}</div>
+            {/* Team Table */}
+            <div className="iam-table-wrap">
+                <table className="iam-table">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Role</th>
+                            <th style={{ textAlign: 'right' }}>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {initialMembers.map((member: any) => {
+                            const roleStyle = ROLE_COLORS[member.role] || { bg: 'rgba(85,85,85,0.2)', color: '#888' };
+                            return (
+                                <tr key={member.id}>
+                                    <td>
+                                        <div className="iam-name">{member.name || 'Unknown'}</div>
+                                        <div className="iam-email">{member.email}</div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${
-                                            member.role === 'ADMIN' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                                            member.role === 'SUPPORT' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-                                            'bg-blue-500/10 text-blue-500 border border-blue-500/20'
-                                        }`}>
+                                    <td>
+                                        <span className="iam-role" style={{ background: roleStyle.bg, color: roleStyle.color }}>
                                             {member.role}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex gap-2 justify-end">
-                                            <button 
-                                                onClick={() => handleAction(() => sendPasswordReset(member.id, member.email))}
+                                    <td>
+                                        <div className="iam-actions">
+                                            <button
+                                                className="iam-action-btn"
                                                 disabled={isPending}
-                                                className="text-slate-400 hover:text-white px-3 py-1 bg-slate-800 rounded text-xs transition-colors border border-slate-700 disabled:opacity-50"
+                                                onClick={() => handleAction(() => sendPasswordReset(member.id, member.email))}
                                             >
                                                 Reset Password
                                             </button>
-                                            
                                             {member.role !== 'ADMIN' && (
-                                                <button 
-                                                    onClick={() => handleAction(() => revokeAccess(member.id, member.email))}
+                                                <button
+                                                    className="iam-action-btn danger"
                                                     disabled={isPending}
-                                                    className="text-red-400 hover:text-white px-3 py-1 bg-red-950/30 rounded text-xs transition-colors border border-red-900/50 disabled:opacity-50"
+                                                    onClick={() => handleAction(() => revokeAccess(member.id, member.email))}
                                                 >
                                                     Revoke
                                                 </button>
@@ -119,18 +149,19 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
-                            {initialMembers.length === 0 && (
-                                <tr>
-                                    <td colSpan={3} className="px-6 py-8 text-center text-slate-500">
-                                        No explicit team members found.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                            );
+                        })}
+                        {initialMembers.length === 0 && (
+                            <tr>
+                                <td colSpan={3} className="iam-empty">No team members yet. Use the invite form above.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+                {initialMembers.length > 0 && (
+                    <div className="iam-count">{initialMembers.length} member{initialMembers.length !== 1 ? 's' : ''}</div>
+                )}
             </div>
-        </div>
+        </>
     );
 }
