@@ -38,13 +38,13 @@ export default function DriverTutorialPreviewPage() {
 
   function numStyle(i: number) {
     if (i < step) return "border-emerald-400/35 bg-emerald-400/15 text-emerald-400";
-    if (i === step) return "border-[#e8a230]/45 bg-[#e8a230]/15 text-[#e8a230]";
+    if (i === step) return "border-[#f97316]/45 bg-[#f97316]/15 text-[#f97316]";
     return "border-white/10 bg-white/5 text-white/30";
   }
 
   const hl = (key: string) =>
     cur.highlight === key
-      ? "border-[#e8a230]/40 shadow-[0_0_0_2px_rgba(232,162,48,0.1)] bg-[#e8a230]/[0.04] transition-all duration-300"
+      ? "border-[#f97316]/40 shadow-[0_0_0_2px_rgba(249,115,22,0.1)] bg-[#f97316]/[0.04] transition-all duration-300"
       : "border-white/8 opacity-45 transition-all duration-300";
 
   const navTabs = ["Dashboard", "Settlements", "Reputation", "Profile"] as const;
@@ -72,9 +72,9 @@ export default function DriverTutorialPreviewPage() {
           box-shadow: none;
         }
         .dt-chip-active {
-          border-color: rgba(232,162,48,0.45);
-          background: rgba(232,162,48,0.14);
-          color: #e8a230;
+          border-color: rgba(249,115,22,0.45);
+          background: rgba(249,115,22,0.14);
+          color: #f97316;
         }
         .dt-tabs {
           background: #0a0c09;
@@ -96,8 +96,8 @@ export default function DriverTutorialPreviewPage() {
           flex-shrink: 0;
         }
         .dt-tab-active {
-          color: #c8a84b;
-          border-bottom-color: #c8a84b;
+          color: #f97316;
+          border-bottom-color: #f97316;
         }
       `}} />
 
@@ -121,7 +121,7 @@ export default function DriverTutorialPreviewPage() {
         <div className="mb-9 text-center md:mb-10">
           <p className="food-kicker mb-3">Interactive Walkthrough</p>
           <h1 className="food-heading !text-[22px] sm:!text-[28px] md:!text-[34px] lg:!text-[44px] leading-none">
-            Driver Portal <span className="text-[#e8a230]">Preview</span>
+            Driver Portal <span className="text-[#f97316]">Preview</span>
           </h1>
           <p className="mx-auto mt-4 max-w-[540px] text-[13px] leading-relaxed text-white/50">
             Explore the key sections of the TrueServe driver experience. Step through each section to see what drivers will interact with.
@@ -146,14 +146,14 @@ export default function DriverTutorialPreviewPage() {
 
             {/* Topbar */}
             <div className="flex min-w-0 items-center gap-2.5 border-b border-white/8 bg-black/40 px-4 py-2.5">
-              <img src="/logo.png" alt="TrueServe" width={22} height={22} style={{ borderRadius: "999px", flexShrink: 0, boxShadow: "0 0 10px rgba(232,162,48,0.3)" }} />
+              <img src="/logo.png" alt="TrueServe" width={22} height={22} style={{ borderRadius: "999px", flexShrink: 0, boxShadow: "0 0 10px rgba(249,115,22,0.3)" }} />
               <span className="shrink-0 text-[11px] font-black tracking-wide text-white">True<span style={{ color: "#68c7cc" }}>Serve</span></span>
               <span className="text-white/20">·</span>
               <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Driver Portal Preview</span>
             </div>
 
             {/* Nav tabs */}
-            <div className={`dt-tabs flex-wrap gap-0 border-b border-white/8 px-3 py-0 transition-all duration-300 ${cur.highlight === "nav" ? "bg-[#e8a230]/[0.03]" : ""}`}>
+            <div className={`dt-tabs flex-wrap gap-0 border-b border-white/8 px-3 py-0 transition-all duration-300 ${cur.highlight === "nav" ? "bg-[#f97316]/[0.03]" : ""}`}>
               {navTabs.map(tab => {
                 return (
                   <span key={tab} className={`dt-tab ${tab === "Dashboard" ? "dt-tab-active" : ""}`}>
@@ -170,7 +170,7 @@ export default function DriverTutorialPreviewPage() {
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {[
                     { label: "Available Trips", val: "8", sub: "Nearby offers", cls: "text-white" },
-                    { label: "Today", val: "$126", sub: "Est. earnings", cls: "text-[#e8a230]" },
+                    { label: "Today", val: "$126", sub: "Est. earnings", cls: "text-[#f97316]" },
                     { label: "Deliveries", val: "7", sub: "Completed today", cls: "text-white" },
                     { label: "Status", val: "Online", sub: "Accepting orders", cls: "text-emerald-300" },
                   ].map(s => (
@@ -186,8 +186,8 @@ export default function DriverTutorialPreviewPage() {
               {/* Active delivery */}
               <div className={`rounded-[8px] border overflow-hidden ${hl("delivery")} ${cur.highlight !== "delivery" ? "hidden sm:block" : ""}`}>
                 <div className="flex items-center gap-2 border-b border-white/8 px-4 py-2.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#e8a230]" style={{ animation: "dpPulse 2s ease-in-out infinite" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.08em] text-[#e8a230]/80">Active Delivery</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#f97316]" style={{ animation: "dpPulse 2s ease-in-out infinite" }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/80">Active Delivery</span>
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="border-r border-white/8 px-4 py-3">
@@ -204,10 +204,10 @@ export default function DriverTutorialPreviewPage() {
                 <div className="flex items-center gap-3 border-t border-white/8 px-4 py-2.5">
                   <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.05em] text-white/35">Progress</span>
                   <div className="relative h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-                    <span className="absolute inset-y-0 left-0 w-[68%] rounded-full bg-[#e8a230]/75" />
+                    <span className="absolute inset-y-0 left-0 w-[68%] rounded-full bg-[#f97316]/75" />
                     <span className="absolute inset-y-0 left-0 w-[25%] rounded-full bg-white/70" style={{ animation: "dpSweep 2.2s linear infinite" }} />
                   </div>
-                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.03em] text-[#e8a230]">Picked up — En route</span>
+                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.03em] text-[#f97316]">Picked up — En route</span>
                 </div>
               </div>
 
@@ -226,7 +226,7 @@ export default function DriverTutorialPreviewPage() {
                       <p className="text-[12px] font-semibold text-white/85">{t.name}</p>
                       <p className="text-[10px] text-white/45">{t.dest}</p>
                     </div>
-                    <span className="shrink-0 text-[14px] font-black text-[#e8a230]">{t.pay}</span>
+                    <span className="shrink-0 text-[14px] font-black text-[#f97316]">{t.pay}</span>
                   </div>
                 ))}
               </div>
@@ -247,7 +247,7 @@ export default function DriverTutorialPreviewPage() {
                       {i < step ? "✓" : s.step}
                     </div>
                     <div className="min-w-0">
-                      <p className={`text-[12px] font-bold leading-tight transition-colors ${i===step ? "text-[#e8a230]" : i<step ? "text-emerald-300" : "text-white/40"}`}>{s.title ?? s.label}</p>
+                      <p className={`text-[12px] font-bold leading-tight transition-colors ${i===step ? "text-[#f97316]" : i<step ? "text-emerald-300" : "text-white/40"}`}>{s.title ?? s.label}</p>
                       <p className="mt-0.5 text-[10px] leading-snug text-white/28">{s.badge}</p>
                     </div>
                   </button>
@@ -258,7 +258,7 @@ export default function DriverTutorialPreviewPage() {
             {/* Section detail */}
             <div className="food-panel flex flex-col gap-4 !rounded-[12px] !p-5">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#e8a230]/60">● {cur.badge}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/60">● {cur.badge}</p>
                 <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">{cur.title}</h3>
                 <p className="mt-3 text-[13px] leading-relaxed text-white/60">{cur.body}</p>
               </div>
@@ -284,7 +284,7 @@ export default function DriverTutorialPreviewPage() {
           <div className="lg:col-span-2 food-panel !rounded-[12px] !p-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#e8a230]/60">Tutorial Feedback</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">Tutorial Feedback</p>
                 <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">Was this tutorial helpful?</h3>
                 <p className="mt-2 max-w-[540px] text-[12px] leading-relaxed text-white/55">
                   Tap a rating to help us improve the driver onboarding experience.
@@ -298,8 +298,8 @@ export default function DriverTutorialPreviewPage() {
                     onClick={() => setRating(n)}
                     className={`flex h-10 w-10 items-center justify-center rounded-full border text-[12px] font-black transition-all ${
                       rating === n
-                        ? "border-[#e8a230]/70 bg-[#e8a230] text-black"
-                        : "border-white/10 bg-white/[0.03] text-white/45 hover:border-[#e8a230]/35 hover:text-[#e8a230]"
+                        ? "border-[#f97316]/70 bg-[#f97316] text-black"
+                        : "border-white/10 bg-white/[0.03] text-white/45 hover:border-[#f97316]/35 hover:text-[#f97316]"
                     }`}
                     aria-label={`Rate tutorial ${n} out of 5`}
                   >

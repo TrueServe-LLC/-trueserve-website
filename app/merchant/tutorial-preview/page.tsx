@@ -58,17 +58,17 @@ export default function MerchantTutorialPreviewPage() {
 
   function blockStyle(i: number) {
     if (i < step) return "border-emerald-400/25 bg-emerald-400/[0.03]";
-    if (i === step) return "border-[#e8a230]/45 bg-[#e8a230]/[0.05] shadow-[0_0_0_2px_rgba(232,162,48,0.1)]";
+    if (i === step) return "border-[#f97316]/45 bg-[#f97316]/[0.05] shadow-[0_0_0_2px_rgba(249,115,22,0.1)]";
     return "border-white/8 bg-white/[0.025]";
   }
   function tagStyle(i: number) {
     if (i < step) return "text-emerald-400";
-    if (i === step) return "text-[#e8a230]";
-    return "text-[#e8a230]/50";
+    if (i === step) return "text-[#f97316]";
+    return "text-[#f97316]/50";
   }
   function numStyle(i: number) {
     if (i < step) return "border-emerald-400/35 bg-emerald-400/15 text-emerald-400";
-    if (i === step) return "border-[#e8a230]/45 bg-[#e8a230]/15 text-[#e8a230]";
+    if (i === step) return "border-[#f97316]/45 bg-[#f97316]/15 text-[#f97316]";
     return "border-white/10 bg-white/5 text-white/30";
   }
 
@@ -96,9 +96,9 @@ export default function MerchantTutorialPreviewPage() {
           box-shadow: none;
         }
         .mp-chip-active {
-          border-color: rgba(232,162,48,0.45);
-          background: rgba(232,162,48,0.14);
-          color: #e8a230;
+          border-color: rgba(249,115,22,0.45);
+          background: rgba(249,115,22,0.14);
+          color: #f97316;
         }
       `}} />
 
@@ -127,7 +127,7 @@ export default function MerchantTutorialPreviewPage() {
         <div className="mb-9 text-center md:mb-10">
           <p className="food-kicker mb-3">Interactive Walkthrough</p>
           <h1 className="food-heading !text-[22px] sm:!text-[28px] md:!text-[34px] lg:!text-[44px] leading-none">
-            POS Connection <span className="text-[#e8a230]">Preview</span>
+            POS Connection <span className="text-[#f97316]">Preview</span>
           </h1>
           <p className="mx-auto mt-4 max-w-[540px] text-[13px] leading-relaxed text-white/50">
             Step through how merchants connect a POS provider, validate credentials, and sync their menu inside the TrueServe portal.
@@ -151,7 +151,7 @@ export default function MerchantTutorialPreviewPage() {
           <div className="food-panel min-w-0 overflow-hidden !p-0 !rounded-[12px]">
             <div className="border-b border-white/8 bg-black/35 px-5 py-4">
               <div className="mb-3 flex min-w-0 items-center gap-2">
-                <img src="/logo.png" alt="TrueServe" width={20} height={20} style={{ borderRadius: "999px", flexShrink: 0, boxShadow: "0 0 10px rgba(232,162,48,0.3)" }} />
+                <img src="/logo.png" alt="TrueServe" width={20} height={20} style={{ borderRadius: "999px", flexShrink: 0, boxShadow: "0 0 10px rgba(249,115,22,0.3)" }} />
                 <span className="shrink-0 text-[11px] font-black tracking-wide text-white">True<span style={{ color: "#68c7cc" }}>Serve</span></span>
                 <span className="text-white/20">·</span>
               <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Merchant Portal Preview</span>
@@ -169,16 +169,16 @@ export default function MerchantTutorialPreviewPage() {
               {/* Connection sequence */}
               <p className="text-[10px] font-black uppercase tracking-[0.1em] text-white/35">Connection Sequence</p>
               <div className="sm:hidden rounded-[8px] border border-[#252b1e] bg-[#161a13] px-4 py-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#e8a230]/85">Step {cur.step}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/85">Step {cur.step}</p>
                 <p className="mt-1 text-[20px] font-black leading-tight text-white">{activeStepBlock.name}</p>
                 <p className="mt-2 text-[13px] leading-relaxed text-white/70">
                   {activeStepBlock.detail || "Run a live connection check to validate credentials and confirm API access."}
                 </p>
                 {step === 2 && (
                   <div className="mt-3">
-                    <div className="mb-1 text-[10px] font-black uppercase tracking-[0.06em] text-[#e8a230]">Checking</div>
+                    <div className="mb-1 text-[10px] font-black uppercase tracking-[0.06em] text-[#f97316]">Checking</div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                      <div className="h-full rounded-full bg-[#e8a230]/80" style={{ animation: "mpProg 2.5s ease-out forwards" }} />
+                      <div className="h-full rounded-full bg-[#f97316]/80" style={{ animation: "mpProg 2.5s ease-out forwards" }} />
                     </div>
                   </div>
                 )}
@@ -201,7 +201,7 @@ export default function MerchantTutorialPreviewPage() {
                           {step >= 2 && (
                             <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
                               {step === 2 ? (
-                                <div key="prog-anim" className="h-full rounded-full bg-[#e8a230]/80" style={{ animation: "mpProg 3s ease-out forwards" }} />
+                                <div key="prog-anim" className="h-full rounded-full bg-[#f97316]/80" style={{ animation: "mpProg 3s ease-out forwards" }} />
                               ) : (
                                 <div className="h-full w-full rounded-full bg-emerald-400/80" />
                               )}
@@ -209,7 +209,7 @@ export default function MerchantTutorialPreviewPage() {
                           )}
                         </div>
                         {step === 2 && (
-                          <span className="mt-0.5 shrink-0 text-[10px] font-black uppercase tracking-[0.06em] text-[#e8a230]" style={{ animation: "mpPulse 1.6s ease-in-out infinite" }}>
+                          <span className="mt-0.5 shrink-0 text-[10px] font-black uppercase tracking-[0.06em] text-[#f97316]" style={{ animation: "mpPulse 1.6s ease-in-out infinite" }}>
                             Checking
                           </span>
                         )}
@@ -229,7 +229,7 @@ export default function MerchantTutorialPreviewPage() {
               </div>
 
               {/* Credentials block */}
-              <div className={`rounded-[8px] border transition-all duration-300 overflow-hidden ${cur.showCred ? "border-[#e8a230]/30 bg-[#e8a230]/[0.03] shadow-[0_0_0_2px_rgba(232,162,48,0.08)]" : "border-white/8 bg-white/[0.02] opacity-40"} ${!cur.showCred ? "hidden sm:block" : ""}`}>
+              <div className={`rounded-[8px] border transition-all duration-300 overflow-hidden ${cur.showCred ? "border-[#f97316]/30 bg-[#f97316]/[0.03] shadow-[0_0_0_2px_rgba(249,115,22,0.08)]" : "border-white/8 bg-white/[0.02] opacity-40"} ${!cur.showCred ? "hidden sm:block" : ""}`}>
                 <div className="border-b border-white/8 px-4 py-2.5">
                   <p className="text-[10px] font-black uppercase tracking-[0.09em] text-white/40">POS Credentials</p>
                 </div>
@@ -293,7 +293,7 @@ export default function MerchantTutorialPreviewPage() {
                       {i < step ? "✓" : s.step}
                     </div>
                     <div className="min-w-0">
-                      <p className={`text-[12px] font-bold leading-tight transition-colors ${i===step ? "text-[#e8a230]" : i<step ? "text-emerald-300" : "text-white/40"}`}>{s.title}</p>
+                      <p className={`text-[12px] font-bold leading-tight transition-colors ${i===step ? "text-[#f97316]" : i<step ? "text-emerald-300" : "text-white/40"}`}>{s.title}</p>
                       <p className="mt-0.5 text-[10px] leading-snug text-white/28">{s.badge.replace(/.*Section/, "Section")}</p>
                     </div>
                   </button>
@@ -306,7 +306,7 @@ export default function MerchantTutorialPreviewPage() {
               <p className="mb-4 text-[10px] font-black uppercase tracking-[0.1em] text-white/40">Preview Controls</p>
               <div className="space-y-2">
                 {[
-                  { k: "POS", v: "Pilot POS", vc: "text-[#e8a230]" },
+                  { k: "POS", v: "Pilot POS", vc: "text-[#f97316]" },
                   { k: "Status", v: step >= 3 ? "Connected" : "Pending", vc: step >= 3 ? "text-emerald-300" : "text-white/35" },
                   { k: "Stripe", v: step >= 4 ? "Ready" : "Pending", vc: step >= 4 ? "text-[#8fb5ff]" : "text-white/25" },
                 ].map(row => (
@@ -321,7 +321,7 @@ export default function MerchantTutorialPreviewPage() {
             {/* Section detail */}
             <div className="food-panel hidden sm:flex flex-col gap-4 !rounded-[12px] !p-5">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#e8a230]/60">● {cur.badge}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/60">● {cur.badge}</p>
                 <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">{cur.title}</h3>
                 <p className="mt-3 text-[13px] leading-relaxed text-white/60">{cur.body}</p>
                 <div className="mt-3 rounded-[8px] border border-white/8 bg-black/20 px-4 py-3">
@@ -349,7 +349,7 @@ export default function MerchantTutorialPreviewPage() {
             </div>
 
             <div className="food-panel !rounded-[12px] !p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#e8a230]/60">Tutorial Feedback</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">Tutorial Feedback</p>
               <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">Was this tutorial helpful?</h3>
               <p className="mt-2 text-[12px] leading-relaxed text-white/55">
                 Rate the walkthrough so we can keep improving the merchant onboarding flow.
@@ -362,8 +362,8 @@ export default function MerchantTutorialPreviewPage() {
                     onClick={() => setRating(n)}
                     className={`flex h-10 w-10 items-center justify-center rounded-full border text-[12px] font-black transition-all ${
                       rating === n
-                        ? "border-[#e8a230]/70 bg-[#e8a230] text-black"
-                        : "border-white/10 bg-white/[0.03] text-white/45 hover:border-[#e8a230]/35 hover:text-[#e8a230]"
+                        ? "border-[#f97316]/70 bg-[#f97316] text-black"
+                        : "border-white/10 bg-white/[0.03] text-white/45 hover:border-[#f97316]/35 hover:text-[#f97316]"
                     }`}
                     aria-label={`Rate tutorial ${n} out of 5`}
                   >

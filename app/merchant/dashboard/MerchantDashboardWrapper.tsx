@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { logout } from '@/app/auth/actions';
 
 interface MerchantDashboardWrapperProps {
   restaurantName: string;
@@ -86,6 +87,33 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
           flex-shrink: 0 !important;
           display: inline-block !important;
         }
+        .mch-logout-section {
+          border-top: 1px solid #1e2420 !important;
+          padding-top: 8px !important;
+          margin-top: 8px !important;
+        }
+        .mch-logout-btn {
+          color: #f97316 !important;
+          text-decoration: none !important;
+          font-size: 13px !important;
+          padding: 9px 16px !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 10px !important;
+          border-left: 2px solid transparent !important;
+          white-space: nowrap !important;
+          transition: all 150ms !important;
+          background: transparent !important;
+          width: 100% !important;
+          cursor: pointer !important;
+          border-top: none !important;
+          border-right: none !important;
+          border-bottom: none !important;
+        }
+        .mch-logout-btn:hover {
+          background: rgba(249,115,22,0.06) !important;
+        }
         .mch-main {
           flex: 1 !important;
           margin-left: 200px !important;
@@ -124,17 +152,29 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
       <div className="mch-portal">
         {/* SIDEBAR */}
         <div className="mch-sidebar">
-          <div className="mch-logo">🛍️ Merchant Portal</div>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`mch-link${pathname === item.href ? ' mch-active' : ''}`}
-            >
-              <span className="mch-icon">{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
+          <div className="mch-logo">
+            <img src="/logo.png" alt="TrueServe" width={28} height={28} style={{ borderRadius: '50%', boxShadow: '0 0 10px rgba(249,115,22,0.4)', flexShrink: 0 }} />
+            <span style={{ color: '#fff', fontWeight: 700 }}>True<span style={{ color: '#f97316' }}>Serve</span></span>
+          </div>
+          <div style={{ flex: 1 }}>
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`mch-link${pathname === item.href ? ' mch-active' : ''}`}
+              >
+                <span className="mch-icon">{item.icon}</span>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mch-logout-section">
+            <form action={logout}>
+              <button type="submit" className="mch-logout-btn">
+                <span className="mch-icon">🚪</span>Log Out
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* MAIN */}
