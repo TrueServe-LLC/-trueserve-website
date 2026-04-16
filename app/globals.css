@@ -947,10 +947,10 @@ nav {
 .md-page-title{font-size:24px;font-weight:900;letter-spacing:-.02em}
 .md-page-sub{font-size:13px;color:var(--t3);font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
 .md-hd-right{display:flex;align-items:center;gap:12px}
-.md-terminal-btn{background:var(--card);border:1px solid var(--border);padding:10px 18px;
-  border-radius:30px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer}
-.md-terminal-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
-.md-online-badge{background:var(--gdim);border:1px solid var(--gb);color:var(--gold);
+.md-terminal-btn{background:var(--gold);border:1px solid var(--gold);padding:10px 18px;
+  border-radius:30px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer;color:#000}
+.md-terminal-dot{width:7px;height:7px;border-radius:50%;background:#000;box-shadow:none}
+.md-online-badge{background:var(--gold);border:1px solid var(--gold);color:#000;
   padding:10px 20px;border-radius:30px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}
 .md-logout{background:transparent;border:none;color:var(--t3);font-size:12px;font-weight:800;cursor:pointer;margin-left:10px}
 .md-logout:hover{color:var(--red)}

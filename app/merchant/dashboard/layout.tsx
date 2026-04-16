@@ -20,10 +20,10 @@ export default async function MerchantDashboardLayout({ children }: { children: 
         redirect('/login?role=merchant&next=/merchant/dashboard');
     }
 
-    let restaurant: any = null;
+    let restaurantName = "";
 
     if (isPreview) {
-        restaurant = { name: "Pilot Kitchen" };
+        restaurantName = "Pilot Kitchen";
     } else {
         const supabase = await createClient();
         const { data: allRestaurants } = await supabase
@@ -32,14 +32,14 @@ export default async function MerchantDashboardLayout({ children }: { children: 
             .eq('ownerId', activeUserId)
             .order('createdAt', { ascending: true });
 
-        restaurant = (allRestaurants || [{}])[0];
+        restaurantName = (allRestaurants || [{}])[0]?.name || "";
     }
 
     return (
-        <>
+        <MerchantDashboardWrapper restaurantName={restaurantName}>
             {children}
             <SupportWidget role="MERCHANT" />
             <PortalTour portal="MERCHANT" />
-        </>
+        </MerchantDashboardWrapper>
     );
 }

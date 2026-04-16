@@ -113,13 +113,13 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
         .adm-activity-msg { font-size: 13px !important; color: #ccc !important; margin: 0 !important; }
         .adm-activity-time { font-size: 12px !important; color: #555 !important; white-space: nowrap !important; margin: 0 0 0 16px !important; }
         .adm-stripe-btn {
-          background: #635bff !important;
-          color: #fff !important;
+          background: #f97316 !important;
+          color: #000 !important;
           border: none !important;
           border-radius: 6px !important;
           padding: 8px 16px !important;
-          font-size: 13px !important;
-          font-weight: 600 !important;
+          font-size: 12px !important;
+          font-weight: 700 !important;
           cursor: pointer !important;
           display: inline-flex !important;
           align-items: center !important;
@@ -127,7 +127,7 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
           text-decoration: none !important;
           transition: background 150ms !important;
         }
-        .adm-stripe-btn:hover { background: #5147e6 !important; }
+        .adm-stripe-btn:hover { background: #fb923c !important; }
         @media (max-width: 1024px) {
           .adm-stats { grid-template-columns: repeat(2, 1fr) !important; }
           .adm-dash-cards { grid-template-columns: repeat(2, 1fr) !important; }
@@ -184,10 +184,10 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
                 💳 Open Stripe Dashboard
               </button>
             </form>
-            <Link href="/admin/team" className="adm-stripe-btn" style={{ background: '#1a2e1a', border: '1px solid #2a4a2a' }}>
+            <Link href="/admin/team" className="adm-stripe-btn">
               👥 Manage Team
             </Link>
-            <Link href="/admin/feature-switches" className="adm-stripe-btn" style={{ background: '#1a1a2e', border: '1px solid #2a2a4a' }}>
+            <Link href="/admin/feature-switches" className="adm-stripe-btn">
               🔧 Feature Switches
             </Link>
           </div>
