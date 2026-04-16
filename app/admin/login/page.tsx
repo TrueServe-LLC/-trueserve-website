@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { login, loginWithGoogle, loginAndRedirect } from "./actions";
+import { login, loginWithGoogle } from "./actions";
 import Logo from "@/components/Logo";
 
 export default function AdminLogin() {
@@ -37,12 +37,8 @@ export default function AdminLogin() {
 
             if (result.success) {
                 console.log("[Admin Login] Login successful, redirecting...");
-                // Try server-side redirect first, fallback to client
-                try {
-                    await loginAndRedirect(formData);
-                } catch {
-                    window.location.href = "/admin/dashboard";
-                }
+                // Use direct browser navigation — ensures cookie is sent on the fresh GET request
+                window.location.href = "/admin/dashboard";
             }
         } catch (err: any) {
             console.error("[Admin Login] Error:", err);
