@@ -214,8 +214,8 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
             height: Math.min(viewportHeight - (isMobileViewport ? 12 : 16), spotlightRect.height),
             borderRadius: isMobileViewport ? 12 : 14,
             boxShadow: `0 0 0 9999px rgba(0,0,0,${isMobileViewport ? 0.28 : 0.34})`,
-            border: "1px solid rgba(232,162,48,.65)",
-            background: "rgba(232,162,48,.06)",
+            border: "1px solid rgba(249,115,22,.65)",
+            background: "rgba(249,115,22,.06)",
             animation: "tsTourPulse 1.9s ease-in-out infinite",
             pointerEvents: "none",
           }}
@@ -241,7 +241,7 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
               {currentStep?.body}
             </div>
             <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] font-semibold leading-relaxed text-white/70">
-              Direction: follow the gold highlight, then tap <span className="text-[#e8a230] font-black">Next</span>.
+              Direction: follow the gold highlight, then tap <span className="text-[#f97316] font-black">Next</span>.
             </div>
           </div>
           <button
@@ -257,7 +257,7 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
           {steps.map((_, index) => (
             <span
               key={`${portal}-dot-${index}`}
-              className={`h-1.5 rounded-full transition-all ${index === stepIndex ? "w-6 bg-[#e8a230]" : "w-3 bg-white/20"}`}
+              className={`h-1.5 rounded-full transition-all ${index === stepIndex ? "w-6 bg-[#f97316]" : "w-3 bg-white/20"}`}
             />
           ))}
         </div>

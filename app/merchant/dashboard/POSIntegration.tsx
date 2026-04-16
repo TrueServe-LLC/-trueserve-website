@@ -67,7 +67,7 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 .section-hd { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid #1c1f28; }
                 .section-icon { width: 28px; height: 28px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
                 .section-title-text { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
-                .section-title-text span { color: #e8a230; }
+                .section-title-text span { color: #f97316; }
                 .section-sub-text { font-size: 11px; color: #444; margin-top: 2px; }
                 .section-body { padding: 0; }
 
@@ -80,20 +80,20 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 .platform-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
                 .platform-btn { padding: 12px 16px; background: #0c0e13; border: 1px solid #2a2f3a; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; cursor: pointer; text-align: center; transition: all .15s; }
                 .platform-btn:hover { border-color: #444; color: #888; }
-                .platform-btn.active { background: #1a1200; border-color: #e8a230; color: #e8a230; }
+                .platform-btn.active { background: #1a1200; border-color: #f97316; color: #f97316; }
                 .platform-btn.none { grid-column: span 1; }
 
                 /* ── FIELDS ── */
                 .field-input { width: 100%; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Mono', monospace; font-size: 13px; padding: 11px 14px; outline: none; margin-bottom: 14px; transition: border-color .15s; }
-                .field-input:focus { border-color: #e8a230; }
+                .field-input:focus { border-color: #f97316; }
                 .field-input::placeholder { color: #222; }
 
                 /* ── BUTTONS ── */
-                .primary-btn { width: 100%; background: #e8a230; border: none; color: #000; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 14px; cursor: pointer; transition: opacity .15s; }
+                .primary-btn { width: 100%; background: #f97316; border: none; color: #000; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 14px; cursor: pointer; transition: opacity .15s; }
                 .primary-btn:hover { opacity: .9; }
                 .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
                 .outline-btn { background: transparent; border: 1px solid #2a2f3a; color: #888; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 20px; cursor: pointer; transition: border-color .15s, color .15s; white-space: nowrap; }
-                .outline-btn:hover { border-color: #e8a230; color: #e8a230; }
+                .outline-btn:hover { border-color: #f97316; color: #f97316; }
                 .danger-btn { background: transparent; border: 1px solid #3a1010; color: #e24b4a; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 20px; cursor: pointer; transition: border-color .15s; }
                 .danger-btn:hover { border-color: #e24b4a; }
 
@@ -102,7 +102,7 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 .key-value { flex: 1; font-family: 'DM Mono', monospace; font-size: 12px; color: #3dd68c; letter-spacing: 0.08em; overflow: hidden; text-overflow: ellipsis; }
                 .key-hidden { flex: 1; font-family: 'DM Mono', monospace; font-size: 14px; color: #2a2f3a; letter-spacing: 0.1em; }
                 .copy-btn { width: 32px; height: 32px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: border-color .15s; }
-                .copy-btn:hover { border-color: #e8a230; }
+                .copy-btn:hover { border-color: #f97316; }
                 .key-hint { font-size: 10px; color: #333; line-height: 1.5; font-style: italic; margin-bottom: 14px; }
 
                 /* ── STATUS TAG ── */
@@ -111,7 +111,7 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 .disconnected-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; background: #1a0808; color: #e24b4a; border: 1px solid #3a1010; }
 
                 /* ── API WATERMARK ── */
-                .api-watermark { font-family: 'Barlow Condensed', sans-serif; font-size: 80px; font-weight: 800; font-style: italic; color: rgba(232, 162, 48, 0.04); letter-spacing: 0.05em; text-align: right; line-height: 1; margin-top: -8px; pointer-events: none; user-select: none; position: absolute; bottom: 10px; right: 20px; }
+                .api-watermark { font-family: 'Barlow Condensed', sans-serif; font-size: 80px; font-weight: 800; font-style: italic; color: rgba(249, 115, 22, 0.04); letter-spacing: 0.05em; text-align: right; line-height: 1; margin-top: -8px; pointer-events: none; user-select: none; position: absolute; bottom: 10px; right: 20px; }
                 
                 .divider { height: 1px; background: #1c1f28; margin: 16px 0; }
                 .action-row { display: flex; align-items: center; gap: 8px; }
@@ -141,8 +141,8 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 <div className="section-hd">
                     <div className="section-icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                            <path d="M3 7h8M7 3v8" stroke="#e8a230" strokeWidth="1.4" strokeLinecap="round"/>
-                            <circle cx="7" cy="7" r="6" stroke="#e8a230" strokeWidth="1.2"/>
+                            <path d="M3 7h8M7 3v8" stroke="#f97316" strokeWidth="1.4" strokeLinecap="round"/>
+                            <circle cx="7" cy="7" r="6" stroke="#f97316" strokeWidth="1.2"/>
                         </svg>
                     </div>
                     <div>
@@ -214,9 +214,9 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 <div className="section-hd">
                     <div className="section-icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                            <rect x="2" y="4" width="10" height="7" rx="1" stroke="#e8a230" strokeWidth="1.2"/>
-                            <path d="M5 4V3a2 2 0 014 0v1" stroke="#e8a230" strokeWidth="1.2"/>
-                            <circle cx="7" cy="7.5" r="1" fill="#e8a230"/>
+                            <rect x="2" y="4" width="10" height="7" rx="1" stroke="#f97316" strokeWidth="1.2"/>
+                            <path d="M5 4V3a2 2 0 014 0v1" stroke="#f97316" strokeWidth="1.2"/>
+                            <circle cx="7" cy="7.5" r="1" fill="#f97316"/>
                         </svg>
                     </div>
                     <div>

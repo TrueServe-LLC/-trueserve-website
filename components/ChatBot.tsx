@@ -92,7 +92,7 @@ export default function ChatBot({
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-4 right-4 rounded-full bg-[#e8a230] p-4 shadow-lg hover:bg-[#d99620] transition-colors"
+                className="fixed bottom-4 right-4 rounded-full bg-[#f97316] p-4 shadow-lg hover:bg-[#d99620] transition-colors"
                 aria-label={`Open ${title}`}
             >
                 <MessageCircle className="h-6 w-6 text-white" />
@@ -105,7 +105,7 @@ export default function ChatBot({
             {/* Header */}
             <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-[#10131b] px-4 py-3">
                 <div className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5 text-[#e8a230]" />
+                    <MessageCircle className="h-5 w-5 text-[#f97316]" />
                     <h3 className="font-bold text-white">{title}</h3>
                 </div>
                 {compact && (
@@ -132,7 +132,7 @@ export default function ChatBot({
                         <div
                             className={`max-w-xs rounded-lg px-4 py-2 ${
                                 msg.sender === 'USER'
-                                    ? 'bg-[#e8a230] text-black'
+                                    ? 'bg-[#f97316] text-black'
                                     : 'bg-white/10 text-white/90'
                             }`}
                         >
@@ -185,12 +185,12 @@ export default function ChatBot({
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={placeholder}
                     disabled={isLoading}
-                    className="flex-1 rounded-lg bg-white/5 px-3 py-2 text-sm text-white placeholder-white/50 border border-white/10 focus:outline-none focus:border-[#e8a230]/50 disabled:opacity-50"
+                    className="flex-1 rounded-lg bg-white/5 px-3 py-2 text-sm text-white placeholder-white/50 border border-white/10 focus:outline-none focus:border-[#f97316]/50 disabled:opacity-50"
                 />
                 <button
                     type="submit"
                     disabled={isLoading || !input.trim()}
-                    className="rounded-lg bg-[#e8a230] p-2 text-black hover:bg-[#d99620] disabled:opacity-50 transition-colors"
+                    className="rounded-lg bg-[#f97316] p-2 text-black hover:bg-[#d99620] disabled:opacity-50 transition-colors"
                     aria-label="Send message"
                 >
                     <Send className="h-4 w-4" />

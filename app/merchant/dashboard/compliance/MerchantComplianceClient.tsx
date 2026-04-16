@@ -133,7 +133,7 @@ export default function MerchantComplianceClient({
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-5 md:px-6 lg:px-8">
                 {/* Header */}
                 <div className="flex flex-col gap-4">
-                    <a href="/merchant/dashboard" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-[#f1b243] transition hover:border-[#f1b243]/40 hover:bg-white/10">
+                    <a href="/merchant/dashboard" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-[#f97316] transition hover:border-[#f97316]/40 hover:bg-white/10">
                         ←
                     </a>
                     <div>
@@ -211,7 +211,7 @@ export default function MerchantComplianceClient({
                             <div className="text-[10px] md:text-xs text-white/50 mt-1">Suspended</div>
                         </div>
                         <div className="rounded-lg bg-white/5 p-3 text-center">
-                            <div className="text-sm md:text-lg font-bold text-[#e8a230]">{driverStats.totalDrivers}</div>
+                            <div className="text-sm md:text-lg font-bold text-[#f97316]">{driverStats.totalDrivers}</div>
                             <div className="text-[10px] md:text-xs text-white/50 mt-1">Total</div>
                         </div>
                     </div>
@@ -274,7 +274,7 @@ export default function MerchantComplianceClient({
                                                     </span>
                                                 )}
                                                 {inspection.score !== null && (
-                                                    <span className="text-xs md:text-sm font-bold text-[#e8a230]">
+                                                    <span className="text-xs md:text-sm font-bold text-[#f97316]">
                                                         Score: {inspection.score}/100
                                                     </span>
                                                 )}
@@ -288,7 +288,7 @@ export default function MerchantComplianceClient({
                                                 href={inspection.externalURL}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center gap-1 text-xs md:text-sm text-[#e8a230] hover:text-[#d99620] transition-colors flex-shrink-0"
+                                                className="flex items-center gap-1 text-xs md:text-sm text-[#f97316] hover:text-[#d99620] transition-colors flex-shrink-0"
                                             >
                                                 View Report
                                                 <ExternalLink className="h-3 w-3" />
@@ -444,7 +444,7 @@ export default function MerchantComplianceClient({
                             {/* Percentile Rank */}
                             <div className="rounded-lg border border-white/10 bg-white/5 p-4">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Award className="h-4 w-4 text-[#e8a230]" />
+                                    <Award className="h-4 w-4 text-[#f97316]" />
                                     <span className="text-xs font-bold uppercase text-white/70">Percentile Rank</span>
                                 </div>
                                 <div className="text-2xl md:text-3xl font-black text-white">
@@ -525,7 +525,7 @@ export default function MerchantComplianceClient({
                                     {benchmarkComparison.topPerformers.map((performer, idx) => (
                                         <div key={performer.id} className="flex items-center justify-between p-2 rounded bg-white/5 border border-white/10">
                                             <div className="flex items-center gap-3">
-                                                <span className="text-xs md:text-sm font-bold text-[#e8a230]">#{idx + 1}</span>
+                                                <span className="text-xs md:text-sm font-bold text-[#f97316]">#{idx + 1}</span>
                                                 <div>
                                                     <p className="text-xs md:text-sm font-bold text-white">{performer.name}</p>
                                                     <p className="text-xs text-white/50">{performer.state}</p>
@@ -620,7 +620,7 @@ export default function MerchantComplianceClient({
                                         href={getStateHealthDeptUrl(restaurant.state)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 px-4 py-2 bg-[#e8a230] hover:bg-[#d99620] text-black rounded text-xs md:text-sm font-semibold transition-colors"
+                                        className="flex items-center gap-2 px-4 py-2 bg-[#f97316] hover:bg-[#d99620] text-black rounded text-xs md:text-sm font-semibold transition-colors"
                                     >
                                         Schedule Now
                                         <ExternalLink className="h-3 w-3" />
@@ -656,7 +656,7 @@ export default function MerchantComplianceClient({
                                                 <span className="text-xs md:text-sm font-bold text-white/70">
                                                     {new Date(inspection.inspectionDate).toLocaleDateString()}
                                                 </span>
-                                                <span className="text-xs md:text-sm font-bold text-[#e8a230]">
+                                                <span className="text-xs md:text-sm font-bold text-[#f97316]">
                                                     Score: {inspection.score}/100
                                                 </span>
                                             </div>
@@ -722,7 +722,7 @@ export default function MerchantComplianceClient({
                                     href={stateInspectionInfo.inspectionURL}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-[#e8a230] hover:bg-[#d99620] text-black px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
+                                    className="flex items-center gap-2 bg-[#f97316] hover:bg-[#d99620] text-black px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
                                 >
                                     📋 View Inspection Reports
                                     <ExternalLink className="h-3 w-3" />
@@ -761,7 +761,7 @@ export default function MerchantComplianceClient({
                 <div className="mt-4">
                     <button
                         onClick={() => setChatOpen(!chatOpen)}
-                        className="w-full rounded-lg bg-[#e8a230] hover:bg-[#d99620] text-black px-4 py-3 font-bold transition-colors text-sm md:text-base"
+                        className="w-full rounded-lg bg-[#f97316] hover:bg-[#d99620] text-black px-4 py-3 font-bold transition-colors text-sm md:text-base"
                     >
                         {chatOpen ? '✕ Close Help Bot' : '💬 Ask Compliance Help'}
                     </button>

@@ -52,7 +52,7 @@ export default function ScenarioEngine() {
                             />
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#444', fontFamily: "'DM Mono',monospace", marginTop: '4px' }}>
                                 <span>0</span>
-                                <span style={{ color: '#e8a230', fontWeight: 700 }}>{currentDailyOrders} orders/day</span>
+                                <span style={{ color: '#f97316', fontWeight: 700 }}>{currentDailyOrders} orders/day</span>
                                 <span>1000</span>
                             </div>
                         </div>

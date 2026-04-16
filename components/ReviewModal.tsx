@@ -53,9 +53,9 @@ export default function ReviewModal({ orderId, driverId, customerId, isOpen, onC
                     .bebas { font-family: 'Bebas Neue', sans-serif; }
                     .barlow-cond { font-family: 'Barlow Condensed', sans-serif; }
                 ` }} />
-                <div className="w-full max-w-sm bg-[#0a0a0a] border border-[#e8a230]/40 p-10 text-center rounded-[2.5rem] shadow-[0_0_80px_rgba(232,162,48,0.2)] animate-in zoom-in-95 duration-500">
-                    <div className="w-20 h-20 bg-[#e8a230]/20 rounded-full flex items-center justify-center text-4xl mb-6 mx-auto border border-[#e8a230]/30 shadow-inner">✅</div>
-                    <h2 className="bebas text-4xl italic tracking-wide text-white uppercase">REVIEW<span className="text-[#e8a230]">UPLOADED.</span></h2>
+                <div className="w-full max-w-sm bg-[#0a0a0a] border border-[#f97316]/40 p-10 text-center rounded-[2.5rem] shadow-[0_0_80px_rgba(249,115,22,0.2)] animate-in zoom-in-95 duration-500">
+                    <div className="w-20 h-20 bg-[#f97316]/20 rounded-full flex items-center justify-center text-4xl mb-6 mx-auto border border-[#f97316]/30 shadow-inner">✅</div>
+                    <h2 className="bebas text-4xl italic tracking-wide text-white uppercase">REVIEW<span className="text-[#f97316]">UPLOADED.</span></h2>
                     <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.3em] text-[#555] mt-2 italic">Communication synchronization complete</p>
                 </div>
             </div>
@@ -76,11 +76,11 @@ export default function ReviewModal({ orderId, driverId, customerId, isOpen, onC
             <div className="w-full max-w-md bg-[#0d0d0d] border border-white/5 rounded-[3rem] p-8 pb-10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden animate-in slide-in-from-bottom-8 duration-700">
                 
                 {/* BACKGROUND ELEMENT */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-[#e8a230]/5 blur-[80px] -z-10 rounded-full" />
+                <div className="absolute top-0 right-0 w-40 h-40 bg-[#f97316]/5 blur-[80px] -z-10 rounded-full" />
                 
                 <header className="mb-10">
-                    <h2 className="bebas text-5xl italic tracking-wider text-white leading-none">RATE YOUR<br/><span className="text-[#e8a230]">EXPERIENCE.</span></h2>
-                    <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.4em] text-[#333] mt-2 italic underline decoration-[#e8a230]/40">Mission evaluation required</p>
+                    <h2 className="bebas text-5xl italic tracking-wider text-white leading-none">RATE YOUR<br/><span className="text-[#f97316]">EXPERIENCE.</span></h2>
+                    <p className="barlow-cond text-[10px] font-black uppercase tracking-[0.4em] text-[#333] mt-2 italic underline decoration-[#f97316]/40">Mission evaluation required</p>
                 </header>
 
                 <div className="flex justify-center gap-4 mb-10">
@@ -88,7 +88,7 @@ export default function ReviewModal({ orderId, driverId, customerId, isOpen, onC
                         <button
                             key={star}
                             onClick={() => setRating(star)}
-                            className={`text-4xl transition-all duration-300 transform active:scale-90 ${rating >= star ? 'text-[#e8a230] drop-shadow-[0_0_15px_rgba(232,162,48,0.5)] scale-110' : 'text-white/10 grayscale hover:scale-105'}`}
+                            className={`text-4xl transition-all duration-300 transform active:scale-90 ${rating >= star ? 'text-[#f97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.5)] scale-110' : 'text-white/10 grayscale hover:scale-105'}`}
                         >
                             ★
                         </button>
@@ -101,7 +101,7 @@ export default function ReviewModal({ orderId, driverId, customerId, isOpen, onC
                         <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.2em] text-[#333] ml-1">CAPTURED PROOF (OPTIONAL)</label>
                         <div 
                             onClick={() => fileInputRef.current?.click()}
-                            className="group relative h-40 bg-black/40 border border-white/5 rounded-3xl overflow-hidden hover:border-[#e8a230]/40 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 active:scale-[0.98]"
+                            className="group relative h-40 bg-black/40 border border-white/5 rounded-3xl overflow-hidden hover:border-[#f97316]/40 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 active:scale-[0.98]"
                         >
                             <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                             
@@ -114,15 +114,15 @@ export default function ReviewModal({ orderId, driverId, customerId, isOpen, onC
                                 </>
                             ) : (
                                 <>
-                                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl relative overflow-hidden group-hover:bg-[#e8a230]/10 transition-colors">
+                                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl relative overflow-hidden group-hover:bg-[#f97316]/10 transition-colors">
                                         <span className="opacity-40 group-hover:opacity-100 transition-opacity group-hover:scale-125 duration-500">📸</span>
-                                        <div className="absolute top-0 left-0 w-full h-[1px] bg-[#e8a230] shadow-[0_0_10px_#e8a230] opacity-0 group-hover:opacity-100 animate-scanning" />
+                                        <div className="absolute top-0 left-0 w-full h-[1px] bg-[#f97316] shadow-[0_0_10px_#f97316] opacity-0 group-hover:opacity-100 animate-scanning" />
                                     </div>
                                     <p className="barlow-cond text-[10px] font-black tracking-[0.2em] text-white/30 group-hover:text-white/60 transition-colors uppercase">Synchronize Visual Memory</p>
                                 </>
                             )}
                             {/* Scanning Pulse at the top of the overall form */}
-                            {photo && <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#e8a230] to-transparent opacity-30 animate-pulse" />}
+                            {photo && <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#f97316] to-transparent opacity-30 animate-pulse" />}
                         </div>
                     </div>
 
@@ -130,7 +130,7 @@ export default function ReviewModal({ orderId, driverId, customerId, isOpen, onC
                     <div className="space-y-2">
                         <label className="barlow-cond text-[11px] font-black uppercase tracking-[0.2em] text-[#333] ml-1">MISSION DEBRIEF</label>
                         <textarea
-                            className="w-full bg-black/40 border border-white/5 rounded-[2rem] p-6 text-[15px] font-medium text-white placeholder:text-[#222] focus:border-[#e8a230]/40 outline-none transition-all h-32 resize-none shadow-inner"
+                            className="w-full bg-black/40 border border-white/5 rounded-[2rem] p-6 text-[15px] font-medium text-white placeholder:text-[#222] focus:border-[#f97316]/40 outline-none transition-all h-32 resize-none shadow-inner"
                             placeholder="Describe your sequence experience..."
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
@@ -148,7 +148,7 @@ export default function ReviewModal({ orderId, driverId, customerId, isOpen, onC
                     <button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="flex-[1.5] bebas h-16 rounded-2xl bg-[#e8a230] hover:bg-[#ffb030] text-black text-[28px] italic tracking-wider transition-all shadow-[0_15px_40px_rgba(232,162,48,0.2)] active:scale-95 disabled:grayscale disabled:opacity-30 disabled:scale-100"
+                        className="flex-[1.5] bebas h-16 rounded-2xl bg-[#f97316] hover:bg-[#ffb030] text-black text-[28px] italic tracking-wider transition-all shadow-[0_15px_40px_rgba(249,115,22,0.2)] active:scale-95 disabled:grayscale disabled:opacity-30 disabled:scale-100"
                     >
                         {isSubmitting ? "SYNCHRONIZING..." : "SUBMIT REPORT →"}
                     </button>

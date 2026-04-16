@@ -117,13 +117,13 @@ export default function CostDashboard({
                                     <span className="text-sm font-medium text-white">
                                         {getServiceDisplayName(service.service as any)}
                                     </span>
-                                    <span className="text-sm font-bold text-[#e8a230]">
+                                    <span className="text-sm font-bold text-[#f97316]">
                                         {formatCost(service.cost)}
                                     </span>
                                 </div>
                                 <div className="h-2 overflow-hidden rounded-full bg-white/10">
                                     <div
-                                        className="h-full rounded-full bg-[#e8a230]/60"
+                                        className="h-full rounded-full bg-[#f97316]/60"
                                         style={{ width: `${service.percentage}%` }}
                                     />
                                 </div>

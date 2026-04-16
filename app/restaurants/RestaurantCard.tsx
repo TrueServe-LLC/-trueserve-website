@@ -15,7 +15,7 @@ function gradeToColor(grade: string): { bg: string; text: string; border: string
     case "A":
       return { bg: "#0d1a10", text: "#2ee5a0", border: "#1a4a2a" };
     case "B":
-      return { bg: "#1c1508", text: "#f1b243", border: "#57400f" };
+      return { bg: "#1c1508", text: "#f97316", border: "#57400f" };
     case "C":
       return { bg: "#1a1208", text: "#fb923c", border: "#5c3a0f" };
     case "D":
@@ -142,7 +142,7 @@ export default function RestaurantCard({
 
         <button
           type="button"
-          className="mt-2 inline-flex text-[11px] uppercase tracking-[0.14em] font-bold text-[#e8a230] hover:text-white transition-colors"
+          className="mt-2 inline-flex text-[11px] uppercase tracking-[0.14em] font-bold text-[#f97316] hover:text-white transition-colors"
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();

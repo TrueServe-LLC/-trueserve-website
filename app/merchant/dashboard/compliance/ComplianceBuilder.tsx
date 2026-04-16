@@ -112,12 +112,12 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
         <div className="md-body min-h-screen animate-fade-in-up">
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 md:px-6 lg:px-8">
                 <div className="flex flex-wrap items-center gap-3">
-                    <Link href="/merchant/dashboard" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-[#f1b243] transition hover:border-[#f1b243]/40 hover:bg-white/10">
+                    <Link href="/merchant/dashboard" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-[#f97316] transition hover:border-[#f97316]/40 hover:bg-white/10">
                         ←
                     </Link>
                     <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full border border-[#f1b243]/20 bg-[#f1b24314] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f1b243]">
+                            <span className="rounded-full border border-[#f97316]/20 bg-[#f9731614] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f97316]">
                                 Merchant Compliance
                             </span>
                             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a93a7]">
@@ -125,7 +125,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                             </span>
                         </div>
                         <div className="mt-2 h-2 w-full max-w-sm overflow-hidden rounded-full bg-white/10">
-                            <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-[#6d6ff3] via-[#8b85ff] to-[#f1b243]" />
+                            <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-[#6d6ff3] via-[#8b85ff] to-[#f97316]" />
                         </div>
                     </div>
                 </div>
@@ -136,7 +136,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                             <div className="max-w-2xl">
                                 <div className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8a93a7]">What would you like to create?</div>
                                 <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] text-white md:text-4xl">
-                                    Build a <span className="text-[#f1b243]">merchant checklist</span> that looks ready for production.
+                                    Build a <span className="text-[#f97316]">merchant checklist</span> that looks ready for production.
                                 </h1>
                                 <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#aab4c8]">
                                     Describe the inspection, form, or checklist you want, and TrueServe will turn it into a reusable template for your restaurant.
@@ -169,7 +169,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                                 setTemplateType(nextSuggestion.preset.key);
                                             }
                                         }}
-                                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-base text-white outline-none transition placeholder:text-[#667085] focus:border-[#f1b243]/50"
+                                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-base text-white outline-none transition placeholder:text-[#667085] focus:border-[#f97316]/50"
                                         placeholder="Daily restaurant hygiene checklist"
                                     />
                                 </div>
@@ -185,7 +185,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                             setDescriptionTouched(true);
                                         }}
                                         rows={6}
-                                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-base leading-7 text-white outline-none transition placeholder:text-[#667085] focus:border-[#f1b243]/50"
+                                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-base leading-7 text-white outline-none transition placeholder:text-[#667085] focus:border-[#f97316]/50"
                                         placeholder="Daily restaurant hygiene checklist"
                                     />
                                     <div className="flex flex-wrap items-center gap-2">
@@ -193,7 +193,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                         <button
                                             type="button"
                                             onClick={applySuggestedDescription}
-                                            className="rounded-full border border-[#f1b243]/20 bg-[#f1b24312] px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-[#f1b243] transition hover:border-[#f1b243]/40 hover:bg-[#f1b24318]"
+                                            className="rounded-full border border-[#f97316]/20 bg-[#f9731612] px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-[#f97316] transition hover:border-[#f97316]/40 hover:bg-[#f9731618]"
                                         >
                                             Use suggested description
                                         </button>
@@ -201,8 +201,8 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                     </div>
                                 </div>
 
-                                <div className="rounded-2xl border border-[#f1b243]/15 bg-[#f1b24310] px-4 py-4">
-                                    <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b243]">Suggestions</div>
+                                <div className="rounded-2xl border border-[#f97316]/15 bg-[#f9731610] px-4 py-4">
+                                    <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f97316]">Suggestions</div>
                                     <div className="mt-3 grid gap-3">
                                         {presets.map((preset) => (
                                             <button
@@ -211,8 +211,8 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                                 onClick={() => applyPreset(preset.key)}
                                                 className={`flex items-center gap-3 rounded-2xl border px-4 py-4 text-left transition ${
                                                     templateType === preset.key
-                                                        ? "border-[#f1b243]/50 bg-[#f1b24318]"
-                                                        : "border-white/10 bg-white/5 hover:border-[#f1b243]/30 hover:bg-white/10"
+                                                        ? "border-[#f97316]/50 bg-[#f9731618]"
+                                                        : "border-white/10 bg-white/5 hover:border-[#f97316]/30 hover:bg-white/10"
                                                 }`}
                                             >
                                                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/8 text-lg">{preset.icon}</span>
@@ -243,7 +243,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                     <button
                                         type="submit"
                                         disabled={pending}
-                                        className="inline-flex h-12 items-center justify-center rounded-full border border-[#f1b243]/40 bg-[#f1b243] px-6 text-sm font-black uppercase tracking-[0.14em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+                                        className="inline-flex h-12 items-center justify-center rounded-full border border-[#f97316]/40 bg-[#f97316] px-6 text-sm font-black uppercase tracking-[0.14em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
                                     >
                                         {pending ? "Saving..." : "Save Draft"}
                                     </button>
@@ -297,7 +297,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                             <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#8a93a7]">Public inspection view</div>
                                             <div className="mt-1 text-xl font-black text-white">Health data and history</div>
                                         </div>
-                                        <div className="rounded-full border border-[#f1b243]/20 bg-[#f1b24314] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f1b243]">
+                                        <div className="rounded-full border border-[#f97316]/20 bg-[#f9731614] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f97316]">
                                             Pilot
                                         </div>
                                     </div>
@@ -305,10 +305,10 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                         Latest health grade, source link, and sync status shown in one streamlined view.
                                     </p>
                                     {publicInspectionFeed && (
-                                        <div className="mt-4 rounded-2xl border border-[#f1b243]/15 bg-[#f1b24310] px-4 py-4">
+                                        <div className="mt-4 rounded-2xl border border-[#f97316]/15 bg-[#f9731610] px-4 py-4">
                                             <div className="flex items-center justify-between gap-3">
-                                                <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#f1b243]">Public-health feed</div>
-                                                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f1b243]/90">
+                                                <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#f97316]">Public-health feed</div>
+                                                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f97316]/90">
                                                     {publicInspectionFeed.items[0]?.grade || "—"}
                                                 </div>
                                             </div>
@@ -364,7 +364,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                                     <div className="text-sm font-semibold text-white">
                                                         {inspection.provider}
                                                     </div>
-                                                    <div className="text-xs font-black uppercase tracking-[0.16em] text-[#f1b243]">
+                                                    <div className="text-xs font-black uppercase tracking-[0.16em] text-[#f97316]">
                                                         {inspection.status || "PASS"}
                                                     </div>
                                                 </div>
@@ -399,7 +399,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                             <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#8a93a7]">Live Preview</div>
                                             <div className="mt-1 text-xl font-black text-white">{preview.title}</div>
                                         </div>
-                                        <div className="rounded-full border border-[#f1b243]/25 bg-[#f1b24314] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f1b243]">
+                                        <div className="rounded-full border border-[#f97316]/25 bg-[#f9731614] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f97316]">
                                             Draft
                                         </div>
                                     </div>
@@ -412,7 +412,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                                 <ul className="mt-3 space-y-2">
                                                     {section.items.map((item) => (
                                                         <li key={item} className="flex gap-2 text-sm leading-6 text-[#aab4c8]">
-                                                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f1b243]" />
+                                                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
                                                             <span>{item}</span>
                                                         </li>
                                                     ))}
@@ -426,7 +426,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                     <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#8a93a7]">Template Health</div>
                                     <div className="mt-4 grid grid-cols-3 gap-3">
                                         <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center">
-                                            <div className="text-xl font-black text-[#f1b243]">{preview.sections.length}</div>
+                                            <div className="text-xl font-black text-[#f97316]">{preview.sections.length}</div>
                                             <div className="mt-1 text-[11px] text-[#8a93a7]">Sections</div>
                                         </div>
                                         <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center">
@@ -438,7 +438,7 @@ export default function ComplianceBuilder({ restaurant, template, isPreview, com
                                             <div className="mt-1 text-[11px] text-[#8a93a7]">Pilot fit</div>
                                         </div>
                                     </div>
-                                    <div className="mt-4 rounded-2xl border border-[#f1b243]/15 bg-[#f1b24310] px-4 py-4 text-sm leading-6 text-[#f8e6bc]">
+                                    <div className="mt-4 rounded-2xl border border-[#f97316]/15 bg-[#f9731610] px-4 py-4 text-sm leading-6 text-[#f8e6bc]">
                                         {preview.note}
                                     </div>
                                 </div>

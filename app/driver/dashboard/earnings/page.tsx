@@ -20,7 +20,7 @@ export default async function DriverEarnings() {
                 .ledger-right { background: #080808; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
 
                 .section-hd-title { font-family: 'Barlow Condensed', sans-serif; font-size: 48px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 8px; }
-                .section-hd-title span { color: #e8a230; }
+                .section-hd-title span { color: #f97316; }
                 .section-hd-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 32px; display: block; }
 
                 .ledger-table-wrap { overflow-x: auto; }
@@ -32,8 +32,8 @@ export default async function DriverEarnings() {
 
                 .heatmap-block { background: #0c0e13; border: 1px solid #1c1f28; }
                 .heatmap-hd { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #1c1f28; }
-                .heatmap-dot { width: 7px; height: 7px; background: #e8a230; border-radius: 50%; }
-                .heatmap-title { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #e8a230; }
+                .heatmap-dot { width: 7px; height: 7px; background: #f97316; border-radius: 50%; }
+                .heatmap-title { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #f97316; }
                 .heatmap-visual { height: 160px; background: #0c0e13; display: flex; align-items: center; justify-content: center; position: relative; }
                 .heatmap-status { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-top: 1px solid #1c1f28; }
                 .heatmap-status-txt { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #333; }
@@ -44,10 +44,10 @@ export default async function DriverEarnings() {
                 .pickup-mesh { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; background: #0d2a1a; color: #3dd68c; border: 1px solid #1a4a2a; }
                 .pickup-body { padding: 14px; }
                 .pickup-name-txt { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; margin-bottom: 2px; }
-                .tip-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; background: #1a1200; color: #e8a230; border: 1px solid #3a2800; }
+                .tip-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; background: #1a1200; color: #f97316; border: 1px solid #3a2800; }
                 .pickup-address-txt { font-size: 11px; font-family: 'DM Mono', monospace; color: #444; margin: 8px 0 12px; }
                 .pickup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-                .nav-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px; background: #e8a230; border: none; color: #000; cursor: pointer; text-align: center; }
+                .nav-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px; background: #f97316; border: none; color: #000; cursor: pointer; text-align: center; }
                 .contact-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px; background: transparent; border: 1px solid #2a2f3a; color: #888; cursor: pointer; text-align: center; }
                 .confirm-row { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid #1c1f28; cursor: pointer; transition: background .15s; }
                 .confirm-row:hover { background: #1a1200; }
@@ -64,7 +64,7 @@ export default async function DriverEarnings() {
                 .liq-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
                 .liq-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; }
                 .liq-balance-val { font-size: 32px; font-weight: 700; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; margin-bottom: 12px; }
-                .cash-out-btn { width: 100%; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px; background: #e8a230; border: none; color: #000; cursor: pointer; }
+                .cash-out-btn { width: 100%; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px; background: #f97316; border: none; color: #000; cursor: pointer; }
 
                 @media (max-width: 768px) {
                     .ledger-left, .ledger-right { padding: 18px; }
@@ -142,15 +142,15 @@ export default async function DriverEarnings() {
                         </div>
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-[10px] font-bold text-[#444] uppercase tracking-widest">Hourly Yield</span>
-                            <span className="text-xs font-mono font-bold text-[#e8a230]">$24.50 Est.</span>
+                            <span className="text-xs font-mono font-bold text-[#f97316]">$24.50 Est.</span>
                         </div>
                         <button className="go-offline-btn">Go Offline</button>
                     </div>
 
                     <div className="liquidity-block">
-                        <div className="liq-hd"><div className="liq-title">Rapid Liquidity</div><div className="settlement-tag bg-[#1a1200] border border-[#3a2800] text-[#e8a230] text-[9px] px-2 py-0.5 uppercase font-bold">3 Ready</div></div>
+                        <div className="liq-hd"><div className="liq-title">Rapid Liquidity</div><div className="settlement-tag bg-[#1a1200] border border-[#3a2800] text-[#f97316] text-[9px] px-2 py-0.5 uppercase font-bold">3 Ready</div></div>
                         <div className="text-[9px] font-bold text-[#444] uppercase tracking-widest mb-4">Liquid balance available</div>
-                        <div className="text-[9px] font-bold text-[#e8a230] uppercase tracking-widest mb-1">Liquid Balance</div>
+                        <div className="text-[9px] font-bold text-[#f97316] uppercase tracking-widest mb-1">Liquid Balance</div>
                         <div className="liq-balance-val">${balance.toFixed(2)}</div>
                         <button className="cash-out-btn">Cash Out Funds</button>
                     </div>

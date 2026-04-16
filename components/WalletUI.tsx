@@ -152,7 +152,7 @@ export default function WalletUI({ userId }: { userId: string }) {
 
             {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-20">
-                    <div className="w-8 h-8 border-t-2 border-[#e8a230] rounded-full animate-spin mb-4" />
+                    <div className="w-8 h-8 border-t-2 border-[#f97316] rounded-full animate-spin mb-4" />
                     <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5A5550] animate-pulse">Syncing...</span>
                 </div>
             ) : (
@@ -166,13 +166,13 @@ export default function WalletUI({ userId }: { userId: string }) {
                         methods.map(pm => (
                             <div key={pm.id} className="flex justify-between items-center p-5 bg-[#1C1C1C] border border-white/5 rounded-2xl group transition-all hover:bg-[#1C1C1C]/80">
                                 <div className="flex items-center gap-5">
-                                    <div className="w-14 h-9 bg-black/60 border border-white/5 rounded-lg flex items-center justify-center text-[9px] font-black text-[#e8a230] uppercase tracking-widest shadow-2xl">
+                                    <div className="w-14 h-9 bg-black/60 border border-white/5 rounded-lg flex items-center justify-center text-[9px] font-black text-[#f97316] uppercase tracking-widest shadow-2xl">
                                         {pm.brand === "PayPal" ? "PAYPAL" : pm.brand || "CARD"}
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-white tracking-widest leading-none mb-1.5">{pm.displayPrimary}</p>
                                         <p className="text-[10px] text-[#5A5550] uppercase tracking-[0.2em] font-black flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 bg-[#e8a230] rounded-full shadow-[0_0_8px_#e8a230]"></span>
+                                            <span className="w-1.5 h-1.5 bg-[#f97316] rounded-full shadow-[0_0_8px_#f97316]"></span>
                                             {pm.displaySecondary}
                                         </p>
                                     </div>
@@ -197,7 +197,7 @@ export default function WalletUI({ userId }: { userId: string }) {
                     Add Payment Method
                 </button>
             ) : clientSecret && stripePromise ? (
-                <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#e8a230', colorBackground: '#0c0e13', colorText: '#f8fafc', fontFamily: 'DM Sans, sans-serif' } } }}>
+                <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#f97316', colorBackground: '#0c0e13', colorText: '#f8fafc', fontFamily: 'DM Sans, sans-serif' } } }}>
                     <SetupForm
                         clientSecret={clientSecret}
                         onSuccess={() => {
@@ -213,7 +213,7 @@ export default function WalletUI({ userId }: { userId: string }) {
                 </Elements>
             ) : (
                 <div className="mt-8 flex flex-col items-center py-10 bg-black/30 border border-white/5 rounded-2xl">
-                    <div className="w-6 h-6 border-t-2 border-[#e8a230] rounded-full animate-spin mb-4"></div>
+                    <div className="w-6 h-6 border-t-2 border-[#f97316] rounded-full animate-spin mb-4"></div>
                     <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5A5550]">Encrypting...</span>
                 </div>
             )}

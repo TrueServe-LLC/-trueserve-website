@@ -374,7 +374,7 @@ export default function MenuClient({
             
             <div className="menu-items">
                 {ghlUrl && (
-                    <button type="button" className="ghl-btn !bg-[#e8a230] !text-black shadow-lg" onClick={openGHL}>
+                    <button type="button" className="ghl-btn !bg-[#f97316] !text-black shadow-lg" onClick={openGHL}>
                         <span style={{ fontSize: '16px' }}>⚡️</span> 
                         Order with Fast Assist
                     </button>
@@ -504,7 +504,7 @@ export default function MenuClient({
                                                 <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Delivery Route</div>
                                                 <div className="text-[11px] font-semibold text-white/70 mt-1">{locationLabel}</div>
                                             </div>
-                                            <div className="text-[10px] font-black uppercase tracking-widest text-[#e8a230] text-right">
+                                            <div className="text-[10px] font-black uppercase tracking-widest text-[#f97316] text-right">
                                                 {hasCheckoutRoute ? (
                                                     <>
                                                         <div>{`ETA ${checkoutEta}`}</div>

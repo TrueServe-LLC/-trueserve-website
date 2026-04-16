@@ -166,7 +166,7 @@ export default function SignupPage() {
             </form>
 
             <div className="food-auth-note">
-              Already have an account? <Link href="/login" className="text-[#e8a230] font-bold">Sign in</Link>
+              Already have an account? <Link href="/login" className="text-[#f97316] font-bold">Sign in</Link>
             </div>
           </section>
         </div>

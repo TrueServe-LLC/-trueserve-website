@@ -123,7 +123,7 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                 </button>
                 <button 
                     onClick={() => handleTabChange('PHOTO')}
-                    className={`flex-1 py-3 text-[10px] uppercase font-black tracking-[0.2em] rounded-lg transition-all italic ${mode === 'PHOTO' ? 'bg-[#e8a230] text-black shadow-[0_4px_20px_rgba(232,162,48,0.2)]' : 'text-[#444] hover:text-white'}`}
+                    className={`flex-1 py-3 text-[10px] uppercase font-black tracking-[0.2em] rounded-lg transition-all italic ${mode === 'PHOTO' ? 'bg-[#f97316] text-black shadow-[0_4px_20px_rgba(249,115,22,0.2)]' : 'text-[#444] hover:text-white'}`}
                 >
                     Leave at Door
                 </button>
@@ -152,7 +152,7 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                                 <>
                                     <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
                                     {stream && (
-                                        <button onClick={takePhoto} className="absolute bottom-6 w-16 h-16 bg-[#e8a230] rounded-full border-4 border-white shadow-[0_0_40px_rgba(232,162,48,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white">
+                                        <button onClick={takePhoto} className="absolute bottom-6 w-16 h-16 bg-[#f97316] rounded-full border-4 border-white shadow-[0_0_40px_rgba(249,115,22,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white">
                                             <span className="sr-only">Take Photo</span>
                                             <div className="w-6 h-6 bg-black rounded-full"></div>
                                         </button>
@@ -174,7 +174,7 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                     onClick={submitDelivery}
                     disabled={loading || (mode === 'PIN' && pin.length < 4) || (mode === 'PHOTO' && !photoCaptured)}
                     className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] transition-all disabled:opacity-30 disabled:scale-100 mt-4 italic
-                        ${mode === 'PIN' ? 'bg-[#3dd68c] text-black hover:bg-white shadow-[0_10px_30px_rgba(61,214,140,0.2)]' : 'bg-[#e8a230] text-black hover:bg-white shadow-[0_10px_30_rgba(232,162,48,0.2)]'}`}
+                        ${mode === 'PIN' ? 'bg-[#3dd68c] text-black hover:bg-white shadow-[0_10px_30px_rgba(61,214,140,0.2)]' : 'bg-[#f97316] text-black hover:bg-white shadow-[0_10px_30_rgba(249,115,22,0.2)]'}`}
                 >
                     {loading ? (
                         <div className="flex items-center justify-center gap-3">

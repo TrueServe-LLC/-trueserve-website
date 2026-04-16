@@ -102,7 +102,7 @@ function MessageBanner({ update, tier }: { update?: string; tier?: string }) {
     }
     if (update === "needs_wallet") {
         return (
-            <div className="food-panel mb-6 border border-[#e8a230]/35 bg-[#e8a230]/10 text-[#f4d7a3]">
+            <div className="food-panel mb-6 border border-[#f97316]/35 bg-[#f97316]/10 text-[#f4d7a3]">
                 Add a saved card in <Link href="/user/settings#wallet" className="underline font-bold">Account Settings</Link> before joining a paid rewards tier.
             </div>
         );
@@ -135,28 +135,28 @@ function TierCard({
 }) {
     const isCurrent = currentPlan === tier;
     return (
-        <article className={`food-card relative overflow-hidden ${isCurrent ? "border border-[#e8a230]/50" : ""}`}>
-            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(232,162,48,0.12),transparent_45%)]" />
+        <article className={`food-card relative overflow-hidden ${isCurrent ? "border border-[#f97316]/50" : ""}`}>
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.12),transparent_45%)]" />
             <div className="relative z-10">
                 <div className="mb-3 flex items-start justify-between gap-3">
-                    <div className="rounded-xl border border-[#e8a230]/35 bg-[#e8a230]/10 p-2 text-[#e8a230]">
+                    <div className="rounded-xl border border-[#f97316]/35 bg-[#f97316]/10 p-2 text-[#f97316]">
                         {icon}
                     </div>
                     {badge && (
-                        <span className="rounded-full border border-[#e8a230]/40 bg-[#e8a230]/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#f6d8a1]">
+                        <span className="rounded-full border border-[#f97316]/40 bg-[#f97316]/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#f6d8a1]">
                             {badge}
                         </span>
                     )}
                 </div>
                 <p className="food-kicker mb-2">{subtitle}</p>
                 <h3 className="food-heading !text-[34px]">{tier}</h3>
-                <p className="text-xl font-bold text-[#e8a230] mt-2">{price}</p>
+                <p className="text-xl font-bold text-[#f97316] mt-2">{price}</p>
             </div>
 
             <div className="mt-4 grid gap-2 relative z-10">
                 {features.map((feature) => (
                     <div key={feature} className="text-sm text-white/78 flex items-start gap-2">
-                        <span className="mt-[8px] h-1.5 w-1.5 rounded-full bg-[#e8a230]" />
+                        <span className="mt-[8px] h-1.5 w-1.5 rounded-full bg-[#f97316]" />
                         <span>{feature}</span>
                     </div>
                 ))}
@@ -205,7 +205,7 @@ export default async function RewardsPage({
                 <MessageBanner update={resolvedSearchParams?.update} tier={resolvedSearchParams?.tier} />
 
                 <section className="food-panel relative overflow-hidden">
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(232,162,48,0.22),transparent_48%),radial-gradient(circle_at_bottom_left,rgba(255,122,45,0.14),transparent_38%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.22),transparent_48%),radial-gradient(circle_at_bottom_left,rgba(255,122,45,0.14),transparent_38%)]" />
                     <div className="relative z-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
                         <div>
                             <p className="food-kicker mb-3">Customer Loyalty</p>
@@ -225,13 +225,13 @@ export default async function RewardsPage({
                             )}
                         </div>
 
-                        <div className="food-card border border-[#e8a230]/30">
+                        <div className="food-card border border-[#f97316]/30">
                             <p className="food-kicker mb-2">Progress</p>
                             <h3 className="food-heading !text-[30px]">{journey.title}</h3>
                             <p className="text-sm text-white/75 mt-2">{journey.detail}</p>
                             <div className="mt-4 rounded-full bg-white/10 h-2 overflow-hidden">
                                 <div
-                                    className="h-full rounded-full bg-gradient-to-r from-[#e8a230] to-[#ffb64a]"
+                                    className="h-full rounded-full bg-gradient-to-r from-[#f97316] to-[#ffb64a]"
                                     style={{ width: `${journey.progress}%` }}
                                 />
                             </div>
@@ -249,7 +249,7 @@ export default async function RewardsPage({
                 <section className="mt-8 grid gap-6 md:grid-cols-3">
                     <article className="food-card">
                         <p className="food-kicker mb-2 flex items-center gap-2">
-                            <Crown size={14} className="text-[#e8a230]" />
+                            <Crown size={14} className="text-[#f97316]" />
                             Current Tier
                         </p>
                         <h3 className="food-heading !text-[34px]">{currentPlan}</h3>
@@ -257,7 +257,7 @@ export default async function RewardsPage({
                     </article>
                     <article className="food-card">
                         <p className="food-kicker mb-2 flex items-center gap-2">
-                            <Sparkles size={14} className="text-[#e8a230]" />
+                            <Sparkles size={14} className="text-[#f97316]" />
                             Reward Points
                         </p>
                         <h3 className="food-heading !text-[34px]">{snapshot ? snapshot.points.toLocaleString() : "0"}</h3>
@@ -265,7 +265,7 @@ export default async function RewardsPage({
                     </article>
                     <article className="food-card">
                         <p className="food-kicker mb-2 flex items-center gap-2">
-                            <TrendingUp size={14} className="text-[#e8a230]" />
+                            <TrendingUp size={14} className="text-[#f97316]" />
                             Order Activity
                         </p>
                         <h3 className="food-heading !text-[34px]">{snapshot ? snapshot.ordersCount : 0}</h3>
@@ -329,7 +329,7 @@ export default async function RewardsPage({
                     </div>
 
                     {isSignedIn && !canChoosePaid && (
-                        <p className="mt-4 text-sm text-[#e8a230]">
+                        <p className="mt-4 text-sm text-[#f97316]">
                             Add a payment method first to unlock Plus or Premium.
                         </p>
                     )}

@@ -144,7 +144,7 @@ function RestaurantFinderContent() {
             <div className="food-eyebrow">Browse restaurants</div>
             <h2>Available Now</h2>
             <p className="lead">
-              Showing restaurants for <span className="text-[#e8a230] font-bold">{selectedArea}</span>.
+              Showing restaurants for <span className="text-[#f97316] font-bold">{selectedArea}</span>.
               Ratings and reviews are linked to Google so customers see external feedback, not platform-only scores.
             </p>
             <div className="mt-5">
@@ -164,7 +164,7 @@ function RestaurantFinderContent() {
           </section>
 
           {loading ? (
-            <div className="food-panel text-center py-20 opacity-60 font-bold text-[#e8a230] animate-pulse">Loading nearby restaurants...</div>
+            <div className="food-panel text-center py-20 opacity-60 font-bold text-[#f97316] animate-pulse">Loading nearby restaurants...</div>
           ) : (
             <div className="rest-grid">
               {restaurants.map((r) => (
@@ -192,7 +192,7 @@ function RestaurantFinderContent() {
 
 export default function RestaurantFinder() {
   return (
-    <Suspense fallback={<div className="food-app-shell flex min-h-screen items-center justify-center text-[#e8a230] font-bold">Loading restaurants...</div>}>
+    <Suspense fallback={<div className="food-app-shell flex min-h-screen items-center justify-center text-[#f97316] font-bold">Loading restaurants...</div>}>
       <RestaurantFinderContent />
     </Suspense>
   );

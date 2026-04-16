@@ -115,7 +115,7 @@ export default async function StorefrontPage() {
                     <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, marginBottom: "14px" }}>
                         Share this path so customers can find and order from {restaurant.name} directly.
                     </p>
-                    <div className="btn btn-ghost justify-center w-full" style={{ cursor: "default", color: "var(--gold)", borderColor: "rgba(232,162,48,.3)" }}>
+                    <div className="btn btn-ghost justify-center w-full" style={{ cursor: "default", color: "var(--gold)", borderColor: "rgba(249,115,22,.3)" }}>
                         {storefrontPath}
                     </div>
                 </div>

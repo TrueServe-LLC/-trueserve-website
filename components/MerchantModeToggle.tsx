@@ -27,7 +27,7 @@ export default function MerchantModeToggle() {
                     aria-selected={mode === m}
                     onClick={() => setMode(m)}
                     className={`ts-pill-btn ts-pill-btn-sm ${
-                        mode === m ? "ring-2 ring-[#e8a230]/35" : "opacity-85"
+                        mode === m ? "ring-2 ring-[#f97316]/35" : "opacity-85"
                     }`}
                 >
                     {m.charAt(0).toUpperCase() + m.slice(1)}

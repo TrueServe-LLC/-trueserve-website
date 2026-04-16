@@ -114,7 +114,7 @@ export default function CostSyncManager() {
                     <button
                         onClick={handleSync}
                         disabled={syncStatus.isLoading}
-                        className="inline-flex items-center gap-2 rounded-lg bg-[#e8a230] hover:bg-[#d89020] disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 text-sm font-semibold text-black transition"
+                        className="inline-flex items-center gap-2 rounded-lg bg-[#f97316] hover:bg-[#d89020] disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 text-sm font-semibold text-black transition"
                     >
                         <RefreshCw className={`h-4 w-4 ${syncStatus.isLoading ? "animate-spin" : ""}`} />
                         {syncStatus.isLoading ? "Syncing..." : "Sync Costs"}

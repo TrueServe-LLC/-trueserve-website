@@ -25,14 +25,14 @@ export default function SignupLeftAnimation({ type }: AnimationProps) {
         resize();
         window.addEventListener('resize', resize);
 
-        const GOLD = '#e8a230';
-        const AMBER = '#e8a230';
+        const GOLD = '#f97316';
+        const AMBER = '#f97316';
         const GREEN = '#3dd68c';
         let t = 0;
 
         // ── MERCHANT ANIMATION LOGIC ──
         const drawGrid = () => {
-            ctx.strokeStyle = 'rgba(232,162,48,0.04)';
+            ctx.strokeStyle = 'rgba(249,115,22,0.04)';
             ctx.lineWidth = 1;
             const size = 52;
             for (let x = 0; x < W; x += size) {
@@ -44,8 +44,8 @@ export default function SignupLeftAnimation({ type }: AnimationProps) {
         };
 
         const glows = [
-            { x: 0.3, y: 0.35, r: 220, color: 'rgba(232,162,48,0.01)' },
-            { x: 0.7, y: 0.6,  r: 180, color: 'rgba(232,162,48,0.06)' },
+            { x: 0.3, y: 0.35, r: 220, color: 'rgba(249,115,22,0.01)' },
+            { x: 0.7, y: 0.6,  r: 180, color: 'rgba(249,115,22,0.06)' },
             { x: 0.15, y: 0.7, r: 140, color: 'rgba(200,130,30,0.05)' },
         ];
 
@@ -202,7 +202,7 @@ export default function SignupLeftAnimation({ type }: AnimationProps) {
                         const by = (r - 0.5) * CELL + 10;
                         ctx.fillStyle = '#111820';
                         ctx.fillRect(bx, by, CELL - 20, CELL - 20);
-                        ctx.fillStyle = 'rgba(232,162,48,0.06)';
+                        ctx.fillStyle = 'rgba(249,115,22,0.06)';
                         for(let wx=0; wx<3; wx++) for(let wy=0; wy<3; wy++) {
                             if(Math.random() > 0.7) ctx.fillRect(bx+8+wx*8, by+8+wy*8, 3, 4);
                         }
@@ -210,7 +210,7 @@ export default function SignupLeftAnimation({ type }: AnimationProps) {
                 }
 
                 // Grid lines & dash line
-                ctx.strokeStyle = 'rgba(232,162,48,0.05)'; ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(249,115,22,0.05)'; ctx.lineWidth = 1;
                 for (let x = 0; x <= W; x += CELL) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
                 for (let y = 0; y <= H; y += CELL) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
 
@@ -240,7 +240,7 @@ export default function SignupLeftAnimation({ type }: AnimationProps) {
             }
 
             const cg = ctx.createRadialGradient(W*0.5, H*0.5, 0, W*0.5, H*0.5, W*0.5);
-            cg.addColorStop(0, `rgba(232,162,48,${0.03 * (0.6 + Math.sin(t*1.2)*0.2)})`);
+            cg.addColorStop(0, `rgba(249,115,22,${0.03 * (0.6 + Math.sin(t*1.2)*0.2)})`);
             cg.addColorStop(1, 'transparent');
             ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H);
 

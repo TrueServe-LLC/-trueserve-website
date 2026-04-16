@@ -162,7 +162,7 @@ export default async function DriverDashboard() {
                             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <div className="text-[11px] uppercase tracking-[0.14em] text-[#e8a230]">{primaryOrder.status}</div>
+                                        <div className="text-[11px] uppercase tracking-[0.14em] text-[#f97316]">{primaryOrder.status}</div>
                                         <h3 className="mt-1 text-[22px] font-black">{primaryOrder.restaurant?.name || "Restaurant"}</h3>
                                     </div>
                                     <div className="text-[11px] uppercase tracking-[0.14em] text-white/45">
@@ -189,9 +189,9 @@ export default async function DriverDashboard() {
                                         <div className="text-[10px] uppercase tracking-[0.14em] text-white/55">Progress</div>
                                         <div className="mt-3 flex items-center gap-3">
                                             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                                                <div className="h-full w-[68%] rounded-full bg-[#e8a230]" />
+                                                <div className="h-full w-[68%] rounded-full bg-[#f97316]" />
                                             </div>
-                                            <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#e8a230]">
+                                            <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#f97316]">
                                                 {primaryOrder.status === "PICKED_UP" ? "Picked up" : "Heading out"}
                                             </div>
                                         </div>
@@ -225,7 +225,7 @@ export default async function DriverDashboard() {
                                                     <div className="text-sm font-semibold text-white">{order.restaurant?.name || "Restaurant"}</div>
                                                     <div className="text-xs text-white/50">{order.deliveryAddress}</div>
                                                 </div>
-                                                <div className="text-[11px] font-black uppercase tracking-[0.08em] text-[#e8a230]">
+                                                <div className="text-[11px] font-black uppercase tracking-[0.08em] text-[#f97316]">
                                                     {order.status}
                                                 </div>
                                             </div>

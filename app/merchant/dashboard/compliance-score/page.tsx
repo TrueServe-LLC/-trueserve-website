@@ -12,7 +12,7 @@ function gradeToColor(grade: string): { bg: string; text: string; border: string
         case "A":
             return { bg: "#0d1a10", border: "#1a4a2a", text: "#2ee5a0" };
         case "B":
-            return { bg: "#1c1508", border: "#57400f", text: "#f1b243" };
+            return { bg: "#1c1508", border: "#57400f", text: "#f97316" };
         case "C":
             return { bg: "#1a1208", border: "#5c3a0f", text: "#fb923c" };
         default:

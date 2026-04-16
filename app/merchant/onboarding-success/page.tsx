@@ -70,7 +70,7 @@ export default async function OnboardingSuccessPage() {
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
                     <div style={{
                         width: "72px", height: "72px", borderRadius: "50%",
-                        background: isFullyActive ? "rgba(61,214,140,.12)" : isPending ? "rgba(232,162,48,.12)" : "rgba(100,100,120,.1)",
+                        background: isFullyActive ? "rgba(61,214,140,.12)" : isPending ? "rgba(249,115,22,.12)" : "rgba(100,100,120,.1)",
                         border: `2px solid ${isFullyActive ? "var(--green)" : isPending ? "var(--gold)" : "var(--border2)"}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "32px"

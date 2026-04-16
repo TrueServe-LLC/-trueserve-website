@@ -34,19 +34,19 @@ export default function AutoPilotPanel({ restaurantId, autoPilotEnabled, capacit
                     position: relative; cursor: pointer; border: none; padding: 0; flex-shrink: 0;
                     transition: background 0.15s;
                 }
-                .ap-toggle.on { background: rgba(232,162,48,0.25); border: 1px solid #e8a230; }
+                .ap-toggle.on { background: rgba(249,115,22,0.25); border: 1px solid #f97316; }
                 .ap-knob {
                     width: 18px; height: 18px; background: #555; border-radius: 1px;
                     position: absolute; top: 2px; left: 2px; transition: left 0.15s, background 0.15s;
                 }
-                .ap-toggle.on .ap-knob { left: 19px; background: #e8a230; }
+                .ap-toggle.on .ap-knob { left: 19px; background: #f97316; }
                 .ap-desc { font-size: 12px; color: #444; line-height: 1.55; margin-bottom: 14px; }
                 .ap-threshold-row {
                     display: flex; align-items: center; justify-content: space-between;
                     padding-top: 12px; border-top: 1px solid #1c1f28;
                 }
                 .ap-threshold-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #555; }
-                .ap-threshold-val { font-size: 14px; font-weight: 700; color: #e8a230; font-family: 'DM Mono', monospace; }
+                .ap-threshold-val { font-size: 14px; font-weight: 700; color: #f97316; font-family: 'DM Mono', monospace; }
             `}</style>
             <div className="ap-panel">
                 <div className="ap-hd">

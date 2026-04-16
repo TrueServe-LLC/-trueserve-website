@@ -52,28 +52,28 @@ export default function MembershipUI({
     return (
         <div className="bg-[#131313] border border-white/5 p-8 rounded-[2rem] shadow-2xl backdrop-blur-md relative overflow-hidden font-barlow-cond">
              {/* Subtle Glow */}
-             <div className="absolute top-0 right-0 w-32 h-32 bg-[#e8a230]/10 blur-[50px] rounded-full -mr-16 -mt-16 pointer-events-none"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-[#f97316]/10 blur-[50px] rounded-full -mr-16 -mt-16 pointer-events-none"></div>
 
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h3 className="font-bebas text-white text-3xl uppercase italic leading-none tracking-wider">TrueServe <span className="text-[#e8a230]">Plus</span></h3>
+                    <h3 className="font-bebas text-white text-3xl uppercase italic leading-none tracking-wider">TrueServe <span className="text-[#f97316]">Plus</span></h3>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5A5550] mt-2 italic">Elite Tier Status</p>
                 </div>
                 {isPlus && (
-                    <div className="bg-[#e8a230]/10 border border-[#e8a230]/20 text-[#e8a230] rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest animate-pulse">
+                    <div className="bg-[#f97316]/10 border border-[#f97316]/20 text-[#f97316] rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest animate-pulse">
                         S Tier Member
                     </div>
                 )}
             </div>
 
             {error && (
-                <div className="mb-6 text-[10px] font-bold uppercase tracking-widest text-[#e8a230] bg-[#e8a230]/5 border border-[#e8a230]/20 p-4 rounded-xl">
+                <div className="mb-6 text-[10px] font-bold uppercase tracking-widest text-[#f97316] bg-[#f97316]/5 border border-[#f97316]/20 p-4 rounded-xl">
                     ⚠️ {error}
                 </div>
             )}
 
             <div className="space-y-6">
-                <p className="text-xs text-slate-400 font-medium leading-relaxed italic border-l-2 border-[#e8a230]/30 pl-4 py-1">
+                <p className="text-xs text-slate-400 font-medium leading-relaxed italic border-l-2 border-[#f97316]/30 pl-4 py-1">
                     {isPlus 
                         ? "Protocol Active: Enjoying $0 delivery fees on all orders and priority courier dispatch." 
                         : "Unlock $0 delivery fees on all local orders, exclusive marketplace discounts, and priority courier matching."}
@@ -96,7 +96,7 @@ export default function MembershipUI({
                     <button 
                         onClick={handleSubscribe}
                         disabled={isLoading}
-                        className="w-full py-5 bg-[#e8a230] text-black font-bebas text-lg uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(232,162,48,0.15)] hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50"
+                        className="w-full py-5 bg-[#f97316] text-black font-bebas text-lg uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(249,115,22,0.15)] hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50"
                     >
                         {isLoading ? "UPLOADING..." : "UPGRADE TO PLUS"}
                     </button>

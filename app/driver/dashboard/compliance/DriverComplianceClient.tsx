@@ -96,12 +96,12 @@ export default function DriverComplianceClient({
         <div className="md-body min-h-screen animate-fade-in-up">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-5 md:px-6 lg:px-8">
                 <div className="flex flex-wrap items-center gap-3">
-                    <a href="/driver/dashboard" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-[#f1b243] transition hover:border-[#f1b243]/40 hover:bg-white/10">
+                    <a href="/driver/dashboard" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-[#f97316] transition hover:border-[#f97316]/40 hover:bg-white/10">
                         ←
                     </a>
                     <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full border border-[#f1b243]/20 bg-[#f1b24314] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f1b243]">
+                            <span className="rounded-full border border-[#f97316]/20 bg-[#f9731614] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f97316]">
                                 Driver Compliance
                             </span>
                             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a93a7]">
@@ -109,7 +109,7 @@ export default function DriverComplianceClient({
                             </span>
                         </div>
                         <div className="mt-2 h-2 w-full max-w-sm overflow-hidden rounded-full bg-white/10">
-                            <div className="h-full w-[66%] rounded-full bg-gradient-to-r from-[#6d6ff3] via-[#8b85ff] to-[#f1b243]" />
+                            <div className="h-full w-[66%] rounded-full bg-gradient-to-r from-[#6d6ff3] via-[#8b85ff] to-[#f97316]" />
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ export default function DriverComplianceClient({
                             <div className="max-w-2xl">
                                 <div className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8a93a7]">What should we keep current?</div>
                                 <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] text-white md:text-4xl">
-                                    Keep your <span className="text-[#f1b243]">driver compliance</span> ready for pilot launch.
+                                    Keep your <span className="text-[#f97316]">driver compliance</span> ready for pilot launch.
                                 </h1>
                                 <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#aab4c8]">
                                     This is the driver-side checklist for food safety training, bag sanitation, and temperature handling. It keeps your profile ready for dispatch and gives TrueServe a clear compliance trail.
@@ -138,7 +138,7 @@ export default function DriverComplianceClient({
                         <div className="mt-8 grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
                             <div className="space-y-5">
                                 <div className="rounded-[24px] border border-white/10 bg-[#0b0f17] p-5">
-                                    <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b243]">Compliance checklist</div>
+                                    <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f97316]">Compliance checklist</div>
                                     <div className="mt-4 overflow-hidden rounded-[20px] border border-white/10 bg-[#0b0f17]">
                                         {[
                                             {
@@ -165,13 +165,13 @@ export default function DriverComplianceClient({
                                         ].map((item, index) => (
                                             <label
                                                 key={item.key}
-                                                className={`flex cursor-pointer items-start gap-4 px-4 py-4 transition ${item.checked ? "bg-[#f1b24312]" : "bg-[#0b0f17] hover:bg-white/[0.03]"} ${index !== 2 ? "border-b border-white/10" : ""}`}
+                                                className={`flex cursor-pointer items-start gap-4 px-4 py-4 transition ${item.checked ? "bg-[#f9731612]" : "bg-[#0b0f17] hover:bg-white/[0.03]"} ${index !== 2 ? "border-b border-white/10" : ""}`}
                                             >
                                                 <input
                                                     type="checkbox"
                                                     checked={item.checked}
                                                     onChange={(event) => item.onChange(event.target.checked)}
-                                                    className="mt-1 h-5 w-5 rounded border-white/20 bg-black/40 text-[#f1b243] focus:ring-[#f1b243]"
+                                                    className="mt-1 h-5 w-5 rounded border-white/20 bg-black/40 text-[#f97316] focus:ring-[#f97316]"
                                                 />
                                                 <span className="min-w-0">
                                                     <span className="block text-sm font-bold text-white">{item.label}</span>
@@ -192,7 +192,7 @@ export default function DriverComplianceClient({
                                         onChange={(event) => setNotes(event.target.value)}
                                         placeholder="Optional notes for the compliance record"
                                         rows={4}
-                                        className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white outline-none transition placeholder:text-[#667085] focus:border-[#f1b243]/50"
+                                        className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white outline-none transition placeholder:text-[#667085] focus:border-[#f97316]/50"
                                     />
                                 </div>
 
@@ -237,7 +237,7 @@ export default function DriverComplianceClient({
                                         type="button"
                                         onClick={submitAttestation}
                                         disabled={isPending}
-                                        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full border border-[#f1b243]/40 bg-[#f1b243] px-6 text-sm font-black uppercase tracking-[0.14em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+                                        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full border border-[#f97316]/40 bg-[#f97316] px-6 text-sm font-black uppercase tracking-[0.14em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
                                     >
                                         {isPending ? "Saving..." : "Save Attestation"}
                                     </button>
@@ -256,7 +256,7 @@ export default function DriverComplianceClient({
                                                         {entry.status} · {entry.completedAt ? new Date(entry.completedAt).toLocaleDateString() : "No date"}
                                                     </div>
                                                 </div>
-                                                <div className="shrink-0 rounded-full border border-[#f1b243]/20 bg-[#f1b24314] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#f1b243]">
+                                                <div className="shrink-0 rounded-full border border-[#f97316]/20 bg-[#f9731614] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#f97316]">
                                                     {entry.score ?? 0}/100
                                                 </div>
                                             </div>
@@ -276,7 +276,7 @@ export default function DriverComplianceClient({
                     <div className="mt-8">
                         <button
                             onClick={() => setChatOpen(!chatOpen)}
-                            className="w-full rounded-full bg-[#f1b243] hover:bg-[#e8a230] text-black px-6 py-3 font-bold transition-colors text-sm md:text-base"
+                            className="w-full rounded-full bg-[#f97316] hover:bg-[#f97316] text-black px-6 py-3 font-bold transition-colors text-sm md:text-base"
                         >
                             {chatOpen ? '✕ Close Help' : '💬 Ask Compliance Help'}
                         </button>

@@ -152,7 +152,7 @@ export default function ProfileAvatar({
             <button
                 onClick={() => setIsMenuOpen((prev) => !prev)}
                 disabled={isUploading || isSaving}
-                className="h-full w-full rounded-full flex items-center justify-center text-[clamp(1rem,2.5vw,2rem)] font-bold border border-white/15 transition-transform hover:scale-[1.02] overflow-hidden hover:ring-2 hover:ring-[#e8a230]/40 relative group bg-[#151922] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
+                className="h-full w-full rounded-full flex items-center justify-center text-[clamp(1rem,2.5vw,2rem)] font-bold border border-white/15 transition-transform hover:scale-[1.02] overflow-hidden hover:ring-2 hover:ring-[#f97316]/40 relative group bg-[#151922] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                 style={!url ? { backgroundColor: color, color: "#fff" } : undefined}
                 aria-label="Customize avatar"
             >
@@ -186,11 +186,11 @@ export default function ProfileAvatar({
                         <button
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploading || isSaving}
-                            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left hover:border-[#e8a230]/50 hover:bg-[#e8a230]/10 transition-colors disabled:opacity-60"
+                            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left hover:border-[#f97316]/50 hover:bg-[#f97316]/10 transition-colors disabled:opacity-60"
                         >
                             <span className="flex items-center justify-between gap-3">
                                 <span className="inline-flex items-center gap-2 text-sm font-semibold text-white leading-none">
-                                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#e8a230]/15 text-[#e8a230]">
+                                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#f97316]/15 text-[#f97316]">
                                         <ImagePlus size={16} />
                                     </span>
                                     Upload Custom Photo
@@ -202,7 +202,7 @@ export default function ProfileAvatar({
                         <button
                             onClick={handleUseMonogram}
                             disabled={!url || isUploading || isSaving}
-                            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left hover:border-[#e8a230]/50 hover:bg-[#e8a230]/10 transition-colors disabled:opacity-60"
+                            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left hover:border-[#f97316]/50 hover:bg-[#f97316]/10 transition-colors disabled:opacity-60"
                         >
                             <span className="flex items-center justify-between gap-3">
                                 <span className="inline-flex items-center gap-2 text-sm font-semibold text-white leading-none">
@@ -226,14 +226,14 @@ export default function ProfileAvatar({
                                     disabled={isUploading || isSaving}
                                     className={`relative aspect-square overflow-hidden rounded-2xl border transition-all ${
                                         url === preset.url
-                                            ? "border-[#e8a230] ring-2 ring-[#e8a230]/50"
+                                            ? "border-[#f97316] ring-2 ring-[#f97316]/50"
                                             : "border-white/10 hover:border-white/30"
                                     }`}
                                     title={preset.label}
                                 >
                                     <img src={preset.url} alt={preset.label} className="h-full w-full object-cover" />
                                     {url === preset.url && (
-                                        <span className="absolute top-1 right-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#e8a230] text-black">
+                                        <span className="absolute top-1 right-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#f97316] text-black">
                                             <Check size={12} strokeWidth={3} />
                                         </span>
                                     )}

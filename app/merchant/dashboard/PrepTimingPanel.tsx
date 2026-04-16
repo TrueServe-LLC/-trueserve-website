@@ -31,7 +31,7 @@ export default function PrepTimingPanel({ restaurantId, manualPrepTime, avgPrepT
                 .prep-panel { background: #0f1219; padding: 18px 20px; }
                 .prep-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
                 .prep-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
-                .prep-accuracy { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #e8a230; background: #1a1200; border: 1px solid #3a2800; padding: 3px 8px; }
+                .prep-accuracy { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #f97316; background: #1a1200; border: 1px solid #3a2800; padding: 3px 8px; }
                 .prep-main { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
                 .prep-time-block {
                     width: 72px; height: 72px; background: #0c0e13; border: 1px solid #2a2f3a;
@@ -39,7 +39,7 @@ export default function PrepTimingPanel({ restaurantId, manualPrepTime, avgPrepT
                 }
                 .prep-time-num { font-size: 28px; font-weight: 700; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; }
                 .prep-time-unit { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-top: 2px; }
-                .prep-ai-title { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #e8a230; margin-bottom: 3px; }
+                .prep-ai-title { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #f97316; margin-bottom: 3px; }
                 .prep-ai-desc { font-size: 11px; color: #444; line-height: 1.5; }
                 .prep-tabs { display: flex; gap: 4px; }
                 .prep-tab-btn {
@@ -47,7 +47,7 @@ export default function PrepTimingPanel({ restaurantId, manualPrepTime, avgPrepT
                     padding: 7px 14px; background: #0c0e13; border: 1px solid #2a2f3a;
                     color: #444; cursor: pointer; font-family: 'DM Sans', sans-serif;
                 }
-                .prep-tab-btn.active { background: #e8a230; color: #000; border-color: #e8a230; }
+                .prep-tab-btn.active { background: #f97316; color: #000; border-color: #f97316; }
                 .prep-tab-btn:hover:not(.active) { border-color: #444; color: #aaa; }
             `}</style>
             <div className="prep-panel">

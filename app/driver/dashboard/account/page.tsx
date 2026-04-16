@@ -14,7 +14,7 @@ export default async function DriverAccount() {
             <style dangerouslySetInnerHTML={{ __html: `
                 .page-wrap { padding: 32px; }
                 .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 32px; }
-                .page-title span { color: #e8a230; }
+                .page-title span { color: #f97316; }
 
                 .acct-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; }
                 @media (min-width: 1024px) { .acct-grid { grid-template-columns: 1fr 1.2fr; } }
@@ -22,22 +22,22 @@ export default async function DriverAccount() {
                 .acct-panel { background: #0c0c0e; padding: 32px; position: relative; overflow: hidden; }
                 .acct-sec-title { font-size: 10px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase; color: #222; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; font-style: italic; }
                 
-                .tag-gold { font-size: 9px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #e8a230; background: rgba(232,162,48,0.05); border: 1px solid rgba(232,162,48,0.1); padding: 4px 10px; border-radius: 4px; }
+                .tag-gold { font-size: 9px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #f97316; background: rgba(249,115,22,0.05); border: 1px solid rgba(249,115,22,0.1); padding: 4px 10px; border-radius: 4px; }
                 .tag-green { font-size: 9px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; background: rgba(61,214,140,0.05); border: 1px solid rgba(61,214,140,0.1); padding: 4px 10px; border-radius: 4px; }
 
                 .profile-hero { display: flex; align-items: center; gap: 24px; padding: 32px; background: #080808; border: 1px solid #1c1f28; margin-bottom: 32px; position: relative; border-radius: 24px; }
-                .profile-hero::before { content: ""; position: absolute; left: 0; top: 20%; bottom: 20%; width: 4px; background: #e8a230; border-radius: 0 4px 4px 0; }
+                .profile-hero::before { content: ""; position: absolute; left: 0; top: 20%; bottom: 20%; width: 4px; background: #f97316; border-radius: 0 4px 4px 0; }
                 
-                .profile-av { width: 80px; height: 80px; background: #e8a230; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #080a0f; flex-shrink: 0; transform: rotate(-3deg); box-shadow: 0 10px 30px rgba(232,162,48,0.2); }
+                .profile-av { width: 80px; height: 80px; background: #f97316; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #080a0f; flex-shrink: 0; transform: rotate(-3deg); box-shadow: 0 10px 30px rgba(249,115,22,0.2); }
                 .profile-name { font-family: 'Barlow Condensed', sans-serif; font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 4px; font-style: italic; text-transform: uppercase; line-height: 0.9; }
                 .profile-meta { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #333; }
                 
                 .field-row { margin-bottom: 24px; }
                 .field-lbl { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #444; margin-bottom: 10px; font-style: italic; }
                 .input-box { width: 100%; background: #080808; border: 1px solid #131720; color: #fff; font-family: 'DM Mono', monospace; font-size: 13px; padding: 16px; outline: none; border-radius: 12px; transition: all .2s; }
-                .input-box:focus { border-color: #e8a230; background: #0c0c0e; }
+                .input-box:focus { border-color: #f97316; background: #0c0c0e; }
                 
-                .btn-save { width: 100%; padding: 18px; background: #e8a230; border: none; color: #000; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .2s; margin-top: 12px; border-radius: 14px; font-style: italic; }
+                .btn-save { width: 100%; padding: 18px; background: #f97316; border: none; color: #000; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .2s; margin-top: 12px; border-radius: 14px; font-style: italic; }
                 .btn-save:hover { background: #fff; transform: translateY(-2px); }
 
                 .info-table { border: 1px solid #131720; background: #080808; border-radius: 20px; overflow: hidden; }
@@ -52,8 +52,8 @@ export default async function DriverAccount() {
                 .stripe-icon { width: 52px; height: 52px; background: #0c0c0e; border: 1.5px solid #131720; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #4a5aaa; font-size: 24px; }
                 .stripe-txt-hd { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 2px; }
                 .stripe-txt-sub { font-size: 11px; font-weight: 600; color: #333; text-transform: uppercase; letter-spacing: 0.1em; }
-                .btn-connect { padding: 12px 24px; border: 1.5px solid #e8a230; color: #e8a230; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .2s; border-radius: 10px; font-style: italic; }
-                .btn-connect:hover { background: #e8a230; color: #000; }
+                .btn-connect { padding: 12px 24px; border: 1.5px solid #f97316; color: #f97316; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .2s; border-radius: 10px; font-style: italic; }
+                .btn-connect:hover { background: #f97316; color: #000; }
 
                 @media (max-width: 900px) {
                     .page-wrap { padding: 20px 16px; }
@@ -85,7 +85,7 @@ export default async function DriverAccount() {
                             <div>
                                 <div className="profile-name">{name}</div>
                                 <div className="profile-meta">FLEET AGENT · ACTIVE SINCE 2024</div>
-                                <div className="mt-2 text-[10px] font-black tracking-widest text-[#e8a230] uppercase">Sector: Charlotte, NC</div>
+                                <div className="mt-2 text-[10px] font-black tracking-widest text-[#f97316] uppercase">Sector: Charlotte, NC</div>
                             </div>
                         </div>
 
@@ -98,17 +98,17 @@ export default async function DriverAccount() {
 
                         <div className="field-row">
                             <div className="field-lbl">Profile Uplink Photo</div>
-                            <div className="group relative flex items-center gap-5 bg-[#0c0e13] p-5 border border-[#2a2f3a] hover:border-[#e8a230]/40 transition-all cursor-pointer rounded-xl overflow-hidden shadow-2xl">
-                                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#e8a230] to-transparent opacity-30 animate-pulse" />
+                            <div className="group relative flex items-center gap-5 bg-[#0c0e13] p-5 border border-[#2a2f3a] hover:border-[#f97316]/40 transition-all cursor-pointer rounded-xl overflow-hidden shadow-2xl">
+                                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#f97316] to-transparent opacity-30 animate-pulse" />
                                 <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-xl text-slate-500 overflow-hidden relative border border-white/5">
                                     <span className="group-hover:scale-125 transition-transform duration-500">👤</span>
-                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-[#e8a230] shadow-[0_0_10px_#e8a230] opacity-0 group-hover:opacity-100 animate-scanning" />
+                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-[#f97316] shadow-[0_0_10px_#f97316] opacity-0 group-hover:opacity-100 animate-scanning" />
                                 </div>
                                 <div className="flex-1">
-                                    <button className="text-[11px] font-black uppercase tracking-[0.2em] text-[#e8a230] group-hover:text-white transition-colors">Start Identity Scan</button>
+                                    <button className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f97316] group-hover:text-white transition-colors">Start Identity Scan</button>
                                     <p className="text-[9px] font-bold text-[#333] uppercase mt-1 tracking-widest">Face-ID Sync · 2026 Secured</p>
                                 </div>
-                                <div className="text-[#e8a230] opacity-30 text-xs">↑</div>
+                                <div className="text-[#f97316] opacity-30 text-xs">↑</div>
                             </div>
                         </div>
 
@@ -152,7 +152,7 @@ export default async function DriverAccount() {
                             </div>
                             <div className="info-row">
                                 <div className="info-label">Fleet Tier</div>
-                                <div className="info-value text-[#e8a230]">ALIGNED ALPHA</div>
+                                <div className="info-value text-[#f97316]">ALIGNED ALPHA</div>
                             </div>
                         </div>
 

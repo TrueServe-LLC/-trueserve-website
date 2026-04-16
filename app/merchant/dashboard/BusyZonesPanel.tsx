@@ -41,7 +41,7 @@ export default function BusyZonesPanel({ restaurantId, schedules: initialSchedul
                 .bz-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
                 .bz-add-btn {
                     font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-                    color: #e8a230; background: transparent; border: 1px solid #3a2800;
+                    color: #f97316; background: transparent; border: 1px solid #3a2800;
                     padding: 5px 12px; cursor: pointer; font-family: 'DM Sans', sans-serif;
                 }
                 .bz-add-btn:hover { background: #1a1200; }
@@ -57,7 +57,7 @@ export default function BusyZonesPanel({ restaurantId, schedules: initialSchedul
                     display: flex; align-items: center; justify-content: space-between;
                 }
                 .bz-zone-info { font-size: 12px; color: #ccc; }
-                .bz-zone-day { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #e8a230; margin-bottom: 2px; }
+                .bz-zone-day { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #f97316; margin-bottom: 2px; }
                 .bz-zone-del {
                     background: none; border: 1px solid #2a2f3a; color: #555;
                     width: 24px; height: 24px; cursor: pointer; font-size: 12px;
@@ -75,7 +75,7 @@ export default function BusyZonesPanel({ restaurantId, schedules: initialSchedul
                     width: 100%; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc;
                     font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 10px; outline: none;
                 }
-                .bz-input:focus, .bz-select:focus { border-color: #e8a230; }
+                .bz-input:focus, .bz-select:focus { border-color: #f97316; }
                 .bz-actions { display: flex; gap: 8px; margin-top: 20px; }
                 .bz-cancel {
                     font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
@@ -84,7 +84,7 @@ export default function BusyZonesPanel({ restaurantId, schedules: initialSchedul
                 }
                 .bz-submit {
                     font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-                    padding: 9px 18px; background: #e8a230; border: none; color: #000;
+                    padding: 9px 18px; background: #f97316; border: none; color: #000;
                     cursor: pointer; flex: 1; font-family: 'DM Sans', sans-serif;
                 }
             `}</style>

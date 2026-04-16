@@ -130,7 +130,7 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
                 .bubble { background: #131720; border: 1px solid #1c1f28; padding: 12px 14px; font-size: 13px; color: #ccc; line-height: 1.5; border-radius: 4px; max-width: 90%; }
                 
                 .user-group { display: flex; justify-content: flex-end; margin-bottom: 16px; }
-                .user-bubble { background: #1a1200; border: 1px solid #3a2800; padding: 12px 14px; font-size: 13px; color: #e8a230; max-width: 80%; line-height: 1.5; border-radius: 4px; }
+                .user-bubble { background: #1a1200; border: 1px solid #3a2800; padding: 12px 14px; font-size: 13px; color: #f97316; max-width: 80%; line-height: 1.5; border-radius: 4px; }
 
                 .input-row { display: flex; gap: 6px; padding: 12px; border-top: 1px solid #1c1f28; background: #0c0e13; }
                 .chat-input { flex: 1; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; border-radius: 4px; }

@@ -188,14 +188,14 @@ export default function Home() {
                 ) : (
                   <div className="grid gap-2 rounded-xl border border-white/5 bg-white/0 px-4 py-3 text-center text-xs text-gray-400">
                     <div>
-                      <Link href="/login" className="font-semibold text-gray-300 transition-colors hover:text-[#e8a230]">
+                      <Link href="/login" className="font-semibold text-gray-300 transition-colors hover:text-[#f97316]">
                         Sign in
                       </Link>{" "}
                       to view past orders.
                     </div>
                     <div>
                       New?{" "}
-                      <Link href="/signup" className="font-semibold text-gray-300 transition-colors hover:text-[#e8a230]">
+                      <Link href="/signup" className="font-semibold text-gray-300 transition-colors hover:text-[#f97316]">
                         Create an account
                       </Link>
                       .
@@ -223,7 +223,7 @@ export default function Home() {
                       href={social.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-[#e8a230] hover:text-white"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-[#f97316] hover:text-white"
                       aria-label={social.label}
                     >
                       <Icon className="h-4 w-4" />
@@ -235,8 +235,8 @@ export default function Home() {
             </div>
             <div className="mb-8 flex flex-wrap justify-center gap-10 text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/merchant/signup" className="hover:text-[#e8a230] transition-colors">Merchants</Link>
-            <Link href="/driver/signup" className="hover:text-[#e8a230] transition-colors">Drivers</Link>
+            <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
+            <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             </div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">

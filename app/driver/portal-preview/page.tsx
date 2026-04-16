@@ -89,7 +89,7 @@ export default function DriverPortalPreviewPage() {
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-[11px] uppercase tracking-[0.14em] text-[#e8a230]">Picked Up</div>
+                  <div className="text-[11px] uppercase tracking-[0.14em] text-[#f97316]">Picked Up</div>
                   <h3 className="mt-1 text-[22px] font-black">Active Restaurant</h3>
                 </div>
                 <div className="text-[11px] uppercase tracking-[0.14em] text-white/45">#TRV-XXXX</div>
@@ -111,9 +111,9 @@ export default function DriverPortalPreviewPage() {
                 <div className="text-[10px] uppercase tracking-[0.14em] text-white/55">Progress</div>
                 <div className="mt-3 flex items-center gap-3">
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full w-[68%] rounded-full bg-[#e8a230]" />
+                    <div className="h-full w-[68%] rounded-full bg-[#f97316]" />
                   </div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#e8a230]">En route</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#f97316]">En route</div>
                 </div>
                 <p className="mt-3 text-sm leading-6 text-white/65">
                   Complete the drop-off once you arrive at the customer address.
@@ -128,7 +128,7 @@ export default function DriverPortalPreviewPage() {
                   className="relative h-44 overflow-hidden rounded-[18px] border border-white/10"
                   style={{
                     background:
-                      "radial-gradient(circle at 20% 25%, rgba(232,162,48,.18), transparent 28%), radial-gradient(circle at 80% 75%, rgba(61,214,140,.16), transparent 24%), linear-gradient(180deg, rgba(10,14,20,.96), rgba(6,9,14,.98))",
+                      "radial-gradient(circle at 20% 25%, rgba(249,115,22,.18), transparent 28%), radial-gradient(circle at 80% 75%, rgba(61,214,140,.16), transparent 24%), linear-gradient(180deg, rgba(10,14,20,.96), rgba(6,9,14,.98))",
                   }}
                 >
                   <div
@@ -139,14 +139,14 @@ export default function DriverPortalPreviewPage() {
                       backgroundSize: "28px 28px",
                     }}
                   />
-                  <div className="absolute left-6 top-6 rounded-full border border-[#e8a230]/30 bg-[#e8a230]/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#e8a230]">
+                  <div className="absolute left-6 top-6 rounded-full border border-[#f97316]/30 bg-[#f97316]/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#f97316]">
                     Pickup
                   </div>
                   <div className="absolute right-6 bottom-6 rounded-full border border-emerald-300/30 bg-emerald-300/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-300">
                     Drop-off
                   </div>
-                  <div className="absolute left-[18%] top-[58%] h-[2px] w-[64%] rounded-full bg-gradient-to-r from-[#e8a230] via-white to-emerald-300" />
-                  <div className="absolute left-[21%] top-[54%] h-5 w-5 rounded-full border-4 border-white bg-[#e8a230] shadow-[0_0_20px_rgba(232,162,48,.45)]" />
+                  <div className="absolute left-[18%] top-[58%] h-[2px] w-[64%] rounded-full bg-gradient-to-r from-[#f97316] via-white to-emerald-300" />
+                  <div className="absolute left-[21%] top-[54%] h-5 w-5 rounded-full border-4 border-white bg-[#f97316] shadow-[0_0_20px_rgba(249,115,22,.45)]" />
                   <div className="absolute right-[17%] top-[58%] h-5 w-5 rounded-full border-4 border-white bg-emerald-300 shadow-[0_0_20px_rgba(61,214,140,.35)]" />
                 </div>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -160,7 +160,7 @@ export default function DriverPortalPreviewPage() {
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Payout</div>
-                    <div className="mt-1 text-lg font-black text-[#e8a230]">$—</div>
+                    <div className="mt-1 text-lg font-black text-[#f97316]">$—</div>
                   </div>
                 </div>
               </div>

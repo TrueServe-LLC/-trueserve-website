@@ -106,7 +106,7 @@ export default function PickupPhotoForm({ orderId, restaurantName }: { orderId: 
                         <div className="flex items-center gap-2">
                             <span className="text-xl">🏎️</span>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#e8a230] italic">Pickup Verification</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f97316] italic">Pickup Verification</p>
                                 <p className="text-[9px] text-[#444] font-black uppercase mt-0.5 tracking-widest italic">
                                     Secure photo: {restaurantName || "the restaurant"}
                                 </p>
@@ -139,7 +139,7 @@ export default function PickupPhotoForm({ orderId, restaurantName }: { orderId: 
                                 {stream && (
                                     <button
                                         onClick={takePhoto}
-                                        className="absolute bottom-6 w-16 h-16 bg-[#e8a230] rounded-full border-4 border-white shadow-[0_0_40px_rgba(232,162,48,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white"
+                                        className="absolute bottom-6 w-16 h-16 bg-[#f97316] rounded-full border-4 border-white shadow-[0_0_40px_rgba(249,115,22,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white"
                                     >
                                         <span className="sr-only">Take Photo</span>
                                         <div className="w-6 h-6 bg-black rounded-full"></div>

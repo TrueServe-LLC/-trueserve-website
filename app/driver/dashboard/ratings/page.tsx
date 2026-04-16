@@ -13,13 +13,13 @@ export default async function DriverRatings() {
             <style dangerouslySetInnerHTML={{ __html: `
                 .page-wrap { padding: 32px; }
                 .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 32px; }
-                .page-title span { color: #e8a230; }
+                .page-title span { color: #f97316; }
 
                 .ratings-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin-bottom: 24px; }
                 @media (max-width: 1024px) { .ratings-grid { grid-template-columns: 1fr; } }
                 
                 .rating-hero { background: #0c0c0e; padding: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-                .rating-na { font-size: 110px; font-weight: 700; font-family: 'DM Mono', monospace; color: #e8a230; line-height: 0.8; margin-bottom: 12px; letter-spacing: -0.1em; }
+                .rating-na { font-size: 110px; font-weight: 700; font-family: 'DM Mono', monospace; color: #f97316; line-height: 0.8; margin-bottom: 12px; letter-spacing: -0.1em; }
                 .rating-tier { font-size: 11px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; color: #fff; margin-bottom: 16px; font-style: italic; }
                 .rating-sub { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: #333; margin-bottom: 4px; }
                 .rating-lifetime { font-size: 10px; font-weight: 800; tracking-widest uppercase color: #1a1a1a; }

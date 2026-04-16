@@ -72,7 +72,7 @@ export default async function UserSettings() {
                         <p className="food-kicker mb-2">Loyalty</p>
                         <h3 className="food-heading !text-[30px] mb-2">TrueServe Rewards</h3>
                         <p className="text-sm leading-7 text-white/70 mb-4">
-                            Current tier: <span className="text-[#e8a230] font-bold">{user.plan || "Basic"}</span>. Manage points and membership here.
+                            Current tier: <span className="text-[#f97316] font-bold">{user.plan || "Basic"}</span>. Manage points and membership here.
                         </p>
                         <Link href="/rewards" className="btn btn-gold">Open Rewards</Link>
                     </article>

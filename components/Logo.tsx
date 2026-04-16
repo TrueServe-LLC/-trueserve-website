@@ -35,7 +35,7 @@ const Logo: React.FC<LogoProps> = ({
                 height={sizes[size].icon}
                 style={{
                     borderRadius: '999px',
-                    boxShadow: '0 0 20px rgba(232, 162, 48, 0.35)',
+                    boxShadow: '0 0 20px rgba(249, 115, 22, 0.35)',
                     objectFit: 'cover'
                 }}
             />

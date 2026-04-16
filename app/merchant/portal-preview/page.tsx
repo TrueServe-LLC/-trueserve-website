@@ -156,7 +156,7 @@ export default function MerchantPortalPreviewPage() {
                     <div className="mt-1 text-[15px] font-bold text-white">{order.name}</div>
                     <div className="mt-1 text-xs text-white/50">{order.note}</div>
                   </div>
-                  <div className="text-[15px] font-black text-[#e8a230]">{order.total}</div>
+                  <div className="text-[15px] font-black text-[#f97316]">{order.total}</div>
                 </div>
               </div>
             ))}
