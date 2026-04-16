@@ -19,11 +19,7 @@ export default async function TeamManagementPage() {
 
     return (
         <AdminPortalWrapper>
-            <div className="adm-page-header">
-                <h1>Team Management</h1>
-                <p>Manage staff roles, access levels, and invite new team members</p>
-            </div>
-            <div className="adm-page-body">
+            <div className="adm-page-body" style={{ paddingTop: '28px' }}>
                 <TeamManagerUI initialMembers={teamMembers} />
             </div>
         </AdminPortalWrapper>
