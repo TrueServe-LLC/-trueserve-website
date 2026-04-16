@@ -62,14 +62,14 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
           gap: 10px !important;
           padding: 9px 16px !important;
           font-size: 12px !important;
-          color: #666 !important;
+          color: #888 !important;
           text-decoration: none !important;
           border-left: 2px solid transparent !important;
           transition: background 0.15s, color 0.15s !important;
         }
         .drv-nav-item:hover {
           background: #141414 !important;
-          color: #bbb !important;
+          color: #ccc !important;
         }
         .drv-nav-item.drv-active {
           color: #fff !important;
@@ -164,7 +164,7 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
             <span>True<span style={{ color: '#f97316' }}>Serve</span></span>
           </div>
 
-          <nav style={{ flex: 1 }}>
+          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/driver/dashboard' && pathname.startsWith(item.href));
               return (

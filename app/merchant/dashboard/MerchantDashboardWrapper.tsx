@@ -183,7 +183,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
             </span>
           </div>
 
-          <nav style={{ flex: 1 }}>
+          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (

@@ -105,20 +105,6 @@ export default async function DriverDashboard() {
                 animation: ddPulse 1.8s ease-in-out infinite;
             }
             @keyframes ddPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-            .dd-top-pill {
-                padding: 6px 16px; border-radius: 22px;
-                font-size: 11px; font-weight: 600; cursor: pointer;
-                border: 1px solid #2e2e2e;
-                background: transparent; color: #888;
-                transition: all 0.15s; letter-spacing: 0.04em; text-transform: uppercase;
-                text-decoration: none; display: inline-flex; align-items: center;
-            }
-            .dd-top-pill:hover { color: #ccc; border-color: #555; }
-            .dd-top-pill-gold { background: #f97316; color: #000; border-color: #f97316; font-weight: 700; }
-            .dd-top-pill-gold:hover { background: #ea6c10; border-color: #ea6c10; }
-            .dd-top-pill-outline-gold { border-color: #f97316; color: #f97316; }
-            .dd-top-pill-outline-gold:hover { background: #1a1000; }
-            .dd-top-pill-green { border-color: #3ecf6e; color: #3ecf6e; }
 
             /* STAT BLOCK */
             .dd-stat-grid {
@@ -342,15 +328,6 @@ export default async function DriverDashboard() {
                     <span className="dd-live-dot" />
                     Live Routes
                 </span>
-                <span className={`dd-top-pill${hasStripe ? ' dd-top-pill-green' : ' dd-top-pill-outline-gold'}`}>
-                    {hasStripe ? 'Online' : 'Online'}
-                </span>
-                <Link href="/driver/dashboard/account" className={`dd-top-pill${hasStripe ? '' : ' dd-top-pill-outline-gold'}`}>
-                    {hasStripe ? 'Payouts Active' : 'Payout Setup'}
-                </Link>
-                <Link href="/driver/dashboard/compliance" className="dd-top-pill dd-top-pill-gold">
-                    Compliance
-                </Link>
             </div>
         </div>
 
