@@ -1,9 +1,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
-import { isInternalStaff } from "@/lib/rbac";
-import { supabase } from "@/lib/supabase";
+import { canAccessAdminSection } from "@/lib/rbac";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import AdminPortalWrapper from "../AdminPortalWrapper";
+import { isMockAdminRecord } from "@/lib/admin-data";
 
 export const dynamic = "force-dynamic";
 
@@ -11,17 +12,25 @@ export default async function AnalyticsPage() {
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
+    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'analytics'));
     if (!isAuthorized) redirect("/admin/login");
 
     const [restaurantRes, driverRes, orderRes] = await Promise.all([
-        supabase.from('Restaurant').select('*', { count: 'exact', head: true }),
-        supabase.from('Driver').select('*', { count: 'exact', head: true }),
-        supabase.from('Order').select('totalAmount, status, createdAt').order('createdAt', { ascending: false }).limit(500),
+        supabaseAdmin.from('Restaurant').select('visibility, isMock, owner:User(email, name, isMock)'),
+        supabaseAdmin.from('Driver').select('status, vehicleVerified, user:User(email, name, isMock)'),
+        supabaseAdmin.from('Order').select('totalAmount, status, createdAt').order('createdAt', { ascending: false }).limit(500),
     ]);
 
-    const totalRestaurants = restaurantRes.count || 0;
-    const totalDrivers = driverRes.count || 0;
+    const totalRestaurants = (restaurantRes.data || []).filter((restaurant: any) =>
+        restaurant.visibility === 'VISIBLE' &&
+        !restaurant.isMock &&
+        !isMockAdminRecord(restaurant.owner)
+    ).length;
+    const totalDrivers = (driverRes.data || []).filter((driver: any) =>
+        driver.vehicleVerified === true &&
+        driver.status !== 'REJECTED' &&
+        !isMockAdminRecord(driver.user)
+    ).length;
     const orders = orderRes.data || [];
     const completed = orders.filter(o => ['DELIVERED', 'COMPLETED'].includes(o.status));
     const totalRevenue = completed.reduce((sum, o) => sum + (Number(o.totalAmount) || 0), 0);
@@ -29,8 +38,8 @@ export default async function AnalyticsPage() {
     const todayOrders = orders.filter(o => o.createdAt?.startsWith(today)).length;
 
     const stats = [
-        { icon: '🏪', label: 'Total Restaurants',       value: totalRestaurants },
-        { icon: '🚗', label: 'Total Drivers',            value: totalDrivers },
+        { icon: '🏪', label: 'Visible Restaurants',      value: totalRestaurants },
+        { icon: '🚗', label: 'Verified Drivers',         value: totalDrivers },
         { icon: '📦', label: 'Orders (Last 500)',        value: orders.length },
         { icon: '✅', label: 'Completed Orders',         value: completed.length },
         { icon: '📅', label: 'Orders Today',             value: todayOrders },
@@ -38,7 +47,7 @@ export default async function AnalyticsPage() {
     ];
 
     return (
-        <AdminPortalWrapper>
+        <AdminPortalWrapper role={role}>
             <style>{`
                 .an-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
                 .an-stat { background: #141a18; border: 1px solid #1e2420; border-radius: 8px; padding: 16px; }
@@ -47,9 +56,9 @@ export default async function AnalyticsPage() {
                 @media (max-width: 900px) { .an-grid { grid-template-columns: repeat(2, 1fr); } }
             `}</style>
 
-            <div className="adm-page-header">
+                <div className="adm-page-header">
                 <h1>Analytics</h1>
-                <p>Live platform metrics from the database</p>
+                <p>Live platform metrics from the database, excluding mock and hidden records</p>
             </div>
             <div className="adm-page-body">
                 <div className="an-grid">

@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isStaffEmail } from '@/lib/admin-config'
+import { isStaffEmail, resolveStaffRole } from '@/lib/admin-config'
+import { ADMIN_ROLES } from '@/lib/rbac'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
     const code = searchParams.get('code')
+    const portal = searchParams.get('portal')
     // if "next" is in param, use it as the redirect URL
     const next = searchParams.get('next') ?? '/'
+    const isAdminPortalRequest = portal === 'admin' || next.startsWith('/admin')
 
     if (code) {
         const supabase = await createClient()
@@ -14,23 +17,29 @@ export async function GET(request: Request) {
 
         if (!error && data?.user) {
             // SYNC: Ensure the user exists in our public User table
-            const { data: profile } = await supabase
+            const { data: profileById } = await supabase
                 .from('User')
                 .select('id, role')
                 .eq('id', data.user.id)
                 .maybeSingle();
 
-            let role = 'CUSTOMER';
+            const { data: profileByEmail } = await supabase
+                .from('User')
+                .select('id, role')
+                .eq('email', data.user.email)
+                .maybeSingle();
 
-            if (!profile) {
+            let role = 'CUSTOMER';
+            const sessionUserId = profileById?.id || profileByEmail?.id || data.user.id;
+            const resolvedStaffRole = resolveStaffRole(data.user.email);
+
+            if (!profileById && !profileByEmail) {
                 // Auto-assign admin conditionally
-                if (isStaffEmail(data.user.email)) {
-                    role = 'ADMIN';
-                }
+                role = resolvedStaffRole || (isStaffEmail(data.user.email) ? 'READONLY' : 'CUSTOMER');
 
                 // First time logging in with Google - create the profile
                 await supabase.from('User').insert({
-                    id: data.user.id,
+                    id: sessionUserId,
                     email: data.user.email,
                     name: data.user.user_metadata.full_name || data.user.user_metadata.name || data.user.email?.split('@')[0],
                     role: role,
@@ -38,12 +47,22 @@ export async function GET(request: Request) {
                     updatedAt: new Date().toISOString()
                 });
             } else {
-                role = profile.role;
-                // Always upgrade to ADMIN if whitelisted staff email, regardless of stored role
-                if (isStaffEmail(data.user.email) && !['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
-                    role = 'ADMIN';
+                role = profileById?.role || profileByEmail?.role || role;
+                // Sync the role if we have an explicit staff mapping.
+                if (resolvedStaffRole && role !== resolvedStaffRole) {
+                    role = resolvedStaffRole;
                     const { supabaseAdmin } = await import("@/lib/supabase-admin");
-                    await supabaseAdmin.from('User').update({ role: 'ADMIN', updatedAt: new Date().toISOString() }).eq('id', data.user.id);
+                    await supabaseAdmin
+                        .from('User')
+                        .update({ role: resolvedStaffRole, updatedAt: new Date().toISOString() })
+                        .eq('id', profileById?.id || profileByEmail?.id || data.user.id);
+                } else if (isStaffEmail(data.user.email) && !ADMIN_ROLES.includes(role as any)) {
+                    role = 'READONLY';
+                    const { supabaseAdmin } = await import("@/lib/supabase-admin");
+                    await supabaseAdmin
+                        .from('User')
+                        .update({ role: 'READONLY', updatedAt: new Date().toISOString() })
+                        .eq('id', profileById?.id || profileByEmail?.id || data.user.id);
                 }
             }
 
@@ -55,7 +74,13 @@ export async function GET(request: Request) {
             if (next === '/') {
                 if (role === 'MERCHANT') finalNext = '/merchant/dashboard';
                 else if (role === 'DRIVER') finalNext = '/driver/dashboard';
-                else if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) finalNext = '/admin/dashboard';
+                else if (ADMIN_ROLES.includes(role as any)) finalNext = '/admin/dashboard';
+            }
+
+            if (isAdminPortalRequest) {
+                finalNext = ADMIN_ROLES.includes(role as any)
+                    ? '/admin/dashboard'
+                    : '/admin/login?error=access_denied';
             }
 
             // Success - continue to 'next' path
@@ -70,8 +95,8 @@ export async function GET(request: Request) {
             const cleanHost = host.split(':')[0];
             const isProdHost = cleanHost.endsWith("trueserve.delivery") || cleanHost.endsWith("trueservedelivery.com");
 
-            if (isProdHost) {
-                if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+            if (isProdHost || isAdminPortalRequest) {
+                if (ADMIN_ROLES.includes(role as any) || isAdminPortalRequest) {
                     redirectUrl = `https://www.admin.trueserve.delivery${finalNext}`;
                 } else if (role === 'MERCHANT') {
                     redirectUrl = `https://merchant.trueserve.delivery${finalNext}`;
@@ -95,7 +120,7 @@ export async function GET(request: Request) {
             const isProd = process.env.NODE_ENV === "production"
 
             // Set userId cookie for compatibility with existing dashboard logic
-            response.cookies.set('userId', data.user.id, {
+            response.cookies.set('userId', sessionUserId, {
                 httpOnly: true,
                 secure: isProd,
                 sameSite: 'lax',
@@ -105,7 +130,15 @@ export async function GET(request: Request) {
             })
 
             // If user is admin, set admin_session cookie so they can access admin portal
-            if (['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role)) {
+            if (ADMIN_ROLES.includes(role as any)) {
+                response.cookies.set('admin_role', role, {
+                    httpOnly: true,
+                    secure: isProd,
+                    sameSite: 'lax',
+                    path: '/',
+                    domain: cookieDomain ? cookieDomain : undefined,
+                    maxAge: 60 * 60 * 24 * 7 // 1 week
+                })
                 response.cookies.set('admin_session', 'true', {
                     httpOnly: true,
                     secure: isProd,

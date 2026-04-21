@@ -78,47 +78,18 @@ export default async function DriverDashboard() {
     return (
         <>
         <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&display=swap');
-
-            .dd-topbar {
-                display: flex; align-items: center; justify-content: space-between;
-                margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
-            }
-            .dd-page-title {
-                font-family: 'DM Mono', monospace;
-                font-size: 18px; font-weight: 500;
-                color: #fff; letter-spacing: 0.04em; text-transform: uppercase;
-            }
-            .dd-page-sub {
-                font-size: 10px; color: #555;
-                letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px;
-            }
-            .dd-topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-            .dd-live-pill {
-                display: flex; align-items: center; gap: 6px;
-                padding: 6px 12px; border-radius: 22px;
-                font-size: 11px; font-weight: 600; color: #3ecf6e;
-            }
-            .dd-live-dot {
-                width: 7px; height: 7px; border-radius: 50%;
-                background: #3ecf6e;
-                animation: ddPulse 1.8s ease-in-out infinite;
-            }
-            @keyframes ddPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
             /* STAT BLOCK */
             .dd-stat-grid {
                 display: grid; grid-template-columns: repeat(3, 1fr);
-                gap: 2px; margin-bottom: 2px;
+                gap: 10px; margin-bottom: 14px;
             }
             .dd-stat-card {
-                background: #161616; border: 0.5px solid #242424;
+                background: #141a18; border: 1px solid #1e2420;
                 padding: 20px 22px;
+                border-radius: 8px;
             }
-            .dd-stat-card:first-child { border-radius: 12px 0 0 0; }
-            .dd-stat-card:last-child { border-radius: 0 12px 0 0; }
             .dd-stat-label {
-                font-size: 10px; font-weight: 600; color: #555;
+                font-size: 10px; font-weight: 800; color: #777;
                 letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;
             }
             .dd-stat-value {
@@ -126,21 +97,21 @@ export default async function DriverDashboard() {
             }
             .dd-stat-value.gold { color: #f97316; }
             .dd-weather-card {
-                background: #161616; border: 0.5px solid #242424;
-                border-radius: 0 0 12px 12px;
+                background: #141a18; border: 1px solid #1e2420;
+                border-radius: 8px;
                 padding: 18px 22px; margin-bottom: 16px;
                 display: flex; align-items: center; justify-content: space-between;
             }
             .dd-weather-label {
-                font-size: 10px; font-weight: 600; color: #555;
+                font-size: 10px; font-weight: 800; color: #777;
                 letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px;
             }
             .dd-weather-temp { font-size: 28px; font-weight: 700; color: #3ecf6e; letter-spacing: -0.5px; }
 
             /* STRIPE BANNER */
             .dd-stripe-banner {
-                background: #161616; border: 0.5px solid #242424;
-                border-radius: 12px; padding: 16px 20px;
+                background: #141a18; border: 1px solid #1e2420;
+                border-radius: 8px; padding: 16px 20px;
                 display: flex; align-items: center; justify-content: space-between;
                 margin-bottom: 16px; gap: 16px;
             }
@@ -150,9 +121,10 @@ export default async function DriverDashboard() {
             .dd-stripe-left { display: flex; align-items: center; gap: 14px; }
             .dd-stripe-icon {
                 width: 40px; height: 28px; border-radius: 6px;
-                background: #5851ea;
+                background: #0f1210;
                 display: flex; align-items: center; justify-content: center;
                 flex-shrink: 0; position: relative; overflow: hidden;
+                border: 1px solid rgba(255,255,255,0.08);
             }
             .dd-stripe-icon.connected { background: #0f2a1a; }
             .dd-stripe-icon::after {
@@ -169,16 +141,18 @@ export default async function DriverDashboard() {
             }
             .dd-stripe-title {
                 display: block; color: #fff;
-                font-weight: 600; font-size: 13px; margin-bottom: 3px;
+                font-weight: 700; font-size: 13px; margin-bottom: 3px;
             }
-            .dd-stripe-sub { font-size: 11px; color: #777; }
+            .dd-stripe-sub { font-size: 11px; color: #aab4c8; }
             .dd-stripe-btn {
                 background: #f97316; color: #000;
                 border: none; border-radius: 9px;
-                padding: 10px 20px; font-size: 12px; font-weight: 700;
+                padding: 10px 20px; font-size: 11px; font-weight: 800;
                 cursor: pointer; white-space: nowrap; flex-shrink: 0;
                 text-decoration: none; display: inline-flex; align-items: center;
                 transition: background 0.15s;
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
             }
             .dd-stripe-btn:hover { background: #ea6c10; }
             .dd-stripe-connected { font-size: 12px; color: #3ecf6e; font-weight: 700; white-space: nowrap; }
@@ -189,11 +163,11 @@ export default async function DriverDashboard() {
                 gap: 12px; margin-bottom: 16px;
             }
             .dd-panel {
-                background: #161616; border: 0.5px solid #242424;
-                border-radius: 12px; padding: 20px;
+                background: #141a18; border: 1px solid #1e2420;
+                border-radius: 8px; padding: 20px;
             }
             .dd-panel-section-label {
-                font-size: 10px; font-weight: 600; color: #555;
+                font-size: 10px; font-weight: 800; color: #777;
                 letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;
             }
             .dd-panel-title {
@@ -201,9 +175,9 @@ export default async function DriverDashboard() {
                 margin-bottom: 12px; letter-spacing: -0.3px;
             }
             .dd-empty-state {
-                background: #111; border: 0.5px solid #242424;
+                background: #0f1210; border: 1px solid #1e2420;
                 border-radius: 8px; padding: 14px 16px;
-                font-size: 12px; color: #777; text-align: center;
+                font-size: 12px; color: #aab4c8; text-align: center;
             }
             .dd-map-wrap {
                 border-radius: 10px; overflow: hidden;
@@ -219,27 +193,27 @@ export default async function DriverDashboard() {
 
             /* ORDER CARDS */
             .dd-order-card {
-                background: #111; border: 0.5px solid #242424;
-                border-radius: 10px; padding: 16px; margin-bottom: 8px;
+                background: #0f1210; border: 1px solid #1e2420;
+                border-radius: 8px; padding: 16px; margin-bottom: 8px;
             }
             .dd-order-status {
                 font-size: 10px; text-transform: uppercase;
                 letter-spacing: 0.12em; color: #f97316;
-                font-weight: 700; margin-bottom: 4px;
+                font-weight: 800; margin-bottom: 4px;
             }
             .dd-order-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; }
             .dd-addr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
             .dd-addr-block {
-                background: #0d0d0d; border: 0.5px solid #242424;
-                border-radius: 7px; padding: 10px 12px;
+                background: #141a18; border: 1px solid #1e2420;
+                border-radius: 8px; padding: 10px 12px;
             }
             .dd-addr-label {
                 font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em;
-                color: #555; margin-bottom: 3px;
+                color: #777; margin-bottom: 3px;
             }
-            .dd-addr-val { font-size: 12px; font-weight: 600; color: #ccc; }
+            .dd-addr-val { font-size: 12px; font-weight: 700; color: #e0e0e0; }
             .dd-progress-bar-wrap {
-                height: 4px; background: #2a2a2a; border-radius: 4px;
+                height: 4px; background: #1e2420; border-radius: 4px;
                 overflow: hidden; margin: 10px 0 6px;
             }
             .dd-progress-bar {
@@ -249,15 +223,15 @@ export default async function DriverDashboard() {
 
             /* AVAIL ORDER CARDS */
             .dd-avail-card {
-                background: #111; border: 0.5px solid #242424;
-                border-radius: 10px; padding: 16px; margin-bottom: 8px;
+                background: #0f1210; border: 1px solid #1e2420;
+                border-radius: 8px; padding: 16px; margin-bottom: 8px;
             }
             .dd-avail-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-            .dd-avail-addr { font-size: 11px; color: #666; margin-bottom: 10px; }
+            .dd-avail-addr { font-size: 11px; color: #aab4c8; margin-bottom: 10px; }
             .dd-badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
             .dd-badge {
-                border-radius: 20px; padding: 3px 10px;
-                font-size: 10px; font-weight: 700;
+                border-radius: 8px; padding: 3px 10px;
+                font-size: 10px; font-weight: 800;
             }
             .dd-badge-green { background: rgba(62,207,110,0.1); border: 1px solid rgba(62,207,110,0.25); color: #3ecf6e; }
             .dd-badge-muted { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #777; }
@@ -266,8 +240,10 @@ export default async function DriverDashboard() {
             .dd-accept-btn {
                 width: 100%; background: #f97316; color: #000;
                 border: none; border-radius: 8px; padding: 10px;
-                font-size: 12px; font-weight: 700; cursor: pointer;
+                font-size: 11px; font-weight: 800; cursor: pointer;
                 transition: background 0.15s; font-family: inherit;
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
             }
             .dd-accept-btn:hover { background: #ea6c10; }
             .dd-accept-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
@@ -275,32 +251,36 @@ export default async function DriverDashboard() {
             /* SUMMARY ROWS */
             .dd-summary-row {
                 display: flex; align-items: center; justify-content: space-between;
-                background: rgba(255,255,255,0.03); border: 0.5px solid #242424;
+                background: rgba(255,255,255,0.03); border: 1px solid #1e2420;
                 border-radius: 8px; padding: 10px 14px; margin-bottom: 6px;
             }
-            .dd-summary-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #555; }
-            .dd-summary-val { font-size: 12px; font-weight: 700; color: #bbb; }
+            .dd-summary-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #777; }
+            .dd-summary-val { font-size: 12px; font-weight: 700; color: #e0e0e0; }
 
             /* ACTION BTNS */
             .dd-btn-gold {
                 display: flex; align-items: center; justify-content: center;
                 background: #f97316; color: #000; border: none;
                 border-radius: 8px; padding: 10px 16px;
-                font-size: 12px; font-weight: 700; cursor: pointer;
+                font-size: 11px; font-weight: 800; cursor: pointer;
                 text-decoration: none; transition: background 0.15s;
                 margin-bottom: 6px; width: 100%;
+                text-transform: uppercase;
+                letter-spacing: 0.11em;
             }
             .dd-btn-gold:hover { background: #ea6c10; }
             .dd-btn-ghost {
                 display: flex; align-items: center; justify-content: center;
-                background: transparent; color: #888;
-                border: 0.5px solid #2e2e2e;
+                background: transparent; color: #999;
+                border: 1px solid #1e2420;
                 border-radius: 8px; padding: 10px 16px;
-                font-size: 12px; font-weight: 600; cursor: pointer;
+                font-size: 11px; font-weight: 800; cursor: pointer;
                 text-decoration: none; transition: all 0.15s;
                 margin-bottom: 6px; width: 100%;
+                text-transform: uppercase;
+                letter-spacing: 0.11em;
             }
-            .dd-btn-ghost:hover { color: #ccc; border-color: #555; }
+            .dd-btn-ghost:hover { color: #f97316; border-color: rgba(249,115,22,0.35); background: rgba(249,115,22,0.06); }
 
             /* ESSENTIALS GRID */
             .dd-essentials-grid {
@@ -316,20 +296,6 @@ export default async function DriverDashboard() {
                 .dd-addr-grid { grid-template-columns: 1fr; }
             }
         `}</style>
-
-        {/* TOPBAR */}
-        <div className="dd-topbar">
-            <div>
-                <div className="dd-page-title">Driver Dashboard</div>
-                <div className="dd-page-sub">Route Board · {(driver as any).name}</div>
-            </div>
-            <div className="dd-topbar-actions">
-                <span className="dd-live-pill">
-                    <span className="dd-live-dot" />
-                    Live Routes
-                </span>
-            </div>
-        </div>
 
         {/* STAT CARDS */}
         <div className="dd-stat-grid">

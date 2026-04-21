@@ -87,7 +87,7 @@ export default function AdminLogin() {
                     {/* Header with gradient */}
                     <div className="bg-gradient-to-r from-orange-500/20 to-orange-600/20 border-b border-white/10 px-8 py-12 text-center">
                         <div className="flex justify-center mb-4">
-                            <Logo size="lg" />
+                            <Logo size="lg" href="/admin" />
                         </div>
                         <h1 className="text-3xl font-black text-white mb-2">Admin Portal</h1>
                         <p className="text-white/60 text-sm">Staff Access Only</p>
@@ -191,10 +191,10 @@ export default function AdminLogin() {
                         {/* Footer Links */}
                         <div className="text-center">
                             <Link
-                                href="/"
+                                href="/admin"
                                 className="text-sm text-orange-500 hover:text-orange-400 font-medium transition"
                             >
-                                ← Return to Homepage
+                                ← Admin Portal
                             </Link>
                         </div>
                     </div>

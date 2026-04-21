@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import AdminPortalWrapper from '../AdminPortalWrapper';
 import { connectStripe } from '../actions';
+import { canAccessAdminSection } from '@/lib/rbac';
 
 interface DashboardProps {
+  role?: string;
   stats: {
     activeMerchants: number;
     activeDrivers: number;
@@ -19,9 +21,38 @@ interface DashboardProps {
   }>;
 }
 
-export default function AdminDashboard({ stats, recentActivity }: DashboardProps) {
-  return (
-    <AdminPortalWrapper>
+export default function AdminDashboard({ role, stats, recentActivity }: DashboardProps) {
+  const canView = (section: Parameters<typeof canAccessAdminSection>[1]) =>
+    !role || canAccessAdminSection(role, section);
+
+  const quickCards = [
+    { icon: '💰', title: 'Cost Management', desc: 'Track spending across all services (Stripe, Supabase, Google Cloud, Resend, Vonage)', href: '/admin/cost-management', section: 'cost-management' as const },
+    { icon: '📈', title: 'Analytics', desc: 'Real-time metrics on orders, drivers, merchants, and platform health', href: '/admin/analytics', section: 'analytics' as const },
+    { icon: '👤', title: 'User Management', desc: 'View and manage drivers, merchants, and customer accounts', href: '/admin/users', section: 'users' as const },
+  ].filter((card) => canView(card.section));
+
+  const quickActions = [
+    canView('cost-management') && (
+      <form key="stripe" action={connectStripe}>
+        <button type="submit" className="adm-stripe-btn">
+          💳 Open Stripe Dashboard
+        </button>
+      </form>
+    ),
+    canView('team') && (
+      <Link key="team" href="/admin/team" className="adm-stripe-btn">
+        👥 Manage Team
+      </Link>
+    ),
+    canView('feature-switches') && (
+      <Link key="flags" href="/admin/feature-switches" className="adm-stripe-btn">
+        🔧 Feature Switches
+      </Link>
+    ),
+  ].filter(Boolean);
+
+    return (
+    <AdminPortalWrapper role={role}>
       <style>{`
         .adm-stats {
           display: grid !important;
@@ -162,11 +193,7 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
 
         {/* Quick Access Cards */}
         <div className="adm-dash-cards">
-          {[
-            { icon: '💰', title: 'Cost Management',  desc: 'Track spending across all services (Stripe, Supabase, Google Cloud, Resend, Vonage)', href: '/admin/cost-management' },
-            { icon: '📈', title: 'Analytics',        desc: 'Real-time metrics on orders, drivers, merchants, and platform health', href: '/admin/analytics' },
-            { icon: '👤', title: 'User Management',  desc: 'View and manage drivers, merchants, and customer accounts', href: '/admin/users' },
-          ].map((c, i) => (
+          {quickCards.map((c, i) => (
             <Link key={i} href={c.href} className="adm-dash-card">
               <div className="adm-dash-card-title"><span>{c.icon}</span>{c.title}</div>
               <div className="adm-dash-card-desc">{c.desc}</div>
@@ -179,17 +206,7 @@ export default function AdminDashboard({ stats, recentActivity }: DashboardProps
         <div className="adm-activity" style={{ marginBottom: 16 }}>
           <h2>Quick Actions</h2>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <form action={connectStripe}>
-              <button type="submit" className="adm-stripe-btn">
-                💳 Open Stripe Dashboard
-              </button>
-            </form>
-            <Link href="/admin/team" className="adm-stripe-btn">
-              👥 Manage Team
-            </Link>
-            <Link href="/admin/feature-switches" className="adm-stripe-btn">
-              🔧 Feature Switches
-            </Link>
+            {quickActions}
           </div>
         </div>
 

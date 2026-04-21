@@ -1,65 +1,76 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { inviteTeamMember, sendPasswordReset, revokeAccess } from "@/app/admin/team/actions";
+import { inviteTeamMember, sendPasswordReset } from "@/app/admin/team/actions";
 
 const ROLE_COLORS: Record<string, { bg: string; color: string }> = {
-    ADMIN:     { bg: '#2a1a00', color: '#f5a623' },
-    PM:        { bg: '#2a1a00', color: '#f5a623' },
-    OPS:       { bg: '#2a1a00', color: '#f5a623' },
-    SUPPORT:   { bg: '#2a1a00', color: '#f5a623' },
-    FINANCE:   { bg: '#2a1a00', color: '#f5a623' },
-    QA_TESTER: { bg: '#2a1a00', color: '#f5a623' },
+    ADMIN: { bg: "#2a1a00", color: "#f5a623" },
+    PM: { bg: "#2a1a00", color: "#f5a623" },
+    OPS: { bg: "#2a1a00", color: "#f5a623" },
+    SUPPORT: { bg: "#2a1a00", color: "#f5a623" },
+    FINANCE: { bg: "#2a1a00", color: "#f5a623" },
+    READONLY: { bg: "#1a1d22", color: "#94a3b8" },
+    QA_TESTER: { bg: "#2a1a00", color: "#f5a623" },
 };
 
 export default function TeamManagerUI({ initialMembers }: { initialMembers: any[] }) {
     const [isPending, startTransition] = useTransition();
-    const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+    const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+    const directoryMembers = initialMembers.filter((member) => member.isDirectoryEntry);
 
     const handleAction = async (actionFn: () => Promise<any>) => {
         setMessage(null);
         startTransition(async () => {
             try {
                 const res = await actionFn();
-                if (res?.error) setMessage({ text: res.error, type: 'error' });
-                else if (res?.success) setMessage({ text: res.success, type: 'success' });
-            } catch (e: any) {
-                setMessage({ text: e.message || "An error occurred", type: 'error' });
+                if (res?.error) setMessage({ text: res.error, type: "error" });
+                else if (res?.success) setMessage({ text: res.success, type: "success" });
+            } catch (error: any) {
+                setMessage({ text: error.message || "An error occurred", type: "error" });
             }
         });
     };
 
-    const handleInvite = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
+    const handleInvite = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
         await handleAction(() => inviteTeamMember(formData));
-        (e.target as HTMLFormElement).reset();
+        event.currentTarget.reset();
     };
 
     return (
         <>
             <style>{`
+                .iam-shell {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                }
+
                 .iam-header {
                     display: flex;
-                    align-items: flex-start;
+                    align-items: flex-end;
                     justify-content: space-between;
                     gap: 24px;
-                    margin-bottom: 28px;
                     flex-wrap: wrap;
                 }
-                .iam-title-block {}
+
                 .iam-title {
-                    font-size: 28px;
+                    font-size: 25px;
                     font-weight: 800;
                     color: #ffffff;
                     margin: 0 0 4px 0;
                     letter-spacing: -0.5px;
                 }
+
                 .iam-subtitle {
                     font-size: 13px;
-                    color: #666;
+                    color: #7a7f75;
                     margin: 0;
+                    max-width: 700px;
+                    line-height: 1.5;
                 }
+
                 .iam-invite-block {
                     display: flex;
                     flex-direction: column;
@@ -67,54 +78,62 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                     gap: 8px;
                     flex-shrink: 0;
                 }
+
                 .iam-invite-label {
                     font-size: 10px;
                     font-weight: 700;
                     letter-spacing: 0.12em;
-                    color: #555;
+                    color: #7a7f75;
                     text-transform: uppercase;
                 }
+
                 .iam-invite-row {
                     display: flex;
                     gap: 8px;
                     align-items: center;
                     flex-wrap: wrap;
                 }
-                .iam-input {
-                    background: #0f1210;
-                    border: 1px solid #2e3830;
-                    color: #fff;
-                    font-size: 13px;
-                    padding: 8px 12px;
-                    border-radius: 6px;
-                    outline: none;
-                    width: 220px;
-                }
-                .iam-input::placeholder { color: #444; }
-                .iam-input:focus { border-color: #f97316; }
+
+                .iam-input,
                 .iam-select {
                     background: #0f1210;
-                    border: 1px solid #2e3830;
+                    border: 1px solid #243028;
                     color: #fff;
                     font-size: 13px;
-                    padding: 8px 10px;
                     border-radius: 6px;
                     outline: none;
+                }
+
+                .iam-input {
+                    padding: 10px 12px;
+                    width: 260px;
+                }
+
+                .iam-input::placeholder { color: #444; }
+                .iam-input:focus,
+                .iam-select:focus {
+                    border-color: #f97316;
+                    box-shadow: 0 0 0 1px rgba(249,115,22,0.15);
+                }
+
+                .iam-select {
+                    padding: 10px 10px;
                     cursor: pointer;
                 }
-                .iam-select:focus { border-color: #f97316; }
+
                 .iam-invite-btn {
                     background: #f97316;
                     color: #000;
                     font-size: 12px;
                     font-weight: 700;
-                    padding: 8px 18px;
+                    padding: 10px 18px;
                     border-radius: 6px;
                     border: none;
                     cursor: pointer;
                     white-space: nowrap;
                     letter-spacing: 0.04em;
                 }
+
                 .iam-invite-btn:hover { background: #fb923c; }
                 .iam-invite-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -123,17 +142,44 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                     border-radius: 6px;
                     font-size: 13px;
                     font-weight: 500;
-                    margin-bottom: 16px;
                 }
-                .iam-msg.success { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
-                .iam-msg.error   { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+
+                .iam-msg.success {
+                    background: rgba(52,211,153,0.1);
+                    color: #34d399;
+                    border: 1px solid rgba(52,211,153,0.2);
+                }
+
+                .iam-msg.error {
+                    background: rgba(248,113,113,0.1);
+                    color: #f87171;
+                    border: 1px solid rgba(248,113,113,0.2);
+                }
 
                 .iam-staff-header {
                     display: flex;
                     align-items: center;
-                    gap: 8px;
-                    margin-bottom: 10px;
+                    justify-content: space-between;
+                    gap: 12px;
+                    flex-wrap: wrap;
                 }
+
+                .iam-staff-copy {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    min-width: 0;
+                }
+
+                .iam-staff-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #e5e7eb;
+                }
+
                 .iam-staff-dot {
                     width: 8px;
                     height: 8px;
@@ -141,10 +187,24 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                     background: #3b82f6;
                     flex-shrink: 0;
                 }
-                .iam-staff-label {
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: #ccc;
+
+                .iam-staff-note {
+                    font-size: 12px;
+                    color: #7a7f75;
+                    line-height: 1.45;
+                }
+
+                .iam-count-pill {
+                    padding: 8px 12px;
+                    border-radius: 999px;
+                    border: 1px solid rgba(59,130,246,0.22);
+                    background: rgba(59,130,246,0.08);
+                    color: #93c5fd;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    white-space: nowrap;
                 }
 
                 .iam-table-wrap {
@@ -153,11 +213,13 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                     border-radius: 8px;
                     overflow-x: auto;
                 }
+
                 .iam-table {
                     width: 100%;
                     border-collapse: collapse;
                     font-size: 13px;
                 }
+
                 .iam-table th {
                     padding: 10px 16px;
                     text-align: left;
@@ -168,17 +230,49 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                     text-transform: uppercase;
                     letter-spacing: 0.06em;
                 }
+
                 .iam-table th.right { text-align: right; }
+
                 .iam-table td {
                     padding: 12px 16px;
                     color: #aaa;
                     border-bottom: 1px solid #1e2420;
+                    vertical-align: middle;
                 }
+
                 .iam-table tr:last-child td { border-bottom: none; }
                 .iam-table tr:hover td { background: rgba(255,255,255,0.01); }
 
-                .iam-name  { color: #fff; font-weight: 500; font-size: 13px; }
-                .iam-email { font-size: 12px; color: #555; margin-top: 2px; }
+                .iam-name {
+                    color: #fff;
+                    font-weight: 500;
+                    font-size: 13px;
+                }
+
+                .iam-email {
+                    font-size: 12px;
+                    color: #555;
+                    margin-top: 2px;
+                }
+
+                .iam-member-chip {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    margin-top: 6px;
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: #93c5fd;
+                }
+
+                .iam-member-chip .dot {
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: #3b82f6;
+                }
 
                 .iam-role {
                     font-size: 11px;
@@ -190,139 +284,175 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
 
                 .iam-action-btn {
                     font-size: 12px;
-                    padding: 5px 14px;
+                    padding: 7px 14px;
                     border-radius: 5px;
                     border: 1px solid #2e3830;
                     background: #1e2420;
                     color: #aaa;
                     cursor: pointer;
                     white-space: nowrap;
-                    float: right;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
                 }
+
                 .iam-action-btn:hover { border-color: #f97316; color: #f97316; }
                 .iam-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
                 .iam-empty {
-                    color: #555;
-                    padding: 32px 16px;
+                    color: #7a7f75;
+                    padding: 34px 16px;
                     text-align: center;
                     font-size: 13px;
+                    line-height: 1.55;
                 }
+
                 .iam-footer {
                     font-size: 12px;
-                    color: #555;
+                    color: #7a7f75;
                     padding: 10px 16px;
                     border-top: 1px solid #1e2420;
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 12px;
+                    flex-wrap: wrap;
                 }
 
                 @media (max-width: 768px) {
                     .iam-header { flex-direction: column; align-items: flex-start; }
-                    .iam-invite-block { align-items: flex-start; }
-                    .iam-input { width: 100%; }
+                    .iam-invite-block { align-items: flex-start; width: 100%; }
+                    .iam-invite-row { width: 100%; }
+                    .iam-input,
+                    .iam-select,
+                    .iam-invite-btn { width: 100%; }
+                    .iam-staff-header { align-items: flex-start; flex-direction: column; }
+                    .iam-count-pill { align-self: flex-start; }
                 }
             `}</style>
 
-            {/* Header + Invite Form */}
-            <div className="iam-header">
-                <div className="iam-title-block">
-                    <h2 className="iam-title">Identity &amp; Access</h2>
-                    <p className="iam-subtitle">Manage internal team members and their portal permissions</p>
+            <div className="iam-shell">
+                <div className="iam-header">
+                    <div className="iam-title-block">
+                        <h2 className="iam-title">Identity &amp; Access</h2>
+                        <p className="iam-subtitle">
+                            Manage internal staff, portal permissions, and the approved access directory. Eric&apos;s
+                            <code style={{ color: "#f97316", background: "rgba(249,115,22,0.08)", padding: "1px 6px", borderRadius: 4, marginLeft: 4 }}>
+                                admin@trueserve.com
+                            </code>
+                            alias now appears here.
+                        </p>
+                    </div>
+
+                    <div className="iam-invite-block">
+                        <div className="iam-invite-label">Invite New Team Member</div>
+                        <form onSubmit={handleInvite}>
+                            <div className="iam-invite-row">
+                                <input
+                                    required
+                                    name="email"
+                                    type="email"
+                                    placeholder="employee@trueserve.delivery"
+                                    className="iam-input"
+                                    disabled={isPending}
+                                />
+                                <select required name="role" className="iam-select" disabled={isPending}>
+                                    <option value="OPS">Ops</option>
+                                    <option value="SUPPORT">Support</option>
+                                    <option value="FINANCE">Finance</option>
+                                    <option value="PM">PM</option>
+                                    <option value="QA_TESTER">QA Tester</option>
+                                    <option value="READONLY">Read Only</option>
+                                    <option value="ADMIN">Admin</option>
+                                </select>
+                                <button type="submit" className="iam-invite-btn" disabled={isPending}>
+                                    {isPending ? "Sending…" : "Invite"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
-                <div className="iam-invite-block">
-                    <div className="iam-invite-label">Invite New Team Member</div>
-                    <form onSubmit={handleInvite}>
-                        <div className="iam-invite-row">
-                            <input
-                                required
-                                name="email"
-                                type="email"
-                                placeholder="employee@trueserve.delivery"
-                                className="iam-input"
-                                disabled={isPending}
-                            />
-                            <select required name="role" className="iam-select" disabled={isPending}>
-                                <option value="OPS">Ops</option>
-                                <option value="SUPPORT">Support</option>
-                                <option value="FINANCE">Finance</option>
-                                <option value="PM">PM</option>
-                                <option value="QA_TESTER">QA Tester</option>
-                                <option value="ADMIN">Admin</option>
-                            </select>
-                            <button type="submit" className="iam-invite-btn" disabled={isPending}>
-                                {isPending ? "Sending…" : "Invite"}
-                            </button>
-                        </div>
-                    </form>
+                {message && <div className={`iam-msg ${message.type}`}>{message.text}</div>}
+
+                <div className="iam-staff-header">
+                    <div className="iam-staff-copy">
+                        <span className="iam-staff-label">
+                            <span className="iam-staff-dot" />
+                            Active Staff
+                        </span>
+                        <span className="iam-staff-note">
+                            Real staff accounts plus the approved access directory. Whitelisted admins stay visible even before their first sync.
+                        </span>
+                    </div>
+                    <div className="iam-count-pill">
+                        {initialMembers.length} Member{initialMembers.length !== 1 ? "s" : ""}
+                    </div>
                 </div>
-            </div>
 
-            {/* Message */}
-            {message && (
-                <div className={`iam-msg ${message.type}`}>{message.text}</div>
-            )}
+                <div className="iam-table-wrap">
+                    <table className="iam-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Role</th>
+                                <th className="right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {initialMembers.map((member: any) => {
+                                const roleStyle = ROLE_COLORS[member.role] || { bg: "rgba(85,85,85,0.2)", color: "#888" };
 
-            {/* Active Staff count */}
-            <div className="iam-staff-header">
-                <span className="iam-staff-dot" />
-                <span className="iam-staff-label">
-                    Active Staff ({initialMembers.length})
-                </span>
-            </div>
+                                return (
+                                    <tr key={member.id}>
+                                        <td>
+                                            <div className="iam-name">{member.name || "Unknown"}</div>
+                                            <div className="iam-email">{member.email}</div>
+                                            <div className="iam-member-chip">
+                                                <span className="dot" />
+                                                {member.isDirectoryEntry ? "Directory sync" : "Active account"}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span className="iam-role" style={{ background: roleStyle.bg, color: roleStyle.color }}>
+                                                {member.role}
+                                            </span>
+                                        </td>
+                                        <td style={{ textAlign: "right" }}>
+                                            {member.isDirectoryEntry ? (
+                                                <button className="iam-action-btn" disabled>
+                                                    Sync pending
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className="iam-action-btn"
+                                                    disabled={isPending}
+                                                    onClick={() => handleAction(() => sendPasswordReset(member.id, member.email))}
+                                                >
+                                                    Reset Password
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
 
-            {/* Team Table */}
-            <div className="iam-table-wrap">
-                <table className="iam-table">
-                    <thead>
-                        <tr>
-                            <th>Member</th>
-                            <th>Role</th>
-                            <th className="right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {initialMembers.map((member: any) => {
-                            const roleStyle = ROLE_COLORS[member.role] || { bg: 'rgba(85,85,85,0.2)', color: '#888' };
-                            return (
-                                <tr key={member.id}>
-                                    <td>
-                                        <div className="iam-name">{member.name || 'Unknown'}</div>
-                                        <div className="iam-email">{member.email}</div>
-                                    </td>
-                                    <td>
-                                        <span
-                                            className="iam-role"
-                                            style={{ background: roleStyle.bg, color: roleStyle.color }}
-                                        >
-                                            {member.role}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button
-                                            className="iam-action-btn"
-                                            disabled={isPending}
-                                            onClick={() => handleAction(() => sendPasswordReset(member.id, member.email))}
-                                        >
-                                            Reset Password
-                                        </button>
+                            {initialMembers.length === 0 && (
+                                <tr>
+                                    <td colSpan={3} className="iam-empty">
+                                        No staff entries are synced yet. Whitelisted admin emails will appear here once they sign in, or you can add staff with the invite form above.
                                     </td>
                                 </tr>
-                            );
-                        })}
-                        {initialMembers.length === 0 && (
-                            <tr>
-                                <td colSpan={3} className="iam-empty">
-                                    No team members yet. Use the invite form above to add staff.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-                {initialMembers.length > 0 && (
-                    <div className="iam-footer">
-                        {initialMembers.length} member{initialMembers.length !== 1 ? 's' : ''} · TrueServe internal staff only
-                    </div>
-                )}
+                            )}
+                        </tbody>
+                    </table>
+
+                    {initialMembers.length > 0 && (
+                        <div className="iam-footer">
+                            <span>{initialMembers.length} member{initialMembers.length !== 1 ? "s" : ""} shown</span>
+                            <span>{directoryMembers.length} from the access directory</span>
+                        </div>
+                    )}
+                </div>
             </div>
         </>
     );

@@ -19,6 +19,8 @@ import { scanDocumentWithAI } from "@/lib/aiScanner";
 import { calculateDistance } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/phoneUtils";
 import { getAppBaseUrl } from "@/lib/app-url";
+import { uploadPrivateDriverDocument } from "@/lib/driver-documents";
+import { syncSignupLeadToGHL } from "@/lib/ghl-sync";
 
 export type DriverApplicationState = {
     message: string;
@@ -91,46 +93,22 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         // Helper for uploads
         async function uploadDoc(file: File, prefix: string) {
-            if (!file || file.size === 0) return "";
+            if (!file || file.size === 0) return { path: "", signedUrl: null as string | null };
             try {
-                // Ensure bucket exists (check first to avoid 400 logs)
-                const { data: buckets } = await supabaseAdmin.storage.listBuckets();
-                if (!buckets?.find(b => b.id === 'driver-documents')) {
-                    await supabaseAdmin.storage.createBucket('driver-documents', { public: true });
-                }
-
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${targetUserId}_${prefix}_${Date.now()}.${fileExt}`;
-                
-                const arrayBuffer = await file.arrayBuffer();
-                const buffer = new Uint8Array(arrayBuffer);
-
-                const { data, error } = await supabaseAdmin.storage
-                    .from('driver-documents')
-                    .upload(fileName, buffer, {
-                        contentType: file.type,
-                        upsert: false
-                    });
-
-                if (!error && data) {
-                    const { data: urlData } = supabaseAdmin.storage.from('driver-documents').getPublicUrl(fileName);
-                    return urlData.publicUrl;
-                } else if (error) {
-                    console.error(`Supabase Upload Error for ${prefix}:`, error);
-                }
-            } catch (e) { 
-                console.error(`[Upload Crash] failed for ${prefix}:`, e); 
+                return await uploadPrivateDriverDocument(file, targetUserId, prefix);
+            } catch (e) {
+                console.error(`[Upload Crash] failed for ${prefix}:`, e);
+                throw e;
             }
-            return "";
         }
 
         console.log(`[DriverApp] Triggering Parallel Uploads and AI Scans for ${email}...`);
 
         // --- PARALLEL EXECUTION: Uploads & AI Scans ---
         const [
-            idDocumentUrl,
-            insuranceUrl,
-            registrationUrl,
+            idDocumentUpload,
+            insuranceUpload,
+            registrationUpload,
             [idScan, insuranceScan, registrationScan]
         ] = await Promise.all([
             uploadDoc(idDocument, "license"),
@@ -197,7 +175,12 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             idScan,
             insuranceScan,
             registrationScan,
-            scannedAt: new Date().toISOString()
+            scannedAt: new Date().toISOString(),
+            documentPaths: {
+                idDocumentPath: idDocumentUpload.path,
+                insuranceDocumentPath: insuranceUpload.path,
+                registrationDocumentPath: registrationUpload.path,
+            }
         };
 
         // Get or create Driver ID
@@ -225,8 +208,6 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                 backgroundCheckId: backgroundCheckId,
                 backgroundCheckStatus: bckStatus,
                 vehicleVerified: false, // Always false on signup, admin must approve
-                insuranceDocumentUrl: insuranceUrl,
-                registrationDocumentUrl: registrationUrl,
                 hasSignedAgreement: true,
                 agreementSignedAt: new Date().toISOString(),
                 aiMetadata: aiMetadata,
@@ -237,6 +218,23 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         if (driverError) {
             throw driverError;
+        }
+
+        const ghlLeadResult = await syncSignupLeadToGHL({
+            type: "DRIVER",
+            name,
+            email,
+            phone,
+            address,
+            source: "TrueServe Driver Signup",
+            tags: [
+                isAutoApproved ? "Driver Auto Approved" : "Driver Pending Review",
+                `Vehicle ${vehicleType}`,
+            ],
+        });
+
+        if (!ghlLeadResult.success) {
+            console.error("[GHL Driver Lead Sync Error]:", ghlLeadResult.error);
         }
 
         // Read Onboarding Document
@@ -262,10 +260,20 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         // 1. Get ALL internal staff emails to notify
         const { data: staffMembers } = await supabaseAdmin
             .from('User')
-            .select('email')
+            .select('id, email, name, phone')
             .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'PM']);
-        
-        const staffEmails = staffMembers?.map(s => s.email).filter(Boolean) as string[] || ["admin@trueservedelivery.com"];
+
+        const staffRecords = (staffMembers || []).filter((member: any) => member?.email);
+        const staffEmails = Array.from(new Set(
+            staffRecords
+                .map((member: any) => member.email.trim().toLowerCase())
+                .filter(Boolean)
+        )) as string[];
+        const staffPhones = Array.from(new Set(
+            staffRecords
+                .map((member: any) => normalizePhoneNumber(member.phone || ""))
+                .filter(Boolean)
+        )) as string[];
 
         if (isAutoApproved) {
             notificationPromises.push(
@@ -325,15 +333,35 @@ export async function submitDriverApplication(prevState: any, formData: FormData
                     <p><strong>Status:</strong> <span style="color: ${isAutoApproved ? 'green' : 'orange'}">${isAutoApproved ? 'AUTO-APPROVED' : 'PENDING REVIEW'}</span></p>
                     ${isAutoApproved ? `<p><em>This application was automatically approved by the AI Scanner because all 3 documents were verified.</em></p>` : `<p><em>This application requires manual review. AI confidence or document verification failed.</em></p>`}
                     <hr />
-                    <p><strong>ID Document:</strong> <a href="${idDocumentUrl || '#'}">${idDocumentUrl ? 'View License' : 'Not Provided'}</a></p>
-                    <p><strong>Insurance:</strong> <a href="${insuranceUrl || '#'}">${insuranceUrl ? 'View Insurance' : 'Not Provided'}</a></p>
-                    <p><strong>Registration:</strong> <a href="${registrationUrl || '#'}">${registrationUrl ? 'View Registration' : 'Not Provided'}</a></p>
+                    <p><strong>ID Document:</strong> <a href="${idDocumentUpload.signedUrl || '#'}">${idDocumentUpload.signedUrl ? 'View License' : 'Not Provided'}</a></p>
+                    <p><strong>Insurance:</strong> <a href="${insuranceUpload.signedUrl || '#'}">${insuranceUpload.signedUrl ? 'View Insurance' : 'Not Provided'}</a></p>
+                    <p><strong>Registration:</strong> <a href="${registrationUpload.signedUrl || '#'}">${registrationUpload.signedUrl ? 'View Registration' : 'Not Provided'}</a></p>
                     <p>Please review explicitly in the Admin Registry Dashboard.</p>`
                 )
             );
         }
 
+        const staffSmsMessage = isAutoApproved
+            ? `TrueServe: Driver application approved automatically for ${name}. Open admin portal to review documents and finalize onboarding.`
+            : `TrueServe: New driver application from ${name}. Open admin portal to review documents and approve or reject.`;
+
+        for (const staffPhone of staffPhones) {
+            notificationPromises.push(sendSMS(staffPhone, staffSmsMessage));
+        }
+
+        for (const staffMember of staffRecords as Array<{ id?: string; email?: string }>) {
+            if (!staffMember.id) continue;
+            notificationPromises.push(createNotification({
+                userId: staffMember.id,
+                title: "New Driver Application",
+                message: `${name} (${email}) submitted a driver application and should appear in Admin → Users for review.`,
+                type: "DRIVER_APPLICATION",
+            }));
+        }
+
         await Promise.allSettled(notificationPromises);
+        revalidatePath("/admin/users");
+        revalidatePath("/admin/dashboard");
 
         return { message: isAutoApproved ? "Application auto-approved! Check your email to start driving." : "Application submitted! We'll email you when approved.", success: true };
 
@@ -1045,14 +1073,15 @@ export async function updateDriverProfile(prevState: any, formData: FormData) {
 
     try {
         if (photo && photo.size > 0) {
+            await supabaseAdmin.storage.createBucket('driver-avatars', { public: true }).catch(() => {});
             const fileExt = photo.name.split('.').pop();
             const fileName = `${user.id}_avatar_${Date.now()}.${fileExt}`;
             const { data, error } = await supabaseAdmin.storage
-                .from('driver-documents')
+                .from('driver-avatars')
                 .upload(fileName, photo);
 
             if (!error && data) {
-                const { data: urlData } = supabaseAdmin.storage.from('driver-documents').getPublicUrl(fileName);
+                const { data: urlData } = supabaseAdmin.storage.from('driver-avatars').getPublicUrl(fileName);
                 photoUrl = urlData.publicUrl;
             }
         }

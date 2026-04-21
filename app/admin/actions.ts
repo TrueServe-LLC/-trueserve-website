@@ -6,18 +6,30 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email";
 import { sendSMS } from "@/lib/sms";
 import { getAuthSession } from "@/app/auth/actions";
 import { logAuditAction } from "@/lib/audit";
 import { normalizePhoneNumber } from "@/lib/phoneUtils";
+import { hasAnyPermission, type Permission } from "@/lib/rbac";
 import type { ConfigEnvironment, ConfigKey } from "@/lib/system";
 
 // Removed local logAuditAction, using shared version from @/lib/audit
 
+async function requireAdminPermissions(requiredPermissions: Permission | Permission[]) {
+    const { isAuth, role, userId, name } = await getAuthSession();
+    const permissions = Array.isArray(requiredPermissions) ? requiredPermissions : [requiredPermissions];
+
+    if (!isAuth || !hasAnyPermission(role, permissions)) {
+        throw new Error("Unauthorized");
+    }
+
+    return { role, userId, name };
+}
+
 export async function approveMenuItem(id: string) {
     try {
+        await requireAdminPermissions('manage_menu');
         const { error } = await supabase
             .from('MenuItem')
             .update({ status: "APPROVED" })
@@ -40,6 +52,7 @@ export async function approveMenuItem(id: string) {
 
 export async function rejectMenuItem(id: string) {
     try {
+        await requireAdminPermissions('manage_menu');
         const { error } = await supabase
             .from('MenuItem')
             .update({ status: "REJECTED" })
@@ -62,6 +75,7 @@ export async function rejectMenuItem(id: string) {
 
 export async function flagMenuItem(id: string) {
     try {
+        await requireAdminPermissions('manage_menu');
         const { error } = await supabase
             .from('MenuItem')
             .update({ status: "FLAGGED" })
@@ -84,6 +98,8 @@ export async function flagMenuItem(id: string) {
 
 export async function approveDriver(id: string) {
     try {
+        await requireAdminPermissions('approve_drivers');
+        const approvedAt = new Date().toISOString();
         // 1. Get Driver Info
         const { data: driver, error: fetchError } = await supabaseAdmin
             .from('Driver')
@@ -104,7 +120,8 @@ export async function approveDriver(id: string) {
         const tempPassword = `TrueServe!${Math.random().toString(36).slice(-8)}`;
 
         // 2. Create Auth User if not exists
-        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+        const { error: authError } = await supabaseAdmin.auth.admin.createUser({
+            id: driver.userId,
             email,
             phone: normalizedPhone,
             password: tempPassword,
@@ -123,45 +140,75 @@ export async function approveDriver(id: string) {
 
         if (authError?.message.includes("already exists")) {
             const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(driver.userId, {
+                email,
                 phone: normalizedPhone,
+                email_confirm: true,
                 phone_confirm: true,
                 user_metadata: { role: 'DRIVER', displayName: name }
             });
-            if (updateError) console.error("Failed to sync role for existing driver:", updateError);
+            if (updateError) {
+                console.error("Failed to sync role for existing driver:", updateError);
+                throw new Error("A login already exists for this email or phone, but it is not linked to this driver application. Use a different email/phone or have an admin merge the accounts before approval.");
+            }
         }
 
-        await supabaseAdmin
+        const { error: userUpdateError } = await supabaseAdmin
             .from('User')
-            .update({ phone: normalizedPhone, updatedAt: new Date().toISOString() })
+            .update({ phone: normalizedPhone, role: 'DRIVER', updatedAt: approvedAt })
             .eq('id', driver.userId);
+
+        if (userUpdateError) throw userUpdateError;
 
         const { error: statusError } = await supabaseAdmin
             .from('Driver')
-            .update({ status: "OFFLINE", vehicleVerified: true, updatedAt: new Date().toISOString() })
+            .update({
+                status: "OFFLINE",
+                vehicleVerified: true,
+                backgroundCheckStatus: "CLEARED",
+                complianceStatus: "ACTIVE",
+                complianceScore: 100,
+                lastComplianceAttestationAt: approvedAt,
+                updatedAt: approvedAt
+            })
             .eq('id', id);
 
         if (statusError) throw statusError;
 
-        await logAuditAction({ action: "APPROVE_DRIVER", targetId: id, entityType: "Driver", before: { status: "PENDING" }, after: { status: "OFFLINE" } });
+        await logAuditAction({
+            action: "APPROVE_DRIVER",
+            targetId: id,
+            entityType: "Driver",
+            before: { status: driver.status || "PENDING" },
+            after: { status: "OFFLINE", backgroundCheckStatus: "CLEARED", complianceStatus: "ACTIVE" }
+        });
 
-        await sendEmail(
-            email,
-            "Your TrueServe Driver Application - APPROVED",
-            `<h1>Welcome to the Fleet! 🚗</h1>
+        const notificationResults = await Promise.allSettled([
+            sendEmail(
+                email,
+                "Your TrueServe Driver Application - APPROVED",
+                `<h1>Welcome to the Fleet! 🚗</h1>
             <p>Hi <span class="accent">${name.split(' ')[0]}</span>,</p>
             <p>Great news! Your driver application for TrueServe has been <strong>approved</strong>.</p>
             <p>You can now log in using your phone number to receive a secure SMS code and start accepting orders immediately.</p>
             <a href="https://www.trueserve.delivery/driver/login" class="button">Log In & Start Driving</a>
             <p style="margin-top: 30px;">Welcome to the team!<br>The TrueServe Team</p>`
-        );
+            ),
+            sendSMS(
+                normalizedPhone,
+                `TrueServe: Your driver application is approved! You can now log in using this phone number at https://trueserve.delivery/driver/login`
+            )
+        ]);
 
-        await sendSMS(
-            normalizedPhone,
-            `TrueServe: Your driver application is approved! You can now log in using this phone number at driver.trueservedelivery.com/login`
-        );
+        notificationResults.forEach((result, index) => {
+            if (result.status === "rejected") {
+                console.error(index === 0 ? "Driver approval email failed:" : "Driver approval SMS failed:", result.reason);
+            }
+        });
 
+        revalidatePath("/admin/users");
         revalidatePath("/admin/dashboard");
         revalidatePath("/driver/dashboard");
+        revalidatePath("/driver/dashboard/compliance");
         return { success: true };
     } catch (e: any) {
         console.error("Failed to approve driver:", e);
@@ -171,6 +218,7 @@ export async function approveDriver(id: string) {
 
 export async function rejectDriver(id: string) {
     try {
+        await requireAdminPermissions('approve_drivers');
         const { data: driver, error: fetchError } = await supabaseAdmin
             .from('Driver')
             .select('user:User(email, name)')
@@ -188,16 +236,23 @@ export async function rejectDriver(id: string) {
 
         await logAuditAction({ action: "REJECT_DRIVER", targetId: id, entityType: "Driver", before: { status: "PENDING" }, after: { status: "REJECTED" } });
 
-        await sendEmail(
-            (driver.user as any).email,
-            "Driver Application Update - TrueServe",
-            `<h1>Application Update 📝</h1>
+        const emailResult = await Promise.allSettled([
+            sendEmail(
+                (driver.user as any).email,
+                "Driver Application Update - TrueServe",
+                `<h1>Application Update 📝</h1>
             <p>Hi <span class="accent">${(driver.user as any).name.split(' ')[0]}</span>,</p>
             <p>Thank you for your interest in driving with TrueServe. We have carefully reviewed your application and documents.</p>
             <p>At this time, we are unable to move forward with your onboarding. We appreciate the time you took to apply.</p>
             <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`
-        );
+            )
+        ]);
 
+        if (emailResult[0]?.status === "rejected") {
+            console.error("Driver rejection email failed:", emailResult[0].reason);
+        }
+
+        revalidatePath("/admin/users");
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e: any) {
@@ -208,19 +263,48 @@ export async function rejectDriver(id: string) {
 
 export async function approveMerchant(restaurantId: string) {
     try {
+        await requireAdminPermissions('approve_restaurants');
+        const approvedAt = new Date().toISOString();
         const { data: restaurant, error: fetchError } = await supabaseAdmin
             .from('Restaurant')
-            .select('id, name, ownerId, owner:User(email, name, phone)')
+            .select('id, name, ownerId, phone, owner:User(email, name, phone)')
             .eq('id', restaurantId)
             .single();
 
         if (fetchError || !restaurant) throw new Error("Merchant application not found");
 
+        const owner = restaurant.owner as any;
+        const normalizedPhone = normalizePhoneNumber(owner?.phone || restaurant.phone || "");
+
+        if (restaurant.ownerId) {
+            const { error: ownerUpdateError } = await supabaseAdmin
+                .from('User')
+                .update({
+                    role: 'MERCHANT',
+                    ...(normalizedPhone ? { phone: normalizedPhone } : {}),
+                    updatedAt: approvedAt
+                })
+                .eq('id', restaurant.ownerId);
+
+            if (ownerUpdateError) throw ownerUpdateError;
+
+            const { error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(restaurant.ownerId, {
+                ...(owner?.email ? { email: owner.email, email_confirm: true } : {}),
+                ...(normalizedPhone ? { phone: normalizedPhone, phone_confirm: true } : {}),
+                user_metadata: { role: 'MERCHANT', displayName: owner?.name || restaurant.name }
+            });
+
+            if (authUpdateError) {
+                console.error("Failed to sync merchant auth role:", authUpdateError);
+                throw new Error("The merchant profile was found, but its login account could not be activated. Check whether this email already belongs to another account.");
+            }
+        }
+
         const { error } = await supabaseAdmin
             .from('Restaurant')
             .update({
                 visibility: 'VISIBLE',
-                updatedAt: new Date().toISOString()
+                updatedAt: approvedAt
             })
             .eq('id', restaurantId);
 
@@ -234,9 +318,10 @@ export async function approveMerchant(restaurantId: string) {
             after: { visibility: "VISIBLE" }
         });
 
-        const owner = restaurant.owner as any;
+        const notificationPromises: Promise<any>[] = [];
+
         if (owner?.email) {
-            await sendEmail(
+            notificationPromises.push(sendEmail(
                 owner.email,
                 "Your TrueServe Merchant Account Is Approved",
                 `<h1>You're Approved 🎉</h1>
@@ -245,18 +330,30 @@ export async function approveMerchant(restaurantId: string) {
                 <p>You can now log in to your merchant portal and complete setup.</p>
                 <a href="https://trueserve.delivery/merchant/login" class="button">Log In to Merchant Portal</a>
                 <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`
-            );
+            ));
         }
 
-        if (owner?.phone) {
-            await sendSMS(
-                owner.phone,
+        if (normalizedPhone) {
+            notificationPromises.push(sendSMS(
+                normalizedPhone,
                 `TrueServe: ${restaurant.name} has been approved. Log in at trueserve.delivery/merchant/login to complete onboarding.`
-            );
+            ));
         }
 
+        const notificationResults = await Promise.allSettled(notificationPromises);
+        notificationResults.forEach((result, index) => {
+            if (result.status === "rejected") {
+                console.error(index === 0 ? "Merchant approval email failed:" : "Merchant approval SMS failed:", result.reason);
+            }
+        });
+
+        revalidatePath("/admin/users");
         revalidatePath("/admin/dashboard");
+        revalidatePath("/merchant/dashboard");
+        revalidatePath("/merchant/dashboard/storefront");
+        revalidatePath("/merchant/dashboard/integrations");
         revalidatePath("/restaurants");
+        revalidatePath(`/restaurants/${restaurantId}`);
         return { success: true };
     } catch (e: any) {
         console.error("Failed to approve merchant:", e);
@@ -266,6 +363,7 @@ export async function approveMerchant(restaurantId: string) {
 
 export async function rejectMerchant(restaurantId: string) {
     try {
+        await requireAdminPermissions('approve_restaurants');
         const { data: restaurant, error: fetchError } = await supabaseAdmin
             .from('Restaurant')
             .select('id, name, owner:User(email, name)')
@@ -294,7 +392,7 @@ export async function rejectMerchant(restaurantId: string) {
 
         const owner = restaurant.owner as any;
         if (owner?.email) {
-            await sendEmail(
+            const emailResult = await Promise.allSettled([sendEmail(
                 owner.email,
                 "Update on Your TrueServe Merchant Application",
                 `<h1>Application Update</h1>
@@ -302,10 +400,16 @@ export async function rejectMerchant(restaurantId: string) {
                 <p>Thank you for applying to TrueServe for <strong>${restaurant.name}</strong>.</p>
                 <p>At this time we cannot approve the application. You can reply to this message if you’d like a follow-up review.</p>
                 <p style="margin-top: 30px;">Best,<br>The TrueServe Team</p>`
-            );
+            )]);
+
+            if (emailResult[0]?.status === "rejected") {
+                console.error("Merchant rejection email failed:", emailResult[0].reason);
+            }
         }
 
+        revalidatePath("/admin/users");
         revalidatePath("/admin/dashboard");
+        revalidatePath("/restaurants");
         return { success: true };
     } catch (e: any) {
         console.error("Failed to reject merchant:", e);
@@ -315,21 +419,20 @@ export async function rejectMerchant(restaurantId: string) {
 
 
 export async function connectStripe(_formData?: FormData) {
-    const { isAuth, role, userId } = await getAuthSession();
-    if (!isAuth) {
-        redirect("/admin/login");
+    try {
+        const { userId } = await requireAdminPermissions('manage_payouts');
+        await logAuditAction({ action: "CONNECT_STRIPE_PORTAL", targetId: userId || "admin", entityType: "Admin" });
+    } catch (e: any) {
+        return { error: e.message || "Unauthorized" };
     }
 
-    await logAuditAction({ action: "CONNECT_STRIPE_PORTAL", targetId: userId!, entityType: "Admin" });
-
-    // Pre-filled Stripe Connect Onboarding for TrueServe Admins
-    redirect("https://dashboard.stripe.com/acct_1Sdd5I2XvtkOTi1j/payment-links/create");
+    // Open the Stripe Dashboard home so staff land on the TrueServe account overview.
+    redirect("https://dashboard.stripe.com/");
 }
 
 export async function generateMerchantStripeLink(restaurantId: string) {
     try {
-        const { isAuth, role } = await getAuthSession();
-        if (!isAuth) throw new Error("Unauthorized");
+        await requireAdminPermissions('approve_restaurants');
 
         const { data: restaurant } = await supabaseAdmin
             .from('Restaurant')
@@ -368,6 +471,7 @@ export async function logout() {
 
 export async function toggleOrderingStatus(enabled: boolean) {
     try {
+        await requireAdminPermissions('manage_feature_flags');
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('ORDERING_SYSTEM_ENABLED', enabled);
 
@@ -382,6 +486,7 @@ export async function toggleOrderingStatus(enabled: boolean) {
 
 export async function toggleAiScanner(enabled: boolean) {
     try {
+        await requireAdminPermissions('manage_feature_flags');
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('AI_MENU_SCANNER_ENABLED', enabled);
         revalidatePath("/admin/dashboard");
@@ -392,6 +497,7 @@ export async function toggleAiScanner(enabled: boolean) {
 
 export async function toggleGoogleRatings(enabled: boolean) {
     try {
+        await requireAdminPermissions('manage_feature_flags');
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('GOOGLE_RATINGS_SYNC_ENABLED', enabled);
         revalidatePath("/admin/dashboard");
@@ -402,6 +508,7 @@ export async function toggleGoogleRatings(enabled: boolean) {
 
 export async function toggleInstantPayouts(enabled: boolean) {
     try {
+        await requireAdminPermissions('manage_feature_flags');
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('INSTANT_PAYOUTS_ENABLED', enabled);
         revalidatePath("/admin/dashboard");
@@ -412,6 +519,7 @@ export async function toggleInstantPayouts(enabled: boolean) {
 
 export async function toggleExpressCheckout(enabled: boolean) {
     try {
+        await requireAdminPermissions('manage_feature_flags');
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig('EXPRESS_CHECKOUT_ACTIVE', enabled);
         revalidatePath("/admin/dashboard");
@@ -422,6 +530,7 @@ export async function toggleExpressCheckout(enabled: boolean) {
 
 export async function updateConfigParam(key: any, value: any) {
     try {
+        await requireAdminPermissions('manage_system_settings');
         const { updateSystemConfig } = await import('@/lib/system');
         await updateSystemConfig(key, value);
 
@@ -448,14 +557,7 @@ export async function updateEnvironmentFeatureSwitch(
     environment: ConfigEnvironment | "global"
 ) {
     try {
-        const cookieStore = await cookies();
-        const hasAdminSession = !!cookieStore.get("admin_session");
-        const { isAuth, role } = await getAuthSession();
-        const isStaff = role ? ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(role) : false;
-
-        if (!hasAdminSession && !(isAuth && isStaff)) {
-            throw new Error("Unauthorized");
-        }
+        await requireAdminPermissions('manage_feature_flags');
 
         if (!ALLOWED_FEATURE_SWITCHES.includes(key)) {
             throw new Error("Unsupported feature switch");
@@ -476,6 +578,7 @@ export async function updateEnvironmentFeatureSwitch(
 
 export async function refreshBackgroundCheck(driverId: string) {
     try {
+        await requireAdminPermissions('approve_drivers');
         const isClean = Math.random() > 0.2;
         const status = isClean ? "CLEARED" : "FLAGGED";
 
@@ -520,6 +623,7 @@ export async function refreshBackgroundCheck(driverId: string) {
 
 export async function forceCompleteOrder(orderId: string) {
     try {
+        await requireAdminPermissions('intervene_orders');
         const { error } = await supabaseAdmin
             .from('Order')
             .update({
@@ -542,6 +646,7 @@ export async function forceCompleteOrder(orderId: string) {
 
 export async function adminCancelOrder(orderId: string) {
     try {
+        await requireAdminPermissions('intervene_orders');
         const { error } = await supabaseAdmin
             .from('Order')
             .update({
@@ -564,8 +669,7 @@ export async function adminCancelOrder(orderId: string) {
 
 export async function requestChange(data: { entityType: string; entityId: string; changeData: any; previousData: any; rollbackPlan?: string }) {
     try {
-        const { isAuth, role, userId, name } = await getAuthSession();
-        if (!isAuth) throw new Error("Unauthorized");
+        const { role, userId, name } = await requireAdminPermissions('intervene_orders');
 
         const { error } = await supabaseAdmin
             .from('ChangeRequest')
@@ -591,8 +695,7 @@ export async function requestChange(data: { entityType: string; entityId: string
 
 export async function approveRequest(requestId: string) {
     try {
-        const { isAuth, role, userId } = await getAuthSession();
-        if (!isAuth || role !== 'ADMIN') throw new Error("Only admins can approve sensitive changes");
+        const { userId } = await requireAdminPermissions('manage_system_settings');
 
         const { data: request, error: fetchError } = await supabaseAdmin
             .from('ChangeRequest')
@@ -634,8 +737,7 @@ export async function approveRequest(requestId: string) {
 
 export async function rejectRequest(requestId: string) {
     try {
-        const { isAuth, role, userId } = await getAuthSession();
-        if (!isAuth || role !== 'ADMIN') throw new Error("Unauthorized");
+        const { userId } = await requireAdminPermissions('manage_system_settings');
 
         const { error } = await supabaseAdmin
             .from('ChangeRequest')
@@ -657,8 +759,7 @@ export async function rejectRequest(requestId: string) {
 
 export async function updateInAppContent(key: string, title: string, content: string) {
     try {
-        const { isAuth, role } = await getAuthSession();
-        if (!isAuth || role !== 'ADMIN') throw new Error("Unauthorized");
+        await requireAdminPermissions('manage_content');
 
         // 1. Get current version
         const { data: current } = await supabaseAdmin

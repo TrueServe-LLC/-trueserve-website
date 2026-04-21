@@ -4,15 +4,17 @@ import nodemailer from 'nodemailer';
 import * as Sentry from '@sentry/nextjs';
 import { logger } from './logger';
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SES_SMTP_HOST || 'email-smtp.us-east-1.amazonaws.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: process.env.SES_SMTP_USER,
-        pass: process.env.SES_SMTP_PASS,
-    },
-});
+function createTransporter() {
+    return nodemailer.createTransport({
+        host: process.env.SES_SMTP_HOST || 'email-smtp.us-east-1.amazonaws.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: process.env.SES_SMTP_USER,
+            pass: process.env.SES_SMTP_PASS,
+        },
+    });
+}
 
 export async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: any[]) {
     // Fallback if no SMTP credentials are set
@@ -33,7 +35,8 @@ export async function sendEmail(to: string, subject: string, htmlBody: string, a
         const actualTo = (isProd || isWhitelisted || isOnboarding) ? to : 'lcking992@gmail.com';
         const actualSubject = isProd ? subject : `[DEV] ${subject}`;
 
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'TrueServe <onboarding@trueserve.delivery>';
+        const fromEmail = process.env.SES_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'TrueServe <onboarding@trueserve.delivery>';
+        const transporter = createTransporter();
         
         const mailOptions = {
             from: fromEmail,

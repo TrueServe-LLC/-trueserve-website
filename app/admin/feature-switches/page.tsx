@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
-import { isInternalStaff } from "@/lib/rbac";
+import { canAccessAdminSection } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { buildScopedConfigKey, type ConfigEnvironment, type ConfigKey } from "@/lib/system";
 import { updateEnvironmentFeatureSwitch } from "../actions";
@@ -59,7 +59,7 @@ export default async function FeatureSwitchesPage() {
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
+    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'feature-switches'));
     if (!isAuthorized) redirect("/admin/login");
 
     const configs = await getFeatureConfigs();
@@ -69,7 +69,7 @@ export default async function FeatureSwitchesPage() {
     const runtimeEnvironment = (process.env.VERCEL_ENV || process.env.NODE_ENV || "development").toLowerCase();
 
     return (
-        <AdminPortalWrapper>
+        <AdminPortalWrapper role={role}>
             <style>{`
                 .fs-env-block { background: #141a18; border: 1px solid #1e2420; border-radius: 8px; padding: 18px; margin-bottom: 16px; }
                 .fs-env-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 2px; }

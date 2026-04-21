@@ -12,6 +12,7 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [addressLine, setAddressLine] = useState("");
   const [city, setCity] = useState("");
@@ -100,6 +101,7 @@ export default function SignupPage() {
               <input type="hidden" name="name" value={`${firstName} ${lastName}`.trim()} />
               <input type="hidden" name="address" value={[addressLine, city, zip].filter(Boolean).join(", ")} />
               <input type="hidden" name="email" value={email} />
+              <input type="hidden" name="phone" value={phone} />
               <input type="hidden" name="password" value={password} />
 
               {step === 1 && (
@@ -120,7 +122,7 @@ export default function SignupPage() {
                       <label>Email Address</label>
                       <input type="email" placeholder="jordan@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     </div>
-                    <div className="fg"><label>Phone Number</label><input type="tel" placeholder="(555) 000-0000" /></div>
+                    <div className="fg"><label>Phone Number</label><input type="tel" placeholder="(555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
                     <div className="fg">
                       <label>Create Password</label>
                       <input type="password" placeholder="At least 8 characters" minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} required />

@@ -18,7 +18,7 @@ export default async function DriverDashboardLayout({ children }: { children: Re
     }
 
     return (
-        <DriverPortalWrapper>
+        <DriverPortalWrapper pageTitle="Driver Dashboard" pageSubtitle="Route Board">
             {children}
             <SupportWidget role="DRIVER" />
             <PortalTour portal="DRIVER" />

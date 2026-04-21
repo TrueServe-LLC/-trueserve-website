@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
@@ -35,7 +35,14 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
         libraries: GOOGLE_MAPS_LIBRARIES
     });
 
+    useEffect(() => {
+        setInputValue(initialValue);
+    }, [initialValue]);
+
     const initServices = () => {
+        if (!isLoaded || typeof window === 'undefined') {
+            return;
+        }
         try {
             if (!autocompleteService.current && window.google) {
                 autocompleteService.current = new window.google.maps.places.AutocompleteService();
@@ -56,6 +63,10 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
         if (!val) {
             setPredictions([]);
             setIsDropdownOpen(false);
+            return;
+        }
+
+        if (!isLoaded) {
             return;
         }
 
@@ -131,10 +142,6 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
         router.push(`/restaurants?search=${encodeURIComponent(inputValue)}`);
     };
 
-    if (!isLoaded) {
-        return <div className="h-12 w-full max-w-xl bg-slate-800 animate-pulse rounded-2xl"></div>;
-    }
-
     return (
         <div className={`w-full relative animate-fade-in group ${isCompact ? "max-w-full" : "max-w-3xl"}`}>
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/25 via-transparent to-primary/25 rounded-[28px] blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
@@ -142,6 +149,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
             <form
                 onSubmit={handleManualSearch}
                 className={`relative z-20 grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "rounded-2xl p-1.5" : "rounded-[28px] p-2"}`}
+                data-scroll-glow
             >
                 <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[20px] px-4 md:px-5"}`}>
                     <span className="mr-2 text-[18px]">📍</span>
@@ -163,6 +171,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                 <button
                     type="submit"
                     className={`place-btn place-btn-inline shrink-0 ${isCompact ? "h-12 px-6 md:px-8" : "h-14 px-6 md:px-9"}`}
+                    data-scroll-glow
                 >
                     Find Food
                 </button>

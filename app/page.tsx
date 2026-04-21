@@ -22,6 +22,7 @@ import LandingSearch from "@/components/LandingSearch";
 
 export default function Home() {
   const [userId, setUserId] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const socialLinks = [
     {
       label: "Instagram",
@@ -48,6 +49,8 @@ export default function Home() {
 
   return (
     <div className="food-app-shell">
+      <div className="home-bg-img" aria-hidden="true"></div>
+      <div className="home-bg-grad" aria-hidden="true"></div>
       <nav className="food-app-nav">
         <Logo size="sm" />
         <div className="nav-links hidden md:flex">
@@ -55,6 +58,20 @@ export default function Home() {
           <Link href="/merchant/login">For Merchants</Link>
           <Link href="/driver/login">For Drivers</Link>
         </div>
+        <button
+          type="button"
+          className="food-mobile-menu-trigger"
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-home-menu"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+        >
+          <span className="menu-icon" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          {mobileMenuOpen ? "Close" : "Menu"}
+        </button>
         <div className="nav-r">
           {userId ? (
             <Link href="/user/settings" className="btn btn-ghost">Account</Link>
@@ -62,12 +79,17 @@ export default function Home() {
             <Link href="/login" className="btn btn-ghost">Sign In</Link>
           )}
         </div>
+        {mobileMenuOpen ? (
+          <div id="mobile-home-menu" className="food-mobile-menu">
+            <Link href="/restaurants" onClick={() => setMobileMenuOpen(false)}>Order Food</Link>
+            <Link href="/merchant/login" onClick={() => setMobileMenuOpen(false)}>For Merchants</Link>
+            <Link href="/driver/login" onClick={() => setMobileMenuOpen(false)}>For Drivers</Link>
+          </div>
+        ) : null}
       </nav>
 
       <main className="food-app-main">
         <section className="food-hero-card">
-          <div className="home-bg-img"></div>
-          <div className="home-bg-grad"></div>
           <div className="relative z-[2] grid gap-7 px-6 py-12 md:grid-cols-[minmax(0,1.1fr)_360px] md:gap-10 md:px-10 md:py-14">
             <div className="space-y-8 ts-animate-fade-up">
               <div className="food-eyebrow">Fresh meals. Fast drop-offs. One clear brand.</div>
@@ -94,7 +116,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="food-panel flex flex-col gap-5 ts-animate-fade-up ts-animate-delay-1">
+            <div className="food-panel food-hero-info-panel flex flex-col gap-5">
               <div className="space-y-4">
                 <p className="food-kicker">Tonight's vibe</p>
                 <h2 className="food-heading">Browse. Order. <span className="accent">Relax.</span></h2>

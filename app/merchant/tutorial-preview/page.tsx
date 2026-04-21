@@ -2,383 +2,670 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Logo from "@/components/Logo";
+import MerchantDashboardWrapper from "../dashboard/MerchantDashboardWrapper";
 
-const SECTIONS = [
-  {
-    step: 1, label: "Choose POS",
-    badge: "Section 1 of 5", title: "Choose POS Provider",
-    body: "Merchants open the Integrations tab and select a supported POS provider from the list. This opens the credentials panel for that integration.",
-    note: "This is visual-only and does not save credentials. It mirrors the merchant integration workflow so teammates can review before launch.",
-    highlightBlock: 0, showCred: false, showStatus: false, showStripe: false, progState: 0,
-  },
-  {
-    step: 2, label: "Credentials",
-    badge: "Section 2 of 5", title: "Enter API Credentials",
-    body: "The merchant enters the provider Client ID, Client Secret, and selects the matching store location. All fields are masked for security.",
-    note: "In the real portal, credentials are encrypted at rest and never exposed after initial entry.",
-    highlightBlock: 1, showCred: true, showStatus: false, showStripe: false, progState: 0,
-  },
-  {
-    step: 3, label: "Test Connection",
-    badge: "Section 3 of 5", title: "Run Connection Test",
-    body: "Clicking 'Test Connection' fires a live validation request to the provider API. The progress bar shows the handshake in real time.",
-    note: "If the test fails, TrueServe surfaces the exact error code so merchants can fix credentials without guessing.",
-    highlightBlock: 2, showCred: true, showStatus: false, showStripe: false, progState: 1,
-  },
-  {
-    step: 4, label: "Verified",
-    badge: "Section 4 of 5", title: "Connection Verified",
-    body: "Once validated, menu sync and order webhooks become available immediately. The status bar confirms the integration is live and ready.",
-    note: "Merchants can re-sync their menu at any time from this panel without re-entering credentials.",
-    highlightBlock: 3, showCred: true, showStatus: true, showStripe: false, progState: 2,
-  },
-  {
-    step: 5, label: "Get Paid",
-    badge: "Section 5 of 5", title: "Stripe Payout Setup",
-    body: "Merchants connect Stripe once to receive order payouts automatically. This final step makes the merchant portal production-ready.",
-    note: "TrueServe uses Stripe Connect so merchant payouts deposit securely on a rolling schedule after customer orders are processed.",
-    highlightBlock: 4, showCred: false, showStatus: false, showStripe: true, progState: 3,
-  },
-];
+type MerchantStep = {
+  step: number;
+  label: string;
+  title: string;
+  body: string;
+  bullets: string[];
+  preview: {
+    status: string;
+    focus: string;
+    accent: string;
+  };
+};
 
-const STEP_BLOCKS = [
-  { label: "Step 1", name: "Choose POS Provider", detail: "Merchant selects a provider in Integrations and opens the credentials panel." },
-  { label: "Step 2", name: "Enter API Credentials", detail: "Client ID, Client Secret, and location details are entered securely." },
-  { label: "Step 3", name: "Run Connection Test", detail: null },
-  { label: "Step 4", name: "Connection Verified", detail: "Menu sync and order webhooks become available immediately." },
-  { label: "Step 5", name: "Stripe Payout Setup", detail: "Connect Stripe so order revenue can be deposited securely." },
+const STEPS: MerchantStep[] = [
+  {
+    step: 1,
+    label: "Choose POS",
+    title: "Choose POS Provider",
+    body: "Merchants start in Integrations and pick the POS they already use in-store. The portal stays in the same dark, flat shell as the live dashboard.",
+    bullets: [
+      "Select the restaurant’s POS system first so TrueServe knows which API to connect to.",
+      "Supported systems show up as simple dashboard cards instead of a separate style or layout.",
+      "If the POS is not listed, support can step in and help map the integration manually.",
+    ],
+    preview: { status: "Pending", focus: "Integrations", accent: "Toast" },
+  },
+  {
+    step: 2,
+    label: "Credentials",
+    title: "Enter API Credentials",
+    body: "The merchant enters the provider Client ID, Client Secret, and the matching location so the connection stays tied to the right store.",
+    bullets: [
+      "Credentials are shown in compact rows so nothing feels stacked or cluttered.",
+      "The portal keeps sensitive values masked, while location details stay visible enough to confirm the right store.",
+      "The same visual treatment is used across desktop and mobile so the flow feels familiar everywhere.",
+    ],
+    preview: { status: "Masked", focus: "Client ID + Secret", accent: "Secure" },
+  },
+  {
+    step: 3,
+    label: "Test Connection",
+    title: "Run Connection Test",
+    body: "When the merchant taps Test Connection, the portal validates credentials, checks menu access, and confirms the API is alive.",
+    bullets: [
+      "The progress bar animates while the provider checks credentials and permissions.",
+      "This step shows the same strong orange accent used in the live merchant dashboard.",
+      "Errors stay readable and actionable so merchants can fix the issue without guessing.",
+    ],
+    preview: { status: "Checking", focus: "API handshake", accent: "In progress" },
+  },
+  {
+    step: 4,
+    label: "Verified",
+    title: "Connection Verified",
+    body: "Once the provider validates, menu sync and order ingestion can move forward with the same flat status treatment used in the live portal.",
+    bullets: [
+      "The verified state is shown as a simple success row, not a noisy badge stack.",
+      "Merchants can re-sync their menu any time after setup without redoing the whole flow.",
+      "This keeps the preview aligned with the production portal’s straightforward dashboard language.",
+    ],
+    preview: { status: "Connected", focus: "Menu sync", accent: "Ready" },
+  },
+  {
+    step: 5,
+    label: "Get Paid",
+    title: "Stripe Payout Setup",
+    body: "Merchants connect Stripe once so customer payments and payouts can move through the production flow.",
+    bullets: [
+      "The payout step keeps the same flat dark panel treatment as the rest of the portal.",
+      "Stripe Connect is the production-ready route for merchant payouts and verification.",
+      "After setup, the merchant can move straight back into the dashboard without a design shift.",
+    ],
+    preview: { status: "Live", focus: "Stripe Connect", accent: "Ready for payout" },
+  },
 ];
 
 export default function MerchantTutorialPreviewPage() {
-  const [step, setStep] = useState(0); // 0-indexed
+  const [step, setStep] = useState(0);
   const [rating, setRating] = useState<number | null>(null);
-  const cur = SECTIONS[step];
-  const activeStepBlock = STEP_BLOCKS[step];
+  const current = STEPS[step];
 
-  function blockStyle(i: number) {
-    if (i < step) return "border-emerald-400/25 bg-emerald-400/[0.03]";
-    if (i === step) return "border-[#f97316]/45 bg-[#f97316]/[0.05] shadow-[0_0_0_2px_rgba(249,115,22,0.1)]";
-    return "border-white/8 bg-white/[0.025]";
-  }
-  function tagStyle(i: number) {
-    if (i < step) return "text-emerald-400";
-    if (i === step) return "text-[#f97316]";
-    return "text-[#f97316]/50";
-  }
-  function numStyle(i: number) {
-    if (i < step) return "border-emerald-400/35 bg-emerald-400/15 text-emerald-400";
-    if (i === step) return "border-[#f97316]/45 bg-[#f97316]/15 text-[#f97316]";
-    return "border-white/10 bg-white/5 text-white/30";
-  }
+  const sequenceTone = (index: number) => {
+    if (index < step) return "border-[#3dd68c]/20 bg-[#0f1210]";
+    if (index === step) return "border-[#f97316]/35 bg-[#11120d] shadow-[0_0_0_1px_rgba(249,115,22,0.08)]";
+    return "border-white/8 bg-[#0f1210]/80";
+  };
 
   return (
-    <div className="food-app-shell min-h-screen overflow-x-hidden">
+    <MerchantDashboardWrapper
+      restaurantName="Pilot Kitchen"
+      pageTitle="Merchant Tutorial Preview"
+      pageSubtitle="Style matched to the live merchant dashboard"
+    >
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes mpProg { from { width:0% } to { width:72% } }
-        @keyframes mpPulse { 0%,100%{opacity:.5} 50%{opacity:1} }
-        .mp-chip {
+        @keyframes mtProgress { from { width: 0%; } to { width: 72%; } }
+        @keyframes mtPulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+
+        .mch-stat-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .mch-stat-card {
+          background: #141a18;
+          border: 1px solid #1e2420;
+          border-radius: 8px;
+          padding: 14px;
+        }
+        .mch-stat-label {
+          font-size: 11px;
+          color: #777;
+          margin-bottom: 7px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+        }
+        .mch-stat-icon {
+          width: 18px;
+          height: 18px;
+          border-radius: 4px;
+          background: #0f1210;
+          border: 1px solid #1e2420;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+        }
+        .mch-stat-value {
+          font-size: 27px;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -0.5px;
+        }
+        .mch-stripe-banner {
+          background: #141a18;
+          border: 1px solid #1e2420;
+          border-radius: 8px;
+          padding: 13px 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 14px;
+          gap: 12px;
+        }
+        .mch-stripe-banner.connected {
+          border-color: #1e3a2a;
+          background: #0f1a14;
+        }
+        .mch-stripe-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+        }
+        .mch-stripe-icon {
+          width: 22px;
+          height: 15px;
+          border-radius: 3px;
+          background: #f97316;
+          flex-shrink: 0;
+        }
+        .mch-stripe-title {
+          display: block;
+          color: #fff;
+          font-weight: 700;
+          font-size: 12px;
+          margin-bottom: 2px;
+        }
+        .mch-stripe-sub {
+          font-size: 11px;
+          color: #aab4c8;
+        }
+        .mch-stripe-connect-btn {
+          background: #f97316;
+          color: #000;
+          border: none;
+          border-radius: 8px;
+          padding: 7px 16px;
+          font-size: 12px;
+          font-weight: 800;
+          cursor: pointer;
+          white-space: nowrap;
+          flex-shrink: 0;
+          transition: background 0.15s;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-height: 32px;
-          padding: 7px 12px;
-          border-radius: 8px;
-          border: 1px solid #252b1e;
-          background: #161a13;
-          color: #5a6052;
+          text-decoration: none;
+        }
+        .mch-stripe-connect-btn:hover { background: #ea6c10; }
+        .mch-stripe-connected-badge {
+          font-size: 11px;
+          color: #4dca80;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+        .mch-section-head {
           font-size: 10px;
+          font-weight: 800;
+          color: #777;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          margin-bottom: 10px;
+        }
+        .mch-tab-row {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 14px;
+          flex-wrap: wrap;
+        }
+        .mch-tab-pill {
+          padding: 8px 14px;
+          border-radius: 8px;
+          font-size: 11px;
+          font-weight: 800;
+          cursor: pointer;
+          text-decoration: none;
+          border: 1px solid #1e2420;
+          color: #999;
+          transition: all 0.15s;
+          text-transform: uppercase;
+          letter-spacing: 0.11em;
+          background: transparent;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .mch-tab-pill:hover {
+          color: #f97316;
+          border-color: rgba(249,115,22,0.35);
+          background: rgba(249,115,22,0.06);
+        }
+        .mch-tab-pill.mch-tab-active {
+          background: rgba(249,115,22,0.08);
+          color: #f97316;
+          border-color: rgba(249,115,22,0.35);
+        }
+        .mch-tutorial-shell {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .mch-tutorial-banner {
+          border-radius: 8px;
+        }
+        .mch-tutorial-banner .mch-stripe-btn,
+        .mch-tutorial-banner .mch-stripe-connected-badge {
+          align-self: center;
+        }
+        .mch-tutorial-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 320px;
+          gap: 12px;
+          align-items: start;
+        }
+        .mch-tutorial-panel {
+          background: #141a18;
+          border: 1px solid #1e2420;
+          border-radius: 8px;
+          padding: 18px;
+          min-width: 0;
+        }
+        .mch-tutorial-head {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .mch-tutorial-badge {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #f97316;
+        }
+        .mch-tutorial-title {
+          font-size: 28px;
           font-weight: 700;
-          letter-spacing: 0.08em;
+          line-height: 1.05;
+          letter-spacing: -0.02em;
+          color: #fff;
+        }
+        .mch-tutorial-copy {
+          font-size: 13px;
+          line-height: 1.7;
+          color: #aab4c8;
+          max-width: 720px;
+        }
+        .mch-sequence-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 14px;
+        }
+        .mch-sequence-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          border: 1px solid #1e2420;
+          border-radius: 8px;
+          padding: 12px 13px;
+        }
+        .mch-sequence-step {
+          width: 24px;
+          height: 24px;
+          border-radius: 6px;
+          border: 1px solid rgba(255,255,255,0.08);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          font-size: 10px;
+          font-weight: 800;
+          color: #fff;
+        }
+        .mch-sequence-step.active {
+          border-color: rgba(249,115,22,0.35);
+          background: rgba(249,115,22,0.12);
+          color: #f97316;
+        }
+        .mch-sequence-step.done {
+          border-color: rgba(61,214,140,0.28);
+          background: rgba(61,214,140,0.1);
+          color: #3dd68c;
+        }
+        .mch-sequence-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #fff;
+          line-height: 1.25;
+        }
+        .mch-sequence-copy {
+          font-size: 12px;
+          line-height: 1.6;
+          color: #aab4c8;
+          margin-top: 3px;
+        }
+        .mch-side-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .mch-mini-stack {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          margin-top: 12px;
+        }
+        .mch-mini-card {
+          background: #0f1210;
+          border: 1px solid #1e2420;
+          border-radius: 8px;
+          padding: 12px;
+          min-width: 0;
+        }
+        .mch-mini-label {
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #777;
+          margin-bottom: 6px;
+        }
+        .mch-mini-value {
+          font-size: 14px;
+          font-weight: 700;
+          color: #fff;
+          line-height: 1.2;
+        }
+        .mch-mini-value.orange { color: #f97316; }
+        .mch-mini-value.green { color: #3dd68c; }
+        .mch-tutorial-actions {
+          display: flex;
+          gap: 8px;
+          margin-top: 14px;
+        }
+        .mch-tutorial-actions .mch-stripe-connect-btn {
+          flex: 1;
+          min-height: 38px;
+          justify-content: center;
+        }
+        .mch-tutorial-actions .mch-back-btn {
+          background: #0f1210;
+          color: #999;
+          border: 1px solid #1e2420;
+        }
+        .mch-tutorial-actions .mch-back-btn:hover {
+          color: #f97316;
+          border-color: rgba(249,115,22,0.35);
+          background: rgba(249,115,22,0.06);
+        }
+        .mch-rating-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 12px;
+        }
+        .mch-rating-btn {
+          width: 42px;
+          height: 42px;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03);
+          color: rgba(255,255,255,0.55);
+          font-size: 12px;
+          font-weight: 800;
+          transition: all .15s ease;
+        }
+        .mch-rating-btn:hover {
+          border-color: rgba(249,115,22,0.35);
+          color: #f97316;
+        }
+        .mch-rating-btn.active {
+          background: rgba(249,115,22,1);
+          border-color: rgba(249,115,22,0.85);
+          color: #120c01;
+        }
+        .mch-steps-wrap {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        .mch-step-chip {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 34px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.03);
+          color: rgba(255,255,255,0.7);
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: .11em;
           text-transform: uppercase;
           line-height: 1;
           white-space: nowrap;
-          box-shadow: none;
+          transition: all .15s ease;
         }
-        .mp-chip-active {
-          border-color: rgba(249,115,22,0.45);
-          background: rgba(249,115,22,0.14);
+        .mch-step-chip:hover {
+          color: #fff;
+          border-color: rgba(249,115,22,0.25);
+        }
+        .mch-step-chip.active {
+          background: rgba(249,115,22,0.1);
           color: #f97316;
+          border-color: rgba(249,115,22,0.35);
         }
-      `}} />
+        .mch-step-chip.done {
+          background: rgba(61,214,140,0.08);
+          color: #3dd68c;
+          border-color: rgba(61,214,140,0.22);
+        }
+        @media (max-width: 1024px) {
+          .mch-stat-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .mch-tutorial-grid {
+            grid-template-columns: 1fr;
+          }
+          .mch-mini-stack {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 640px) {
+          .mch-stat-grid {
+            grid-template-columns: 1fr;
+          }
+          .mch-tutorial-title { font-size: 22px; }
+          .mch-tutorial-copy { font-size: 12px; }
+        }
+      ` }} />
 
-      <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
-        <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] flex-col items-start gap-3 py-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <Logo size="sm" />
-            <span className="hidden text-[10px] font-black uppercase tracking-[0.18em] text-[#68c7cc] md:inline-flex">
-              Merchant Pilot Preview
-            </span>
+      <div className="mch-tutorial-shell">
+        <div className="mch-stat-grid">
+          <div className="mch-stat-card">
+            <div className="mch-stat-label">
+              <div className="mch-stat-icon">1</div>
+              Tutorial Step
+            </div>
+            <div className="mch-stat-value">{current.step}/5</div>
           </div>
-          <div className="flex w-full flex-wrap gap-2 md:w-auto md:justify-end">
-            <Link href="/merchant/portal-preview" className="ts-pill-btn ts-pill-btn-sm w-auto whitespace-nowrap">
-              View Portal Preview
-            </Link>
-            <Link href="/merchant/login" className="ts-pill-btn ts-pill-btn-sm w-auto whitespace-nowrap">
-              Back to Login
-            </Link>
+          <div className="mch-stat-card">
+            <div className="mch-stat-label">
+              <div className="mch-stat-icon">🏪</div>
+              Portal Focus
+            </div>
+            <div className="mch-stat-value" style={{ fontSize: 22 }}>{current.preview.focus}</div>
+          </div>
+          <div className="mch-stat-card">
+            <div className="mch-stat-label">
+              <div className="mch-stat-icon">✓</div>
+              Tutorial Mode
+            </div>
+            <div className="mch-stat-value" style={{ fontSize: 22, color: "#f97316" }}>{current.preview.accent}</div>
           </div>
         </div>
-      </header>
 
-      <main className="mx-auto w-[min(1060px,calc(100%-24px))] py-10 md:py-12">
-
-        {/* Hero */}
-        <div className="mb-9 text-center md:mb-10">
-          <p className="food-kicker mb-3">Interactive Walkthrough</p>
-          <h1 className="food-heading !text-[22px] sm:!text-[28px] md:!text-[34px] lg:!text-[44px] leading-none">
-            POS Connection <span className="text-[#f97316]">Preview</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-[540px] text-[13px] leading-relaxed text-white/50">
-            Step through how merchants connect a POS provider, validate credentials, and sync their menu inside the TrueServe portal.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            {SECTIONS.map((s, i) => (
-              <button key={i} type="button" onClick={() => setStep(i)} className={`mp-chip min-w-[116px] ${i===step ? "mp-chip-active" : ""}`}>
-                <span className="opacity-70">{s.step}</span>
-                <span className="opacity-50">·</span>
-                {s.label}
-              </button>
-            ))}
+        <div className="mch-stripe-banner mch-tutorial-banner">
+          <div className="mch-stripe-left">
+            <div className="mch-stripe-icon" />
+            <div>
+              <span className="mch-stripe-title">Tutorial mode active</span>
+              <span className="mch-stripe-sub">
+                Same flat cards, same sidebar, same orange accents — just a guided preview of how merchants connect their tools.
+              </span>
+            </div>
           </div>
+          <Link href="/merchant/login" className="mch-stripe-connect-btn">
+            Back to Login
+          </Link>
         </div>
 
-        <div className="mb-8 border-t border-white/8" />
+        <div className="mch-section-head">Walkthrough</div>
+        <div className="mch-steps-wrap">
+          {STEPS.map((item, index) => (
+            <button
+              key={item.step}
+              type="button"
+              className={`mch-step-chip ${index === step ? "active" : index < step ? "done" : ""}`}
+              onClick={() => setStep(index)}
+            >
+              {item.step} · {item.label}
+            </button>
+          ))}
+        </div>
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
-
-          {/* Portal frame */}
-          <div className="food-panel min-w-0 overflow-hidden !p-0 !rounded-[12px]">
-            <div className="border-b border-white/8 bg-black/35 px-5 py-4">
-              <div className="mb-3 flex min-w-0 items-center gap-2">
-                <img src="/logo.png" alt="TrueServe" width={20} height={20} style={{ borderRadius: "999px", flexShrink: 0, boxShadow: "0 0 10px rgba(249,115,22,0.3)" }} />
-                <span className="shrink-0 text-[11px] font-black tracking-wide text-white">True<span style={{ color: "#68c7cc" }}>Serve</span></span>
-                <span className="text-white/20">·</span>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Merchant Portal Preview</span>
-              </div>
-              <p className="mb-1 text-[10px] font-black uppercase tracking-[0.1em] text-white/40">Portal Preview</p>
-              <h2 className="food-heading !text-[22px] leading-tight">
-                How POS Connection Looks
-              </h2>
-              <p className="mt-1.5 max-w-[560px] text-[12px] leading-relaxed text-white/55">
-                This preview shows the exact portal area where merchants connect a POS provider, validate credentials, and sync their menu.
-              </p>
+        <div className="mch-tutorial-grid">
+          <section className="mch-tutorial-panel">
+            <div className="mch-tutorial-head">
+              <div className="mch-tutorial-badge">Section {current.step} of 5</div>
+              <div className="mch-tutorial-title">{current.title}</div>
+              <div className="mch-tutorial-copy">{current.body}</div>
             </div>
 
-            <div className="space-y-3 p-4 md:p-5">
-              {/* Connection sequence */}
-              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-white/35">Connection Sequence</p>
-              <div className="sm:hidden rounded-[8px] border border-[#252b1e] bg-[#161a13] px-4 py-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/85">Step {cur.step}</p>
-                <p className="mt-1 text-[20px] font-black leading-tight text-white">{activeStepBlock.name}</p>
-                <p className="mt-2 text-[13px] leading-relaxed text-white/70">
-                  {activeStepBlock.detail || "Run a live connection check to validate credentials and confirm API access."}
-                </p>
-                {step === 2 && (
-                  <div className="mt-3">
-                    <div className="mb-1 text-[10px] font-black uppercase tracking-[0.06em] text-[#f97316]">Checking</div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                      <div className="h-full rounded-full bg-[#f97316]/80" style={{ animation: "mpProg 2.5s ease-out forwards" }} />
+            <div className="mch-sequence-list">
+              {current.bullets.map((bullet, index) => (
+                <div key={bullet} className={`mch-sequence-item ${sequenceTone(index)}`}>
+                  <div className={`mch-sequence-step ${index < step ? "done" : index === step ? "active" : ""}`}>
+                    {index + 1}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="mch-sequence-title">
+                      {index === 0 ? "First move" : index === 1 ? "What the merchant sees" : "What happens next"}
                     </div>
-                  </div>
-                )}
-                {step > 2 && (
-                  <div className="mt-3 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.06em] text-emerald-300">
-                    Connection verified
-                  </div>
-                )}
-              </div>
-
-              <div className="hidden sm:block space-y-2">
-                {STEP_BLOCKS.map((b, i) => (
-                  <div key={i} className={`rounded-[8px] border px-4 py-3 transition-all duration-300 ${blockStyle(i)}`}>
-                    {i === 2 ? (
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className={`text-[10px] font-black uppercase tracking-[0.08em] ${tagStyle(i)}`}>{b.label}</p>
-                          <p className={`mt-0.5 text-[13px] font-bold ${i <= step ? "text-white" : "text-white/50"}`}>{b.name}</p>
-                          {/* Progress bar for step 3 */}
-                          {step >= 2 && (
-                            <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
-                              {step === 2 ? (
-                                <div key="prog-anim" className="h-full rounded-full bg-[#f97316]/80" style={{ animation: "mpProg 3s ease-out forwards" }} />
-                              ) : (
-                                <div className="h-full w-full rounded-full bg-emerald-400/80" />
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        {step === 2 && (
-                          <span className="mt-0.5 shrink-0 text-[10px] font-black uppercase tracking-[0.06em] text-[#f97316]" style={{ animation: "mpPulse 1.6s ease-in-out infinite" }}>
-                            Checking
-                          </span>
-                        )}
-                        {step > 2 && (
-                          <span className="mt-0.5 shrink-0 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-emerald-300">Done</span>
-                        )}
-                      </div>
-                    ) : (
-                      <>
-                        <p className={`text-[10px] font-black uppercase tracking-[0.08em] ${tagStyle(i)}`}>{b.label}</p>
-                        <p className={`mt-0.5 text-[13px] font-bold ${i <= step ? "text-white" : "text-white/50"}`}>{b.name}</p>
-                        {b.detail && <p className={`mt-0.5 text-[12px] leading-snug ${i === step ? "text-white/55" : "text-white/30"}`}>{b.detail}</p>}
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Credentials block */}
-              <div className={`rounded-[8px] border transition-all duration-300 overflow-hidden ${cur.showCred ? "border-[#f97316]/30 bg-[#f97316]/[0.03] shadow-[0_0_0_2px_rgba(249,115,22,0.08)]" : "border-white/8 bg-white/[0.02] opacity-40"} ${!cur.showCred ? "hidden sm:block" : ""}`}>
-                <div className="border-b border-white/8 px-4 py-2.5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.09em] text-white/40">POS Credentials</p>
-                </div>
-                {[
-                  { label: "Client ID", val: "client_id_001" },
-                  { label: "Client Secret", val: "••••••••••••••" },
-                  { label: "Location", val: "Location 01 / POS-0042" },
-                ].map((f) => (
-                  <div key={f.label} className="flex items-baseline justify-between gap-4 border-b border-white/[0.05] px-4 py-2.5 last:border-0">
-                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.07em] text-white/40">{f.label}</span>
-                    <span className="max-w-[170px] truncate text-[12px] font-semibold text-right text-white/80">{f.val}</span>
-                  </div>
-                ))}
-                <div className="flex gap-2 border-t border-white/8 px-4 py-3">
-                  <button type="button" className="ts-pill-btn ts-pill-btn-sm flex-1">Test Connection</button>
-                  <button type="button" className="ts-pill-btn ts-pill-btn-sm flex-1">Sync Menu</button>
-                </div>
-                {cur.showStatus && (
-                  <div className="border-t border-emerald-400/20 bg-emerald-400/[0.05] px-4 py-2.5">
-                    <p className="text-[10px] font-semibold text-emerald-300">● Connected: menu sync and order ingestion are active.</p>
-                  </div>
-                )}
-              </div>
-
-              {cur.showStripe && (
-                <div className="rounded-[6px] border border-[#8fb5ff]/25 bg-[#8fb5ff]/[0.06] overflow-hidden">
-                  <div className="border-b border-white/8 px-4 py-2.5">
-                    <p className="text-[10px] font-black uppercase tracking-[0.09em] text-white/40">Stripe Payout Setup</p>
-                  </div>
-                  <div className="px-4 py-3">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#8fb5ff]">Connect Stripe to receive payouts</p>
-                    <p className="mt-1 text-[12px] leading-relaxed text-white/60">
-                      Merchants create or link a Stripe account, verify business details, and connect their bank so payouts can be deposited automatically.
-                    </p>
-                    <div className="mt-3 space-y-2">
-                      <div className="flex items-center justify-between rounded-[10px] border border-white/8 bg-black/20 px-3 py-2">
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-white/45">Processing</span>
-                        <span className="text-[11px] font-bold text-[#8fb5ff]">2.9% + 30¢</span>
-                      </div>
-                      <div className="flex items-center justify-between rounded-[10px] border border-white/8 bg-black/20 px-3 py-2">
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-white/45">Payout</span>
-                        <span className="text-[11px] font-bold text-emerald-300">Rolling · every 2 days</span>
-                      </div>
-                    </div>
+                    <div className="mch-sequence-copy">{bullet}</div>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            {step === 2 && (
+              <div className="mt-4 rounded-[8px] border border-white/8 bg-black/20 px-4 py-3">
+                <div className="mb-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]" style={{ animation: "mtPulse 1.8s ease-in-out infinite" }}>
+                  Checking
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-[#f97316]/85" style={{ width: "72%", animation: "mtProgress 2.6s ease-out" }} />
+                </div>
+              </div>
+            )}
+
+            {step > 2 && (
+              <div className="mt-4 rounded-[8px] border border-[#3dd68c]/25 bg-[#3dd68c]/[0.06] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#3dd68c]">
+                Connection verified and ready for menu sync.
+              </div>
+            )}
+
+            <div className="mch-tutorial-actions">
+              <button
+                type="button"
+                className="mch-stripe-connect-btn mch-back-btn"
+                onClick={() => setStep((value) => Math.max(0, value - 1))}
+                disabled={step === 0}
+                style={{ opacity: step === 0 ? 0.35 : 1, pointerEvents: step === 0 ? "none" : "auto" }}
+              >
+                ← Back
+              </button>
+              {step < STEPS.length - 1 ? (
+                <button
+                  type="button"
+                  className="mch-stripe-connect-btn"
+                  onClick={() => setStep((value) => Math.min(STEPS.length - 1, value + 1))}
+                >
+                  Next →
+                </button>
+              ) : (
+                <Link href="/merchant/login" className="mch-stripe-connect-btn">
+                  Done ✓
+                </Link>
               )}
             </div>
-          </div>
+          </section>
 
-          {/* Sidebar */}
-          <div className="flex flex-col gap-4">
-
-            {/* Sections list */}
-            <div className="hidden sm:block food-panel !rounded-[12px] !p-5">
-              <p className="mb-5 text-[10px] font-black uppercase tracking-[0.1em] text-white/40">Sections</p>
-              <div className="space-y-4">
-                {SECTIONS.map((s, i) => (
-                  <button key={i} onClick={() => setStep(i)} className="flex w-full items-start gap-3 text-left">
-                    <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-black transition-all ${numStyle(i)}`}>
-                      {i < step ? "✓" : s.step}
-                    </div>
-                    <div className="min-w-0">
-                      <p className={`text-[12px] font-bold leading-tight transition-colors ${i===step ? "text-[#f97316]" : i<step ? "text-emerald-300" : "text-white/40"}`}>{s.title}</p>
-                      <p className="mt-0.5 text-[10px] leading-snug text-white/28">{s.badge.replace(/.*Section/, "Section")}</p>
-                    </div>
-                  </button>
-                ))}
+          <aside className="mch-side-stack">
+            <div className="mch-tutorial-panel">
+              <div className="mch-section-head" style={{ marginBottom: 8 }}>Preview Controls</div>
+              <div className="mch-mini-stack">
+                <div className="mch-mini-card">
+                  <div className="mch-mini-label">Current status</div>
+                  <div className="mch-mini-value">{current.preview.status}</div>
+                </div>
+                <div className="mch-mini-card">
+                  <div className="mch-mini-label">Focused area</div>
+                  <div className="mch-mini-value orange">{current.preview.focus}</div>
+                </div>
+                <div className="mch-mini-card">
+                  <div className="mch-mini-label">Live shell</div>
+                  <div className="mch-mini-value green">Match</div>
+                </div>
               </div>
             </div>
 
-            {/* Preview controls */}
-            <div className="hidden sm:block food-panel !rounded-[12px] !p-5">
-              <p className="mb-4 text-[10px] font-black uppercase tracking-[0.1em] text-white/40">Preview Controls</p>
+            <div className="mch-tutorial-panel">
+              <div className="mch-section-head" style={{ marginBottom: 8 }}>What merchants get</div>
               <div className="space-y-2">
                 {[
-                  { k: "POS", v: "Pilot POS", vc: "text-[#f97316]" },
-                  { k: "Status", v: step >= 3 ? "Connected" : "Pending", vc: step >= 3 ? "text-emerald-300" : "text-white/35" },
-                  { k: "Stripe", v: step >= 4 ? "Ready" : "Pending", vc: step >= 4 ? "text-[#8fb5ff]" : "text-white/25" },
-                ].map(row => (
-                  <div key={row.k} className={`flex items-center justify-between rounded-[10px] border px-4 py-2.5 transition-all ${row.k==="Status" && step>=3 ? "border-emerald-400/20 bg-emerald-400/[0.04]" : "border-white/8 bg-white/[0.03]"}`}>
-                    <span className="text-[10px] font-semibold text-white/45">{row.k}</span>
-                    <span className={`text-[11px] font-bold ${row.vc}`}>{row.v}</span>
+                  "Flat 8px cards that match the live dashboard.",
+                  "No crowded mockups — each step is separated cleanly.",
+                  "The same portal shell appears on mobile and desktop.",
+                ].map((text) => (
+                  <div key={text} className="flex items-start gap-2 rounded-[8px] border border-white/8 bg-black/20 px-3 py-2.5">
+                    <span className="mt-0.5 text-[#f97316]">•</span>
+                    <span className="text-[12px] leading-relaxed text-white/65">{text}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Section detail */}
-            <div className="food-panel hidden sm:flex flex-col gap-4 !rounded-[12px] !p-5">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/60">● {cur.badge}</p>
-                <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">{cur.title}</h3>
-                <p className="mt-3 text-[13px] leading-relaxed text-white/60">{cur.body}</p>
-                <div className="mt-3 rounded-[8px] border border-white/8 bg-black/20 px-4 py-3">
-                  <p className="mb-1 text-[10px] font-black uppercase tracking-[0.07em] text-white/35">Note</p>
-                  <p className="text-[12px] leading-relaxed text-white/50">{cur.note}</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => setStep(s => Math.max(0, s-1))} style={{ opacity: step===0 ? 0.3 : 1, pointerEvents: step===0 ? "none" : "auto" }}
-                  className="ts-pill-btn ts-pill-btn-sm flex-1">
-                  ← Back
-                </button>
-                {step < 4 ? (
-                  <button onClick={() => setStep(s => Math.min(4, s+1))}
-                    className="ts-pill-btn ts-pill-btn-sm flex-1">
-                    Next →
-                  </button>
-                ) : (
-                  <Link href="/merchant/login"
-                    className="ts-pill-btn ts-pill-btn-sm flex-1">
-                    Done ✓
-                  </Link>
-                )}
-              </div>
-            </div>
-
-            <div className="food-panel !rounded-[12px] !p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">Tutorial Feedback</p>
-              <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">Was this tutorial helpful?</h3>
+            <div className="mch-tutorial-panel">
+              <div className="mch-section-head" style={{ marginBottom: 8 }}>Tutorial feedback</div>
+              <div className="text-[13px] font-semibold text-white">Was this walkthrough helpful?</div>
               <p className="mt-2 text-[12px] leading-relaxed text-white/55">
-                Rate the walkthrough so we can keep improving the merchant onboarding flow.
+                Rate the preview so we can keep the merchant onboarding flow clean and production-ready.
               </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {[1, 2, 3, 4, 5].map(n => (
+              <div className="mch-rating-row">
+                {[1, 2, 3, 4, 5].map((value) => (
                   <button
-                    key={n}
+                    key={value}
                     type="button"
-                    onClick={() => setRating(n)}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border text-[12px] font-black transition-all ${
-                      rating === n
-                        ? "border-[#f97316]/70 bg-[#f97316] text-black"
-                        : "border-white/10 bg-white/[0.03] text-white/45 hover:border-[#f97316]/35 hover:text-[#f97316]"
-                    }`}
-                    aria-label={`Rate tutorial ${n} out of 5`}
+                    className={`mch-rating-btn ${rating === value ? "active" : ""}`}
+                    onClick={() => setRating(value)}
+                    aria-label={`Rate tutorial ${value} out of 5`}
                   >
-                    {n}
+                    {value}
                   </button>
                 ))}
               </div>
-              <button type="button" className="ts-pill-btn ts-pill-btn-sm mt-4">
+              <button type="button" className="mch-stripe-connect-btn" style={{ marginTop: 14 }}>
                 Send Feedback
               </button>
             </div>
-
-          </div>
+          </aside>
         </div>
-      </main>
-    </div>
+      </div>
+    </MerchantDashboardWrapper>
   );
 }

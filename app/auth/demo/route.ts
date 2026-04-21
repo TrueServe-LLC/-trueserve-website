@@ -42,5 +42,12 @@ export async function GET() {
         maxAge: 60 * 60 * 24
     });
 
+    cookieStore.set("preview_mode", "true", {
+        path: "/",
+        httpOnly: false,
+        secure: false,
+        maxAge: 60 * 60 * 12
+    });
+
     return redirect("/driver/dashboard");
 }

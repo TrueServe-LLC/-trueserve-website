@@ -29,6 +29,10 @@ export async function middleware(request: NextRequest) {
   if (nonCanonicalAdminHosts.includes(cleanHostCheck)) {
     return NextResponse.redirect(`https://www.admin.trueserve.delivery${path}${url.search}`)
   }
+  const isRootProdHost = cleanHostCheck === 'trueserve.delivery' || cleanHostCheck === 'www.trueserve.delivery'
+  if (isRootProdHost && path.startsWith('/admin')) {
+    return NextResponse.redirect(`https://www.admin.trueserve.delivery${path}${url.search}`)
+  }
 
   const response = NextResponse.next({
     request: {
@@ -53,6 +57,7 @@ export async function middleware(request: NextRequest) {
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com https://api.launchdarkly.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
+      "worker-src 'self' blob:",
       "img-src 'self' data: blob: https: http:",
       "connect-src 'self' https://*.supabase.co https://api.stripe.com https://app.launchdarkly.com https://api.launchdarkly.com wss://*.supabase.co https://sentry.io",
       "frame-src https://js.stripe.com https://hooks.stripe.com",

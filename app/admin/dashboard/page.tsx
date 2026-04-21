@@ -1,16 +1,24 @@
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
-import { isInternalStaff } from "@/lib/rbac";
+import { canAccessAdminSection } from "@/lib/rbac";
 import AdminDashboard from "./admin-dashboard";
+import { isMockAdminRecord } from "@/lib/admin-data";
 
 async function getRestaurantCount() {
     try {
-        const { count } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('Restaurant')
-            .select('*', { count: 'exact', head: true });
-        return count || 0;
+            .select('visibility, isMock, owner:User(email, name, isMock)');
+
+        if (error || !data) return 0;
+
+        return data.filter((restaurant: any) =>
+            restaurant.visibility === 'VISIBLE' &&
+            !restaurant.isMock &&
+            !isMockAdminRecord(restaurant.owner)
+        ).length;
     } catch (e) {
         console.log("Error fetching restaurant count:", e);
         return 0;
@@ -19,12 +27,17 @@ async function getRestaurantCount() {
 
 async function getDriverCount() {
     try {
-        const showMockData = process.env.SHOW_MOCK_DATA === 'true';
-        const { count } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('Driver')
-            .select('*', { count: 'exact', head: true })
-            .eq('isMock', showMockData);
-        return count || 0;
+            .select('status, vehicleVerified, backgroundCheckStatus, user:User(email, name, isMock)');
+
+        if (error || !data) return 0;
+
+        return data.filter((driver: any) =>
+            driver.vehicleVerified === true &&
+            driver.status !== 'REJECTED' &&
+            !isMockAdminRecord(driver.user)
+        ).length;
     } catch (e) {
         console.log("Error fetching driver count:", e);
         return 0;
@@ -101,7 +114,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
 
-    let isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
+    let isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'dashboard'));
 
     if (!isAuthorized) {
         redirect("/admin/login");
@@ -123,5 +136,5 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
         revenueToday
     };
 
-    return <AdminDashboard stats={stats} recentActivity={recentActivity} />;
+    return <AdminDashboard role={role} stats={stats} recentActivity={recentActivity} />;
 }

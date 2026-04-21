@@ -3,33 +3,82 @@
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getAuthSession } from "@/app/auth/actions";
-import { isInternalStaff } from "@/lib/rbac";
+import { ADMIN_ROLES, canAccessAdminSection } from "@/lib/rbac";
 import { v4 as uuidv4 } from "uuid";
+import { ADMIN_EMAILS, getStaffDisplayName, resolveStaffRole } from "@/lib/admin-config";
 
 // 1. Fetch Team Members
 export async function getTeamMembers() {
     const { isAuth, role } = await getAuthSession();
-    if (!isAuth || !isInternalStaff(role)) return [];
+    if (!isAuth || !canAccessAdminSection(role, 'team')) return [];
 
-    const { data: teamMembers, error } = await supabaseAdmin
-        .from('User')
-        .select('id, name, email, role')
-        .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE']);
+    const [roleResponse, staffResponse] = await Promise.all([
+        supabaseAdmin
+            .from('User')
+            .select('id, name, email, role')
+            .in('role', ADMIN_ROLES),
+        supabaseAdmin
+            .from('User')
+            .select('id, name, email, role')
+            .in('email', ADMIN_EMAILS),
+    ]);
 
-    if (error) {
-        console.error("Error fetching team members:", error);
+    if (roleResponse.error) {
+        console.error("Error fetching team members:", roleResponse.error);
         return [];
     }
 
-    return teamMembers || [];
+    if (staffResponse.error) {
+        console.error("Error fetching staff members:", staffResponse.error);
+    }
+
+    const combinedMembers = new Map<string, any>();
+
+    [...(roleResponse.data || []), ...(staffResponse.data || [])].forEach((member: any) => {
+        if (!member?.email) return;
+        const email = member.email.trim().toLowerCase();
+        const resolvedRole = resolveStaffRole(email) || member.role || 'READONLY';
+        combinedMembers.set(email, {
+            ...member,
+            email,
+            role: resolvedRole,
+            name: member.name || getStaffDisplayName(email),
+            isDirectoryEntry: false,
+        });
+    });
+
+    ADMIN_EMAILS.forEach((email) => {
+        const normalizedEmail = email.trim().toLowerCase();
+        if (combinedMembers.has(normalizedEmail)) return;
+
+        combinedMembers.set(normalizedEmail, {
+            id: `directory:${normalizedEmail}`,
+            name: getStaffDisplayName(normalizedEmail),
+            email: normalizedEmail,
+            role: resolveStaffRole(normalizedEmail) || 'READONLY',
+            isDirectoryEntry: true,
+        });
+    });
+
+    return Array.from(combinedMembers.values()).sort((left: any, right: any) => {
+        const roleOrder = (value: string) => {
+            const index = ADMIN_ROLES.indexOf(value as any);
+            return index === -1 ? 99 : index;
+        };
+
+        const roleDiff = roleOrder(left.role) - roleOrder(right.role);
+        if (roleDiff !== 0) return roleDiff;
+
+        return String(left.name || left.email).localeCompare(String(right.name || right.email));
+    });
 }
 
 // 2. Invite a missing Admin user that has an Auth account but no Public User account,
 // or just create a stub.
 export async function inviteTeamMember(formData: FormData) {
     const { isAuth, role: currentRole, userId } = await getAuthSession();
-    if (!isAuth || currentRole !== 'ADMIN') {
-        return { error: 'Only ADMIN users can invite team members.' };
+    if (!isAuth || !['ADMIN', 'PM'].includes(currentRole || '')) {
+        return { error: 'Only ADMIN or PM users can invite team members.' };
     }
 
     const email = formData.get("email") as string;
@@ -90,8 +139,8 @@ export async function inviteTeamMember(formData: FormData) {
 // 3. Reset Password Link
 export async function sendPasswordReset(userIdToReset: string, email: string) {
     const { isAuth, role: currentRole, userId } = await getAuthSession();
-    if (!isAuth || currentRole !== 'ADMIN') {
-        return { error: 'Only ADMIN users can reset passwords.' };
+    if (!isAuth || !['ADMIN', 'PM'].includes(currentRole || '')) {
+        return { error: 'Only ADMIN or PM users can reset passwords.' };
     }
 
     try {

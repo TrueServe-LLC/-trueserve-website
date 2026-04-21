@@ -1,6 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getAuthSession } from "@/app/auth/actions";
-import { isInternalStaff } from "@/lib/rbac";
+import { canAccessAdminSection } from "@/lib/rbac";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import CostDashboard from "@/components/admin/CostDashboard";
@@ -41,7 +41,7 @@ export default async function CostManagementPage() {
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
+    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'cost-management'));
     if (!isAuthorized) redirect("/admin/login");
 
     const realCosts = await getServiceCosts();
@@ -83,46 +83,72 @@ export default async function CostManagementPage() {
         : [];
 
     return (
-        <AdminPortalWrapper>
+        <AdminPortalWrapper role={role}>
             <div className="adm-page-header">
                 <h1>Cost Management</h1>
-                <p>Track real spending across all services — Stripe, Supabase, Google Cloud, Resend, Vonage</p>
+                <p>Track real spending across service APIs and surface budget alerts when costs move outside the expected range.</p>
             </div>
             <div className="adm-page-body">
-                {/* Sync Manager */}
-                <div style={{ marginBottom: 20 }}>
-                    <CostSyncManager />
-                </div>
-
-                {monthlyCosts.length === 0 ? (
-                    <div className="adm-card" style={{ textAlign: 'center', padding: '40px 24px' }}>
-                        <div style={{ fontSize: 32, marginBottom: 12 }}>📊</div>
-                        <div style={{ color: '#fff', fontWeight: 600, marginBottom: 8 }}>No cost data yet</div>
-                        <div style={{ color: '#555', fontSize: 13, marginBottom: 20 }}>
-                            Use the sync manager above to import spending data from your service providers.
-                        </div>
-                        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                            {[
-                                { name: "Stripe", link: "https://dashboard.stripe.com" },
-                                { name: "Supabase", link: "https://supabase.com/dashboard" },
-                                { name: "Google Cloud", link: "https://console.cloud.google.com" },
-                                { name: "Resend", link: "https://resend.com/dashboard" },
-                                { name: "Vonage", link: "https://dashboard.nexmo.com" },
-                            ].map((s) => (
-                                <a key={s.name} href={s.link} target="_blank" rel="noopener noreferrer"
-                                   style={{ color: '#f97316', fontSize: 13, textDecoration: 'none', background: 'rgba(249,115,22,0.08)', padding: '6px 14px', borderRadius: 4, border: '1px solid rgba(249,115,22,0.2)' }}>
-                                    {s.name} →
-                                </a>
-                            ))}
+                <div className="space-y-4">
+                    <div className="adm-card">
+                        <div className="adm-card-title">What this page does</div>
+                        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+                            <div className="space-y-3 text-sm leading-6 text-white/60">
+                                <p>
+                                    This page pulls live service spend into Supabase, compares it against budget thresholds, and
+                                    lets the admin team run anomaly checks.
+                                </p>
+                                <p>
+                                    Right now Stripe is the active source. The other providers stay ready in the UI until their
+                                    credentials are configured in Vercel.
+                                </p>
+                            </div>
+                            <div className="grid gap-2 sm:grid-cols-2">
+                                {[
+                                    { name: "Stripe", link: "https://dashboard.stripe.com", active: true },
+                                    { name: "Supabase", link: "https://supabase.com/dashboard", active: false },
+                                    { name: "Google Cloud", link: "https://console.cloud.google.com", active: false },
+                                    { name: "Resend", link: "https://resend.com/dashboard", active: false },
+                                    { name: "Vonage", link: "https://dashboard.nexmo.com", active: false },
+                                ].map((s) => (
+                                    <a
+                                        key={s.name}
+                                        href={s.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={`rounded-md border px-3 py-2 text-sm font-medium transition ${
+                                            s.active
+                                                ? "border-[#f97316]/30 bg-[#f97316] text-black hover:bg-[#ff8a2a]"
+                                                : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
+                                        }`}
+                                    >
+                                        {s.name}
+                                        <span className="ml-1">↗</span>
+                                    </a>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                ) : (
-                    <CostDashboard
-                        analysis={analysis}
-                        currentMonth={currentMonth}
-                        budgetWarnings={budgetWarnings}
-                    />
-                )}
+
+                    <CostSyncManager />
+
+                    {monthlyCosts.length === 0 ? (
+                        <div className="adm-card text-center">
+                            <div className="mb-3 text-3xl">📊</div>
+                            <div className="mb-2 text-sm font-semibold text-white">No cost data yet</div>
+                            <div className="mx-auto mb-5 max-w-xl text-sm leading-6 text-white/55">
+                                Use the sync manager above to import spending data from your service providers. Once Stripe data
+                                exists, the dashboard below will render cost trends, forecasts, and budget warnings.
+                            </div>
+                        </div>
+                    ) : (
+                        <CostDashboard
+                            analysis={analysis}
+                            currentMonth={currentMonth}
+                            budgetWarnings={budgetWarnings}
+                        />
+                    )}
+                </div>
             </div>
         </AdminPortalWrapper>
     );

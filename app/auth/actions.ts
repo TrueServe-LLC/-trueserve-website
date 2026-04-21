@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
+import { normalizePhoneNumber } from "@/lib/phoneUtils";
+import { syncSignupLeadToGHL } from "@/lib/ghl-sync";
 
 export type AuthState = {
     message: string;
@@ -103,6 +105,7 @@ export async function signupWithPassword(prevStateOrFormData: AuthState | FormDa
     const plan = formData.get("plan") as string || 'Basic'; // Capture requested plan
     const name = (formData.get("name") as string) || email.split('@')[0];
     const address = formData.get("address") as string;
+    const phone = normalizePhoneNumber((formData.get("phone") as string) || "");
     const cookieStore = await cookies();
     const supabase = await createClient();
 
@@ -146,11 +149,26 @@ export async function signupWithPassword(prevStateOrFormData: AuthState | FormDa
                 role: role,
                 plan: plan, // Store the plan
                 address: address || null,
+                phone: phone || null,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });
 
             if (dbError) console.error("Public User Insert Error:", dbError);
+
+            const ghlLeadResult = await syncSignupLeadToGHL({
+                type: "CUSTOMER",
+                name,
+                email,
+                phone,
+                address,
+                source: "TrueServe Customer Signup",
+                tags: [`Customer Plan ${plan || "Basic"}`],
+            });
+
+            if (!ghlLeadResult.success) {
+                console.error("[GHL Customer Lead Sync Error]:", ghlLeadResult.error);
+            }
 
             cookieStore.set("userId", data.user.id, { 
                 secure: process.env.NODE_ENV === "production", 
@@ -285,7 +303,7 @@ export async function logout() {
 
     // 3. Define all possible auth cookies to clear
     const allCookies = cookieStore.getAll();
-    const authCookiesToClear = ["userId", "admin_session"];
+    const authCookiesToClear = ["userId", "admin_session", "admin_role"];
     
     // Add any and all supabase tokens (they start with sb-)
     allCookies.forEach(c => {
@@ -320,9 +338,11 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
         const cookieStore = await cookies();
 
         const userId = cookieStore.get("userId")?.value;
+        const adminSession = cookieStore.get("admin_session")?.value === "true";
+        const adminRole = cookieStore.get("admin_role")?.value;
         console.log("[AuthSession] userId from cookie:", userId);
 
-        let role = 'CUSTOMER';
+        let role = adminSession && adminRole ? adminRole : 'CUSTOMER';
 
         if (!userId) {
             // Fallback: Check Supabase session directly
@@ -336,7 +356,7 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
                     .eq('email', user.email)
                     .maybeSingle();
 
-                return { isAuth: true, userId: user.id, role: publicUser?.role || 'CUSTOMER', name: publicUser?.name || user.email, stripeAccountId: publicUser?.stripeAccountId };
+                return { isAuth: true, userId: user.id, role: adminSession && adminRole ? adminRole : (publicUser?.role || 'CUSTOMER'), name: publicUser?.name || user.email, stripeAccountId: publicUser?.stripeAccountId };
             }
             return { isAuth: false };
         }
@@ -348,9 +368,9 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             .eq('id', userId)
             .maybeSingle();
 
-        if (publicUser?.role) {
+        if (!role && publicUser?.role) {
             role = publicUser.role;
-        } else {
+        } else if (!role) {
             // ID Mismatch fallback: Try by email
             const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
             if (authUser?.user?.email) {
@@ -454,6 +474,13 @@ export async function loginAsDemoDriver() {
         sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 * 24 // 24 hours
+    });
+
+    cookieStore.set("preview_mode", "true", {
+        path: "/",
+        httpOnly: false,
+        secure: false,
+        maxAge: 60 * 60 * 12
     });
     
     return { success: true };

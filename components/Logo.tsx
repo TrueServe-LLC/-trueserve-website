@@ -4,11 +4,13 @@ import Link from 'next/link';
 interface LogoProps {
     className?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
+    href?: string;
 }
 
 const Logo: React.FC<LogoProps> = ({ 
     className = "", 
-    size = 'md'
+    size = 'md',
+    href = "/"
 }) => {
     const sizes = {
         sm: { text: 'text-[18px]', icon: 32 },
@@ -19,7 +21,7 @@ const Logo: React.FC<LogoProps> = ({
 
     return (
         <Link 
-            href="/" 
+            href={href} 
             className={`logo ${sizes[size].text} ${className}`}
             style={{ 
                 cursor: 'pointer',

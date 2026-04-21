@@ -12,8 +12,9 @@ import { sendSMS } from "@/lib/sms";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createNotification } from "@/lib/notifications";
 import { logAuditAction } from "@/lib/audit";
-import { pushMenuItemToGHL } from "@/lib/ghl-sync";
+import { pushMenuItemToGHL, syncSignupLeadToGHL } from "@/lib/ghl-sync";
 import { getAppBaseUrl } from "@/lib/app-url";
+import { normalizePhoneNumber } from "@/lib/phoneUtils";
 
 export type MerchantActionState = {
     message: string;
@@ -495,6 +496,28 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
 
         if (restError) throw restError;
 
+        const ghlLeadResult = await syncSignupLeadToGHL({
+            type: "MERCHANT",
+            name: contactName,
+            email,
+            phone,
+            address,
+            city,
+            state,
+            postalCode: zip,
+            companyName: restaurantName,
+            source: "TrueServe Merchant Signup",
+            tags: [
+                "Merchant Pending Review",
+                `Plan ${plan || "Flex Options"}`,
+                `POS ${posSystem || "None"}`,
+            ],
+        });
+
+        if (!ghlLeadResult.success) {
+            console.error("[GHL Merchant Lead Sync Error]:", ghlLeadResult.error);
+        }
+
         // Set Cookie manually for the current request context if needed, 
         // but Next.js Action will handle redirect & session normally if we use Auth correctly.
         const cookieStore = await cookies();
@@ -503,10 +526,20 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
         // Notify Team of NEW MERCHANT
         const { data: staffMembers } = await supabaseAdmin
             .from('User')
-            .select('email')
+            .select('id, email, phone')
             .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'PM']);
-        
-        const staffEmails = staffMembers?.map(s => s.email).filter(Boolean) as string[] || ["admin@trueservedelivery.com"];
+
+        const staffRecords = (staffMembers || []).filter((member: any) => member?.email);
+        const staffEmails = Array.from(new Set(
+            staffRecords
+                .map((member: any) => member.email.trim().toLowerCase())
+                .filter(Boolean)
+        )) as string[];
+        const staffPhones = Array.from(new Set(
+            staffRecords
+                .map((member: any) => normalizePhoneNumber(member.phone || ""))
+                .filter(Boolean)
+        )) as string[];
 
         const notificationPromises: Promise<any>[] = [];
 
@@ -552,7 +585,24 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             );
         }
 
+        const staffSmsMessage = `TrueServe: New merchant signup from ${contactName} (${restaurantName}). Open admin portal to review and approve the application.`;
+        for (const staffPhone of staffPhones) {
+            notificationPromises.push(sendSMS(staffPhone, staffSmsMessage));
+        }
+
+        for (const staffMember of staffRecords as Array<{ id?: string }>) {
+            if (!staffMember.id) continue;
+            notificationPromises.push(createNotification({
+                userId: staffMember.id,
+                title: "New Merchant Signup",
+                message: `${restaurantName} (${contactName}) submitted a merchant application and should appear in Admin → Users for review.`,
+                type: "MERCHANT_APPLICATION",
+            }));
+        }
+
         await Promise.allSettled(notificationPromises);
+        revalidatePath("/admin/users");
+        revalidatePath("/admin/dashboard");
         
         return { success: true, message: "Application submitted. We’ll notify you once approved." };
 

@@ -6,18 +6,20 @@ import { logout } from '@/app/auth/actions';
 
 interface DriverPortalWrapperProps {
   children: React.ReactNode;
+  pageTitle?: string;
+  pageSubtitle?: string;
 }
 
-export default function DriverPortalWrapper({ children }: DriverPortalWrapperProps) {
+export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle }: DriverPortalWrapperProps) {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/driver/dashboard',            label: 'Dashboard',   icon: '📊', iconBg: '#2a1508', iconColor: '#f97316' },
-    { href: '/driver/dashboard/earnings',   label: 'Settlements', icon: '💰', iconBg: '#1a2a1a', iconColor: '#4dca80' },
-    { href: '/driver/dashboard/ratings',    label: 'Reputation',  icon: '⭐', iconBg: '#2a1a08', iconColor: '#f97316' },
-    { href: '/driver/dashboard/compliance', label: 'Compliance',  icon: '✅', iconBg: '#0f2a1a', iconColor: '#4dca80' },
-    { href: '/driver/dashboard/account',    label: 'Profile',     icon: '👤', iconBg: '#1a1a2a', iconColor: '#6b8ee8' },
-    { href: '/driver/dashboard/help',       label: 'Help',        icon: '🆘', iconBg: '#2a1010', iconColor: '#e84040' },
+    { href: '/driver/dashboard', label: 'Dashboard', icon: '📊', tour: 'driver-nav-dashboard' },
+    { href: '/driver/dashboard/earnings', label: 'Settlements', icon: '💰', tour: 'driver-nav-earnings' },
+    { href: '/driver/dashboard/ratings', label: 'Reputation', icon: '⭐', tour: 'driver-nav-ratings' },
+    { href: '/driver/dashboard/compliance', label: 'Compliance', icon: '✅', tour: 'driver-nav-compliance' },
+    { href: '/driver/dashboard/account', label: 'Profile', icon: '👤', tour: 'driver-nav-account' },
+    { href: '/driver/dashboard/help', label: 'Help', icon: '🆘', tour: 'driver-nav-help' },
   ];
 
   return (
@@ -26,22 +28,23 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
         .drv-layout {
           display: flex !important;
           min-height: 100vh !important;
-          background: #0d0d0d !important;
-          font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
-          color: #ddd !important;
+          background: #0a0c09 !important;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+          color: #e0e0e0 !important;
           font-size: 13px !important;
         }
         .drv-sidebar {
-          width: 168px !important;
-          min-width: 168px !important;
-          max-width: 168px !important;
-          background: #0f0f0f !important;
-          border-right: 0.5px solid #242424 !important;
+          width: 200px !important;
+          min-width: 200px !important;
+          max-width: 200px !important;
+          background: #0f1210 !important;
+          border-right: 1px solid #1e2420 !important;
           display: flex !important;
           flex-direction: column !important;
           padding: 16px 0 !important;
           position: fixed !important;
-          top: 0 !important; left: 0 !important;
+          top: 0 !important;
+          left: 0 !important;
           height: 100vh !important;
           overflow-y: auto !important;
           z-index: 100 !important;
@@ -50,104 +53,133 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
           display: flex !important;
           align-items: center !important;
           gap: 8px !important;
-          padding: 0 16px 20px !important;
+          padding: 0 16px 16px !important;
           font-weight: 700 !important;
           font-size: 13px !important;
           color: #fff !important;
-          letter-spacing: -0.2px !important;
+          border-bottom: 1px solid #1e2420 !important;
+          margin-bottom: 8px !important;
         }
         .drv-nav-item {
           display: flex !important;
           align-items: center !important;
           gap: 10px !important;
           padding: 9px 16px !important;
-          font-size: 12px !important;
-          color: #888 !important;
+          font-size: 13px !important;
+          color: #999 !important;
           text-decoration: none !important;
           border-left: 2px solid transparent !important;
           transition: background 0.15s, color 0.15s !important;
+          white-space: nowrap !important;
+          background: transparent !important;
+          width: 100% !important;
         }
         .drv-nav-item:hover {
-          background: #141414 !important;
-          color: #ccc !important;
+          background: rgba(249,115,22,0.06) !important;
+          color: #f97316 !important;
         }
         .drv-nav-item.drv-active {
-          color: #fff !important;
-          background: #1a1a1a !important;
+          color: #f97316 !important;
+          background: rgba(249,115,22,0.08) !important;
           border-left-color: #f97316 !important;
         }
-        .drv-nav-icon {
-          width: 18px !important;
-          height: 18px !important;
-          border-radius: 5px !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 11px !important;
+        .drv-nav-emoji {
+          font-size: 13px !important;
           flex-shrink: 0 !important;
         }
         .drv-sidebar-footer {
           margin-top: auto !important;
-          padding: 12px 16px !important;
-          border-top: 0.5px solid #242424 !important;
+          padding: 12px 16px 0 !important;
+          border-top: 1px solid #1e2420 !important;
           display: flex !important;
           flex-direction: column !important;
-          gap: 4px !important;
+          gap: 8px !important;
         }
         .drv-tutorial-btn {
           display: flex !important;
           align-items: center !important;
           gap: 8px !important;
-          background: #1a1a1a !important;
-          border: 0.5px solid #2e2e2e !important;
+          background: #141a18 !important;
+          border: 1px solid #1e2420 !important;
           border-radius: 8px !important;
-          padding: 9px 12px !important;
-          color: #666 !important;
+          padding: 8px 12px !important;
+          color: #bbb !important;
           font-size: 11px !important;
-          font-weight: 500 !important;
+          font-weight: 700 !important;
           cursor: pointer !important;
           width: 100% !important;
+          transition: background 0.15s, color 0.15s, border-color 0.15s !important;
           font-family: inherit !important;
-          transition: all 0.15s !important;
         }
         .drv-tutorial-btn:hover {
-          background: #1f1f1f !important;
+          background: rgba(249,115,22,0.06) !important;
           color: #f97316 !important;
-          border-color: #f97316 !important;
+          border-color: rgba(249,115,22,0.35) !important;
         }
         .drv-tutorial-icon {
-          width: 16px !important; height: 16px !important;
-          border-radius: 50% !important;
+          width: 16px !important;
+          height: 16px !important;
+          border-radius: 4px !important;
           border: 1.5px solid currentColor !important;
-          display: flex !important; align-items: center !important; justify-content: center !important;
-          font-size: 10px !important; font-weight: 700 !important; flex-shrink: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 10px !important;
+          font-weight: 700 !important;
+          flex-shrink: 0 !important;
         }
         .drv-logout-btn {
           display: flex !important;
           align-items: center !important;
-          gap: 8px !important;
-          padding: 9px 4px !important;
-          font-size: 12px !important;
-          color: #444 !important;
-          cursor: pointer !important;
+          gap: 7px !important;
           background: transparent !important;
           border: none !important;
+          padding: 7px 0 9px !important;
+          color: #666 !important;
+          font-size: 11px !important;
+          cursor: pointer !important;
           width: 100% !important;
           font-family: inherit !important;
+          font-weight: 700 !important;
           transition: color 0.15s !important;
         }
-        .drv-logout-btn:hover { color: #888 !important; }
+        .drv-logout-btn:hover { color: #f97316 !important; }
         .drv-main {
           flex: 1 !important;
-          margin-left: 168px !important;
-          padding: 26px 28px !important;
+          margin-left: 200px !important;
+          padding: 20px 24px 40px !important;
           min-height: 100vh !important;
           overflow: auto !important;
-          background: #0d0d0d !important;
+          background: #0a0c09 !important;
+        }
+        .drv-main [class*="rounded-2xl"],
+        .drv-main [class*="rounded-3xl"],
+        .drv-main [class*="rounded-[18px]"],
+        .drv-main [class*="rounded-[20px]"],
+        .drv-main [class*="rounded-[22px]"],
+        .drv-main [class*="rounded-[24px]"],
+        .drv-main [class*="rounded-[28px]"],
+        .drv-main [class*="rounded-[32px]"] {
+          border-radius: 8px !important;
+        }
+        .drv-page-title {
+          font-size: 20px !important;
+          font-weight: 600 !important;
+          color: #fff !important;
+          margin-bottom: 4px !important;
+          letter-spacing: -0.01em !important;
+        }
+        .drv-page-sub {
+          font-size: 13px !important;
+          color: #666 !important;
+          margin-bottom: 18px !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.08em !important;
+          font-weight: 600 !important;
         }
         @media (max-width: 768px) {
-          .drv-sidebar { width: 140px !important; min-width: 140px !important; }
-          .drv-main { margin-left: 140px !important; padding: 16px !important; }
+          .drv-sidebar { width: 160px !important; min-width: 160px !important; }
+          .drv-main { margin-left: 160px !important; padding: 16px !important; }
         }
       `}</style>
 
@@ -157,11 +189,13 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
             <img
               src="/logo.png"
               alt="TrueServe"
-              width={28}
-              height={28}
-              style={{ borderRadius: '50%', boxShadow: '0 0 10px rgba(232,124,43,0.4)', flexShrink: 0 }}
+              width={26}
+              height={26}
+              style={{ borderRadius: '50%', boxShadow: '0 0 8px rgba(232,124,43,0.4)', flexShrink: 0 }}
             />
-            <span>True<span style={{ color: '#f97316' }}>Serve</span></span>
+            <span style={{ color: '#fff', fontWeight: 700 }}>
+              True<span style={{ color: '#f97316' }}>Serve</span>
+            </span>
           </div>
 
           <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
@@ -170,15 +204,11 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
               return (
                 <Link
                   key={item.href}
+                  data-tour={item.tour}
                   href={item.href}
                   className={`drv-nav-item${isActive ? ' drv-active' : ''}`}
                 >
-                  <span
-                    className="drv-nav-icon"
-                    style={{ background: item.iconBg }}
-                  >
-                    {item.icon}
-                  </span>
+                  <span className="drv-nav-emoji">{item.icon}</span>
                   {item.label}
                 </Link>
               );
@@ -186,7 +216,10 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
           </nav>
 
           <div className="drv-sidebar-footer">
-            <button className="drv-tutorial-btn" onClick={() => window.dispatchEvent(new CustomEvent('ts:portal-tour:open', { detail: { portal: 'DRIVER' } }))}>
+            <button
+              className="drv-tutorial-btn"
+              onClick={() => window.dispatchEvent(new CustomEvent('ts:portal-tour:open', { detail: { portal: 'DRIVER' } }))}
+            >
               <span className="drv-tutorial-icon">?</span>
               Start tutorial
             </button>
@@ -199,6 +232,12 @@ export default function DriverPortalWrapper({ children }: DriverPortalWrapperPro
         </aside>
 
         <main className="drv-main">
+          {pageTitle || pageSubtitle ? (
+            <>
+              {pageTitle ? <div className="drv-page-title">{pageTitle}</div> : null}
+              {pageSubtitle ? <div className="drv-page-sub">{pageSubtitle}</div> : null}
+            </>
+          ) : null}
           {children}
         </main>
       </div>

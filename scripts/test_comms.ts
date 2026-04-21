@@ -1,11 +1,12 @@
 
 import dotenv from 'dotenv';
-import { sendEmail } from '../lib/email';
-import { sendSMS } from '../lib/sms';
 
 dotenv.config({ path: '.env.local' });
 
 async function runTest() {
+    const { sendEmail } = await import('../lib/email');
+    const { sendSMS } = await import('../lib/sms');
+
     const testEmail = process.argv[2] || "lcking992@gmail.com"; // Default to your email found in environment
     const testPhone = process.argv[3] || process.env.TWILIO_PHONE_NUMBER; // Use environment phone if none provided
 
