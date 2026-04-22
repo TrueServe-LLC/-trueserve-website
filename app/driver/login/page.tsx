@@ -78,26 +78,12 @@ export default function DriverLoginPage() {
               </button>
             </div>
 
-            <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-              <div className="text-[11px] font-black uppercase tracking-[0.1em] text-white/60">Portal preview tools</div>
-              <p className="mt-1.5 text-[12px] font-semibold leading-relaxed text-white/70">
-                Preview the driver portal and walkthrough before signing in.
-              </p>
-              <div className="mt-3 grid gap-2">
-                <Link
-                  href="/driver/portal-preview"
-                  className="ts-pill-btn ts-pill-btn-block"
-                >
-                  Preview Driver Portal Mock
-                </Link>
-                <Link
-                  href="/driver/tutorial-preview"
-                  className="ts-pill-btn ts-pill-btn-block"
-                >
-                  View Animated Tutorial
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/driver/tutorial-preview"
+              className="ts-pill-btn ts-pill-btn-block mt-3"
+            >
+              View Animated Tutorial
+            </Link>
           </section>
         </div>
       </main>

@@ -4,6 +4,7 @@ import Logo from "@/components/Logo";
 import { getAuthSession } from "@/app/auth/actions";
 import WalletUI from "@/components/WalletUI";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import ReferralCard from "@/components/ReferralCard";
 
 export const dynamic = "force-dynamic";
 
@@ -76,6 +77,8 @@ export default async function UserSettings() {
                         </p>
                         <Link href="/rewards" className="btn btn-gold">Open Rewards</Link>
                     </article>
+
+                    <ReferralCard userId={userId} />
                 </section>
 
                 <section id="wallet" className="mt-8">

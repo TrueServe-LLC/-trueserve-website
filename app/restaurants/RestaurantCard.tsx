@@ -131,14 +131,51 @@ export default function RestaurantCard({
           </div>
         </div>
 
-        {/* Compliance Status Indicator */}
-        {r.complianceStatus && r.complianceStatus !== "—" && (
-          <div style={{ marginTop: "8px", fontSize: "12px", color: "#999" }}>
-            {r.complianceStatus === "PASS" && "✅ Compliant"}
-            {r.complianceStatus === "IN_REVIEW" && "⚠️ In Review"}
-            {r.complianceStatus === "FLAGGED" && "🚨 Flagged"}
-          </div>
-        )}
+        {/* Compliance / trust badges */}
+        {(() => {
+          const grade = (r.healthGrade || "").toUpperCase();
+          const status = (r.complianceStatus || "").toUpperCase();
+          const isVerified =
+            (status === "PASS" || status === "APPROVED" || status === "COMPLIANT") &&
+            (grade === "A" || grade === "B");
+          const isFlagged = status === "FLAGGED";
+
+          if (!isVerified && !isFlagged) return null;
+
+          return (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+              {isVerified && (
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 4,
+                  background: "rgba(77,202,128,0.1)",
+                  border: "1px solid rgba(77,202,128,0.25)",
+                  color: "#4dca80",
+                  borderRadius: 20, padding: "3px 9px",
+                  fontSize: 10, fontWeight: 800,
+                  letterSpacing: "0.08em", textTransform: "uppercase",
+                }}>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                    <path d="M1.5 4L3.2 5.7L6.5 2.3" stroke="#4dca80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Verified Kitchen
+                </span>
+              )}
+              {isFlagged && (
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 4,
+                  background: "rgba(248,113,113,0.1)",
+                  border: "1px solid rgba(248,113,113,0.25)",
+                  color: "#f87171",
+                  borderRadius: 20, padding: "3px 9px",
+                  fontSize: 10, fontWeight: 800,
+                  letterSpacing: "0.08em", textTransform: "uppercase",
+                }}>
+                  ⚠ Health Review
+                </span>
+              )}
+            </div>
+          );
+        })()}
 
         <button
           type="button"

@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useActionState, useEffect, useState, Suspense } from "react";
 import Logo from "@/components/Logo";
 import { signupWithPassword } from "@/app/auth/actions";
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refCode = searchParams.get("ref") || "";
   const [step, setStep] = useState(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -78,6 +80,12 @@ export default function SignupPage() {
             <h2 className="food-heading !text-[36px]">Sign Up</h2>
             <p className="lead mt-2">Create your account and start ordering from nearby restaurants.</p>
 
+            {refCode && (
+              <div className="mt-4 rounded-xl border border-[#f97316]/30 bg-[#f97316]/[0.07] px-4 py-3 text-xs font-bold tracking-[0.08em] text-[#f97316]">
+                🎉 Referral applied — your first delivery fee is on us.
+              </div>
+            )}
+
             {stateData?.message && (
               <div className={`mt-4 rounded-xl border px-4 py-3 text-xs font-bold uppercase tracking-[0.11em] ${
                 stateData.error
@@ -97,6 +105,7 @@ export default function SignupPage() {
             <form action={formAction}>
               <input type="hidden" name="role" value="CUSTOMER" />
               <input type="hidden" name="plan" value="Basic" />
+              {refCode && <input type="hidden" name="referredBy" value={refCode} />}
               <input type="hidden" name="name" value={`${firstName} ${lastName}`.trim()} />
               <input type="hidden" name="address" value={[addressLine, city, zip].filter(Boolean).join(", ")} />
               <input type="hidden" name="email" value={email} />
@@ -172,5 +181,13 @@ export default function SignupPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   );
 }
