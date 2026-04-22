@@ -40,7 +40,17 @@ export default async function DriverDashboard() {
 
     if (isPreview) {
         availableOrders = [];
-        myActiveOrders = [];
+        myActiveOrders = [{
+            id: "preview-order-001",
+            status: "PICKED_UP",
+            total: 24.50,
+            totalPay: 12.75,
+            deliveryAddress: "842 Poplar Tent Rd, Concord NC 28027",
+            deliveryInstructions: "",
+            customerName: "Alex Johnson",
+            customer: { name: "Alex Johnson" },
+            restaurant: { name: "Emerald Kitchen", address: "120 S Tryon St, Charlotte NC", lat: 35.2271, lng: -80.8431, complianceScore: 95, complianceStatus: "ACTIVE" },
+        }];
     } else {
         const supabase = await createClient();
 
