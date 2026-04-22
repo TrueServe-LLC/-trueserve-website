@@ -7,6 +7,17 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { ADMIN_ROLES } from "@/lib/rbac";
 import { v4 as uuidv4 } from "uuid";
 
+export async function getAdminSession() {
+    try {
+        const cookieStore = await cookies();
+        const isAuth = cookieStore.get("admin_session")?.value === "true";
+        const role = cookieStore.get("admin_role")?.value || null;
+        return { isAuth, role };
+    } catch {
+        return { isAuth: false, role: null };
+    }
+}
+
 async function ensureStaffUser(email: string) {
     const normalizedEmail = email.trim().toLowerCase();
     const fallbackName = normalizedEmail.split('@')[0] || 'admin';
