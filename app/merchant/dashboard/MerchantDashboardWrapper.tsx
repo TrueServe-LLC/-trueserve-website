@@ -13,11 +13,11 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/merchant/dashboard',             label: 'Dashboard',    icon: '📊', dotColor: '#f97316' },
-    { href: '/merchant/dashboard/compliance',  label: 'Compliance',   icon: '✅', dotColor: '#4dca80' },
-    { href: '/merchant/dashboard/integrations',label: 'Integrations', icon: '🔗', dotColor: '#555' },
-    { href: '/merchant/dashboard/storefront',  label: 'Storefront',   icon: '🛍️', dotColor: '#555' },
-    { href: '/merchant/dashboard/franchise',   label: 'Franchise',    icon: '🏪', dotColor: '#555' },
+    { href: '/merchant/dashboard',             label: 'Dashboard',    icon: '📊', dotColor: '#f97316', tour: 'merchant-nav-dashboard'    },
+    { href: '/merchant/dashboard/compliance',  label: 'Compliance',   icon: '✅', dotColor: '#4dca80', tour: 'merchant-nav-compliance'   },
+    { href: '/merchant/dashboard/integrations',label: 'Integrations', icon: '🔗', dotColor: '#555',    tour: 'merchant-nav-integrations' },
+    { href: '/merchant/dashboard/storefront',  label: 'Storefront',   icon: '🛍️', dotColor: '#555',    tour: 'merchant-nav-storefront'   },
+    { href: '/merchant/dashboard/franchise',   label: 'Franchise',    icon: '🏪', dotColor: '#555',    tour: 'merchant-nav-franchise'    },
   ];
 
   return (
@@ -190,6 +190,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
                 <Link
                   key={item.href}
                   href={item.href}
+                  data-tour={item.tour}
                   className={`mch-nav-item${isActive ? ' mch-active' : ''}`}
                 >
                   <span className="mch-nav-emoji">{item.icon}</span>

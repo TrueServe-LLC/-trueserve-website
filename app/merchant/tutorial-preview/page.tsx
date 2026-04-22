@@ -4,376 +4,399 @@ import { useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 
-const SECTIONS = [
-  {
-    step: 1, label: "Choose POS",
-    badge: "Section 1 of 5", title: "Choose POS Provider",
-    body: "Merchants open the Integrations tab and select a supported POS provider from the list. This opens the credentials panel for that integration.",
-    note: "This is visual-only and does not save credentials. It mirrors the merchant integration workflow so teammates can review before launch.",
-    highlightBlock: 0, showCred: false, showStatus: false, showStripe: false, progState: 0,
-  },
-  {
-    step: 2, label: "Credentials",
-    badge: "Section 2 of 5", title: "Enter API Credentials",
-    body: "The merchant enters the provider Client ID, Client Secret, and selects the matching store location. All fields are masked for security.",
-    note: "In the real portal, credentials are encrypted at rest and never exposed after initial entry.",
-    highlightBlock: 1, showCred: true, showStatus: false, showStripe: false, progState: 0,
-  },
-  {
-    step: 3, label: "Test Connection",
-    badge: "Section 3 of 5", title: "Run Connection Test",
-    body: "Clicking 'Test Connection' fires a live validation request to the provider API. The progress bar shows the handshake in real time.",
-    note: "If the test fails, TrueServe surfaces the exact error code so merchants can fix credentials without guessing.",
-    highlightBlock: 2, showCred: true, showStatus: false, showStripe: false, progState: 1,
-  },
-  {
-    step: 4, label: "Verified",
-    badge: "Section 4 of 5", title: "Connection Verified",
-    body: "Once validated, menu sync and order webhooks become available immediately. The status bar confirms the integration is live and ready.",
-    note: "Merchants can re-sync their menu at any time from this panel without re-entering credentials.",
-    highlightBlock: 3, showCred: true, showStatus: true, showStripe: false, progState: 2,
-  },
-  {
-    step: 5, label: "Get Paid",
-    badge: "Section 5 of 5", title: "Stripe Payout Setup",
-    body: "Merchants connect Stripe once to receive order payouts automatically. This final step makes the merchant portal production-ready.",
-    note: "TrueServe uses Stripe Connect so merchant payouts deposit securely on a rolling schedule after customer orders are processed.",
-    highlightBlock: 4, showCred: false, showStatus: false, showStripe: true, progState: 3,
-  },
+const NAV_ITEMS = [
+  { label: "Dashboard",    icon: "📊", color: "#f97316" },
+  { label: "Compliance",   icon: "✅", color: "#4dca80" },
+  { label: "Integrations", icon: "🔗", color: "#6b8ee8" },
+  { label: "Storefront",   icon: "🛍️", color: "#f97316" },
+  { label: "Franchise",    icon: "🏪", color: "#4dca80" },
 ];
 
-const STEP_BLOCKS = [
-  { label: "Step 1", name: "Choose POS Provider", detail: "Merchant selects a provider in Integrations and opens the credentials panel." },
-  { label: "Step 2", name: "Enter API Credentials", detail: "Client ID, Client Secret, and location details are entered securely." },
-  { label: "Step 3", name: "Run Connection Test", detail: null },
-  { label: "Step 4", name: "Connection Verified", detail: "Menu sync and order webhooks become available immediately." },
-  { label: "Step 5", name: "Stripe Payout Setup", detail: "Connect Stripe so order revenue can be deposited securely." },
+const SECTIONS = [
+  {
+    step: 1,
+    label: "Dashboard",
+    title: "Your Command Center",
+    body: "The Dashboard gives you a live snapshot of today's orders, revenue, and active delivery statuses. Approve pending orders, see which drivers are on route, and monitor your storefront uptime — all from one screen.",
+    navIndex: 0,
+    content: (
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {[
+            { label: "Today's Orders",  val: "24",     cls: "text-white" },
+            { label: "Revenue",         val: "$842",   cls: "text-[#f97316]" },
+            { label: "Active Drivers",  val: "3",      cls: "text-[#4dca80]" },
+            { label: "Avg. Prep Time",  val: "18 min", cls: "text-white" },
+          ].map(s => (
+            <div key={s.label} className="rounded-[8px] border border-white/8 bg-black/30 px-3 py-2.5">
+              <p className="text-[10px] font-black uppercase text-white/35">{s.label}</p>
+              <p className={`mt-1.5 text-[17px] font-black leading-none ${s.cls}`}>{s.val}</p>
+            </div>
+          ))}
+        </div>
+        <div className="overflow-hidden rounded-[8px] border border-white/8">
+          <div className="border-b border-white/8 px-4 py-2.5">
+            <span className="text-[10px] font-black uppercase text-white/40">Live Orders</span>
+          </div>
+          {[
+            { id: "#1042", items: "Burger + Fries × 2",  status: "Preparing",  sc: "text-[#f97316]" },
+            { id: "#1041", items: "Chicken Wrap × 1",    status: "Ready",      sc: "text-[#4dca80]" },
+            { id: "#1040", items: "Salad Bowl × 3",      status: "En Route",   sc: "text-[#6b8ee8]" },
+          ].map((o, i) => (
+            <div key={i} className={`flex items-center justify-between gap-3 px-4 py-2.5 ${i < 2 ? "border-b border-white/[0.05]" : ""}`}>
+              <div>
+                <p className="text-[12px] font-semibold text-white/85">{o.id}</p>
+                <p className="text-[10px] text-white/45">{o.items}</p>
+              </div>
+              <span className={`text-[10px] font-bold ${o.sc}`}>{o.status}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    step: 2,
+    label: "Compliance",
+    title: "Stay Approved",
+    body: "Compliance tracks your health inspection grade, business license, and approval status. Keeping documents current ensures your storefront stays live. TrueServe flags anything expiring so you can renew before orders are paused.",
+    navIndex: 1,
+    content: (
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: "Health Grade",     val: "A",        cls: "text-[#4dca80]" },
+            { label: "Portal Status",    val: "Approved", cls: "text-[#4dca80]" },
+          ].map(s => (
+            <div key={s.label} className="rounded-[8px] border border-[#4dca80]/20 bg-[#4dca80]/[0.04] px-4 py-3 text-center">
+              <p className="text-[10px] font-black uppercase text-white/35">{s.label}</p>
+              <p className={`mt-1 text-[20px] font-black ${s.cls}`}>{s.val}</p>
+            </div>
+          ))}
+        </div>
+        <div className="overflow-hidden rounded-[8px] border border-white/8">
+          <div className="border-b border-white/8 px-4 py-2.5">
+            <span className="text-[10px] font-black uppercase text-white/40">Documents</span>
+          </div>
+          {[
+            { doc: "Health Inspection",  status: "Verified", exp: "Valid through 03/2026", sc: "text-[#4dca80]", bc: "border-[#4dca80]/20 bg-[#4dca80]/[0.05]" },
+            { doc: "Business License",   status: "Verified", exp: "Exp: 12/2025",          sc: "text-[#4dca80]", bc: "border-[#4dca80]/20 bg-[#4dca80]/[0.05]" },
+            { doc: "Food Handler Cert.", status: "Expiring", exp: "Renew in 30 days",       sc: "text-[#f97316]", bc: "border-[#f97316]/25 bg-[#f97316]/[0.05]" },
+          ].map((d, i) => (
+            <div key={i} className={`flex items-center justify-between gap-3 px-4 py-3 ${i < 2 ? "border-b border-white/[0.05]" : ""}`}>
+              <div>
+                <p className="text-[12px] font-semibold text-white/85">{d.doc}</p>
+                <p className="text-[10px] text-white/40">{d.exp}</p>
+              </div>
+              <span className={`rounded-full border px-2.5 py-1 text-[10px] font-bold ${d.bc} ${d.sc}`}>{d.status}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    step: 3,
+    label: "Integrations",
+    title: "Connect Your POS",
+    body: "Integrations is where you link your POS system (Toast, Square, etc.) so orders flow directly into your kitchen. Enter your API credentials, run a connection test, and your menu syncs automatically.",
+    navIndex: 2,
+    content: (
+      <div className="space-y-3">
+        <div className="overflow-hidden rounded-[8px] border border-[#6b8ee8]/30 bg-[#6b8ee8]/[0.04]">
+          <div className="border-b border-white/8 px-4 py-2.5">
+            <p className="text-[10px] font-black uppercase text-white/40">POS Integration</p>
+          </div>
+          {[
+            { label: "Provider",       val: "Toast POS" },
+            { label: "Client ID",      val: "client_id_••••" },
+            { label: "Client Secret",  val: "••••••••••••" },
+            { label: "Location",       val: "Main St Location" },
+          ].map((f, i) => (
+            <div key={i} className={`flex items-center justify-between gap-4 px-4 py-2.5 ${i < 3 ? "border-b border-white/[0.05]" : ""}`}>
+              <span className="text-[10px] font-bold uppercase text-white/40">{f.label}</span>
+              <span className="text-[12px] font-semibold text-white/75">{f.val}</span>
+            </div>
+          ))}
+          <div className="flex gap-2 border-t border-white/8 px-4 py-3">
+            <button className="flex-1 rounded-[8px] border border-[#6b8ee8]/30 bg-[#6b8ee8]/[0.08] py-2 text-[11px] font-bold text-[#6b8ee8]">
+              Test Connection
+            </button>
+            <button className="flex-1 rounded-[8px] border border-white/10 bg-white/[0.03] py-2 text-[11px] font-bold text-white/60">
+              Sync Menu
+            </button>
+          </div>
+        </div>
+        <div className="rounded-[8px] border border-[#4dca80]/25 bg-[#4dca80]/[0.05] px-4 py-3">
+          <p className="text-[10px] font-semibold text-[#4dca80]">● Connected — menu sync and order ingestion active</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    step: 4,
+    label: "Storefront",
+    title: "Your Public Page",
+    body: "Storefront controls what customers see when they browse TrueServe — your banner image, restaurant description, hours, and menu categories. You can also grab your embeddable order widget to add to your own website.",
+    navIndex: 3,
+    content: (
+      <div className="space-y-3">
+        <div className="overflow-hidden rounded-[8px] border border-white/8">
+          <div className="relative h-20 w-full overflow-hidden rounded-t-[8px] bg-gradient-to-r from-[#1a0a00] to-[#2a1200]">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Banner Image</span>
+            </div>
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-[14px] font-black text-white">Burger Palace</p>
+            <p className="text-[11px] text-white/50">American · Fast Casual · 0.4 mi</p>
+            <div className="mt-2 flex gap-3 text-[10px] text-white/40">
+              <span>★ 4.7 (212)</span>
+              <span>15–25 min</span>
+              <span>$2.99 delivery</span>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button className="rounded-[8px] border border-[#f97316]/30 bg-[#f97316]/[0.06] py-2.5 text-[11px] font-bold text-[#f97316]">
+            Edit Banner
+          </button>
+          <button className="rounded-[8px] border border-white/10 bg-white/[0.03] py-2.5 text-[11px] font-bold text-white/60">
+            Copy Embed
+          </button>
+        </div>
+      </div>
+    ),
+  },
+  {
+    step: 5,
+    label: "Franchise",
+    title: "Multiple Locations",
+    body: "If you operate more than one location, Franchise lets you manage all of them from a single account. Switch between locations, set per-location hours and menus, and see consolidated revenue across the portfolio.",
+    navIndex: 4,
+    content: (
+      <div className="space-y-3">
+        <div className="overflow-hidden rounded-[8px] border border-white/8">
+          <div className="border-b border-white/8 px-4 py-2.5">
+            <span className="text-[10px] font-black uppercase text-white/40">Locations (3)</span>
+          </div>
+          {[
+            { name: "Burger Palace – Main St",    status: "Active",   orders: "24 today" },
+            { name: "Burger Palace – Oak Ave",    status: "Active",   orders: "18 today" },
+            { name: "Burger Palace – Pine Plaza", status: "Inactive", orders: "Closed"   },
+          ].map((l, i) => (
+            <div key={i} className={`flex items-center justify-between gap-3 px-4 py-3 ${i < 2 ? "border-b border-white/[0.05]" : ""}`}>
+              <div>
+                <p className="text-[12px] font-semibold text-white/85">{l.name}</p>
+                <p className="text-[10px] text-white/40">{l.orders}</p>
+              </div>
+              <span className={`text-[10px] font-bold ${l.status === "Active" ? "text-[#4dca80]" : "text-white/30"}`}>
+                {l.status}
+              </span>
+            </div>
+          ))}
+        </div>
+        <button className="w-full rounded-[8px] border border-[#4dca80]/30 bg-[#4dca80]/[0.06] py-2.5 text-[11px] font-bold text-[#4dca80]">
+          + Add Location
+        </button>
+      </div>
+    ),
+  },
 ];
 
 export default function MerchantTutorialPreviewPage() {
-  const [step, setStep] = useState(0); // 0-indexed
+  const [step, setStep] = useState(0);
   const [rating, setRating] = useState<number | null>(null);
   const cur = SECTIONS[step];
-  const activeStepBlock = STEP_BLOCKS[step];
-
-  function blockStyle(i: number) {
-    if (i < step) return "border-emerald-400/25 bg-emerald-400/[0.03]";
-    if (i === step) return "border-[#f97316]/45 bg-[#f97316]/[0.05] shadow-[0_0_0_2px_rgba(249,115,22,0.1)]";
-    return "border-white/8 bg-white/[0.025]";
-  }
-  function tagStyle(i: number) {
-    if (i < step) return "text-emerald-400";
-    if (i === step) return "text-[#f97316]";
-    return "text-[#f97316]/50";
-  }
-  function numStyle(i: number) {
-    if (i < step) return "border-emerald-400/35 bg-emerald-400/15 text-emerald-400";
-    if (i === step) return "border-[#f97316]/45 bg-[#f97316]/15 text-[#f97316]";
-    return "border-white/10 bg-white/5 text-white/30";
-  }
+  const isLast = step === SECTIONS.length - 1;
 
   return (
     <div className="food-app-shell min-h-screen overflow-x-hidden">
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes mpProg { from { width:0% } to { width:72% } }
-        @keyframes mpPulse { 0%,100%{opacity:.5} 50%{opacity:1} }
-        .mp-chip {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 32px;
-          padding: 7px 12px;
-          border-radius: 8px;
-          border: 1px solid #252b1e;
-          background: #161a13;
-          color: #5a6052;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          line-height: 1;
-          white-space: nowrap;
-          box-shadow: none;
-        }
-        .mp-chip-active {
-          border-color: rgba(249,115,22,0.45);
-          background: rgba(249,115,22,0.14);
-          color: #f97316;
-        }
-      `}} />
-
       <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
-        <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] flex-col items-start gap-3 py-3 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] items-center justify-between gap-4 py-3">
           <div className="flex items-center gap-3">
             <Logo size="sm" />
-            <span className="hidden text-[10px] font-black uppercase tracking-[0.18em] text-[#68c7cc] md:inline-flex">
-              Merchant Pilot Preview
+            <span className="hidden text-[10px] font-black uppercase tracking-[0.18em] text-[#f97316] md:inline-flex">
+              Merchant Portal Tutorial
             </span>
           </div>
-          <div className="flex w-full flex-wrap gap-2 md:w-auto md:justify-end">
-            <Link href="/merchant/portal-preview" className="ts-pill-btn ts-pill-btn-sm w-auto whitespace-nowrap">
-              View Portal Preview
-            </Link>
-            <Link href="/merchant/login" className="ts-pill-btn ts-pill-btn-sm w-auto whitespace-nowrap">
+          <div className="flex items-center gap-2">
+            <span className="hidden text-[11px] text-white/40 md:block">Step {step + 1} of {SECTIONS.length}</span>
+            <Link href="/merchant/login" className="ts-pill-btn ts-pill-btn-sm">
               Back to Login
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto w-[min(1060px,calc(100%-24px))] py-10 md:py-12">
+      <main className="mx-auto w-[min(1060px,calc(100%-24px))] py-8 md:py-10">
 
         {/* Hero */}
-        <div className="mb-9 text-center md:mb-10">
-          <p className="food-kicker mb-3">Interactive Walkthrough</p>
-          <h1 className="food-heading !text-[22px] sm:!text-[28px] md:!text-[34px] lg:!text-[44px] leading-none">
-            POS Connection <span className="text-[#f97316]">Preview</span>
+        <div className="mb-8 text-center">
+          <p className="food-kicker mb-2">Interactive Walkthrough</p>
+          <h1 className="food-heading !text-[22px] sm:!text-[28px] md:!text-[36px] leading-none">
+            Merchant Portal <span className="text-[#f97316]">Tour</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-[540px] text-[13px] leading-relaxed text-white/50">
-            Step through how merchants connect a POS provider, validate credentials, and sync their menu inside the TrueServe portal.
+          <p className="mx-auto mt-3 max-w-[480px] text-[13px] leading-relaxed text-white/50">
+            Explore every section of your merchant dashboard before going live.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
+
+          {/* Step chips */}
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
             {SECTIONS.map((s, i) => (
-              <button key={i} type="button" onClick={() => setStep(i)} className={`mp-chip min-w-[116px] ${i===step ? "mp-chip-active" : ""}`}>
-                <span className="opacity-70">{s.step}</span>
-                <span className="opacity-50">·</span>
+              <button
+                key={i}
+                onClick={() => setStep(i)}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  minHeight: 32, padding: "7px 12px", borderRadius: 8,
+                  border: i === step ? "1px solid rgba(249,115,22,0.5)" : "1px solid rgba(255,255,255,0.08)",
+                  background: i === step ? "rgba(249,115,22,0.12)" : "rgba(255,255,255,0.03)",
+                  color: i === step ? "#f97316" : i < step ? "#4dca80" : "rgba(255,255,255,0.4)",
+                  fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
+                  cursor: "pointer",
+                }}
+              >
+                <span>{i < step ? "✓" : s.step}</span>
+                <span style={{ opacity: 0.5 }}>·</span>
                 {s.label}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="mb-8 border-t border-white/8" />
+        <div className="mb-6 border-t border-white/8" />
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
 
           {/* Portal frame */}
-          <div className="food-panel min-w-0 overflow-hidden !p-0 !rounded-[12px]">
-            <div className="border-b border-white/8 bg-black/35 px-5 py-4">
-              <div className="mb-3 flex min-w-0 items-center gap-2">
-                <img src="/logo.png" alt="TrueServe" width={20} height={20} style={{ borderRadius: "999px", flexShrink: 0, boxShadow: "0 0 10px rgba(249,115,22,0.3)" }} />
-                <span className="shrink-0 text-[11px] font-black tracking-wide text-white">True<span style={{ color: "#68c7cc" }}>Serve</span></span>
-                <span className="text-white/20">·</span>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Merchant Portal Preview</span>
+          <div className="food-panel overflow-hidden !p-0 !rounded-[12px]" style={{minHeight: 420}}>
+            {/* Portal topbar */}
+            <div className="flex items-center gap-2.5 border-b border-white/8 bg-black/40 px-4 py-2.5">
+              <img src="/logo.png" alt="TrueServe" width={20} height={20} style={{ borderRadius: "999px", flexShrink: 0 }} />
+              <span className="text-[11px] font-black text-white">True<span style={{ color: "#68c7cc" }}>Serve</span></span>
+              <span className="text-white/20 text-xs">·</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-white/35">Merchant Portal</span>
+              <div className="ml-auto">
+                <span className="text-[10px] font-bold text-white/50">Burger Palace</span>
               </div>
-              <p className="mb-1 text-[10px] font-black uppercase tracking-[0.1em] text-white/40">Portal Preview</p>
-              <h2 className="food-heading !text-[22px] leading-tight">
-                How POS Connection Looks
-              </h2>
-              <p className="mt-1.5 max-w-[560px] text-[12px] leading-relaxed text-white/55">
-                This preview shows the exact portal area where merchants connect a POS provider, validate credentials, and sync their menu.
-              </p>
             </div>
 
-            <div className="space-y-3 p-4 md:p-5">
-              {/* Connection sequence */}
-              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-white/35">Connection Sequence</p>
-              <div className="sm:hidden rounded-[8px] border border-[#252b1e] bg-[#161a13] px-4 py-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/85">Step {cur.step}</p>
-                <p className="mt-1 text-[20px] font-black leading-tight text-white">{activeStepBlock.name}</p>
-                <p className="mt-2 text-[13px] leading-relaxed text-white/70">
-                  {activeStepBlock.detail || "Run a live connection check to validate credentials and confirm API access."}
-                </p>
-                {step === 2 && (
-                  <div className="mt-3">
-                    <div className="mb-1 text-[10px] font-black uppercase tracking-[0.06em] text-[#f97316]">Checking</div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                      <div className="h-full rounded-full bg-[#f97316]/80" style={{ animation: "mpProg 2.5s ease-out forwards" }} />
-                    </div>
-                  </div>
-                )}
-                {step > 2 && (
-                  <div className="mt-3 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.06em] text-emerald-300">
-                    Connection verified
-                  </div>
-                )}
-              </div>
-
-              <div className="hidden sm:block space-y-2">
-                {STEP_BLOCKS.map((b, i) => (
-                  <div key={i} className={`rounded-[8px] border px-4 py-3 transition-all duration-300 ${blockStyle(i)}`}>
-                    {i === 2 ? (
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className={`text-[10px] font-black uppercase tracking-[0.08em] ${tagStyle(i)}`}>{b.label}</p>
-                          <p className={`mt-0.5 text-[13px] font-bold ${i <= step ? "text-white" : "text-white/50"}`}>{b.name}</p>
-                          {/* Progress bar for step 3 */}
-                          {step >= 2 && (
-                            <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
-                              {step === 2 ? (
-                                <div key="prog-anim" className="h-full rounded-full bg-[#f97316]/80" style={{ animation: "mpProg 3s ease-out forwards" }} />
-                              ) : (
-                                <div className="h-full w-full rounded-full bg-emerald-400/80" />
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        {step === 2 && (
-                          <span className="mt-0.5 shrink-0 text-[10px] font-black uppercase tracking-[0.06em] text-[#f97316]" style={{ animation: "mpPulse 1.6s ease-in-out infinite" }}>
-                            Checking
-                          </span>
-                        )}
-                        {step > 2 && (
-                          <span className="mt-0.5 shrink-0 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-emerald-300">Done</span>
-                        )}
-                      </div>
-                    ) : (
-                      <>
-                        <p className={`text-[10px] font-black uppercase tracking-[0.08em] ${tagStyle(i)}`}>{b.label}</p>
-                        <p className={`mt-0.5 text-[13px] font-bold ${i <= step ? "text-white" : "text-white/50"}`}>{b.name}</p>
-                        {b.detail && <p className={`mt-0.5 text-[12px] leading-snug ${i === step ? "text-white/55" : "text-white/30"}`}>{b.detail}</p>}
-                      </>
-                    )}
-                  </div>
+            <div className="flex" style={{minHeight: 380}}>
+              {/* Sidebar nav */}
+              <div className="flex flex-col border-r border-white/8 bg-black/20 py-3" style={{width: 140, flexShrink: 0}}>
+                {NAV_ITEMS.map((nav, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setStep(i)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "9px 14px",
+                      borderLeft: i === step ? `2px solid ${nav.color}` : "2px solid transparent",
+                      background: i === step ? "rgba(255,255,255,0.04)" : "transparent",
+                      color: i === step ? "#fff" : "rgba(255,255,255,0.4)",
+                      fontSize: 11, fontWeight: i === step ? 700 : 500,
+                      cursor: "pointer", textAlign: "left",
+                    }}
+                  >
+                    <span style={{fontSize: 14}}>{nav.icon}</span>
+                    {nav.label}
+                  </button>
                 ))}
               </div>
 
-              {/* Credentials block */}
-              <div className={`rounded-[8px] border transition-all duration-300 overflow-hidden ${cur.showCred ? "border-[#f97316]/30 bg-[#f97316]/[0.03] shadow-[0_0_0_2px_rgba(249,115,22,0.08)]" : "border-white/8 bg-white/[0.02] opacity-40"} ${!cur.showCred ? "hidden sm:block" : ""}`}>
-                <div className="border-b border-white/8 px-4 py-2.5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.09em] text-white/40">POS Credentials</p>
+              {/* Content area */}
+              <div className="flex-1 overflow-hidden p-4">
+                <div className="mb-3">
+                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">
+                    Step {cur.step} of {SECTIONS.length}
+                  </p>
+                  <h2 style={{fontSize: 17, fontWeight: 800, color: "#fff", marginTop: 2}}>{cur.label}</h2>
                 </div>
-                {[
-                  { label: "Client ID", val: "client_id_001" },
-                  { label: "Client Secret", val: "••••••••••••••" },
-                  { label: "Location", val: "Location 01 / POS-0042" },
-                ].map((f) => (
-                  <div key={f.label} className="flex items-baseline justify-between gap-4 border-b border-white/[0.05] px-4 py-2.5 last:border-0">
-                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.07em] text-white/40">{f.label}</span>
-                    <span className="max-w-[170px] truncate text-[12px] font-semibold text-right text-white/80">{f.val}</span>
-                  </div>
-                ))}
-                <div className="flex gap-2 border-t border-white/8 px-4 py-3">
-                  <button type="button" className="ts-pill-btn ts-pill-btn-sm flex-1">Test Connection</button>
-                  <button type="button" className="ts-pill-btn ts-pill-btn-sm flex-1">Sync Menu</button>
-                </div>
-                {cur.showStatus && (
-                  <div className="border-t border-emerald-400/20 bg-emerald-400/[0.05] px-4 py-2.5">
-                    <p className="text-[10px] font-semibold text-emerald-300">● Connected: menu sync and order ingestion are active.</p>
-                  </div>
-                )}
+                {cur.content}
               </div>
-
-              {cur.showStripe && (
-                <div className="rounded-[6px] border border-[#8fb5ff]/25 bg-[#8fb5ff]/[0.06] overflow-hidden">
-                  <div className="border-b border-white/8 px-4 py-2.5">
-                    <p className="text-[10px] font-black uppercase tracking-[0.09em] text-white/40">Stripe Payout Setup</p>
-                  </div>
-                  <div className="px-4 py-3">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#8fb5ff]">Connect Stripe to receive payouts</p>
-                    <p className="mt-1 text-[12px] leading-relaxed text-white/60">
-                      Merchants create or link a Stripe account, verify business details, and connect their bank so payouts can be deposited automatically.
-                    </p>
-                    <div className="mt-3 space-y-2">
-                      <div className="flex items-center justify-between rounded-[10px] border border-white/8 bg-black/20 px-3 py-2">
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-white/45">Processing</span>
-                        <span className="text-[11px] font-bold text-[#8fb5ff]">2.9% + 30¢</span>
-                      </div>
-                      <div className="flex items-center justify-between rounded-[10px] border border-white/8 bg-black/20 px-3 py-2">
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-white/45">Payout</span>
-                        <span className="text-[11px] font-bold text-emerald-300">Rolling · every 2 days</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar panel */}
           <div className="flex flex-col gap-4">
 
-            {/* Sections list */}
-            <div className="hidden sm:block food-panel !rounded-[12px] !p-5">
-              <p className="mb-5 text-[10px] font-black uppercase tracking-[0.1em] text-white/40">Sections</p>
-              <div className="space-y-4">
-                {SECTIONS.map((s, i) => (
-                  <button key={i} onClick={() => setStep(i)} className="flex w-full items-start gap-3 text-left">
-                    <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-black transition-all ${numStyle(i)}`}>
-                      {i < step ? "✓" : s.step}
-                    </div>
-                    <div className="min-w-0">
-                      <p className={`text-[12px] font-bold leading-tight transition-colors ${i===step ? "text-[#f97316]" : i<step ? "text-emerald-300" : "text-white/40"}`}>{s.title}</p>
-                      <p className="mt-0.5 text-[10px] leading-snug text-white/28">{s.badge.replace(/.*Section/, "Section")}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Preview controls */}
-            <div className="hidden sm:block food-panel !rounded-[12px] !p-5">
-              <p className="mb-4 text-[10px] font-black uppercase tracking-[0.1em] text-white/40">Preview Controls</p>
-              <div className="space-y-2">
-                {[
-                  { k: "POS", v: "Pilot POS", vc: "text-[#f97316]" },
-                  { k: "Status", v: step >= 3 ? "Connected" : "Pending", vc: step >= 3 ? "text-emerald-300" : "text-white/35" },
-                  { k: "Stripe", v: step >= 4 ? "Ready" : "Pending", vc: step >= 4 ? "text-[#8fb5ff]" : "text-white/25" },
-                ].map(row => (
-                  <div key={row.k} className={`flex items-center justify-between rounded-[10px] border px-4 py-2.5 transition-all ${row.k==="Status" && step>=3 ? "border-emerald-400/20 bg-emerald-400/[0.04]" : "border-white/8 bg-white/[0.03]"}`}>
-                    <span className="text-[10px] font-semibold text-white/45">{row.k}</span>
-                    <span className={`text-[11px] font-bold ${row.vc}`}>{row.v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Section detail */}
-            <div className="food-panel hidden sm:flex flex-col gap-4 !rounded-[12px] !p-5">
+            <div className="food-panel flex flex-col gap-4 !rounded-[12px] !p-5">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/60">● {cur.badge}</p>
-                <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">{cur.title}</h3>
+                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#f97316]/60">
+                  ● {cur.label} · {cur.step}/{SECTIONS.length}
+                </p>
+                <h3 className="food-heading mt-1.5 !text-[18px] leading-tight">{cur.title}</h3>
                 <p className="mt-3 text-[13px] leading-relaxed text-white/60">{cur.body}</p>
-                <div className="mt-3 rounded-[8px] border border-white/8 bg-black/20 px-4 py-3">
-                  <p className="mb-1 text-[10px] font-black uppercase tracking-[0.07em] text-white/35">Note</p>
-                  <p className="text-[12px] leading-relaxed text-white/50">{cur.note}</p>
-                </div>
               </div>
+
+              {/* Progress dots */}
+              <div className="flex items-center gap-1.5">
+                {SECTIONS.map((_, i) => (
+                  <span
+                    key={i}
+                    onClick={() => setStep(i)}
+                    style={{
+                      height: 6, borderRadius: 999, cursor: "pointer",
+                      width: i === step ? 24 : 12,
+                      background: i === step ? "#f97316" : i < step ? "#4dca80" : "rgba(255,255,255,0.15)",
+                      transition: "all 0.2s",
+                    }}
+                  />
+                ))}
+              </div>
+
               <div className="flex gap-2">
-                <button onClick={() => setStep(s => Math.max(0, s-1))} style={{ opacity: step===0 ? 0.3 : 1, pointerEvents: step===0 ? "none" : "auto" }}
-                  className="ts-pill-btn ts-pill-btn-sm flex-1">
+                <button
+                  onClick={() => setStep(s => Math.max(0, s - 1))}
+                  disabled={step === 0}
+                  className="ts-pill-btn ts-pill-btn-sm flex-1 disabled:opacity-30"
+                >
                   ← Back
                 </button>
-                {step < 4 ? (
-                  <button onClick={() => setStep(s => Math.min(4, s+1))}
-                    className="ts-pill-btn ts-pill-btn-sm flex-1">
-                    Next →
-                  </button>
-                ) : (
-                  <Link href="/merchant/login"
-                    className="ts-pill-btn ts-pill-btn-sm flex-1">
+                {isLast ? (
+                  <Link href="/merchant/login" className="ts-pill-btn ts-pill-btn-sm flex-1 text-center">
                     Done ✓
                   </Link>
+                ) : (
+                  <button
+                    onClick={() => setStep(s => Math.min(SECTIONS.length - 1, s + 1))}
+                    className="ts-pill-btn ts-pill-btn-sm flex-1"
+                    style={{ background: "rgba(249,115,22,0.15)", borderColor: "rgba(249,115,22,0.35)", color: "#f97316" }}
+                  >
+                    Next →
+                  </button>
                 )}
               </div>
             </div>
 
+            {/* Feedback */}
             <div className="food-panel !rounded-[12px] !p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">Tutorial Feedback</p>
-              <h3 className="food-heading mt-1.5 !text-[19px] leading-tight">Was this tutorial helpful?</h3>
-              <p className="mt-2 text-[12px] leading-relaxed text-white/55">
-                Rate the walkthrough so we can keep improving the merchant onboarding flow.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">Feedback</p>
+              <h3 className="food-heading mt-1 !text-[16px] leading-tight">Was this helpful?</h3>
+              <div className="mt-3 flex gap-2">
                 {[1, 2, 3, 4, 5].map(n => (
                   <button
                     key={n}
-                    type="button"
                     onClick={() => setRating(n)}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border text-[12px] font-black transition-all ${
-                      rating === n
-                        ? "border-[#f97316]/70 bg-[#f97316] text-black"
-                        : "border-white/10 bg-white/[0.03] text-white/45 hover:border-[#f97316]/35 hover:text-[#f97316]"
-                    }`}
-                    aria-label={`Rate tutorial ${n} out of 5`}
+                    style={{
+                      flex: 1, height: 36, borderRadius: 8,
+                      border: rating === n ? "1px solid rgba(249,115,22,0.6)" : "1px solid rgba(255,255,255,0.1)",
+                      background: rating === n ? "#f97316" : "rgba(255,255,255,0.03)",
+                      color: rating === n ? "#000" : "rgba(255,255,255,0.45)",
+                      fontSize: 12, fontWeight: 800, cursor: "pointer",
+                    }}
                   >
                     {n}
                   </button>
                 ))}
               </div>
-              <button type="button" className="ts-pill-btn ts-pill-btn-sm mt-4">
-                Send Feedback
-              </button>
+              {rating && (
+                <button className="ts-pill-btn ts-pill-btn-sm mt-3 w-full">
+                  Send Feedback
+                </button>
+              )}
             </div>
 
           </div>

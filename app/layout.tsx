@@ -33,8 +33,8 @@ const barlowCond = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "TrueServe | Next-Gen Delivery Infrastructure",
-  description: "Empowering independent restaurants through fair logistics, elite driver fleets, and seamless Toast POS integrations.",
+  title: "TrueServe | Order Food Delivery Near You",
+  description: "Order from your favorite local restaurants. Fast delivery, real-time driver tracking, and menus you'll love — all in one place.",
   manifest: '/manifest.json',
   icons: {
     icon: '/logo.png',
