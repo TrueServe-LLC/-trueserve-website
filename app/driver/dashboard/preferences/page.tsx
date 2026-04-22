@@ -1,9 +1,12 @@
+import { cookies } from "next/headers";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DriverPreferences() {
-    await getDriverOrRedirect();
+    const cookieStore = await cookies();
+    const isPreview = cookieStore.get("preview_mode")?.value === "true";
+    if (!isPreview) await getDriverOrRedirect();
 
     return (
         <div className="font-sans">

@@ -188,16 +188,26 @@ export default function DriverMap({
             </GoogleMap>
 
             {/* Always-on AI Unified Overlay */}
-            <div className="absolute top-4 left-4 flex gap-2 z-[10]">
-                <div className="bg-black/80 backdrop-blur-md p-3 rounded-xl border border-white/10 flex flex-col items-start gap-1 shadow-2xl">
-                    <div className="flex items-center gap-2">
-                        <span className="relative flex h-2 w-2">
-                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            <div className="absolute top-3 left-3 z-[10]">
+                <div style={{
+                    background: "rgba(12,14,19,0.88)",
+                    backdropFilter: "blur(8px)",
+                    border: "1px solid rgba(249,115,22,0.25)",
+                    borderRadius: 10,
+                    padding: "8px 12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    minWidth: 180,
+                }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                        <span style={{ position: "relative", display: "flex", width: 7, height: 7, flexShrink: 0 }}>
+                            <span className="animate-ping" style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#f97316", opacity: 0.6 }} />
+                            <span style={{ position: "relative", width: 7, height: 7, borderRadius: "50%", background: "#f97316", display: "inline-flex" }} />
                         </span>
-                        <h4 className="text-[10px] uppercase font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-primary">Smart Heatmap</h4>
+                        <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#f97316" }}>Smart Heatmap</span>
                     </div>
-                    <p className="text-[9px] text-slate-400 font-bold max-w-[120px]">Live orders & predictive demand zones blended automatically.</p>
+                    <p style={{ fontSize: 10, color: "#666", fontWeight: 600, lineHeight: 1.4, margin: 0 }}>Live orders &amp; predictive demand zones blended automatically.</p>
                 </div>
             </div>
 

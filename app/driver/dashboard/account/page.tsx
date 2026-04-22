@@ -1,9 +1,15 @@
+import { cookies } from "next/headers";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DriverAccount() {
-    const driver = await getDriverOrRedirect();
+    const cookieStore = await cookies();
+    const isPreview = cookieStore.get("preview_mode")?.value === "true";
+
+    const driver = isPreview
+        ? { id: "preview", name: "Jordan Rivers", user: { name: "Jordan Rivers", email: "driver@trueserve.com" } }
+        : await getDriverOrRedirect();
 
     const name = driver?.name || driver?.user?.name || "Driver";
     const email = driver?.user?.email || "driver@trueserve.com";

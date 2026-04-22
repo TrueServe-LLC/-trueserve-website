@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import DriverMap from "@/components/DriverMap";
 import MileageTracker from "@/components/MileageTracker";
@@ -5,7 +6,13 @@ import MileageTracker from "@/components/MileageTracker";
 export const dynamic = 'force-dynamic';
 
 export default async function DriverEarnings() {
-    const driver = await getDriverOrRedirect();
+    const cookieStore = await cookies();
+    const isPreview = cookieStore.get("preview_mode")?.value === "true";
+
+    const driver = isPreview
+        ? { id: "preview", name: "Jordan Rivers", balance: 247.50, currentLat: 35.2271, currentLng: -80.8431 }
+        : await getDriverOrRedirect();
+
     const balance = driver?.balance || 0;
     const driverLat = typeof driver?.currentLat === "number" ? driver.currentLat : null;
     const driverLng = typeof driver?.currentLng === "number" ? driver.currentLng : null;
