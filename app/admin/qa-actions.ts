@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { logAuditAction } from "@/lib/audit";
 import { v4 as uuidv4 } from "uuid";
+import { isProductionEnvironment } from "@/lib/environment";
 
 /**
  * QA TOOLBOX ACTIONS
@@ -13,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function createMockOrder(restaurantId: string) {
     try {
+        if (isProductionEnvironment()) throw new Error("QA mock orders are disabled in production.");
         const { data: user } = await supabaseAdmin.from('User').select('id').limit(1).single();
         if (!user) throw new Error("No users found to assign mock order.");
 
@@ -46,6 +48,7 @@ export async function createMockOrder(restaurantId: string) {
 
 export async function approveAllPendingDrivers() {
     try {
+        if (isProductionEnvironment()) throw new Error("QA driver approval is disabled in production.");
         const { data: drivers, error: fetchError } = await supabaseAdmin
             .from('Driver')
             .select('id, userId')
@@ -77,6 +80,7 @@ export async function approveAllPendingDrivers() {
 
 export async function clearAllMockData() {
     try {
+        if (isProductionEnvironment()) throw new Error("Mock data cleanup is disabled in production.");
         // Clear mock restaurants (where isMock is true)
         const { error: restError } = await supabaseAdmin
             .from('Restaurant')
@@ -119,6 +123,7 @@ export async function getRecentAuditLogs() {
 
 export async function generateMockDrivers() {
     try {
+        if (isProductionEnvironment()) throw new Error("Mock driver generation is disabled in production.");
         const regions = [
             { name: "Mecklenburg, NC", email: "driver.meck@trueserve.test" },
             { name: "Surry, NC", email: "driver.surry@trueserve.test" },
@@ -188,6 +193,7 @@ export async function generateMockDrivers() {
 
 export async function advanceMockOrder() {
     try {
+        if (isProductionEnvironment()) throw new Error("Mock order advancement is disabled in production.");
         const { data: order } = await supabaseAdmin.from('Order').select('id, status').not('status', 'in', '("DELIVERED","CANCELLED","REFUNDED")').order('createdAt', { ascending: false }).limit(1).single();
         if (!order) throw new Error("No active orders found to advance.");
 
@@ -220,6 +226,7 @@ export async function advanceMockOrder() {
 
 export async function checkMockSmsProvider() {
     try {
+        if (isProductionEnvironment()) throw new Error("Mock SMS testing is disabled in production.");
         // Just return dummy data for QA since Supabase uses native SMS Twilio integration that isn't logged in DB 
         return { success: true, fakeCode: "123456", message: "SMS OTPs are currently managed exclusively by Supabase Auth (Twilio). Use one of the registered test phone numbers (+15555555555 etc) in Supabase with code 123456 to bypass real SMS gating." };
     } catch(e: any) {

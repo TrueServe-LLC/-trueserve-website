@@ -2,7 +2,49 @@
 
 import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { isStaffEmail } from "@/lib/admin-config";
+import { isStaffEmail, resolveStaffRole } from "@/lib/admin-config";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import { ADMIN_ROLES } from "@/lib/rbac";
+import { v4 as uuidv4 } from "uuid";
+
+async function ensureStaffUser(email: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const fallbackName = normalizedEmail.split('@')[0] || 'admin';
+    const resolvedRole = resolveStaffRole(normalizedEmail);
+
+    const { data: existingUser } = await supabaseAdmin
+        .from('User')
+        .select('id, role, name')
+        .eq('email', normalizedEmail)
+        .maybeSingle();
+
+    if (existingUser?.id) {
+        const targetRole = resolvedRole || (ADMIN_ROLES.includes(existingUser.role as any) ? existingUser.role : 'READONLY');
+
+        if (existingUser.role !== targetRole) {
+            await supabaseAdmin
+                .from('User')
+                .update({
+                    role: targetRole,
+                    updatedAt: new Date().toISOString(),
+                })
+                .eq('id', existingUser.id);
+        }
+        return existingUser.id;
+    }
+
+    const userId = uuidv4();
+    await supabaseAdmin.from('User').insert({
+        id: userId,
+        email: normalizedEmail,
+        name: fallbackName,
+        role: resolvedRole || 'READONLY',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+    });
+
+    return userId;
+}
 
 export async function login(formData: FormData) {
     try {
@@ -22,7 +64,17 @@ export async function login(formData: FormData) {
         if (ADMIN_EMAIL && ADMIN_PASSWORD &&
             email.toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
             password === ADMIN_PASSWORD) {
-            return createAdminSession();
+            const userId = await ensureStaffUser(email);
+            const role = resolveStaffRole(email) || 'READONLY';
+            return createAdminSession(userId, role);
+        }
+
+        if (ADMIN_PASSWORD &&
+            password === ADMIN_PASSWORD &&
+            isStaffEmail(email)) {
+            const userId = await ensureStaffUser(email);
+            const role = resolveStaffRole(email) || 'READONLY';
+            return createAdminSession(userId, role);
         }
 
         // SECONDARY: Try Supabase auth (team admins)
@@ -43,20 +95,29 @@ export async function login(formData: FormData) {
 
                 let userRole = userData?.role;
 
-                // Auto-grant admin role if whitelisted staff email
+                // Auto-sync internal staff roles if they have a known staff identity.
+                const resolvedStaffRole = resolveStaffRole(email);
                 if ((!userRole || userRole === 'CUSTOMER') && isStaffEmail(email)) {
-                    userRole = 'ADMIN';
+                    userRole = resolvedStaffRole || 'READONLY';
                     await supabaseAdmin.from('User').upsert({
                         id: authData.user.id,
                         email: email,
-                        role: 'ADMIN',
+                        role: userRole,
+                        updatedAt: new Date().toISOString()
+                    });
+                } else if (resolvedStaffRole && userRole !== resolvedStaffRole) {
+                    userRole = resolvedStaffRole;
+                    await supabaseAdmin.from('User').upsert({
+                        id: authData.user.id,
+                        email: email,
+                        role: resolvedStaffRole,
                         updatedAt: new Date().toISOString()
                     });
                 }
 
                 // Check if user is admin
-                if (userRole && ['ADMIN', 'PM', 'OPS', 'SUPPORT', 'FINANCE', 'QA_TESTER'].includes(userRole)) {
-                    return createAdminSession();
+                if (userRole && ADMIN_ROLES.includes(userRole as any)) {
+                    return createAdminSession(authData.user.id, userRole);
                 } else {
                     return { error: "Access denied. Admin role required." };
                 }
@@ -74,7 +135,7 @@ export async function login(formData: FormData) {
     }
 }
 
-async function createAdminSession() {
+async function createAdminSession(userId?: string, role?: string) {
     try {
         const cookieStore = await cookies();
         const headersList = await headers();
@@ -91,6 +152,28 @@ async function createAdminSession() {
         }
 
         const isProd = process.env.NODE_ENV === "production";
+
+        if (userId) {
+            cookieStore.set("userId", userId, {
+                httpOnly: true,
+                secure: isProd,
+                path: "/",
+                ...(cookieDomain && { domain: cookieDomain }),
+                maxAge: 60 * 60 * 24 * 7,
+                sameSite: "lax",
+            });
+        }
+
+        if (role) {
+            cookieStore.set("admin_role", role, {
+                httpOnly: true,
+                secure: isProd,
+                path: "/",
+                ...(cookieDomain && { domain: cookieDomain }),
+                maxAge: 60 * 60 * 24 * 7,
+                sameSite: "lax",
+            });
+        }
 
         cookieStore.set("admin_session", "true", {
             httpOnly: true,
@@ -124,11 +207,10 @@ export async function loginWithGoogle() {
         const headersList = await headers();
         const host = headersList.get("host") || "";
         const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-        // Always use canonical admin domain in production so OAuth callback lands correctly
-        const canonicalHost = process.env.NODE_ENV === "production"
-            ? "www.admin.trueserve.delivery"
+        const adminCallbackHost = process.env.NODE_ENV === "production"
+            ? "trueserve.delivery"
             : host;
-        const redirectUrl = `${protocol}://${canonicalHost}/auth/callback`;
+        const redirectUrl = `${protocol}://${adminCallbackHost}/auth/callback?portal=admin&next=${encodeURIComponent("/admin/dashboard")}`;
 
         console.log("[Admin Google] Initiating OAuth with redirect:", redirectUrl);
 

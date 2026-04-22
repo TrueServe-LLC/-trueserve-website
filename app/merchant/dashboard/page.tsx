@@ -88,14 +88,14 @@ export default async function MerchantDashboard({
                     margin-bottom: 14px;
                 }
                 .mch-stat-card {
-                    background: #1a1a1a;
-                    border: 0.5px solid #2a2a2a;
-                    border-radius: 10px;
+                    background: #141a18;
+                    border: 1px solid #1e2420;
+                    border-radius: 8px;
                     padding: 14px;
                 }
                 .mch-stat-label {
                     font-size: 11px;
-                    color: #888;
+                    color: #777;
                     margin-bottom: 7px;
                     display: flex;
                     align-items: center;
@@ -104,20 +104,21 @@ export default async function MerchantDashboard({
                 .mch-stat-icon {
                     width: 18px; height: 18px;
                     border-radius: 4px;
-                    background: #252525;
+                    background: #0f1210;
+                    border: 1px solid #1e2420;
                     display: flex; align-items: center; justify-content: center;
                     font-size: 11px;
                 }
                 .mch-stat-value {
                     font-size: 27px;
-                    font-weight: 600;
+                    font-weight: 700;
                     color: #fff;
                     letter-spacing: -0.5px;
                 }
                 .mch-stripe-banner {
-                    background: #1a1a1a;
-                    border: 0.5px solid #2a2a2a;
-                    border-radius: 10px;
+                    background: #141a18;
+                    border: 1px solid #1e2420;
+                    border-radius: 8px;
                     padding: 13px 16px;
                     display: flex;
                     align-items: center;
@@ -127,7 +128,7 @@ export default async function MerchantDashboard({
                 }
                 .mch-stripe-banner.connected {
                     border-color: #1e3a2a;
-                    background: #111a14;
+                    background: #0f1a14;
                 }
                 .mch-stripe-left { display: flex; align-items: center; gap: 10px; }
                 .mch-stripe-icon {
@@ -140,56 +141,61 @@ export default async function MerchantDashboard({
                 .mch-stripe-title {
                     display: block;
                     color: #fff;
-                    font-weight: 500;
+                    font-weight: 700;
                     font-size: 12px;
                     margin-bottom: 2px;
                 }
-                .mch-stripe-sub { font-size: 11px; color: #666; }
+                .mch-stripe-sub { font-size: 11px; color: #aab4c8; }
                 .mch-stripe-connect-btn {
                     background: #f97316;
-                    color: #fff;
+                    color: #000;
                     border: none;
                     border-radius: 8px;
                     padding: 7px 16px;
                     font-size: 12px;
-                    font-weight: 500;
+                    font-weight: 800;
                     cursor: pointer;
                     white-space: nowrap;
                     flex-shrink: 0;
                     transition: background 0.15s;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
                 }
                 .mch-stripe-connect-btn:hover { background: #ea6c10; }
                 .mch-stripe-connected-badge {
                     font-size: 11px;
                     color: #4dca80;
-                    font-weight: 600;
+                    font-weight: 800;
                     white-space: nowrap;
                 }
                 .mch-section-head {
                     font-size: 10px;
-                    font-weight: 600;
-                    color: #666;
-                    letter-spacing: 0.07em;
+                    font-weight: 800;
+                    color: #777;
+                    letter-spacing: 0.12em;
                     text-transform: uppercase;
                     margin-bottom: 10px;
                 }
-                .mch-tab-row { display: flex; gap: 6px; margin-bottom: 14px; }
+                .mch-tab-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
                 .mch-tab-pill {
-                    padding: 5px 15px;
-                    border-radius: 20px;
-                    font-size: 12px;
-                    font-weight: 500;
+                    padding: 8px 14px;
+                    border-radius: 8px;
+                    font-size: 11px;
+                    font-weight: 800;
                     cursor: pointer;
                     text-decoration: none;
-                    border: 1px solid #333;
-                    color: #777;
+                    border: 1px solid #1e2420;
+                    color: #999;
                     transition: all 0.15s;
+                    text-transform: uppercase;
+                    letter-spacing: 0.11em;
+                    background: transparent;
                 }
-                .mch-tab-pill:hover { color: #bbb; border-color: #555; }
+                .mch-tab-pill:hover { color: #f97316; border-color: rgba(249,115,22,0.35); background: rgba(249,115,22,0.06); }
                 .mch-tab-pill.mch-tab-active {
-                    background: #f97316;
-                    color: #fff;
-                    border-color: #f97316;
+                    background: rgba(249,115,22,0.08);
+                    color: #f97316;
+                    border-color: rgba(249,115,22,0.35);
                 }
                 .mch-two-col {
                     display: grid;

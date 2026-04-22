@@ -3,26 +3,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/app/auth/actions';
+import { ADMIN_NAV_ITEMS, canAccessAdminSection, getRoleLabel } from '@/lib/rbac';
 
 interface AdminPortalWrapperProps {
   children: React.ReactNode;
+  role?: string;
 }
 
-export default function AdminPortalWrapper({ children }: AdminPortalWrapperProps) {
+export default function AdminPortalWrapper({ children, role }: AdminPortalWrapperProps) {
   const pathname = usePathname();
-
-  const navItems = [
-    { href: '/admin/dashboard',        label: 'Dashboard',        icon: '📊' },
-    { href: '/admin/cost-management',  label: 'Cost Management',  icon: '💰' },
-    { href: '/admin/pricing',          label: 'Pricing',          icon: '💳' },
-    { href: '/admin/feature-switches', label: 'Feature Switches', icon: '🔧' },
-    { href: '/admin/team',             label: 'Team',             icon: '👥' },
-    { href: '/admin/support',          label: 'Support',          icon: '🆘' },
-    { href: '/admin/content',          label: 'Content',          icon: '📝' },
-    { href: '/admin/analytics',        label: 'Analytics',        icon: '📈' },
-    { href: '/admin/users',            label: 'Users',            icon: '👤' },
-    { href: '/admin/settings',         label: 'Settings',         icon: '⚙️' },
-  ];
+  const navItems = role
+    ? ADMIN_NAV_ITEMS.filter((item) => canAccessAdminSection(role, item.section))
+    : ADMIN_NAV_ITEMS;
 
   return (
     <>
@@ -60,6 +52,18 @@ export default function AdminPortalWrapper({ children }: AdminPortalWrapperProps
           display: flex !important;
           align-items: center !important;
           gap: 8px !important;
+        }
+        .adm-role-pill {
+          margin: 0 16px 12px !important;
+          padding: 7px 10px !important;
+          border: 1px solid rgba(249,115,22,0.25) !important;
+          background: rgba(249,115,22,0.08) !important;
+          color: #f97316 !important;
+          border-radius: 6px !important;
+          font-size: 11px !important;
+          font-weight: 600 !important;
+          letter-spacing: 0.04em !important;
+          text-transform: uppercase !important;
         }
         .adm-nav-section {
           flex: 1 !important;
@@ -158,6 +162,7 @@ export default function AdminPortalWrapper({ children }: AdminPortalWrapperProps
             <img src="/logo.png" alt="TrueServe" width={28} height={28} style={{ borderRadius: '50%', boxShadow: '0 0 10px rgba(249,115,22,0.4)', flexShrink: 0 }} />
             <span style={{ color: '#fff', fontWeight: 700 }}>True<span style={{ color: '#f97316' }}>Serve</span></span>
           </div>
+          {role && <div className="adm-role-pill">{getRoleLabel(role)}</div>}
 
           <div className="adm-nav-section">
             {navItems.map((item) => (

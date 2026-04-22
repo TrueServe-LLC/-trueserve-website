@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "tsx scripts/seed_pimento_bay_kitchen.ts && tsx scripts/seed_krave489.ts",
+    "postbuild": "tsx scripts/seed_pimento_bay_kitchen.ts && tsx scripts/seed_krave489.ts && tsx scripts/seed_dank_burrito.ts",
     "start": "next start",
     "lint": "eslint",
     "db:up": "docker-compose up -d",

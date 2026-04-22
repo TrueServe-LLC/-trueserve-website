@@ -4,6 +4,8 @@
 > **For QA Testers** — Everything you need to test the TrueServe platform.  
 > Last updated: March 2026
 
+> **See also:** [`docs/QA_TDD_ASANA_PLAYBOOK.md`](docs/QA_TDD_ASANA_PLAYBOOK.md) for the current QA, TDD, responder, and Asana workflow.
+
 ---
 
 ## 📋 Table of Contents

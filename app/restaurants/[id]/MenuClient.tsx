@@ -187,6 +187,9 @@ export default function MenuClient({
         if (isDhansKitchen) {
             return ["Doubles", "Curry Platters", "Vegan", "Sides", "Drinks", "Dessert", "Main Menu"];
         }
+        if (restaurant?.name?.toLowerCase?.().includes("dank burrito")) {
+            return ["Burritos", "Bowls", "Quesadillas", "Salads", "Sides", "Kids Meals", "Desserts", "Drinks", "Main Menu"];
+        }
         if (restaurant?.name?.toLowerCase?.().includes("pimento")) {
             return ["Appetizers", "Entrees", "Roti", "Sides", "Drinks", "Desserts", "Main Menu"];
         }
@@ -272,7 +275,57 @@ export default function MenuClient({
                 return "Entrees";
             })();
 
-            const label = inferredLabel || pimentoLabel || kraveLabel || categoryLabelFor(item);
+            const dankLabel = (() => {
+                if (!restaurant?.name?.toLowerCase?.().includes("dank burrito")) return null;
+                if (typeof item.category === "string" && item.category.trim().length) return null;
+
+                const name = String(item.name || "").toLowerCase();
+
+                if (name.includes("quesadilla")) return "Quesadillas";
+                if (name.startsWith("kids ")) return "Kids Meals";
+                if (
+                    name.includes("fried oreos") ||
+                    name.includes("funnel fries") ||
+                    name.includes("crème brulee") ||
+                    name.includes("creme brulee")
+                ) {
+                    return "Desserts";
+                }
+                if (
+                    name.includes("sweet tea") ||
+                    name.includes("unsweet tea") ||
+                    name.includes("coke") ||
+                    name.includes("sprite") ||
+                    name.includes("lemonade") ||
+                    name.includes("water")
+                ) {
+                    return "Drinks";
+                }
+                if (
+                    name.includes("chips") ||
+                    name.includes("queso") ||
+                    name.includes("salsa") ||
+                    name.includes("guacamole") ||
+                    name.includes("side")
+                ) {
+                    return "Sides";
+                }
+                if (name.includes("salad")) return "Salads";
+                if (
+                    [
+                        "cloud 9",
+                        "dank banger",
+                        "porky's revenge",
+                        "sticky icky",
+                        "california dreaming",
+                    ].some((needle) => name.includes(needle))
+                ) {
+                    return "Burritos";
+                }
+                return "Bowls";
+            })();
+
+            const label = inferredLabel || pimentoLabel || kraveLabel || dankLabel || categoryLabelFor(item);
             if (!buckets.has(label)) buckets.set(label, []);
             buckets.get(label)!.push(item);
         }

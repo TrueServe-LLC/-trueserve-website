@@ -102,7 +102,6 @@ export default function AsanaBoard() {
     const [completingTask, setCompletingTask] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<"board" | "list">("board");
     const [filterAssignee, setFilterAssignee] = useState<string>("all");
-    const [expandedTask, setExpandedTask] = useState<string | null>(null);
 
     const fetchBoard = useCallback(async () => {
         try {
@@ -190,23 +189,45 @@ export default function AsanaBoard() {
         return new Date(t.due_on) < new Date();
     }).length : 0;
 
+    const boardSections = board
+        ? board.sections.map((section) => {
+            const tasks = (board.tasksPerSection[section.gid] || [])
+                .filter((task) => filterAssignee === "all" || task.assignee?.gid === filterAssignee);
+            return {
+                section,
+                tasks,
+                incompleteTasks: tasks.filter((task) => !task.completed),
+            };
+        })
+        : [];
+
+    const listTasks = board
+        ? boardSections.flatMap(({ section, tasks }) =>
+            tasks.map((task) => ({ section, task }))
+        )
+        : [];
+
+    const totalVisibleTasks = boardSections.reduce((sum, entry) => sum + entry.tasks.length, 0);
+
     if (loading && !board) {
         return (
-            <section className="mb-16">
-                <div className="flex items-center gap-4 mb-6">
-                    <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                        <span className="inline-block w-8 h-8 bg-gradient-to-br from-[#F06A6A] to-[#6A67CE] rounded-lg flex items-center justify-center text-sm">📋</span>
-                        Asana Board
-                    </h2>
+            <section className="adm-card mb-16">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 className="text-[26px] md:text-[30px] font-black italic tracking-tight text-white flex items-baseline gap-3">
+                            Asana <span className="not-italic text-[#f97316]">Board</span>
+                        </h2>
+                        <p className="text-[10px] uppercase tracking-[0.42em] text-[#667084] mt-2">Task management and operational oversight</p>
+                    </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="bg-white/[0.03] border border-white/5 rounded-2xl p-5 animate-pulse">
-                            <div className="h-4 bg-white/10 rounded-full w-24 mb-6" />
+                <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map((index) => (
+                        <div key={index} className="bg-[#101613] border border-[#1e2420] rounded-lg p-4 animate-pulse">
+                            <div className="h-3 bg-white/10 rounded-full w-24 mb-5" />
                             <div className="space-y-3">
-                                <div className="h-16 bg-white/5 rounded-xl" />
-                                <div className="h-16 bg-white/5 rounded-xl" />
-                                <div className="h-16 bg-white/5 rounded-xl" />
+                                <div className="h-16 bg-white/5 rounded-md" />
+                                <div className="h-16 bg-white/5 rounded-md" />
+                                <div className="h-16 bg-white/5 rounded-md" />
                             </div>
                         </div>
                     ))}
@@ -217,19 +238,21 @@ export default function AsanaBoard() {
 
     if (error) {
         return (
-            <section className="mb-16">
-                <div className="flex items-center gap-4 mb-6">
-                    <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                        <span className="inline-block w-8 h-8 bg-gradient-to-br from-[#F06A6A] to-[#6A67CE] rounded-lg flex items-center justify-center text-sm">📋</span>
-                        Asana Board
-                    </h2>
+            <section className="adm-card mb-16">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 className="text-[26px] md:text-[30px] font-black italic tracking-tight text-white flex items-baseline gap-3">
+                            Asana <span className="not-italic text-[#f97316]">Board</span>
+                        </h2>
+                        <p className="text-[10px] uppercase tracking-[0.42em] text-[#667084] mt-2">Task management and operational oversight</p>
+                    </div>
                 </div>
-                <div className="card p-8 text-center border-red-500/20 bg-red-500/5">
-                    <p className="text-red-400 text-sm font-bold mb-2">Failed to load Asana board</p>
-                    <p className="text-slate-500 text-xs mb-4">{error}</p>
+                <div className="bg-[#101613] border border-[#431212] rounded-lg p-6 text-center">
+                    <p className="text-[#f97316] text-sm font-bold mb-2">Failed to load Asana board</p>
+                    <p className="text-[#6b7280] text-xs mb-4">{error}</p>
                     <button
                         onClick={fetchBoard}
-                        className="text-[10px] font-black uppercase tracking-widest px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full transition-all"
+                        className="text-[10px] font-black uppercase tracking-[0.18em] px-4 py-2 bg-[#f97316] hover:bg-[#fb923c] text-[#0a0c09] border border-[#f97316] rounded-md transition-all"
                     >
                         Retry
                     </button>
@@ -241,127 +264,624 @@ export default function AsanaBoard() {
     if (!board) return null;
 
     return (
-        <section className="mb-16">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
-                <div>
-                  <h2 className="text-3xl font-bold flex items-center gap-3 italic">
-                      Asana <span className="text-primary not-italic">Board</span>
-                  </h2>
-                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-1">Task management and operational oversight</p>
+        <section className="adm-card mb-16 asana-board-shell">
+            <style>{`
+                .asana-board-shell {
+                    background: #141a18 !important;
+                    border: 1px solid #1e2420 !important;
+                    border-radius: 8px !important;
+                    padding: 18px !important;
+                }
+                .asana-header {
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: flex-start;
+                    justify-content: space-between;
+                    gap: 16px;
+                    margin-bottom: 14px;
+                }
+                .asana-heading {
+                    min-width: 280px;
+                }
+                .asana-title {
+                    font-size: 30px;
+                    line-height: 1;
+                    font-weight: 900;
+                    font-style: italic;
+                    letter-spacing: -0.02em;
+                    color: #fff;
+                    margin: 0;
+                    display: flex;
+                    align-items: baseline;
+                    gap: 12px;
+                }
+                .asana-title span {
+                    color: #f97316;
+                    font-style: normal;
+                }
+                .asana-subtitle {
+                    margin-top: 8px;
+                    font-size: 10px;
+                    font-weight: 800;
+                    letter-spacing: 0.42em;
+                    text-transform: uppercase;
+                    color: #667084;
+                }
+                .asana-controls {
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: flex-end;
+                    gap: 10px;
+                }
+                .asana-stat {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 10px;
+                    border-radius: 8px;
+                    border: 1px solid #1e2420;
+                    background: #101613;
+                    color: #9ca3af;
+                    font-size: 10px;
+                    font-weight: 800;
+                    letter-spacing: 0.18em;
+                    text-transform: uppercase;
+                    white-space: nowrap;
+                }
+                .asana-dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 999px;
+                    flex-shrink: 0;
+                }
+                .asana-dot--green { background: #10b981; }
+                .asana-dot--red { background: #ef4444; }
+                .asana-toggle {
+                    display: inline-flex;
+                    border: 1px solid #1e2420;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    background: #101613;
+                }
+                .asana-toggle button,
+                .asana-btn,
+                .asana-link,
+                .asana-mini-btn {
+                    border: none;
+                    outline: none;
+                    font-family: inherit;
+                    transition: all 150ms ease;
+                }
+                .asana-toggle button {
+                    padding: 8px 12px;
+                    background: transparent;
+                    color: #7a8087;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.18em;
+                    text-transform: uppercase;
+                    cursor: pointer;
+                }
+                .asana-toggle button:hover {
+                    color: #fff;
+                }
+                .asana-toggle button.active {
+                    background: #f97316;
+                    color: #0a0c09;
+                }
+                .asana-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    padding: 9px 14px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.18em;
+                    text-transform: uppercase;
+                }
+                .asana-btn--accent {
+                    background: #f97316;
+                    color: #0a0c09;
+                    border: 1px solid #f97316;
+                }
+                .asana-btn--accent:hover {
+                    background: #fb923c;
+                    border-color: #fb923c;
+                }
+                .asana-link {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    padding: 9px 14px;
+                    border-radius: 8px;
+                    border: 1px solid #1e2420;
+                    background: #101613;
+                    color: #c7ccd1;
+                    text-decoration: none;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.18em;
+                    text-transform: uppercase;
+                }
+                .asana-link:hover {
+                    color: #fff;
+                    border-color: rgba(249, 115, 22, 0.35);
+                }
+                .asana-filter {
+                    min-width: 180px;
+                    padding: 9px 12px;
+                    border-radius: 8px;
+                    border: 1px solid #1e2420;
+                    background: #101613;
+                    color: #e5e7eb;
+                    font-size: 12px;
+                    outline: none;
+                }
+                .asana-filter:focus {
+                    border-color: rgba(249, 115, 22, 0.55);
+                }
+                .asana-create {
+                    margin: 18px 0;
+                    padding: 14px;
+                    border-radius: 8px;
+                    border: 1px solid #1e2420;
+                    background: #101613;
+                }
+                .asana-create-grid {
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) 240px;
+                    gap: 10px;
+                }
+                .asana-input,
+                .asana-select,
+                .asana-textarea {
+                    width: 100%;
+                    border: 1px solid #1e2420;
+                    border-radius: 8px;
+                    background: #0d110f;
+                    color: #fff;
+                    padding: 11px 12px;
+                    font-size: 13px;
+                    outline: none;
+                }
+                .asana-textarea {
+                    min-height: 88px;
+                    resize: vertical;
+                }
+                .asana-input::placeholder,
+                .asana-textarea::placeholder {
+                    color: #667084;
+                }
+                .asana-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-top: 10px;
+                    flex-wrap: wrap;
+                }
+                .asana-btn--muted {
+                    background: #101613;
+                    color: #7a8087;
+                    border: 1px solid #1e2420;
+                }
+                .asana-btn--muted:hover {
+                    color: #fff;
+                    border-color: rgba(249, 115, 22, 0.25);
+                }
+                .asana-btn--disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+                .asana-columns,
+                .asana-list {
+                    border: 1px solid #1e2420;
+                    background: #101613;
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                .asana-columns {
+                    display: flex;
+                    gap: 1px;
+                    overflow-x: auto;
+                }
+                .asana-column {
+                    flex: 0 0 320px;
+                    min-height: 420px;
+                    background: #0d110f;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .asana-column__head {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 10px;
+                    padding: 12px 14px;
+                    border-bottom: 1px solid #1e2420;
+                }
+                .asana-column__name {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: #f97316;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.18em;
+                    text-transform: uppercase;
+                    font-style: italic;
+                }
+                .asana-column__count {
+                    color: #667084;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.12em;
+                }
+                .asana-task-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    padding: 12px;
+                }
+                .asana-task {
+                    border: 1px solid #1e2420;
+                    border-radius: 8px;
+                    background: #121816;
+                    padding: 12px;
+                    transition: border-color 150ms ease, background 150ms ease;
+                }
+                .asana-task:hover {
+                    border-color: rgba(249, 115, 22, 0.35);
+                    background: #131b18;
+                }
+                .asana-task__title {
+                    margin: 0;
+                    color: #e5e7eb;
+                    font-size: 13px;
+                    font-weight: 700;
+                    line-height: 1.4;
+                    letter-spacing: -0.01em;
+                }
+                .asana-task__meta {
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: space-between;
+                    gap: 10px;
+                    margin-top: 10px;
+                }
+                .asana-task__assignee {
+                    color: #667084;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                }
+                .asana-task__badges {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex-wrap: wrap;
+                    justify-content: flex-end;
+                }
+                .asana-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 3px 7px;
+                    border-radius: 999px;
+                    border: 1px solid #1e2420;
+                    background: #0d110f;
+                    color: #9ca3af;
+                    font-size: 8px;
+                    font-weight: 900;
+                    letter-spacing: 0.14em;
+                    text-transform: uppercase;
+                }
+                .asana-complete {
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 4px;
+                    border: 1px solid #1e2420;
+                    background: #0d110f;
+                    color: #d1d5db;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 150ms ease;
+                }
+                .asana-complete:hover {
+                    border-color: rgba(16, 185, 129, 0.45);
+                    background: rgba(16, 185, 129, 0.08);
+                    color: #a7f3d0;
+                }
+                .asana-empty {
+                    padding: 72px 16px;
+                    text-align: center;
+                    color: #667084;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.18em;
+                    text-transform: uppercase;
+                }
+                .asana-list {
+                    display: flex;
+                    flex-direction: column;
+                }
+                .asana-list-item {
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) auto;
+                    gap: 12px;
+                    padding: 14px 16px;
+                    border-bottom: 1px solid #1e2420;
+                    background: #0d110f;
+                }
+                .asana-list-item:last-child {
+                    border-bottom: none;
+                }
+                .asana-list-item__section {
+                    color: #f97316;
+                    font-size: 9px;
+                    font-weight: 900;
+                    letter-spacing: 0.18em;
+                    text-transform: uppercase;
+                    margin-bottom: 6px;
+                }
+                .asana-list-item__title {
+                    color: #e5e7eb;
+                    font-size: 13px;
+                    font-weight: 700;
+                    line-height: 1.4;
+                }
+                .asana-list-item__meta {
+                    margin-top: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                }
+                .asana-list-item__actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .asana-list-item__complete {
+                    margin-top: 2px;
+                }
+                @media (max-width: 1024px) {
+                    .asana-column {
+                        flex-basis: 290px;
+                    }
+                    .asana-create-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                @media (max-width: 768px) {
+                    .asana-board-shell {
+                        padding: 14px !important;
+                    }
+                    .asana-title {
+                        font-size: 24px;
+                    }
+                    .asana-controls {
+                        justify-content: flex-start;
+                    }
+                    .asana-column {
+                        flex-basis: 270px;
+                    }
+                    .asana-list-item {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            `}</style>
+
+            <div className="asana-header">
+                <div className="asana-heading">
+                    <h2 className="asana-title">Asana <span>Board</span></h2>
+                    <p className="asana-subtitle">Task management and operational oversight</p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex gap-4 mr-4">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{completedTasks} DONE</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 bg-red-500 rounded-full pulse"></span>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{overdueTasks} OVERDUE</span>
-                        </div>
+                <div className="asana-controls">
+                    <div className="asana-stat">
+                        <span className="asana-dot asana-dot--green" />
+                        {completedTasks} done
+                    </div>
+                    <div className="asana-stat">
+                        <span className="asana-dot asana-dot--red" />
+                        {overdueTasks} overdue
                     </div>
 
-                    <div className="flex bg-white/5 border border-white/10 rounded-lg p-0.5">
-                        <button onClick={() => setViewMode("board")} className={`text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-md transition-all ${viewMode === "board" ? "bg-primary text-black" : "text-slate-500 hover:text-white"}`}>Board</button>
-                        <button onClick={() => setViewMode("list")} className={`text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-primary text-black" : "text-slate-500 hover:text-white"}`}>List</button>
+                    {allAssignees.length > 0 && (
+                        <select
+                            value={filterAssignee}
+                            onChange={(event) => setFilterAssignee(event.target.value)}
+                            className="asana-filter"
+                            aria-label="Filter by assignee"
+                        >
+                            <option value="all">All assignees</option>
+                            {allAssignees.map((assignee) => (
+                                <option key={assignee.gid} value={assignee.gid}>
+                                    {assignee.name}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+
+                    <div className="asana-toggle" role="tablist" aria-label="Asana board view mode">
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("board")}
+                            className={viewMode === "board" ? "active" : ""}
+                        >
+                            Board
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("list")}
+                            className={viewMode === "list" ? "active" : ""}
+                        >
+                            List
+                        </button>
                     </div>
 
-                    <button onClick={() => setCreating(!creating)} className="bg-primary hover:bg-primary/90 text-black py-2 px-5 rounded-lg font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-2">+ New Task</button>
+                    <button
+                        type="button"
+                        onClick={() => setCreating(!creating)}
+                        className="asana-btn asana-btn--accent"
+                    >
+                        + New Task
+                    </button>
 
-                    <a href={`https://app.asana.com/0/1213802368265152/board`} target="_blank" rel="noopener noreferrer" className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-white px-4 py-2 border border-white/10 rounded-lg hover:border-white/20 transition-all">Open in Asana ↗</a>
+                    <a
+                        href="https://app.asana.com/0/1213802368265152/board"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="asana-link"
+                    >
+                        Open in Asana ↗
+                    </a>
                 </div>
             </div>
 
             {creating && (
-                <div className="mb-8 bg-white/[0.02] border border-white/5 rounded-2xl p-6 animate-fade-in">
-                    <form onSubmit={handleCreate} className="space-y-4">
-                        <div className="flex flex-col md:flex-row gap-4">
+                <div className="asana-create">
+                    <form onSubmit={handleCreate}>
+                        <div className="asana-create-grid">
                             <input
                                 type="text"
                                 value={newTaskName}
-                                onChange={(e) => setNewTaskName(e.target.value)}
-                                placeholder="Task name..."
-                                className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-primary/50"
+                                onChange={(event) => setNewTaskName(event.target.value)}
+                                placeholder="Task name"
+                                className="asana-input"
                                 autoFocus
                             />
                             <select
                                 value={newTaskSection}
-                                onChange={(e) => setNewTaskSection(e.target.value)}
-                                className="bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 focus:outline-none"
-                                aria-label="Select Task Section"
+                                onChange={(event) => setNewTaskSection(event.target.value)}
+                                className="asana-select"
+                                aria-label="Select task section"
                             >
                                 <option value="">Select section...</option>
-                                {board.sections.map((s) => (
-                                    <option key={s.gid} value={s.gid}>{s.name}</option>
+                                {board.sections.map((section) => (
+                                    <option key={section.gid} value={section.gid}>
+                                        {section.name}
+                                    </option>
                                 ))}
                             </select>
                         </div>
-                        <div className="flex gap-3">
-                            <button type="submit" disabled={submitting || !newTaskName.trim()} className="bg-primary text-black py-2 px-6 rounded-lg font-black uppercase tracking-widest text-[10px] disabled:opacity-50">
-                                {submitting ? "..." : "Create Task"}
+
+                        <div style={{ marginTop: 10 }}>
+                            <textarea
+                                value={newTaskNotes}
+                                onChange={(event) => setNewTaskNotes(event.target.value)}
+                                placeholder="Task notes, context, links, or QA details"
+                                className="asana-textarea"
+                            />
+                        </div>
+
+                        <div className="asana-actions">
+                            <button
+                                type="submit"
+                                disabled={submitting || !newTaskName.trim()}
+                                className={`asana-btn asana-btn--accent ${submitting || !newTaskName.trim() ? "asana-btn--disabled" : ""}`}
+                            >
+                                {submitting ? "Creating..." : "Create Task"}
                             </button>
-                            <button type="button" onClick={() => setCreating(false)} className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-white px-4 py-2">Cancel</button>
+                            <button
+                                type="button"
+                                onClick={() => setCreating(false)}
+                                className="asana-btn asana-btn--muted"
+                            >
+                                Cancel
+                            </button>
                         </div>
                     </form>
                 </div>
             )}
 
-            <div className="flex gap-px overflow-x-auto pb-4 bg-white/5 border border-white/5">
-                {board.sections.map((section) => {
-                    const tasks = (board.tasksPerSection[section.gid] || [])
-                        .filter(t => filterAssignee === "all" || t.assignee?.gid === filterAssignee);
-                    const incompleteTasks = tasks.filter(t => !t.completed);
-
-                    return (
-                        <div key={section.gid} className="flex-shrink-0 w-[340px] bg-[#0c0e13] min-h-[400px]">
-                            <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-primary text-[10px]">{getSectionIcon(section.name)}</span>
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary italic">
-                                        {section.name.replace(":", "")}
-                                    </h3>
+            {viewMode === "board" ? (
+                <div className="asana-columns">
+                    {boardSections.map(({ section, incompleteTasks }) => (
+                        <div key={section.gid} className="asana-column">
+                            <div className="asana-column__head">
+                                <div className="asana-column__name">
+                                    <span>{getSectionIcon(section.name)}</span>
+                                    <span>{section.name.replace(":", "")}</span>
                                 </div>
-                                <span className="text-[9px] font-black text-slate-700">{incompleteTasks.length}</span>
+                                <span className="asana-column__count">{incompleteTasks.length}</span>
                             </div>
 
-                            <div className="p-3 space-y-1.5">
+                            <div className="asana-task-list">
                                 {incompleteTasks.map((task) => {
                                     const dueBadge = getDueBadge(task.due_on);
                                     return (
-                                        <div key={task.gid} className="p-4 bg-white/[0.02] border border-white/5 rounded-lg hover:border-white/10 transition-all cursor-pointer group">
-                                            <div className="flex flex-col gap-2">
-                                                <p className="text-[12px] font-bold text-slate-200 tracking-tight leading-snug group-hover:text-white transition-colors">
-                                                    {task.name}
-                                                </p>
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                      <span className="text-[9px] font-black uppercase text-slate-600">{task.assignee?.name || 'Unassigned'}</span>
-                                                      {dueBadge && (
-                                                          <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${dueBadge.className}`}>
-                                                              {dueBadge.text}
-                                                          </span>
-                                                      )}
-                                                    </div>
-                                                    <button onClick={(e) => { e.stopPropagation(); handleComplete(task.gid, true); }} className="w-4 h-4 rounded border border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 flex items-center justify-center transition-all">
-                                                        <span className="text-[8px] text-white/0 group-hover:text-white/20">✓</span>
-                                                    </button>
+                                        <article key={task.gid} className="asana-task">
+                                            <p className="asana-task__title">{task.name}</p>
+                                            <div className="asana-task__meta">
+                                                <div className="asana-task__badges">
+                                                    <span className="asana-task__assignee">
+                                                        {task.assignee?.name || "Unassigned"}
+                                                    </span>
+                                                    {dueBadge && <span className={`asana-badge ${dueBadge.className}`}>{dueBadge.text}</span>}
                                                 </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleComplete(task.gid, true)}
+                                                    className="asana-complete"
+                                                    aria-label={`Mark ${task.name} complete`}
+                                                    disabled={completingTask === task.gid}
+                                                >
+                                                    ✓
+                                                </button>
                                             </div>
-                                        </div>
+                                        </article>
                                     );
                                 })}
 
                                 {incompleteTasks.length === 0 && (
-                                    <div className="py-20 text-center opacity-20">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">NO TASKS</p>
-                                    </div>
+                                    <div className="asana-empty">No tasks</div>
                                 )}
                             </div>
                         </div>
-                    );
-                })}
+                    ))}
+                </div>
+            ) : (
+                <div className="asana-list">
+                    {listTasks.map(({ section, task }) => {
+                        const dueBadge = getDueBadge(task.due_on);
+                        return (
+                            <div key={task.gid} className="asana-list-item">
+                                <div>
+                                    <div className="asana-list-item__section">{section.name.replace(":", "")}</div>
+                                    <div className="asana-list-item__title">{task.name}</div>
+                                    <div className="asana-list-item__meta">
+                                        <span className="asana-task__assignee">{task.assignee?.name || "Unassigned"}</span>
+                                        {dueBadge && <span className={`asana-badge ${dueBadge.className}`}>{dueBadge.text}</span>}
+                                    </div>
+                                </div>
+                                <div className="asana-list-item__actions">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleComplete(task.gid, true)}
+                                        className="asana-complete asana-list-item__complete"
+                                        aria-label={`Mark ${task.name} complete`}
+                                        disabled={completingTask === task.gid}
+                                    >
+                                        ✓
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            <div className="mt-3 text-[10px] uppercase tracking-[0.22em] text-[#667084]">
+                {totalVisibleTasks} visible tasks · {board.sections.length} sections · synced with Asana
             </div>
         </section>
     );

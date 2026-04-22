@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
-import { isInternalStaff } from "@/lib/rbac";
+import { canAccessAdminSection } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { updateInAppContent } from "../actions";
 import PolicyCMS from "@/components/admin/PolicyCMS";
@@ -25,13 +25,13 @@ export default async function ContentCMSPage() {
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
+    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'content'));
     if (!isAuthorized) redirect("/admin/login");
 
     const policies = await getPolicies();
 
     return (
-        <AdminPortalWrapper>
+        <AdminPortalWrapper role={role}>
             <div className="adm-page-header">
                 <h1>Content CMS</h1>
                 <p>Manage policies, FAQs, legal docs, and in-app content</p>

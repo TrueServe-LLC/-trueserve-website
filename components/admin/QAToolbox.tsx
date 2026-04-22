@@ -7,6 +7,9 @@ export default function QAToolbox({ restaurants }: { restaurants: any[] }) {
     const [loading, setLoading] = useState<string | null>(null);
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
     const [logs, setLogs] = useState<any[]>([]);
+    const isProduction = process.env.NODE_ENV === "production";
+
+    if (isProduction) return null;
 
     const fetchLogs = async () => {
         setLoading("fetch_logs");

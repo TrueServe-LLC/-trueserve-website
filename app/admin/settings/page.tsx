@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
-import { isInternalStaff } from "@/lib/rbac";
+import { canAccessAdminSection, ADMIN_ROLE_MATRIX, ADMIN_SECTION_PERMISSIONS, getPermissionLabel } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { updateConfigParam } from "../actions";
 import AdminPortalWrapper from "../AdminPortalWrapper";
@@ -27,15 +27,34 @@ export default async function SettingsPage() {
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && isInternalStaff(role));
+    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'settings'));
     if (!isAuthorized) redirect("/admin/login");
 
     const configs = await getConfigs();
     const auditLogs = await getAuditLogs();
 
     return (
-        <AdminPortalWrapper>
+        <AdminPortalWrapper role={role}>
             <style>{`
+                .iam-overview { display: grid; grid-template-columns: 1.15fr 1fr; gap: 12px; margin-bottom: 16px; }
+                .iam-callouts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+                .iam-callout { background: #101512; border: 1px solid #1e2420; border-radius: 8px; padding: 10px 12px; }
+                .iam-callout strong { display: block; color: #fff; font-size: 13px; margin-bottom: 2px; }
+                .iam-callout span { color: #777; font-size: 12px; line-height: 1.45; }
+                .iam-role-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+                .iam-role-card { background: #101512; border: 1px solid #1e2420; border-radius: 8px; padding: 14px; }
+                .iam-role-name { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+                .iam-role-desc { font-size: 12px; color: #777; line-height: 1.5; margin-bottom: 10px; }
+                .iam-perm-list { display: flex; flex-wrap: wrap; gap: 6px; }
+                .iam-perm-chip { font-size: 10px; color: #f97316; background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.16); padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+                .iam-section-table-wrap { border: 1px solid #1e2420; border-radius: 8px; overflow-x: auto; background: #101512; margin-top: 12px; }
+                .iam-section-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                .iam-section-table th { padding: 10px 12px; text-align: left; color: #666; font-weight: 500; border-bottom: 1px solid #1e2420; white-space: nowrap; }
+                .iam-section-table td { padding: 10px 12px; color: #aaa; border-bottom: 1px solid #1e2420; vertical-align: top; }
+                .iam-section-table tr:last-child td { border-bottom: none; }
+                .iam-section-title { color: #fff; font-weight: 600; }
+                .iam-role-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+                .iam-role-tag { font-size: 10px; color: #f5a623; background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.14); padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
                 .set-param-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #1e2420; gap: 12px; }
                 .set-param-row:last-child { border-bottom: none; }
                 .set-param-name { font-size: 13px; font-weight: 500; color: #ccc; }
@@ -60,6 +79,81 @@ export default async function SettingsPage() {
                 <p>Platform parameters, system configuration, and change history</p>
             </div>
             <div className="adm-page-body">
+                <div className="adm-card" style={{ marginBottom: 16 }}>
+                    <div className="adm-card-title">Identity &amp; Access Matrix</div>
+                    <div className="iam-overview">
+                        <div className="iam-callouts">
+                            <div className="iam-callout">
+                                <strong>Eric</strong>
+                                <span>Super Admin — full control over platform settings, billing, support, and access.</span>
+                            </div>
+                            <div className="iam-callout">
+                                <strong>Leon</strong>
+                                <span>Super Admin — same top-level access as Eric for redundancy.</span>
+                            </div>
+                            <div className="iam-callout">
+                                <strong>Santhini</strong>
+                                <span>QA — release checks, feature flags, and validation tooling.</span>
+                            </div>
+                            <div className="iam-callout">
+                                <strong>Ronni / Providant Consulting</strong>
+                                <span>Project Manager — operational oversight, content, team coordination, and support.</span>
+                            </div>
+                        </div>
+                        <div className="iam-role-grid">
+                            {ADMIN_ROLE_MATRIX.map((entry) => (
+                                <div key={entry.role} className="iam-role-card">
+                                    <div className="iam-role-name">{entry.label}</div>
+                                    <div className="iam-role-desc">{entry.description}</div>
+                                    <div className="iam-perm-list">
+                                        {entry.permissions.map((permission) => (
+                                            <span key={permission} className="iam-perm-chip">{getPermissionLabel(permission)}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="iam-section-table-wrap">
+                        <table className="iam-section-table">
+                            <thead>
+                                <tr>
+                                    <th>Portal Section</th>
+                                    <th>Required Permission</th>
+                                    <th>Allowed Roles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Object.entries(ADMIN_SECTION_PERMISSIONS).map(([section, permissions]) => {
+                                    const allowedRoles = ADMIN_ROLE_MATRIX
+                                        .filter((entry) => permissions.some((permission) => entry.permissions.includes(permission)))
+                                        .map((entry) => entry.label);
+
+                                    return (
+                                        <tr key={section}>
+                                            <td className="iam-section-title">{section.replace(/-/g, ' ')}</td>
+                                            <td>
+                                                <div className="iam-role-tags">
+                                                    {permissions.map((permission) => (
+                                                        <span key={permission} className="iam-role-tag">{getPermissionLabel(permission)}</span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="iam-role-tags">
+                                                    {allowedRoles.map((label) => (
+                                                        <span key={label} className="iam-role-tag">{label}</span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 {/* Platform Parameters */}
                 <div className="adm-card" style={{ marginBottom: 16 }}>
                     <div className="adm-card-title">Platform Parameters</div>
