@@ -9,6 +9,7 @@ import CompleteDeliveryForm from "./CompleteDeliveryForm";
 import DriverMap from "@/components/DriverMap";
 import DriverRouteMap from "./DriverRouteMap";
 import DriverLocationTracker from "@/components/DriverLocationTracker";
+import WeatherCard from "@/components/WeatherCard";
 
 export const dynamic = "force-dynamic";
 
@@ -325,19 +326,12 @@ export default async function DriverDashboard() {
             </div>
         </div>
 
-        {/* WEATHER — connected strip below stats */}
-        <div className="dd-weather-card">
-            <div>
-                <div className="dd-weather-label">Weather</div>
-                <div className="dd-weather-temp">{weather.temperature}°F</div>
-            </div>
-            <div style={{ fontSize: 11, color: '#555', textAlign: 'right' }}>
-                <div>{weather.condition}</div>
-                <div style={{ marginTop: 3, color: '#3a3a3a' }}>
-                    {driverLat && driverLng ? `${driverLat.toFixed(2)}°N` : 'Location pending'}
-                </div>
-            </div>
-        </div>
+        {/* WEATHER — animated condition card */}
+        <WeatherCard
+            temperature={weather.temperature}
+            condition={weather.condition}
+            locationLabel={driverLat && driverLng ? `${driverLat.toFixed(2)}°N` : undefined}
+        />
 
         {/* STRIPE BANNER */}
         {!hasStripe ? (
