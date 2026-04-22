@@ -197,7 +197,7 @@ export const COMMON_DRIVER_QUESTIONS = [
     },
     {
         question: "Why is my rating low?",
-        answer: "Ratings are based on punctuality, food handling, and customer communication. Check your delivery times and ask customers for feedback to improve.",
+        answer: "Your star rating is the average of your latest customer reviews, with up to the most recent 100 reviews counted. Completion rate and on-time rate are tracked separately on the Reputation page, so improving delivery timing and communication still helps the overall picture customers see.",
     },
     {
         question: "How do I go online?",

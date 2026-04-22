@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { syncDriverStoredRating } from "@/lib/driver-metrics";
 import { revalidatePath } from "next/cache";
 
 export async function submitReviewWithPhoto(formData: FormData) {
@@ -69,7 +70,15 @@ export async function submitReviewWithPhoto(formData: FormData) {
             throw new Error("Failed to save review to database.");
         }
 
+        try {
+            await syncDriverStoredRating(driverId);
+        } catch (ratingSyncError) {
+            console.error("Driver rating sync failed after review insert:", ratingSyncError);
+        }
+
         revalidatePath(`/orders/${orderId}`);
+        revalidatePath("/driver/dashboard");
+        revalidatePath("/driver/dashboard/ratings");
         return { success: true };
     } catch (e: any) {
         console.error("Submit Review Error:", e);

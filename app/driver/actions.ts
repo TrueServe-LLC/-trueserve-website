@@ -468,13 +468,25 @@ export async function pickupOrder(orderId: string) {
             throw new Error("Order not ready for pickup.");
         }
 
-        const { error } = await supabase
+        let { error } = await supabase
             .from('Order')
             .update({
                 status: 'PICKED_UP',
+                pickedUpAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             })
             .eq('id', orderId);
+
+        if (error && (error.code === 'PGRST204' || error.message?.includes('pickedUpAt'))) {
+            const fallback = await supabase
+                .from('Order')
+                .update({
+                    status: 'PICKED_UP',
+                    updatedAt: new Date().toISOString()
+                })
+                .eq('id', orderId);
+            error = fallback.error;
+        }
 
         if (error) throw error;
 
@@ -557,16 +569,29 @@ export async function confirmPickupWithPhoto(formData: FormData) {
         // Update order: mark picked up + save pickup photo URL
         const updateData: any = {
             status: 'PICKED_UP',
+            pickedUpAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
         if (pickupPhotoUrl) {
             updateData.pickupPhotoUrl = pickupPhotoUrl;
         }
 
-        const { error } = await supabase
+        let { error } = await supabase
             .from('Order')
             .update(updateData)
             .eq('id', orderId);
+
+        if (error && (error.code === 'PGRST204' || error.message?.includes('pickedUpAt'))) {
+            const fallback = await supabase
+                .from('Order')
+                .update({
+                    status: 'PICKED_UP',
+                    pickupPhotoUrl,
+                    updatedAt: new Date().toISOString(),
+                })
+                .eq('id', orderId);
+            error = fallback.error;
+        }
 
         if (error) throw error;
 
@@ -672,14 +697,27 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
         }
 
         // 2. Update order status
-        const { error } = await supabase
+        let { error } = await supabase
             .from('Order')
             .update({
                 status: 'DELIVERED',
+                deliveredAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             })
             .eq('id', orderId)
             .eq('status', 'PICKED_UP');
+
+        if (error && (error.code === 'PGRST204' || error.message?.includes('deliveredAt'))) {
+            const fallback = await supabase
+                .from('Order')
+                .update({
+                    status: 'DELIVERED',
+                    updatedAt: new Date().toISOString()
+                })
+                .eq('id', orderId)
+                .eq('status', 'PICKED_UP');
+            error = fallback.error;
+        }
 
         if (error) throw error;
 
@@ -786,27 +824,29 @@ export async function completePhotoDelivery(formData: FormData) {
         }
 
         // 3. Update order status & attach photo URL
-        const checkColumn = await supabase.from('Order').update({ status: 'DELIVERED' }).eq('id', '00000000-0000-0000-0000-000000000000');
-        let updatePayload: any = {
-            status: 'DELIVERED',
-            updatedAt: new Date().toISOString()
-        };
-        // Add photo URL (We assume column exists, if SQL schema script was executed)
-        // If not, we still update status to DELIVERED.
-        
-        const { error } = await supabase
+        let { error } = await supabase
             .from('Order')
             .update({
                 status: 'DELIVERED',
+                deliveredAt: new Date().toISOString(),
                 proofOfDeliveryUrl: proofOfDeliveryUrl,
                 updatedAt: new Date().toISOString()
             })
             .eq('id', orderId)
             .eq('status', 'PICKED_UP');
 
-        if (error) {
+        if (error && (error.code === 'PGRST204' || error.message?.includes('deliveredAt'))) {
             // fallback if column missing
-            await supabase.from('Order').update({ status: 'DELIVERED', updatedAt: new Date().toISOString() }).eq('id', orderId).eq('status', 'PICKED_UP');
+            const fallback = await supabase
+                .from('Order')
+                .update({ status: 'DELIVERED', updatedAt: new Date().toISOString() })
+                .eq('id', orderId)
+                .eq('status', 'PICKED_UP');
+            error = fallback.error;
+        }
+
+        if (error) {
+            throw error;
         }
 
         // Notify Customer
