@@ -1,5 +1,6 @@
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import DriverMap from "@/components/DriverMap";
+import MileageTracker from "@/components/MileageTracker";
 
 export const dynamic = 'force-dynamic';
 
@@ -150,10 +151,31 @@ export default async function DriverEarnings() {
                     <div className="liquidity-block">
                         <div className="liq-hd"><div className="liq-title">Rapid Liquidity</div><div className="settlement-tag bg-[#1a1200] border border-[#3a2800] text-[#f97316] text-[9px] px-2 py-0.5 uppercase font-bold">3 Ready</div></div>
                         <div className="text-[9px] font-bold text-[#444] uppercase tracking-widest mb-4">Liquid balance available</div>
+
+                        {/* Tip transparency banner */}
+                        <div style={{
+                            display: "flex", alignItems: "flex-start", gap: 10,
+                            background: "rgba(77,202,128,0.06)", border: "1px solid rgba(77,202,128,0.18)",
+                            borderRadius: 8, padding: "10px 12px", marginBottom: 14,
+                        }}>
+                            <span style={{ fontSize: 16, flexShrink: 0 }}>💚</span>
+                            <div>
+                                <div style={{ fontSize: 11, fontWeight: 800, color: "#4dca80", marginBottom: 2 }}>
+                                    TrueServe takes 0% of your tips. Always.
+                                </div>
+                                <div style={{ fontSize: 10, color: "#555", lineHeight: 1.5 }}>
+                                    Every dollar customers tip goes directly to you — no deductions, no platform cuts, no surprises.
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="text-[9px] font-bold text-[#f97316] uppercase tracking-widest mb-1">Liquid Balance</div>
                         <div className="liq-balance-val">${balance.toFixed(2)}</div>
                         <button className="cash-out-btn">Cash Out Funds</button>
                     </div>
+
+                    {/* Mileage & Tax Tracker */}
+                    <MileageTracker driverId={driver.id} />
                 </div>
             </div>
         </div>

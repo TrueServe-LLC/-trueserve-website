@@ -9,6 +9,7 @@ import { customerCancelOrder, submitOrderIssueProof } from "../actions";
 import { useRamenStream } from "@/hooks/useRamenStream";
 import { driverLocChannel } from "@/lib/ramen/types";
 import type { DriverLocationPayload } from "@/lib/ramen/types";
+import PostDeliveryTip from "@/components/PostDeliveryTip";
 
 interface OrderTrackingClientProps {
     order: any;
@@ -18,6 +19,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     const [currentOrder, setCurrentOrder] = useState(order);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [showDelivered, setShowDelivered] = useState(currentOrder.status === 'DELIVERED');
+    const [showTipPrompt, setShowTipPrompt] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [cancelComment, setCancelComment] = useState("");
@@ -96,7 +98,8 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 setCurrentOrder((prev: any) => ({ ...prev, ...newOrder }));
                 if (newOrder.status === 'DELIVERED') {
                     setShowDelivered(true);
-                    setTimeout(() => setIsReviewOpen(true), 3500);
+                    // Show tip prompt first, then review modal after tip is dismissed
+                    setTimeout(() => setShowTipPrompt(true), 3500);
                 }
             })
             .subscribe();
@@ -455,6 +458,22 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         )}
                 </div>
             </div>
+
+            {showTipPrompt && currentOrder.driverId && (
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}>
+                    <div style={{ width: '100%', maxWidth: 400 }}>
+                        <PostDeliveryTip
+                            orderId={currentOrder.id}
+                            restaurantName={currentOrder.restaurant?.name || "the restaurant"}
+                            deliveryPhoto={currentOrder.deliveryPhotoUrl ?? null}
+                            onDone={() => {
+                                setShowTipPrompt(false);
+                                setIsReviewOpen(true);
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
 
             {isCancelModalOpen && (
                 <div className="overlay" style={{ display: 'flex', position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000, alignItems: 'center', justifyContent: 'center' }}>
