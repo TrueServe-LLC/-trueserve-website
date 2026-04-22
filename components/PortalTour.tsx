@@ -48,23 +48,28 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
       return [
         {
           title: "Dashboard",
-          body: "Your command center: view performance, orders, and keep your storefront up to date.",
-          selector: "[data-tour='merchant-nav-dashboard']",
+          body: "Your command center — live orders, today’s revenue, and active driver statuses all in one view.",
+          selector: "[data-tour=’merchant-nav-dashboard’]",
+        },
+        {
+          title: "Compliance",
+          body: "Keep your health grade, business license, and documents current so your storefront stays live.",
+          selector: "[data-tour=’merchant-nav-compliance’]",
         },
         {
           title: "Integrations",
-          body: "Connect Toast POS and payment tools here. This is where your operational setup lives.",
-          selector: "[data-tour='merchant-nav-integrations']",
+          body: "Connect your POS (Toast, Square, etc.) to sync your menu and receive orders directly in your kitchen.",
+          selector: "[data-tour=’merchant-nav-integrations’]",
         },
         {
           title: "Storefront",
-          body: "Manage your banner, embed, and customer-facing storefront preview here.",
-          selector: "[data-tour='merchant-nav-storefront']",
+          body: "Control your banner, description, hours, and the embeddable widget for your own website.",
+          selector: "[data-tour=’merchant-nav-storefront’]",
         },
         {
-          title: "Support",
-          body: "Tap support anytime for help. Ask the AI, or request a human agent if needed.",
-          selector: "[data-tour='support-fab']",
+          title: "Franchise",
+          body: "Manage multiple locations from one account — per-location hours, menus, and consolidated revenue.",
+          selector: "[data-tour=’merchant-nav-franchise’]",
         },
       ];
     }
@@ -72,28 +77,33 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
     return [
       {
         title: "Dashboard",
-        body: "Your home base for active deliveries, availability, and today’s activity.",
-        selector: "[data-tour='driver-nav-dashboard']",
+        body: "Your home base — available trips, today’s earnings, active delivery, and online/offline toggle.",
+        selector: "[data-tour=’driver-nav-dashboard’]",
       },
       {
         title: "Settlements",
-        body: "See your payouts and earnings details in one place.",
-        selector: "[data-tour='driver-nav-earnings']",
+        body: "Weekly pay breakdown: every trip, tip, and deduction. See exactly when your next deposit lands.",
+        selector: "[data-tour=’driver-nav-earnings’]",
       },
       {
         title: "Reputation",
-        body: "Track ratings and feedback to keep your standing strong.",
-        selector: "[data-tour='driver-nav-ratings']",
+        body: "Track your star rating, acceptance rate, and customer feedback. Stay above 4.5 for priority orders.",
+        selector: "[data-tour=’driver-nav-ratings’]",
+      },
+      {
+        title: "Compliance",
+        body: "Manage your license, insurance, and background check status. TrueServe flags anything expiring.",
+        selector: "[data-tour=’driver-nav-compliance’]",
       },
       {
         title: "Profile",
-        body: "Update account details and preferences here.",
-        selector: "[data-tour='driver-nav-account']",
+        body: "Update your personal info, vehicle details, and bank account for payouts.",
+        selector: "[data-tour=’driver-nav-account’]",
       },
       {
-        title: "Support",
-        body: "Need help mid-route? Support is always one tap away.",
-        selector: "[data-tour='support-fab']",
+        title: "Help",
+        body: "Need help mid-route? Tap Support for live chat, call-back, or to report an order issue — 24/7.",
+        selector: "[data-tour=’support-fab’]",
       },
     ];
   }, [portal]);

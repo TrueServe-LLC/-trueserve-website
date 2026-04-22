@@ -12,6 +12,7 @@ import AutoPilotPanel from "@/app/merchant/dashboard/AutoPilotPanel";
 import BusyZonesPanel from "@/app/merchant/dashboard/BusyZonesPanel";
 import IssuesPanel from "@/app/merchant/dashboard/IssuesPanel";
 import GHLSettingsPanel from "@/app/merchant/dashboard/GHLSettingsPanel";
+import LiveOrdersPanel from "@/app/merchant/dashboard/LiveOrdersPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -265,6 +266,12 @@ export default async function MerchantDashboard({
                     <span className="mch-stripe-connected-badge">✓ Payouts Active</span>
                 )}
             </div>
+
+            {/* LIVE ORDERS */}
+            <LiveOrdersPanel
+                restaurantId={restaurant.id}
+                initialOrders={pendingOrders}
+            />
 
             {/* QUICK SETUP */}
             <div className="mch-section-head">Quick Setup</div>

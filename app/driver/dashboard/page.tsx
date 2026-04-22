@@ -7,6 +7,7 @@ import { getCurrentWeather } from "@/lib/weather";
 import PickupPhotoForm from "./PickupPhotoForm";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
 import DriverMap from "@/components/DriverMap";
+import DriverRouteMap from "./DriverRouteMap";
 
 export const dynamic = "force-dynamic";
 
@@ -429,13 +430,29 @@ export default async function DriverDashboard() {
             {/* LIVE MAP */}
             <div className="dd-panel">
                 <div className="dd-panel-section-label">Navigation</div>
-                <div className="dd-panel-title">Live Map + Heatmap</div>
+                <div className="dd-panel-title">
+                    {primaryOrder && driverLat !== null && driverLng !== null
+                        ? "Route Snapshot"
+                        : "Live Map + Heatmap"}
+                </div>
+
+                {primaryOrder && driverLat !== null && driverLng !== null ? (
+                    <DriverRouteMap
+                        driverLat={driverLat}
+                        driverLng={driverLng}
+                        restaurantLat={primaryOrder.restaurant?.lat ?? null}
+                        restaurantLng={primaryOrder.restaurant?.lng ?? null}
+                        deliveryAddress={primaryOrder.deliveryAddress ?? null}
+                        status={primaryOrder.status}
+                    />
+                ) : (
                 <div className="dd-map-wrap">
                     <DriverMap
                         initialCenter={driverLat !== null && driverLng !== null ? { lat: driverLat, lng: driverLng } : null}
                         className="h-[260px] w-full"
                     />
                 </div>
+                )}
 
                 {/* ESSENTIALS */}
                 <div style={{ marginTop: 16 }}>

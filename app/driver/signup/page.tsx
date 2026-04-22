@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { submitDriverApplication } from "@/app/driver/actions";
+import DriverEarningsCalc from "@/components/DriverEarningsCalc";
 
 export default function DriverSignupPage() {
   const [step, setStep] = useState(1);
@@ -89,6 +90,7 @@ export default function DriverSignupPage() {
                   </div>
                 </li>
               </ul>
+              <DriverEarningsCalc />
             </div>
           </section>
 

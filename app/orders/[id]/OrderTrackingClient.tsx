@@ -14,6 +14,7 @@ interface OrderTrackingClientProps {
 export default function OrderTrackingClient({ order }: OrderTrackingClientProps) {
     const [currentOrder, setCurrentOrder] = useState(order);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
+    const [showDelivered, setShowDelivered] = useState(currentOrder.status === 'DELIVERED');
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [cancelComment, setCancelComment] = useState("");
@@ -90,7 +91,8 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 const newOrder = payload.new;
                 setCurrentOrder((prev: any) => ({ ...prev, ...newOrder }));
                 if (newOrder.status === 'DELIVERED') {
-                    setTimeout(() => setIsReviewOpen(true), 2000);
+                    setShowDelivered(true);
+                    setTimeout(() => setIsReviewOpen(true), 3500);
                 }
             })
             .subscribe();
@@ -176,6 +178,87 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
 
     return (
         <main id="view-tracking" className="active">
+        {showDelivered && (
+            <div
+                onClick={() => setShowDelivered(false)}
+                style={{
+                    position: "fixed", inset: 0, zIndex: 9000,
+                    background: "rgba(0,0,0,0.72)", backdropFilter: "blur(6px)",
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    gap: 20, cursor: "pointer",
+                }}
+            >
+                <style>{`
+                    @keyframes ts-ring-pulse {
+                        0%   { transform: scale(0.6); opacity: 0; }
+                        40%  { transform: scale(1.08); opacity: 1; }
+                        70%  { transform: scale(0.97); }
+                        100% { transform: scale(1); opacity: 1; }
+                    }
+                    @keyframes ts-check-draw {
+                        from { stroke-dashoffset: 60; opacity: 0; }
+                        to   { stroke-dashoffset: 0;  opacity: 1; }
+                    }
+                    @keyframes ts-confetti-drop {
+                        0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+                        100% { transform: translateY(80px)  rotate(360deg); opacity: 0; }
+                    }
+                    @keyframes ts-text-rise {
+                        from { opacity: 0; transform: translateY(14px); }
+                        to   { opacity: 1; transform: translateY(0); }
+                    }
+                `}</style>
+
+                {/* Confetti dots */}
+                {[...Array(14)].map((_, i) => (
+                    <div key={i} style={{
+                        position: "absolute",
+                        top: `${20 + Math.random() * 40}%`,
+                        left: `${5 + (i / 14) * 90}%`,
+                        width: 8, height: 8, borderRadius: "50%",
+                        background: ["#f97316","#fbbf24","#4dca80","#fff","#fb923c"][i % 5],
+                        animation: `ts-confetti-drop ${0.9 + Math.random() * 0.8}s ease-out ${i * 0.06}s both`,
+                        pointerEvents: "none",
+                    }} />
+                ))}
+
+                {/* Checkmark circle */}
+                <div style={{
+                    width: 100, height: 100, borderRadius: "50%",
+                    border: "3px solid rgba(77,202,128,0.3)",
+                    background: "rgba(77,202,128,0.12)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    animation: "ts-ring-pulse 0.55s cubic-bezier(.34,1.56,.64,1) both",
+                }}>
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <polyline
+                            points="10,26 20,36 38,14"
+                            stroke="#4dca80" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"
+                            strokeDasharray="60" strokeDashoffset="60"
+                            style={{ animation: "ts-check-draw 0.45s ease-out 0.3s both" }}
+                        />
+                    </svg>
+                </div>
+
+                <div style={{ textAlign: "center", animation: "ts-text-rise 0.4s ease-out 0.5s both", opacity: 0 }}>
+                    <p style={{ fontSize: 28, fontWeight: 900, color: "#fff", letterSpacing: "-0.02em" }}>
+                        Order Delivered! 🎉
+                    </p>
+                    <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", marginTop: 6 }}>
+                        Enjoy your meal · tap to dismiss
+                    </p>
+                </div>
+
+                <div style={{
+                    marginTop: 4, padding: "10px 24px", borderRadius: 999,
+                    border: "1px solid rgba(77,202,128,0.35)", background: "rgba(77,202,128,0.08)",
+                    color: "#4dca80", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+                    animation: "ts-text-rise 0.4s ease-out 0.7s both", opacity: 0,
+                }}>
+                    Rate your experience →
+                </div>
+            </div>
+        )}
             <div className="track-top">
                 <div>
                     <div className="track-label">Order #{currentOrder.id.slice(-6).toUpperCase()} · {currentOrder.restaurant.name}</div>
@@ -224,6 +307,41 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                     <div className="track-right">
                         <div className="status-box">
                             <h3>Order Status</h3>
+
+                            {/* Live prep status banner */}
+                            {currentOrder.status === "PREPARING" && (
+                                <div style={{
+                                    display: "flex", alignItems: "center", gap: 10,
+                                    background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.22)",
+                                    borderRadius: 10, padding: "10px 14px", marginBottom: 14,
+                                }}>
+                                    <div style={{
+                                        width: 8, height: 8, borderRadius: "50%", background: "#fbbf24", flexShrink: 0,
+                                        animation: "ddPulse 1.4s ease-in-out infinite",
+                                    }} />
+                                    <div>
+                                        <div style={{ fontSize: 12, fontWeight: 800, color: "#fbbf24" }}>Kitchen is preparing your order</div>
+                                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Your food is being made fresh right now</div>
+                                    </div>
+                                </div>
+                            )}
+                            {currentOrder.status === "READY_FOR_PICKUP" && (
+                                <div style={{
+                                    display: "flex", alignItems: "center", gap: 10,
+                                    background: "rgba(77,202,128,0.08)", border: "1px solid rgba(77,202,128,0.25)",
+                                    borderRadius: 10, padding: "10px 14px", marginBottom: 14,
+                                }}>
+                                    <div style={{
+                                        width: 8, height: 8, borderRadius: "50%", background: "#4dca80", flexShrink: 0,
+                                        animation: "ddPulse 1.4s ease-in-out infinite",
+                                    }} />
+                                    <div>
+                                        <div style={{ fontSize: 12, fontWeight: 800, color: "#4dca80" }}>Order is ready — driver is on the way</div>
+                                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Your food is packed and waiting for pickup</div>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="tl">
                                 <div className={`tl-row ${currentStep >= 1 ? 'done' : ''}`}>
                                     <div className={`tl-dot ${currentStep >= 1 ? 'done' : 'wait'}`}>✓</div>
@@ -236,7 +354,14 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                     <div className={`tl-dot ${currentStep >= 2 ? 'done' : currentStep === 1 ? 'live' : 'wait'}`}>{currentStep === 1 ? '⟳' : '✓'}</div>
                                     <div className="tl-body">
                                         <div className="tl-lbl">Preparing Your Food</div>
-                                        <div className="tl-sub">Kitchen is cooking</div>
+                                        <div className="tl-sub">{currentStep === 1 ? "Waiting for kitchen to start" : "Kitchen is cooking"}</div>
+                                    </div>
+                                </div>
+                                <div className={`tl-row ${currentStep >= 3 ? 'done' : currentStep === 2 ? 'live' : ''}`}>
+                                    <div className={`tl-dot ${currentStep >= 3 ? 'done' : currentStep === 2 ? 'live' : 'wait'}`}>{currentStep === 2 ? '⟳' : '✓'}</div>
+                                    <div className="tl-body">
+                                        <div className="tl-lbl">Ready for Pickup</div>
+                                        <div className="tl-sub">{currentStep >= 3 ? "Food is packed and ready" : "Kitchen will mark when done"}</div>
                                     </div>
                                 </div>
                                 <div className={`tl-row ${currentStep >= 4 ? 'done' : currentStep === 3 ? 'live' : ''}`}>

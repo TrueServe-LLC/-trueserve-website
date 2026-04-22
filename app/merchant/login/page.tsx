@@ -100,26 +100,12 @@ export default function MerchantLoginPage() {
               </button>
             </form>
 
-            <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-              <div className="text-[11px] font-black uppercase tracking-[0.1em] text-white/60">Portal preview tools</div>
-              <p className="mt-1.5 text-[12px] font-semibold leading-relaxed text-white/70">
-                Preview the merchant portal setup and guided walkthrough before logging in.
-              </p>
-              <div className="mt-3 grid gap-2">
-                <Link
-                  href="/merchant/portal-preview"
-                  className="ts-pill-btn ts-pill-btn-block"
-                >
-                  Preview POS Setup (Toast Mock)
-                </Link>
-                <Link
-                  href="/merchant/tutorial-preview"
-                  className="ts-pill-btn ts-pill-btn-block"
-                >
-                  View Animated Tutorial
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/merchant/tutorial-preview"
+              className="ts-pill-btn ts-pill-btn-block mt-3"
+            >
+              View Animated Tutorial
+            </Link>
 
             <div className="login-foot">New to network? <Link href="/merchant/signup">Apply for partnership</Link></div>
           </section>

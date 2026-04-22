@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GOOGLE_MAPS_LIBRARIES, GOOGLE_MAPS_SCRIPT_ID, GOOGLE_MAPS_API_KEY } from "@/lib/maps-config";
 
@@ -16,9 +16,10 @@ interface LandingSearchProps {
     locations?: ServiceLocation[];
     initialValue?: string;
     isCompact?: boolean;
+    onAddressChange?: (hasValue: boolean) => void;
 }
 
-export default function LandingSearch({ locations = [], initialValue = "", isCompact = false }: LandingSearchProps) {
+export default function LandingSearch({ locations = [], initialValue = "", isCompact = false, onAddressChange }: LandingSearchProps) {
     const router = useRouter();
     const [inputValue, setInputValue] = useState(initialValue);
     const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
@@ -35,14 +36,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
         libraries: GOOGLE_MAPS_LIBRARIES
     });
 
-    useEffect(() => {
-        setInputValue(initialValue);
-    }, [initialValue]);
-
     const initServices = () => {
-        if (!isLoaded || typeof window === 'undefined') {
-            return;
-        }
         try {
             if (!autocompleteService.current && window.google) {
                 autocompleteService.current = new window.google.maps.places.AutocompleteService();
@@ -59,14 +53,11 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setInputValue(val);
+        onAddressChange?.(val.trim().length > 0);
 
         if (!val) {
             setPredictions([]);
             setIsDropdownOpen(false);
-            return;
-        }
-
-        if (!isLoaded) {
             return;
         }
 
@@ -142,21 +133,24 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
         router.push(`/restaurants?search=${encodeURIComponent(inputValue)}`);
     };
 
+    if (!isLoaded) {
+        return <div className="h-12 w-full max-w-xl bg-slate-800 animate-pulse rounded-2xl"></div>;
+    }
+
     return (
         <div className={`w-full relative animate-fade-in group ${isCompact ? "max-w-full" : "max-w-3xl"}`}>
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/25 via-transparent to-primary/25 rounded-[28px] blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
 
             <form
                 onSubmit={handleManualSearch}
-                className={`relative z-20 grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "rounded-2xl p-1.5" : "rounded-[28px] p-2"}`}
-                data-scroll-glow
+                className={`relative z-20 w-full border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-2xl p-1.5" : "flex flex-col gap-2 rounded-[24px] p-2.5 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-stretch md:rounded-[28px] md:p-2"}`}
             >
-                <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[20px] px-4 md:px-5"}`}>
+                <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[18px] px-4 md:px-5"}`}>
                     <span className="mr-2 text-[18px]">📍</span>
                     <input
                         type="text"
                         placeholder="Enter delivery address..."
-                        className={`min-w-0 flex-1 bg-transparent px-1 font-bold tracking-tight text-white placeholder:text-white/45 focus:outline-none ${isCompact ? "h-12 text-[17px]" : "h-14 text-[20px]"}`}
+                        className={`min-w-0 flex-1 bg-transparent px-1 font-bold tracking-tight text-white placeholder:text-white/45 focus:outline-none ${isCompact ? "h-12 text-[17px]" : "h-12 text-[16px] md:h-14 md:text-[20px]"}`}
                         value={inputValue}
                         onChange={handleInput}
                         onFocus={() => {
@@ -170,8 +164,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                 <button
                     type="submit"
-                    className={`place-btn place-btn-inline shrink-0 ${isCompact ? "h-12 px-6 md:px-8" : "h-14 px-6 md:px-9"}`}
-                    data-scroll-glow
+                    className={`place-btn place-btn-inline shrink-0 ${isCompact ? "h-12 px-6 md:px-8" : "h-12 w-full rounded-[16px] text-[15px] md:h-14 md:w-auto md:px-9 md:rounded-[20px]"}`}
                 >
                     Find Food
                 </button>
