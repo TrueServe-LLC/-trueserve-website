@@ -8,6 +8,7 @@ import PickupPhotoForm from "./PickupPhotoForm";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
 import DriverMap from "@/components/DriverMap";
 import DriverRouteMap from "./DriverRouteMap";
+import DriverLocationTracker from "@/components/DriverLocationTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,13 @@ export default async function DriverDashboard() {
 
     return (
         <>
+        {/* RAMEN — broadcasts driver GPS to all tracking customers */}
+        {driver.id !== "preview" && (
+            <DriverLocationTracker
+                driverId={driver.id}
+                orderId={primaryOrder?.id}
+            />
+        )}
         <style>{`
             /* STAT BLOCK */
             .dd-stat-grid {
