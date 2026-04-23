@@ -138,9 +138,9 @@ nav {
       rgba(9,10,12,0.10) 18%,
       rgba(9,10,12,0.82) 78%,
       rgba(9,10,12,1.00) 100%),
-    url('/hero_food_delivery.png') center 30% / cover no-repeat,
+    url('/hero_food_delivery.png') center top / cover no-repeat,
     #0d0b0a;
-  background-size: 100% 100vh, 100% 100vh, auto;
+  background-size: 100% 100vh, cover, auto;
   background-repeat: no-repeat, no-repeat, repeat;
   }
 
@@ -159,8 +159,10 @@ nav {
   background: rgba(9, 10, 15, 0.45);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   position: relative;
   z-index: 10;
+  overflow: hidden;
 }
 
 .hamburger-btn {
