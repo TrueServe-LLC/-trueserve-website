@@ -225,6 +225,24 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Trust bar */}
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"center", flexWrap:"wrap", gap:0, padding:"14px 24px 6px" }}>
+          {([
+            { icon:"📍", label:"Local Restaurants" },
+            { icon:"📡", label:"Live Tracking" },
+            { icon:"⚡", label:"Avg. 30 min" },
+            { icon:"⭐", label:"Google Reviews" },
+          ] as const).map((item, i, arr) => (
+            <React.Fragment key={item.label}>
+              <div style={{ display:"flex", alignItems:"center", gap:7, padding:"4px 18px", whiteSpace:"nowrap" }}>
+                <span style={{ fontSize:14 }}>{item.icon}</span>
+                <span style={{ fontSize:11, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.14em", color:"rgba(255,255,255,0.45)" }}>{item.label}</span>
+              </div>
+              {i < arr.length - 1 && <div style={{ width:1, height:14, background:"rgba(255,255,255,0.1)", flexShrink:0 }} />}
+            </React.Fragment>
+          ))}
+        </div>
+
         <section className="mt-10 grid gap-8 md:grid-cols-3">
           {[
             { kicker: "Step 1", title: "Find your spot", desc: "Enter your address, browse restaurants nearby, and jump straight into menu browsing.", link: "/restaurants", delay: "0ms" },

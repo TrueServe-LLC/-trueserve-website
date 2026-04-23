@@ -434,6 +434,10 @@ nav {
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
 }
 
+.food-card {
+  border-color: rgba(249, 115, 22, 0.2);
+}
+
 .food-hero-card {
   position: relative;
   isolation: isolate;
@@ -528,7 +532,7 @@ nav {
 }
 
 .food-subtitle {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.84);
   font-size: 15px;
   line-height: 1.7;
   max-width: 620px;
@@ -576,12 +580,12 @@ nav {
 .food-stat span,
 .food-card p,
 .food-kicker {
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.75);
   overflow-wrap: anywhere;
 }
 
 .food-kicker {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .18em;
