@@ -4,10 +4,17 @@ import { NextResponse } from 'next/server';
 import { logger } from "@/lib/logger";
 import * as Sentry from '@sentry/nextjs';
 
-// Initialize Supabase with Service Role Key for administrative actions
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
-const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+import type { SupabaseClient } from '@supabase/supabase-js';
+let _supabase: SupabaseClient | null = null;
+function getSupabase() {
+  if (!_supabase) {
+    _supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+  }
+  return _supabase;
+}
 
 /**
  * POS Sync API (Method #1 & #2)
@@ -28,7 +35,7 @@ export async function POST(req: Request) {
         }
 
         // 1. Resolve Restaurant by API Key
-        const { data: restaurant, error: resError } = await supabase
+        const { data: restaurant, error: resError } = await getSupabase()
             .from('Restaurant')
             .select('id, name')
             .eq('apiKey', apiKey)
@@ -50,7 +57,7 @@ export async function POST(req: Request) {
         for (const item of items) {
             try {
                 // If the POS system provided a posId, we check if it already exists
-                const { data: existingItem } = await supabase
+                const { data: existingItem } = await getSupabase()
                     .from('MenuItem')
                     .select('id')
                     .eq('restaurantId', restaurant.id)
@@ -59,7 +66,7 @@ export async function POST(req: Request) {
 
                 if (existingItem) {
                     // Update
-                    const { error: updateError } = await supabase
+                    const { error: updateError } = await getSupabase()
                         .from('MenuItem')
                         .update({
                             name: item.name,
@@ -74,7 +81,7 @@ export async function POST(req: Request) {
                     syncResults.updated++;
                 } else {
                     // Create
-                    const { error: insertError } = await supabase
+                    const { error: insertError } = await getSupabase()
                         .from('MenuItem')
                         .insert({
                             restaurantId: restaurant.id,
