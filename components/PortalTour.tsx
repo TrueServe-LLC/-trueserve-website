@@ -233,26 +233,41 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
       )}
 
       <div
-        className="fixed left-1/2 w-[calc(100%-12px)] -translate-x-1/2 rounded-[18px] border border-white/10 bg-[#0a0a0b]/95 p-4 shadow-[0_24px_60px_rgba(0,0,0,0.6)] sm:bottom-5 sm:w-[min(560px,calc(100%-24px))] sm:rounded-[22px] sm:p-5 sm:shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+        className="fixed left-1/2 -translate-x-1/2 border border-white/10 bg-[#0a0a0b]/95 shadow-[0_24px_60px_rgba(0,0,0,0.6)]"
         style={{
           animation: "tsTourFadeIn .22s ease-out",
-          bottom: isMobileViewport ? "max(12px, env(safe-area-inset-bottom))" : "20px",
+          bottom: isMobileViewport ? 0 : "20px",
+          width: isMobileViewport ? "100%" : "min(560px, calc(100% - 24px))",
+          borderRadius: isMobileViewport ? "18px 18px 0 0" : "22px",
+          padding: isMobileViewport ? "14px 16px max(14px, env(safe-area-inset-bottom))" : "20px",
         }}
       >
+        {/* Progress dots — top of sheet on mobile */}
+        <div className="flex items-center gap-1.5 mb-3">
+          {steps.map((_, index) => (
+            <span
+              key={`${portal}-dot-${index}`}
+              className={`h-1 rounded-full transition-all ${index === stepIndex ? "w-5 bg-[#f97316]" : "w-2 bg-white/20"}`}
+            />
+          ))}
+          <span className="ml-auto text-[10px] font-black uppercase tracking-[0.14em] text-white/40">
+            {stepNumber} / {steps.length}
+          </span>
+        </div>
+
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/55 sm:text-[11px] sm:tracking-[0.16em]">
-              Tutorial {stepNumber} / {steps.length}
-            </div>
-            <div className="mt-2 text-[20px] font-black tracking-tight text-white sm:text-[22px]">
+            <div className={`font-black tracking-tight text-white ${isMobileViewport ? "text-[17px]" : "text-[22px]"}`}>
               {currentStep?.title}
             </div>
-            <div className="mt-1 text-[13px] font-semibold leading-relaxed text-white/80 sm:text-[14px]">
+            <div className={`mt-1 font-semibold leading-snug text-white/70 ${isMobileViewport ? "text-[12px]" : "text-[14px]"}`}>
               {currentStep?.body}
             </div>
-            <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] font-semibold leading-relaxed text-white/70">
-              Direction: follow the gold highlight, then tap <span className="text-[#f97316] font-black">Next</span>.
-            </div>
+            {!isMobileViewport && (
+              <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] font-semibold leading-relaxed text-white/70">
+                Direction: follow the gold highlight, then tap <span className="text-[#f97316] font-black">Next</span>.
+              </div>
+            )}
           </div>
           <button
             type="button"
@@ -263,37 +278,27 @@ export default function PortalTour({ portal }: { portal: PortalType }) {
           </button>
         </div>
 
-        <div className="mt-3 flex items-center gap-1.5">
-          {steps.map((_, index) => (
-            <span
-              key={`${portal}-dot-${index}`}
-              className={`h-1.5 rounded-full transition-all ${index === stepIndex ? "w-6 bg-[#f97316]" : "w-3 bg-white/20"}`}
-            />
-          ))}
-        </div>
-
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <div className={`flex items-center gap-2 ${isMobileViewport ? "mt-3" : "mt-4"}`}>
           <button
             type="button"
             onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
             disabled={stepIndex === 0}
-            className="ts-pill-btn ts-pill-btn-sm w-full disabled:opacity-30 sm:w-auto"
+            className="ts-pill-btn ts-pill-btn-sm disabled:opacity-30"
+            style={{ minWidth: isMobileViewport ? 56 : 64 }}
           >
             Back
           </button>
-
-          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
-            <button
-              type="button"
-              onClick={markDoneAndClose}
-              className="ts-pill-btn ts-pill-btn-sm"
-            >
-              Dismiss
-            </button>
+          <div className="flex flex-1 justify-end gap-2">
+            {!isMobileViewport && (
+              <button type="button" onClick={markDoneAndClose} className="ts-pill-btn ts-pill-btn-sm">
+                Dismiss
+              </button>
+            )}
             <button
               type="button"
               onClick={() => (isLast ? markDoneAndClose() : setStepIndex((i) => Math.min(steps.length - 1, i + 1)))}
               className="ts-pill-btn ts-pill-btn-sm"
+              style={isMobileViewport ? { flex: 1 } : undefined}
             >
               {isLast ? "Done" : "Next"}
             </button>

@@ -63,6 +63,12 @@ export default function MenuClient({
     );
     const [deliveryInstructions, setDeliveryInstructions] = useState("");
     const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
+
+    // Gift a Meal
+    const [isGift, setIsGift] = useState(false);
+    const [giftName, setGiftName] = useState("");
+    const [giftPhone, setGiftPhone] = useState("");
+    const [giftNote, setGiftNote] = useState("");
     const [redeemPoints, setRedeemPoints] = useState(false);
     const [checkoutEta, setCheckoutEta] = useState<string>("Calculating...");
     const [checkoutDistance, setCheckoutDistance] = useState<string>("");
@@ -372,6 +378,9 @@ export default function MenuClient({
             return alert("Please select a suggested address so we can route your order accurately.");
         }
         setIsSubmitting(true);
+        const giftPrefix = isGift && giftName
+            ? `[GIFT:${JSON.stringify({ recipientName: giftName, recipientPhone: giftPhone, note: giftNote })}] `
+            : "";
         const res = await placeOrder(
             restaurant.id,
             cartItems.map(([id, qty]) => {
@@ -383,7 +392,7 @@ export default function MenuClient({
             deliveryLng || 0,
             deliveryAddress,
             tip,
-            deliveryInstructions,
+            giftPrefix + deliveryInstructions,
             redeemPoints ? pointsValue : 0
         );
         if (res.success && res.orderId) setPendingOrderId(res.orderId);
@@ -494,19 +503,92 @@ export default function MenuClient({
 
                         {/* Tip Selection */}
                         <div style={{ marginTop: '16px' }}>
-                            <div style={{ fontSize: '11px', color: 'var(--t2)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '.14em', fontWeight: 800 }}>Tip your driver</div>
+                            <div style={{ fontSize: '11px', color: 'var(--t2)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '.14em', fontWeight: 800 }}>Tip your driver</div>
+                            <div style={{ fontSize: '10px', color: '#555', marginBottom: '8px' }}>You can also tip after delivery once you've seen your food.</div>
                             <div style={{ display: 'flex', gap: '5px' }}>
                                 {[0, 15, 18, 20].map(p => (
-                                    <button 
-                                        key={p} 
-                                        className={`btn ${tipPct === p ? 'btn-gold' : 'btn-ghost'}`} 
+                                    <button
+                                        key={p}
+                                        className={`btn ${tipPct === p ? 'btn-gold' : 'btn-ghost'}`}
                                         style={{ flex: 1, padding: '4px', fontSize: '11px' }}
                                         onClick={() => setTipPct(p)}
                                     >
-                                        {p === 0 ? 'No' : p + '%'}
+                                        {p === 0 ? 'Skip' : p + '%'}
                                     </button>
                                 ))}
                             </div>
+                        </div>
+
+                        {/* Gift a Meal */}
+                        <div style={{ marginTop: '16px' }}>
+                            <button
+                                type="button"
+                                onClick={() => setIsGift(g => !g)}
+                                style={{
+                                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                    background: isGift ? 'rgba(249,115,22,0.07)' : 'transparent',
+                                    border: `1px solid ${isGift ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                                    borderRadius: 10, padding: '10px 14px', cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <span style={{ fontSize: 16 }}>🎁</span>
+                                    <div style={{ textAlign: 'left' }}>
+                                        <div style={{ fontSize: 12, fontWeight: 800, color: isGift ? '#f97316' : '#fff' }}>Send as a Gift</div>
+                                        <div style={{ fontSize: 10, color: '#555' }}>Deliver to someone else with a personal note</div>
+                                    </div>
+                                </div>
+                                <div style={{
+                                    width: 20, height: 20, borderRadius: '50%',
+                                    background: isGift ? '#f97316' : 'transparent',
+                                    border: `2px solid ${isGift ? '#f97316' : '#333'}`,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    flexShrink: 0, transition: 'all 0.15s',
+                                }}>
+                                    {isGift && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7.5 8,3" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                </div>
+                            </button>
+
+                            {isGift && (
+                                <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                                        <div>
+                                            <label style={{ fontSize: 10, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Recipient Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Jordan Lee"
+                                                value={giftName}
+                                                onChange={e => setGiftName(e.target.value)}
+                                                style={{ width: '100%', background: '#111', border: '1px solid #222', borderRadius: 8, padding: '8px 10px', fontSize: 12, color: '#fff', outline: 'none' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: 10, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Their Phone</label>
+                                            <input
+                                                type="tel"
+                                                placeholder="(555) 000-0000"
+                                                value={giftPhone}
+                                                onChange={e => setGiftPhone(e.target.value)}
+                                                style={{ width: '100%', background: '#111', border: '1px solid #222', borderRadius: 8, padding: '8px 10px', fontSize: 12, color: '#fff', outline: 'none' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: 10, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Personal Note</label>
+                                        <textarea
+                                            placeholder="Thinking of you! Enjoy your meal 🍜"
+                                            value={giftNote}
+                                            onChange={e => setGiftNote(e.target.value)}
+                                            rows={2}
+                                            style={{ width: '100%', background: '#111', border: '1px solid #222', borderRadius: 8, padding: '8px 10px', fontSize: 12, color: '#fff', outline: 'none', resize: 'none' }}
+                                        />
+                                    </div>
+                                    <div style={{ fontSize: 10, color: 'rgba(249,115,22,0.7)', fontWeight: 600 }}>
+                                        The delivery address below will be where this gift is sent.
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {userId && truePointsBalance > 0 && (

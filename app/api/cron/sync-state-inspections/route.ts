@@ -25,19 +25,31 @@ interface SyncResult {
   duration: number;
 }
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-  { auth: { persistSession: false, autoRefreshToken: false } }
-);
+import type { SupabaseClient } from '@supabase/supabase-js';
+let _supabaseAdmin: SupabaseClient | null = null;
+function getSupabaseAdmin() {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false, autoRefreshToken: false } }
+    );
+  }
+  return _supabaseAdmin;
+}
 
-// Map of state codes to API implementations
-const stateAPIs: Record<string, any> = {
-  NC: new NorthCarolinaAPI(process.env.NC_HEALTH_DEPT_API_KEY),
-  NY: new NewYorkAPI(process.env.NY_HEALTH_DEPT_API_KEY),
-  FL: new FloridaAPI(process.env.FL_HEALTH_DEPT_API_KEY),
-  PA: new PennsylvaniaAPI(process.env.PA_HEALTH_DEPT_API_KEY),
-};
+let _stateAPIs: Record<string, any> | null = null;
+function getStateAPIs() {
+  if (!_stateAPIs) {
+    _stateAPIs = {
+      NC: new NorthCarolinaAPI(process.env.NC_HEALTH_DEPT_API_KEY),
+      NY: new NewYorkAPI(process.env.NY_HEALTH_DEPT_API_KEY),
+      FL: new FloridaAPI(process.env.FL_HEALTH_DEPT_API_KEY),
+      PA: new PennsylvaniaAPI(process.env.PA_HEALTH_DEPT_API_KEY),
+    };
+  }
+  return _stateAPIs;
+}
 
 export async function GET(request: Request) {
   const startTime = Date.now();
@@ -62,7 +74,7 @@ export async function GET(request: Request) {
 
     // Run sync for each state
     const results: SyncResult[] = [];
-    const states = Object.keys(stateAPIs);
+    const states = Object.keys(getStateAPIs());
 
     for (const state of states) {
       const stateStartTime = Date.now();
@@ -142,7 +154,7 @@ async function syncState(state: string): Promise<SyncResult> {
   let recordsFailed = 0;
 
   try {
-    const api = stateAPIs[state];
+    const api = getStateAPIs()[state];
     if (!api) {
       throw new Error(`No API implementation for state ${state}`);
     }
@@ -286,7 +298,7 @@ async function updateRestaurant(
     }
 
     // Recalculate compliance score
-    await supabaseAdmin.rpc('recalculate_restaurant_compliance_score', {
+    await getSupabaseAdmin().rpc('recalculate_restaurant_compliance_score', {
       target_restaurant_id: restaurantId,
     });
 

@@ -8,8 +8,8 @@ import PickupPhotoForm from "./PickupPhotoForm";
 import CompleteDeliveryForm from "./CompleteDeliveryForm";
 import DriverMap from "@/components/DriverMap";
 import DriverRouteMap from "./DriverRouteMap";
-import ActiveOrderNavigation from "@/components/ActiveOrderNavigation";
-import { fetchDriverPerformanceMetrics, getPreviewDriverPerformanceMetrics } from "@/lib/driver-metrics";
+import DriverLocationTracker from "@/components/DriverLocationTracker";
+import WeatherCard from "@/components/WeatherCard";
 
 export const dynamic = "force-dynamic";
 
@@ -36,19 +36,21 @@ export default async function DriverDashboard() {
     let availableOrders: any[] = [];
     let myActiveOrders: any[] = [];
     let weather = { temperature: 68, condition: "Clear", multiplier: 1.0 };
-    let stats: { totalEarnings: number; balance: number; trips: number; rating: number | null } = {
-        totalEarnings: 0,
-        balance: 0,
-        trips: 0,
-        rating: null,
-    };
-    const performance = isPreview
-        ? getPreviewDriverPerformanceMetrics()
-        : await fetchDriverPerformanceMetrics(driver.id, { orders: driver.orders || [] });
+    let stats = { totalEarnings: 0, balance: 0, trips: 0, rating: 0 };
 
     if (isPreview) {
         availableOrders = [];
-        myActiveOrders = [];
+        myActiveOrders = [{
+            id: "preview-order-001",
+            status: "PICKED_UP",
+            total: 24.50,
+            totalPay: 12.75,
+            deliveryAddress: "842 Poplar Tent Rd, Concord NC 28027",
+            deliveryInstructions: "",
+            customerName: "Alex Johnson",
+            customer: { name: "Alex Johnson" },
+            restaurant: { name: "Emerald Kitchen", address: "120 S Tryon St, Charlotte NC", lat: 35.2271, lng: -80.8431, complianceScore: 95, complianceStatus: "ACTIVE" },
+        }];
     } else {
         const supabase = await createClient();
 
@@ -78,25 +80,23 @@ export default async function DriverDashboard() {
     stats = {
         totalEarnings: Number(driver?.totalEarnings || 0),
         balance: Number(driver?.balance || 0),
-        trips: performance.completedTrips,
-        rating: performance.averageRating,
+        trips: driver?.orders?.length || 0,
+        rating: Number(driver?.rating || 0),
     };
-
-    const ratingDisplay = stats.rating !== null ? stats.rating.toFixed(1) : "—";
 
     const hasStripe = Boolean((driver as any)?.stripeAccountId);
     const primaryOrder = myActiveOrders[0] || null;
     const additionalOrders = myActiveOrders.slice(1);
-    const hasRouteTarget =
-        primaryOrder &&
-        (
-            (primaryOrder.status === "PICKED_UP" && primaryOrder.deliveryLat && primaryOrder.deliveryLng) ||
-            (primaryOrder.restaurant?.lat && primaryOrder.restaurant?.lng)
-        );
-    const canRenderLiveRouteSnapshot = Boolean(primaryOrder && driverLat !== null && driverLng !== null && hasRouteTarget);
 
     return (
         <>
+        {/* RAMEN — broadcasts driver GPS to all tracking customers */}
+        {driver.id !== "preview" && (
+            <DriverLocationTracker
+                driverId={driver.id}
+                orderId={primaryOrder?.id}
+            />
+        )}
         <style>{`
             /* STAT BLOCK */
             .dd-stat-grid {
@@ -330,25 +330,18 @@ export default async function DriverDashboard() {
             <div className="dd-stat-card">
                 <div className="dd-stat-label">Rating</div>
                 <div className="dd-stat-value" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {ratingDisplay}
+                    {stats.rating.toFixed(1)}
                     <span style={{ color: '#f97316', fontSize: 22 }}>★</span>
                 </div>
             </div>
         </div>
 
-        {/* WEATHER — connected strip below stats */}
-        <div className="dd-weather-card">
-            <div>
-                <div className="dd-weather-label">Weather</div>
-                <div className="dd-weather-temp">{weather.temperature}°F</div>
-            </div>
-            <div style={{ fontSize: 11, color: '#555', textAlign: 'right' }}>
-                <div>{weather.condition}</div>
-                <div style={{ marginTop: 3, color: '#3a3a3a' }}>
-                    {driverLat && driverLng ? `${driverLat.toFixed(2)}°N` : 'Location pending'}
-                </div>
-            </div>
-        </div>
+        {/* WEATHER — animated condition card */}
+        <WeatherCard
+            temperature={weather.temperature}
+            condition={weather.condition}
+            locationLabel={driverLat && driverLng ? `${driverLat.toFixed(2)}°N` : undefined}
+        />
 
         {/* STRIPE BANNER */}
         {!hasStripe ? (
@@ -487,23 +480,6 @@ export default async function DriverDashboard() {
         </div>
 
         {/* AVAILABLE ORDERS + SUMMARY */}
-        {primaryOrder && (
-            <div style={{ marginBottom: 16 }}>
-                <div className="dd-panel">
-                    <div className="dd-panel-section-label">Route Snapshot</div>
-                    <div className="dd-panel-title">Live turn-by-turn route</div>
-                    {canRenderLiveRouteSnapshot ? (
-                        <ActiveOrderNavigation order={primaryOrder} driverLat={driverLat!} driverLng={driverLng!} />
-                    ) : (
-                        <div className="dd-empty-state">
-                            Live route navigation becomes available once the driver and order both have coordinates. Right now the dashboard is falling back to the heatmap only.
-                        </div>
-                    )}
-                </div>
-            </div>
-        )}
-
-        {/* AVAILABLE ORDERS + SUMMARY */}
         <div className="dd-bottom-grid">
             {/* AVAILABLE ORDERS */}
             <div className="dd-panel">
@@ -559,7 +535,7 @@ export default async function DriverDashboard() {
                         { label: 'Balance', value: `$${Number(driver.balance || 0).toFixed(2)}` },
                         { label: 'Weather', value: `${weather.temperature}°F · ${weather.condition}` },
                         { label: 'Trip Count', value: `${stats.trips} deliveries` },
-                        { label: 'Rating', value: stats.rating !== null ? `${ratingDisplay} stars` : 'No ratings yet' },
+                        { label: 'Rating', value: `${stats.rating.toFixed(1)} stars` },
                     ].map((row) => (
                         <div key={row.label} className="dd-summary-row">
                             <span className="dd-summary-label">{row.label}</span>

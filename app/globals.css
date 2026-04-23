@@ -138,9 +138,9 @@ nav {
       rgba(9,10,12,0.10) 18%,
       rgba(9,10,12,0.82) 78%,
       rgba(9,10,12,1.00) 100%),
-    url('/hero_food_delivery.png') center 30% / cover no-repeat,
+    url('/hero_food_delivery.png') center top / cover no-repeat,
     #0d0b0a;
-  background-size: 100% 100vh, 100% 100vh, auto;
+  background-size: 100% 100vh, cover, auto;
   background-repeat: no-repeat, no-repeat, repeat;
   }
 
@@ -159,12 +159,14 @@ nav {
   background: rgba(9, 10, 15, 0.45);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   position: relative;
   z-index: 10;
+  overflow: hidden;
 }
 
 .hamburger-btn {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   width: 38px;
@@ -174,6 +176,9 @@ nav {
   background: rgba(255,255,255,0.05);
   color: rgba(255,255,255,0.8);
   transition: all .15s;
+}
+@media (max-width: 767px) {
+  .hamburger-btn { display: flex; }
 }
 .hamburger-btn:hover {
   background: rgba(255,255,255,0.1);
@@ -429,6 +434,10 @@ nav {
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
 }
 
+.food-card {
+  border-color: rgba(249, 115, 22, 0.2);
+}
+
 .food-hero-card {
   position: relative;
   isolation: isolate;
@@ -523,7 +532,7 @@ nav {
 }
 
 .food-subtitle {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.84);
   font-size: 15px;
   line-height: 1.7;
   max-width: 620px;
@@ -571,12 +580,12 @@ nav {
 .food-stat span,
 .food-card p,
 .food-kicker {
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.75);
   overflow-wrap: anywhere;
 }
 
 .food-kicker {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .18em;

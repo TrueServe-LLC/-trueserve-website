@@ -3,10 +3,15 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import Stripe from "stripe";
 
-// Initialize API clients
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-    apiVersion: "2024-11-20",
-});
+let _stripe: Stripe | null = null;
+function getStripe(): Stripe {
+    if (!_stripe) {
+        _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+            apiVersion: "2024-11-20",
+        });
+    }
+    return _stripe;
+}
 
 interface ServiceCostRecord {
     service: string;
@@ -28,7 +33,7 @@ async function syncStripeCosts(month: string): Promise<ServiceCostRecord | null>
         endDate.setMonth(endDate.getMonth() + 1);
 
         // Fetch invoices for the month
-        const invoices = await stripe.invoices.list({
+        const invoices = await getStripe().invoices.list({
             created: {
                 gte: Math.floor(startDate.getTime() / 1000),
                 lt: Math.floor(endDate.getTime() / 1000),

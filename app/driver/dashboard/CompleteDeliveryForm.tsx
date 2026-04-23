@@ -5,10 +5,11 @@ import { completeDelivery, completePhotoDelivery } from "../actions";
 
 export default function CompleteDeliveryForm({ orderId, customerName, deliveryInstructions }: { orderId: string, customerName?: string, deliveryInstructions?: string }) {
     const [mode, setMode] = useState<'PIN' | 'PHOTO'>(deliveryInstructions?.toLowerCase().includes('leave') ? 'PHOTO' : 'PIN');
-    const [pin, setPin] = useState("");
+    const [digits, setDigits] = useState<string[]>([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    
+    const [done, setDone] = useState(false);
+
     // Camera state
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,173 +18,288 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
 
     const startCamera = async () => {
         try {
-            const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-                video: { facingMode: "environment" }, 
-                audio: false 
-            });
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
             setStream(mediaStream);
-            if (videoRef.current) {
-                videoRef.current.srcObject = mediaStream;
-            }
-        } catch (err) {
+            if (videoRef.current) videoRef.current.srcObject = mediaStream;
+        } catch {
             setError("Camera access required to take delivery photo.");
         }
     };
 
     const stopCamera = () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            setStream(null);
-        }
+        if (stream) { stream.getTracks().forEach(t => t.stop()); setStream(null); }
     };
 
     const handleTabChange = (newMode: 'PIN' | 'PHOTO') => {
         setMode(newMode);
         setError("");
         setPhotoCaptured(null);
-        if (newMode === 'PHOTO') {
-            startCamera();
-        } else {
-            stopCamera();
-        }
+        setDigits([]);
+        if (newMode === 'PHOTO') startCamera();
+        else stopCamera();
     };
 
     const takePhoto = () => {
         if (!videoRef.current || !canvasRef.current) return;
-        const context = canvasRef.current.getContext('2d');
+        const ctx = canvasRef.current.getContext('2d');
         canvasRef.current.width = videoRef.current.videoWidth;
         canvasRef.current.height = videoRef.current.videoHeight;
-        context?.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-
-        canvasRef.current.toBlob((blob) => {
-            if (blob) {
-                setPhotoCaptured(blob);
-                stopCamera();
-            }
-        }, 'image/jpeg', 0.8);
+        ctx?.drawImage(videoRef.current, 0, 0);
+        canvasRef.current.toBlob(blob => { if (blob) { setPhotoCaptured(blob); stopCamera(); } }, 'image/jpeg', 0.8);
     };
 
-    const retakePhoto = () => {
-        setPhotoCaptured(null);
-        startCamera();
+    const enterDigit = (d: string) => {
+        if (digits.length < 4) setDigits(prev => [...prev, d]);
     };
+
+    const delDigit = () => setDigits(prev => prev.slice(0, -1));
 
     const submitDelivery = async () => {
-        if (mode === 'PIN' && pin.length < 4) return;
+        if (mode === 'PIN' && digits.length < 4) return;
         if (mode === 'PHOTO' && !photoCaptured) return;
-        
         setLoading(true);
         setError("");
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-                
-                try {
-                    let res;
-                    if (mode === 'PIN') {
-                        res = await completeDelivery(orderId, pin, lat, lng);
-                    } else {
-                        const formData = new FormData();
-                        formData.append('orderId', orderId);
-                        formData.append('driverLat', lat.toString());
-                        formData.append('driverLng', lng.toString());
-                        if (photoCaptured) formData.append('photo', photoCaptured, 'delivery.jpg');
-                        res = await completePhotoDelivery(formData);
-                    }
-
-                    if (res?.error) {
-                        setError(res.error);
-                        setLoading(false);
-                    }
-                } catch (e: any) {
-                    setError("Failed to complete delivery.");
-                    setLoading(false);
+        const doSubmit = async (lat: number, lng: number) => {
+            try {
+                let res;
+                if (mode === 'PIN') {
+                    res = await completeDelivery(orderId, digits.join(""), lat, lng);
+                } else {
+                    const fd = new FormData();
+                    fd.append('orderId', orderId);
+                    fd.append('driverLat', lat.toString());
+                    fd.append('driverLng', lng.toString());
+                    if (photoCaptured) fd.append('photo', photoCaptured, 'delivery.jpg');
+                    res = await completePhotoDelivery(fd);
                 }
-            }, (err) => {
-                setError("Location access required for Safe Drop Verification.");
-                setLoading(false);
-            });
+                if (res?.error) { setError(res.error); setLoading(false); }
+                else setDone(true);
+            } catch {
+                setError("Failed to complete delivery."); setLoading(false);
+            }
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                pos => doSubmit(pos.coords.latitude, pos.coords.longitude),
+                () => { setError("Location access required for Safe Drop Verification."); setLoading(false); }
+            );
         } else {
-            setError("Geolocation is not supported by your browser.");
-            setLoading(false);
+            setError("Geolocation not supported."); setLoading(false);
         }
     };
 
+    const numpad = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+
     return (
-        <div className="w-full mt-2 bg-slate-900 border border-white/10 rounded-2xl p-4 shadow-xl">
-            {/* Delivery Tabs */}
-            <div className="flex bg-black/50 rounded-xl p-1.5 mb-6 border border-white/5">
-                <button 
-                    onClick={() => handleTabChange('PIN')}
-                    className={`flex-1 py-3 text-[10px] uppercase font-black tracking-[0.2em] rounded-lg transition-all italic ${mode === 'PIN' ? 'bg-[#3dd68c] text-black shadow-[0_4px_20px_rgba(61,214,140,0.2)]' : 'text-[#444] hover:text-white'}`}
-                >
-                    Hand to Me
-                </button>
-                <button 
-                    onClick={() => handleTabChange('PHOTO')}
-                    className={`flex-1 py-3 text-[10px] uppercase font-black tracking-[0.2em] rounded-lg transition-all italic ${mode === 'PHOTO' ? 'bg-[#f97316] text-black shadow-[0_4px_20px_rgba(249,115,22,0.2)]' : 'text-[#444] hover:text-white'}`}
-                >
-                    Leave at Door
-                </button>
+        <div style={{
+            background: "#111418",
+            borderRadius: 16,
+            padding: 20,
+            width: "100%",
+            marginTop: 8,
+            border: "1px solid #1e2530",
+        }}>
+            {/* Status bar */}
+            <div style={{
+                background: "#0a2e22",
+                border: "1px solid #1a5c3e",
+                borderRadius: 8,
+                padding: "8px 16px",
+                textAlign: "center",
+                marginBottom: 16,
+            }}>
+                <span style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.15em",
+                    color: "#2ee8a0",
+                    textTransform: "uppercase",
+                }}>
+                    ● PICKED UP — HEADING TO CUSTOMER
+                </span>
             </div>
 
-            {error && <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-4"><p className="text-red-400 text-[10px] uppercase font-bold text-center tracking-widest">{error}</p></div>}
-            
-            <div className="flex flex-col gap-3">
-                {mode === 'PIN' ? (
-                    <>
-                        <input 
-                            type="text" 
-                            placeholder="4-DIGIT PIN" 
-                            className="w-full bg-[#080808] border border-[#3dd68c]/20 rounded-2xl p-5 text-[#3dd68c] tracking-[0.8em] text-center font-black placeholder:text-[#3dd68c]/10 focus:outline-none focus:border-[#3dd68c] transition-all text-4xl bebas italic"
-                            maxLength={4}
-                            value={pin}
-                            onChange={e => setPin(e.target.value.replace(/\D/g, ''))} // Numeric only
-                            disabled={loading}
-                        />
-                        <p className="text-[10px] text-center text-[#333] uppercase font-black tracking-[0.3em] mt-2 italic">Retrieve Access Code from {customerName || 'Recipient'}</p>
-                    </>
-                ) : (
-                    <>
-                        <div className="relative w-full aspect-video bg-[#080808] rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mt-2 group">
-                            {!photoCaptured ? (
-                                <>
-                                    <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-                                    {stream && (
-                                        <button onClick={takePhoto} className="absolute bottom-6 w-16 h-16 bg-[#f97316] rounded-full border-4 border-white shadow-[0_0_40px_rgba(249,115,22,0.4)] flex items-center justify-center active:scale-95 transition-all hover:bg-white">
-                                            <span className="sr-only">Take Photo</span>
-                                            <div className="w-6 h-6 bg-black rounded-full"></div>
-                                        </button>
-                                    )}
-                                    {!stream && !error && <p className="text-[10px] bebas text-white/5 italic animate-pulse tracking-[0.4em]">INITIATING UPLINK...</p>}
-                                </>
-                            ) : (
-                                <>
-                                    <img src={URL.createObjectURL(photoCaptured)} className="w-full h-full object-cover" alt="Proof" />
-                                    <button onClick={retakePhoto} className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-[10px] uppercase font-black px-4 py-2 rounded-xl shadow-lg border border-white/10 hover:bg-black transition-colors">Retake Photo</button>
-                                </>
-                            )}
-                            <canvas ref={canvasRef} className="hidden" />
-                        </div>
-                    </>
-                )}
-
-                <button 
-                    onClick={submitDelivery}
-                    disabled={loading || (mode === 'PIN' && pin.length < 4) || (mode === 'PHOTO' && !photoCaptured)}
-                    className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] transition-all disabled:opacity-30 disabled:scale-100 mt-4 italic
-                        ${mode === 'PIN' ? 'bg-[#3dd68c] text-black hover:bg-white shadow-[0_10px_30px_rgba(61,214,140,0.2)]' : 'bg-[#f97316] text-black hover:bg-white shadow-[0_10px_30_rgba(249,115,22,0.2)]'}`}
-                >
-                    {loading ? (
-                        <div className="flex items-center justify-center gap-3">
-                            <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                            Finalizing Mission...
-                        </div>
-                    ) : "Verify & Complete Mission"}
-                </button>
+            {/* Toggle */}
+            <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                background: "#1a1d22",
+                borderRadius: 10,
+                padding: 4,
+                gap: 4,
+                marginBottom: 16,
+            }}>
+                {(['PIN', 'PHOTO'] as const).map((m, i) => {
+                    const label = m === 'PIN' ? 'HAND TO ME' : 'LEAVE AT DOOR';
+                    const active = mode === m;
+                    return (
+                        <button
+                            key={m}
+                            type="button"
+                            onClick={() => handleTabChange(m)}
+                            style={{
+                                fontFamily: "'Barlow Condensed', sans-serif",
+                                fontSize: 13,
+                                fontWeight: 700,
+                                letterSpacing: "0.1em",
+                                padding: "10px",
+                                border: active ? "1px solid #2ee8a0" : "1px solid transparent",
+                                borderRadius: 7,
+                                cursor: "pointer",
+                                background: active ? "#1a3d2e" : "transparent",
+                                color: active ? "#2ee8a0" : "#5a6170",
+                                transition: "all 0.15s",
+                            }}
+                        >
+                            {label}
+                        </button>
+                    );
+                })}
             </div>
+
+            {error && (
+                <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: "10px 14px", marginBottom: 12 }}>
+                    <p style={{ color: "#f87171", fontSize: 10, fontWeight: 700, textAlign: "center", textTransform: "uppercase", letterSpacing: "0.12em" }}>{error}</p>
+                </div>
+            )}
+
+            {mode === 'PIN' ? (
+                <div style={{
+                    background: "#0d1117",
+                    border: "1px solid #1e2530",
+                    borderRadius: 12,
+                    padding: 20,
+                    marginBottom: 12,
+                    textAlign: "center",
+                }}>
+                    <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "#3a4555", marginBottom: 14, textTransform: "uppercase" }}>
+                        4-DIGIT PIN
+                    </div>
+
+                    {/* PIN boxes */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 14 }}>
+                        {[0,1,2,3].map(i => {
+                            const filled = i < digits.length;
+                            const active = i === digits.length;
+                            return (
+                                <div key={i} style={{
+                                    width: 56, height: 68,
+                                    background: "#141820",
+                                    border: `2px solid ${filled ? "#2ee8a0" : active ? "#5ee8b0" : "#2a3040"}`,
+                                    borderRadius: 10,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontFamily: "'Barlow Condensed', sans-serif",
+                                    fontSize: 36,
+                                    fontWeight: 800,
+                                    color: "#2ee8a0",
+                                    transition: "border-color 0.15s",
+                                    userSelect: "none",
+                                }}>
+                                    {digits[i] ?? "\u00a0"}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: "#3a4555", textTransform: "uppercase", marginBottom: 14 }}>
+                        RETRIEVE ACCESS CODE FROM {customerName?.toUpperCase() || 'RECIPIENT'}
+                    </div>
+
+                    {/* Numpad */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                        {numpad.map((key, i) => {
+                            if (key === '') return <div key={i} />;
+                            const isDel = key === '⌫';
+                            return (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => isDel ? delDigit() : enterDigit(key)}
+                                    style={{
+                                        background: "#1a1d22",
+                                        border: "1px solid #2a3040",
+                                        borderRadius: 8,
+                                        padding: "13px",
+                                        fontFamily: "'Barlow Condensed', sans-serif",
+                                        fontSize: isDel ? 14 : 20,
+                                        fontWeight: 700,
+                                        color: isDel ? "#5a6170" : "#c8d4e0",
+                                        cursor: "pointer",
+                                        transition: "background 0.1s",
+                                    }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = "#22262e")}
+                                    onMouseLeave={e => (e.currentTarget.style.background = "#1a1d22")}
+                                >
+                                    {key}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            ) : (
+                <div style={{ marginBottom: 12 }}>
+                    <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", background: "#080808", borderRadius: 12, overflow: "hidden", border: "1px solid #1e2530", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {!photoCaptured ? (
+                            <>
+                                <video ref={videoRef} autoPlay playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                {stream && (
+                                    <button
+                                        type="button"
+                                        onClick={takePhoto}
+                                        style={{ position: "absolute", bottom: 20, width: 64, height: 64, background: "#f97316", borderRadius: "50%", border: "4px solid white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                    >
+                                        <div style={{ width: 22, height: 22, background: "black", borderRadius: "50%" }} />
+                                    </button>
+                                )}
+                                {!stream && !error && (
+                                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.1)", fontWeight: 700, letterSpacing: "0.4em", textTransform: "uppercase" }}>INITIATING UPLINK...</span>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <img src={URL.createObjectURL(photoCaptured)} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Proof" />
+                                <button
+                                    type="button"
+                                    onClick={() => { setPhotoCaptured(null); startCamera(); }}
+                                    style={{ position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,0.6)", color: "white", fontSize: 10, fontWeight: 700, textTransform: "uppercase", padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer" }}
+                                >
+                                    Retake
+                                </button>
+                            </>
+                        )}
+                        <canvas ref={canvasRef} style={{ display: "none" }} />
+                    </div>
+                </div>
+            )}
+
+            {/* Verify button */}
+            <button
+                type="button"
+                onClick={submitDelivery}
+                disabled={loading || done || (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)}
+                style={{
+                    width: "100%",
+                    padding: "15px",
+                    background: done ? "#2ee8a0" : (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured) ? "#1a3d2e" : "#2ee8a0",
+                    color: done ? "#071a12" : (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured) ? "#2a5540" : "#071a12",
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: 14,
+                    fontWeight: 800,
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    border: "none",
+                    borderRadius: 10,
+                    cursor: (loading || done || (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)) ? "not-allowed" : "pointer",
+                    transition: "background 0.15s, transform 0.1s",
+                }}
+            >
+                {loading ? "FINALIZING MISSION..." : done ? "MISSION COMPLETE ✓" : "VERIFY & COMPLETE MISSION"}
+            </button>
         </div>
     );
 }

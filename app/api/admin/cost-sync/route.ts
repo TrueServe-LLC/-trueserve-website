@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { syncAllServiceCosts, checkAndCreateAnomalies } from "@/app/admin/cost-management/actions";
 import { getAuthSession } from "@/app/auth/actions";
 

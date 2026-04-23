@@ -6,6 +6,10 @@ import ChatWindow from "@/components/ChatWindow";
 import MapWithDirections from "@/components/MapWithDirections";
 import ReviewModal from "@/components/ReviewModal";
 import { customerCancelOrder, submitOrderIssueProof } from "../actions";
+import { useRamenStream } from "@/hooks/useRamenStream";
+import { driverLocChannel } from "@/lib/ramen/types";
+import type { DriverLocationPayload } from "@/lib/ramen/types";
+import PostDeliveryTip from "@/components/PostDeliveryTip";
 
 interface OrderTrackingClientProps {
     order: any;
@@ -15,6 +19,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
     const [currentOrder, setCurrentOrder] = useState(order);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [showDelivered, setShowDelivered] = useState(currentOrder.status === 'DELIVERED');
+    const [showTipPrompt, setShowTipPrompt] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [cancelComment, setCancelComment] = useState("");
@@ -84,44 +89,43 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
         );
     }, [customerPos]);
 
+    // Order status via Supabase postgres_changes (reliable for DB-level updates)
     useEffect(() => {
-        const orderChannel = supabase
+        const orderCh = supabase
             .channel(`order-track-${order.id}`)
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Order', filter: `id=eq.${order.id}` }, (payload) => {
                 const newOrder = payload.new;
                 setCurrentOrder((prev: any) => ({ ...prev, ...newOrder }));
                 if (newOrder.status === 'DELIVERED') {
                     setShowDelivered(true);
-                    setTimeout(() => setIsReviewOpen(true), 3500);
+                    // Show tip prompt first, then review modal after tip is dismissed
+                    setTimeout(() => setShowTipPrompt(true), 3500);
                 }
             })
             .subscribe();
 
-        let driverChannel: any;
-        if (order.driverId) {
-            driverChannel = supabase
-                .channel(`driver-loc-${order.driverId}`)
-                .on('broadcast', { event: 'location_update' }, (payload) => {
-                    const { lat, lng } = payload.payload;
-                    const nextLat = parseCoordinate(lat);
-                    const nextLng = parseCoordinate(lng);
-                    if (nextLat !== null && nextLng !== null) {
-                        setDriverPos(prev => {
-                            if (!prev) return [nextLat, nextLng];
-                            const bearing = calculateBearing(prev[0], prev[1], nextLat, nextLng);
-                            if (bearing !== 0) setDriverBearing(bearing);
-                            return [nextLat, nextLng];
-                        });
-                    }
-                })
-                .subscribe();
-        }
+        return () => { supabase.removeChannel(orderCh); };
+    }, [order.id]);
 
-        return () => {
-            supabase.removeChannel(orderChannel);
-            if (driverChannel) supabase.removeChannel(driverChannel);
-        };
-    }, [order.id, order.driverId]);
+    // Driver location via RAMEN SSE — low-latency pings from DriverLocationTracker
+    const { lastEvent: locEvent } = useRamenStream<DriverLocationPayload>(
+        order.driverId ? driverLocChannel(order.driverId) : null,
+        { filter: ['driver_location'] },
+    );
+
+    useEffect(() => {
+        if (!locEvent) return;
+        const { lat, lng } = locEvent.payload;
+        const nextLat = parseCoordinate(lat);
+        const nextLng = parseCoordinate(lng);
+        if (nextLat === null || nextLng === null) return;
+        setDriverPos(prev => {
+            if (!prev) return [nextLat, nextLng];
+            const bearing = calculateBearing(prev[0], prev[1], nextLat, nextLng);
+            if (bearing !== 0) setDriverBearing(bearing);
+            return [nextLat, nextLng];
+        });
+    }, [locEvent]);
 
     const getProgressStep = (status: string) => {
         if (status === 'PENDING') return 1;
@@ -454,6 +458,22 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         )}
                 </div>
             </div>
+
+            {showTipPrompt && currentOrder.driverId && (
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}>
+                    <div style={{ width: '100%', maxWidth: 400 }}>
+                        <PostDeliveryTip
+                            orderId={currentOrder.id}
+                            restaurantName={currentOrder.restaurant?.name || "the restaurant"}
+                            deliveryPhoto={currentOrder.deliveryPhotoUrl ?? null}
+                            onDone={() => {
+                                setShowTipPrompt(false);
+                                setIsReviewOpen(true);
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
 
             {isCancelModalOpen && (
                 <div className="overlay" style={{ display: 'flex', position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000, alignItems: 'center', justifyContent: 'center' }}>
