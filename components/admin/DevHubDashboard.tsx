@@ -721,10 +721,313 @@ export async function updateSomething(id: string, data: any) {
   );
 }
 
+// ── Mock Data ─────────────────────────────────────────────────────────────────
+
+function MockData() {
+  const [activeSection, setActiveSection] = useState<'seed' | 'factories' | 'supabase' | 'reset'>('seed');
+
+  const seedScripts = [
+    { label: 'Seed all mock data (customers, drivers, merchants, orders)', cmd: 'pnpm run seed:all' },
+    { label: 'Seed customers only', cmd: 'pnpm run seed:customers' },
+    { label: 'Seed drivers only', cmd: 'pnpm run seed:drivers' },
+    { label: 'Seed merchants + menu items', cmd: 'pnpm run seed:merchants' },
+    { label: 'Seed mock orders (50 across all states)', cmd: 'pnpm run seed:orders' },
+    { label: 'Wipe all mock data (local dev only)', cmd: 'pnpm run seed:reset' },
+    { label: 'Reseed from scratch', cmd: 'pnpm run seed:reset && pnpm run seed:all' },
+  ];
+
+  const factories = [
+    {
+      title: 'createMockOrder()',
+      color: '#60a5fa',
+      code: `// __tests__/factories/order.ts
+import { createMockOrder } from '@/tests/factories/order';
+
+// Default — creates a PENDING order
+const order = createMockOrder();
+
+// Override any field
+const deliveredOrder = createMockOrder({
+  status: 'DELIVERED',
+  total: 29.99,
+  driverId: 'driver-uuid-123',
+  restaurantId: 'restaurant-uuid-456',
+});
+
+// Batch — create 10 orders in different states
+const orders = Array.from({ length: 10 }, (_, i) =>
+  createMockOrder({ status: ['PENDING','ACCEPTED','PREPARING','DELIVERED'][i % 4] })
+);`,
+      note: 'Factories always return fully-typed objects. No partial mocks — every required field has a sensible default.',
+    },
+    {
+      title: 'createMockDriver()',
+      color: '#a78bfa',
+      code: `// __tests__/factories/driver.ts
+import { createMockDriver } from '@/tests/factories/driver';
+
+// Approved driver ready to receive orders
+const driver = createMockDriver({ status: 'APPROVED' });
+
+// Pending driver waiting for document review
+const pendingDriver = createMockDriver({
+  status: 'PENDING',
+  documents: { license: null, insurance: null },
+});
+
+// Driver with location (for map/routing tests)
+const driverWithLoc = createMockDriver({
+  lat: 35.2271,
+  lng: -80.8431, // Charlotte, NC
+  isOnline: true,
+});`,
+      note: 'Use createMockDriver({ isOnline: true }) in DriverMap and routing tests — location fields are required.',
+    },
+    {
+      title: 'createMockMerchant()',
+      color: '#f97316',
+      code: `// __tests__/factories/merchant.ts
+import { createMockMerchant } from '@/tests/factories/merchant';
+
+// Active merchant with a menu
+const merchant = createMockMerchant({ status: 'ACTIVE', menuItemCount: 10 });
+
+// Merchant pending onboarding review
+const pendingMerchant = createMockMerchant({
+  status: 'PENDING',
+  stripeConnectId: null,
+});
+
+// Merchant with Stripe Connect already complete
+const stripeMerchant = createMockMerchant({
+  stripeConnectId: 'acct_test_123456',
+  payoutsEnabled: true,
+});`,
+      note: 'Setting menuItemCount auto-generates that many MenuItem rows linked to the restaurant.',
+    },
+    {
+      title: 'createMockCustomer()',
+      color: '#22c55e',
+      code: `// __tests__/factories/customer.ts
+import { createMockCustomer } from '@/tests/factories/customer';
+
+// Basic customer
+const customer = createMockCustomer();
+
+// Customer with saved addresses
+const customerWithAddresses = createMockCustomer({
+  addresses: [
+    { label: 'Home', address: '123 Main St, Charlotte NC 28201', isDefault: true },
+    { label: 'Work', address: '456 Trade St, Charlotte NC 28202' },
+  ],
+});
+
+// Customer with wallet balance (for reward testing)
+const rewardsCustomer = createMockCustomer({
+  walletBalance: 15.00,
+  rewardPoints: 420,
+});`,
+      note: 'createMockCustomer() never creates a real Supabase auth user — it only inserts a Customer row with a mock userId.',
+    },
+  ];
+
+  const supabasePatterns = [
+    {
+      title: 'Mock Supabase in Unit Tests',
+      color: '#60a5fa',
+      code: `// jest.setup.ts — global mock for all unit tests
+jest.mock('@/lib/supabase-admin', () => ({
+  supabaseAdmin: {
+    from: jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      insert: jest.fn().mockReturnThis(),
+      update: jest.fn().mockReturnThis(),
+      delete: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      single: jest.fn().mockResolvedValue({ data: mockOrder, error: null }),
+    }),
+  },
+}));
+
+// Per-test override
+it('returns error when order not found', async () => {
+  (supabaseAdmin.from as jest.Mock).mockReturnValueOnce({
+    select: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    single: jest.fn().mockResolvedValue({ data: null, error: { message: 'Not found' } }),
+  });
+  const result = await getOrder('fake-id');
+  expect(result.error).toBe('Not found');
+});`,
+      note: 'Unit tests never hit the real DB. Integration tests (integration/ folder) use a real test Supabase project.',
+    },
+    {
+      title: 'Mock Stripe in Tests',
+      color: '#a78bfa',
+      code: `// Mock the entire Stripe module
+jest.mock('@/lib/stripe', () => ({
+  getStripe: () => ({
+    paymentIntents: {
+      create: jest.fn().mockResolvedValue({
+        id: 'pi_test_123',
+        client_secret: 'pi_test_123_secret_abc',
+        status: 'requires_payment_method',
+      }),
+      confirm: jest.fn().mockResolvedValue({ status: 'succeeded' }),
+    },
+    transfers: {
+      create: jest.fn().mockResolvedValue({ id: 'tr_test_456' }),
+    },
+  }),
+}));
+
+// For webhook tests — generate a real Stripe test signature
+import Stripe from 'stripe';
+const payload = JSON.stringify({ type: 'payment_intent.succeeded', data: { object: mockPI } });
+const signature = stripe.webhooks.generateTestHeaderString({
+  payload, secret: process.env.STRIPE_WEBHOOK_SECRET!,
+});`,
+      note: 'Never use real Stripe API calls in unit tests. Use generateTestHeaderString() for webhook handler tests.',
+    },
+    {
+      title: 'Environment Detection in Code',
+      color: '#22c55e',
+      code: `// lib/env.ts — helpers to detect mock/test context
+export const isMockEnv = () =>
+  process.env.NEXT_PUBLIC_MOCK_MODE === 'true' ||
+  process.env.NODE_ENV === 'test';
+
+export const isTestEnv = () => process.env.NODE_ENV === 'test';
+
+// Use in server actions to skip real DB in test runs
+export async function placeOrder(data: OrderInput) {
+  if (isMockEnv()) {
+    return { success: true, orderId: 'mock-order-' + Date.now() };
+  }
+  // real implementation...
+}
+
+// .env.local — turn on mock mode for full UI testing without real DB
+NEXT_PUBLIC_MOCK_MODE=true`,
+      note: 'NEXT_PUBLIC_MOCK_MODE=true makes the UI fully interactive with fake data — no Supabase or Stripe calls are made.',
+    },
+  ];
+
+  const resetCommands = [
+    { label: 'Wipe and reseed dev DB (local only — never run on prod)', cmd: 'pnpm run seed:reset && pnpm run seed:all' },
+    { label: 'Reset only orders (keep users/merchants)', cmd: 'pnpm run seed:reset:orders' },
+    { label: 'Check which mock records exist', cmd: 'pnpm run seed:status' },
+    { label: 'Clear all mock Stripe test data (Stripe Dashboard → Test Data → Reset)', cmd: 'stripe fixtures reset' },
+    { label: 'List active Stripe test customers', cmd: 'stripe customers list --limit 20' },
+    { label: 'Trigger a webhook event manually', cmd: 'stripe trigger payment_intent.succeeded' },
+    { label: 'Trigger checkout.session.completed', cmd: 'stripe trigger checkout.session.completed' },
+  ];
+
+  const sidebarItems = [
+    { id: 'seed' as const, label: 'Seed Scripts', icon: '🌱' },
+    { id: 'factories' as const, label: 'Data Factories', icon: '🏭' },
+    { id: 'supabase' as const, label: 'Mocking Patterns', icon: '🔌' },
+    { id: 'reset' as const, label: 'Reset & Inspect', icon: '🔄' },
+  ];
+
+  return (
+    <div style={{ display: 'flex', gap: 16 }}>
+      {/* Sidebar */}
+      <div style={{ width: 160, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {sidebarItems.map(item => (
+          <button
+            key={item.id}
+            onClick={() => setActiveSection(item.id)}
+            style={{
+              padding: '9px 12px', borderRadius: 6, textAlign: 'left', cursor: 'pointer', transition: 'all 150ms',
+              border: activeSection === item.id ? '1px solid rgba(249,115,22,0.3)' : '1px solid rgba(255,255,255,0.05)',
+              background: activeSection === item.id ? 'rgba(249,115,22,0.08)' : 'transparent',
+              color: activeSection === item.id ? '#f97316' : '#666',
+              fontSize: 13, fontWeight: 600,
+            }}
+          >
+            {item.icon} {item.label}
+          </button>
+        ))}
+        <div style={{ marginTop: 12, padding: '10px 12px', background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 7, fontSize: 11, color: '#4ade80', lineHeight: 1.6 }}>
+          ✅ Mock data is <strong>only</strong> allowed in Local Dev and Preview envs. Never in Production.
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {activeSection === 'seed' && (
+          <div className="adm-card">
+            <SectionHeader title="Seed Scripts" sub="Run these from the project root to populate your local or preview DB with realistic test data." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {seedScripts.map(s => <CodeBlock key={s.cmd} cmd={s.cmd} label={s.label} />)}
+            </div>
+            <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.15)', borderRadius: 7 }}>
+              <div style={{ fontSize: 12, color: '#93c5fd', lineHeight: 1.7 }}>
+                💡 <strong>How seeds work:</strong> Scripts live in <code>scripts/seed/</code>. They use <code>supabaseAdmin</code> to insert rows directly, bypassing RLS. Each entity is tagged with <code>is_mock: true</code> so they can be bulk-deleted without touching real data.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'factories' && (
+          <div className="adm-card">
+            <SectionHeader title="Data Factories" sub="Import and call these helpers in any test file to get a fully-typed mock entity in one line." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {factories.map(f => (
+                <div key={f.title} style={{ background: '#0f1210', border: `1px solid ${f.color}22`, borderRadius: 8, padding: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: f.color, marginBottom: 10 }}>{f.title}</div>
+                  <pre style={{ background: '#0a0c09', border: '1px solid #1e2420', borderRadius: 6, padding: 12, fontSize: 12, color: '#e0e0e0', fontFamily: 'monospace', overflowX: 'auto', lineHeight: 1.6, margin: '0 0 10px' }}>{f.code}</pre>
+                  <div style={{ fontSize: 12, color: '#555', lineHeight: 1.5 }}>
+                    <span style={{ color: '#444' }}>Note: </span>{f.note}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'supabase' && (
+          <div className="adm-card">
+            <SectionHeader title="Mocking Patterns" sub="How to isolate tests from real Supabase and Stripe — so unit tests are fast and deterministic." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {supabasePatterns.map(p => (
+                <div key={p.title} style={{ background: '#0f1210', border: `1px solid ${p.color}22`, borderRadius: 8, padding: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: p.color, marginBottom: 10 }}>{p.title}</div>
+                  <pre style={{ background: '#0a0c09', border: '1px solid #1e2420', borderRadius: 6, padding: 12, fontSize: 12, color: '#e0e0e0', fontFamily: 'monospace', overflowX: 'auto', lineHeight: 1.6, margin: '0 0 10px' }}>{p.code}</pre>
+                  <div style={{ fontSize: 12, color: '#555', lineHeight: 1.5 }}>
+                    <span style={{ color: '#444' }}>Note: </span>{p.note}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'reset' && (
+          <div className="adm-card">
+            <SectionHeader title="Reset & Inspect" sub="Commands to wipe mock data, check what exists, and trigger Stripe test events." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+              {resetCommands.map(c => <CodeBlock key={c.cmd} cmd={c.cmd} label={c.label} />)}
+            </div>
+            <div style={{ padding: '12px 14px', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 7 }}>
+              <div style={{ fontSize: 12, color: '#f87171', lineHeight: 1.7 }}>
+                ⛔ <strong>NEVER run seed:reset against the production database.</strong> Seeds check for <code>NODE_ENV !== 'production'</code> and will throw before executing, but you should still double-check your <code>.env.local</code> Supabase URL before running any destructive command.
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 // ── Root Component ────────────────────────────────────────────────────────────
 
 export default function DevHubDashboard() {
-  const [tab, setTab] = useState<'tdd' | 'tests' | 'checklist' | 'env' | 'dev'>('tdd');
+  const [tab, setTab] = useState<'tdd' | 'tests' | 'checklist' | 'env' | 'dev' | 'mock'>('tdd');
 
   const tabs: Array<{ id: typeof tab; label: string; icon: string }> = [
     { id: 'tdd', label: 'TDD Guide', icon: '🔴' },
@@ -732,6 +1035,7 @@ export default function DevHubDashboard() {
     { id: 'checklist', label: 'Release QA', icon: '✅' },
     { id: 'env', label: 'Environments', icon: '🌍' },
     { id: 'dev', label: 'Dev Setup', icon: '⚙️' },
+    { id: 'mock', label: 'Mock Data', icon: '🌱' },
   ];
 
   return (
@@ -772,6 +1076,7 @@ export default function DevHubDashboard() {
       {tab === 'checklist' && <ReleaseChecklist />}
       {tab === 'env' && <EnvRules />}
       {tab === 'dev' && <DevSetup />}
+      {tab === 'mock' && <MockData />}
     </div>
   );
 }
