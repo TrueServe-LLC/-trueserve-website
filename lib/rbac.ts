@@ -32,7 +32,9 @@ export type AdminSection =
     | 'cost-management'
     | 'pricing'
     | 'feature-switches'
-    | 'settings';
+    | 'settings'
+    | 'stripe-testing'
+    | 'dev-hub';
 
 export type AdminNavItem = {
     href: string;
@@ -202,6 +204,8 @@ export const ADMIN_SECTION_PERMISSIONS: Record<AdminSection, Permission[]> = {
     pricing: ['manage_pricing'],
     'feature-switches': ['manage_feature_flags'],
     settings: ['manage_system_settings'],
+    'stripe-testing': ['manage_payouts', 'access_qa_toolbox'],
+    'dev-hub': ['view_dashboard'],
 };
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
@@ -215,6 +219,8 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     { href: '/admin/analytics', label: 'Analytics', icon: '📈', section: 'analytics' },
     { href: '/admin/users', label: 'Users', icon: '👤', section: 'users' },
     { href: '/admin/settings', label: 'Settings', icon: '⚙️', section: 'settings' },
+    { href: '/admin/stripe-testing', label: 'Stripe Testing', icon: '🧪', section: 'stripe-testing' },
+    { href: '/admin/dev-hub', label: 'Dev & QA Hub', icon: '📋', section: 'dev-hub' },
 ];
 
 export const ADMIN_ROLE_MATRIX = ADMIN_ROLES.map((role) => ({
