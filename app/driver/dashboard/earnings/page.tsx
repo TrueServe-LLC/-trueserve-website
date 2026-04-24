@@ -1,9 +1,34 @@
 import { cookies } from "next/headers";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
-import DriverMap from "@/components/DriverMap";
 import MileageTracker from "@/components/MileageTracker";
 
 export const dynamic = 'force-dynamic';
+
+const MOCK_ROWS = [
+    { date: "2026-04-23", restaurant: "Emerald Kitchen",    miles: 3.2, base: 5.50, tip: 4.00, total: 9.50  },
+    { date: "2026-04-23", restaurant: "Noodle Palace",      miles: 5.1, base: 6.75, tip: 3.50, total: 10.25 },
+    { date: "2026-04-22", restaurant: "Burger Vault",       miles: 2.4, base: 4.50, tip: 2.00, total: 6.50  },
+    { date: "2026-04-22", restaurant: "Sunrise Bowls",      miles: 6.8, base: 8.00, tip: 5.00, total: 13.00 },
+    { date: "2026-04-21", restaurant: "Taco Loco",          miles: 4.0, base: 5.75, tip: 3.00, total: 8.75  },
+    { date: "2026-04-21", restaurant: "Pho Saigon",         miles: 3.5, base: 5.25, tip: 2.50, total: 7.75  },
+    { date: "2026-04-20", restaurant: "Gold Wok",           miles: 7.2, base: 9.00, tip: 4.50, total: 13.50 },
+    { date: "2026-04-19", restaurant: "Pizza Underground",  miles: 2.9, base: 4.75, tip: 2.00, total: 6.75  },
+    { date: "2026-04-18", restaurant: "The Grill House",    miles: 5.5, base: 7.25, tip: 3.50, total: 10.75 },
+    { date: "2026-04-17", restaurant: "Harvest Table",      miles: 4.1, base: 6.00, tip: 4.00, total: 10.00 },
+];
+
+// Weekly bar data Mon-Sun (mock values proportional)
+const WEEK_DAYS = [
+    { day: "Mon", amount: 24.00 },
+    { day: "Tue", amount: 31.50 },
+    { day: "Wed", amount: 18.75 },
+    { day: "Thu", amount: 42.00 },
+    { day: "Fri", amount: 56.25 },
+    { day: "Sat", amount: 67.50 },
+    { day: "Sun", amount: 38.00 },
+];
+
+const MAX_DAY = Math.max(...WEEK_DAYS.map(d => d.amount));
 
 export default async function DriverEarnings() {
     const cookieStore = await cookies();
@@ -14,150 +39,169 @@ export default async function DriverEarnings() {
         : await getDriverOrRedirect();
 
     const balance = driver?.balance || 0;
-    const driverLat = typeof driver?.currentLat === "number" ? driver.currentLat : null;
-    const driverLng = typeof driver?.currentLng === "number" ? driver.currentLng : null;
+
+    // Compute totals from mock rows
+    const allTimeTotal = balance;
+    const weeklyTotal  = MOCK_ROWS.slice(0, 4).reduce((s, r) => s + r.total, 0);
+    const monthlyTotal = MOCK_ROWS.reduce((s, r) => s + r.total, 0);
+
+    const totalBase = MOCK_ROWS.reduce((s, r) => s + r.base, 0);
+    const totalTips = MOCK_ROWS.reduce((s, r) => s + r.tip, 0);
+    const bonuses   = 12.50;
+    const grandTotal = totalBase + totalTips + bonuses;
+    const basePct  = Math.round((totalBase / grandTotal) * 100);
+    const tipPct   = Math.round((totalTips / grandTotal) * 100);
+    const bonusPct = 100 - basePct - tipPct;
+
+    const ytdEst   = allTimeTotal * 12;          // rough annualised
+    const taxAside = ytdEst * 0.25;
 
     return (
         <div className="font-sans">
             <style dangerouslySetInnerHTML={{ __html: `
-                .page-wrap { padding: 0; }
+                /* ── layout ── */
                 .two-col-ledger { display: grid; grid-template-columns: 1fr 360px; gap: 1px; background: #1c1f28; border-bottom: 1px solid #1c1f28; }
                 @media (max-width: 1024px) { .two-col-ledger { grid-template-columns: 1fr; } }
-                
-                .ledger-left { background: #0c0c0e; padding: 32px; }
+                .ledger-left  { background: #0c0c0e; padding: 32px; }
                 .ledger-right { background: #080808; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
 
+                /* ── heading ── */
                 .section-hd-title { font-family: 'Barlow Condensed', sans-serif; font-size: 48px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 8px; }
                 .section-hd-title span { color: #f97316; }
-                .section-hd-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 32px; display: block; }
+                .section-hd-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 28px; display: block; }
 
-                .ledger-table-wrap { overflow-x: auto; }
-                .ledger-table { width: 100%; border-collapse: collapse; border: 1px solid #1c1f28; margin-bottom: 14px; }
+                /* ── stat cards row ── */
+                .stat-cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin-bottom: 28px; }
+                @media (max-width: 640px) { .stat-cards-row { grid-template-columns: 1fr; } }
+                .stat-card { background: #0f1219; padding: 18px 16px; }
+                .stat-card-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #444; margin-bottom: 8px; }
+                .stat-card-val { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -0.02em; }
+                .stat-card-val.accent { color: #f97316; }
+
+                /* ── earnings table ── */
+                .ledger-table-wrap { overflow-x: auto; margin-bottom: 16px; }
+                .ledger-table { width: 100%; border-collapse: collapse; border: 1px solid #1c1f28; }
                 .ledger-table th { background: #0f1219; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #444; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1c1f28; }
-                .ledger-table td { padding: 11px 14px; border-bottom: 1px solid #131720; font-size: 12px; font-family: 'DM Mono', monospace; color: #888; }
-                .ledger-table td.log-name { color: #ccc; font-weight: 500; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; }
-                .ledger-table td.settlement { color: #3dd68c; font-weight: 600; }
+                .ledger-table td { padding: 10px 14px; border-bottom: 1px solid #131720; font-size: 12px; font-family: 'DM Mono', monospace; color: #888; }
+                .ledger-table td.col-name { color: #ccc; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; }
+                .ledger-table td.col-total { color: #3dd68c; font-weight: 600; }
+                .ledger-table td.col-tip   { color: #f97316; }
 
-                .heatmap-block { background: #0c0e13; border: 1px solid #1c1f28; }
-                .heatmap-hd { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #1c1f28; }
-                .heatmap-dot { width: 7px; height: 7px; background: #f97316; border-radius: 50%; }
-                .heatmap-title { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #f97316; }
-                .heatmap-visual { height: 160px; background: #0c0e13; display: flex; align-items: center; justify-content: center; position: relative; }
-                .heatmap-status { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-top: 1px solid #1c1f28; }
-                .heatmap-status-txt { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #333; }
+                /* ── CSV btn ── */
+                .csv-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 20px; background: transparent; border: 1px solid #2a2f3a; color: #888; cursor: pointer; transition: all .15s; }
+                .csv-btn:hover { border-color: #f97316; color: #f97316; }
 
-                .pickup-card { background: #0c0e13; border: 1px solid #1c1f28; }
-                .pickup-card-hd { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid #1c1f28; }
-                .pickup-type { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #555; }
-                .pickup-mesh { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; background: #0d2a1a; color: #3dd68c; border: 1px solid #1a4a2a; }
-                .pickup-body { padding: 14px; }
-                .pickup-name-txt { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; margin-bottom: 2px; }
-                .tip-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; background: #1a1200; color: #f97316; border: 1px solid #3a2800; }
-                .pickup-address-txt { font-size: 11px; font-family: 'DM Mono', monospace; color: #444; margin: 8px 0 12px; }
-                .pickup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-                .nav-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px; background: #f97316; border: none; color: #000; cursor: pointer; text-align: center; }
-                .contact-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px; background: transparent; border: 1px solid #2a2f3a; color: #888; cursor: pointer; text-align: center; }
-                .confirm-row { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid #1c1f28; cursor: pointer; transition: background .15s; }
-                .confirm-row:hover { background: #1a1200; }
-                .confirm-icon { width: 28px; height: 28px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; }
-                .confirm-text { font-size: 11px; font-weight: 700; color: #888; letter-spacing: 0.05em; text-transform: uppercase; }
+                /* ── right panel blocks ── */
+                .r-block { background: #0c0e13; border: 1px solid #1c1f28; padding: 16px; }
+                .r-block-hd { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+                .r-block-hd-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #444; }
 
-                .mission-ctrl-block { background: #0c0e13; border: 1px solid #1c1f28; padding: 14px; }
-                .mc-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-                .mc-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; }
-                .sector-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; background: #0d2a1a; color: #3dd68c; border: 1px solid #1a4a2a; }
-                .go-offline-btn { width: 100%; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px; background: transparent; border: 1.5px solid #e24b4a; color: #e24b4a; cursor: pointer; margin-top: 8px; }
-
-                .liquidity-block { background: #0c0e13; border: 1px solid #1c1f28; padding: 14px; }
-                .liq-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-                .liq-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; }
+                /* ── liquidity ── */
                 .liq-balance-val { font-size: 32px; font-weight: 700; font-family: 'DM Mono', monospace; color: #fff; line-height: 1; margin-bottom: 12px; }
                 .cash-out-btn { width: 100%; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px; background: #f97316; border: none; color: #000; cursor: pointer; }
+
+                /* ── breakdown rows ── */
+                .breakdown-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+                .breakdown-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+                .breakdown-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; flex: 1; }
+                .breakdown-pct { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: #fff; }
+                .breakdown-bar-track { flex: 1; height: 3px; background: #1c1f28; border-radius: 2px; overflow: hidden; }
+                .breakdown-bar-fill  { height: 100%; border-radius: 2px; }
+
+                /* ── weekly bars ── */
+                .week-bars { display: flex; align-items: flex-end; gap: 6px; height: 100px; padding-bottom: 24px; position: relative; }
+                .week-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+                .week-bar { width: 100%; background: #1c1f28; border-radius: 2px 2px 0 0; position: relative; overflow: hidden; min-height: 4px; }
+                .week-bar-fill { position: absolute; bottom: 0; left: 0; width: 100%; background: #f97316; border-radius: 2px 2px 0 0; transition: height .3s; }
+                .week-bar-lbl { font-size: 8px; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+                .week-bar-amt { font-size: 9px; font-family: 'DM Mono', monospace; color: #666; }
+
+                /* ── tax card ── */
+                .tax-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #131720; }
+                .tax-row:last-child { border-bottom: none; }
+                .tax-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555; }
+                .tax-val { font-family: 'DM Mono', monospace; font-size: 13px; color: #ccc; }
+                .tax-val.warn { color: #f97316; }
+                .dl-btn { width: 100%; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px; background: transparent; border: 1px solid #2a2f3a; color: #555; cursor: pointer; margin-top: 12px; transition: all .15s; }
+                .dl-btn:hover { border-color: #f97316; color: #f97316; }
 
                 @media (max-width: 768px) {
                     .ledger-left, .ledger-right { padding: 18px; }
                     .section-hd-title { font-size: 34px; }
-                    .section-hd-sub { margin-bottom: 20px; letter-spacing: 0.14em; }
-                    .pickup-actions { grid-template-columns: 1fr; }
+                    .stat-card-val { font-size: 22px; }
                 }
-
                 @media (max-width: 480px) {
-                    .section-hd-title { font-size: 30px; }
-                    .ledger-table th, .ledger-table td { padding: 9px 10px; }
-                    .heatmap-visual { height: 200px; }
-                    .liq-balance-val { font-size: 26px; }
+                    .section-hd-title { font-size: 28px; }
+                    .ledger-table th, .ledger-table td { padding: 8px 10px; }
                 }
             ` }} />
-            
+
             <div className="two-col-ledger">
+                {/* ──────────── LEFT ──────────── */}
                 <div className="ledger-left">
-                    <div className="section-hd-title">Ledger <span>&amp; Mesh</span></div>
-                    <div className="section-hd-sub">Historical yield and sector forecasting</div>
-                    
+                    <div className="section-hd-title">Earnings <span>&amp; Settlements</span></div>
+                    <div className="section-hd-sub">Your full yield history and payout records</div>
+
+                    {/* 3 stat cards */}
+                    <div className="stat-cards-row">
+                        <div className="stat-card">
+                            <div className="stat-card-lbl">This Week</div>
+                            <div className="stat-card-val">${weeklyTotal.toFixed(2)}</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-card-lbl">This Month</div>
+                            <div className="stat-card-val">${monthlyTotal.toFixed(2)}</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-card-lbl">All Time</div>
+                            <div className="stat-card-val accent">${allTimeTotal.toFixed(2)}</div>
+                        </div>
+                    </div>
+
+                    {/* Earnings table */}
                     <div className="ledger-table-wrap">
                         <table className="ledger-table">
-                            <thead><tr><th>Timeline</th><th>Dispatch</th><th>Yield</th><th>Settlement</th></tr></thead>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Restaurant</th>
+                                    <th>Miles</th>
+                                    <th>Base</th>
+                                    <th>Tip</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
                             <tbody>
-                                <tr><td className="log-name">Sync Log 26</td><td>2.5 MI Link</td><td>$3.25</td><td className="settlement">$8.95</td></tr>
-                                <tr><td className="log-name">Sync Log 25</td><td>5 MI Link</td><td>$3.50</td><td className="settlement">$13.30</td></tr>
-                                <tr><td className="log-name">Sync Log 24</td><td>7.5 MI Link</td><td>$3.75</td><td className="settlement">$13.85</td></tr>
+                                {MOCK_ROWS.map((row, i) => (
+                                    <tr key={i}>
+                                        <td>{row.date}</td>
+                                        <td className="col-name">{row.restaurant}</td>
+                                        <td>{row.miles.toFixed(1)}</td>
+                                        <td>${row.base.toFixed(2)}</td>
+                                        <td className="col-tip">${row.tip.toFixed(2)}</td>
+                                        <td className="col-total">${row.total.toFixed(2)}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
 
-                    <div className="heatmap-block">
-                        <div className="heatmap-hd"><div className="heatmap-dot"></div><div className="heatmap-title">Smart Heatmap</div></div>
-                        <div className="heatmap-visual !h-[280px] !p-3">
-                            <DriverMap
-                                className="h-full w-full"
-                                initialCenter={driverLat !== null && driverLng !== null ? { lat: driverLat, lng: driverLng } : null}
-                            />
-                        </div>
-                        <div className="heatmap-status"><div className="heatmap-status-txt">Live demand zones</div><div className="heatmap-status-txt">Based on your location</div></div>
-                    </div>
+                    <button className="csv-btn">⬇ Download CSV</button>
                 </div>
 
+                {/* ──────────── RIGHT ──────────── */}
                 <div className="ledger-right">
-                    <div className="pickup-card">
-                        <div className="pickup-card-hd"><div className="pickup-type">Pickup Mission</div><div className="pickup-mesh">Mesh Active</div></div>
-                        <div className="pickup-body">
-                            <div className="flex justify-between items-start mb-1.5">
-                                <div className="pickup-name-txt">Emerald Kitchen</div>
-                                <div className="tip-tag">$4.00 Tip</div>
-                            </div>
-                            <div className="pickup-address-txt">842 Poplar Tent Rd, Concord NC</div>
-                            <div className="pickup-actions">
-                                <button className="nav-btn">Nav → Sector</button>
-                                <button className="contact-btn">Contact Customer</button>
-                            </div>
-                            <div className="confirm-row">
-                                <div className="confirm-icon">
-                                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="2" width="9" height="9" rx="1" stroke="#888" strokeWidth="1.2"/><path d="M4.5 6.5l1.5 1.5 2.5-3" stroke="#888" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                                </div>
-                                <div className="confirm-text">Confirm Pickup with Photo</div>
-                            </div>
-                            <div className="text-center text-[10px] font-bold text-[#e24b4a] uppercase tracking-widest pt-4 border-t border-[#1c1f28] cursor-pointer hover:opacity-80 mt-1">
-                                Terminate Mission Connection
-                            </div>
+                    {/* Balance / Cash Out */}
+                    <div className="r-block">
+                        <div className="r-block-hd">
+                            Liquid Balance
+                            <span style={{
+                                fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
+                                padding: "3px 8px", background: "#1a1200", color: "#f97316", border: "1px solid #3a2800",
+                            }}>
+                                Ready
+                            </span>
                         </div>
-                    </div>
-
-                    <div className="mission-ctrl-block">
-                        <div className="mc-hd"><div className="mc-title">Mission Control</div><div className="sector-badge">Sector Active</div></div>
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-[10px] font-bold text-[#444] uppercase tracking-widest">Main Sector</span>
-                            <span className="text-xs font-mono font-bold text-white">Downtown Grid</span>
-                        </div>
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-[10px] font-bold text-[#444] uppercase tracking-widest">Hourly Yield</span>
-                            <span className="text-xs font-mono font-bold text-[#f97316]">$24.50 Est.</span>
-                        </div>
-                        <button className="go-offline-btn">Go Offline</button>
-                    </div>
-
-                    <div className="liquidity-block">
-                        <div className="liq-hd"><div className="liq-title">Rapid Liquidity</div><div className="settlement-tag bg-[#1a1200] border border-[#3a2800] text-[#f97316] text-[9px] px-2 py-0.5 uppercase font-bold">3 Ready</div></div>
-                        <div className="text-[9px] font-bold text-[#444] uppercase tracking-widest mb-4">Liquid balance available</div>
 
                         {/* Tip transparency banner */}
                         <div style={{
@@ -171,14 +215,79 @@ export default async function DriverEarnings() {
                                     TrueServe takes 0% of your tips. Always.
                                 </div>
                                 <div style={{ fontSize: 10, color: "#555", lineHeight: 1.5 }}>
-                                    Every dollar customers tip goes directly to you — no deductions, no platform cuts, no surprises.
+                                    Every dollar customers tip goes directly to you.
                                 </div>
                             </div>
                         </div>
 
-                        <div className="text-[9px] font-bold text-[#f97316] uppercase tracking-widest mb-1">Liquid Balance</div>
+                        <div style={{ fontSize: 9, fontWeight: 700, color: "#f97316", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+                            Available
+                        </div>
                         <div className="liq-balance-val">${balance.toFixed(2)}</div>
                         <button className="cash-out-btn">Cash Out Funds</button>
+                    </div>
+
+                    {/* Earnings breakdown */}
+                    <div className="r-block">
+                        <div className="r-block-hd">Earnings Breakdown</div>
+
+                        {[
+                            { label: "Base Pay",  pct: basePct,  color: "#3dd68c" },
+                            { label: "Tips",       pct: tipPct,   color: "#f97316" },
+                            { label: "Bonuses",    pct: bonusPct, color: "#60a5fa" },
+                        ].map(({ label, pct, color }) => (
+                            <div key={label} className="breakdown-row">
+                                <div className="breakdown-dot" style={{ background: color }} />
+                                <div className="breakdown-label">{label}</div>
+                                <div className="breakdown-bar-track">
+                                    <div className="breakdown-bar-fill" style={{ width: `${pct}%`, background: color }} />
+                                </div>
+                                <div className="breakdown-pct">{pct}%</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Weekly bar chart */}
+                    <div className="r-block">
+                        <div className="r-block-hd">
+                            Weekly Earnings
+                            <span className="r-block-hd-sub">Mon – Sun</span>
+                        </div>
+                        <div className="week-bars">
+                            {WEEK_DAYS.map(({ day, amount }) => {
+                                const heightPct = Math.round((amount / MAX_DAY) * 100);
+                                return (
+                                    <div key={day} className="week-bar-wrap">
+                                        <div className="week-bar-amt">${amount.toFixed(0)}</div>
+                                        <div className="week-bar" style={{ height: "60px" }}>
+                                            <div
+                                                className="week-bar-fill"
+                                                style={{ height: `${heightPct}%`, opacity: amount === MAX_DAY ? 1 : 0.6 }}
+                                            />
+                                        </div>
+                                        <div className="week-bar-lbl">{day}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Tax summary */}
+                    <div className="r-block">
+                        <div className="r-block-hd">Tax Summary</div>
+                        <div className="tax-row">
+                            <span className="tax-lbl">Est. YTD Earnings</span>
+                            <span className="tax-val">${ytdEst.toFixed(2)}</span>
+                        </div>
+                        <div className="tax-row">
+                            <span className="tax-lbl">Est. Tax Set-Aside (25%)</span>
+                            <span className="tax-val warn">${taxAside.toFixed(2)}</span>
+                        </div>
+                        <div className="tax-row">
+                            <span className="tax-lbl">Filing Status</span>
+                            <span className="tax-val">1099-NEC</span>
+                        </div>
+                        <button className="dl-btn">⬇ Download 1099 (UI only)</button>
                     </div>
 
                     {/* Mileage & Tax Tracker */}

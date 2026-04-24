@@ -56,6 +56,13 @@ export default async function UserSettings() {
                     </article>
 
                     <article className="food-card">
+                        <p className="food-kicker mb-2">Delivery</p>
+                        <h3 className="food-heading !text-[30px] mb-2">Address Book</h3>
+                        <p className="text-sm leading-7 text-white/70 mb-4">Save multiple delivery addresses for faster checkout.</p>
+                        <Link href="/user/settings/addresses" className="btn btn-gold">Manage Addresses</Link>
+                    </article>
+
+                    <article className="food-card">
                         <p className="food-kicker mb-2">Security</p>
                         <h3 className="food-heading !text-[30px] mb-2">Password</h3>
                         <p className="text-sm leading-7 text-white/70 mb-4">Manage your account password and sign-in safety.</p>

@@ -18,8 +18,9 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
     { href: '/driver/dashboard/earnings', label: 'Settlements', icon: '💰', tour: 'driver-nav-earnings' },
     { href: '/driver/dashboard/ratings', label: 'Reputation', icon: '⭐', tour: 'driver-nav-ratings' },
     { href: '/driver/dashboard/compliance', label: 'Compliance', icon: '✅', tour: 'driver-nav-compliance' },
-    { href: '/driver/dashboard/account', label: 'Profile', icon: '👤', tour: 'driver-nav-account' },
-    { href: '/driver/dashboard/help', label: 'Help', icon: '🆘', tour: 'driver-nav-help' },
+    { href: '/driver/dashboard/account',   label: 'Profile',   icon: '👤', tour: 'driver-nav-account'   },
+    { href: '/driver/dashboard/disputes',  label: 'Disputes',  icon: '🚨', tour: 'driver-nav-disputes'  },
+    { href: '/driver/dashboard/help',      label: 'Help',      icon: '🆘', tour: 'driver-nav-help'      },
   ];
 
   return (
