@@ -1024,10 +1024,349 @@ NEXT_PUBLIC_MOCK_MODE=true`,
   );
 }
 
+// ── Onboarding Hub ────────────────────────────────────────────────────────────
+
+function OnboardingHub() {
+  const [activeSection, setActiveSection] = useState<'checklist' | 'troubleshooting' | 'schema'>('checklist');
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const toggle = (id: string) => setChecked(prev => ({ ...prev, [id]: !prev[id] }));
+
+  const days = [
+    {
+      day: 'Day 1', color: '#60a5fa', items: [
+        { id: 'd1_github', label: 'Get added to TrueServe-LLC GitHub org (ask team lead)' },
+        { id: 'd1_clone', label: 'Clone the repo: git clone https://github.com/TrueServe-LLC/-trueserve-website.git' },
+        { id: 'd1_1pass', label: 'Get 1Password team invite — all env credentials live here' },
+        { id: 'd1_env', label: 'Copy .env.example → .env.local and fill in values from 1Password' },
+        { id: 'd1_install', label: 'Run: pnpm install && pnpm dev — confirm app loads at localhost:3000' },
+        { id: 'd1_tests', label: 'Run: pnpm test — confirm all unit tests pass locally' },
+        { id: 'd1_slack', label: 'Join Slack: #dev, #qa, #deployments, #alerts channels' },
+      ]
+    },
+    {
+      day: 'Day 2', color: '#a78bfa', items: [
+        { id: 'd2_supabase', label: 'Get Supabase project invite (dev schema access only)' },
+        { id: 'd2_vercel', label: 'Get added to Vercel team (true-serve-llc org)' },
+        { id: 'd2_stripe', label: 'Get Stripe test-mode API keys from 1Password' },
+        { id: 'd2_stripe_cli', label: 'Install Stripe CLI + run: stripe listen --forward-to localhost:3000/api/webhook/stripe' },
+        { id: 'd2_seed', label: 'Run: pnpm run seed:all — seed local DB with mock data' },
+        { id: 'd2_admin', label: 'Log into admin portal at localhost:3000/admin — confirm access' },
+        { id: 'd2_devhub', label: 'Read the TDD Guide and Dev Setup tabs in this portal' },
+      ]
+    },
+    {
+      day: 'Day 3', color: '#f97316', items: [
+        { id: 'd3_schema', label: 'Review the Database Schema section in this portal (Onboarding → Schema Map)' },
+        { id: 'd3_branch', label: 'Create your first feature branch: git checkout -b feature/your-name-hello-world' },
+        { id: 'd3_test', label: 'Write a small unit test (TDD Red phase) — even a trivial one to confirm the flow works' },
+        { id: 'd3_pr', label: 'Open a draft PR — confirm Vercel preview URL generates automatically' },
+        { id: 'd3_e2e', label: 'Run E2E tests on the preview URL: pnpm run test:e2e' },
+        { id: 'd3_meet', label: 'Sync with team lead: confirm access, raise any blockers, agree on first real ticket' },
+      ]
+    },
+    {
+      day: 'QA-Specific', color: '#22c55e', items: [
+        { id: 'qa_stripe', label: 'Bookmark the Stripe Testing tab in this portal — all test cards are there' },
+        { id: 'qa_mock', label: 'Review the Mock Data tab — use seed scripts before every test run' },
+        { id: 'qa_checklist', label: 'Review the Release QA Checklist tab — this is your sign-off checklist before every merge' },
+        { id: 'qa_devices', label: 'Set up Chrome DevTools presets: Pixel 5 and iPhone 13 (minimum mobile devices to test)' },
+        { id: 'qa_playwright', label: 'Install Playwright browsers: npx playwright install' },
+        { id: 'qa_report', label: 'Run E2E + open report: pnpm run test:e2e && npx playwright show-report' },
+        { id: 'qa_flags', label: 'Get familiar with Feature Switches in the admin portal — QA uses flags to isolate features' },
+      ]
+    },
+  ];
+
+  const totalItems = days.flatMap(d => d.items).length;
+  const doneItems = Object.values(checked).filter(Boolean).length;
+  const pct = Math.round((doneItems / totalItems) * 100);
+
+  const faqs = [
+    {
+      error: 'Error: supabase is not defined / NEXT_PUBLIC_SUPABASE_URL missing',
+      color: '#ef4444',
+      cause: '.env.local is missing or the env var name is wrong.',
+      fix: 'Check .env.local has NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY. Copy them from 1Password. Restart the dev server after editing .env.local — Next.js does not hot-reload env files.',
+      cmd: 'pnpm dev',
+    },
+    {
+      error: 'Stripe webhook: No signatures found matching the expected signature',
+      color: '#ef4444',
+      cause: 'STRIPE_WEBHOOK_SECRET in .env.local does not match the secret Stripe CLI printed when you ran stripe listen.',
+      fix: 'Re-run stripe listen and copy the "webhook signing secret" it prints (whsec_...) into your .env.local as STRIPE_WEBHOOK_SECRET. Restart the dev server.',
+      cmd: 'stripe listen --forward-to localhost:3000/api/webhook/stripe',
+    },
+    {
+      error: 'Supabase RLS: new row violates row-level security policy',
+      color: '#f59e0b',
+      cause: 'You are using the anon Supabase client (supabase) for a write that requires the service role.',
+      fix: 'Switch to supabaseAdmin from @/lib/supabase-admin in your server action or API route. Never use supabaseAdmin in client components.',
+      cmd: "import { supabaseAdmin } from '@/lib/supabase-admin';",
+    },
+    {
+      error: 'Vercel build error: Cannot find module or its corresponding type declarations',
+      color: '#f59e0b',
+      cause: 'A new env var or import is referenced but not available at build time.',
+      fix: 'Add the env var to Vercel project settings (Settings → Environment Variables) for the Preview environment. For imports, check the @/ alias resolves correctly in tsconfig.json.',
+      cmd: 'npx tsc --noEmit',
+    },
+    {
+      error: 'pnpm test fails: Cannot find module @/lib/...',
+      color: '#f59e0b',
+      cause: 'Jest moduleNameMapper is not configured for the @/ alias.',
+      fix: 'Check jest.config.ts has moduleNameMapper: { "^@/(.*)$": "<rootDir>/$1" }. This maps the @/ alias to the project root for test runs.',
+      cmd: 'cat jest.config.ts',
+    },
+    {
+      error: 'Google Maps blank / "This page can\'t load Google Maps correctly"',
+      color: '#60a5fa',
+      cause: 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is missing or the key has no Maps JavaScript API enabled.',
+      fix: 'Add the key to .env.local. In Google Cloud Console, confirm "Maps JavaScript API" and "Directions API" are both enabled for the key. Also add localhost:3000 to allowed referrers.',
+      cmd: '',
+    },
+    {
+      error: 'Admin portal redirects to /admin/login even with correct credentials',
+      color: '#60a5fa',
+      cause: 'The admin_session cookie or Supabase session has expired, or the role in the DB does not match an ADMIN_ROLES entry.',
+      fix: 'Clear cookies and log in again. If it persists, check the user\'s role field in the Supabase profiles table — it must be one of: ADMIN, PM, OPS, SUPPORT, FINANCE, READONLY, QA_TESTER.',
+      cmd: '',
+    },
+    {
+      error: 'pnpm run test:e2e fails: browserType.launch: Executable doesn\'t exist',
+      color: '#a78bfa',
+      cause: 'Playwright browsers have not been installed on this machine.',
+      fix: 'Run the install command below. This downloads Chromium, Firefox, and WebKit — takes ~2 minutes. Only needed once per machine.',
+      cmd: 'npx playwright install',
+    },
+  ];
+
+  const tables = [
+    {
+      name: 'profiles', color: '#60a5fa', desc: 'One row per authenticated user. Linked to Supabase auth.users via userId.',
+      cols: [
+        { col: 'id', type: 'uuid', note: 'Primary key' },
+        { col: 'userId', type: 'uuid', note: 'FK → auth.users.id' },
+        { col: 'role', type: 'AppRole', note: 'ADMIN | PM | OPS | SUPPORT | FINANCE | READONLY | QA_TESTER | MERCHANT | DRIVER | CUSTOMER' },
+        { col: 'email', type: 'text', note: 'Mirrors auth.users.email' },
+        { col: 'fullName', type: 'text', note: '' },
+        { col: 'phone', type: 'text', note: 'E.164 format (+1XXXXXXXXXX)' },
+        { col: 'createdAt', type: 'timestamptz', note: '' },
+      ]
+    },
+    {
+      name: 'Restaurant', color: '#f97316', desc: 'Merchant/restaurant accounts. Linked to a Stripe Connect account for payouts.',
+      cols: [
+        { col: 'id', type: 'uuid', note: 'Primary key' },
+        { col: 'ownerId', type: 'uuid', note: 'FK → profiles.id' },
+        { col: 'name', type: 'text', note: '' },
+        { col: 'status', type: 'text', note: 'PENDING | ACTIVE | SUSPENDED' },
+        { col: 'stripeConnectId', type: 'text', note: 'acct_... from Stripe Connect onboarding' },
+        { col: 'address', type: 'text', note: '' },
+        { col: 'lat / lng', type: 'float8', note: 'Used for proximity search and delivery fee calc' },
+        { col: 'is_mock', type: 'bool', note: 'True for seeded test data — never in prod' },
+      ]
+    },
+    {
+      name: 'MenuItem', color: '#fb923c', desc: 'Menu items belonging to a Restaurant. Synced from POS (Revel, Clover, Square, Toast, Lightspeed) or created manually.',
+      cols: [
+        { col: 'id', type: 'uuid', note: 'Primary key' },
+        { col: 'restaurantId', type: 'uuid', note: 'FK → Restaurant.id' },
+        { col: 'name', type: 'text', note: '' },
+        { col: 'price', type: 'numeric', note: 'Always stored in dollars (not cents)' },
+        { col: 'category', type: 'text', note: 'e.g. Burgers, Sides, Drinks' },
+        { col: 'available', type: 'bool', note: 'False hides item from customer app' },
+        { col: 'posItemId', type: 'text', note: 'External POS item ID for sync matching' },
+      ]
+    },
+    {
+      name: 'Order', color: '#a78bfa', desc: 'Core order record. Status transitions follow the state machine in the TDD Guide tab.',
+      cols: [
+        { col: 'id', type: 'uuid', note: 'Primary key' },
+        { col: 'customerId', type: 'uuid', note: 'FK → profiles.id' },
+        { col: 'restaurantId', type: 'uuid', note: 'FK → Restaurant.id' },
+        { col: 'driverId', type: 'uuid', note: 'FK → profiles.id (nullable until assigned)' },
+        { col: 'status', type: 'text', note: 'PENDING | ACCEPTED | PREPARING | READY | PICKED_UP | DELIVERED | CANCELLED' },
+        { col: 'total', type: 'numeric', note: 'Final charge amount in dollars' },
+        { col: 'deliveryFee', type: 'numeric', note: 'Calculated by payEngine based on distance' },
+        { col: 'stripePaymentIntentId', type: 'text', note: 'pi_... Links to Stripe charge' },
+        { col: 'deliveryAddress', type: 'text', note: 'Customer drop-off address' },
+        { col: 'deliveryPin', type: 'text', note: '4-digit PIN for contactless handoff confirmation' },
+        { col: 'createdAt', type: 'timestamptz', note: '' },
+      ]
+    },
+    {
+      name: 'Driver', color: '#34d399', desc: 'Driver profile, approval status, and real-time location. Separate from profiles — linked via userId.',
+      cols: [
+        { col: 'id', type: 'uuid', note: 'Primary key' },
+        { col: 'userId', type: 'uuid', note: 'FK → profiles.id' },
+        { col: 'status', type: 'text', note: 'PENDING | APPROVED | REJECTED | SUSPENDED' },
+        { col: 'lat / lng', type: 'float8', note: 'Updated in real-time via RAMEN SSE push' },
+        { col: 'isOnline', type: 'bool', note: 'True when driver is accepting orders' },
+        { col: 'stripeConnectId', type: 'text', note: 'For driver payout transfers' },
+        { col: 'licenseUrl', type: 'text', note: 'Signed Supabase Storage URL' },
+        { col: 'insuranceUrl', type: 'text', note: 'Signed Supabase Storage URL' },
+        { col: 'complianceScore', type: 'int2', note: '0–100. Updated by compliance engine' },
+      ]
+    },
+    {
+      name: 'OrderItem', color: '#60a5fa', desc: 'Line items within an Order. Snapshot of MenuItem at time of order (price may change later).',
+      cols: [
+        { col: 'id', type: 'uuid', note: 'Primary key' },
+        { col: 'orderId', type: 'uuid', note: 'FK → Order.id' },
+        { col: 'menuItemId', type: 'uuid', note: 'FK → MenuItem.id' },
+        { col: 'name', type: 'text', note: 'Snapshot — do not join to MenuItem for display' },
+        { col: 'price', type: 'numeric', note: 'Snapshot price at time of order' },
+        { col: 'quantity', type: 'int4', note: '' },
+      ]
+    },
+  ];
+
+  const sidebarItems = [
+    { id: 'checklist' as const, label: 'Onboarding Checklist', icon: '✅' },
+    { id: 'troubleshooting' as const, label: 'Troubleshooting FAQ', icon: '🔧' },
+    { id: 'schema' as const, label: 'Schema Map', icon: '🗄️' },
+  ];
+
+  return (
+    <div style={{ display: 'flex', gap: 16 }}>
+      {/* Sidebar */}
+      <div style={{ width: 170, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {sidebarItems.map(item => (
+          <button
+            key={item.id}
+            onClick={() => setActiveSection(item.id)}
+            style={{
+              padding: '9px 12px', borderRadius: 6, textAlign: 'left', cursor: 'pointer', transition: 'all 150ms',
+              border: activeSection === item.id ? '1px solid rgba(249,115,22,0.3)' : '1px solid rgba(255,255,255,0.05)',
+              background: activeSection === item.id ? 'rgba(249,115,22,0.08)' : 'transparent',
+              color: activeSection === item.id ? '#f97316' : '#666',
+              fontSize: 13, fontWeight: 600,
+            }}
+          >
+            {item.icon} {item.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* ── Onboarding Checklist ── */}
+        {activeSection === 'checklist' && (
+          <div className="adm-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div>
+                <div className="adm-card-title" style={{ margin: 0 }}>New Hire Onboarding Checklist</div>
+                <div style={{ fontSize: 12, color: '#555', marginTop: 3 }}>Day-by-day tasks to get fully set up. Resets on page reload.</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: pct === 100 ? '#22c55e' : pct > 50 ? '#f59e0b' : '#ef4444' }}>{pct}%</div>
+                <div style={{ fontSize: 11, color: '#555' }}>{doneItems}/{totalItems} done</div>
+              </div>
+            </div>
+            <div style={{ height: 4, background: '#1e2420', borderRadius: 2, marginBottom: 20, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? '#22c55e' : pct > 50 ? '#f59e0b' : '#ef4444', borderRadius: 2, transition: 'all 300ms' }} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {days.map(day => (
+                <div key={day.day}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: day.color, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {day.day}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {day.items.map(item => (
+                      <label key={item.id} onClick={() => toggle(item.id)} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', padding: '8px 10px', borderRadius: 6, background: checked[item.id] ? 'rgba(34,197,94,0.05)' : 'transparent', border: `1px solid ${checked[item.id] ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.04)'}`, transition: 'all 150ms' }}>
+                        <div style={{ width: 16, height: 16, borderRadius: 4, border: `2px solid ${checked[item.id] ? '#22c55e' : '#333'}`, background: checked[item.id] ? '#22c55e' : 'transparent', flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 150ms' }}>
+                          {checked[item.id] && <span style={{ color: '#000', fontSize: 10, fontWeight: 900 }}>✓</span>}
+                        </div>
+                        <span style={{ fontSize: 13, color: checked[item.id] ? '#555' : '#ccc', textDecoration: checked[item.id] ? 'line-through' : 'none', lineHeight: 1.5 }}>{item.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setChecked({})} style={{ marginTop: 16, background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', color: '#555', borderRadius: 5, padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}>
+              Reset checklist
+            </button>
+          </div>
+        )}
+
+        {/* ── Troubleshooting FAQ ── */}
+        {activeSection === 'troubleshooting' && (
+          <div className="adm-card">
+            <SectionHeader title="Troubleshooting FAQ" sub="The most common errors new devs and QAs hit, and the exact fix for each." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {faqs.map((faq, i) => (
+                <div key={i} style={{ background: '#0f1210', border: `1px solid ${faq.color}22`, borderRadius: 8, padding: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: faq.color, marginBottom: 8, fontFamily: 'monospace' }}>
+                    ❌ {faq.error}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#666', marginBottom: 6 }}>
+                    <span style={{ color: '#444' }}>Cause: </span>{faq.cause}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#aaa', lineHeight: 1.6, marginBottom: faq.cmd ? 10 : 0 }}>
+                    <span style={{ color: '#444' }}>Fix: </span>{faq.fix}
+                  </div>
+                  {faq.cmd && <CodeBlock cmd={faq.cmd} />}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Schema Map ── */}
+        {activeSection === 'schema' && (
+          <div className="adm-card">
+            <SectionHeader title="Database Schema Map" sub="Core Supabase tables, their columns, and how they relate. Source of truth for new devs." />
+            <div style={{ padding: '10px 14px', background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.15)', borderRadius: 7, marginBottom: 16, fontSize: 12, color: '#93c5fd' }}>
+              💡 <strong>Key relationships:</strong> profiles ← Driver (userId) · profiles ← Order (customerId, driverId) · Restaurant ← MenuItem · Order ← OrderItem ← MenuItem
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {tables.map(table => (
+                <div key={table.name} style={{ background: '#0f1210', border: `1px solid ${table.color}22`, borderRadius: 8, overflow: 'hidden' }}>
+                  <div style={{ padding: '12px 16px', borderBottom: `1px solid ${table.color}22`, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                    <div style={{ width: 3, alignSelf: 'stretch', background: table.color, borderRadius: 2, flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: table.color, fontFamily: 'monospace' }}>{table.name}</div>
+                      <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>{table.desc}</div>
+                    </div>
+                  </div>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid #1e2420' }}>
+                          {['Column', 'Type', 'Notes'].map(h => (
+                            <th key={h} style={{ padding: '8px 14px', textAlign: 'left', color: '#444', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {table.cols.map((col, i) => (
+                          <tr key={col.col} style={{ borderBottom: i < table.cols.length - 1 ? '1px solid #151a17' : 'none' }}>
+                            <td style={{ padding: '8px 14px', fontFamily: 'monospace', color: '#e0e0e0', whiteSpace: 'nowrap' }}>{col.col}</td>
+                            <td style={{ padding: '8px 14px', fontFamily: 'monospace', color: table.color, opacity: 0.8, whiteSpace: 'nowrap' }}>{col.type}</td>
+                            <td style={{ padding: '8px 14px', color: '#666', lineHeight: 1.5 }}>{col.note}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 // ── Root Component ────────────────────────────────────────────────────────────
 
 export default function DevHubDashboard() {
-  const [tab, setTab] = useState<'tdd' | 'tests' | 'checklist' | 'env' | 'dev' | 'mock'>('tdd');
+  const [tab, setTab] = useState<'tdd' | 'tests' | 'checklist' | 'env' | 'dev' | 'mock' | 'onboarding'>('tdd');
 
   const tabs: Array<{ id: typeof tab; label: string; icon: string }> = [
     { id: 'tdd', label: 'TDD Guide', icon: '🔴' },
@@ -1036,6 +1375,7 @@ export default function DevHubDashboard() {
     { id: 'env', label: 'Environments', icon: '🌍' },
     { id: 'dev', label: 'Dev Setup', icon: '⚙️' },
     { id: 'mock', label: 'Mock Data', icon: '🌱' },
+    { id: 'onboarding', label: 'Onboarding', icon: '🚀' },
   ];
 
   return (
@@ -1077,6 +1417,7 @@ export default function DevHubDashboard() {
       {tab === 'env' && <EnvRules />}
       {tab === 'dev' && <DevSetup />}
       {tab === 'mock' && <MockData />}
+      {tab === 'onboarding' && <OnboardingHub />}
     </div>
   );
 }
