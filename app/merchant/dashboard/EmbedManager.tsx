@@ -30,6 +30,9 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
 </div>`;
 
     const socialCaption = `${restaurantName} is now live on TrueServe.\n\nOrder directly here: ${storefrontUrl}\n\nFresh meals. Fast delivery. Local support.`;
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(storefrontUrl)}`;
+    const emailShareUrl = `mailto:?subject=${encodeURIComponent(`Order from ${restaurantName} on TrueServe`)}&body=${encodeURIComponent(socialCaption)}`;
+    const smsShareUrl = `sms:?&body=${encodeURIComponent(`${restaurantName} is live on TrueServe. Order here: ${storefrontUrl}`)}`;
 
     const handleCopy = async (value: string, key: "snippet" | "link" | "caption" | "qr") => {
         await navigator.clipboard.writeText(value);
@@ -75,6 +78,17 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                             {copiedItem === "qr" ? "✓ Copied QR Link" : "Copy QR Destination"}
                         </button>
                     </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginTop: "14px" }}>
+                    <a href={facebookShareUrl} target="_blank" rel="noreferrer" className="btn btn-gold" style={{ justifyContent: "center", textDecoration: "none" }}>
+                        Share to Facebook ↗
+                    </a>
+                    <a href={emailShareUrl} className="btn btn-ghost" style={{ justifyContent: "center", textDecoration: "none" }}>
+                        Share by Email
+                    </a>
+                    <a href={smsShareUrl} className="btn btn-ghost" style={{ justifyContent: "center", textDecoration: "none" }}>
+                        Share by Text
+                    </a>
                 </div>
             </div>
 
