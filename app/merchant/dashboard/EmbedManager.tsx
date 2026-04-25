@@ -10,9 +10,10 @@ interface EmbedManagerProps {
     slug?: string;
     storefrontPath: string;
     storefrontUrl: string;
+    bannerImageUrl?: string;
 }
 
-export default function EmbedManager({ restaurantId, restaurantName, slug, storefrontPath, storefrontUrl }: EmbedManagerProps) {
+export default function EmbedManager({ restaurantId, restaurantName, slug, storefrontPath, storefrontUrl, bannerImageUrl }: EmbedManagerProps) {
     const [copiedItem, setCopiedItem] = useState<null | "snippet" | "link" | "caption" | "qr">(null);
     const [downloadMode, setDownloadMode] = useState<null | "flyer" | "tableTent">(null);
     const [primaryColor, setPrimaryColor] = useState("10B981");
@@ -36,6 +37,7 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
     const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(storefrontUrl)}`;
     const emailShareUrl = `mailto:?subject=${encodeURIComponent(`Order from ${restaurantName} on TrueServe`)}&body=${encodeURIComponent(socialCaption)}`;
     const smsShareUrl = `sms:?&body=${encodeURIComponent(`${restaurantName} is live on TrueServe. Order here: ${storefrontUrl}`)}`;
+    const heroBanner = bannerImageUrl || "/restaurant1.jpg";
 
     const handleCopy = async (value: string, key: "snippet" | "link" | "caption" | "qr") => {
         await navigator.clipboard.writeText(value);
@@ -188,6 +190,71 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                     <button onClick={() => downloadFlyerPdf("tableTent")} className="btn btn-ghost" style={{ justifyContent: "center" }}>
                         {downloadMode === "tableTent" ? "Building Table Tent..." : "Download Table Tent PDF"}
                     </button>
+                </div>
+            </div>
+
+            <div className="md-stat-block">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "12px" }}>
+                    <div className="md-stat-name" style={{ marginBottom: 0 }}>Print Preview</div>
+                    <div style={{ color: "var(--t3)", fontSize: "11px", fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase" }}>Counter-ready assets</div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "18px" }}>
+                    <div style={{ border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden", background: "#fff", color: "#0b0f14", boxShadow: "0 16px 40px rgba(0,0,0,.22)" }}>
+                        <div style={{ position: "relative", height: "150px", background: "#0b0f14" }}>
+                            <img src={heroBanner} alt={`${restaurantName} flyer preview`} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.78 }} />
+                            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(11,15,20,.82) 0%, rgba(11,15,20,.4) 100%)" }} />
+                            <div style={{ position: "absolute", left: "18px", top: "18px", right: "18px" }}>
+                                <div style={{ display: "inline-flex", padding: "5px 10px", borderRadius: "999px", background: "rgba(249,115,22,.15)", color: "#f97316", border: "1px solid rgba(249,115,22,.35)", fontSize: "10px", fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase" }}>
+                                    Powered by TrueServe
+                                </div>
+                                <div style={{ marginTop: "14px", color: "#fff", fontSize: "30px", fontWeight: 900, lineHeight: 1 }}>
+                                    Scan to Order
+                                </div>
+                            </div>
+                        </div>
+                        <div style={{ padding: "18px", display: "grid", gridTemplateColumns: "1fr 112px", gap: "16px", alignItems: "center" }}>
+                            <div>
+                                <div style={{ fontSize: "20px", fontWeight: 900, marginBottom: "8px" }}>{restaurantName}</div>
+                                <div style={{ fontSize: "13px", lineHeight: 1.6, color: "#4b5563", marginBottom: "10px" }}>
+                                    Fresh meals. Fast delivery. Order directly from our official TrueServe storefront.
+                                </div>
+                                <div style={{ fontSize: "12px", lineHeight: 1.5, color: "#f97316", fontWeight: 800, wordBreak: "break-word" }}>
+                                    {storefrontUrl}
+                                </div>
+                            </div>
+                            <div style={{ background: "#fff", border: "1px solid rgba(15,23,42,.12)", borderRadius: "12px", padding: "8px" }}>
+                                <img src={qrUrl} alt={`${restaurantName} flyer QR preview`} style={{ width: "96px", height: "96px", display: "block" }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden", background: "#f7f4ef", color: "#0b0f14", boxShadow: "0 16px 40px rgba(0,0,0,.22)" }}>
+                        <div style={{ padding: "18px", borderBottom: "1px solid rgba(15,23,42,.08)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px" }}>
+                            <div>
+                                <div style={{ fontSize: "11px", letterSpacing: ".12em", fontWeight: 800, textTransform: "uppercase", color: "#f97316", marginBottom: "6px" }}>
+                                    Table Tent
+                                </div>
+                                <div style={{ fontSize: "24px", fontWeight: 900, lineHeight: 1.05 }}>{restaurantName}</div>
+                            </div>
+                            <div style={{ padding: "6px 10px", borderRadius: "999px", background: "#0b0f14", color: "#fff", fontSize: "10px", fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase" }}>
+                                Order Here
+                            </div>
+                        </div>
+                        <div style={{ padding: "18px", display: "grid", gridTemplateColumns: "112px 1fr", gap: "16px", alignItems: "center" }}>
+                            <div style={{ background: "#fff", borderRadius: "12px", padding: "8px", border: "1px solid rgba(15,23,42,.08)" }}>
+                                <img src={qrUrl} alt={`${restaurantName} table tent QR preview`} style={{ width: "96px", height: "96px", display: "block" }} />
+                            </div>
+                            <div>
+                                <div style={{ fontSize: "15px", fontWeight: 800, marginBottom: "8px" }}>Scan to order with TrueServe</div>
+                                <div style={{ fontSize: "12px", lineHeight: 1.6, color: "#475569", marginBottom: "8px" }}>
+                                    Perfect for counters, pickup shelves, and dine-in tables during pilot.
+                                </div>
+                                <div style={{ fontSize: "11px", lineHeight: 1.5, color: "#f97316", fontWeight: 800, wordBreak: "break-word" }}>
+                                    {storefrontUrl}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

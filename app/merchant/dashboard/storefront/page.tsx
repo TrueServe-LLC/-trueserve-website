@@ -118,6 +118,7 @@ export default async function StorefrontPage() {
                 slug={restaurant.slug}
                 storefrontPath={storefrontPath}
                 storefrontUrl={storefrontUrl}
+                bannerImageUrl={restaurant.imageUrl || ""}
             />
         </div>
     );
