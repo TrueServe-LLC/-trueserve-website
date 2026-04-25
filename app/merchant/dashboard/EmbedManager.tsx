@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { jsPDF } from "jspdf";
+import QRCode from "qrcode";
 
 interface EmbedManagerProps {
     restaurantId: string;
@@ -12,6 +14,7 @@ interface EmbedManagerProps {
 
 export default function EmbedManager({ restaurantId, restaurantName, slug, storefrontPath, storefrontUrl }: EmbedManagerProps) {
     const [copiedItem, setCopiedItem] = useState<null | "snippet" | "link" | "caption" | "qr">(null);
+    const [downloadMode, setDownloadMode] = useState<null | "flyer" | "tableTent">(null);
     const [primaryColor, setPrimaryColor] = useState("10B981");
 
     const embedId = slug || restaurantId;
@@ -38,6 +41,94 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
         await navigator.clipboard.writeText(value);
         setCopiedItem(key);
         setTimeout(() => setCopiedItem(null), 2000);
+    };
+
+    const buildQrDataUrl = async () =>
+        QRCode.toDataURL(storefrontUrl, {
+            width: 720,
+            margin: 1,
+            color: {
+                dark: "#0b0f14",
+                light: "#ffffff",
+            },
+        });
+
+    const downloadFlyerPdf = async (variant: "flyer" | "tableTent") => {
+        setDownloadMode(variant);
+        try {
+            const qrDataUrl = await buildQrDataUrl();
+            const isFlyer = variant === "flyer";
+            const doc = new jsPDF({
+                orientation: isFlyer ? "portrait" : "landscape",
+                unit: "pt",
+                format: isFlyer ? "letter" : [396, 612],
+            });
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+
+            doc.setFillColor(10, 14, 20);
+            doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+            doc.setFillColor(249, 115, 22);
+            doc.rect(0, 0, pageWidth, isFlyer ? 78 : 62, "F");
+
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(isFlyer ? 26 : 24);
+            doc.text(restaurantName, 36, isFlyer ? 48 : 40);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(isFlyer ? 14 : 12);
+            doc.text("Order directly with TrueServe", 36, isFlyer ? 104 : 98);
+
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(249, 115, 22);
+            doc.setFontSize(isFlyer ? 34 : 30);
+            doc.text(isFlyer ? "SCAN TO ORDER" : "SCAN TO ORDER", 36, isFlyer ? 148 : 138);
+
+            doc.addImage(qrDataUrl, "PNG", pageWidth - (isFlyer ? 244 : 210), isFlyer ? 108 : 86, isFlyer ? 188 : 156, isFlyer ? 188 : 156);
+
+            doc.setTextColor(235, 235, 235);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(isFlyer ? 16 : 13);
+            const bodyLines = doc.splitTextToSize(
+                "Skip the marketplace detour. Order from our official TrueServe storefront for fresh meals, direct updates, and local delivery support.",
+                isFlyer ? pageWidth - 320 : pageWidth - 270
+            );
+            doc.text(bodyLines, 36, isFlyer ? 188 : 176);
+
+            doc.setDrawColor(255, 255, 255, 0.14);
+            doc.line(36, isFlyer ? 262 : 236, pageWidth - 36, isFlyer ? 262 : 236);
+
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(isFlyer ? 14 : 12);
+            doc.text("Direct ordering link", 36, isFlyer ? 292 : 266);
+
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(200, 200, 200);
+            doc.setFontSize(isFlyer ? 12 : 10);
+            const urlLines = doc.splitTextToSize(storefrontUrl, isFlyer ? pageWidth - 72 : pageWidth - 72);
+            doc.text(urlLines, 36, isFlyer ? 316 : 288);
+
+            doc.setFillColor(17, 24, 39);
+            doc.roundedRect(36, pageHeight - (isFlyer ? 122 : 96), pageWidth - 72, isFlyer ? 70 : 58, 10, 10, "F");
+            doc.setTextColor(249, 115, 22);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(isFlyer ? 18 : 15);
+            doc.text("Fresh meals. Fast delivery. Local support.", 54, pageHeight - (isFlyer ? 82 : 64));
+
+            doc.setTextColor(230, 230, 230);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(isFlyer ? 11 : 10);
+            doc.text("Powered by TrueServe", 54, pageHeight - (isFlyer ? 58 : 42));
+
+            const safeName = restaurantName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            doc.save(`${safeName}-${variant}.pdf`);
+        } finally {
+            setDownloadMode(null);
+        }
     };
 
     return (
@@ -89,6 +180,14 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                     <a href={smsShareUrl} className="btn btn-ghost" style={{ justifyContent: "center", textDecoration: "none" }}>
                         Share by Text
                     </a>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginTop: "12px" }}>
+                    <button onClick={() => downloadFlyerPdf("flyer")} className="btn btn-ghost" style={{ justifyContent: "center" }}>
+                        {downloadMode === "flyer" ? "Building Flyer..." : "Download Flyer PDF"}
+                    </button>
+                    <button onClick={() => downloadFlyerPdf("tableTent")} className="btn btn-ghost" style={{ justifyContent: "center" }}>
+                        {downloadMode === "tableTent" ? "Building Table Tent..." : "Download Table Tent PDF"}
+                    </button>
                 </div>
             </div>
 
