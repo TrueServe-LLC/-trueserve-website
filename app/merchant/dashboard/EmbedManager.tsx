@@ -16,7 +16,7 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
 
     const embedId = slug || restaurantId;
     const embedUrl = `https://trueserve.delivery/restaurants/${embedId}?embed=true&primary=${primaryColor.replace('#', '')}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(storefrontUrl)}`;
+    const qrUrl = `/api/qr?size=260&data=${encodeURIComponent(storefrontUrl)}`;
 
     const snippet = `<div style="width:100%; overflow:hidden;">
   <iframe
