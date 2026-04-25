@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Share2, Menu, X } from "lucide-react";
 
@@ -21,13 +21,29 @@ import Logo from "@/components/Logo";
 import LandingSearch from "@/components/LandingSearch";
 import RestaurantCard from "@/app/restaurants/RestaurantCard";
 import { supabase } from "@/lib/supabase";
+import {
+  buildHomeCollections,
+  buildMenuMoments,
+  getLiveRestaurants,
+  summarizeRestaurantNetwork,
+  type PublicRestaurantCollection,
+  type MenuMomentCollection,
+  type PublicRestaurantRecord,
+} from "@/lib/public-restaurants";
 
 export default function Home() {
   const [userId, setUserId] = useState<string | null>(null);
   const [hasAddress, setHasAddress] = useState(false);
-  const [featuredRestaurants, setFeaturedRestaurants] = useState<any[]>([]);
+  const [featuredRestaurants, setFeaturedRestaurants] = useState<PublicRestaurantRecord[]>([]);
+  const [collections, setCollections] = useState<PublicRestaurantCollection[]>([]);
+  const [menuMoments, setMenuMoments] = useState<MenuMomentCollection[]>([]);
+  const [networkStats, setNetworkStats] = useState({
+    totalRestaurants: 0,
+    verifiedCount: 0,
+    markets: 0,
+    averageRating: null as number | null,
+  });
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const socialLinks = [
     {
       label: "Instagram",
@@ -53,23 +69,36 @@ export default function Home() {
       if (localStorage.getItem("ts.delivery.address")) setHasAddress(true);
     } catch {}
 
-    supabase
-      .from('Restaurant')
-      .select('*, healthGrade, complianceStatus')
-      .limit(30)
-      .then(({ data, error }) => {
-        if (error) { console.error('Restaurant fetch error:', JSON.stringify(error)); return; }
-        if (!data) return;
-        const live = data.filter(r => {
-          const vis = (r.visibility || '').toUpperCase();
-          const isVisible = !vis || vis === 'VISIBLE';
-          const isApproved = r.isApproved !== false;
-          const isNotMock = r.isMock !== true;
-          const isClean = !/mock|test|demo|preview|sandbox|sample|qa|staging|seed/i.test(`${r.name} ${r.city}`);
-          return isVisible && isApproved && isNotMock && isClean;
-        });
-        setFeaturedRestaurants(live.slice(0, 4));
-      });
+    Promise.all([
+      supabase
+        .from('Restaurant')
+        .select('*, healthGrade, complianceStatus, complianceScore, createdAt')
+        .limit(60),
+      supabase
+        .from('MenuItem')
+        .select('id, restaurantId, name, category, price, status, isAvailable')
+        .limit(200),
+    ]).then(([restaurantsResult, menuResult]) => {
+      if (restaurantsResult.error) {
+        console.error('Restaurant fetch error:', JSON.stringify(restaurantsResult.error));
+        return;
+      }
+
+      const restaurantData = restaurantsResult.data || [];
+      const live = getLiveRestaurants(restaurantData);
+      const sortedFeatured = [...live].sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
+      setFeaturedRestaurants(sortedFeatured.slice(0, 4));
+      setCollections(buildHomeCollections(live));
+      setNetworkStats(summarizeRestaurantNetwork(live));
+
+      if (menuResult.error) {
+        console.error('Menu item fetch error:', JSON.stringify(menuResult.error));
+        setMenuMoments([]);
+        return;
+      }
+
+      setMenuMoments(buildMenuMoments(live, menuResult.data || []));
+    });
   }, []);
 
   return (
@@ -243,11 +272,46 @@ export default function Home() {
           ))}
         </div>
 
+        <section className="mt-8 grid gap-4 md:grid-cols-4">
+          {[
+            {
+              kicker: "Live network",
+              value: networkStats.totalRestaurants ? `${networkStats.totalRestaurants}+` : "Growing",
+              detail: "Approved restaurant partners live on TrueServe",
+            },
+            {
+              kicker: "Verified kitchens",
+              value: networkStats.verifiedCount ? `${networkStats.verifiedCount}` : "Reviewing",
+              detail: "Operators showing strong health and compliance signals",
+            },
+            {
+              kicker: "Local markets",
+              value: networkStats.markets ? `${networkStats.markets}` : "Expanding",
+              detail: "Distinct city markets with active restaurant coverage",
+            },
+            {
+              kicker: "Average rating",
+              value: networkStats.averageRating ? `${networkStats.averageRating.toFixed(1)}★` : "Trusted",
+              detail: "Review average across live restaurants on the platform",
+            },
+          ].map((stat, index) => (
+            <div
+              key={stat.kicker}
+              className="food-card ts-reveal transition-transform hover:-translate-y-1"
+              style={{ animationDelay: `${index * 80}ms` }}
+            >
+              <p className="food-kicker mb-3">{stat.kicker}</p>
+              <h2 className="food-heading !text-[38px] mb-3">{stat.value}</h2>
+              <p className="text-sm leading-7">{stat.detail}</p>
+            </div>
+          ))}
+        </section>
+
         <section className="mt-10 grid gap-8 md:grid-cols-3">
           {[
-            { kicker: "Step 1", title: "Find your spot", desc: "Enter your address, browse restaurants nearby, and jump straight into menu browsing.", link: "/restaurants", delay: "0ms" },
-            { kicker: "Step 2", title: "Build your cart", desc: "Add your favorites, customize items, and check out in seconds — no fuss.", link: "/restaurants", delay: "80ms" },
-            { kicker: "Step 3", title: "Track your order", desc: "Watch your food go from kitchen to prep to your door with live driver updates.", link: "/orders", delay: "160ms" }
+            { kicker: "Why it lands", title: "Built for daily orders", desc: "A calmer browsing and checkout flow that keeps customers moving instead of hunting for the next click.", link: "/restaurants", delay: "0ms" },
+            { kicker: "Why restaurants join", title: "Brand-first restaurant pages", desc: "Each partner gets a stronger local presence, cleaner discovery, and a storefront they can proudly share.", link: "/merchant", delay: "80ms" },
+            { kicker: "Why customers trust it", title: "Verified signals, not fluff", desc: "Live tracking, Google review links, and operational trust signals help TrueServe feel more credible than a generic marketplace grid.", link: "/restaurants", delay: "160ms" }
           ].map((card) => (
             <Link key={card.title} href={card.link} className="food-card ts-reveal transition-transform hover:-translate-y-1" style={{animationDelay: card.delay}}>
               <p className="food-kicker mb-3">{card.kicker}</p>
@@ -303,6 +367,157 @@ export default function Home() {
                   <span className="cuisine-label">{c.label}</span>
                 </Link>
               ))}
+            </div>
+          </section>
+        )}
+
+        {collections.length > 0 && (
+          <section className="mt-10">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <div>
+                <p className="food-kicker mb-2">Pilot-ready discovery</p>
+                <h2 className="food-heading">Shop with <span className="accent">real trust signals</span></h2>
+              </div>
+              <Link href="/restaurants" className="portal-btn-outline shrink-0" style={{ width: "auto" }}>
+                Explore All
+              </Link>
+            </div>
+            <div className="grid gap-5 lg:grid-cols-2">
+              {collections.map((collection, index) => {
+                const heroRestaurant = collection.restaurants[0];
+                return (
+                  <Link
+                    key={collection.key}
+                    href={collection.href}
+                    className="food-card ts-reveal transition-transform hover:-translate-y-1"
+                    style={{ animationDelay: `${index * 80}ms` }}
+                  >
+                    <div
+                      style={{
+                        height: 220,
+                        borderRadius: 18,
+                        backgroundImage: `linear-gradient(180deg, rgba(10,12,16,.12), rgba(10,12,16,.84)), url('${heroRestaurant?.imageUrl || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80"}')`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        padding: 18,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div className="food-eyebrow">{collection.eyebrow}</div>
+                      <div>
+                        <h3 className="food-heading !text-[36px] mb-2">{collection.title}</h3>
+                        <p className="text-sm leading-6 text-white/75 max-w-[32rem]">{collection.description}</p>
+                      </div>
+                    </div>
+                    <div className="mt-5 grid gap-3">
+                      {collection.restaurants.map((restaurant) => (
+                        <div
+                          key={restaurant.id}
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr auto",
+                            gap: 12,
+                            alignItems: "center",
+                            padding: "14px 16px",
+                            borderRadius: 16,
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            background: "rgba(255,255,255,0.03)",
+                          }}
+                        >
+                          <div>
+                            <div className="text-sm font-black uppercase tracking-[0.12em] text-white">{restaurant.name}</div>
+                            <div className="mt-1 text-xs uppercase tracking-[0.14em] text-white/45">
+                              {[restaurant.city, restaurant.state].filter(Boolean).join(", ") || "Local partner"}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-black text-[#f97316]">
+                              {Number(restaurant.rating || 0) > 0 ? `${Number(restaurant.rating).toFixed(1)}★` : "New"}
+                            </div>
+                            <div className="mt-1 text-[11px] uppercase tracking-[0.12em] text-white/45">
+                              {restaurant.healthGrade ? `Grade ${restaurant.healthGrade}` : "Live now"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {menuMoments.length > 0 && (
+          <section className="mt-10">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <div>
+                <p className="food-kicker mb-2">Menu-aware discovery</p>
+                <h2 className="food-heading">Browse by <span className="accent">actual dishes</span></h2>
+              </div>
+              <Link href="/restaurants" className="portal-btn-outline shrink-0" style={{ width: "auto" }}>
+                See Menus
+              </Link>
+            </div>
+            <div className="grid gap-5 xl:grid-cols-3">
+              {menuMoments.map((moment, index) => {
+                const hero = moment.entries[0];
+                return (
+                  <Link
+                    key={moment.key}
+                    href={moment.href}
+                    className="food-card ts-reveal transition-transform hover:-translate-y-1"
+                    style={{ animationDelay: `${index * 90}ms` }}
+                  >
+                    <div
+                      style={{
+                        height: 180,
+                        borderRadius: 18,
+                        backgroundImage: `linear-gradient(180deg, rgba(10,12,16,.1), rgba(10,12,16,.88)), url('${hero?.imageUrl || "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80"}')`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        padding: 18,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div className="food-eyebrow">{moment.eyebrow}</div>
+                      <div>
+                        <h3 className="food-heading !text-[34px] mb-2">{moment.title}</h3>
+                        <p className="text-sm leading-6 text-white/75">{moment.description}</p>
+                      </div>
+                    </div>
+                    <div className="mt-5 grid gap-3">
+                      {moment.entries.map((entry) => (
+                        <div
+                          key={entry.id}
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr auto",
+                            gap: 12,
+                            alignItems: "center",
+                            padding: "14px 16px",
+                            borderRadius: 16,
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            background: "rgba(255,255,255,0.03)",
+                          }}
+                        >
+                          <div>
+                            <div className="text-sm font-black uppercase tracking-[0.12em] text-white">{entry.itemName}</div>
+                            <div className="mt-1 text-xs uppercase tracking-[0.14em] text-white/45">
+                              {entry.restaurantName} · {entry.cityLabel}
+                            </div>
+                          </div>
+                          <div className="text-sm font-black text-[#f97316]">{entry.priceLabel}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </section>
         )}
