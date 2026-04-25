@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAuthSession } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import StoreBannerUpload from "../StoreBannerUpload";
 import EmbedManager from "../EmbedManager";
@@ -17,45 +16,33 @@ function buildSlug(value: string) {
 }
 
 export default async function StorefrontPage() {
-    const cookieStore = await cookies();
-    const isPreview = cookieStore.get("preview_mode")?.value === "true";
-    const cookieUserId = cookieStore.get("userId")?.value;
     const { userId } = await getAuthSession();
-    const activeUserId = userId || cookieUserId;
+    const activeUserId = userId;
 
-    if (!activeUserId && !isPreview) {
+    if (!activeUserId) {
         redirect("/login?role=merchant");
     }
 
     let restaurant: any = null;
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from("Restaurant")
+        .select("id, name, imageUrl")
+        .eq("ownerId", activeUserId)
+        .maybeSingle();
 
-    if (isPreview) {
-        restaurant = {
-            id: "preview",
-            name: "Pilot Kitchen",
-            slug: "pilot-kitchen",
-            imageUrl: "/restaurant1.jpg",
-        };
-    } else {
-        const supabase = await createClient();
-        const { data, error } = await supabase
-            .from("Restaurant")
-            .select("id, name, imageUrl")
-            .eq("ownerId", activeUserId!)
-            .maybeSingle();
-
-        if (error || !data) {
-            redirect("/merchant/signup");
-        }
-
-        restaurant = {
-            ...data,
-            slug: buildSlug(data.name || "restaurant"),
-        };
+    if (error || !data) {
+        redirect("/merchant/signup");
     }
+
+    restaurant = {
+        ...data,
+        slug: buildSlug(data.name || "restaurant"),
+    };
 
     const hasBanner = Boolean(restaurant.imageUrl);
     const storefrontPath = `/restaurants/${restaurant.slug || restaurant.id}`;
+    const storefrontUrl = `https://trueserve.delivery${storefrontPath}`;
 
     return (
         <div className="md-body min-h-screen animate-fade-in-up">
@@ -89,7 +76,7 @@ export default async function StorefrontPage() {
                 <div className="md-stat-block">
                     <div className="md-stat-name">Public Path</div>
                     <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--gold)", marginTop: "8px", wordBreak: "break-all" }}>
-                        {storefrontPath}
+                        {storefrontUrl}
                     </div>
                 </div>
             </div>
@@ -116,7 +103,7 @@ export default async function StorefrontPage() {
                         Share this path so customers can find and order from {restaurant.name} directly.
                     </p>
                     <div className="btn btn-ghost justify-center w-full" style={{ cursor: "default", color: "var(--gold)", borderColor: "rgba(249,115,22,.3)" }}>
-                        {storefrontPath}
+                        {storefrontUrl}
                     </div>
                 </div>
             </div>
@@ -125,7 +112,13 @@ export default async function StorefrontPage() {
             <StoreBannerUpload currentImageUrl={restaurant.imageUrl || ""} />
 
             {/* EMBED MANAGER */}
-            <EmbedManager restaurantId={restaurant.id} restaurantName={restaurant.name} slug={restaurant.slug} />
+            <EmbedManager
+                restaurantId={restaurant.id}
+                restaurantName={restaurant.name}
+                slug={restaurant.slug}
+                storefrontPath={storefrontPath}
+                storefrontUrl={storefrontUrl}
+            />
         </div>
     );
 }
