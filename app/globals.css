@@ -1352,8 +1352,8 @@ nav {
 .dm-mono { font-family: var(--font-dm-mono), monospace; }
 
 /* Global Override for Dashboard Titles */
-.hero-title, .md-page-title, .panel-title, .bebas-title { 
-    font-family: var(--font-bebas), sans-serif; 
+.hero-title, .panel-title, .bebas-title {
+    font-family: var(--font-bebas), sans-serif;
     text-transform: uppercase;
     font-style: italic;
 }
