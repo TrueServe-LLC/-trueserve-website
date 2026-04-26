@@ -15,11 +15,11 @@ export async function getTeamMembers() {
     const [roleResponse, staffResponse] = await Promise.all([
         supabaseAdmin
             .from('User')
-            .select('id, name, email, role')
+            .select('id, name, email, role, phone')
             .in('role', ADMIN_ROLES),
         supabaseAdmin
             .from('User')
-            .select('id, name, email, role')
+            .select('id, name, email, role, phone')
             .in('email', ADMIN_EMAILS),
     ]);
 
@@ -193,6 +193,34 @@ export async function revokeAccess(userIdToRevoke: string, email: string) {
     } catch (e: any) {
         console.error("Revoke Error:", e.message);
         return { error: e.message || "Failed to revoke access." };
+    }
+}
+
+// 5. Update Phone Number
+export async function updateMemberPhone(userId: string, email: string, phone: string) {
+    const { isAuth, role: currentRole, userId: actorId } = await getAuthSession();
+    if (!isAuth || !['ADMIN', 'PM'].includes(currentRole || '')) {
+        return { error: 'Only ADMIN or PM users can update phone numbers.' };
+    }
+
+    const normalized = phone.trim();
+    if (normalized && !/^\+?[1-9]\d{6,14}$/.test(normalized.replace(/[\s\-().]/g, ''))) {
+        return { error: 'Invalid phone number format. Use E.164 format, e.g. +18005551234' };
+    }
+
+    try {
+        const { error } = await supabaseAdmin
+            .from('User')
+            .update({ phone: normalized || null })
+            .eq('id', userId);
+
+        if (error) throw error;
+
+        await logTeamAction(actorId!, `Updated phone for ${email}`);
+        revalidatePath('/admin/team');
+        return { success: `Phone updated for ${email}.` };
+    } catch (e: any) {
+        return { error: e.message || 'Failed to update phone.' };
     }
 }
 

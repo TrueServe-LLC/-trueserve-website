@@ -1,7 +1,60 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { inviteTeamMember, sendPasswordReset } from "@/app/admin/team/actions";
+import { inviteTeamMember, sendPasswordReset, updateMemberPhone } from "@/app/admin/team/actions";
+
+function PhoneEditor({ member, onMessage }: { member: any; onMessage: (msg: { text: string; type: "success" | "error" }) => void }) {
+    const [editing, setEditing] = useState(false);
+    const [value, setValue] = useState(member.phone || "");
+    const [saving, setSaving] = useState(false);
+
+    const handleSave = async () => {
+        setSaving(true);
+        const res = await updateMemberPhone(member.id, member.email, value);
+        setSaving(false);
+        if (res?.error) {
+            onMessage({ text: res.error, type: "error" });
+        } else if (res?.success) {
+            onMessage({ text: res.success, type: "success" });
+            member.phone = value || null;
+            setEditing(false);
+        }
+    };
+
+    if (editing) {
+        return (
+            <div className="iam-phone-input-row">
+                <input
+                    autoFocus
+                    className="iam-phone-input"
+                    placeholder="+18005551234"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
+                    disabled={saving}
+                />
+                <button className="iam-phone-save" onClick={handleSave} disabled={saving}>
+                    {saving ? "…" : "Save"}
+                </button>
+                <button className="iam-phone-cancel" onClick={() => { setValue(member.phone || ""); setEditing(false); }}>
+                    ✕
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="iam-phone-row">
+            {member.phone
+                ? <span className="iam-phone-text">📞 {member.phone}</span>
+                : <span className="iam-phone-missing">⚠ No phone</span>
+            }
+            {!member.isDirectoryEntry && (
+                <button className="iam-phone-edit-btn" title="Edit phone" onClick={() => setEditing(true)}>✏</button>
+            )}
+        </div>
+    );
+}
 
 const ROLE_COLORS: Record<string, { bg: string; color: string }> = {
     ADMIN: { bg: "#2a1a00", color: "#f5a623" },
@@ -318,6 +371,69 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                     flex-wrap: wrap;
                 }
 
+                .iam-phone-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    margin-top: 4px;
+                }
+                .iam-phone-text {
+                    font-size: 11px;
+                    color: #7a7f75;
+                }
+                .iam-phone-missing {
+                    font-size: 11px;
+                    color: #f97316;
+                    font-weight: 600;
+                }
+                .iam-phone-edit-btn {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: #555;
+                    font-size: 11px;
+                    padding: 1px 4px;
+                    border-radius: 3px;
+                    line-height: 1;
+                }
+                .iam-phone-edit-btn:hover { color: #f97316; }
+                .iam-phone-input-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    margin-top: 4px;
+                }
+                .iam-phone-input {
+                    background: #0f1210;
+                    border: 1px solid #f97316;
+                    color: #fff;
+                    font-size: 12px;
+                    border-radius: 5px;
+                    padding: 5px 8px;
+                    width: 160px;
+                    outline: none;
+                }
+                .iam-phone-save {
+                    background: #f97316;
+                    color: #000;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 5px 10px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    cursor: pointer;
+                }
+                .iam-phone-save:disabled { opacity: 0.5; cursor: not-allowed; }
+                .iam-phone-cancel {
+                    background: none;
+                    border: none;
+                    color: #7a7f75;
+                    font-size: 11px;
+                    cursor: pointer;
+                    padding: 4px;
+                }
+                .iam-phone-cancel:hover { color: #fff; }
+
                 @media (max-width: 768px) {
                     .iam-header { flex-direction: column; align-items: flex-start; }
                     .iam-invite-block { align-items: flex-start; width: 100%; }
@@ -407,6 +523,7 @@ export default function TeamManagerUI({ initialMembers }: { initialMembers: any[
                                         <td>
                                             <div className="iam-name">{member.name || "Unknown"}</div>
                                             <div className="iam-email">{member.email}</div>
+                                            <PhoneEditor member={member} onMessage={setMessage} />
                                             <div className="iam-member-chip">
                                                 <span className="dot" />
                                                 {member.isDirectoryEntry ? "Directory sync" : "Active account"}
