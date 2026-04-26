@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import MerchantRealtime from "@/components/MerchantRealtime";
 import WelcomeAnimation from "@/components/WelcomeAnimation";
+import OnboardingChecklist from "./OnboardingChecklist";
 import { createStripeAccount } from "../actions";
 import PrepTimingPanel from "@/app/merchant/dashboard/PrepTimingPanel";
 import TerminalStatusPanel from "@/app/merchant/dashboard/TerminalStatusPanel";
@@ -253,6 +254,14 @@ export default async function MerchantDashboard({
                 ]}
             />
             {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
+
+            <OnboardingChecklist
+                hasMenuItems={(restaurant.menuItems || []).length > 0}
+                hasStripe={Boolean(restaurant.stripeAccountId)}
+                hasImage={Boolean(restaurant.imageUrl)}
+                isVisible={restaurant.visibility === "VISIBLE"}
+                restaurantId={restaurant.id}
+            />
 
             {/* KPI CARDS */}
             <div className="mch-stat-grid">
