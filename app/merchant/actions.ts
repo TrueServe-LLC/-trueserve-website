@@ -315,6 +315,41 @@ export async function updateOrderStatus(orderId: string, nextStatus: string, rea
             console.error("Notification Error:", notifErr);
         }
 
+        // SMS Alert to Customer on key status changes
+        try {
+            const { data: customerOrder } = await supabaseAdmin
+                .from('Order')
+                .select('userId, id, restaurant:Restaurant(name)')
+                .eq('id', orderId)
+                .single();
+
+            if (customerOrder?.userId) {
+                const { data: customer } = await supabaseAdmin
+                    .from('User')
+                    .select('phone')
+                    .eq('id', customerOrder.userId)
+                    .single();
+
+                const phone = customer?.phone;
+                const restName = (customerOrder.restaurant as any)?.name || "your restaurant";
+                const ref = orderId.slice(-6).toUpperCase();
+
+                if (phone) {
+                    let smsText = '';
+                    if (nextStatus === 'PREPARING') {
+                        smsText = `TrueServe: 👨‍🍳 ${restName} is now preparing your order #${ref}. We'll text you when it's ready!`;
+                    } else if (nextStatus === 'READY_FOR_PICKUP') {
+                        smsText = `TrueServe: ✅ Your order #${ref} from ${restName} is ready! A driver will pick it up shortly.`;
+                    } else if (nextStatus === 'CANCELLED') {
+                        smsText = `TrueServe: Your order #${ref} from ${restName} was cancelled. ${reason ? `Reason: ${reason}.` : ''} Contact support@trueserve.delivery for help.`;
+                    }
+                    if (smsText) await sendSMS(phone, smsText);
+                }
+            }
+        } catch (smsErr) {
+            console.error("Customer SMS Error:", smsErr);
+        }
+
         // Trigger SMS Alert to Driver if ready
         if (nextStatus === 'READY_FOR_PICKUP') {
             try {

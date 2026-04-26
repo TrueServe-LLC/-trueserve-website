@@ -490,7 +490,7 @@ export async function pickupOrder(orderId: string) {
 
         if (error) throw error;
 
-        // --- NEW: Notify Customer ---
+        // --- NEW: Notify Customer (in-app + SMS) ---
         try {
             const { data: orderData } = await supabaseAdmin
                 .from('Order')
@@ -499,12 +499,22 @@ export async function pickupOrder(orderId: string) {
                 .single();
 
             if (orderData) {
+                const restName = (orderData.restaurant as any)?.name || "the restaurant";
+                const ref = orderId.slice(-6).toUpperCase();
+
                 await createNotification({
                     userId: orderData.userId,
                     orderId: orderId,
                     title: "Driver Picked Up! 🚗",
-                    message: `A driver has picked up your order from ${(orderData.restaurant as any)?.name || "the restaurant"} and is on the way!`
+                    message: `A driver has picked up your order from ${restName} and is on the way!`
                 });
+
+                // SMS
+                const { data: customer } = await supabaseAdmin
+                    .from('User').select('phone').eq('id', orderData.userId).single();
+                if (customer?.phone) {
+                    await sendSMS(customer.phone, `TrueServe: 🚗 Your order #${ref} from ${restName} has been picked up and is on the way to you!`);
+                }
             }
         } catch (notifErr) {
             console.error("[Customer Notification Error]:", notifErr);
@@ -721,7 +731,7 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
 
         if (error) throw error;
 
-        // --- NEW: Notify Customer ---
+        // --- NEW: Notify Customer (in-app + SMS) ---
         try {
             const { data: orderData } = await supabaseAdmin
                 .from('Order')
@@ -730,12 +740,22 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
                 .single();
 
             if (orderData) {
+                const restName = (orderData.restaurant as any)?.name || "the restaurant";
+                const ref = orderId.slice(-6).toUpperCase();
+
                 await createNotification({
                     userId: orderData.userId,
                     orderId: orderId,
                     title: "Order Delivered! 🎉",
-                    message: `Your order from ${(orderData.restaurant as any)?.name || "the restaurant"} has been delivered. Enjoy your meal!`
+                    message: `Your order from ${restName} has been delivered. Enjoy your meal!`
                 });
+
+                // SMS
+                const { data: customer } = await supabaseAdmin
+                    .from('User').select('phone').eq('id', orderData.userId).single();
+                if (customer?.phone) {
+                    await sendSMS(customer.phone, `TrueServe: 🎉 Your order #${ref} from ${restName} has been delivered! Enjoy your meal. Rate your experience: trueserve.delivery/orders/${orderId}`);
+                }
             }
         } catch (notifErr) {
             console.error("[Customer Notification Error]:", notifErr);

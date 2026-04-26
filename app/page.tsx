@@ -120,6 +120,7 @@ export default function Home() {
           <Link href="/pricing">Pricing</Link>
           <Link href="/merchant/signup">For Merchants</Link>
           <Link href="/driver/signup">For Drivers</Link>
+          <Link href="/contact">Contact</Link>
         </div>
         <div className="nav-r">
           {userId ? (
@@ -523,6 +524,7 @@ export default function Home() {
               <Link href="/pricing" className="hover:text-[#f97316] transition-colors">Pricing</Link>
               <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
               <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
+              <Link href="/contact" className="hover:text-[#f97316] transition-colors">Contact</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             </div>
             <div className="flex items-center gap-5">
