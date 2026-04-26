@@ -34,6 +34,9 @@ interface MenuClientProps {
     restaurant: any;
     items: MenuItem[];
     orderingEnabled: boolean;
+    isOpen?: boolean;
+    openTimeDisplay?: string;
+    closeTimeDisplay?: string;
     initialAddress?: string;
     initialLat?: number;
     initialLng?: number;
@@ -45,6 +48,9 @@ export default function MenuClient({
     restaurant,
     items,
     orderingEnabled,
+    isOpen = true,
+    openTimeDisplay = "08:00",
+    closeTimeDisplay = "22:00",
     initialAddress = undefined,
     initialLat = undefined,
     initialLng = undefined,
@@ -400,6 +406,14 @@ export default function MenuClient({
         setIsSubmitting(false);
     };
 
+    function to12h(hhmm: string): string {
+        const [hStr, mStr] = hhmm.split(':');
+        const h = parseInt(hStr, 10);
+        const period = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        return `${h12}:${mStr} ${period}`;
+    }
+
     return (
         <div className="menu-body">
             {pendingOrderId && (
@@ -407,6 +421,35 @@ export default function MenuClient({
                     restaurantName={restaurant.name}
                     onComplete={() => router.push(`/orders/${pendingOrderId}`)}
                 />
+            )}
+
+            {/* Closed Banner */}
+            {!isOpen && (
+                <div style={{
+                    background: 'rgba(248,113,113,0.08)',
+                    border: '1px solid rgba(248,113,113,0.25)',
+                    borderRadius: 10,
+                    padding: '14px 18px',
+                    marginBottom: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                }}>
+                    <div style={{
+                        width: 36, height: 36, borderRadius: '50%',
+                        background: 'rgba(248,113,113,0.12)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 18, flexShrink: 0,
+                    }}>🔒</div>
+                    <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: '#f87171' }}>
+                            {restaurant.name} is currently closed
+                        </div>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                            Hours: {to12h(openTimeDisplay)} – {to12h(closeTimeDisplay)} · You can still browse the menu
+                        </div>
+                    </div>
+                </div>
             )}
 
             {/* GHL Modal */}
@@ -677,7 +720,21 @@ export default function MenuClient({
                                 </div>
                         )}
 
-                        {userId ? (
+                        {!isOpen ? (
+                            <div style={{
+                                marginTop: '20px',
+                                padding: '14px',
+                                borderRadius: 8,
+                                background: 'rgba(248,113,113,0.07)',
+                                border: '1px solid rgba(248,113,113,0.2)',
+                                textAlign: 'center',
+                                fontSize: '12px',
+                                color: '#f87171',
+                                fontWeight: 700,
+                            }}>
+                                Ordering is unavailable · Opens at {to12h(openTimeDisplay)}
+                            </div>
+                        ) : userId ? (
                             clientSecret ? (
                                 <div style={{ marginTop: '20px' }}>
                                     <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>

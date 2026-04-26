@@ -98,6 +98,14 @@ async function getRestaurant(id: string) {
         restaurant.isBusy = restaurant.isMock ? false : isBusy;
         restaurant.prepTime = `${basePrep + extraBuffer}-${basePrep + extraBuffer + 10} min`;
 
+        // Compute open/closed status from operating hours
+        const openTime = (restaurant.openTime || "08:00:00").slice(0, 5);
+        const closeTime = (restaurant.closeTime || "22:00:00").slice(0, 5);
+        const currentHHMM = now.toTimeString().slice(0, 5);
+        restaurant.isOpen = restaurant.isMock ? true : (currentHHMM >= openTime && currentHHMM <= closeTime);
+        restaurant.openTimeDisplay = openTime;
+        restaurant.closeTimeDisplay = closeTime;
+
         return restaurant;
     } catch (e) {
         console.warn("DB failed", e);
@@ -156,7 +164,14 @@ export default async function RestaurantMenu({
                                 </Link>
                                 <div className="food-eyebrow">Restaurant Menu</div>
                                 <h2>{restaurant.name}</h2>
-                                <p>{restaurant.address} · {restaurant.cuisineType || 'Comfort Food'} · Prep time {restaurant.prepTime}</p>
+                                <p>
+                                    {restaurant.address} · {restaurant.cuisineType || 'Comfort Food'} · Prep time {restaurant.prepTime}
+                                    {' · '}
+                                    {restaurant.isOpen
+                                        ? <span style={{ color: '#4dca80', fontWeight: 700 }}>Open</span>
+                                        : <span style={{ color: '#f87171', fontWeight: 700 }}>Closed</span>
+                                    }
+                                </p>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '9px', flexShrink: 0, flexWrap: 'wrap' }}>
                                 <span className="stars">★★★★★</span>
@@ -180,6 +195,9 @@ export default async function RestaurantMenu({
                                 price: Number(item.price)
                             }))}
                             orderingEnabled={orderingEnabled}
+                            isOpen={restaurant.isOpen}
+                            openTimeDisplay={restaurant.openTimeDisplay}
+                            closeTimeDisplay={restaurant.closeTimeDisplay}
                             initialAddress={address}
                             initialLat={typeof lat === 'string' ? parseFloat(lat) : undefined}
                             initialLng={typeof lng === 'string' ? parseFloat(lng) : undefined}
@@ -199,6 +217,9 @@ export default async function RestaurantMenu({
                             price: Number(item.price)
                         }))}
                         orderingEnabled={orderingEnabled}
+                        isOpen={restaurant.isOpen}
+                        openTimeDisplay={restaurant.openTimeDisplay}
+                        closeTimeDisplay={restaurant.closeTimeDisplay}
                         initialAddress={address}
                         initialLat={typeof lat === 'string' ? parseFloat(lat) : undefined}
                         initialLng={typeof lng === 'string' ? parseFloat(lng) : undefined}

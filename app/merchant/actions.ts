@@ -876,7 +876,39 @@ export async function updateAutoPilotSettings(restaurantId: string, enabled: boo
     } catch (e: any) {
         return { error: e.message };
     }
-}export async function toggleIngredientStock(restaurantId: string, ingredient: string, isNowAvailable: boolean) {
+}
+
+export async function updateRestaurantHours(restaurantId: string, openTime: string, closeTime: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Unauthorized" };
+
+    // Validate HH:MM format
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (!timeRegex.test(openTime) || !timeRegex.test(closeTime)) {
+        return { error: "Invalid time format. Use HH:MM (24-hour)." };
+    }
+
+    try {
+        const { error } = await supabase
+            .from('Restaurant')
+            .update({
+                openTime: openTime + ':00',
+                closeTime: closeTime + ':00',
+                updatedAt: new Date().toISOString(),
+            })
+            .eq('id', restaurantId)
+            .eq('ownerId', user.id);
+
+        if (error) throw error;
+        revalidatePath('/merchant/dashboard');
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function toggleIngredientStock(restaurantId: string, ingredient: string, isNowAvailable: boolean) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: "Unauthorized" };
