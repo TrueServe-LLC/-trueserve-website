@@ -25,6 +25,7 @@ function RestaurantFinderContent() {
   const hasLocationInput = Boolean((address || search || "").trim() || (latParam && lngParam));
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeRestaurantCount, setActiveRestaurantCount] = useState(0);
 
   useEffect(() => {
     async function fetchRestaurants() {
@@ -45,6 +46,7 @@ function RestaurantFinderContent() {
       
       if (!error && data) {
         const liveRestaurants = getLiveRestaurants(data);
+        setActiveRestaurantCount(liveRestaurants.length);
         const withDistance = addDistanceMiles(liveRestaurants, targetLat, targetLng);
 
         const filtered = withDistance
@@ -130,7 +132,7 @@ function RestaurantFinderContent() {
                       <p className="food-kicker mb-3">Outside our current zone</p>
                       <h3 className="food-heading !text-[30px] mb-3">Not in your area <span className="accent">yet.</span></h3>
                       <p className="text-sm text-white/55 mb-6 max-w-sm mx-auto leading-relaxed">
-                        We're currently piloting in <strong className="text-white/80">Pineville, NC</strong> and <strong className="text-white/80">Rock Hill, SC</strong>. Drop your email and we'll notify you when we expand to your area.
+                        We&apos;re actively onboarding restaurant partners across our current launch footprint. Drop your email and we&apos;ll notify you when ordering opens in your area.
                       </p>
                       <form
                         onSubmit={(e) => { e.preventDefault(); const el = e.currentTarget.querySelector('input') as HTMLInputElement; if (el?.value) { el.value = ''; alert('You\'re on the list — we\'ll reach out when we launch near you!'); } }}
@@ -143,9 +145,9 @@ function RestaurantFinderContent() {
                   ) : (
                     <>
                       <p className="food-kicker mb-3">Pilot launch</p>
-                      <h3 className="food-heading !text-[30px] mb-3">Now live in <span className="accent">2 markets</span></h3>
+                      <h3 className="food-heading !text-[30px] mb-3">Now live with <span className="accent">{activeRestaurantCount || "local"} restaurant partners</span></h3>
                       <p className="text-sm text-white/55 max-w-sm mx-auto leading-relaxed">
-                        Enter your address above to see restaurants near you. Currently serving <strong className="text-white/80">Pineville, NC</strong> and <strong className="text-white/80">Rock Hill, SC</strong>.
+                        Enter your address above to see restaurants near you and discover currently active merchant locations in your area.
                       </p>
                     </>
                   )}
