@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { Check, Zap, Crown, ArrowRight } from "lucide-react";
+import { Check, Minus, ArrowRight, Zap, Crown } from "lucide-react";
 
 const PLANS = [
   {
     name: "Flex Options",
     tagline: "Starter",
-    price: "0% commission",
-    sub: "Pay only per transaction",
+    price: "0%",
+    priceSub: "commission",
+    sub: "Pay only per transaction — no monthly fee",
     color: "#3dd68c",
     badge: null,
     icon: Zap,
@@ -16,7 +17,7 @@ const PLANS = [
     features: [
       "Zero monthly fees",
       "Zero commission on orders",
-      "Public restaurant page",
+      "Public restaurant storefront page",
       "Real-time order management",
       "Basic prep time controls",
       "Customer ratings visible",
@@ -32,12 +33,13 @@ const PLANS = [
   {
     name: "Pro",
     tagline: "Growth",
-    price: "$49 / mo",
-    sub: "Everything in Flex, plus",
+    price: "$49",
+    priceSub: "/ month",
+    sub: "Everything in Flex Options, plus",
     color: "#f97316",
-    badge: "Most Popular",
+    badge: "Best for Growth",
     icon: Crown,
-    cta: "Start Pro Trial",
+    cta: "Start Free Trial",
     href: "/merchant/signup?plan=pro",
     features: [
       "Everything in Flex Options",
@@ -47,206 +49,201 @@ const PLANS = [
       "Priority order routing",
       "GHL booking widget embed",
       "Compliance score dashboard",
-      "Dedicated account manager",
       "Multi-location dashboard",
+      "Dedicated account manager",
     ],
     notIncluded: [],
   },
 ];
 
+const COMPARE = [
+  { name: "DoorDash",   commission: "15–30%", fee: "$0",       contract: false },
+  { name: "Uber Eats",  commission: "15–30%", fee: "$0",       contract: false },
+  { name: "GrubHub",    commission: "15–30%", fee: "$0",       contract: false },
+  { name: "TrueServe",  commission: "0%",     fee: "$0–$49",   contract: false, highlight: true },
+];
+
 const FAQS = [
-  {
-    q: "Is there really zero commission?",
-    a: "Yes. TrueServe does not take a percentage of your orders. You keep everything your customers pay for food.",
-  },
-  {
-    q: "How do I get paid?",
-    a: "Payouts go directly to your Stripe account. Setup takes about 5 minutes and funds typically arrive within 2 business days.",
-  },
-  {
-    q: "Can I switch plans later?",
-    a: "Yes — you can upgrade or downgrade at any time from your dashboard settings. Changes take effect immediately.",
-  },
-  {
-    q: "What POS systems do you support?",
-    a: "Toast, Square, and Clover are supported on the Pro plan. More integrations are being added during our pilot phase.",
-  },
-  {
-    q: "Is there a contract?",
-    a: "No contracts, no lock-ins. Cancel anytime with no penalty.",
-  },
-  {
-    q: "What markets are you currently in?",
-    a: "We are currently live in Pineville, NC and Rock Hill, SC, with more markets launching soon.",
-  },
+  { q: "Is there really zero commission?",   a: "Yes. TrueServe does not take a percentage of your orders. You keep everything your customers pay for food." },
+  { q: "How do I get paid?",                 a: "Payouts go directly to your Stripe account. Setup takes about 5 minutes and funds typically arrive within 2 business days." },
+  { q: "Can I switch plans later?",          a: "Yes — upgrade or downgrade anytime from your dashboard. Changes take effect immediately, no penalty." },
+  { q: "What POS systems are supported?",    a: "Toast, Square, and Clover on the Pro plan. More integrations are being added during our pilot phase." },
+  { q: "Is there a contract?",               a: "No contracts, no lock-ins. Cancel anytime." },
+  { q: "What markets are you in?",           a: "Currently live in Pineville, NC and Rock Hill, SC — expanding soon." },
 ];
 
 export default function PricingPage() {
   return (
     <div className="food-app-shell">
       <nav className="food-app-nav">
-        <div className="mx-auto flex items-center justify-between" style={{ width: "min(1180px, calc(100% - 32px))", padding: "14px 0" }}>
-          <Logo size="sm" />
-          <div className="hidden md:flex items-center gap-6 text-xs font-black uppercase tracking-[0.14em]">
-            <Link href="/restaurants" className="text-white/60 hover:text-white transition-colors">Order Food</Link>
-            <Link href="/merchant/signup" className="text-white/60 hover:text-[#f97316] transition-colors">For Merchants</Link>
-          </div>
-          <div className="flex gap-2">
-            <Link href="/merchant/login" className="btn btn-ghost text-xs">Sign In</Link>
-            <Link href="/merchant/signup" className="btn btn-gold text-xs">Get Started</Link>
-          </div>
+        <Logo size="sm" />
+        <div className="nav-links hidden md:flex">
+          <Link href="/restaurants">Order Food</Link>
+          <Link href="/merchant/signup">For Merchants</Link>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/merchant/login" className="btn btn-ghost">Sign In</Link>
+          <Link href="/merchant/signup" className="btn btn-gold">Get Started</Link>
         </div>
       </nav>
 
       <main className="food-app-main">
 
-        {/* HERO */}
-        <section className="food-panel relative overflow-hidden text-center">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(249,115,22,0.18),transparent_55%)]" />
-          <div className="relative z-10 max-w-2xl mx-auto">
+        {/* ── HERO ── */}
+        <section className="food-panel relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.2),transparent_60%)]" />
+          <div className="relative z-10 text-center max-w-3xl mx-auto py-6">
             <p className="food-kicker mb-4">Merchant Pricing</p>
-            <h1 className="food-heading" style={{ fontSize: "clamp(42px, 7vw, 80px)" }}>
-              Keep every dollar <span className="accent">you earn.</span>
+            <h1 className="food-heading" style={{ fontSize: "clamp(48px, 8vw, 88px)", lineHeight: 0.92 }}>
+              Keep every dollar<br /><span className="accent">you earn.</span>
             </h1>
-            <p className="food-subtitle mt-4 mx-auto">
+            <p className="food-subtitle mt-5 mx-auto" style={{ maxWidth: 520 }}>
               No commissions. No hidden fees. TrueServe makes money when you grow — not by taking a cut of every order.
             </p>
             <div className="food-chip-row mt-6 justify-center">
-              <div className="food-chip"><span className="food-chip-dot" /> 0% commission</div>
-              <div className="food-chip"><span className="food-chip-dot" /> No contracts</div>
-              <div className="food-chip"><span className="food-chip-dot" /> Cancel anytime</div>
+              <div className="food-chip"><span className="food-chip-dot" />0% commission</div>
+              <div className="food-chip"><span className="food-chip-dot" />No contracts</div>
+              <div className="food-chip"><span className="food-chip-dot" />Cancel anytime</div>
+              <div className="food-chip"><span className="food-chip-dot" />Live in minutes</div>
             </div>
           </div>
         </section>
 
-        {/* PLAN CARDS */}
-        <section className="mt-8 grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+        {/* ── PLAN CARDS ── */}
+        <section className="mt-8 grid gap-6 md:grid-cols-2">
           {PLANS.map((plan) => {
             const Icon = plan.icon;
-            const isHighlighted = Boolean(plan.badge);
             return (
               <article
                 key={plan.name}
-                className="food-card relative overflow-hidden flex flex-col"
-                style={isHighlighted ? { border: `1px solid ${plan.color}50` } : {}}
+                className="food-panel relative overflow-hidden flex flex-col"
+                style={{ border: `1px solid ${plan.color}35` }}
               >
-                <div className="pointer-events-none absolute inset-0" style={{ background: `radial-gradient(circle at top right, ${plan.color}14, transparent 50%)` }} />
-                {plan.badge && (
-                  <div className="absolute top-5 right-5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em]"
-                    style={{ background: `${plan.color}20`, border: `1px solid ${plan.color}40`, color: plan.color }}>
-                    {plan.badge}
-                  </div>
-                )}
-                <div className="relative z-10 flex-1">
-                  <div className="mb-4 inline-flex rounded-xl p-2.5" style={{ background: `${plan.color}15`, border: `1px solid ${plan.color}30` }}>
-                    <Icon size={20} style={{ color: plan.color }} />
-                  </div>
-                  <p className="food-kicker mb-1">{plan.tagline}</p>
-                  <h2 className="food-heading !text-[38px]">{plan.name}</h2>
-                  <p className="text-2xl font-black mt-2" style={{ color: plan.color }}>{plan.price}</p>
-                  <p className="text-xs text-white/40 mt-1 mb-6">{plan.sub}</p>
+                <div className="pointer-events-none absolute inset-0" style={{ background: `radial-gradient(circle at top right, ${plan.color}12, transparent 55%)` }} />
 
-                  <div className="space-y-2.5">
+                {plan.badge && (
+                  <span
+                    className="absolute top-6 right-6 text-[10px] font-black uppercase tracking-[0.14em] rounded-full px-3 py-1"
+                    style={{ background: `${plan.color}18`, border: `1px solid ${plan.color}40`, color: plan.color }}
+                  >
+                    {plan.badge}
+                  </span>
+                )}
+
+                <div className="relative z-10 flex-1">
+                  {/* Icon */}
+                  <div className="mb-5 inline-flex rounded-2xl p-3" style={{ background: `${plan.color}12`, border: `1px solid ${plan.color}30` }}>
+                    <Icon size={22} style={{ color: plan.color }} />
+                  </div>
+
+                  {/* Name + price */}
+                  <p className="food-kicker mb-1">{plan.tagline}</p>
+                  <h2 className="food-heading !text-[44px] mb-1">{plan.name}</h2>
+                  <div className="flex items-end gap-2 mt-3 mb-1">
+                    <span className="text-[52px] font-black leading-none" style={{ color: plan.color }}>{plan.price}</span>
+                    <span className="text-base font-bold text-white/40 mb-2">{plan.priceSub}</span>
+                  </div>
+                  <p className="text-xs text-white/40 mb-8">{plan.sub}</p>
+
+                  {/* Features */}
+                  <div className="space-y-3">
                     {plan.features.map((f) => (
-                      <div key={f} className="flex items-start gap-2.5 text-sm text-white/80">
-                        <Check size={14} className="mt-0.5 shrink-0" style={{ color: plan.color }} />
+                      <div key={f} className="flex items-center gap-3 text-sm text-white/80">
+                        <div className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: `${plan.color}18` }}>
+                          <Check size={11} style={{ color: plan.color }} />
+                        </div>
                         {f}
                       </div>
                     ))}
                     {plan.notIncluded.map((f) => (
-                      <div key={f} className="flex items-start gap-2.5 text-sm text-white/25 line-through">
-                        <span className="mt-0.5 shrink-0 w-3.5 h-3.5 text-center text-white/20">—</span>
-                        {f}
+                      <div key={f} className="flex items-center gap-3 text-sm text-white/25">
+                        <div className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-white/5">
+                          <Minus size={10} className="text-white/20" />
+                        </div>
+                        <span className="line-through">{f}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
+                {/* CTA */}
                 <Link
                   href={plan.href}
-                  className="relative z-10 mt-8 flex items-center justify-center gap-2 rounded-2xl py-4 text-xs font-black uppercase tracking-[0.13em] transition-all"
+                  className="relative z-10 mt-8 flex items-center justify-center gap-2 rounded-2xl py-4 text-[11px] font-black uppercase tracking-[0.15em] transition-all hover:opacity-90"
                   style={{ background: plan.color, color: "#0c0f0d" }}
                 >
-                  {plan.cta} <ArrowRight size={14} />
+                  {plan.cta} <ArrowRight size={13} />
                 </Link>
               </article>
             );
           })}
         </section>
 
-        {/* COMPARISON ROW */}
-        <section className="mt-10 food-panel max-w-4xl mx-auto">
+        {/* ── COMPARISON ── */}
+        <section className="mt-8 food-panel">
           <div className="text-center mb-8">
-            <p className="food-kicker mb-2">How We Compare</p>
-            <h2 className="food-heading !text-[34px]">The honest comparison</h2>
+            <p className="food-kicker mb-3">How We Compare</p>
+            <h2 className="food-heading !text-[36px]">The honest <span className="accent">comparison.</span></h2>
+            <p className="text-sm text-white/45 mt-3">Other platforms charge 15–30% of every order. We don't.</p>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/8">
-                  <th className="text-left py-3 pr-6 text-white/40 font-bold text-xs uppercase tracking-widest">Platform</th>
-                  <th className="text-center py-3 px-4 text-white/40 font-bold text-xs uppercase tracking-widest">Commission</th>
-                  <th className="text-center py-3 px-4 text-white/40 font-bold text-xs uppercase tracking-widest">Monthly Fee</th>
-                  <th className="text-center py-3 px-4 text-white/40 font-bold text-xs uppercase tracking-widest">Contract</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { name: "DoorDash", commission: "15–30%", monthly: "$0", contract: "No" },
-                  { name: "Uber Eats", commission: "15–30%", monthly: "$0", contract: "No" },
-                  { name: "GrubHub", commission: "15–30%", monthly: "$0", contract: "No" },
-                  { name: "TrueServe ✦", commission: "0%", monthly: "$0 – $49", contract: "No", highlight: true },
-                ].map((row: any) => (
-                  <tr
-                    key={row.name}
-                    className="border-b border-white/5"
-                    style={row.highlight ? { background: "rgba(249,115,22,0.06)" } : {}}
-                  >
-                    <td className="py-3 pr-6 font-bold" style={row.highlight ? { color: "#f97316" } : { color: "#fff" }}>
-                      {row.name}
-                    </td>
-                    <td className="py-3 px-4 text-center font-bold" style={row.highlight ? { color: "#3dd68c" } : { color: "rgba(255,255,255,0.55)" }}>
-                      {row.commission}
-                    </td>
-                    <td className="py-3 px-4 text-center" style={{ color: "rgba(255,255,255,0.55)" }}>{row.monthly}</td>
-                    <td className="py-3 px-4 text-center" style={{ color: "rgba(255,255,255,0.55)" }}>{row.contract}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+          <div className="grid gap-3">
+            {/* Header */}
+            <div className="grid grid-cols-4 px-5 pb-2 border-b border-white/8">
+              {["Platform", "Commission", "Monthly Fee", "Contract"].map((h, i) => (
+                <p key={h} className={`text-[10px] font-black uppercase tracking-[0.16em] text-white/35 ${i === 0 ? "text-left" : "text-center"}`}>{h}</p>
+              ))}
+            </div>
+
+            {COMPARE.map((row) => (
+              <div
+                key={row.name}
+                className="grid grid-cols-4 items-center px-5 py-4 rounded-2xl"
+                style={row.highlight ? { background: "rgba(249,115,22,0.07)", border: "1px solid rgba(249,115,22,0.2)" } : { background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <p className="font-black text-sm" style={row.highlight ? { color: "#f97316" } : { color: "rgba(255,255,255,0.7)" }}>
+                  {row.name}{row.highlight && <span className="ml-1.5 text-[10px] font-black tracking-widest text-[#f97316]/60">✦</span>}
+                </p>
+                <p className="text-center text-sm font-black" style={row.highlight ? { color: "#3dd68c" } : { color: "rgba(255,255,255,0.45)" }}>
+                  {row.commission}
+                </p>
+                <p className="text-center text-sm" style={{ color: row.highlight ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.35)" }}>{row.fee}</p>
+                <p className="text-center text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>None</p>
+              </div>
+            ))}
           </div>
-          <p className="mt-4 text-xs text-white/30 text-center">Commission rates based on publicly available platform data. Actual rates may vary.</p>
+          <p className="mt-5 text-[10px] text-white/25 text-center tracking-wide">Commission rates based on publicly available data. Actual rates may vary by market.</p>
         </section>
 
-        {/* FAQ */}
-        <section className="mt-10 max-w-2xl mx-auto">
+        {/* ── FAQ ── */}
+        <section className="mt-8 food-panel">
           <div className="text-center mb-8">
-            <p className="food-kicker mb-2">FAQ</p>
-            <h2 className="food-heading !text-[34px]">Common questions</h2>
+            <p className="food-kicker mb-3">FAQ</p>
+            <h2 className="food-heading !text-[36px]">Common <span className="accent">questions.</span></h2>
           </div>
-          <div className="space-y-3">
+          <div className="grid gap-4 md:grid-cols-2">
             {FAQS.map((faq) => (
               <div key={faq.q} className="food-card">
-                <p className="font-bold text-white mb-2">{faq.q}</p>
-                <p className="text-sm text-white/60 leading-relaxed">{faq.a}</p>
+                <p className="font-black text-white mb-2 text-sm">{faq.q}</p>
+                <p className="text-sm text-white/55 leading-relaxed">{faq.a}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* BOTTOM CTA */}
-        <section className="mt-10 food-panel text-center relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.15),transparent_60%)]" />
-          <div className="relative z-10 max-w-xl mx-auto">
-            <p className="food-kicker mb-3">Ready to get started?</p>
-            <h2 className="food-heading !text-[40px] mb-4">
-              Your restaurant, <span className="accent">your revenue.</span>
+        {/* ── BOTTOM CTA ── */}
+        <section className="mt-8 food-panel relative overflow-hidden text-center">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.16),transparent_60%)]" />
+          <div className="relative z-10 max-w-xl mx-auto py-4">
+            <p className="food-kicker mb-4">Ready to partner with us?</p>
+            <h2 className="food-heading !text-[44px] mb-5">
+              Your restaurant,<br /><span className="accent">your revenue.</span>
             </h2>
-            <p className="text-sm text-white/55 mb-8 leading-relaxed">
+            <p className="text-sm text-white/50 mb-8 leading-relaxed mx-auto" style={{ maxWidth: 420 }}>
               Join TrueServe during our pilot launch in Pineville, NC and Rock Hill, SC. Setup takes less than 10 minutes.
             </p>
             <div className="flex gap-3 justify-center flex-wrap">
-              <Link href="/merchant/signup" className="portal-btn-gold" style={{ minWidth: 180 }}>
+              <Link href="/merchant/signup" className="portal-btn-gold" style={{ minWidth: 200 }}>
                 Apply as a Merchant
               </Link>
               <Link href="/restaurants" className="portal-btn-outline" style={{ minWidth: 160 }}>
@@ -258,10 +255,18 @@ export default function PricingPage() {
 
       </main>
 
-      <footer className="mt-8 border-t border-white/5 py-8 text-center">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
-          © {new Date().getFullYear()} TrueServe · Built for local restaurants.
-        </p>
+      <footer className="mt-8 border-t border-white/5 px-2 pt-10 pb-12 text-center">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-5">
+          <Logo size="md" />
+          <div className="flex items-center justify-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Get Started</Link>
+          </div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
+            © {new Date().getFullYear()} TrueServe · Built for local restaurants.
+          </p>
+        </div>
       </footer>
     </div>
   );
