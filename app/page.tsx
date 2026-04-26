@@ -116,6 +116,7 @@ export default function Home() {
         </div>
         <div className="nav-links hidden md:flex">
           <Link href="/restaurants">Order Food</Link>
+          <Link href="/rewards">Rewards</Link>
           <Link href="/merchant/signup">For Merchants</Link>
           <Link href="/driver/signup">For Drivers</Link>
         </div>
@@ -149,6 +150,7 @@ export default function Home() {
                 { href:"/driver/signup", icon:"🚗", label:"For Drivers", sub:"Earn delivering food" },
                 { href:"/merchant/signup", icon:"🍽️", label:"For Merchants", sub:"List your restaurant" },
                 { href:"/restaurants", icon:"🛍️", label:"Order Food", sub:"Browse local restaurants" },
+                { href:"/rewards", icon:"⭐", label:"Rewards", sub:"Earn points on every order" },
               ].map(item => (
                 <Link
                   key={item.href}
@@ -515,6 +517,7 @@ export default function Home() {
             <Logo size="md" />
             <div className="flex items-center justify-center gap-6 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+              <Link href="/rewards" className="hover:text-[#f97316] transition-colors">Rewards</Link>
               <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
               <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>

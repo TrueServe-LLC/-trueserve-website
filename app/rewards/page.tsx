@@ -287,7 +287,7 @@ export default async function RewardsPage({
                     <div className="grid gap-6 md:grid-cols-3">
                         <TierCard
                             tier="Plus"
-                            subtitle="Most Popular"
+                            subtitle="Priority Tier"
                             price="$9.99 / month"
                             currentPlan={currentPlan}
                             canChoose={isSignedIn && canChoosePaid}
