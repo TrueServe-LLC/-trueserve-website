@@ -39,18 +39,14 @@ export default async function IntegrationsPage() {
     }
 
     return (
-        <div className="md-body min-h-screen animate-fade-in-up">
-            <div className="md-page-hd">
-                <div>
-                    <div className="md-page-title">Integrations</div>
-                    <div className="md-page-sub">Manage POS systems, iframes, and API protocols.</div>
-                </div>
-            </div>
-            
-            <POSIntegration 
-                currentApiKey={restaurant.apiKey} 
-                posType={restaurant.posType || "None"} 
+        <>
+            <p style={{ fontSize: 11, color: '#555', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20, marginTop: -4 }}>
+                Manage POS systems, iframes, and API protocols.
+            </p>
+            <POSIntegration
+                currentApiKey={restaurant.apiKey}
+                posType={restaurant.posType || "None"}
             />
-        </div>
+        </>
     );
 }

@@ -13,6 +13,9 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
     const [view, setView] = useState<'weekly' | 'daily'>('weekly');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+    const [weeklyGoal, setWeeklyGoal] = useState(800);
+    const [editingGoal, setEditingGoal] = useState(false);
+    const [goalInput, setGoalInput] = useState('800');
 
     // Calculate chart data from real orders (7-day window)
     const sevenDaysAgo = new Date();
@@ -97,6 +100,135 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
 
                 </div>
             </header>
+
+            {/* ── Predictive Earnings Planner ── */}
+            <section className="card border-orange-500/20 p-6 md:p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.05) 0%, rgba(0,0,0,0) 60%)' }}>
+                <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/5 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
+
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 relative">
+                    <div>
+                        <p className="text-[10px] font-black uppercase text-orange-400 tracking-[0.2em] mb-1">Weekly Goal Tracker</p>
+                        <h3 className="text-xl font-black text-white">Earnings Forecast</h3>
+                    </div>
+                    <div className="flex flex-col items-start sm:items-end gap-2">
+                        {editingGoal ? (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="number"
+                                    value={goalInput}
+                                    onChange={e => setGoalInput(e.target.value)}
+                                    className="bg-black/50 border border-white/10 text-white w-24 px-3 py-1.5 rounded-lg text-sm font-bold outline-none focus:border-orange-500/50"
+                                />
+                                <button
+                                    onClick={() => { setWeeklyGoal(Number(goalInput) || 800); setEditingGoal(false); }}
+                                    className="text-[10px] font-black uppercase px-3 py-1.5 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-all"
+                                >Save</button>
+                                <button
+                                    onClick={() => setEditingGoal(false)}
+                                    className="text-[10px] font-black uppercase px-3 py-1.5 border border-white/10 text-slate-500 rounded-lg hover:text-white transition-all"
+                                >Cancel</button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-black text-white">Goal: <span className="text-orange-400">${weeklyGoal}</span></span>
+                                <button
+                                    onClick={() => { setGoalInput(String(weeklyGoal)); setEditingGoal(true); }}
+                                    className="text-[9px] font-black uppercase px-3 py-1 border border-white/10 text-slate-500 rounded-lg hover:text-white hover:border-white/20 transition-all"
+                                >Edit</button>
+                            </div>
+                        )}
+                        {/* Preset buttons */}
+                        {!editingGoal && (
+                            <div className="flex gap-1.5">
+                                {[500, 800, 1000, 1500].map(g => (
+                                    <button
+                                        key={g}
+                                        onClick={() => { setWeeklyGoal(g); setGoalInput(String(g)); }}
+                                        className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-full border transition-all ${
+                                            weeklyGoal === g
+                                                ? 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+                                                : 'border-white/5 text-slate-600 hover:text-white hover:border-white/15'
+                                        }`}
+                                    >${g}</button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Progress bar */}
+                <div className="mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">This Week</span>
+                        <span className="text-sm font-black text-white">
+                            ${totalWeek.toFixed(2)} <span className="text-slate-500 font-normal text-xs">/ ${weeklyGoal}</span>
+                        </span>
+                    </div>
+                    <div className="h-3 bg-black/50 rounded-full overflow-hidden border border-white/5">
+                        <div
+                            className="h-full rounded-full transition-all duration-1000 ease-out"
+                            style={{
+                                width: `${Math.min((totalWeek / weeklyGoal) * 100, 100)}%`,
+                                background: totalWeek >= weeklyGoal
+                                    ? 'linear-gradient(90deg, #10b981, #34d399)'
+                                    : 'linear-gradient(90deg, #f97316, #fb923c)',
+                                boxShadow: totalWeek >= weeklyGoal
+                                    ? '0 0 12px rgba(16,185,129,0.4)'
+                                    : '0 0 12px rgba(249,115,22,0.4)',
+                            }}
+                        />
+                    </div>
+                    <div className="flex justify-between items-center mt-1.5">
+                        <span className="text-[9px] text-slate-700 font-bold">$0</span>
+                        <span className="text-[9px] text-slate-700 font-bold">${weeklyGoal}</span>
+                    </div>
+                </div>
+
+                {/* Prediction cards */}
+                {(() => {
+                    const remaining = Math.max(weeklyGoal - totalWeek, 0);
+                    const completedTrips = orders.filter(o => new Date(o.createdAt) > sevenDaysAgo).length;
+                    const avgPerTrip = completedTrips > 0 ? totalWeek / completedTrips : 18;
+                    const tripsNeeded = Math.ceil(remaining / Math.max(avgPerTrip, 1));
+                    const dayOfWeek = new Date().getDay();
+                    const daysLeft = Math.max(7 - dayOfWeek, 1);
+
+                    if (totalWeek >= weeklyGoal) {
+                        return (
+                            <div className="flex items-center gap-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+                                <span className="text-3xl">🎉</span>
+                                <div>
+                                    <p className="font-black text-emerald-400 text-sm">Goal Crushed!</p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">
+                                        You hit your ${weeklyGoal} target. Every extra trip is pure bonus earnings.
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div className="grid grid-cols-3 gap-3">
+                            <div className="bg-black/30 border border-white/5 rounded-xl p-4">
+                                <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-2">Still Needed</p>
+                                <p className="text-2xl font-black text-white">${remaining.toFixed(0)}</p>
+                                <p className="text-[10px] text-slate-500 mt-1">{Math.round((totalWeek / weeklyGoal) * 100)}% there</p>
+                            </div>
+                            <div className="bg-black/30 border border-white/5 rounded-xl p-4">
+                                <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-2">Trips to Goal</p>
+                                <p className="text-2xl font-black text-orange-400">{tripsNeeded}</p>
+                                <p className="text-[10px] text-slate-500 mt-1">~${avgPerTrip.toFixed(0)} avg/trip</p>
+                            </div>
+                            <div className="bg-black/30 border border-white/5 rounded-xl p-4">
+                                <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-2">Days Left</p>
+                                <p className="text-2xl font-black text-white">{daysLeft}</p>
+                                <p className="text-[10px] text-slate-500 mt-1">~${(remaining / daysLeft).toFixed(0)}/day needed</p>
+                            </div>
+                        </div>
+                    );
+                })()}
+            </section>
 
             {/* Chart Section */}
             <section className="card bg-white/5 border-white/10 p-6 md:p-10 relative overflow-hidden group">

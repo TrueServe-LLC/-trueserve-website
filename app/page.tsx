@@ -116,8 +116,8 @@ export default function Home() {
         </div>
         <div className="nav-links hidden md:flex">
           <Link href="/restaurants">Order Food</Link>
-          <Link href="/merchant/login">For Merchants</Link>
-          <Link href="/driver/login">For Drivers</Link>
+          <Link href="/merchant/signup">For Merchants</Link>
+          <Link href="/driver/signup">For Drivers</Link>
         </div>
         <div className="nav-r">
           {userId ? (
@@ -146,8 +146,8 @@ export default function Home() {
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:8,paddingTop:8}}>
               {[
-                { href:"/driver/login", icon:"🚗", label:"For Drivers", sub:"Earn delivering food" },
-                { href:"/merchant/login", icon:"🍽️", label:"For Merchants", sub:"List your restaurant" },
+                { href:"/driver/signup", icon:"🚗", label:"For Drivers", sub:"Earn delivering food" },
+                { href:"/merchant/signup", icon:"🍽️", label:"For Merchants", sub:"List your restaurant" },
                 { href:"/restaurants", icon:"🛍️", label:"Order Food", sub:"Browse local restaurants" },
               ].map(item => (
                 <Link
@@ -307,19 +307,6 @@ export default function Home() {
           ))}
         </section>
 
-        <section className="mt-10 grid gap-8 md:grid-cols-3">
-          {[
-            { kicker: "Why it lands", title: "Built for daily orders", desc: "A calmer browsing and checkout flow that keeps customers moving instead of hunting for the next click.", link: "/restaurants", delay: "0ms" },
-            { kicker: "Why restaurants join", title: "Brand-first restaurant pages", desc: "Each partner gets a stronger local presence, cleaner discovery, and a storefront they can proudly share.", link: "/merchant", delay: "80ms" },
-            { kicker: "Why customers trust it", title: "Verified signals, not fluff", desc: "Live tracking, Google review links, and operational trust signals help TrueServe feel more credible than a generic marketplace grid.", link: "/restaurants", delay: "160ms" }
-          ].map((card) => (
-            <Link key={card.title} href={card.link} className="food-card ts-reveal transition-transform hover:-translate-y-1" style={{animationDelay: card.delay}}>
-              <p className="food-kicker mb-3">{card.kicker}</p>
-              <h3 className="food-heading !text-[34px] mb-3">{card.title}</h3>
-              <p className="text-sm leading-7">{card.desc}</p>
-            </Link>
-          ))}
-        </section>
 
         {hasAddress && featuredRestaurants.length > 0 && (
           <section className="mt-10">
@@ -371,7 +358,7 @@ export default function Home() {
           </section>
         )}
 
-        {collections.length > 0 && (
+        {collections.length > 0 && networkStats.totalRestaurants >= 5 && (
           <section className="mt-10">
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
@@ -385,11 +372,12 @@ export default function Home() {
             <div className="grid gap-5 lg:grid-cols-2">
               {collections.map((collection, index) => {
                 const heroRestaurant = collection.restaurants[0];
+                const isLastOdd = index === collections.length - 1 && collections.length % 2 !== 0;
                 return (
                   <Link
                     key={collection.key}
                     href={collection.href}
-                    className="food-card ts-reveal transition-transform hover:-translate-y-1"
+                    className={`food-card ts-reveal transition-transform hover:-translate-y-1${isLastOdd ? " lg:col-span-2" : ""}`}
                     style={{ animationDelay: `${index * 80}ms` }}
                   >
                     <div

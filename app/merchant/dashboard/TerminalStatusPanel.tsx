@@ -26,35 +26,37 @@ export default function TerminalStatusPanel({ restaurantId, isBusy: initialBusy,
     return (
         <>
             <style>{`
-                .term-panel { background: #0f1219; padding: 18px 20px; border-left: 3px solid #3dd68c; }
-                .term-panel.busy { border-left-color: #e24b4a; }
-                .term-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-                .term-title { font-size: 14px; font-weight: 700; color: #ccc; }
-                .term-live { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; }
+                .term-panel { background: #141a18; border: 1px solid #1e2420; border-radius: 8px; padding: 16px 18px; border-left: 3px solid #3dd68c; }
+                .term-panel.busy { border-left-color: #e24b4a; background: rgba(226,75,74,0.04); border-color: rgba(226,75,74,0.2); }
+                .term-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+                .term-title { font-size: 13px; font-weight: 700; color: #ccc; }
+                .term-live { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #3dd68c; }
                 .term-paused { color: #e24b4a; }
                 .term-live-dot { width: 6px; height: 6px; background: #3dd68c; border-radius: 50%; animation: term-pulse 2s infinite; }
                 .term-paused-dot { background: #e24b4a; }
                 @keyframes term-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-                .term-desc { font-size: 12px; color: #555; line-height: 1.5; margin-bottom: 14px; }
+                .term-desc { font-size: 11px; color: #555; line-height: 1.5; margin-bottom: 14px; }
                 .term-actions { display: flex; align-items: center; gap: 8px; }
                 .term-emergency {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-                    padding: 9px 18px; background: #e24b4a; border: none; color: #fff;
-                    cursor: pointer; flex: 1; text-align: center; font-family: 'DM Sans', sans-serif;
+                    font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+                    padding: 8px 16px; background: rgba(226,75,74,0.15); border: 1px solid rgba(226,75,74,0.3); color: #e24b4a;
+                    border-radius: 6px; cursor: pointer; flex: 1; text-align: center; font-family: 'DM Sans', sans-serif;
+                    transition: all 0.15s;
                 }
-                .term-emergency.resume { background: #22a464; }
-                .term-emergency:hover { opacity: 0.9; }
+                .term-emergency.resume { background: rgba(61,214,140,0.12); border-color: rgba(61,214,140,0.25); color: #3dd68c; }
+                .term-emergency:hover { opacity: 0.85; }
                 .term-dur-select {
-                    background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc;
-                    font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 10px;
+                    background: #0f1210; border: 1px solid #1e2420; color: #888; border-radius: 5px;
+                    font-family: 'DM Sans', sans-serif; font-size: 11px; padding: 7px 8px;
                     cursor: pointer; outline: none;
                 }
                 .term-short-btn {
-                    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-                    padding: 9px 16px; background: transparent; border: 1px solid #2a2f3a;
-                    color: #888; cursor: pointer; font-family: 'DM Sans', sans-serif;
+                    font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+                    padding: 8px 14px; background: transparent; border: 1px solid #1e2420;
+                    border-radius: 6px; color: #555; cursor: pointer; font-family: 'DM Sans', sans-serif;
+                    transition: all 0.15s;
                 }
-                .term-short-btn:hover { border-color: #555; color: #ccc; }
+                .term-short-btn:hover { border-color: #333; color: #888; }
             `}</style>
             <div className={`term-panel${isBusy ? " busy" : ""}`}>
                 <div className="term-hd">

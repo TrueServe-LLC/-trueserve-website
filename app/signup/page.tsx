@@ -39,7 +39,7 @@ function SignupForm() {
           <section className="food-hero-card food-auth-hero">
             <div
               className="food-auth-image"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1520201163981-8cc95007dd2e?w=1200&q=80')" }}
+              style={{ backgroundImage: "url('/hero_food_delivery.png')" }}
             />
             <div className="food-auth-hero-inner">
               <div className="food-eyebrow">Customer onboarding</div>

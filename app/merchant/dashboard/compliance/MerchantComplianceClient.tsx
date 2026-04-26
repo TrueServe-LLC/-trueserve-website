@@ -131,153 +131,126 @@ export default function MerchantComplianceClient({
     return (
         <>
             <style>{`
-                .merchant-compliance-shell {
-                    display: grid;
-                    gap: 20px;
-                }
-                .merchant-compliance-panel {
-                    border: 1px solid var(--border);
-                    background: var(--card);
-                    border-radius: 16px;
-                    padding: 18px;
-                    box-shadow: 0 14px 32px rgba(0,0,0,.16);
-                }
-                .merchant-compliance-panel h2 {
-                    font-size: 18px;
-                    font-weight: 800;
-                    color: #fff;
-                }
-                .merchant-compliance-hero-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4, minmax(0, 1fr));
-                    gap: 14px;
-                }
-                .merchant-compliance-pill {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-height: 40px;
-                    border-radius: 12px;
-                    font-weight: 800;
-                }
-                .merchant-compliance-mini-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4, minmax(0, 1fr));
-                    gap: 12px;
-                }
-                .merchant-compliance-mini-card {
-                    border-radius: 14px;
-                    background: rgba(255,255,255,0.04);
-                    border: 1px solid rgba(255,255,255,0.08);
+                .mc-panel {
+                    background: #141a18;
+                    border: 1px solid #1e2420;
+                    border-radius: 8px;
                     padding: 14px;
+                    margin-bottom: 14px;
+                }
+                .mc-section-hd {
+                    font-size: 10px;
+                    font-weight: 800;
+                    color: #555;
+                    text-transform: uppercase;
+                    letter-spacing: 0.12em;
+                    margin-bottom: 10px;
+                }
+                .mc-score-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 10px;
+                }
+                .mc-score-cell {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
+                .mc-score-label {
+                    font-size: 10px;
+                    font-weight: 800;
+                    color: #555;
+                    text-transform: uppercase;
+                    letter-spacing: 0.12em;
+                }
+                .mc-driver-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 10px;
+                }
+                .mc-driver-card {
+                    background: #0f1210;
+                    border: 1px solid #1e2420;
+                    border-radius: 6px;
+                    padding: 12px;
                     text-align: center;
                 }
                 @media (max-width: 768px) {
-                    .merchant-compliance-panel {
-                        padding: 16px;
-                    }
-                    .merchant-compliance-hero-grid,
-                    .merchant-compliance-mini-grid {
-                        grid-template-columns: repeat(2, minmax(0, 1fr));
-                    }
+                    .mc-score-grid, .mc-driver-grid { grid-template-columns: repeat(2, 1fr); }
                 }
-                @media (max-width: 520px) {
-                    .merchant-compliance-hero-grid,
-                    .merchant-compliance-mini-grid {
-                        grid-template-columns: 1fr;
-                    }
+                @media (max-width: 480px) {
+                    .mc-score-grid, .mc-driver-grid { grid-template-columns: 1fr 1fr; }
                 }
             `}</style>
-        <div className="md-body min-h-screen bg-[#0a0c09]">
-            <div className="merchant-compliance-shell mx-auto w-full max-w-6xl">
-                {/* Header */}
-                <div className="md-page-hd">
-                    <div>
-                        <div className="md-page-title">Compliance</div>
-                        <div className="md-page-sub">{restaurant.name} · {restaurant.city}, {restaurant.state}</div>
-                    </div>
-                    <div className="md-hd-right">
-                        <a href="/merchant/dashboard" className="md-terminal-btn" style={{ textDecoration: "none" }}>
-                            <span className="md-terminal-dot"></span>
-                            Back to Dashboard
-                        </a>
-                    </div>
-                </div>
+        <div>
+                {/* Sub-description */}
+                <p style={{ fontSize: 11, color: '#555', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20, marginTop: -4 }}>
+                    {restaurant.name} · {restaurant.city}, {restaurant.state}
+                </p>
 
-                {/* Score Card - Mobile Optimized */}
-                <div className="merchant-compliance-panel">
-                    <div className="merchant-compliance-hero-grid">
-                        {/* Compliance Score */}
-                        <div className="flex flex-col gap-2">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Score</span>
-                            <div className="text-2xl md:text-3xl font-black text-white">
+                {/* Score Card */}
+                <div className="mc-panel">
+                    <div className="mc-section-hd">Compliance Overview</div>
+                    <div className="mc-score-grid" style={{ marginBottom: 14 }}>
+                        {/* Score */}
+                        <div className="mc-score-cell">
+                            <span className="mc-score-label">Score</span>
+                            <div style={{ fontSize: 27, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px', lineHeight: 1 }}>
                                 {restaurant.complianceScore}
-                                <span className="text-base text-white/50">/100</span>
+                                <span style={{ fontSize: 14, color: '#555', fontWeight: 400 }}>/100</span>
                             </div>
                         </div>
-
-                        {/* Health Grade */}
-                        <div className="flex flex-col gap-2">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Grade</span>
-                            <div className={`merchant-compliance-pill border px-3 py-1 text-center font-black ${getGradeColor(restaurant.healthGrade)}`}>
+                        {/* Grade */}
+                        <div className="mc-score-cell">
+                            <span className="mc-score-label">Grade</span>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 6, fontSize: 20, fontWeight: 900, background: restaurant.healthGrade === 'A' ? 'rgba(61,214,140,0.1)' : restaurant.healthGrade === 'B' ? 'rgba(249,115,22,0.1)' : 'rgba(226,75,74,0.1)', border: restaurant.healthGrade === 'A' ? '1px solid rgba(61,214,140,0.25)' : restaurant.healthGrade === 'B' ? '1px solid rgba(249,115,22,0.25)' : '1px solid rgba(226,75,74,0.25)', color: restaurant.healthGrade === 'A' ? '#3dd68c' : restaurant.healthGrade === 'B' ? '#f97316' : '#e24b4a' }}>
                                 {restaurant.healthGrade}
                             </div>
                         </div>
-
                         {/* Status */}
-                        <div className="flex flex-col gap-2">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Status</span>
-                            <div className={`merchant-compliance-pill border px-3 py-1 text-center text-sm font-bold ${getStatusColor(restaurant.complianceStatus)}`}>
+                        <div className="mc-score-cell">
+                            <span className="mc-score-label">Status</span>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 10px', borderRadius: 5, fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', background: restaurant.complianceStatus === 'PASS' ? 'rgba(61,214,140,0.1)' : 'rgba(226,75,74,0.1)', border: restaurant.complianceStatus === 'PASS' ? '1px solid rgba(61,214,140,0.25)' : '1px solid rgba(226,75,74,0.25)', color: restaurant.complianceStatus === 'PASS' ? '#3dd68c' : '#e24b4a' }}>
                                 {restaurant.complianceStatus}
                             </div>
                         </div>
-
                         {/* Last Inspection */}
-                        <div className="flex flex-col gap-2">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Last Inspect</span>
-                            <div className="text-xs md:text-sm font-medium text-white/70">
+                        <div className="mc-score-cell">
+                            <span className="mc-score-label">Last Inspect</span>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#888', marginTop: 2 }}>
                                 {restaurant.lastInspectionAt
                                     ? new Date(restaurant.lastInspectionAt).toLocaleDateString()
-                                    : 'No inspection'}
+                                    : 'None on record'}
                             </div>
                         </div>
                     </div>
-
                     {/* Progress Bar */}
-                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
-                        <div
-                            className="h-full rounded-full bg-gradient-to-r from-green-500 to-yellow-500"
-                            style={{ width: `${restaurant.complianceScore}%` }}
-                        />
+                    <div style={{ height: 5, background: '#1c1f28', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${restaurant.complianceScore}%`, background: restaurant.complianceScore >= 80 ? 'linear-gradient(90deg,#10b981,#34d399)' : 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 3, transition: 'width 0.8s ease', boxShadow: restaurant.complianceScore >= 80 ? '0 0 8px rgba(16,185,129,0.4)' : '0 0 8px rgba(249,115,22,0.4)' }} />
                     </div>
                 </div>
 
-                {/* Driver Compliance Summary */}
-                <div className="merchant-compliance-panel">
-                    <h2 className="mb-4 text-lg md:text-xl font-bold text-white">Driver Compliance</h2>
-                    <div className="merchant-compliance-mini-grid">
-                        <div className="merchant-compliance-mini-card">
-                            <div className="text-sm md:text-lg font-bold text-white">{driverStats.activeDrivers}</div>
-                            <div className="text-[10px] md:text-xs text-white/50 mt-1">Active Drivers</div>
-                        </div>
-                        <div className="merchant-compliance-mini-card">
-                            <div className="text-sm md:text-lg font-bold text-yellow-400">{driverStats.pendingTraining}</div>
-                            <div className="text-[10px] md:text-xs text-white/50 mt-1">Pending Training</div>
-                        </div>
-                        <div className="merchant-compliance-mini-card">
-                            <div className="text-sm md:text-lg font-bold text-red-400">{driverStats.suspended}</div>
-                            <div className="text-[10px] md:text-xs text-white/50 mt-1">Suspended</div>
-                        </div>
-                        <div className="merchant-compliance-mini-card">
-                            <div className="text-sm md:text-lg font-bold text-[#f97316]">{driverStats.totalDrivers}</div>
-                            <div className="text-[10px] md:text-xs text-white/50 mt-1">Total</div>
-                        </div>
+                {/* Driver Compliance */}
+                <div className="mc-panel">
+                    <div className="mc-section-hd">Driver Compliance</div>
+                    <div className="mc-driver-grid">
+                        {[
+                            { label: 'Active',          value: driverStats.activeDrivers,  color: '#3dd68c' },
+                            { label: 'Pending Training', value: driverStats.pendingTraining, color: '#f97316' },
+                            { label: 'Suspended',        value: driverStats.suspended,       color: '#e24b4a' },
+                            { label: 'Total',            value: driverStats.totalDrivers,    color: '#fff'    },
+                        ].map(({ label, value, color }) => (
+                            <div key={label} className="mc-driver-card">
+                                <div style={{ fontSize: 22, fontWeight: 700, color, letterSpacing: '-0.5px', lineHeight: 1, marginBottom: 5 }}>{value}</div>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
                 {/* Live State Inspection Data */}
                 {liveInspections.length > 0 && (
-                    <div className="merchant-compliance-panel">
+                    <div className="mc-panel">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                             <div>
                                 <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
@@ -380,7 +353,7 @@ export default function MerchantComplianceClient({
 
                 {/* Violation Severity Breakdown */}
                 {violationAggregate && violationAggregate.totalViolations > 0 && (
-                    <div className="merchant-compliance-panel">
+                    <div className="mc-panel">
                         <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
                             {violationAggregate.criticalCount > 0 ? '⚠️' : '📊'} Violation Severity Breakdown
                         </h2>
@@ -492,7 +465,7 @@ export default function MerchantComplianceClient({
 
                 {/* Benchmarking Card */}
                 {benchmarkComparison && (
-                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                    <div className="mc-panel">
                         <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
                             <Award className="h-5 w-5" />
                             📊 Network Benchmarking
@@ -604,7 +577,7 @@ export default function MerchantComplianceClient({
 
                 {/* Inspection Due Alert - Predictive Alerts */}
                 {inspectionAlertMetadata?.nextInspectionDueDate && (
-                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                    <div className="mc-panel">
                         <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
                             <Calendar className="h-5 w-5" />
                             📅 Next Scheduled Inspection
@@ -690,7 +663,7 @@ export default function MerchantComplianceClient({
                 )}
 
                 {/* Inspection History - Mobile Optimized */}
-                <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                <div className="mc-panel">
                     <h2 className="text-lg md:text-xl font-bold text-white mb-4">
                         {liveInspections.length > 0 ? 'Additional' : ''} Inspection History
                     </h2>
@@ -763,7 +736,7 @@ export default function MerchantComplianceClient({
 
                 {/* State Inspection Requirements */}
                 {stateInspectionInfo && (
-                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                    <div className="mc-panel">
                         <h2 className="text-lg md:text-xl font-bold text-white mb-4">
                             {stateInspectionInfo.state} Inspection Requirements
                         </h2>
@@ -835,7 +808,6 @@ export default function MerchantComplianceClient({
                         />
                     </div>
                 )}
-            </div>
         </div>
         </>
     );

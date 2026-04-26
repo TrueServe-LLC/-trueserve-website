@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import MileageTracker from "@/components/MileageTracker";
+import EarningsPlannerWidget from "./EarningsPlannerWidget";
 
 export const dynamic = 'force-dynamic';
 
@@ -135,6 +136,14 @@ export default async function DriverEarnings() {
                     .ledger-table th, .ledger-table td { padding: 8px 10px; }
                 }
             ` }} />
+
+            {/* ── Predictive Earnings Planner (client widget) ── */}
+            <div style={{ padding: '0 32px', marginTop: 28 }}>
+                <EarningsPlannerWidget
+                    weeklyTotal={weeklyTotal}
+                    daysLeft={7 - new Date().getDay() || 7}
+                />
+            </div>
 
             <div className="two-col-ledger">
                 {/* ──────────── LEFT ──────────── */}

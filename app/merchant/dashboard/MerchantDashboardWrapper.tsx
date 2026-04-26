@@ -16,6 +16,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
 
   const navItems = [
     { href: '/merchant/dashboard',             label: 'Dashboard',    icon: '📊', dotColor: '#f97316', tour: 'merchant-nav-dashboard'    },
+    { href: '/merchant/dashboard/menu',        label: 'Menu',         icon: '🍽️', dotColor: '#f97316', tour: 'merchant-nav-menu'         },
     { href: '/merchant/dashboard/compliance',  label: 'Compliance',   icon: '✅', dotColor: '#4dca80', tour: 'merchant-nav-compliance'   },
     { href: '/merchant/dashboard/integrations',label: 'Integrations', icon: '🔗', dotColor: '#555',    tour: 'merchant-nav-integrations' },
     { href: '/merchant/dashboard/storefront',  label: 'Storefront',   icon: '🛍️', dotColor: '#555',    tour: 'merchant-nav-storefront'   },
@@ -367,7 +368,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
               {activeNav?.label || 'Dashboard'}
             </div>
           </div>
-          <div className="mch-page-title">Merchant Dashboard</div>
+          <div className="mch-page-title">{activeNav?.label ?? 'Dashboard'}</div>
           <div className="mch-page-sub">{restaurantName}</div>
           {children}
         </main>

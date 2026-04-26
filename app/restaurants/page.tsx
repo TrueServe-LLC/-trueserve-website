@@ -123,9 +123,32 @@ function RestaurantFinderContent() {
                   lngParam={lngParam}
                 />
               ))}
-              {restaurants.length === 0 && (
-                <div className="food-panel col-span-full text-center py-20 opacity-50">
-                  {hasLocationInput ? "No restaurants matched that area yet." : "Add your address to start browsing restaurants."}
+              {restaurants.length === 0 && !loading && (
+                <div className="food-panel col-span-full text-center py-16 px-8" style={{ opacity: 1 }}>
+                  {hasLocationInput ? (
+                    <>
+                      <p className="food-kicker mb-3">Outside our current zone</p>
+                      <h3 className="food-heading !text-[30px] mb-3">Not in your area <span className="accent">yet.</span></h3>
+                      <p className="text-sm text-white/55 mb-6 max-w-sm mx-auto leading-relaxed">
+                        We're currently piloting in <strong className="text-white/80">Pineville, NC</strong> and <strong className="text-white/80">Rock Hill, SC</strong>. Drop your email and we'll notify you when we expand to your area.
+                      </p>
+                      <form
+                        onSubmit={(e) => { e.preventDefault(); const el = e.currentTarget.querySelector('input') as HTMLInputElement; if (el?.value) { el.value = ''; alert('You\'re on the list — we\'ll reach out when we launch near you!'); } }}
+                        style={{ display: 'flex', gap: 8, maxWidth: 360, margin: '0 auto' }}
+                      >
+                        <input type="email" placeholder="your@email.com" required style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '10px 14px', color: '#fff', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+                        <button type="submit" className="portal-btn-gold" style={{ whiteSpace: 'nowrap' }}>Notify Me</button>
+                      </form>
+                    </>
+                  ) : (
+                    <>
+                      <p className="food-kicker mb-3">Pilot launch</p>
+                      <h3 className="food-heading !text-[30px] mb-3">Now live in <span className="accent">2 markets</span></h3>
+                      <p className="text-sm text-white/55 max-w-sm mx-auto leading-relaxed">
+                        Enter your address above to see restaurants near you. Currently serving <strong className="text-white/80">Pineville, NC</strong> and <strong className="text-white/80">Rock Hill, SC</strong>.
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
             </div>

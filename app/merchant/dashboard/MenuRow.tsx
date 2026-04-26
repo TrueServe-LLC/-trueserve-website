@@ -30,13 +30,18 @@ export default function MenuRow({ item, outOfStockIngredients }: MenuRowProps) {
     };
 
     return (
-        <div key={item.id} className="card p-4 flex justify-between items-center hover:bg-white/5 transition-colors">
+        <div key={item.id} className={`card p-4 flex justify-between items-center hover:bg-white/5 transition-all ${item.isAvailable === false ? 'opacity-60 saturate-50' : ''}`}>
             <div className="flex gap-4 items-center">
-                <div className="h-16 w-16 bg-slate-700 rounded-lg overflow-hidden shrink-0 shadow-lg">
+                <div className="h-16 w-16 bg-slate-700 rounded-lg overflow-hidden shrink-0 shadow-lg relative">
                     {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />}
+                    {item.isAvailable === false && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <span className="text-[10px] font-black text-red-400 uppercase tracking-widest rotate-[-20deg] border border-red-500/40 px-1 bg-black/50">86</span>
+                        </div>
+                    )}
                 </div>
                 <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h3 className="font-bold text-lg">{item.name}</h3>
                         <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest ${item.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                             item.status === 'REJECTED' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
@@ -45,6 +50,11 @@ export default function MenuRow({ item, outOfStockIngredients }: MenuRowProps) {
                             }`}>
                             {item.status}
                         </span>
+                        {item.isAvailable === false && (
+                            <span className="text-[9px] px-2 py-0.5 font-black uppercase tracking-widest bg-red-600/15 text-red-400 border border-red-500/30 rounded-full">
+                                86&apos;d
+                            </span>
+                        )}
                     </div>
                     <p className="text-slate-500 text-xs line-clamp-1 max-w-[200px] md:max-w-none">{item.description}</p>
                     {missingIngredients.length > 0 && (
@@ -78,16 +88,22 @@ export default function MenuRow({ item, outOfStockIngredients }: MenuRowProps) {
                         >
                             Edit
                         </button>
-                        <button 
+                        <button
                             onClick={handleToggleStock}
                             disabled={isUpdating}
-                            className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all px-3 py-1 rounded-lg border ${
-                                item.isAvailable === false 
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20' 
-                                : 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'
+                            className={`font-black uppercase tracking-[0.15em] transition-all px-4 py-1.5 rounded-lg border flex items-center gap-1.5 ${
+                                item.isAvailable === false
+                                ? 'text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                                : 'text-[11px] bg-red-600/15 text-red-400 border-red-500/30 hover:bg-red-600/25 hover:border-red-500/50'
                             }`}
                         >
-                            {isUpdating ? '...' : (item.isAvailable === false ? 'Restock' : 'Sold Out')}
+                            {isUpdating ? (
+                                <span className="animate-pulse">…</span>
+                            ) : item.isAvailable === false ? (
+                                <>↩ Restock</>
+                            ) : (
+                                <><span className="text-[13px] leading-none font-black">86</span> It</>
+                            )}
                         </button>
                     </div>
 

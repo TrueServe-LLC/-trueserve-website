@@ -346,40 +346,95 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                 </div>
                             )}
 
+                            {/* Animated overall progress bar */}
+                            <div style={{ marginBottom: 20 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                    <span style={{ fontSize: 10, fontWeight: 800, color: '#444', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
+                                        Step {currentStep} of 5
+                                    </span>
+                                    <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--gold)' }}>
+                                        {Math.round(((currentStep - 1) / 4) * 100)}% complete
+                                    </span>
+                                </div>
+                                <div style={{ height: 5, background: '#1c1f28', borderRadius: 3, overflow: 'hidden' }}>
+                                    <div style={{
+                                        height: '100%',
+                                        width: `${Math.round(((currentStep - 1) / 4) * 100)}%`,
+                                        background: currentStep >= 5
+                                            ? 'linear-gradient(90deg, #10b981, #34d399)'
+                                            : 'linear-gradient(90deg, #f97316, #fb923c)',
+                                        borderRadius: 3,
+                                        transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                                        boxShadow: currentStep >= 5
+                                            ? '0 0 10px rgba(16,185,129,0.5)'
+                                            : '0 0 10px rgba(249,115,22,0.5)',
+                                    }} />
+                                </div>
+                            </div>
+
                             <div className="tl">
+                                {/* Step 1: Order Confirmed */}
                                 <div className={`tl-row ${currentStep >= 1 ? 'done' : ''}`}>
                                     <div className={`tl-dot ${currentStep >= 1 ? 'done' : 'wait'}`}>✓</div>
                                     <div className="tl-body">
                                         <div className="tl-lbl">Order Confirmed</div>
-                                        <div className="tl-sub">{new Date(currentOrder.createdAt).toLocaleTimeString()}</div>
+                                        <div className="tl-sub">{new Date(currentOrder.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                                     </div>
                                 </div>
-                                <div className={`tl-row ${currentStep >= 2 ? 'done' : currentStep === 1 ? 'live' : ''}`}>
-                                    <div className={`tl-dot ${currentStep >= 2 ? 'done' : currentStep === 1 ? 'live' : 'wait'}`}>{currentStep === 1 ? '⟳' : '✓'}</div>
+
+                                {/* Step 2: Preparing */}
+                                <div className={`tl-row ${currentStep >= 2 ? 'done' : ''}`}>
+                                    <div className={`tl-dot ${currentStep >= 2 ? 'done' : currentStep === 1 ? 'live' : 'wait'}`}>
+                                        {currentStep >= 2 ? '✓' : '2'}
+                                    </div>
                                     <div className="tl-body">
-                                        <div className="tl-lbl">Preparing Your Food</div>
-                                        <div className="tl-sub">{currentStep === 1 ? "Waiting for kitchen to start" : "Kitchen is cooking"}</div>
+                                        <div className={`tl-lbl${currentStep === 1 ? ' active' : ''}`}>Preparing Your Food</div>
+                                        <div className="tl-sub">
+                                            {currentStep > 2 ? 'Kitchen done' : currentStep === 1 ? 'Waiting for kitchen to start' : 'Food is being made fresh'}
+                                        </div>
+                                        {currentStep === 1 && <div className="tl-eta">Kitchen starting soon…</div>}
                                     </div>
                                 </div>
-                                <div className={`tl-row ${currentStep >= 3 ? 'done' : currentStep === 2 ? 'live' : ''}`}>
-                                    <div className={`tl-dot ${currentStep >= 3 ? 'done' : currentStep === 2 ? 'live' : 'wait'}`}>{currentStep === 2 ? '⟳' : '✓'}</div>
+
+                                {/* Step 3: Ready for Pickup */}
+                                <div className={`tl-row ${currentStep >= 3 ? 'done' : ''}`}>
+                                    <div className={`tl-dot ${currentStep >= 3 ? 'done' : currentStep === 2 ? 'live' : 'wait'}`}>
+                                        {currentStep >= 3 ? '✓' : '3'}
+                                    </div>
                                     <div className="tl-body">
-                                        <div className="tl-lbl">Ready for Pickup</div>
-                                        <div className="tl-sub">{currentStep >= 3 ? "Food is packed and ready" : "Kitchen will mark when done"}</div>
+                                        <div className={`tl-lbl${currentStep === 2 ? ' active' : ''}`}>Ready for Pickup</div>
+                                        <div className="tl-sub">
+                                            {currentStep >= 3 ? 'Food packed and ready' : 'Kitchen will mark when ready'}
+                                        </div>
+                                        {currentStep === 2 && <div className="tl-eta">Almost done cooking…</div>}
                                     </div>
                                 </div>
-                                <div className={`tl-row ${currentStep >= 4 ? 'done' : currentStep === 3 ? 'live' : ''}`}>
-                                    <div className={`tl-dot ${currentStep >= 4 ? 'done' : currentStep === 3 ? 'live' : 'wait'}`}>{currentStep === 3 ? '⟳' : '✓'}</div>
+
+                                {/* Step 4: Driver En Route */}
+                                <div className={`tl-row ${currentStep >= 4 ? 'done' : ''}`}>
+                                    <div className={`tl-dot ${currentStep >= 4 ? 'done' : currentStep === 3 ? 'live' : 'wait'}`}>
+                                        {currentStep >= 4 ? '✓' : '4'}
+                                    </div>
                                     <div className="tl-body">
-                                        <div className="tl-lbl">Driver Picked Up</div>
-                                        <div className="tl-sub">Estimated arrival: {eta}</div>
+                                        <div className={`tl-lbl${currentStep === 3 ? ' active' : ''}`}>Driver En Route</div>
+                                        <div className="tl-sub">
+                                            {currentStep >= 4 ? `ETA: ${eta}` : 'Driver heading to restaurant'}
+                                        </div>
+                                        {currentStep === 3 && <div className="tl-eta">Driver is on the way to pick up…</div>}
                                     </div>
                                 </div>
-                                <div className={`tl-row ${currentStep >= 5 ? 'done' : currentStep === 4 ? 'live' : ''}`}>
-                                    <div className={`tl-dot ${currentStep >= 5 ? 'done' : currentStep === 4 ? 'live' : 'wait'}`}>{currentStep === 4 ? '⟳' : '✓'}</div>
+
+                                {/* Step 5: Delivered */}
+                                <div className={`tl-row ${currentStep >= 5 ? 'done' : ''}`}>
+                                    <div className={`tl-dot ${currentStep >= 5 ? 'done' : currentStep === 4 ? 'live' : 'wait'}`}>
+                                        {currentStep >= 5 ? '✓' : '5'}
+                                    </div>
                                     <div className="tl-body">
-                                        <div className="tl-lbl">Delivered</div>
-                                        <div className="tl-sub">Enjoy your meal!</div>
+                                        <div className={`tl-lbl${currentStep === 4 ? ' active' : ''}`}>Delivered</div>
+                                        <div className="tl-sub">
+                                            {currentStep >= 5 ? 'Enjoy your meal! 🎉' : `Arriving in ${eta}`}
+                                        </div>
+                                        {currentStep === 4 && <div className="tl-eta">ETA: {eta}</div>}
                                     </div>
                                 </div>
                             </div>

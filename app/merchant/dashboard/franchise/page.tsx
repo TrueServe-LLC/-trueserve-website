@@ -137,57 +137,37 @@ export default async function FranchiseDashboard() {
     const insights = generateFranchiseInsights(franchiseMetrics);
 
     return (
-        <div className="md-body min-h-screen animate-fade-in-up">
-            <div className="md-page-hd">
-                <div>
-                    <div className="md-page-title">Franchise Compliance</div>
-                    <div className="md-page-sub">Multi-Location Overview</div>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-1">
-                    <Link href="/merchant/dashboard" className="btn btn-ghost justify-center">
-                        Back to Dashboard
-                    </Link>
-                </div>
-            </div>
+        <div className="animate-fade-in-up">
+            <style>{`.mc-table-row:hover { background: rgba(249,115,22,0.03); }`}</style>
+            <p style={{ fontSize: 11, color: '#555', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20, marginTop: -4 }}>
+                Multi-Location Overview
+            </p>
 
-            {/* Franchise-Level Metrics */}
-            <div className="md-stat-grid">
-                <div className="md-stat-block">
-                    <div className="md-stat-name">Locations</div>
-                    <div style={{ fontSize: "48px", fontWeight: "bold", color: "var(--gold)", marginTop: "12px" }}>
-                        {franchiseMetrics.locationCount}
+            {/* Franchise-Level Metrics — mch-stat-card style */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 14 }}>
+                {[
+                    { label: 'Locations',     icon: '🏪', value: String(franchiseMetrics.locationCount),                                    color: '#f97316'                                                      },
+                    { label: 'Avg Score',     icon: '📊', value: `${franchiseMetrics.averageScore}/100`,                                    color: '#3dd68c'                                                      },
+                    { label: 'Pass Rate',     icon: '✅', value: `${franchiseMetrics.passRate}%`,                                           color: franchiseMetrics.passRate >= 80 ? '#3dd68c' : '#e24b4a'        },
+                    { label: 'Flagged',       icon: '🚩', value: String(franchiseMetrics.flaggedCount),                                     color: franchiseMetrics.flaggedCount > 0 ? '#e24b4a' : '#3dd68c'      },
+                ].map(({ label, icon, value, color }) => (
+                    <div key={label} style={{ background: '#141a18', border: '1px solid #1e2420', borderRadius: 8, padding: 14 }}>
+                        <div style={{ fontSize: 11, color: '#777', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ width: 18, height: 18, borderRadius: 4, background: '#0f1210', border: '1px solid #1e2420', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>{icon}</span>
+                            {label}
+                        </div>
+                        <div style={{ fontSize: 27, fontWeight: 700, color, letterSpacing: '-0.5px' }}>{value}</div>
                     </div>
-                </div>
-
-                <div className="md-stat-block">
-                    <div className="md-stat-name">Average Score</div>
-                    <div style={{ fontSize: "48px", fontWeight: "bold", color: "var(--green)", marginTop: "12px" }}>
-                        {franchiseMetrics.averageScore}/100
-                    </div>
-                </div>
-
-                <div className="md-stat-block">
-                    <div className="md-stat-name">Pass Rate</div>
-                    <div style={{ fontSize: "48px", fontWeight: "bold", color: franchiseMetrics.passRate >= 80 ? "var(--green)" : "var(--red)", marginTop: "12px" }}>
-                        {franchiseMetrics.passRate}%
-                    </div>
-                </div>
-
-                <div className="md-stat-block">
-                    <div className="md-stat-name">Flagged</div>
-                    <div style={{ fontSize: "48px", fontWeight: "bold", color: franchiseMetrics.flaggedCount > 0 ? "var(--red)" : "var(--green)", marginTop: "12px" }}>
-                        {franchiseMetrics.flaggedCount}
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* Insights */}
-            <div className="md-stat-block">
-                <div className="md-stat-name mb-4">Key Insights</div>
-                <div className="grid gap-2">
+            <div style={{ background: '#141a18', border: '1px solid #1e2420', borderRadius: 8, padding: 14, marginBottom: 14 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: '#555', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>Key Insights</div>
+                <div style={{ display: 'grid', gap: 8 }}>
                     {insights.map((insight, idx) => (
-                        <div key={idx} style={{ padding: "12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)" }}>
-                            <div style={{ fontSize: "13px", color: "var(--t2)", lineHeight: "1.6" }}>
+                        <div key={idx} style={{ padding: "11px 12px", borderRadius: "6px", background: "rgba(249,115,22,0.04)", border: "1px solid rgba(249,115,22,0.1)" }}>
+                            <div style={{ fontSize: "12px", color: "#888", lineHeight: "1.6" }}>
                                 {insight}
                             </div>
                         </div>
@@ -196,19 +176,19 @@ export default async function FranchiseDashboard() {
             </div>
 
             {/* Locations Table */}
-            <div className="md-stat-block">
-                <div className="md-stat-name mb-4">All Locations</div>
+            <div style={{ background: '#141a18', border: '1px solid #1e2420', borderRadius: 8, padding: 14, marginBottom: 14 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: '#555', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>All Locations</div>
                 <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
                         <thead>
-                            <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                                <th style={{ textAlign: "left", padding: "12px", color: "var(--t2)", fontWeight: "600" }}>Location</th>
-                                <th style={{ textAlign: "center", padding: "12px", color: "var(--t2)", fontWeight: "600" }}>Score</th>
-                                <th style={{ textAlign: "center", padding: "12px", color: "var(--t2)", fontWeight: "600" }}>Grade</th>
-                                <th style={{ textAlign: "center", padding: "12px", color: "var(--t2)", fontWeight: "600" }}>Status</th>
-                                <th style={{ textAlign: "center", padding: "12px", color: "var(--t2)", fontWeight: "600" }}>Trend</th>
-                                <th style={{ textAlign: "center", padding: "12px", color: "var(--t2)", fontWeight: "600" }}>Last Inspection</th>
-                                <th style={{ textAlign: "center", padding: "12px", color: "var(--t2)", fontWeight: "600" }}>Action</th>
+                            <tr style={{ borderBottom: "1px solid #1e2420" }}>
+                                <th style={{ textAlign: "left", padding: "10px 12px", color: "#555", fontWeight: "700", textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 10 }}>Location</th>
+                                <th style={{ textAlign: "center", padding: "10px 12px", color: "#555", fontWeight: "700", textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 10 }}>Score</th>
+                                <th style={{ textAlign: "center", padding: "10px 12px", color: "#555", fontWeight: "700", textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 10 }}>Grade</th>
+                                <th style={{ textAlign: "center", padding: "10px 12px", color: "#555", fontWeight: "700", textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 10 }}>Status</th>
+                                <th style={{ textAlign: "center", padding: "10px 12px", color: "#555", fontWeight: "700", textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 10 }}>Trend</th>
+                                <th style={{ textAlign: "center", padding: "10px 12px", color: "#555", fontWeight: "700", textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 10 }}>Last Inspect</th>
+                                <th style={{ textAlign: "center", padding: "10px 12px", color: "#555", fontWeight: "700", textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 10 }}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -221,26 +201,16 @@ export default async function FranchiseDashboard() {
                                 return (
                                     <tr
                                         key={location.restaurantId}
-                                        style={{
-                                            borderBottom: "1px solid var(--border)",
-                                            transition: "background 0.2s",
-                                            cursor: "pointer",
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            (e.currentTarget as HTMLTableRowElement).style.background =
-                                                "rgba(255,255,255,0.03)";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            (e.currentTarget as HTMLTableRowElement).style.background = "transparent";
-                                        }}
+                                        className="mc-table-row"
+                                        style={{ borderBottom: "1px solid #1e2420" }}
                                     >
-                                        <td style={{ padding: "12px", fontWeight: "500" }}>
+                                        <td style={{ padding: "10px 12px", fontWeight: "600", color: "#ccc" }}>
                                             <div>{location.name}</div>
-                                            <div style={{ fontSize: "12px", color: "var(--t2)", marginTop: "4px" }}>
+                                            <div style={{ fontSize: "11px", color: "#555", marginTop: "3px" }}>
                                                 📍 {location.city}, {location.state}
                                             </div>
                                         </td>
-                                        <td style={{ padding: "12px", textAlign: "center", fontWeight: "bold", color: "var(--gold)" }}>
+                                        <td style={{ padding: "10px 12px", textAlign: "center", fontWeight: "700", color: "#f97316" }}>
                                             {location.complianceScore}
                                         </td>
                                         <td style={{ padding: "12px", textAlign: "center" }}>
@@ -259,20 +229,19 @@ export default async function FranchiseDashboard() {
                                                 {location.healthGrade}
                                             </div>
                                         </td>
-                                        <td style={{ padding: "12px", textAlign: "center", fontSize: "12px" }}>
+                                        <td style={{ padding: "10px 12px", textAlign: "center", fontSize: "11px", color: "#888" }}>
                                             {getStatusEmoji(location.complianceStatus)} {location.complianceStatus}
                                         </td>
-                                        <td style={{ padding: "12px", textAlign: "center", fontSize: "12px" }}>
+                                        <td style={{ padding: "10px 12px", textAlign: "center", fontSize: "11px", color: "#888" }}>
                                             {getTrendEmoji(location.trend)} {location.trend}
                                         </td>
-                                        <td style={{ padding: "12px", textAlign: "center", fontSize: "12px", color: "var(--t2)" }}>
+                                        <td style={{ padding: "10px 12px", textAlign: "center", fontSize: "11px", color: "#555" }}>
                                             {lastInspectionDate}
                                         </td>
-                                        <td style={{ padding: "12px", textAlign: "center" }}>
+                                        <td style={{ padding: "10px 12px", textAlign: "center" }}>
                                             <Link
                                                 href={`/merchant/dashboard/compliance-score?restaurantId=${location.restaurantId}`}
-                                                className="btn btn-ghost"
-                                                style={{ fontSize: "11px", padding: "6px 12px" }}
+                                                style={{ textDecoration: 'none', background: 'transparent', border: '1px solid #1e2420', borderRadius: 5, padding: '4px 10px', fontSize: "10px", fontWeight: 700, color: '#777', textTransform: 'uppercase', letterSpacing: '0.08em' }}
                                             >
                                                 View
                                             </Link>
@@ -285,69 +254,49 @@ export default async function FranchiseDashboard() {
                 </div>
             </div>
 
-            {/* Grade Distribution */}
-            <div className="md-stat-grid">
-                <div className="md-stat-block">
-                    <div className="md-stat-name mb-3">Grade Distribution</div>
+            {/* Grade Distribution + Performance Summary */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+                <div style={{ background: '#141a18', border: '1px solid #1e2420', borderRadius: 8, padding: 14 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, color: '#555', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>Grade Distribution</div>
                     <div style={{ display: "grid", gap: "8px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <div style={{ width: "12px", height: "12px", borderRadius: "2px", background: "#2ee5a0" }}></div>
-                                <span>Grade A (90-100)</span>
+                        {[
+                            { label: 'Grade A (90–100)', color: '#3dd68c', count: franchiseMetrics.aggregateGradeDistribution.a },
+                            { label: 'Grade B (80–89)', color: '#f97316', count: franchiseMetrics.aggregateGradeDistribution.b },
+                            { label: 'Grade C (70–79)', color: '#fb923c', count: franchiseMetrics.aggregateGradeDistribution.c },
+                            { label: 'Grade D (<70)',   color: '#e24b4a', count: franchiseMetrics.aggregateGradeDistribution.d },
+                        ].map(({ label, color, count }) => (
+                            <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <div style={{ width: 10, height: 10, borderRadius: 2, background: color, flexShrink: 0 }} />
+                                    <span style={{ fontSize: 12, color: '#888' }}>{label}</span>
+                                </div>
+                                <span style={{ fontWeight: 700, color: '#ccc', fontSize: 13 }}>{count}</span>
                             </div>
-                            <span style={{ fontWeight: "bold", color: "var(--gold)" }}>
-                                {franchiseMetrics.aggregateGradeDistribution.a}
-                            </span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <div style={{ width: "12px", height: "12px", borderRadius: "2px", background: "#f97316" }}></div>
-                                <span>Grade B (80-89)</span>
-                            </div>
-                            <span style={{ fontWeight: "bold", color: "var(--gold)" }}>
-                                {franchiseMetrics.aggregateGradeDistribution.b}
-                            </span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <div style={{ width: "12px", height: "12px", borderRadius: "2px", background: "#fb923c" }}></div>
-                                <span>Grade C (70-79)</span>
-                            </div>
-                            <span style={{ fontWeight: "bold", color: "var(--gold)" }}>
-                                {franchiseMetrics.aggregateGradeDistribution.c}
-                            </span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div style={{ width: "12px", height: "12px", borderRadius: "2px", background: "#f87171" }}></div>
-                            <span>Grade D (&lt;70)</span>
-                            <span style={{ fontWeight: "bold", color: "var(--gold)" }}>
-                                {franchiseMetrics.aggregateGradeDistribution.d}
-                            </span>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
-                <div className="md-stat-block">
-                    <div className="md-stat-name mb-3">Performance Summary</div>
-                    <div style={{ display: "grid", gap: "12px" }}>
+                <div style={{ background: '#141a18', border: '1px solid #1e2420', borderRadius: 8, padding: 14 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, color: '#555', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>Performance Summary</div>
+                    <div style={{ display: "grid", gap: "10px" }}>
                         {franchiseMetrics.highestScoringLocation && (
-                            <div style={{ padding: "10px", borderRadius: "6px", background: "rgba(46, 229, 160, 0.1)", border: "1px solid rgba(46, 229, 160, 0.2)" }}>
-                                <div style={{ fontSize: "12px", color: "var(--t2)", marginBottom: "4px" }}>Top Performer</div>
-                                <div style={{ fontSize: "13px", fontWeight: "600", color: "#2ee5a0" }}>
+                            <div style={{ padding: "10px 12px", borderRadius: "6px", background: "rgba(61,214,140,0.06)", border: "1px solid rgba(61,214,140,0.15)" }}>
+                                <div style={{ fontSize: "10px", color: "#444", marginBottom: "4px", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Top Performer</div>
+                                <div style={{ fontSize: "13px", fontWeight: "700", color: "#3dd68c" }}>
                                     {franchiseMetrics.highestScoringLocation.name}
                                 </div>
-                                <div style={{ fontSize: "12px", color: "var(--t2)", marginTop: "4px" }}>
+                                <div style={{ fontSize: "11px", color: "#555", marginTop: "3px" }}>
                                     Score: {franchiseMetrics.highestScoringLocation.complianceScore}
                                 </div>
                             </div>
                         )}
                         {franchiseMetrics.lowestScoringLocation && (
-                            <div style={{ padding: "10px", borderRadius: "6px", background: "rgba(248, 113, 113, 0.1)", border: "1px solid rgba(248, 113, 113, 0.2)" }}>
-                                <div style={{ fontSize: "12px", color: "var(--t2)", marginBottom: "4px" }}>Needs Attention</div>
-                                <div style={{ fontSize: "13px", fontWeight: "600", color: "#f87171" }}>
+                            <div style={{ padding: "10px 12px", borderRadius: "6px", background: "rgba(226,75,74,0.06)", border: "1px solid rgba(226,75,74,0.15)" }}>
+                                <div style={{ fontSize: "10px", color: "#444", marginBottom: "4px", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Needs Attention</div>
+                                <div style={{ fontSize: "13px", fontWeight: "700", color: "#e24b4a" }}>
                                     {franchiseMetrics.lowestScoringLocation.name}
                                 </div>
-                                <div style={{ fontSize: "12px", color: "var(--t2)", marginTop: "4px" }}>
+                                <div style={{ fontSize: "11px", color: "#555", marginTop: "3px" }}>
                                     Score: {franchiseMetrics.lowestScoringLocation.complianceScore}
                                 </div>
                             </div>
@@ -357,20 +306,21 @@ export default async function FranchiseDashboard() {
             </div>
 
             {/* Help Section */}
-            <div className="md-stat-block">
-                <div className="md-stat-name mb-4">Need Help?</div>
-                <div style={{ fontSize: "13px", color: "var(--t2)", lineHeight: "1.6", marginBottom: "12px" }}>
+            <div style={{ background: '#141a18', border: '1px solid #1e2420', borderRadius: 8, padding: 14, marginBottom: 14 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: '#555', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>Need Help?</div>
+                <p style={{ fontSize: 12, color: '#666', lineHeight: 1.6, marginBottom: 12 }}>
                     Questions about your franchise compliance or how to improve across all locations?
-                </div>
-                <div className="grid gap-2">
-                    <div className="btn btn-ghost justify-between" style={{ cursor: "default" }}>
-                        <span>📧 Email support</span>
-                        <span style={{ color: "var(--gold)" }}>support@trueserve.delivery</span>
-                    </div>
-                    <div className="btn btn-ghost justify-between" style={{ cursor: "default" }}>
-                        <span>📱 Phone support</span>
-                        <span style={{ color: "var(--gold)" }}>1-800-TRUESERVE</span>
-                    </div>
+                </p>
+                <div style={{ display: 'grid', gap: 8 }}>
+                    {[
+                        { icon: '📧', label: 'Email support', value: 'support@trueserve.delivery' },
+                        { icon: '📱', label: 'Phone support', value: '1-800-TRUESERVE' },
+                    ].map(({ icon, label, value }) => (
+                        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f1210', border: '1px solid #1e2420', borderRadius: 6, padding: '8px 12px' }}>
+                            <span style={{ fontSize: 12, color: '#888' }}>{icon} {label}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: '#f97316' }}>{value}</span>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
