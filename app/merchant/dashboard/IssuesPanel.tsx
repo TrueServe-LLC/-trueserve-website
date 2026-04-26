@@ -24,7 +24,7 @@ export default function IssuesPanel({ pendingCount }: IssuesPanelProps) {
                     display: flex; align-items: center; justify-content: center;
                     font-size: 12px; font-weight: 700; color: #e24b4a; flex-shrink: 0;
                 }
-                .issues-text { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
+                .issues-text { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
                 .issues-close { font-size: 14px; color: rgba(255,255,255,.6); cursor: pointer; margin-left: 4px; background: none; border: none; }
             `}</style>
             <div className="issues-toast">
