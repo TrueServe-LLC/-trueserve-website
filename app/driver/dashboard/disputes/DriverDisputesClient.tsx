@@ -59,7 +59,7 @@ export default function DriverDisputesClient({ driverName, pastDisputes }: Props
         <div style={{ fontFamily: "'DM Sans', -apple-system, sans-serif" }}>
             <style dangerouslySetInnerHTML={{ __html: `
                 /* ── page heading ── */
-                .disp-title { font-family: 'Barlow Condensed', sans-serif; font-size: 48px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 6px; }
+                .disp-title { font-size: 36px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 6px; }
                 .disp-title span { color: #f97316; }
                 .disp-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 32px; display: block; }
 
@@ -69,7 +69,7 @@ export default function DriverDisputesClient({ driverName, pastDisputes }: Props
 
                 /* ── form card ── */
                 .disp-card { background: #0c0e13; border: 1px solid #1c1f28; padding: 24px; }
-                .disp-card-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 20px; }
+                .disp-card-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 20px; letter-spacing: -0.01em; }
 
                 /* ── form fields ── */
                 .form-group { margin-bottom: 16px; }
@@ -111,12 +111,12 @@ export default function DriverDisputesClient({ driverName, pastDisputes }: Props
                 /* ── success state ── */
                 .success-box { background: rgba(61,214,140,0.06); border: 1px solid rgba(61,214,140,0.2); padding: 28px 24px; text-align: center; }
                 .success-icon { font-size: 36px; margin-bottom: 12px; }
-                .success-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #3dd68c; margin-bottom: 6px; }
+                .success-title { font-size: 20px; font-weight: 700; color: #3dd68c; margin-bottom: 6px; letter-spacing: -0.01em; }
                 .success-msg { font-size: 12px; color: #666; margin-bottom: 16px; }
                 .success-reset { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #f97316; background: transparent; border: 1px solid rgba(249,115,22,0.3); padding: 8px 16px; cursor: pointer; font-family: inherit; }
 
                 /* ── past disputes ── */
-                .past-hd { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 14px; }
+                .past-hd { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 14px; letter-spacing: -0.01em; }
                 .dispute-row { background: #0c0e13; border: 1px solid #1c1f28; padding: 14px 16px; margin-bottom: 8px; }
                 .dispute-row-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
                 .dispute-type { font-size: 12px; font-weight: 700; color: #ccc; }

@@ -12,7 +12,7 @@ export default async function DriverPreferences() {
         <div className="font-sans">
             <style dangerouslySetInnerHTML={{ __html: `
                 .page-wrap { padding: 24px 28px; }
-                .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; margin-bottom: 20px; }
+                .page-title { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.02em; margin-bottom: 20px; }
                 .page-title span { color: #f97316; }
 
                 .prefs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

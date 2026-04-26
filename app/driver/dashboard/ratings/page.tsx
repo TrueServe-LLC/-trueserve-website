@@ -18,7 +18,7 @@ export default async function DriverRatings() {
         <div className="font-sans">
             <style dangerouslySetInnerHTML={{ __html: `
                 .page-wrap { padding: 32px; }
-                .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 32px; }
+                .page-title { font-size: 36px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 32px; }
                 .page-title span { color: #f97316; }
 
                 .ratings-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; margin-bottom: 24px; }
@@ -40,7 +40,7 @@ export default async function DriverRatings() {
                 .sq-target { font-size: 10px; font-weight: 800; tracking-widest uppercase color: #1a1a1a; font-family: 'DM Mono', monospace; }
 
                 .feedback-block { background: #0c0c0e; border: 1px solid #1c1f28; padding: 32px; border-radius: 0; }
-                .feedback-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.1em; margin-bottom: 24px; }
+                .feedback-title { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.01em; margin-bottom: 24px; }
                 .feedback-empty { background: #080808; border: 1px solid #131720; padding: 48px; text-align: center; font-size: 11px; font-weight: 800; tracking-widest uppercase color: #222; font-style: italic; }
 
                 @media (max-width: 900px) {

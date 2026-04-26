@@ -66,7 +66,7 @@ export default async function DriverEarnings() {
                 .ledger-right { background: #080808; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
 
                 /* ── heading ── */
-                .section-hd-title { font-family: 'Barlow Condensed', sans-serif; font-size: 48px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 8px; }
+                .section-hd-title { font-size: 36px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 8px; }
                 .section-hd-title span { color: #f97316; }
                 .section-hd-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #333; margin-bottom: 28px; display: block; }
 
@@ -93,7 +93,7 @@ export default async function DriverEarnings() {
 
                 /* ── right panel blocks ── */
                 .r-block { background: #0c0e13; border: 1px solid #1c1f28; padding: 16px; }
-                .r-block-hd { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+                .r-block-hd { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; letter-spacing: -0.01em; }
                 .r-block-hd-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #444; }
 
                 /* ── liquidity ── */

@@ -19,7 +19,7 @@ export default async function DriverAccount() {
         <div className="font-sans min-h-screen bg-[#080a0f]">
             <style dangerouslySetInnerHTML={{ __html: `
                 .page-wrap { padding: 32px; }
-                .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -0.02em; line-height: 0.9; margin-bottom: 32px; }
+                .page-title { font-size: 36px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 32px; }
                 .page-title span { color: #f97316; }
 
                 .acct-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: #1c1f28; border: 1px solid #1c1f28; }
@@ -35,7 +35,7 @@ export default async function DriverAccount() {
                 .profile-hero::before { content: ""; position: absolute; left: 0; top: 20%; bottom: 20%; width: 4px; background: #f97316; border-radius: 0 4px 4px 0; }
                 
                 .profile-av { width: 80px; height: 80px; background: #f97316; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #080a0f; flex-shrink: 0; transform: rotate(-3deg); box-shadow: 0 10px 30px rgba(249,115,22,0.2); }
-                .profile-name { font-family: 'Barlow Condensed', sans-serif; font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 4px; font-style: italic; text-transform: uppercase; line-height: 0.9; }
+                .profile-name { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; letter-spacing: -0.02em; line-height: 1.1; }
                 .profile-meta { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #333; }
                 
                 .field-row { margin-bottom: 24px; }
