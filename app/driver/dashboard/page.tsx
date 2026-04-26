@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import WelcomeAnimation from "@/components/WelcomeAnimation";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import { createClient } from "@/lib/supabase/server";
 import { acceptOrder } from "../actions";
@@ -90,6 +91,15 @@ export default async function DriverDashboard() {
 
     return (
         <>
+        <WelcomeAnimation
+            name={driver.name || "Driver"}
+            role="driver"
+            stats={[
+                { label: "Orders Available", value: String(availableOrders.length) },
+                { label: "Total Earnings", value: `$${stats.totalEarnings.toFixed(0)}` },
+                { label: "Rating", value: stats.rating > 0 ? `${stats.rating.toFixed(1)}★` : "New" },
+            ]}
+        />
         {/* RAMEN — broadcasts driver GPS to all tracking customers */}
         {driver.id !== "preview" && (
             <DriverLocationTracker

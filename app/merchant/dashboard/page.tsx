@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import MerchantRealtime from "@/components/MerchantRealtime";
-import WelcomeModal from "./WelcomeModal";
+import WelcomeAnimation from "@/components/WelcomeAnimation";
 import { createStripeAccount } from "../actions";
 import PrepTimingPanel from "@/app/merchant/dashboard/PrepTimingPanel";
 import TerminalStatusPanel from "@/app/merchant/dashboard/TerminalStatusPanel";
@@ -243,7 +243,15 @@ export default async function MerchantDashboard({
                 }
             `}</style>
 
-            <WelcomeModal restaurantName={restaurant.name} />
+            <WelcomeAnimation
+                name={restaurant.name}
+                role="merchant"
+                stats={[
+                    { label: "Pending Orders", value: String(pendingOrders.length) },
+                    { label: "Revenue", value: `$${netRevenue.toFixed(0)}` },
+                    { label: "Menu Items", value: String((restaurant.menuItems || []).length) },
+                ]}
+            />
             {restaurant.id !== "preview" && <MerchantRealtime restaurantId={restaurant.id} />}
 
             {/* KPI CARDS */}
