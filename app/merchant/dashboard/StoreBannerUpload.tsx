@@ -25,7 +25,49 @@ export default function StoreBannerUpload({ currentImageUrl }: { currentImageUrl
     };
 
     return (
-        <div className="md-stat-block" style={{ marginBottom: "24px" }}>
+        <>
+            <style>{`
+                .store-banner-shell {
+                    display: grid;
+                    grid-template-columns: minmax(280px, 400px) minmax(0, 1fr);
+                    gap: 0;
+                    border-radius: 18px;
+                    overflow: hidden;
+                    border: 1px solid var(--border);
+                    background: var(--card2);
+                }
+                .store-banner-preview {
+                    position: relative;
+                    min-height: 240px;
+                    background: var(--card2);
+                    border-right: 1px solid var(--border);
+                }
+                .store-banner-controls {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                    padding: 24px;
+                    background: var(--card2);
+                }
+                @media (max-width: 900px) {
+                    .store-banner-shell {
+                        grid-template-columns: 1fr;
+                    }
+                    .store-banner-preview {
+                        min-height: 210px;
+                        border-right: none;
+                        border-bottom: 1px solid var(--border);
+                    }
+                    .store-banner-controls {
+                        padding: 18px;
+                    }
+                    .store-banner-save {
+                        width: 100%;
+                        justify-content: center;
+                    }
+                }
+            `}</style>
+            <div className="md-stat-block" style={{ marginBottom: "24px" }}>
             <div className="md-stat-name">Store Banner</div>
 
             {state.success && (
@@ -40,8 +82,8 @@ export default function StoreBannerUpload({ currentImageUrl }: { currentImageUrl
             )}
 
             <form action={formAction}>
-                <div style={{ display: "grid", gridTemplateColumns: "400px 1fr", gap: 0, borderRadius: "10px", overflow: "hidden", border: "1px solid var(--border)" }}>
-                    <div style={{ position: "relative", minHeight: "240px", background: "var(--card2)", borderRight: "1px solid var(--border)" }}>
+                <div className="store-banner-shell">
+                    <div className="store-banner-preview">
                         <img src={previewUrl} alt="Store Banner Preview" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", minHeight: "240px" }} />
                         <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.14)", pointerEvents: "none" }} />
                         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
@@ -49,7 +91,7 @@ export default function StoreBannerUpload({ currentImageUrl }: { currentImageUrl
                         </div>
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "24px", background: "var(--card2)" }}>
+                    <div className="store-banner-controls">
                         <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, margin: 0 }}>
                             Recommended: 1200×800px · Max 5MB.<br />
                             This is the first image customers see when browsing your storefront.
@@ -72,12 +114,13 @@ export default function StoreBannerUpload({ currentImageUrl }: { currentImageUrl
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" disabled={isPending} className="btn btn-gold" style={{ width: "fit-content" }}>
+                        <button type="submit" disabled={isPending} className="btn btn-gold store-banner-save" style={{ width: "fit-content" }}>
                             {isPending ? "Uploading..." : "Save Banner"}
                         </button>
                     </div>
                 </div>
             </form>
-        </div>
+            </div>
+        </>
     );
 }

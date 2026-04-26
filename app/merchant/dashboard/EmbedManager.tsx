@@ -134,7 +134,61 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
     };
 
     return (
-        <div style={{ display: "grid", gap: "24px" }}>
+        <>
+            <style>{`
+                .embed-toolkit-shell {
+                    display: grid;
+                    gap: 24px;
+                }
+                .embed-toolkit-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                    gap: 14px;
+                }
+                .embed-toolkit-card {
+                    border: 1px solid var(--border);
+                    background: rgba(255,255,255,0.02);
+                    padding: 16px;
+                    border-radius: 10px;
+                }
+                .embed-action-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                    gap: 12px;
+                    margin-top: 14px;
+                }
+                .embed-print-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                    gap: 18px;
+                }
+                @media (max-width: 768px) {
+                    .embed-toolkit-shell {
+                        gap: 18px;
+                    }
+                    .embed-toolkit-grid,
+                    .embed-action-grid,
+                    .embed-print-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    .embed-toolkit-card {
+                        padding: 14px;
+                    }
+                    .embed-mobile-priority {
+                        order: -1;
+                    }
+                    .embed-mobile-qr {
+                        min-height: 156px !important;
+                    }
+                    .embed-preview-card {
+                        border-radius: 14px !important;
+                    }
+                    .embed-preview-card > div[style*="grid-template-columns"] {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            `}</style>
+        <div className="embed-toolkit-shell">
             <div className="md-stat-block">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "12px" }}>
                     <div className="md-stat-name" style={{ marginBottom: 0 }}>Direct-Order Toolkit</div>
@@ -143,8 +197,8 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                 <p style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, marginBottom: "16px" }}>
                     Use one live ordering link everywhere: your website, Google Business Profile, Instagram bio, Facebook page, and QR flyers.
                 </p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px" }}>
-                    <div style={{ border: "1px solid var(--border)", background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "10px" }}>
+                <div className="embed-toolkit-grid">
+                    <div className="embed-toolkit-card embed-mobile-priority">
                         <div className="md-stat-name" style={{ marginBottom: "10px" }}>Live Ordering URL</div>
                         <div style={{ color: "var(--gold)", fontSize: "13px", fontWeight: 700, lineHeight: 1.6, wordBreak: "break-word", marginBottom: "12px" }}>
                             {storefrontUrl}
@@ -153,7 +207,7 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                             {copiedItem === "link" ? "✓ Copied Link" : "Copy Ordering Link"}
                         </button>
                     </div>
-                    <div style={{ border: "1px solid var(--border)", background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "10px" }}>
+                    <div className="embed-toolkit-card">
                         <div className="md-stat-name" style={{ marginBottom: "10px" }}>Instagram / Facebook Caption</div>
                         <div style={{ color: "var(--t2)", fontSize: "13px", lineHeight: 1.6, minHeight: "88px", whiteSpace: "pre-wrap", marginBottom: "12px" }}>
                             {socialCaption}
@@ -162,9 +216,9 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                             {copiedItem === "caption" ? "✓ Copied Caption" : "Copy Social Caption"}
                         </button>
                     </div>
-                    <div style={{ border: "1px solid var(--border)", background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "10px" }}>
+                    <div className="embed-toolkit-card">
                         <div className="md-stat-name" style={{ marginBottom: "10px" }}>Customer QR Code</div>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", padding: "14px", borderRadius: "10px", marginBottom: "12px", minHeight: "180px" }}>
+                        <div className="embed-mobile-qr" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", padding: "14px", borderRadius: "10px", marginBottom: "12px", minHeight: "180px" }}>
                             <img src={qrUrl} alt={`${restaurantName} ordering QR code`} style={{ width: "148px", height: "148px", display: "block" }} />
                         </div>
                         <button onClick={() => handleCopy(storefrontUrl, "qr")} className="btn btn-ghost" style={{ width: "100%", justifyContent: "center" }}>
@@ -172,7 +226,7 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                         </button>
                     </div>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginTop: "14px" }}>
+                <div className="embed-action-grid">
                     <a href={facebookShareUrl} target="_blank" rel="noreferrer" className="btn btn-gold" style={{ justifyContent: "center", textDecoration: "none" }}>
                         Share to Facebook ↗
                     </a>
@@ -183,7 +237,7 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                         Share by Text
                     </a>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginTop: "12px" }}>
+                <div className="embed-action-grid" style={{ marginTop: "12px" }}>
                     <button onClick={() => downloadFlyerPdf("flyer")} className="btn btn-ghost" style={{ justifyContent: "center" }}>
                         {downloadMode === "flyer" ? "Building Flyer..." : "Download Flyer PDF"}
                     </button>
@@ -198,8 +252,8 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                     <div className="md-stat-name" style={{ marginBottom: 0 }}>Print Preview</div>
                     <div style={{ color: "var(--t3)", fontSize: "11px", fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase" }}>Counter-ready assets</div>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "18px" }}>
-                    <div style={{ border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden", background: "#fff", color: "#0b0f14", boxShadow: "0 16px 40px rgba(0,0,0,.22)" }}>
+                <div className="embed-print-grid">
+                    <div className="embed-preview-card" style={{ border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden", background: "#fff", color: "#0b0f14", boxShadow: "0 16px 40px rgba(0,0,0,.22)" }}>
                         <div style={{ position: "relative", height: "150px", background: "#0b0f14" }}>
                             <img src={heroBanner} alt={`${restaurantName} flyer preview`} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.78 }} />
                             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(11,15,20,.82) 0%, rgba(11,15,20,.4) 100%)" }} />
@@ -228,7 +282,7 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                         </div>
                     </div>
 
-                    <div style={{ border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden", background: "#f7f4ef", color: "#0b0f14", boxShadow: "0 16px 40px rgba(0,0,0,.22)" }}>
+                    <div className="embed-preview-card" style={{ border: "1px solid var(--border)", borderRadius: "16px", overflow: "hidden", background: "#f7f4ef", color: "#0b0f14", boxShadow: "0 16px 40px rgba(0,0,0,.22)" }}>
                         <div style={{ padding: "18px", borderBottom: "1px solid rgba(15,23,42,.08)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px" }}>
                             <div>
                                 <div style={{ fontSize: "11px", letterSpacing: ".12em", fontWeight: 800, textTransform: "uppercase", color: "#f97316", marginBottom: "6px" }}>
@@ -290,5 +344,6 @@ export default function EmbedManager({ restaurantId, restaurantName, slug, store
                 </div>
             </div>
         </div>
+        </>
     );
 }

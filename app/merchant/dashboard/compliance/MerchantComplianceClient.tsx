@@ -129,26 +129,84 @@ export default function MerchantComplianceClient({
     };
 
     return (
+        <>
+            <style>{`
+                .merchant-compliance-shell {
+                    display: grid;
+                    gap: 20px;
+                }
+                .merchant-compliance-panel {
+                    border: 1px solid var(--border);
+                    background: var(--card);
+                    border-radius: 16px;
+                    padding: 18px;
+                    box-shadow: 0 14px 32px rgba(0,0,0,.16);
+                }
+                .merchant-compliance-panel h2 {
+                    font-size: 18px;
+                    font-weight: 800;
+                    color: #fff;
+                }
+                .merchant-compliance-hero-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                    gap: 14px;
+                }
+                .merchant-compliance-pill {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 40px;
+                    border-radius: 12px;
+                    font-weight: 800;
+                }
+                .merchant-compliance-mini-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                    gap: 12px;
+                }
+                .merchant-compliance-mini-card {
+                    border-radius: 14px;
+                    background: rgba(255,255,255,0.04);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    padding: 14px;
+                    text-align: center;
+                }
+                @media (max-width: 768px) {
+                    .merchant-compliance-panel {
+                        padding: 16px;
+                    }
+                    .merchant-compliance-hero-grid,
+                    .merchant-compliance-mini-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                    }
+                }
+                @media (max-width: 520px) {
+                    .merchant-compliance-hero-grid,
+                    .merchant-compliance-mini-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            `}</style>
         <div className="md-body min-h-screen bg-[#0a0c09]">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-5 md:px-6 lg:px-8">
+            <div className="merchant-compliance-shell mx-auto w-full max-w-6xl">
                 {/* Header */}
-                <div className="flex flex-col gap-4">
-                    <a href="/merchant/dashboard" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-[#f97316] transition hover:border-[#f97316]/40 hover:bg-white/10">
-                        ←
-                    </a>
+                <div className="md-page-hd">
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-black text-white">
-                            {restaurant.name} Compliance
-                        </h1>
-                        <p className="text-sm text-white/50 mt-1">
-                            {restaurant.city}, {restaurant.state}
-                        </p>
+                        <div className="md-page-title">Compliance</div>
+                        <div className="md-page-sub">{restaurant.name} · {restaurant.city}, {restaurant.state}</div>
+                    </div>
+                    <div className="md-hd-right">
+                        <a href="/merchant/dashboard" className="md-terminal-btn" style={{ textDecoration: "none" }}>
+                            <span className="md-terminal-dot"></span>
+                            Back to Dashboard
+                        </a>
                     </div>
                 </div>
 
                 {/* Score Card - Mobile Optimized */}
-                <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
-                    <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+                <div className="merchant-compliance-panel">
+                    <div className="merchant-compliance-hero-grid">
                         {/* Compliance Score */}
                         <div className="flex flex-col gap-2">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Score</span>
@@ -161,7 +219,7 @@ export default function MerchantComplianceClient({
                         {/* Health Grade */}
                         <div className="flex flex-col gap-2">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Grade</span>
-                            <div className={`rounded-lg border px-3 py-1 text-center font-black ${getGradeColor(restaurant.healthGrade)}`}>
+                            <div className={`merchant-compliance-pill border px-3 py-1 text-center font-black ${getGradeColor(restaurant.healthGrade)}`}>
                                 {restaurant.healthGrade}
                             </div>
                         </div>
@@ -169,7 +227,7 @@ export default function MerchantComplianceClient({
                         {/* Status */}
                         <div className="flex flex-col gap-2">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Status</span>
-                            <div className={`rounded-lg border px-3 py-1 text-center text-sm font-bold ${getStatusColor(restaurant.complianceStatus)}`}>
+                            <div className={`merchant-compliance-pill border px-3 py-1 text-center text-sm font-bold ${getStatusColor(restaurant.complianceStatus)}`}>
                                 {restaurant.complianceStatus}
                             </div>
                         </div>
@@ -195,22 +253,22 @@ export default function MerchantComplianceClient({
                 </div>
 
                 {/* Driver Compliance Summary */}
-                <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
-                    <h2 className="text-lg md:text-xl font-bold text-white mb-4">Driver Compliance</h2>
-                    <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
-                        <div className="rounded-lg bg-white/5 p-3 text-center">
+                <div className="merchant-compliance-panel">
+                    <h2 className="mb-4 text-lg md:text-xl font-bold text-white">Driver Compliance</h2>
+                    <div className="merchant-compliance-mini-grid">
+                        <div className="merchant-compliance-mini-card">
                             <div className="text-sm md:text-lg font-bold text-white">{driverStats.activeDrivers}</div>
                             <div className="text-[10px] md:text-xs text-white/50 mt-1">Active Drivers</div>
                         </div>
-                        <div className="rounded-lg bg-white/5 p-3 text-center">
+                        <div className="merchant-compliance-mini-card">
                             <div className="text-sm md:text-lg font-bold text-yellow-400">{driverStats.pendingTraining}</div>
                             <div className="text-[10px] md:text-xs text-white/50 mt-1">Pending Training</div>
                         </div>
-                        <div className="rounded-lg bg-white/5 p-3 text-center">
+                        <div className="merchant-compliance-mini-card">
                             <div className="text-sm md:text-lg font-bold text-red-400">{driverStats.suspended}</div>
                             <div className="text-[10px] md:text-xs text-white/50 mt-1">Suspended</div>
                         </div>
-                        <div className="rounded-lg bg-white/5 p-3 text-center">
+                        <div className="merchant-compliance-mini-card">
                             <div className="text-sm md:text-lg font-bold text-[#f97316]">{driverStats.totalDrivers}</div>
                             <div className="text-[10px] md:text-xs text-white/50 mt-1">Total</div>
                         </div>
@@ -219,7 +277,7 @@ export default function MerchantComplianceClient({
 
                 {/* Live State Inspection Data */}
                 {liveInspections.length > 0 && (
-                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                    <div className="merchant-compliance-panel">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                             <div>
                                 <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
@@ -322,7 +380,7 @@ export default function MerchantComplianceClient({
 
                 {/* Violation Severity Breakdown */}
                 {violationAggregate && violationAggregate.totalViolations > 0 && (
-                    <div className="rounded-lg border border-white/10 bg-[#10131b] p-4 md:p-6">
+                    <div className="merchant-compliance-panel">
                         <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
                             {violationAggregate.criticalCount > 0 ? '⚠️' : '📊'} Violation Severity Breakdown
                         </h2>
@@ -779,5 +837,6 @@ export default function MerchantComplianceClient({
                 )}
             </div>
         </div>
+        </>
     );
 }

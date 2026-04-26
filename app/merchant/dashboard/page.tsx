@@ -213,6 +213,34 @@ export default async function MerchantDashboard({
                     .mch-stat-grid { grid-template-columns: 1fr 1fr; }
                     .mch-two-col, .mch-four-col { grid-template-columns: 1fr; }
                 }
+                @media (max-width: 768px) {
+                    .mch-stat-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    .mch-stat-card {
+                        padding: 16px;
+                    }
+                    .mch-stripe-banner {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                    .mch-stripe-left {
+                        align-items: flex-start;
+                    }
+                    .mch-stripe-connect-btn,
+                    .mch-stripe-connected-badge {
+                        width: 100%;
+                        text-align: center;
+                    }
+                    .mch-tab-row {
+                        display: grid;
+                        grid-template-columns: 1fr;
+                    }
+                    .mch-tab-pill {
+                        width: 100%;
+                        text-align: center;
+                    }
+                }
             `}</style>
 
             <WelcomeModal restaurantName={restaurant.name} />

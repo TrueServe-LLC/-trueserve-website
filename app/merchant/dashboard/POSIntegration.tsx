@@ -63,30 +63,30 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
         <>
             <style>{`
                 /* ── SECTION ── */
-                .section { background: #0f1219; border: 1px solid #1c1f28; margin-bottom: 24px; position: relative; }
-                .section-hd { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid #1c1f28; }
-                .section-icon { width: 28px; height: 28px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-                .section-title-text { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: 0.02em; }
+                .section { background: var(--card); border: 1px solid var(--border); margin-bottom: 24px; position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 14px 32px rgba(0,0,0,.16); }
+                .section-hd { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+                .section-icon { width: 30px; height: 30px; background: rgba(249,115,22,.08); border: 1px solid rgba(249,115,22,.18); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+                .section-title-text { font-size: 12px; font-weight: 900; text-transform: uppercase; color: var(--t3); letter-spacing: 0.14em; }
                 .section-title-text span { color: #f97316; }
-                .section-sub-text { font-size: 11px; color: #444; margin-top: 2px; }
+                .section-sub-text { font-size: 12px; color: var(--t2); margin-top: 4px; }
                 .section-body { padding: 0; }
 
                 /* ── TWO COL ── */
-                .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1c1f28; }
-                .col { background: #0f1219; padding: 24px; position: relative; overflow: hidden; }
+                .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+                .col { background: var(--card); padding: 24px; position: relative; overflow: hidden; }
 
                 /* ── PLATFORM SELECTOR ── */
-                .field-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #444; margin-bottom: 10px; }
+                .field-label { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--t3); margin-bottom: 10px; }
                 .platform-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-                .platform-btn { padding: 12px 16px; background: #0c0e13; border: 1px solid #2a2f3a; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; cursor: pointer; text-align: center; transition: all .15s; }
-                .platform-btn:hover { border-color: #444; color: #888; }
-                .platform-btn.active { background: #1a1200; border-color: #f97316; color: #f97316; }
+                .platform-btn { padding: 12px 16px; background: #0c0e13; border: 1px solid #2a2f3a; border-radius: 10px; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #7d8692; cursor: pointer; text-align: center; transition: all .15s; }
+                .platform-btn:hover { border-color: rgba(249,115,22,.32); color: #f3f4f6; }
+                .platform-btn.active { background: rgba(249,115,22,.08); border-color: rgba(249,115,22,.35); color: #f97316; }
                 .platform-btn.none { grid-column: span 1; }
 
                 /* ── FIELDS ── */
-                .field-input { width: 100%; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Mono', monospace; font-size: 13px; padding: 11px 14px; outline: none; margin-bottom: 14px; transition: border-color .15s; }
+                .field-input { width: 100%; background: #0c0e13; border: 1px solid #2a2f3a; color: #ccc; font-family: 'DM Mono', monospace; font-size: 13px; padding: 11px 14px; outline: none; margin-bottom: 14px; transition: border-color .15s; border-radius: 10px; }
                 .field-input:focus { border-color: #f97316; }
-                .field-input::placeholder { color: #222; }
+                .field-input::placeholder { color: #4a5565; }
 
                 /* ── BUTTONS ── */
                 .primary-btn { width: 100%; background: #f97316; border: none; color: #000; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 14px; cursor: pointer; transition: opacity .15s; }
@@ -98,17 +98,17 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
                 .danger-btn:hover { border-color: #e24b4a; }
 
                 /* ── KEY BLOCK ── */
-                .key-block { display: flex; align-items: center; gap: 6px; background: #0c0e13; border: 1px solid #2a2f3a; padding: 12px 16px; margin-bottom: 6px; position: relative; }
+                .key-block { display: flex; align-items: center; gap: 6px; background: #0c0e13; border: 1px solid #2a2f3a; padding: 12px 16px; margin-bottom: 6px; position: relative; border-radius: 10px; }
                 .key-value { flex: 1; font-family: 'DM Mono', monospace; font-size: 12px; color: #3dd68c; letter-spacing: 0.08em; overflow: hidden; text-overflow: ellipsis; }
                 .key-hidden { flex: 1; font-family: 'DM Mono', monospace; font-size: 14px; color: #2a2f3a; letter-spacing: 0.1em; }
-                .copy-btn { width: 32px; height: 32px; background: #131720; border: 1px solid #2a2f3a; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: border-color .15s; }
+                .copy-btn { width: 32px; height: 32px; background: #131720; border: 1px solid #2a2f3a; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: border-color .15s; }
                 .copy-btn:hover { border-color: #f97316; }
-                .key-hint { font-size: 10px; color: #333; line-height: 1.5; font-style: italic; margin-bottom: 14px; }
+                .key-hint { font-size: 11px; color: var(--t2); line-height: 1.6; margin-bottom: 14px; }
 
                 /* ── STATUS TAG ── */
                 .status-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-                .connected-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; background: #0d2a1a; color: #3dd68c; border: 1px solid #1a4a2a; }
-                .disconnected-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; background: #1a0808; color: #e24b4a; border: 1px solid #3a1010; }
+                .connected-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 10px; background: #0d2a1a; color: #3dd68c; border: 1px solid #1a4a2a; border-radius: 999px; }
+                .disconnected-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 10px; background: #1a0808; color: #e24b4a; border: 1px solid #3a1010; border-radius: 999px; }
 
                 /* ── API WATERMARK ── */
                 .api-watermark { font-family: 'Barlow Condensed', sans-serif; font-size: 80px; font-weight: 800; font-style: italic; color: rgba(249, 115, 22, 0.04); letter-spacing: 0.05em; text-align: right; line-height: 1; margin-top: -8px; pointer-events: none; user-select: none; position: absolute; bottom: 10px; right: 20px; }
@@ -123,15 +123,14 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
 
                 @media (max-width: 700px) {
                     .section-hd { padding: 12px 14px; }
-                    .section-title-text { font-size: 16px; }
-                    .section-sub-text { font-size: 10px; }
+                    .section-title-text { font-size: 11px; }
+                    .section-sub-text { font-size: 11px; }
                     .platform-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
                     .platform-btn { padding: 10px 10px; font-size: 10px; }
                     .platform-btn.none { grid-column: span 2; }
-                    .key-block { border-radius: 12px; }
                     .key-value { word-break: break-all; }
                     .action-row { flex-direction: column; align-items: stretch; }
-                    .outline-btn, .danger-btn { width: 100%; text-align: center; }
+                    .outline-btn, .danger-btn, .primary-btn { width: 100%; text-align: center; }
                     .api-watermark { display: none; }
                 }
             `}</style>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/app/auth/actions';
 
@@ -11,6 +12,7 @@ interface MerchantDashboardWrapperProps {
 
 export default function MerchantDashboardWrapper({ restaurantName, children }: MerchantDashboardWrapperProps) {
   const pathname = usePathname();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const navItems = [
     { href: '/merchant/dashboard',             label: 'Dashboard',    icon: '📊', dotColor: '#f97316', tour: 'merchant-nav-dashboard'    },
@@ -19,6 +21,25 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
     { href: '/merchant/dashboard/storefront',  label: 'Storefront',   icon: '🛍️', dotColor: '#555',    tour: 'merchant-nav-storefront'   },
     { href: '/merchant/dashboard/franchise',   label: 'Franchise',    icon: '🏪', dotColor: '#555',    tour: 'merchant-nav-franchise'    },
   ];
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const previous = document.body.style.overflow;
+    if (mobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = previous;
+    }
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileNavOpen]);
+
+  const activeNav = navItems.find((item) => pathname === item.href);
 
   return (
     <>
@@ -32,9 +53,9 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
           font-size: 13px !important;
         }
         .mch-sidebar {
-          width: 160px !important;
-          min-width: 160px !important;
-          max-width: 160px !important;
+          width: 176px !important;
+          min-width: 176px !important;
+          max-width: 176px !important;
           background: #111 !important;
           border-right: 0.5px solid #2a2a2a !important;
           display: flex !important;
@@ -45,6 +66,9 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
           height: 100vh !important;
           overflow-y: auto !important;
           z-index: 100 !important;
+        }
+        .mch-sidebar-shell {
+          display: contents !important;
         }
         .mch-logo {
           display: flex !important;
@@ -142,9 +166,65 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
           transition: color 0.15s !important;
         }
         .mch-logout-btn:hover { color: #f97316 !important; }
+        .mch-mobile-topbar {
+          display: none !important;
+        }
+        .mch-mobile-overlay {
+          display: none !important;
+        }
+        .mch-mobile-nav-btn {
+          width: 42px !important;
+          height: 42px !important;
+          border-radius: 12px !important;
+          border: 1px solid rgba(249,115,22,0.28) !important;
+          background: rgba(255,255,255,0.04) !important;
+          color: #f97316 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 18px !important;
+          cursor: pointer !important;
+          flex-shrink: 0 !important;
+        }
+        .mch-mobile-topbar-copy {
+          min-width: 0 !important;
+        }
+        .mch-mobile-eyebrow {
+          color: #6e7782 !important;
+          font-size: 10px !important;
+          font-weight: 800 !important;
+          letter-spacing: .14em !important;
+          text-transform: uppercase !important;
+          margin-bottom: 4px !important;
+        }
+        .mch-mobile-title {
+          color: #fff !important;
+          font-size: 16px !important;
+          font-weight: 900 !important;
+          line-height: 1.1 !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          max-width: 100% !important;
+        }
+        .mch-mobile-status {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          padding: 6px 10px !important;
+          border-radius: 999px !important;
+          border: 1px solid rgba(249,115,22,0.22) !important;
+          background: rgba(249,115,22,0.08) !important;
+          color: #f97316 !important;
+          font-size: 10px !important;
+          font-weight: 800 !important;
+          letter-spacing: .1em !important;
+          text-transform: uppercase !important;
+          flex-shrink: 0 !important;
+        }
         .mch-main {
           flex: 1 !important;
-          margin-left: 160px !important;
+          margin-left: 176px !important;
           padding: 24px !important;
           min-height: 100vh !important;
           overflow: auto !important;
@@ -161,60 +241,132 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
           color: #666 !important;
           margin-bottom: 18px !important;
         }
-        @media (max-width: 768px) {
-          .mch-sidebar { width: 140px !important; min-width: 140px !important; }
-          .mch-main { margin-left: 140px !important; padding: 16px !important; }
+        @media (max-width: 980px) {
+          .mch-layout {
+            display: block !important;
+          }
+          .mch-sidebar-shell {
+            display: block !important;
+          }
+          .mch-mobile-topbar {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            justify-content: space-between !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 120 !important;
+            padding: 14px 16px !important;
+            margin: -16px -16px 16px !important;
+            background: rgba(15,15,15,0.94) !important;
+            backdrop-filter: blur(14px) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+          }
+          .mch-mobile-overlay {
+            display: block !important;
+            position: fixed !important;
+            inset: 0 !important;
+            background: rgba(0,0,0,0.62) !important;
+            backdrop-filter: blur(3px) !important;
+            z-index: 109 !important;
+          }
+          .mch-sidebar {
+            width: min(82vw, 280px) !important;
+            min-width: min(82vw, 280px) !important;
+            max-width: min(82vw, 280px) !important;
+            transform: translateX(-105%) !important;
+            transition: transform .22s ease !important;
+            box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
+            z-index: 130 !important;
+          }
+          .mch-sidebar.mch-sidebar-open {
+            transform: translateX(0) !important;
+          }
+          .mch-main {
+            margin-left: 0 !important;
+            padding: 16px !important;
+            min-height: 100dvh !important;
+          }
+          .mch-page-title {
+            font-size: 18px !important;
+            margin-bottom: 4px !important;
+          }
+          .mch-page-sub {
+            font-size: 11px !important;
+            margin-bottom: 14px !important;
+          }
+          .mch-logo {
+            padding: 0 16px 16px !important;
+          }
+          .mch-nav-item {
+            padding: 11px 16px !important;
+          }
         }
       `}</style>
 
       <div className="mch-layout">
-        {/* SIDEBAR */}
-        <aside className="mch-sidebar">
-          <div className="mch-logo">
-            <img
-              src="/logo.png"
-              alt="TrueServe"
-              width={26}
-              height={26}
-              style={{ borderRadius: '50%', boxShadow: '0 0 8px rgba(232,124,43,0.4)', flexShrink: 0 }}
-            />
-            <span style={{ color: '#fff', fontWeight: 700 }}>
-              True<span style={{ color: '#f97316' }}>Serve</span>
-            </span>
-          </div>
+        {mobileNavOpen && <button className="mch-mobile-overlay" aria-label="Close navigation" onClick={() => setMobileNavOpen(false)} />}
 
-          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  data-tour={item.tour}
-                  className={`mch-nav-item${isActive ? ' mch-active' : ''}`}
-                >
-                  <span className="mch-nav-emoji">{item.icon}</span>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+        <div className="mch-sidebar-shell">
+          <aside className={`mch-sidebar${mobileNavOpen ? ' mch-sidebar-open' : ''}`}>
+            <div className="mch-logo">
+              <img
+                src="/logo.png"
+                alt="TrueServe"
+                width={26}
+                height={26}
+                style={{ borderRadius: '50%', boxShadow: '0 0 8px rgba(232,124,43,0.4)', flexShrink: 0 }}
+              />
+              <span style={{ color: '#fff', fontWeight: 700 }}>
+                True<span style={{ color: '#f97316' }}>Serve</span>
+              </span>
+            </div>
 
-          <div className="mch-sidebar-footer">
-            <button className="mch-tutorial-btn" onClick={() => window.dispatchEvent(new CustomEvent('ts:portal-tour:open', { detail: { portal: 'MERCHANT' } }))}>
-              <span className="mch-tutorial-icon">?</span>
-              Start tutorial
-            </button>
-            <form action={logout}>
-              <button type="submit" className="mch-logout-btn">
-                🚪 Log Out
+            <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    data-tour={item.tour}
+                    className={`mch-nav-item${isActive ? ' mch-active' : ''}`}
+                  >
+                    <span className="mch-nav-emoji">{item.icon}</span>
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="mch-sidebar-footer">
+              <button className="mch-tutorial-btn" onClick={() => window.dispatchEvent(new CustomEvent('ts:portal-tour:open', { detail: { portal: 'MERCHANT' } }))}>
+                <span className="mch-tutorial-icon">?</span>
+                Start tutorial
               </button>
-            </form>
-          </div>
-        </aside>
+              <form action={logout}>
+                <button type="submit" className="mch-logout-btn">
+                  🚪 Log Out
+                </button>
+              </form>
+            </div>
+          </aside>
+        </div>
 
         {/* MAIN */}
         <main className="mch-main">
+          <div className="mch-mobile-topbar">
+            <button className="mch-mobile-nav-btn" aria-label="Open navigation" onClick={() => setMobileNavOpen(true)}>
+              ☰
+            </button>
+            <div className="mch-mobile-topbar-copy">
+              <div className="mch-mobile-eyebrow">Merchant Portal</div>
+              <div className="mch-mobile-title">{restaurantName || 'Merchant Dashboard'}</div>
+            </div>
+            <div className="mch-mobile-status">
+              {activeNav?.label || 'Dashboard'}
+            </div>
+          </div>
           <div className="mch-page-title">Merchant Dashboard</div>
           <div className="mch-page-sub">{restaurantName}</div>
           {children}
