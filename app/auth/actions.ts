@@ -342,7 +342,7 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
         const adminRole = cookieStore.get("admin_role")?.value;
         console.log("[AuthSession] userId from cookie:", userId);
 
-        let role = adminSession && adminRole ? adminRole : 'CUSTOMER';
+        let role = adminSession && adminRole ? adminRole : undefined;
 
         if (!userId) {
             // Fallback: Check Supabase session directly
@@ -386,9 +386,11 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             }
         }
         
-        console.log("[AuthSession] Result:", { isAuth: true, userId, role, name: publicUser?.name, stripeAccountId: publicUser?.stripeAccountId });
+        const resolvedRole = role || publicUser?.role || 'CUSTOMER';
 
-        return { isAuth: true, userId, role, name: publicUser?.name || 'User', stripeAccountId: publicUser?.stripeAccountId };
+        console.log("[AuthSession] Result:", { isAuth: true, userId, role: resolvedRole, name: publicUser?.name, stripeAccountId: publicUser?.stripeAccountId });
+
+        return { isAuth: true, userId, role: resolvedRole, name: publicUser?.name || 'User', stripeAccountId: publicUser?.stripeAccountId };
     } catch (e) {
         console.error("[AuthSession] Error:", e);
         return { isAuth: false };

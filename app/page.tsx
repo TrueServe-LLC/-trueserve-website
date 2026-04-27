@@ -30,9 +30,11 @@ import {
   type MenuMomentCollection,
   type PublicRestaurantRecord,
 } from "@/lib/public-restaurants";
+import { getAccountHomeHref } from "@/lib/account-routing";
 
 export default function Home() {
   const [userId, setUserId] = useState<string | null>(null);
+  const [accountHref, setAccountHref] = useState("/account");
   const [hasAddress, setHasAddress] = useState(false);
   const [featuredRestaurants, setFeaturedRestaurants] = useState<PublicRestaurantRecord[]>([]);
   const [collections, setCollections] = useState<PublicRestaurantCollection[]>([]);
@@ -68,6 +70,21 @@ export default function Home() {
     try {
       if (localStorage.getItem("ts.delivery.address")) setHasAddress(true);
     } catch {}
+
+    supabase.auth.getUser().then(async ({ data }) => {
+      const authUser = data.user;
+      if (!authUser?.id) return;
+
+      const { data: profile } = await supabase
+        .from('User')
+        .select('role')
+        .eq('id', authUser.id)
+        .maybeSingle();
+
+      setAccountHref(getAccountHomeHref(profile?.role));
+    }).catch((error) => {
+      console.error('Account role fetch error:', error);
+    });
 
     Promise.all([
       supabase
@@ -124,7 +141,7 @@ export default function Home() {
         </div>
         <div className="nav-r">
           {userId ? (
-            <Link href="/user/settings" className="btn btn-ghost">Account</Link>
+            <Link href={accountHref} className="btn btn-ghost">Account</Link>
           ) : (
             <Link href="/login" className="btn btn-ghost">Sign In</Link>
           )}
@@ -172,7 +189,7 @@ export default function Home() {
               ))}
               <div style={{marginTop:4,borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:12}}>
                 <Link
-                  href={userId ? "/user/settings" : "/login"}
+                  href={userId ? accountHref : "/login"}
                   onClick={() => setMenuOpen(false)}
                   style={{display:"block",textAlign:"center",padding:"13px",borderRadius:12,border:"1px solid rgba(255,255,255,0.15)",background:"transparent",color:"#fff",fontWeight:700,fontSize:14}}
                 >

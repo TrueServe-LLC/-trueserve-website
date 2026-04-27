@@ -140,7 +140,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
                         )}
                     </div>
                     <Link
-                        href="/user/settings"
+                        href="/account"
                         onClick={() => setIsOpen(false)}
                         className="block w-full text-center p-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:bg-white/5 transition-all border-t border-white/5"
                     >

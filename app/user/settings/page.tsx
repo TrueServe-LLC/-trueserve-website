@@ -1,20 +1,23 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import Logo from "@/components/Logo";
 import { getAuthSession } from "@/app/auth/actions";
 import WalletUI from "@/components/WalletUI";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import ReferralCard from "@/components/ReferralCard";
+import { getAccountHomeHref, isCustomerRole } from "@/lib/account-routing";
 
 export const dynamic = "force-dynamic";
 
 export default async function UserSettings() {
-    const { isAuth, userId } = await getAuthSession();
-    if (!isAuth || !userId) return null;
+    const { isAuth, userId, role } = await getAuthSession();
+    if (!isAuth || !userId) redirect("/login");
+    if (!isCustomerRole(role)) redirect(getAccountHomeHref(role));
 
     const { data: user } = await supabaseAdmin.from('User').select('*').eq('id', userId).maybeSingle();
 
-    if (!user) return null;
+    if (!user) redirect("/login");
 
     return (
         <div className="food-app-shell">

@@ -4,12 +4,14 @@ import Logo from '@/components/Logo';
 import { getAuthSession } from '@/app/auth/actions';
 import { getSavedAddresses } from './actions';
 import AddressBookClient from './AddressBookClient';
+import { getAccountHomeHref, isCustomerRole } from '@/lib/account-routing';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AddressesPage() {
-    const { isAuth, userId } = await getAuthSession();
+    const { isAuth, userId, role } = await getAuthSession();
     if (!isAuth || !userId) redirect('/login');
+    if (!isCustomerRole(role)) redirect(getAccountHomeHref(role));
 
     const savedAddresses = await getSavedAddresses(userId);
 

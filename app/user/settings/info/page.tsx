@@ -1,16 +1,19 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Logo from "@/components/Logo";
 import { getAuthSession } from "@/app/auth/actions";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getAccountHomeHref, isCustomerRole } from "@/lib/account-routing";
 
 export const dynamic = "force-dynamic";
 
 export default async function PersonalInfoPage() {
-    const { isAuth, userId } = await getAuthSession();
-    if (!isAuth || !userId) return null;
+    const { isAuth, userId, role } = await getAuthSession();
+    if (!isAuth || !userId) redirect("/login");
+    if (!isCustomerRole(role)) redirect(getAccountHomeHref(role));
 
     const { data: user } = await supabaseAdmin.from("User").select("*").eq("id", userId).maybeSingle();
-    if (!user) return null;
+    if (!user) redirect("/login");
 
     return (
         <div className="food-app-shell">

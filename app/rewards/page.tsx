@@ -119,7 +119,9 @@ function TierCard({
     subtitle,
     price,
     currentPlan,
-    canChoose,
+    canSubmit,
+    ctaHref,
+    ctaLabel,
     features,
     badge,
     icon
@@ -128,7 +130,9 @@ function TierCard({
     subtitle: string;
     price: string;
     currentPlan: string;
-    canChoose: boolean;
+    canSubmit: boolean;
+    ctaHref?: string;
+    ctaLabel?: string;
     features: string[];
     badge?: string;
     icon: ReactNode;
@@ -161,16 +165,32 @@ function TierCard({
                     </div>
                 ))}
             </div>
-            <form action={joinRewardsTier} className="mt-6 relative z-10">
-                <input type="hidden" name="tier" value={tier} />
-                <button
-                    type="submit"
-                    disabled={isCurrent || !canChoose}
-                    className={`w-full ${isCurrent ? "btn btn-ghost opacity-70 cursor-not-allowed" : "place-btn"}`}
-                >
-                    {isCurrent ? "Current Plan" : `Join ${tier}`}
-                </button>
-            </form>
+            <div className="mt-6 relative z-10">
+                {isCurrent ? (
+                    <button
+                        type="button"
+                        disabled
+                        className="w-full btn btn-ghost opacity-70 cursor-not-allowed"
+                    >
+                        Current Plan
+                    </button>
+                ) : ctaHref ? (
+                    <Link href={ctaHref} className="place-btn w-full text-center block">
+                        {ctaLabel || `Join ${tier}`}
+                    </Link>
+                ) : (
+                    <form action={joinRewardsTier}>
+                        <input type="hidden" name="tier" value={tier} />
+                        <button
+                            type="submit"
+                            disabled={!canSubmit}
+                            className="w-full place-btn"
+                        >
+                            {ctaLabel || `Join ${tier}`}
+                        </button>
+                    </form>
+                )}
+            </div>
         </article>
     );
 }
@@ -195,7 +215,7 @@ export default async function RewardsPage({
                 <div className="mx-auto flex items-center justify-between px-4 sm:px-0" style={{ width: "min(1180px, calc(100% - 32px))", padding: "14px 0" }}>
                     <Logo size="sm" />
                     <div className="flex gap-2">
-                        <Link href="/user/settings" className="btn btn-ghost">Account</Link>
+                        <Link href="/account" className="btn btn-ghost">Account</Link>
                         <Link href="/restaurants" className="btn btn-gold">Order Food</Link>
                     </div>
                 </div>
@@ -290,7 +310,9 @@ export default async function RewardsPage({
                             subtitle="Priority Tier"
                             price="$9.99 / month"
                             currentPlan={currentPlan}
-                            canChoose={isSignedIn && canChoosePaid}
+                            canSubmit={isSignedIn && canChoosePaid}
+                            ctaHref={!isSignedIn ? "/login" : !canChoosePaid ? "/account#wallet" : undefined}
+                            ctaLabel={!isSignedIn ? "Sign In To Join" : !canChoosePaid ? "Add Wallet To Join" : undefined}
                             badge="Best Value"
                             icon={<Star size={17} />}
                             features={[
@@ -304,7 +326,9 @@ export default async function RewardsPage({
                             subtitle="Starter"
                             price="Free"
                             currentPlan={currentPlan}
-                            canChoose={isSignedIn}
+                            canSubmit={isSignedIn}
+                            ctaHref={!isSignedIn ? "/login" : undefined}
+                            ctaLabel={!isSignedIn ? "Sign In To Join" : undefined}
                             icon={<Gift size={17} />}
                             features={[
                                 "Standard points earning",
@@ -317,7 +341,9 @@ export default async function RewardsPage({
                             subtitle="Power User"
                             price="$19.99 / month"
                             currentPlan={currentPlan}
-                            canChoose={isSignedIn && canChoosePaid}
+                            canSubmit={isSignedIn && canChoosePaid}
+                            ctaHref={!isSignedIn ? "/login" : !canChoosePaid ? "/account#wallet" : undefined}
+                            ctaLabel={!isSignedIn ? "Sign In To Join" : !canChoosePaid ? "Add Wallet To Join" : undefined}
                             badge="Top Perks"
                             icon={<ShieldCheck size={17} />}
                             features={[
