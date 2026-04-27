@@ -1,48 +1,43 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { Check, Minus, ArrowRight, Zap, Crown } from "lucide-react";
+import { Check, ArrowRight, Zap, TrendingUp } from "lucide-react";
 
 const PLANS = [
   {
-    name: "Flex",
-    tagline: "Starter",
-    price: "0%",
-    priceSub: "commission",
-    sub: "Pay only per transaction — no monthly fee",
+    name: "Starter",
+    tagline: "Under 100 orders / month",
+    price: "$199",
+    priceSub: "/ month",
+    sub: "Perfect for growing restaurants just getting started",
     color: "#3dd68c",
     badge: null,
     icon: Zap,
-    cta: "Get Started Free",
+    cta: "Get Started",
     href: "/merchant/signup",
     features: [
-      "Zero monthly fees",
-      "Zero commission on orders",
+      "0% commission on every order",
       "Public restaurant storefront page",
       "Real-time order management",
       "Basic prep time controls",
       "Customer ratings visible",
+      "Stripe payout integration",
       "Standard support",
-    ],
-    notIncluded: [
-      "POS integration",
-      "AutoPilot busy management",
-      "Multi-location dashboard",
-      "Dedicated account manager",
     ],
   },
   {
-    name: "Pro",
-    tagline: "Growth",
-    price: "$49",
+    name: "Scale",
+    tagline: "100+ orders / month",
+    price: "$399",
     priceSub: "/ month",
-    sub: "Everything in Flex, plus",
+    sub: "For high-volume restaurants ready to grow fast",
     color: "#f97316",
-    badge: "Most Popular",
-    icon: Crown,
-    cta: "Start Free Trial",
-    href: "/merchant/signup?plan=pro",
+    badge: null,
+    icon: TrendingUp,
+    cta: "Get Started",
+    href: "/merchant/signup?plan=scale",
     features: [
-      "Everything in Flex",
+      "0% commission on every order",
+      "Everything in Starter",
       "POS integration (Toast, Square, Clover)",
       "AutoPilot busy-window management",
       "Advanced prep timing controls",
@@ -52,23 +47,22 @@ const PLANS = [
       "Multi-location dashboard",
       "Dedicated account manager",
     ],
-    notIncluded: [],
   },
 ];
 
 const COMPARE = [
-  { name: "DoorDash",  commission: "15–30%", fee: "$0",     contract: "None" },
-  { name: "Uber Eats", commission: "15–30%", fee: "$0",     contract: "None" },
-  { name: "GrubHub",   commission: "15–30%", fee: "$0",     contract: "None" },
-  { name: "TrueServe", commission: "0%",     fee: "$0–$49", contract: "None", highlight: true },
+  { name: "DoorDash",  commission: "15–30%", fee: "$0",        contract: "None" },
+  { name: "Uber Eats", commission: "15–30%", fee: "$0",        contract: "None" },
+  { name: "GrubHub",   commission: "15–30%", fee: "$0",        contract: "None" },
+  { name: "TrueServe", commission: "0%",     fee: "$199–$399", contract: "Monthly", highlight: true },
 ];
 
 const FAQS = [
   { q: "Is there really zero commission?",   a: "Yes. TrueServe does not take a percentage of your orders. You keep everything your customers pay for food." },
   { q: "How do I get paid?",                 a: "Payouts go directly to your Stripe account. Setup takes about 5 minutes and funds typically arrive within 2 business days." },
-  { q: "Can I switch plans later?",          a: "Yes — upgrade or downgrade anytime from your dashboard. Changes take effect immediately, no penalty." },
-  { q: "What POS systems are supported?",    a: "Toast, Square, and Clover on the Pro plan. More integrations are being added during our pilot phase." },
-  { q: "Is there a contract?",               a: "No contracts, no lock-ins. Cancel anytime." },
+  { q: "How does order volume affect my plan?", a: "If your restaurant processes fewer than 100 orders per month you're on the Starter plan at $199/month. Once you consistently exceed 100 orders you move to the Scale plan at $399/month." },
+  { q: "What POS systems are supported?",    a: "Toast, Square, and Clover on the Scale plan. More integrations are being added during our pilot phase." },
+  { q: "Is there a contract?",               a: "Yes — all plans are legally binding agreements on a month-to-month basis. You can opt out at any time with 30 days written notice. No long-term lock-in." },
   { q: "What markets are you in?",           a: "We're actively expanding — contact us to see if we're available in your area or to bring TrueServe to your market." },
 ];
 
@@ -103,10 +97,10 @@ export default function PricingPage() {
               Keep every dollar<br /><span className="accent">you earn.</span>
             </h1>
             <p className="food-subtitle mt-5" style={{ maxWidth: 480, fontSize: 14, textAlign: "center", margin: "20px auto 0" }}>
-              No commissions. No hidden fees. TrueServe makes money when you grow — not by taking a cut of every order.
+              No commissions. No hidden fees. Flat monthly rate — TrueServe makes money when you grow, not by skimming every order.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginTop: 20 }}>
-              {["0% commission", "No contracts", "Cancel anytime", "Live in minutes"].map(label => (
+              {["0% commission", "Month-to-month", "30-day notice", "Live in minutes"].map(label => (
                 <span key={label} className="food-chip" style={{ fontSize: 11, padding: "6px 13px", flexShrink: 0 }}>
                   <span className="food-chip-dot" />{label}
                 </span>
@@ -125,10 +119,8 @@ export default function PricingPage() {
                 className="food-panel relative overflow-hidden flex flex-col"
                 style={{ border: `1px solid ${plan.color}30`, padding: 28 }}
               >
-                {/* Subtle glow */}
                 <div className="pointer-events-none absolute inset-0" style={{ background: `radial-gradient(circle at top right, ${plan.color}10, transparent 55%)` }} />
 
-                {/* Badge */}
                 {plan.badge && (
                   <span style={{
                     position: "absolute", top: 20, right: 20,
@@ -141,7 +133,6 @@ export default function PricingPage() {
                 )}
 
                 <div className="relative z-10 flex-1">
-                  {/* Icon */}
                   <div style={{
                     marginBottom: 16, display: "inline-flex", borderRadius: 14, padding: 10,
                     background: `${plan.color}12`, border: `1px solid ${plan.color}28`,
@@ -149,7 +140,7 @@ export default function PricingPage() {
                     <Icon size={20} style={{ color: plan.color }} />
                   </div>
 
-                  {/* Plan label + name */}
+                  {/* Volume tag */}
                   <p className="food-kicker" style={{ marginBottom: 4 }}>{plan.tagline}</p>
                   <h2 className="food-heading" style={{ fontSize: "clamp(28px,3vw,36px)", marginBottom: 4 }}>{plan.name}</h2>
 
@@ -160,7 +151,7 @@ export default function PricingPage() {
                   </div>
                   <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 24 }}>{plan.sub}</p>
 
-                  {/* Feature list */}
+                  {/* Features */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {plan.features.map((f) => (
                       <div key={f} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.8)" }}>
@@ -174,22 +165,14 @@ export default function PricingPage() {
                         {f}
                       </div>
                     ))}
-                    {plan.notIncluded.map((f) => (
-                      <div key={f} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.2)" }}>
-                        <div style={{
-                          flexShrink: 0, width: 20, height: 20, borderRadius: "50%",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          background: "rgba(255,255,255,0.04)",
-                        }}>
-                          <Minus size={10} style={{ color: "rgba(255,255,255,0.15)" }} />
-                        </div>
-                        <span style={{ textDecoration: "line-through" }}>{f}</span>
-                      </div>
-                    ))}
                   </div>
+
+                  {/* Contract note */}
+                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 20, lineHeight: 1.5 }}>
+                    Month-to-month agreement · Cancel with 30 days written notice
+                  </p>
                 </div>
 
-                {/* CTA */}
                 <Link
                   href={plan.href}
                   style={{
@@ -216,14 +199,13 @@ export default function PricingPage() {
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 8 }}>Other platforms charge 15–30% of every order. We don't.</p>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {/* Header */}
+          {/* Desktop table */}
+          <div className="pricing-compare-desktop" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "0 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               {["Platform", "Commission", "Monthly Fee", "Contract"].map((h, i) => (
                 <p key={h} style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(255,255,255,0.3)", textAlign: i === 0 ? "left" : "center", margin: 0 }}>{h}</p>
               ))}
             </div>
-
             {COMPARE.map((row) => (
               <div key={row.name} style={{
                 display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr",
@@ -236,10 +218,46 @@ export default function PricingPage() {
                 </p>
                 <p style={{ margin: 0, textAlign: "center", fontSize: 13, fontWeight: 800, color: row.highlight ? "#3dd68c" : "rgba(255,255,255,0.4)" }}>{row.commission}</p>
                 <p style={{ margin: 0, textAlign: "center", fontSize: 13, color: row.highlight ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)" }}>{row.fee}</p>
-                <p style={{ margin: 0, textAlign: "center", fontSize: 13, color: "rgba(255,255,255,0.3)" }}>{row.contract}</p>
+                <p style={{ margin: 0, textAlign: "center", fontSize: 13, color: row.highlight ? "#f97316" : "rgba(255,255,255,0.3)" }}>{row.contract}</p>
               </div>
             ))}
           </div>
+
+          {/* Mobile stacked cards */}
+          <div className="pricing-compare-mobile" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {COMPARE.map((row) => (
+              <div key={row.name} style={{
+                padding: "14px 16px", borderRadius: 10,
+                background: row.highlight ? "rgba(249,115,22,0.07)" : "rgba(255,255,255,0.02)",
+                border: `1px solid ${row.highlight ? "rgba(249,115,22,0.2)" : "rgba(255,255,255,0.04)"}`,
+              }}>
+                <p style={{ margin: "0 0 10px", fontWeight: 800, fontSize: 14, color: row.highlight ? "#f97316" : "rgba(255,255,255,0.8)" }}>
+                  {row.name}{row.highlight && <span style={{ marginLeft: 6, fontSize: 9, color: "rgba(249,115,22,0.5)", fontWeight: 800, letterSpacing: "0.1em" }}>✦ US</span>}
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                  {[
+                    { label: "Commission", value: row.commission, color: row.highlight ? "#3dd68c" : undefined },
+                    { label: "Monthly Fee", value: row.fee, color: row.highlight ? "rgba(255,255,255,0.7)" : undefined },
+                    { label: "Contract",    value: row.contract, color: row.highlight ? "#f97316" : undefined },
+                  ].map(col => (
+                    <div key={col.label}>
+                      <p style={{ margin: "0 0 3px", fontSize: 8, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(255,255,255,0.25)" }}>{col.label}</p>
+                      <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: col.color || "rgba(255,255,255,0.35)" }}>{col.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <style>{`
+            .pricing-compare-mobile { display: none; }
+            @media (max-width: 600px) {
+              .pricing-compare-desktop { display: none !important; }
+              .pricing-compare-mobile { display: flex !important; }
+            }
+          `}</style>
+
           <p style={{ marginTop: 14, fontSize: 10, color: "rgba(255,255,255,0.2)", textAlign: "center", letterSpacing: "0.06em" }}>
             Commission rates based on publicly available data. Actual rates may vary by market.
           </p>
