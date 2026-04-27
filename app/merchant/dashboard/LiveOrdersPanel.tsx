@@ -33,6 +33,7 @@ export default function LiveOrdersPanel({ restaurantId, initialOrders }: LiveOrd
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [pending, startTransition] = useTransition();
   const [actionOrderId, setActionOrderId] = useState<string | null>(null);
+  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     if (restaurantId === "preview") return;
@@ -142,25 +143,45 @@ export default function LiveOrdersPanel({ restaurantId, initialOrders }: LiveOrd
                     </div>
                   </div>
 
-                  {action && (
-                    <button
-                      onClick={() => advance(order.id, action.next)}
-                      disabled={isActing}
-                      style={{
-                        background: action.next === "PREPARING" ? "rgba(249,115,22,0.15)" : "rgba(77,202,128,0.15)",
-                        border: `1px solid ${action.next === "PREPARING" ? "rgba(249,115,22,0.4)" : "rgba(77,202,128,0.4)"}`,
-                        color: action.next === "PREPARING" ? "#f97316" : "#4dca80",
-                        borderRadius: 9, padding: "9px 14px",
-                        fontSize: 11, fontWeight: 800, cursor: "pointer",
-                        whiteSpace: "nowrap", flexShrink: 0,
-                        opacity: isActing ? 0.5 : 1,
-                        transition: "all 0.15s",
-                        fontFamily: "inherit",
-                      }}
-                    >
-                      {isActing ? "…" : `${action.emoji} ${action.label}`}
-                    </button>
-                  )}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                    {action && (
+                      <button
+                        onClick={() => advance(order.id, action.next)}
+                        disabled={isActing}
+                        style={{
+                          background: action.next === "PREPARING" ? "rgba(249,115,22,0.15)" : "rgba(77,202,128,0.15)",
+                          border: `1px solid ${action.next === "PREPARING" ? "rgba(249,115,22,0.4)" : "rgba(77,202,128,0.4)"}`,
+                          color: action.next === "PREPARING" ? "#f97316" : "#4dca80",
+                          borderRadius: 9, padding: "9px 14px",
+                          fontSize: 11, fontWeight: 800, cursor: "pointer",
+                          whiteSpace: "nowrap",
+                          opacity: isActing ? 0.5 : 1,
+                          transition: "all 0.15s",
+                          fontFamily: "inherit",
+                        }}
+                      >
+                        {isActing ? "…" : `${action.emoji} ${action.label}`}
+                      </button>
+                    )}
+                    {["PENDING", "PREPARING"].includes(order.status) && (
+                      <button
+                        onClick={() => setCancelConfirmId(order.id)}
+                        style={{
+                          background: "transparent",
+                          border: "1px solid rgba(248,113,113,0.25)",
+                          color: "#f87171",
+                          borderRadius: 9, padding: "6px 14px",
+                          fontSize: 10, fontWeight: 800, cursor: "pointer",
+                          whiteSpace: "nowrap",
+                          transition: "all 0.15s",
+                          fontFamily: "inherit",
+                          letterSpacing: "0.06em",
+                        }}
+                      >
+                        ✕ Cancel
+                      </button>
+                    )}
+                  </div>
 
                   {order.status === "READY_FOR_PICKUP" && (
                     <div style={{
@@ -175,6 +196,58 @@ export default function LiveOrdersPanel({ restaurantId, initialOrders }: LiveOrd
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Cancel confirmation modal */}
+      {cancelConfirmId && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 1000,
+          background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "0 16px",
+        }}>
+          <div style={{
+            background: "#111", border: "1px solid #2a2a2a",
+            borderRadius: 14, padding: "24px 20px", maxWidth: 360, width: "100%",
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#fff", marginBottom: 8 }}>
+              Cancel this order?
+            </div>
+            <div style={{ fontSize: 11, color: "#666", marginBottom: 20, lineHeight: 1.5 }}>
+              Order #{cancelConfirmId.slice(-6).toUpperCase()} will be cancelled and the customer will be notified via SMS.
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                onClick={() => setCancelConfirmId(null)}
+                style={{
+                  flex: 1, background: "transparent",
+                  border: "1px solid #333", color: "#aaa",
+                  borderRadius: 9, padding: "10px 0",
+                  fontSize: 12, fontWeight: 700, cursor: "pointer",
+                  fontFamily: "inherit",
+                }}
+              >
+                Keep It
+              </button>
+              <button
+                onClick={() => {
+                  const id = cancelConfirmId;
+                  setCancelConfirmId(null);
+                  advance(id, "CANCELLED");
+                }}
+                style={{
+                  flex: 1, background: "rgba(248,113,113,0.12)",
+                  border: "1px solid rgba(248,113,113,0.35)", color: "#f87171",
+                  borderRadius: 9, padding: "10px 0",
+                  fontSize: 12, fontWeight: 800, cursor: "pointer",
+                  fontFamily: "inherit",
+                }}
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

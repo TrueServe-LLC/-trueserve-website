@@ -1,13 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { toggleFavorite } from "@/app/user/favorite-actions";
+
+function computeIsOpen(openTime?: string | null, closeTime?: string | null): boolean | null {
+  const o = openTime?.slice(0, 5);
+  const c = closeTime?.slice(0, 5);
+  if (!o || !c) return null;
+  const now = new Date().toTimeString().slice(0, 5);
+  return now >= o && now <= c;
+}
 
 interface RestaurantCardProps {
   r: any;
-  address?: string;
-  search?: string;
-  latParam?: string;
-  lngParam?: string;
+  address?: string | null;
+  search?: string | null;
+  latParam?: string | null;
+  lngParam?: string | null;
+  userId?: string | null;
+  initialIsFavorited?: boolean;
 }
 
 function gradeToColor(grade: string): { bg: string; text: string; border: string } {
@@ -31,7 +43,24 @@ export default function RestaurantCard({
   search,
   latParam,
   lngParam,
+  userId,
+  initialIsFavorited = false,
 }: RestaurantCardProps) {
+  const [isFav, setIsFav] = useState(initialIsFavorited);
+  const [favPending, setFavPending] = useState(false);
+
+  const isOpen = computeIsOpen(r.openTime, r.closeTime);
+
+  const handleFav = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!userId) { window.location.href = "/login"; return; }
+    setIsFav(prev => !prev);
+    setFavPending(true);
+    await toggleFavorite(r.id);
+    setFavPending(false);
+  };
+
   const hasGHL = Boolean(r.ghlUrl);
   const googleQuery = encodeURIComponent(`${r.name || ""} ${r.address || ""} ${r.city || ""} ${r.state || ""}`);
 
@@ -84,6 +113,56 @@ export default function RestaurantCard({
             <span style={{ color: "var(--gold)" }}>●</span> FAST ASSIST
           </div>
         )}
+
+        {/* OPEN / CLOSED badge */}
+        {isOpen !== null && (
+          <div style={{
+            position: "absolute",
+            top: 12,
+            left: 12,
+            display: "flex", alignItems: "center", gap: 5,
+            background: isOpen ? "rgba(10,22,14,0.88)" : "rgba(22,10,10,0.88)",
+            border: `1px solid ${isOpen ? "rgba(77,202,128,0.35)" : "rgba(248,113,113,0.35)"}`,
+            color: isOpen ? "#4dca80" : "#f87171",
+            borderRadius: 999,
+            padding: "4px 9px",
+            fontSize: 9,
+            fontWeight: 800,
+            letterSpacing: "0.1em",
+            zIndex: 2,
+          }}>
+            <span style={{
+              width: 5, height: 5, borderRadius: "50%",
+              background: isOpen ? "#4dca80" : "#f87171",
+              display: "inline-block",
+            }} />
+            {isOpen ? "OPEN" : "CLOSED"}
+          </div>
+        )}
+
+        {/* Favorite heart button */}
+        <button
+          onClick={handleFav}
+          disabled={favPending}
+          aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+          style={{
+            position: "absolute",
+            top: 10,
+            right: hasHealthGrade ? 70 : 10,
+            width: 32, height: 32,
+            borderRadius: "50%",
+            background: "rgba(0,0,0,0.55)",
+            border: `1px solid ${isFav ? "rgba(249,115,22,0.6)" : "rgba(255,255,255,0.15)"}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer",
+            zIndex: 3,
+            transition: "all 0.15s",
+            fontSize: 15,
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          {isFav ? "❤️" : "🤍"}
+        </button>
 
         {/* Health Grade Badge */}
         {hasHealthGrade && colors && (

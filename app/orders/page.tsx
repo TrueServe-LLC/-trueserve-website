@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import Logo from "@/components/Logo";
 import { getAuthSession } from "@/app/auth/actions";
 import OrderHistoryClient from "./OrderHistoryClient";
+import NotificationBell from "@/components/NotificationBell";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,7 @@ export default async function OrdersPage() {
                     <div className="h-6 w-px bg-white/10" />
                     <Logo size="sm" />
                 </div>
+                <NotificationBell userId={userId} />
             </nav>
 
             <main className="food-app-main">

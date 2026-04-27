@@ -7,6 +7,7 @@ import WalletUI from "@/components/WalletUI";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import ReferralCard from "@/components/ReferralCard";
 import { getAccountHomeHref, isCustomerRole } from "@/lib/account-routing";
+import NotificationBell from "@/components/NotificationBell";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,10 @@ export default async function UserSettings() {
             <nav className="food-app-nav">
                 <div className="mx-auto flex items-center justify-between px-4 sm:px-0" style={{ width: "min(1180px, calc(100% - 32px))", padding: "14px 0" }}>
                     <Logo size="sm" />
-                    <Link href="/" className="btn btn-ghost">← Back to Home</Link>
+                    <div className="flex items-center gap-3">
+                        <NotificationBell userId={userId} />
+                        <Link href="/" className="btn btn-ghost">← Back to Home</Link>
+                    </div>
                 </div>
             </nav>
 

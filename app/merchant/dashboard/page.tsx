@@ -16,6 +16,7 @@ import GHLSettingsPanel from "@/app/merchant/dashboard/GHLSettingsPanel";
 import LiveOrdersPanel from "@/app/merchant/dashboard/LiveOrdersPanel";
 import HoursPanel from "@/app/merchant/dashboard/HoursPanel";
 import CoverPhotoPanel from "@/app/merchant/dashboard/CoverPhotoPanel";
+import RevenueSparkline from "@/app/merchant/dashboard/RevenueSparkline";
 
 export const dynamic = "force-dynamic";
 
@@ -289,6 +290,9 @@ export default async function MerchantDashboard({
                     <div className="mch-stat-value">${netRevenue.toFixed(2)}</div>
                 </div>
             </div>
+
+            {/* REVENUE SPARKLINE */}
+            <RevenueSparkline orders={restaurant.orders || []} />
 
             {/* STRIPE BANNER */}
             <div className={`mch-stripe-banner${hasStripe ? ' connected' : ''}`}>

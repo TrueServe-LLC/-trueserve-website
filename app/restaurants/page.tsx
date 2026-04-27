@@ -7,6 +7,7 @@ import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import LandingSearch from "@/components/LandingSearch";
 import RestaurantCard from "./RestaurantCard";
+import { getFavorites } from "@/app/user/favorite-actions";
 import {
   addDistanceMiles,
   extractStateCode,
@@ -26,6 +27,17 @@ function RestaurantFinderContent() {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeRestaurantCount, setActiveRestaurantCount] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user?.id) {
+        setUserId(data.user.id);
+        getFavorites().then(setFavorites);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     async function fetchRestaurants() {
@@ -123,6 +135,8 @@ function RestaurantFinderContent() {
                   search={search}
                   latParam={latParam}
                   lngParam={lngParam}
+                  userId={userId}
+                  initialIsFavorited={favorites.includes(r.id)}
                 />
               ))}
               {restaurants.length === 0 && !loading && (
@@ -144,11 +158,13 @@ function RestaurantFinderContent() {
                     </>
                   ) : (
                     <>
-                      <p className="food-kicker mb-3">Pilot launch</p>
-                      <h3 className="food-heading !text-[30px] mb-3">Now live with <span className="accent">{activeRestaurantCount || "local"} restaurant partners</span></h3>
-                      <p className="text-sm text-white/55 max-w-sm mx-auto leading-relaxed">
-                        Enter your address above to see restaurants near you and discover currently active merchant locations in your area.
-                      </p>
+                      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+                        <p className="food-kicker mb-3">Pilot launch</p>
+                        <h3 className="food-heading !text-[30px] mb-3 text-center">Now live with <span className="accent">{activeRestaurantCount || "local"} restaurant partners</span></h3>
+                        <p className="text-sm text-white/55 max-w-xl leading-relaxed text-center">
+                          Enter your address above to see restaurants near you and discover currently active merchant locations in your area.
+                        </p>
+                      </div>
                     </>
                   )}
                 </div>
