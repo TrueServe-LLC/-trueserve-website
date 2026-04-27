@@ -389,21 +389,79 @@ export async function refundOrder(orderId: string) {
     if (!user) return { error: "Unauthorized" };
 
     try {
-        const { error } = await supabase
+        // Fetch order details for Stripe refund + customer notification
+        const { data: order, error: fetchError } = await supabaseAdmin
             .from('Order')
-            .update({ isRefunded: true, status: 'CANCELLED' })
+            .select('id, total, stripePaymentIntentId, posReference, restaurant:Restaurant(name), user:User(phone, email, name)')
+            .eq('id', orderId)
+            .single();
+
+        if (fetchError || !order) throw new Error("Order not found");
+
+        // Issue Stripe refund if a payment intent exists
+        let stripeRefundId: string | null = null;
+        if (order.stripePaymentIntentId) {
+            try {
+                const stripe = getStripe();
+                const refund = await stripe.refunds.create({
+                    payment_intent: order.stripePaymentIntentId,
+                    reason: "requested_by_customer",
+                });
+                stripeRefundId = refund.id;
+            } catch (stripeErr: any) {
+                // Log but don't block — already charged orders may need manual handling
+                console.error("Stripe refund failed:", stripeErr.message);
+                await logAuditAction({
+                    action: "REFUND_STRIPE_FAILED",
+                    targetId: orderId,
+                    entityType: "Order",
+                    message: `Stripe refund error: ${stripeErr.message}`,
+                });
+                // Return the error so the merchant knows
+                return { error: `Stripe error: ${stripeErr.message}. Refund the customer manually in your Stripe dashboard.` };
+            }
+        }
+
+        // Mark order as refunded in DB
+        const { error: updateError } = await supabaseAdmin
+            .from('Order')
+            .update({ isRefunded: true, status: 'CANCELLED', updatedAt: new Date().toISOString() })
             .eq('id', orderId);
 
-        if (error) throw error;
+        if (updateError) throw updateError;
 
-        await logAuditAction({ 
-            action: "REFUND_ORDER", 
-            targetId: orderId, 
-            entityType: "Order", 
-            message: "Merchant initiated refund and cancellation"
+        // Notify customer via SMS
+        const customerPhone = (order.user as any)?.phone;
+        const restaurantName = (order.restaurant as any)?.name || "the restaurant";
+        const ref = order.posReference || orderId.slice(-6).toUpperCase();
+        if (customerPhone) {
+            try {
+                await sendSMS(customerPhone, `Your order #${ref} from ${restaurantName} has been refunded. The amount will appear on your statement within 3–5 business days.`);
+            } catch { /* non-blocking */ }
+        }
+
+        // Notify customer via email
+        const customerEmail = (order.user as any)?.email;
+        const customerName = (order.user as any)?.name || "there";
+        if (customerEmail) {
+            try {
+                await sendEmail(
+                    customerEmail,
+                    `Refund issued for order #${ref}`,
+                    `<div style="font-family:sans-serif;background:#0c0f0d;color:#fff;padding:32px;max-width:560px;margin:0 auto;border-radius:12px"><p style="font-size:11px;color:#f97316;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin:0 0 8px">TrueServe Delivery</p><h1 style="font-size:24px;font-weight:900;margin:0 0 8px">Refund Issued</h1><p style="color:#aaa">Hi ${customerName}, your order <strong style="color:#fff">#${ref}</strong> from ${restaurantName} has been refunded for <strong style="color:#fff">$${Number(order.total).toFixed(2)}</strong>. Please allow 3–5 business days for the amount to appear on your statement.</p></div>`
+                );
+            } catch { /* non-blocking */ }
+        }
+
+        await logAuditAction({
+            action: "REFUND_ORDER",
+            targetId: orderId,
+            entityType: "Order",
+            message: `Merchant refunded order #${ref}. Stripe refund ID: ${stripeRefundId || "none (no payment intent)"}`,
         });
+
         revalidatePath('/merchant/dashboard');
-        return { success: true };
+        return { success: true, stripeRefundId };
     } catch (e: any) {
         return { error: e.message };
     }
