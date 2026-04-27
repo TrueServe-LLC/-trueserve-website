@@ -78,11 +78,15 @@ export async function findSimilarRestaurants(
     }
 
     // Find similar restaurants in the same state with similar compliance tier
+    // Exclude mock/test restaurants and those with no compliance score
     const { data: similarRestaurants } = await supabaseAdmin
       .from('Restaurant')
       .select('id, name, complianceScore, complianceStatus, state, createdAt')
       .eq('state', targetRestaurant.state)
+      .eq('isMock', false)
       .neq('id', restaurantId)
+      .not('complianceScore', 'is', null)
+      .gt('complianceScore', 0)
       .order('complianceScore', { ascending: false })
       .limit(limit);
 
@@ -130,12 +134,14 @@ export async function calculatePercentileRank(
       return { rank: 0, label: 'Unknown', total: 0 };
     }
 
-    // Get all restaurants in the same state
+    // Get all real restaurants in the same state with valid scores
     const { data: stateRestaurants } = await supabaseAdmin
       .from('Restaurant')
       .select('id, complianceScore')
       .eq('state', restaurant.state)
-      .not('complianceScore', 'is', null);
+      .eq('isMock', false)
+      .not('complianceScore', 'is', null)
+      .gt('complianceScore', 0);
 
     if (!stateRestaurants || stateRestaurants.length === 0) {
       return { rank: 50, label: 'Average', total: 1 };
@@ -175,7 +181,9 @@ export async function getNetworkBenchmarks(
       .from('Restaurant')
       .select('id, complianceScore, healthGrade, complianceStatus')
       .eq('state', state)
-      .not('complianceScore', 'is', null);
+      .eq('isMock', false)
+      .not('complianceScore', 'is', null)
+      .gt('complianceScore', 0);
 
     if (!restaurants || restaurants.length === 0) {
       return null;
@@ -255,11 +263,15 @@ export async function getBenchmarkComparison(
         ? Math.round(similarScores.reduce((a, b) => a + b, 0) / similarScores.length)
         : 0;
 
-    // Get top performers in state
+    // Get top performers in state — exclude mock/test restaurants, zero scores, and the current restaurant
     const { data: topPerformers } = await supabaseAdmin
       .from('Restaurant')
       .select('id, name, complianceScore, state')
       .eq('state', restaurant.state)
+      .eq('isMock', false)
+      .neq('id', restaurantId)
+      .not('complianceScore', 'is', null)
+      .gt('complianceScore', 0)
       .order('complianceScore', { ascending: false })
       .limit(3);
 
@@ -381,6 +393,9 @@ export async function getBestPerformersInState(
       .select('id, name, complianceScore, healthGrade')
       .eq('state', state)
       .eq('complianceStatus', 'PASS')
+      .eq('isMock', false)
+      .not('complianceScore', 'is', null)
+      .gt('complianceScore', 0)
       .order('complianceScore', { ascending: false })
       .limit(limit);
 

@@ -109,18 +109,18 @@ export const STATE_INSPECTION_REPORTS: Record<string, StateInspectionInfo> = {
   "NC": {
     state: "North Carolina",
     stateCode: "NC",
-    healthDept: "North Carolina Department of Health and Human Services",
-    inspectionURL: "https://www.dhhs.nc.gov/about/divisions/public-health/food-protection-program",
-    requirementsURL: "https://www.dhhs.nc.gov/about/divisions/public-health/food-protection-program/inspections",
+    healthDept: "NC Dept. of Health & Human Services – Food & Drug Protection",
+    inspectionURL: "https://www.ncdhhs.gov/divisions/public-health/food-and-drug-protection-division",
+    requirementsURL: "https://www.ncdhhs.gov/divisions/public-health/food-and-drug-protection-division/food-protection/retail-food-program",
     phoneNumber: "(919) 733-3000",
     requirements: ["Food Service License", "County Health Inspection", "Manager Certification"]
   },
   "SC": {
     state: "South Carolina",
     stateCode: "SC",
-    healthDept: "South Carolina Department of Health and Environmental Control",
-    inspectionURL: "https://www.scdhec.gov/Food-Safety/Inspection-Reports",
-    requirementsURL: "https://www.scdhec.gov/food-safety",
+    healthDept: "SC Dept. of Health & Environmental Control – Food Safety",
+    inspectionURL: "https://www.scdhec.gov/food-safety",
+    requirementsURL: "https://www.scdhec.gov/food-safety/food-establishments",
     phoneNumber: "(803) 898-3432",
     requirements: ["Food Service License", "Health Department Inspection", "Employee Training"]
   },
