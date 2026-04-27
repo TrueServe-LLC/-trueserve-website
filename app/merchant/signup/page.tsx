@@ -41,33 +41,33 @@ export default function MerchantSignupPage() {
           <section className="food-hero-card food-auth-hero">
             <div className="food-auth-image" style={{ backgroundImage: "url('/merchant_hero.png')" }} />
             <div className="food-auth-hero-inner">
-              <div className="food-eyebrow">Merchant onboarding</div>
+              <div className="food-eyebrow">🤝 Founding Partner Program</div>
               <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[56px]">Grow Your Restaurant <span className="accent">Without Losing Margin.</span></h1>
+                <h1 className="food-heading !text-[56px]">Lock In Your Rate. <span className="accent">Keep Every Dollar.</span></h1>
                 <p className="food-subtitle !max-w-[520px]">
-                  A merchant sign-up flow designed for owners and operators with clear setup steps and visuals tailored to restaurant partners.
+                  Join as a Founding Partner — first 30 days free, your rate locked forever, and zero commission on every order you take.
                 </p>
               </div>
               <ul className="food-auth-list">
                 <li>
                   <div className="food-auth-icon">1</div>
                   <div>
-                    <div className="font-extrabold">Zero platform fees</div>
-                    <div className="text-sm text-white/65">Keep more from every order while growing online reach.</div>
+                    <div className="font-extrabold">30 days free</div>
+                    <div className="text-sm text-white/65">No charge for your first month. Start taking orders risk-free.</div>
                   </div>
                 </li>
                 <li>
                   <div className="food-auth-icon">2</div>
                   <div>
-                    <div className="font-extrabold">Smart operations</div>
-                    <div className="text-sm text-white/65">Connect POS, control prep time, and automate busy windows.</div>
+                    <div className="font-extrabold">Rate locked forever</div>
+                    <div className="text-sm text-white/65">Your founding rate never increases — even as TrueServe grows.</div>
                   </div>
                 </li>
                 <li>
                   <div className="food-auth-icon">3</div>
                   <div>
-                    <div className="font-extrabold">Faster go-live</div>
-                    <div className="text-sm text-white/65">Get approved quickly and begin accepting delivery orders.</div>
+                    <div className="font-extrabold">Zero commission</div>
+                    <div className="text-sm text-white/65">Keep 100% of every order. Flat monthly fee, nothing more.</div>
                   </div>
                 </li>
               </ul>
@@ -76,9 +76,9 @@ export default function MerchantSignupPage() {
 
           <section className="food-panel food-auth-form">
             <Link href="/" className="su-back">← Back to Home</Link>
-            <p className="food-kicker mb-3">Restaurant account</p>
-            <h1 className="food-heading !text-[36px]">Partner with TrueServe</h1>
-            <p className="lead mt-2">Set up your restaurant in minutes with no hidden fees.</p>
+            <p className="food-kicker mb-3">🤝 Founding Partner Application</p>
+            <h1 className="food-heading !text-[36px]">Apply as a Founding Partner</h1>
+            <p className="lead mt-2">First 30 days free · Rate locked forever · Zero commission.</p>
 
             {stateData?.message && (
               <div className={`mt-4 rounded-xl border px-4 py-3 text-xs font-bold uppercase tracking-[0.11em] ${

@@ -11,6 +11,7 @@ export default function MerchantLanding() {
         <div className="nav-links hidden md:flex">
           <Link href="/restaurants">Order Food</Link>
           <Link href="/driver">For Drivers</Link>
+          <Link href="/pricing">Pricing</Link>
         </div>
         <div className="nav-r">
           <Link href="/merchant/login" className="btn btn-ghost">Sign In</Link>
@@ -18,33 +19,46 @@ export default function MerchantLanding() {
       </nav>
 
       <main className="food-app-main">
-        {/* Hero */}
-        <section style={{ padding: "64px 0 48px", textAlign: "center" }}>
+
+        {/* ── FOUNDING PARTNER BADGE ── */}
+        <div style={{
+          marginBottom: 24, padding: "12px 20px", borderRadius: 10, textAlign: "center",
+          background: "rgba(249,115,22,0.07)", border: "1px solid rgba(249,115,22,0.25)",
+        }}>
+          <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>
+            🤝 <strong style={{ color: "#f97316" }}>Founding Partner Program —</strong>{" "}
+            Join now for <strong style={{ color: "#fff" }}>30 days free</strong> and get your rate{" "}
+            <strong style={{ color: "#fff" }}>locked forever.</strong>
+          </p>
+        </div>
+
+        {/* ── HERO ── */}
+        <section style={{ padding: "48px 0 40px", textAlign: "center" }}>
           <p className="food-kicker" style={{ marginBottom: 16, color: "#f97316" }}>For Restaurant Partners</p>
           <h1 className="food-title" style={{ marginBottom: 20, maxWidth: 800, margin: "0 auto 20px" }}>
             Grow your restaurant<br /><span className="accent">with TrueServe</span>
           </h1>
           <p className="food-subtitle" style={{ maxWidth: 560, margin: "0 auto 36px", textAlign: "center" }}>
-            Reach more local customers, manage orders in real time, and keep more of what you earn — no upfront cost to get started.
+            Reach more local customers, manage orders in real time, and keep 100% of every dollar you earn — flat monthly rate, zero commission.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/merchant/signup" className="portal-btn-gold portal-btn-gold-block" style={{ width: "auto", padding: "14px 32px", fontSize: 14 }}>
-              Partner With Us →
+              Apply as Founding Partner →
             </Link>
-            <Link href="/merchant/login" className="portal-btn-outline portal-btn-outline-block" style={{ width: "auto", padding: "14px 28px", fontSize: 14 }}>
-              Sign In
+            <Link href="/pricing" className="portal-btn-outline portal-btn-outline-block" style={{ width: "auto", padding: "14px 28px", fontSize: 14 }}>
+              See Pricing
             </Link>
           </div>
         </section>
 
-        {/* Feature cards */}
+        {/* ── FEATURE CARDS ── */}
         <section className="grid gap-6 md:grid-cols-3" style={{ marginBottom: 56 }}>
           {[
             {
               icon: "💳",
-              kicker: "No Setup Fees",
-              title: "Zero upfront cost",
-              desc: "Get your restaurant listed and receiving orders today. We only earn when you do — no monthly minimums, no contracts.",
+              kicker: "Zero Commission",
+              title: "Keep everything you earn",
+              desc: "TrueServe charges a flat monthly fee — not a cut of every order. The more you sell, the more you keep.",
             },
             {
               icon: "📊",
@@ -53,10 +67,10 @@ export default function MerchantLanding() {
               desc: "See every order the moment it comes in, track prep timing, monitor your driver, and view daily revenue — all in one place.",
             },
             {
-              icon: "🤝",
-              kicker: "Fair Rates",
-              title: "Transparent commission",
-              desc: "Clear, flat commission rates with no hidden charges. Know exactly what you keep on every order before you accept.",
+              icon: "🔒",
+              kicker: "Rate Lock Guarantee",
+              title: "Your price, locked forever",
+              desc: "Founding partners lock in today's rate permanently. Even as TrueServe grows and pricing increases, your rate never changes.",
             },
           ].map((card) => (
             <div key={card.title} className="food-card" style={{ padding: 28 }}>
@@ -68,15 +82,15 @@ export default function MerchantLanding() {
           ))}
         </section>
 
-        {/* How it works */}
+        {/* ── HOW IT WORKS ── */}
         <section className="food-panel" style={{ marginBottom: 56, padding: 40 }}>
           <p className="food-kicker" style={{ marginBottom: 12 }}>How It Works</p>
           <h2 className="food-heading" style={{ marginBottom: 32 }}>Up and running <span className="accent">in minutes</span></h2>
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              { step: "01", title: "Apply online", desc: "Fill out a quick form with your restaurant info. We review and approve within 24 hours." },
-              { step: "02", title: "Connect your POS", desc: "Sync with Toast, Square, or enter your menu manually. Your storefront goes live instantly." },
-              { step: "03", title: "Start earning", desc: "Orders flow directly to your dashboard. Drivers are dispatched automatically. You get paid." },
+              { step: "01", title: "Apply online",    desc: "Fill out a quick form with your restaurant info. We review and approve within 24 hours." },
+              { step: "02", title: "Build your menu", desc: "Sync with Toast, Square, or Clover — or use our AI menu scanner to import your menu in seconds." },
+              { step: "03", title: "Start earning",   desc: "Orders flow directly to your dashboard. Drivers are dispatched automatically. You get paid next day." },
             ].map((item) => (
               <div key={item.step} style={{ display: "flex", gap: 16 }}>
                 <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 40, lineHeight: 1, color: "rgba(249,115,22,0.25)", flexShrink: 0, minWidth: 48 }}>{item.step}</div>
@@ -89,14 +103,16 @@ export default function MerchantLanding() {
           </div>
         </section>
 
-        {/* CTA banner */}
+        {/* ── FOUNDING PARTNER CTA ── */}
         <section style={{ textAlign: "center", padding: "40px 0 64px" }}>
-          <h2 className="food-heading" style={{ marginBottom: 12 }}>Ready to grow?</h2>
-          <p className="food-subtitle" style={{ maxWidth: 420, margin: "0 auto 28px" }}>
-            Join local restaurants already serving their neighborhood through TrueServe.
+          <p className="food-kicker" style={{ marginBottom: 10, color: "#f97316" }}>Founding Partner Program</p>
+          <h2 className="food-heading" style={{ marginBottom: 12 }}>Limited spots available.</h2>
+          <p className="food-subtitle" style={{ maxWidth: 460, margin: "0 auto 10px" }}>
+            First 30 days free. Rate locked for life. Direct line to our team during onboarding.
           </p>
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 28 }}>Month-to-month · Cancel with 30 days notice</p>
           <Link href="/merchant/signup" className="portal-btn-gold portal-btn-gold-block" style={{ width: "auto", display: "inline-flex", padding: "16px 40px", fontSize: 15 }}>
-            Get Started — It&apos;s Free
+            Apply as Founding Partner →
           </Link>
         </section>
 
@@ -105,6 +121,7 @@ export default function MerchantLanding() {
             <Logo size="md" />
             <div className="flex items-center gap-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">
               <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              <Link href="/pricing" className="hover:text-[#f97316] transition-colors">Pricing</Link>
               <Link href="/driver" className="hover:text-[#f97316] transition-colors">For Drivers</Link>
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>

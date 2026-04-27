@@ -13,7 +13,7 @@ const PLANS = [
     color: "#3dd68c",
     badge: null,
     icon: Zap,
-    cta: "Get Started",
+    cta: "Apply as Founding Partner",
     href: "/merchant/signup",
     features: [
       "0% commission on every order",
@@ -35,7 +35,7 @@ const PLANS = [
     color: "#f97316",
     badge: null,
     icon: TrendingUp,
-    cta: "Get Started",
+    cta: "Apply as Founding Partner",
     href: "/merchant/signup?plan=growth",
     features: [
       "0% commission on every order",
@@ -59,7 +59,7 @@ const PLANS = [
     color: "#a78bfa",
     badge: null,
     icon: Flame,
-    cta: "Get Started",
+    cta: "Apply as Founding Partner",
     href: "/merchant/signup?plan=scale",
     features: [
       "0% commission on every order",
@@ -133,9 +133,23 @@ export default function PricingPage() {
           </div>
         </section>
 
+        {/* ── FOUNDING PARTNER BANNER ── */}
+        <div style={{
+          marginTop: 16, padding: "18px 24px", borderRadius: 12, textAlign: "center",
+          background: "rgba(249,115,22,0.07)", border: "1px solid rgba(249,115,22,0.25)",
+        }}>
+          <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.16em", color: "#f97316" }}>
+            🤝 Founding Partner Program
+          </p>
+          <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>
+            Join now and get <strong style={{ color: "#fff" }}>30 days free</strong> + your rate{" "}
+            <strong style={{ color: "#fff" }}>locked forever</strong> — even if pricing increases later.
+          </p>
+        </div>
+
         {/* ── SAVINGS CALLOUT ── */}
         <div style={{
-          marginTop: 16, padding: "14px 20px", borderRadius: 12, textAlign: "center",
+          marginTop: 10, padding: "14px 20px", borderRadius: 12, textAlign: "center",
           background: "rgba(61,214,140,0.07)", border: "1px solid rgba(61,214,140,0.2)",
         }}>
           <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>
@@ -322,7 +336,7 @@ export default function PricingPage() {
             </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
               <Link href="/merchant/signup" className="portal-btn-gold" style={{ minWidth: 200 }}>
-                Apply as a Merchant
+                Apply as Founding Partner
               </Link>
               <Link href="/restaurants" className="portal-btn-outline" style={{ minWidth: 160 }}>
                 See the Platform
