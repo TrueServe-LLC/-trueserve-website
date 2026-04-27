@@ -195,6 +195,8 @@ export default function MenuClient({
         return raw.length ? raw : "Main Menu";
     };
 
+    const isSteak = restaurant?.name?.toLowerCase?.().includes("steak 'n shake") || restaurant?.name?.toLowerCase?.().includes("steak n shake");
+
     const categoryOrder = (() => {
         if (isDhansKitchen) {
             return ["Doubles", "Curry Platters", "Vegan", "Sides", "Drinks", "Dessert", "Main Menu"];
@@ -207,6 +209,9 @@ export default function MenuClient({
         }
         if (restaurant?.name?.toLowerCase?.().includes("krave 489")) {
             return ["Small Plates", "Salads", "Entrees", "Seafood Boil", "Sides", "Desserts", "Kids Cravings", "Main Menu"];
+        }
+        if (isSteak) {
+            return ["Steakburgers", "Hot Dogs", "Chicken", "Salads", "Sides", "Milkshakes", "Desserts", "Drinks", "Kids Meals", "Main Menu"];
         }
         return [];
     })();
@@ -337,7 +342,23 @@ export default function MenuClient({
                 return "Bowls";
             })();
 
-            const label = inferredLabel || pimentoLabel || kraveLabel || dankLabel || categoryLabelFor(item);
+            const steakLabel = (() => {
+                if (!isSteak) return null;
+                if (typeof item.category === "string" && item.category.trim().length) return null;
+                const name = String(item.name || "").toLowerCase();
+                if (name.includes("shake") || name.includes("float") || name.includes("malt")) return "Milkshakes";
+                if (name.includes("hot dog") || name.includes("frank") || name.includes("corn dog")) return "Hot Dogs";
+                if (name.includes("chicken") || name.includes("nugget") || name.includes("tender")) return "Chicken";
+                if (name.includes("salad")) return "Salads";
+                if (name.startsWith("kids ") || name.includes("kid's") || name.includes("kids meal")) return "Kids Meals";
+                if (name.includes("sundae") || name.includes("pie") || name.includes("banana split") || name.includes("dessert")) return "Desserts";
+                if (name.includes("fries") || name.includes("onion rings") || name.includes("chili") || name.includes("side") || name.includes("cheese sauce")) return "Sides";
+                if (name.includes("coffee") || name.includes("tea") || name.includes("soda") || name.includes("water") || name.includes("juice") || name.includes("lemonade") || name.includes("drink")) return "Drinks";
+                if (name.includes("burger") || name.includes("steakburger") || name.includes("double") || name.includes("triple") || name.includes("single") || name.includes("patty melt") || name.includes("sandwich")) return "Steakburgers";
+                return "Steakburgers"; // default for Steak 'n Shake is burgers
+            })();
+
+            const label = inferredLabel || pimentoLabel || kraveLabel || dankLabel || steakLabel || categoryLabelFor(item);
             if (!buckets.has(label)) buckets.set(label, []);
             buckets.get(label)!.push(item);
         }

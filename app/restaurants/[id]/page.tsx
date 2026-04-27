@@ -175,23 +175,11 @@ export default async function RestaurantMenu({
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
                                 />
                             ) : (
-                                /* Placeholder shown until a real photo is uploaded */
+                                /* Silent dark gradient fallback — no internal copy visible to customers */
                                 <div style={{
                                     width: '100%', height: '100%',
                                     background: 'linear-gradient(135deg, #1a2420 0%, #0f1a14 50%, #141a18 100%)',
-                                    display: 'flex', flexDirection: 'column',
-                                    alignItems: 'center', justifyContent: 'center', gap: 10,
-                                }}>
-                                    <div style={{
-                                        width: 52, height: 52, borderRadius: 14,
-                                        border: '2px dashed rgba(249,115,22,0.35)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: 22, color: 'rgba(249,115,22,0.5)',
-                                    }}>📷</div>
-                                    <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                                        Add cover photo in merchant dashboard
-                                    </p>
-                                </div>
+                                }} />
                             )}
                             {/* Gradient overlay — always shown */}
                             <div style={{
