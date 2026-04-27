@@ -13,6 +13,7 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
     const [view, setView] = useState<'weekly' | 'daily'>('weekly');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+    const [isError, setIsError] = useState(false);
     const [weeklyGoal, setWeeklyGoal] = useState(800);
     const [editingGoal, setEditingGoal] = useState(false);
     const [goalInput, setGoalInput] = useState('800');
@@ -59,15 +60,20 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
         if (!confirm("Are you sure you want to transfer your balance to your bank account?")) return;
         setLoading(true);
         setMessage("");
+        setIsError(false);
         try {
             const result = await createDriverPayout();
-            if (result.error) setMessage("Error: " + result.error);
-            else {
-                setMessage("Payout successful! Funds are on the way.");
+            if (result.error) {
+                setIsError(true);
+                setMessage(result.error);
+            } else {
+                setIsError(false);
+                setMessage("Payout successful! Funds are on the way. ✓");
                 setTimeout(() => window.location.reload(), 2000);
             }
         } catch (e: any) {
-            setMessage("Payout failed.");
+            setIsError(true);
+            setMessage("Payout failed — please try again or contact support.");
         } finally {
             setLoading(false);
         }
@@ -86,7 +92,11 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
                     <div className="text-4xl font-black text-emerald-400 flex items-center justify-end gap-2 drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                         ${Number(driver.balance || 0).toFixed(2)}
                     </div>
-                    {message && <p className="text-[10px] text-emerald-400 font-bold mt-2 animate-bounce">{message}</p>}
+                    {message && (
+                        <p className={`text-[10px] font-bold mt-2 ${isError ? 'text-red-400' : 'text-emerald-400 animate-bounce'}`}>
+                            {isError ? '⚠ ' : ''}{message}
+                        </p>
+                    )}
                     <button
                         onClick={handleCashOut}
                         disabled={loading || (Number(driver.balance) <= 0 && !!driver.stripeAccountId)}

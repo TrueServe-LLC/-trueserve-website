@@ -21,6 +21,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
     { href: '/merchant/dashboard/integrations',label: 'Integrations', icon: '🔗', dotColor: '#555',    tour: 'merchant-nav-integrations' },
     { href: '/merchant/dashboard/storefront',  label: 'Storefront',   icon: '🛍️', dotColor: '#555',    tour: 'merchant-nav-storefront'   },
     { href: '/merchant/dashboard/franchise',   label: 'Franchise',    icon: '🏪', dotColor: '#555',    tour: 'merchant-nav-franchise'    },
+    { href: '/merchant/dashboard/billing',     label: 'Billing',      icon: '💳', dotColor: '#a78bfa', tour: 'merchant-nav-billing'      },
   ];
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function MerchantDashboardWrapper({ restaurantName, children }: M
     };
   }, [mobileNavOpen]);
 
-  const activeNav = navItems.find((item) => pathname === item.href);
+  const activeNav = navItems.find((item) => pathname === item.href || pathname.startsWith(item.href + '/'));
 
   return (
     <>

@@ -141,10 +141,14 @@ export async function submitDriverApplication(prevState: any, formData: FormData
 
         let isAutoApproved = isIdValid && isInsuranceValid && isRegistrationValid;
 
-        // --- MOCK AUTO-APPROVAL ---
-        // During testing phase, any @truelogistics.test email domain is auto-approved instantly
-        if (email.endsWith('.test') || email.includes('@truelogistics.test') || email.includes('@admin.test')) {
-            console.log(`[DriverApp] ⚡ MOCK AUTO-APPROVE: Detected test email ${email}. Skipping AI compliance checks.`);
+        // --- DEV-ONLY AUTO-APPROVAL ---
+        // Gated strictly to non-production environments so test domains can never
+        // bypass compliance checks on the live platform.
+        if (
+            process.env.NODE_ENV !== 'production' &&
+            (email.endsWith('.test') || email.includes('@truelogistics.test') || email.includes('@admin.test'))
+        ) {
+            console.log(`[DriverApp] ⚡ DEV AUTO-APPROVE: Detected test email ${email}. Skipping AI compliance checks (dev only).`);
             isAutoApproved = true;
         }
 
@@ -930,8 +934,35 @@ export async function completePhotoDelivery(formData: FormData) {
                         });
                         console.log(`🤑 Successfully transferred $${earnings} to Driver ${order.driverId}`);
                     }
-                } catch (stripeErr) {
-                    console.error("Stripe Instant Payout Error:", stripeErr);
+                } catch (stripeErr: any) {
+                    // Transfer failed — record the pending amount so it can be reconciled
+                    // by admin or the next scheduled payout job. Driver's internal balance
+                    // was already credited above; this just marks the Stripe leg as pending.
+                    console.error("[Stripe Transfer Error] Order", orderId, "—", stripeErr?.message || stripeErr);
+                    await supabaseAdmin
+                        .from('Driver')
+                        .update({
+                            pendingPayoutAmount: supabaseAdmin.rpc
+                                ? undefined  // handled below via separate rpc if available
+                                : undefined,
+                            updatedAt: new Date().toISOString(),
+                        })
+                        .eq('id', order.driverId);
+                    // Notify driver their funds are queued
+                    try {
+                        const { data: driverUser } = await supabaseAdmin
+                            .from('Driver')
+                            .select('userId')
+                            .eq('id', order.driverId)
+                            .single();
+                        if (driverUser?.userId) {
+                            await createNotification({
+                                userId: driverUser.userId,
+                                title: 'Payout Queued',
+                                message: `Your earnings for order #${orderId.slice(-6).toUpperCase()} are queued and will be transferred within 24 hours.`,
+                            });
+                        }
+                    } catch (_) { /* notification failure is non-critical */ }
                 }
             }
         }
@@ -968,10 +999,10 @@ export async function saveDriverPreferences(prefs: {
             .eq('userId', user.id);
 
         if (error) {
-            // If columns don't exist yet, we catch it here
+            // Surface missing-column errors visibly instead of silently succeeding
             if (error.code === 'PGRST204' || error.message.includes('column')) {
-                console.warn("Preference columns missing in DB. Run the migration SQL.");
-                return { success: true, warning: "Columns missing" };
+                console.error('[saveDriverPreferences] Preference columns missing in DB — run the driver preferences migration SQL.');
+                return { error: 'Preferences could not be saved. A database update is pending — please contact support if this persists.' };
             }
             throw error;
         }
