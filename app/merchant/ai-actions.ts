@@ -10,18 +10,16 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 const CATEGORY_NORMALIZATION: Record<string, string> = {
+    // Only normalize truly ambiguous or plural/singular variations
+    // DO NOT collapse specific categories like "Burgers" → "Mains"
     appetizer: "Starters",
     appetizers: "Starters",
     starter: "Starters",
     starters: "Starters",
-    entree: "Mains",
-    entrees: "Mains",
+    entree: "Entrees",
+    entrees: "Entrees",
     main: "Mains",
     mains: "Mains",
-    burger: "Mains",
-    burgers: "Mains",
-    sandwich: "Sandwiches",
-    sandwiches: "Sandwiches",
     dessert: "Desserts",
     desserts: "Desserts",
     drink: "Drinks",
@@ -32,10 +30,13 @@ const CATEGORY_NORMALIZATION: Record<string, string> = {
     sides: "Sides",
     salad: "Salads",
     salads: "Salads",
+    sandwich: "Sandwiches",
+    sandwiches: "Sandwiches",
+    // Keep specific category names as-is (burgers, pizza, tacos, etc.)
 };
 
 function normalizeCategory(category: unknown): string {
-    if (typeof category !== "string" || !category.trim()) return "Uncategorized";
+    if (typeof category !== "string" || !category.trim()) return "";
     const cleaned = category.trim().toLowerCase().replace(/[^\w\s]/g, "");
     return CATEGORY_NORMALIZATION[cleaned] || category.trim();
 }
@@ -121,7 +122,7 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
         const { default: Anthropic } = await import('@anthropic-ai/sdk');
         const anthropic = new Anthropic({ apiKey });
 
-        const prompt = "Extract all food and drink items from this menu. For each item, provide the 'name', 'price' (as a number), 'description', and 'category' (e.g., Starters, Mains, Desserts, Drinks). Return the data ONLY as a valid JSON array of objects. Do not include any other text or markdown.";
+        const prompt = `Extract all food and drink items from this menu image. For each item return: 'name' (string), 'price' (number), 'description' (string, empty if none), and 'category' (string — use the EXACT section heading from the menu, e.g. "Steakburgers", "Milkshakes", "Wood-Fired Pizza", "Sushi Rolls". Do NOT flatten into generic labels like "Mains" — preserve the menu's own category names). Return ONLY a valid JSON array. No markdown, no extra text.`;
 
         const response = await anthropic.messages.create({
             model: "claude-3-5-sonnet-latest",

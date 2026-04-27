@@ -358,7 +358,40 @@ export default function MenuClient({
                 return "Steakburgers"; // default for Steak 'n Shake is burgers
             })();
 
-            const label = inferredLabel || pimentoLabel || kraveLabel || dankLabel || steakLabel || categoryLabelFor(item);
+            // Universal fallback: infer from item name when no DB category and no restaurant-specific rule matched
+            const universalLabel = (() => {
+                if (inferredLabel || pimentoLabel || kraveLabel || dankLabel || steakLabel) return null;
+                // Only fires when there's no DB category set
+                if (typeof item.category === "string" && item.category.trim().length) return null;
+                const name = String(item.name || "").toLowerCase();
+                if (name.includes("shake") || name.includes("smoothie") || name.includes("float") ||
+                    name.includes("coffee") || name.includes("tea") || name.includes("lemonade") ||
+                    name.includes("juice") || name.includes("soda") || name.includes("water") ||
+                    name.includes("beverage") || name.includes("drink") || name.includes("beer") ||
+                    name.includes("wine") || name.includes("cocktail") || name.includes("malt"))
+                    return "Drinks";
+                if (name.includes("fries") || name.includes("onion ring") || name.includes("coleslaw") ||
+                    name.includes("mac and cheese") || name.includes("mashed potato") ||
+                    name.includes("corn") || name.includes("rice") || name.includes("beans") ||
+                    name.includes("breadstick") || name.includes("side"))
+                    return "Sides";
+                if (name.includes("salad")) return "Salads";
+                if (name.includes("cake") || name.includes("pie") || name.includes("brownie") ||
+                    name.includes("cookie") || name.includes("ice cream") || name.includes("sundae") ||
+                    name.includes("cheesecake") || name.includes("pudding") || name.includes("cobbler") ||
+                    name.includes("dessert"))
+                    return "Desserts";
+                if (name.startsWith("kids ") || name.includes("kid's ") || name.includes("kids meal") ||
+                    name.includes("children"))
+                    return "Kids Meals";
+                if (name.includes("appetizer") || name.includes("starter") || name.includes("sampler") ||
+                    name.includes("nachos") || name.includes("wings") || name.includes("mozzarella stick") ||
+                    name.includes("egg roll") || name.includes("spring roll") || name.includes("bruschetta"))
+                    return "Starters";
+                return null; // let categoryLabelFor handle it (uses DB value or "Main Menu")
+            })();
+
+            const label = inferredLabel || pimentoLabel || kraveLabel || dankLabel || steakLabel || universalLabel || categoryLabelFor(item);
             if (!buckets.has(label)) buckets.set(label, []);
             buckets.get(label)!.push(item);
         }
