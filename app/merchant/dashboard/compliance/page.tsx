@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import { getMerchantOrRedirect } from "@/lib/merchant-auth";
+import { getAuthSession } from "@/app/auth/actions";
+import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getRestaurantInspections } from "@/lib/stateInspectionQueries";
 import { getInspectionAlertMetadata } from "@/lib/inspectionAlertQueries";
@@ -95,13 +96,19 @@ export default async function MerchantCompliancePage() {
         );
     }
 
-    const merchant = await getMerchantOrRedirect();
+    const cookieUserId = cookieStore.get("userId")?.value;
+    const { isAuth, userId } = await getAuthSession();
+    const activeUserId = userId || cookieUserId;
 
-    // Fetch merchant's first restaurant (or primary)
+    if (!activeUserId) {
+        redirect("/merchant/login");
+    }
+
+    // Fetch merchant's first restaurant directly by ownerId (same pattern as main dashboard)
     const { data: restaurants } = await supabaseAdmin
         .from("Restaurant")
         .select("id, name, complianceScore, complianceStatus, healthGrade, lastInspectionAt, city, state")
-        .eq("ownerId", merchant.id)
+        .eq("ownerId", activeUserId)
         .order("createdAt", { ascending: true });
 
     const restaurant = restaurants?.[0];
