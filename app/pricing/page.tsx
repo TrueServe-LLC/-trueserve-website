@@ -69,7 +69,7 @@ const FAQS = [
   { q: "Can I switch plans later?",          a: "Yes — upgrade or downgrade anytime from your dashboard. Changes take effect immediately, no penalty." },
   { q: "What POS systems are supported?",    a: "Toast, Square, and Clover on the Pro plan. More integrations are being added during our pilot phase." },
   { q: "Is there a contract?",               a: "No contracts, no lock-ins. Cancel anytime." },
-  { q: "What markets are you in?",           a: "Currently live in Pineville, NC and Rock Hill, SC — expanding soon." },
+  { q: "What markets are you in?",           a: "We're actively expanding — contact us to see if we're available in your area or to bring TrueServe to your market." },
 ];
 
 export default function PricingPage() {
@@ -270,7 +270,7 @@ export default function PricingPage() {
               Your restaurant,<br /><span className="accent">your revenue.</span>
             </h2>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", marginBottom: 28, lineHeight: 1.65 }}>
-              Join TrueServe during our pilot launch in Pineville, NC and Rock Hill, SC.<br />Setup takes less than 10 minutes.
+              Join TrueServe and start taking orders with zero commission.<br />Setup takes less than 10 minutes.
             </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
               <Link href="/merchant/signup" className="portal-btn-gold" style={{ minWidth: 200 }}>
