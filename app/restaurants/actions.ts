@@ -312,6 +312,47 @@ export async function placeOrder(
             console.error("SMS Alert Failed - Continuing order", smsErr);
         }
 
+        // 8. Email Notifications: Customer Confirmation + Merchant Alert
+        try {
+            const [{ data: customerData }, { data: restInfo }] = await Promise.all([
+                supabase.from('User').select('email, name').eq('id', finalUserId).single(),
+                supabase.from('Restaurant').select('name, owner:User(email)').eq('id', restaurantId).single()
+            ]);
+
+            const { sendEmail } = await import('@/lib/email');
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trueserve.delivery';
+
+            const itemRows = verifiedItems.map(i => {
+                const dbItem = (dbItems as any[]).find((d: any) => d.id === i.id);
+                return `<tr><td style="padding:7px 4px;color:#ccc;border-bottom:1px solid #1e2420">${dbItem?.name || 'Item'}</td><td style="padding:7px 4px;color:#777;text-align:center;border-bottom:1px solid #1e2420">×${i.quantity}</td><td style="padding:7px 4px;color:#fff;text-align:right;border-bottom:1px solid #1e2420;font-weight:700">$${(Number(i.price) * i.quantity).toFixed(2)}</td></tr>`;
+            }).join('');
+
+            const cardBase = `background:#0c0f0d;color:#fff;font-family:system-ui,sans-serif;padding:32px;max-width:560px;margin:0 auto;border-radius:12px`;
+            const tableBlock = `<div style="background:#141a18;border:1px solid #1e2420;border-radius:8px;padding:16px;margin:20px 0"><p style="font-size:11px;color:#555;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px">Order #${posRef}</p><table style="width:100%;border-collapse:collapse">${itemRows}</table><div style="border-top:1px solid #1e2420;margin-top:10px;padding-top:10px;text-align:right;font-size:18px;font-weight:900;color:#fff">Total: $${total.toFixed(2)}</div></div>`;
+            const btnStyle = `display:block;background:#f97316;color:#000;text-decoration:none;text-align:center;padding:14px;border-radius:9px;font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase`;
+
+            // Customer confirmation email
+            if (customerData?.email) {
+                await sendEmail(
+                    customerData.email,
+                    `Order confirmed #${posRef} — ${restInfo?.name}`,
+                    `<div style="${cardBase}"><p style="font-size:11px;color:#f97316;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin:0 0 8px">TrueServe Delivery</p><h1 style="font-size:26px;font-weight:900;margin:0 0 6px">Order Confirmed! 🎉</h1><p style="color:#aaa;margin:0">Hi ${customerData.name || 'there'}, your order from <strong style="color:#fff">${restInfo?.name}</strong> has been received and the kitchen is being notified.</p>${tableBlock}<a href="${appUrl}/orders/${newOrderId}" style="${btnStyle}">Track Your Order →</a></div>`
+                );
+            }
+
+            // Merchant email alert
+            const merchantEmail = (restInfo?.owner as any)?.email;
+            if (merchantEmail) {
+                await sendEmail(
+                    merchantEmail,
+                    `New Order #${posRef} — $${total.toFixed(2)} — Action Required`,
+                    `<div style="${cardBase}"><p style="font-size:11px;color:#f97316;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin:0 0 8px">TrueServe Merchant Alert</p><h1 style="font-size:26px;font-weight:900;margin:0 0 6px">New Order! 📦</h1><p style="color:#aaa;margin:0">A new order just came in for <strong style="color:#fff">${restInfo?.name}</strong>. Open your dashboard to start prep.</p>${tableBlock}<a href="${appUrl}/merchant/dashboard" style="${btnStyle}">Open Dashboard →</a></div>`
+                );
+            }
+        } catch (emailErr) {
+            console.error("Email notifications failed — order still valid:", emailErr);
+        }
+
         // logToFile(`SUCCESS: Order ${newOrderId} created.`);
 
         revalidatePath("/driver/dashboard");

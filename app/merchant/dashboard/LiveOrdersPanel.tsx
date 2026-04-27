@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { supabase } from "@/lib/supabase";
-import { updateOrderStatus } from "@/app/merchant/actions";
+import { updateOrderStatus, refundOrder } from "@/app/merchant/actions";
 
 interface Order {
   id: string;
@@ -34,6 +34,8 @@ export default function LiveOrdersPanel({ restaurantId, initialOrders }: LiveOrd
   const [pending, startTransition] = useTransition();
   const [actionOrderId, setActionOrderId] = useState<string | null>(null);
   const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
+  const [refundConfirmId, setRefundConfirmId] = useState<string | null>(null);
+  const [refundPending, setRefundPending] = useState(false);
 
   useEffect(() => {
     if (restaurantId === "preview") return;
@@ -184,12 +186,26 @@ export default function LiveOrdersPanel({ restaurantId, initialOrders }: LiveOrd
                   </div>
 
                   {order.status === "READY_FOR_PICKUP" && (
-                    <div style={{
-                      background: "rgba(77,202,128,0.1)", border: "1px solid rgba(77,202,128,0.3)",
-                      color: "#4dca80", borderRadius: 9, padding: "9px 14px",
-                      fontSize: 11, fontWeight: 800, whiteSpace: "nowrap", flexShrink: 0,
-                    }}>
-                      ✓ Awaiting Driver
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                      <div style={{
+                        background: "rgba(77,202,128,0.1)", border: "1px solid rgba(77,202,128,0.3)",
+                        color: "#4dca80", borderRadius: 9, padding: "9px 14px",
+                        fontSize: 11, fontWeight: 800, whiteSpace: "nowrap",
+                      }}>
+                        ✓ Awaiting Driver
+                      </div>
+                      <button
+                        onClick={() => setRefundConfirmId(order.id)}
+                        style={{
+                          background: "transparent",
+                          border: "1px solid rgba(248,113,113,0.25)", color: "#f87171",
+                          borderRadius: 9, padding: "6px 14px",
+                          fontSize: 10, fontWeight: 800, cursor: "pointer",
+                          whiteSpace: "nowrap", transition: "all 0.15s", fontFamily: "inherit",
+                        }}
+                      >
+                        ↩ Refund
+                      </button>
                     </div>
                   )}
                 </div>
@@ -245,6 +261,57 @@ export default function LiveOrdersPanel({ restaurantId, initialOrders }: LiveOrd
                 }}
               >
                 Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Refund confirmation modal */}
+      {refundConfirmId && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 1000,
+          background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px",
+        }}>
+          <div style={{
+            background: "#111", border: "1px solid #2a2a2a",
+            borderRadius: 14, padding: "24px 20px", maxWidth: 360, width: "100%",
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#fff", marginBottom: 8 }}>
+              Issue Refund?
+            </div>
+            <div style={{ fontSize: 11, color: "#666", marginBottom: 20, lineHeight: 1.5 }}>
+              Order #{refundConfirmId.slice(-6).toUpperCase()} will be marked as refunded and cancelled. The customer will be notified.
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                onClick={() => setRefundConfirmId(null)}
+                style={{
+                  flex: 1, background: "transparent", border: "1px solid #333", color: "#aaa",
+                  borderRadius: 9, padding: "10px 0", fontSize: 12, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                Keep It
+              </button>
+              <button
+                disabled={refundPending}
+                onClick={async () => {
+                  const id = refundConfirmId;
+                  setRefundPending(true);
+                  await refundOrder(id);
+                  setRefundPending(false);
+                  setRefundConfirmId(null);
+                }}
+                style={{
+                  flex: 1, background: "rgba(248,113,113,0.12)",
+                  border: "1px solid rgba(248,113,113,0.35)", color: "#f87171",
+                  borderRadius: 9, padding: "10px 0", fontSize: 12, fontWeight: 800,
+                  cursor: "pointer", fontFamily: "inherit",
+                  opacity: refundPending ? 0.5 : 1,
+                }}
+              >
+                {refundPending ? "…" : "Yes, Refund"}
               </button>
             </div>
           </div>

@@ -44,6 +44,11 @@ export default function AdminDashboard({ role, stats, recentActivity }: Dashboar
         👥 Manage Team
       </Link>
     ),
+    canView('dashboard') && (
+      <Link key="orders" href="/admin/orders" className="adm-stripe-btn" style={{ background: '#1e3a2a', color: '#4dca80', border: '1px solid #1e4a2e' }}>
+        📦 Live Order Board
+      </Link>
+    ),
     canView('feature-switches') && (
       <Link key="flags" href="/admin/feature-switches" className="adm-stripe-btn">
         🔧 Feature Switches

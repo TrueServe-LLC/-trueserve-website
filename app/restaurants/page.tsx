@@ -29,6 +29,7 @@ function RestaurantFinderContent() {
   const [activeRestaurantCount, setActiveRestaurantCount] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [filterOpenNow, setFilterOpenNow] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -117,8 +118,8 @@ function RestaurantFinderContent() {
             )}
 
             <div className="rest-filters">
-              <button className="on">All Restaurants</button>
-              <button>Fast Delivery</button>
+              <button className={!filterOpenNow ? "on" : ""} onClick={() => setFilterOpenNow(false)}>All Restaurants</button>
+              <button className={filterOpenNow ? "on" : ""} onClick={() => setFilterOpenNow(v => !v)}>Open Now</button>
               <button>Top Rated</button>
             </div>
           </section>
@@ -127,7 +128,14 @@ function RestaurantFinderContent() {
             <div className="food-panel text-center py-20 opacity-60 font-bold text-[#f97316] animate-pulse">Loading nearby restaurants...</div>
           ) : (
             <div className="rest-grid">
-              {restaurants.map((r) => (
+              {restaurants.filter((r) => {
+                if (!filterOpenNow) return true;
+                const o = r.openTime?.slice(0, 5);
+                const c = r.closeTime?.slice(0, 5);
+                if (!o || !c) return true;
+                const now = new Date().toTimeString().slice(0, 5);
+                return now >= o && now <= c;
+              }).map((r) => (
                 <RestaurantCard
                   key={r.id}
                   r={r}
