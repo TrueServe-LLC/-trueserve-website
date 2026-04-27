@@ -97,12 +97,12 @@ export default function PricingPage() {
         {/* ── HERO ── */}
         <section className="food-panel relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at top, rgba(249,115,22,0.18), transparent 60%)" }} />
-          <div className="relative z-10 text-center max-w-2xl mx-auto py-6">
+          <div className="relative z-10 py-6" style={{ textAlign: "center" }}>
             <p className="food-kicker mb-4">Merchant Pricing</p>
             <h1 className="food-heading" style={{ fontSize: "clamp(36px,6vw,64px)", lineHeight: 0.95, textAlign: "center" }}>
               Keep every dollar<br /><span className="accent">you earn.</span>
             </h1>
-            <p className="food-subtitle mt-5 mx-auto" style={{ maxWidth: 480, fontSize: 14, textAlign: "center" }}>
+            <p className="food-subtitle mt-5" style={{ maxWidth: 480, fontSize: 14, textAlign: "center", margin: "20px auto 0" }}>
               No commissions. No hidden fees. TrueServe makes money when you grow — not by taking a cut of every order.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginTop: 20 }}>
