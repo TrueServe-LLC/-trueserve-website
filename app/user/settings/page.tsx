@@ -30,21 +30,29 @@ export default async function UserSettings() {
 
             <main className="food-app-main">
                 <section className="food-panel">
-                    <div className="flex flex-col items-center gap-7 md:flex-row md:items-start">
-                        <ProfileAvatar
-                            userId={userId}
-                            initialName={user?.name || ""}
-                            initialColor={user?.avatarColor || "#E8A230"}
-                            initialUrl={user?.avatarUrl}
-                            className="h-32 w-32 md:h-36 md:w-36"
-                        />
-                        <div className="w-full text-center md:text-left">
-                            <p className="food-kicker mb-3">Customer Profile</p>
-                            <h1 className="food-heading">Account Settings</h1>
-                            <p className="food-subtitle !max-w-none mt-2">{user?.email}</p>
-                            <div className="food-chip-row mt-4">
-                                <div className="food-chip"><span className="food-chip-dot" /> Click avatar to upload photo or choose a preset</div>
-                                <div className="food-chip"><span className="food-chip-dot" /> Wallet and cards managed below</div>
+                    <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
+                        {/* Avatar with click hint */}
+                        <div className="flex flex-col items-center gap-2 shrink-0">
+                            <ProfileAvatar
+                                userId={userId}
+                                initialName={user?.name || ""}
+                                initialColor={user?.avatarColor || "#E8A230"}
+                                initialUrl={user?.avatarUrl}
+                                className="h-28 w-28 sm:h-32 sm:w-32"
+                            />
+                            <span className="text-[10px] font-black uppercase tracking-[0.14em] text-white/30">Click to edit</span>
+                        </div>
+
+                        {/* Profile info */}
+                        <div className="flex-1 text-center sm:text-left min-w-0">
+                            <p className="food-kicker mb-2">Customer Profile</p>
+                            <h1 className="food-heading !text-[clamp(36px,6vw,64px)] leading-none">
+                                {user?.name || "Account Settings"}
+                            </h1>
+                            <p className="text-sm text-white/45 mt-2 truncate">{user?.email}</p>
+                            <div className="food-chip-row mt-4 justify-center sm:justify-start">
+                                <div className="food-chip"><span className="food-chip-dot" />Tap avatar to customize</div>
+                                <div className="food-chip"><span className="food-chip-dot" />Wallet below</div>
                             </div>
                         </div>
                     </div>
