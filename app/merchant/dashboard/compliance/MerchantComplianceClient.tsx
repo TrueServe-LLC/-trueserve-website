@@ -743,53 +743,74 @@ export default function MerchantComplianceClient({
                 {/* State Inspection Requirements */}
                 {stateInspectionInfo && (
                     <div className="mc-panel">
-                        <h2 className="text-lg md:text-xl font-bold text-white mb-4">
-                            {stateInspectionInfo.state} Inspection Requirements
+                        <h2 className="text-lg md:text-xl font-bold text-white mb-1 flex items-center gap-2">
+                            🏛️ {stateInspectionInfo.state} Inspection Requirements
                         </h2>
+                        <p className="text-xs text-white/40 mb-5">Official state health department contact & compliance resources</p>
 
-                        {/* Health Department Info */}
-                        <div className="mb-6 rounded-lg bg-white/5 p-4 border border-white/10">
-                            <h3 className="font-bold text-white mb-3">Health Department Contact</h3>
-                            <p className="text-sm text-gray-300 mb-2"><strong>{stateInspectionInfo.healthDept}</strong></p>
-                            <p className="text-sm text-gray-300 mb-4">📞 {stateInspectionInfo.phoneNumber}</p>
+                        {/* Health Dept card */}
+                        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "18px 20px", marginBottom: 16 }}>
+                            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                                <div>
+                                    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>Health Department</p>
+                                    <p style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 6 }}>{stateInspectionInfo.healthDept}</p>
+                                    <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center", gap: 6 }}>
+                                        <span style={{ fontSize: 12 }}>📞</span> {stateInspectionInfo.phoneNumber}
+                                    </p>
+                                </div>
+                            </div>
 
-                            {/* Quick Links */}
-                            <div className="flex flex-col sm:flex-row gap-2">
+                            <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
                                 <a
                                     href={stateInspectionInfo.inspectionURL}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-[#f97316] hover:bg-[#d99620] text-black px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
+                                    style={{
+                                        display: "inline-flex", alignItems: "center", gap: 6,
+                                        background: "rgba(249,115,22,0.12)", border: "1px solid rgba(249,115,22,0.3)",
+                                        color: "#f97316", borderRadius: 8, padding: "8px 14px",
+                                        fontSize: 12, fontWeight: 700, textDecoration: "none",
+                                        transition: "background 0.15s"
+                                    }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(249,115,22,0.2)")}
+                                    onMouseLeave={e => (e.currentTarget.style.background = "rgba(249,115,22,0.12)")}
                                 >
-                                    📋 View Inspection Reports
-                                    <ExternalLink className="h-3 w-3" />
+                                    📋 Inspection Reports
+                                    <ExternalLink style={{ width: 11, height: 11 }} />
                                 </a>
                                 <a
                                     href={stateInspectionInfo.requirementsURL}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
+                                    style={{
+                                        display: "inline-flex", alignItems: "center", gap: 6,
+                                        background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                                        color: "rgba(255,255,255,0.7)", borderRadius: 8, padding: "8px 14px",
+                                        fontSize: 12, fontWeight: 700, textDecoration: "none",
+                                        transition: "background 0.15s"
+                                    }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+                                    onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
                                 >
-                                    📖 View Requirements
-                                    <ExternalLink className="h-3 w-3" />
+                                    📖 Requirements
+                                    <ExternalLink style={{ width: 11, height: 11 }} />
                                 </a>
                             </div>
                         </div>
 
-                        {/* Requirements List */}
-                        <h3 className="font-bold text-white mb-3">Key Requirements</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {/* Requirements checklist */}
+                        <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>Key Requirements</p>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 8 }}>
                             {stateInspectionInfo.requirements.map((req, idx) => (
-                                <div key={idx} className="flex items-start gap-2 text-sm text-gray-300">
-                                    <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                                    <span>{req}</span>
+                                <div key={idx} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(77,202,128,0.06)", border: "1px solid rgba(77,202,128,0.15)", borderRadius: 8, padding: "8px 12px" }}>
+                                    <span style={{ color: "#4dca80", fontSize: 14, flexShrink: 0 }}>✓</span>
+                                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>{req}</span>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Info Box */}
-                        <div className="mt-4 p-3 rounded bg-blue-500/10 border border-blue-500/30 text-xs text-blue-200">
-                            💡 <strong>Tip:</strong> Visit your state's health department website to review the latest inspection standards, complete any required training, and submit documentation.
+                        <div style={{ marginTop: 16, padding: "10px 14px", borderRadius: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", fontSize: 11, color: "rgba(255,255,255,0.4)", lineHeight: 1.5 }}>
+                            💡 Visit your state health department's website to review the latest standards, complete required training, and submit documentation.
                         </div>
                     </div>
                 )}
