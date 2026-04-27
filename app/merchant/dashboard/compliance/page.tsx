@@ -125,39 +125,74 @@ export default async function MerchantCompliancePage() {
         );
     }
 
-    // Fetch inspection history
-    const { data: inspections } = await supabaseAdmin
-        .from("ComplianceInspection")
-        .select("id, inspectionDate, violations, followUpRequired, score")
-        .eq("restaurantId", restaurant.id)
-        .order("inspectionDate", { ascending: false })
-        .limit(10);
+    // Fetch all compliance data — each call is guarded so a single missing table
+    // or DB error cannot crash the page and eject the merchant from the portal.
+    let inspections: any[] = [];
+    let liveInspections: any[] = [];
+    let inspectionMetadata = { lastSyncedAt: null as string | null, recordCount: 0, isStale: true };
+    let inspectionAlertMetadata: any = null;
+    let violationAggregate: any = null;
+    let benchmarkComparison: any = null;
+    let driverStats = { totalDrivers: 0, activeDrivers: 0, pendingTraining: 0, suspended: 0 };
 
-    // Fetch live state inspection data
-    const { inspections: liveInspections, metadata: inspectionMetadata } =
-        await getRestaurantInspections(restaurant.id, restaurant.state);
+    try {
+        const { data } = await supabaseAdmin
+            .from("ComplianceInspection")
+            .select("id, inspectionDate, violations, followUpRequired, score")
+            .eq("restaurantId", restaurant.id)
+            .order("inspectionDate", { ascending: false })
+            .limit(10);
+        inspections = (data || []).map((insp: any) => ({
+            id: insp.id,
+            inspectionDate: insp.inspectionDate,
+            violations: insp.violations || [],
+            followUpRequired: insp.followUpRequired || false,
+            score: insp.score || 0,
+        }));
+    } catch (e) {
+        console.warn("[Compliance] ComplianceInspection fetch failed:", e);
+    }
 
-    // Fetch inspection due alert metadata
-    const inspectionAlertMetadata = await getInspectionAlertMetadata(restaurant.id);
+    try {
+        const result = await getRestaurantInspections(restaurant.id, restaurant.state);
+        liveInspections = result.inspections;
+        inspectionMetadata = result.metadata;
+    } catch (e) {
+        console.warn("[Compliance] getRestaurantInspections failed:", e);
+    }
 
-    // Fetch violation severity aggregate
-    const violationAggregate = await aggregateViolationsBySeverity(restaurant.id);
+    try {
+        inspectionAlertMetadata = await getInspectionAlertMetadata(restaurant.id);
+    } catch (e) {
+        console.warn("[Compliance] getInspectionAlertMetadata failed:", e);
+    }
 
-    // Fetch benchmarking comparison
-    const benchmarkComparison = await getBenchmarkComparison(restaurant.id);
+    try {
+        violationAggregate = await aggregateViolationsBySeverity(restaurant.id);
+    } catch (e) {
+        console.warn("[Compliance] aggregateViolationsBySeverity failed:", e);
+    }
 
-    // Fetch driver compliance stats
-    const { data: drivers } = await supabaseAdmin
-        .from("Driver")
-        .select("complianceStatus, complianceScore")
-        .eq("restaurantId", restaurant.id);
+    try {
+        benchmarkComparison = await getBenchmarkComparison(restaurant.id);
+    } catch (e) {
+        console.warn("[Compliance] getBenchmarkComparison failed:", e);
+    }
 
-    const driverStats = {
-        totalDrivers: drivers?.length || 0,
-        activeDrivers: drivers?.filter((d: any) => d.complianceStatus === "ACTIVE").length || 0,
-        pendingTraining: drivers?.filter((d: any) => d.complianceStatus === "PENDING").length || 0,
-        suspended: drivers?.filter((d: any) => d.complianceStatus === "SUSPENDED").length || 0,
-    };
+    try {
+        const { data: drivers } = await supabaseAdmin
+            .from("Driver")
+            .select("complianceStatus, complianceScore")
+            .eq("restaurantId", restaurant.id);
+        driverStats = {
+            totalDrivers: drivers?.length || 0,
+            activeDrivers: drivers?.filter((d: any) => d.complianceStatus === "ACTIVE").length || 0,
+            pendingTraining: drivers?.filter((d: any) => d.complianceStatus === "PENDING").length || 0,
+            suspended: drivers?.filter((d: any) => d.complianceStatus === "SUSPENDED").length || 0,
+        };
+    } catch (e) {
+        console.warn("[Compliance] Driver fetch failed:", e);
+    }
 
     return (
         <MerchantComplianceClient
@@ -171,13 +206,7 @@ export default async function MerchantCompliancePage() {
                 city: restaurant.city,
                 state: restaurant.state,
             }}
-            inspections={(inspections || []).map((insp: any) => ({
-                id: insp.id,
-                inspectionDate: insp.inspectionDate,
-                violations: insp.violations || [],
-                followUpRequired: insp.followUpRequired || false,
-                score: insp.score || 0,
-            }))}
+            inspections={inspections}
             liveInspections={liveInspections}
             inspectionMetadata={inspectionMetadata}
             inspectionAlertMetadata={inspectionAlertMetadata}
