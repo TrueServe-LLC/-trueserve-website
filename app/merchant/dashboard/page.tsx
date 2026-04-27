@@ -15,6 +15,7 @@ import IssuesPanel from "@/app/merchant/dashboard/IssuesPanel";
 import GHLSettingsPanel from "@/app/merchant/dashboard/GHLSettingsPanel";
 import LiveOrdersPanel from "@/app/merchant/dashboard/LiveOrdersPanel";
 import HoursPanel from "@/app/merchant/dashboard/HoursPanel";
+import CoverPhotoPanel from "@/app/merchant/dashboard/CoverPhotoPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -340,6 +341,13 @@ export default async function MerchantDashboard({
                     busyUntil={restaurant.busyUntil}
                 />
             </div>
+
+            {/* COVER PHOTO */}
+            <CoverPhotoPanel
+                restaurantId={restaurant.id}
+                currentImageUrl={restaurant.imageUrl ?? null}
+                restaurantName={restaurant.name}
+            />
 
             {/* HOURS */}
             <HoursPanel
