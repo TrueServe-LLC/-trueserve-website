@@ -26,7 +26,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
  * `npx ts-node scripts/seed_dhans.ts`
  *
  * LOGIN CREDENTIALS:
- * Email: dhanskitchen@trueserve.test
+ * Email: info@dhanskitchen.trueserve.delivery
  * Password: DhansKitchen2026!
  *
  * VERIFICATION:
@@ -40,7 +40,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 async function addDhansKitchen() {
     console.log("Adding Dhan's Kitchen to Fayetteville...")
     const now = new Date().toISOString()
-    const merchantEmail = 'dhanskitchen@trueserve.test'
+    const merchantEmail = 'info@dhanskitchen.trueserve.delivery'
     const merchantPassword = 'DhansKitchen2026!'
 
     // 1. Create or Update Supabase Auth Account
@@ -206,7 +206,7 @@ async function addDhansKitchen() {
     }
 
     console.log('\n🎉 Dhan\'s Kitchen is ready to login!')
-    console.log('   Email: dhanskitchen@trueserve.test')
+    console.log('   Email: info@dhanskitchen.trueserve.delivery')
     console.log('   Password: DhansKitchen2026!')
     console.log('   URL: http://localhost:3000/merchant/login')
 }
