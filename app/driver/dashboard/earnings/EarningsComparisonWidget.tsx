@@ -17,9 +17,15 @@ const ECW_CSS = `
   .ecw-compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .ecw-mile-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .ecw-breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  @media (max-width: 480px) {
+  .ecw-monthly-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; }
+  @media (max-width: 640px) {
+    .ecw-compare-grid { grid-template-columns: 1fr; }
+    .ecw-breakdown-grid { grid-template-columns: 1fr; }
     .ecw-mile-tiles { grid-template-columns: 1fr 1fr; }
     .ecw-mile-tiles > :last-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) {
+    .ecw-monthly-grid { grid-template-columns: 1fr 1fr; }
   }
 `;
 let _ecwInjected = false;
@@ -235,7 +241,7 @@ export default function EarningsComparisonWidget({ orders, driver }: Props) {
                         </div>
                         <div style={{ background: '#0c0d11', border: '1px solid #1c1f28', borderRadius: 10, overflow: 'hidden' }}>
                             {/* Header */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '10px 14px', borderBottom: '1px solid #1c1f28' }}>
+                            <div className="ecw-monthly-grid" style={{ padding: '10px 14px', borderBottom: '1px solid #1c1f28' }}>
                                 {['Month', 'Deliveries', 'Miles', 'Deduction'].map(h => (
                                     <span key={h} style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: '#444' }}>{h}</span>
                                 ))}
@@ -246,8 +252,7 @@ export default function EarningsComparisonWidget({ orders, driver }: Props) {
                                 </div>
                             ) : (
                                 monthlyMileage.map((row, i) => (
-                                    <div key={i} style={{
-                                        display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                                    <div key={i} className="ecw-monthly-grid" style={{
                                         padding: '10px 14px',
                                         borderBottom: i < monthlyMileage.length - 1 ? '1px solid #141720' : 'none',
                                         background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
@@ -261,8 +266,7 @@ export default function EarningsComparisonWidget({ orders, driver }: Props) {
                             )}
                             {/* Total row */}
                             {monthlyMileage.length > 0 && (
-                                <div style={{
-                                    display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                                <div className="ecw-monthly-grid" style={{
                                     padding: '12px 14px', background: 'rgba(62,207,110,0.05)',
                                     borderTop: '1px solid rgba(62,207,110,0.15)',
                                 }}>

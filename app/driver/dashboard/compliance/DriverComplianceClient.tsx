@@ -129,6 +129,7 @@ export default function DriverComplianceClient({
                 /* Stats row */
                 .comp-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
                 @media (max-width: 600px) { .comp-stats-row { grid-template-columns: 1fr 1fr; } }
+                @media (max-width: 400px) { .comp-stats-row { grid-template-columns: 1fr; } }
                 .comp-stat { background: #141a18; border: 1px solid #1e2420; border-radius: 8px; padding: 14px 14px; }
                 .comp-stat-lbl { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: #555; margin-bottom: 6px; }
                 .comp-stat-val { font-size: 18px; font-weight: 800; color: #fff; }
@@ -202,6 +203,12 @@ export default function DriverComplianceClient({
 
                 @media (max-width: 767px) {
                     .comp-wrap { padding-bottom: 0; }
+                }
+                @media (max-width: 640px) {
+                    .comp-title { font-size: 22px; margin-bottom: 14px; }
+                    .comp-card { padding: 14px 14px; }
+                    .comp-section-title { font-size: 13px; }
+                    .comp-chat-wrap { height: 320px; }
                 }
             ` }} />
 

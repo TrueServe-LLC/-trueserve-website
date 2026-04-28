@@ -10,7 +10,6 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
     const [loading, setLoading] = useState(false);
     const [done, setDone] = useState(false);
 
-    // Camera state
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
@@ -22,7 +21,7 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
             setStream(mediaStream);
             if (videoRef.current) videoRef.current.srcObject = mediaStream;
         } catch {
-            setError("Camera access required to take delivery photo.");
+            setError("Camera access required to take a delivery photo.");
         }
     };
 
@@ -48,10 +47,7 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
         canvasRef.current.toBlob(blob => { if (blob) { setPhotoCaptured(blob); stopCamera(); } }, 'image/jpeg', 0.8);
     };
 
-    const enterDigit = (d: string) => {
-        if (digits.length < 4) setDigits(prev => [...prev, d]);
-    };
-
+    const enterDigit = (d: string) => { if (digits.length < 4) setDigits(prev => [...prev, d]); };
     const delDigit = () => setDigits(prev => prev.slice(0, -1));
 
     const submitDelivery = async () => {
@@ -83,7 +79,7 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 pos => doSubmit(pos.coords.latitude, pos.coords.longitude),
-                () => { setError("Location access required for Safe Drop Verification."); setLoading(false); }
+                () => { setError("Location access required."); setLoading(false); }
             );
         } else {
             setError("Geolocation not supported."); setLoading(false);
@@ -92,48 +88,30 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
 
     const numpad = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
 
-    return (
-        <div style={{
-            background: "#111418",
-            borderRadius: 16,
-            padding: 20,
-            width: "100%",
-            marginTop: 8,
-            border: "1px solid #1e2530",
-        }}>
-            {/* Status bar */}
+    if (done) {
+        return (
             <div style={{
-                background: "#0a2e22",
-                border: "1px solid #1a5c3e",
-                borderRadius: 8,
-                padding: "8px 16px",
-                textAlign: "center",
-                marginBottom: 16,
+                background: 'rgba(62,207,110,0.08)', border: '1px solid rgba(62,207,110,0.25)',
+                borderRadius: 8, padding: '14px 16px', textAlign: 'center', marginTop: 8,
             }}>
-                <span style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: "0.15em",
-                    color: "#2ee8a0",
-                    textTransform: "uppercase",
-                }}>
-                    ● PICKED UP — HEADING TO CUSTOMER
-                </span>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#3ecf6e', letterSpacing: '0.08em' }}>
+                    ✓ Delivery Complete
+                </div>
             </div>
+        );
+    }
 
-            {/* Toggle */}
+    return (
+        <div style={{ background: '#111418', borderRadius: 10, padding: 14, marginTop: 8, border: '1px solid #1e2420' }}>
+
+            {/* Mode toggle */}
             <div style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                background: "#1a1d22",
-                borderRadius: 10,
-                padding: 4,
-                gap: 4,
-                marginBottom: 16,
+                display: 'grid', gridTemplateColumns: '1fr 1fr',
+                background: '#0f1210', borderRadius: 8,
+                padding: 3, gap: 3, marginBottom: 12,
             }}>
-                {(['PIN', 'PHOTO'] as const).map((m, i) => {
-                    const label = m === 'PIN' ? 'HAND TO ME' : 'LEAVE AT DOOR';
+                {(['PIN', 'PHOTO'] as const).map(m => {
+                    const label = m === 'PIN' ? 'Hand to Me' : 'Leave at Door';
                     const active = mode === m;
                     return (
                         <button
@@ -141,17 +119,15 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                             type="button"
                             onClick={() => handleTabChange(m)}
                             style={{
-                                fontFamily: "'Barlow Condensed', sans-serif",
-                                fontSize: 13,
-                                fontWeight: 700,
-                                letterSpacing: "0.1em",
-                                padding: "10px",
-                                border: active ? "1px solid #2ee8a0" : "1px solid transparent",
-                                borderRadius: 7,
-                                cursor: "pointer",
-                                background: active ? "#1a3d2e" : "transparent",
-                                color: active ? "#2ee8a0" : "#5a6170",
-                                transition: "all 0.15s",
+                                fontSize: 11, fontWeight: 800, letterSpacing: '0.1em',
+                                padding: '8px 10px',
+                                border: active ? '1px solid rgba(249,115,22,0.4)' : '1px solid transparent',
+                                borderRadius: 6, cursor: 'pointer',
+                                background: active ? 'rgba(249,115,22,0.12)' : 'transparent',
+                                color: active ? '#f97316' : '#555',
+                                transition: 'all 0.15s',
+                                fontFamily: 'inherit',
+                                textTransform: 'uppercase',
                             }}
                         >
                             {label}
@@ -161,57 +137,41 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
             </div>
 
             {error && (
-                <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: "10px 14px", marginBottom: 12 }}>
-                    <p style={{ color: "#f87171", fontSize: 10, fontWeight: 700, textAlign: "center", textTransform: "uppercase", letterSpacing: "0.12em" }}>{error}</p>
+                <div style={{ background: 'rgba(232,64,64,0.08)', border: '1px solid rgba(232,64,64,0.25)', borderRadius: 6, padding: '8px 12px', marginBottom: 10 }}>
+                    <p style={{ color: '#e84040', fontSize: 10, fontWeight: 700, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{error}</p>
                 </div>
             )}
 
             {mode === 'PIN' ? (
-                <div style={{
-                    background: "#0d1117",
-                    border: "1px solid #1e2530",
-                    borderRadius: 12,
-                    padding: 20,
-                    marginBottom: 12,
-                    textAlign: "center",
-                }}>
-                    <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "#3a4555", marginBottom: 14, textTransform: "uppercase" }}>
-                        4-DIGIT PIN
+                <div style={{ background: '#0f1210', border: '1px solid #1e2420', borderRadius: 8, padding: 12, marginBottom: 10, textAlign: 'center' }}>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', color: '#555', marginBottom: 10, textTransform: 'uppercase' }}>
+                        4-Digit PIN from {customerName || 'Customer'}
                     </div>
 
                     {/* PIN boxes */}
-                    <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 12 }}>
                         {[0,1,2,3].map(i => {
                             const filled = i < digits.length;
                             const active = i === digits.length;
                             return (
                                 <div key={i} style={{
-                                    width: 56, height: 68,
-                                    background: "#141820",
-                                    border: `2px solid ${filled ? "#2ee8a0" : active ? "#5ee8b0" : "#2a3040"}`,
-                                    borderRadius: 10,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontFamily: "'Barlow Condensed', sans-serif",
-                                    fontSize: 36,
-                                    fontWeight: 800,
-                                    color: "#2ee8a0",
-                                    transition: "border-color 0.15s",
-                                    userSelect: "none",
+                                    width: 48, height: 52,
+                                    background: '#141a18',
+                                    border: `2px solid ${filled ? '#f97316' : active ? 'rgba(249,115,22,0.4)' : '#1e2420'}`,
+                                    borderRadius: 8,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: 28, fontWeight: 800, color: '#f97316',
+                                    transition: 'border-color 0.15s',
+                                    userSelect: 'none',
                                 }}>
-                                    {digits[i] ?? "\u00a0"}
+                                    {digits[i] ?? '\u00a0'}
                                 </div>
                             );
                         })}
                     </div>
 
-                    <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: "#3a4555", textTransform: "uppercase", marginBottom: 14 }}>
-                        RETRIEVE ACCESS CODE FROM {customerName?.toUpperCase() || 'RECIPIENT'}
-                    </div>
-
                     {/* Numpad */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
                         {numpad.map((key, i) => {
                             if (key === '') return <div key={i} />;
                             const isDel = key === '⌫';
@@ -221,19 +181,15 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                                     type="button"
                                     onClick={() => isDel ? delDigit() : enterDigit(key)}
                                     style={{
-                                        background: "#1a1d22",
-                                        border: "1px solid #2a3040",
-                                        borderRadius: 8,
-                                        padding: "13px",
-                                        fontFamily: "'Barlow Condensed', sans-serif",
-                                        fontSize: isDel ? 14 : 20,
-                                        fontWeight: 700,
-                                        color: isDel ? "#5a6170" : "#c8d4e0",
-                                        cursor: "pointer",
-                                        transition: "background 0.1s",
+                                        background: '#141a18', border: '1px solid #1e2420',
+                                        borderRadius: 7, padding: '10px',
+                                        fontSize: isDel ? 13 : 18, fontWeight: 700,
+                                        color: isDel ? '#555' : '#ccc',
+                                        cursor: 'pointer', transition: 'background 0.1s',
+                                        fontFamily: 'inherit',
                                     }}
-                                    onMouseEnter={e => (e.currentTarget.style.background = "#22262e")}
-                                    onMouseLeave={e => (e.currentTarget.style.background = "#1a1d22")}
+                                    onMouseEnter={e => (e.currentTarget.style.background = '#1e2420')}
+                                    onMouseLeave={e => (e.currentTarget.style.background = '#141a18')}
                                 >
                                     {key}
                                 </button>
@@ -242,63 +198,61 @@ export default function CompleteDeliveryForm({ orderId, customerName, deliveryIn
                     </div>
                 </div>
             ) : (
-                <div style={{ marginBottom: 12 }}>
-                    <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", background: "#080808", borderRadius: 12, overflow: "hidden", border: "1px solid #1e2530", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ marginBottom: 10 }}>
+                    <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#080808', borderRadius: 8, overflow: 'hidden', border: '1px solid #1e2420', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {!photoCaptured ? (
                             <>
-                                <video ref={videoRef} autoPlay playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 {stream && (
                                     <button
                                         type="button"
                                         onClick={takePhoto}
-                                        style={{ position: "absolute", bottom: 20, width: 64, height: 64, background: "#f97316", borderRadius: "50%", border: "4px solid white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                        style={{ position: 'absolute', bottom: 16, width: 56, height: 56, background: '#f97316', borderRadius: '50%', border: '3px solid white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                     >
-                                        <div style={{ width: 22, height: 22, background: "black", borderRadius: "50%" }} />
+                                        <div style={{ width: 18, height: 18, background: 'black', borderRadius: '50%' }} />
                                     </button>
                                 )}
                                 {!stream && !error && (
-                                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.1)", fontWeight: 700, letterSpacing: "0.4em", textTransform: "uppercase" }}>INITIATING UPLINK...</span>
+                                    <span style={{ fontSize: 10, color: '#555', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Starting camera…</span>
                                 )}
                             </>
                         ) : (
                             <>
-                                <img src={URL.createObjectURL(photoCaptured)} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Proof" />
+                                <img src={URL.createObjectURL(photoCaptured)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Proof" />
                                 <button
                                     type="button"
                                     onClick={() => { setPhotoCaptured(null); startCamera(); }}
-                                    style={{ position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,0.6)", color: "white", fontSize: 10, fontWeight: 700, textTransform: "uppercase", padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer" }}
+                                    style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', padding: '5px 10px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontFamily: 'inherit' }}
                                 >
                                     Retake
                                 </button>
                             </>
                         )}
-                        <canvas ref={canvasRef} style={{ display: "none" }} />
+                        <canvas ref={canvasRef} style={{ display: 'none' }} />
                     </div>
                 </div>
             )}
 
-            {/* Verify button */}
+            {/* Submit */}
             <button
                 type="button"
                 onClick={submitDelivery}
-                disabled={loading || done || (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)}
+                disabled={loading || (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)}
                 style={{
-                    width: "100%",
-                    padding: "15px",
-                    background: done ? "#2ee8a0" : (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured) ? "#1a3d2e" : "#2ee8a0",
-                    color: done ? "#071a12" : (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured) ? "#2a5540" : "#071a12",
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 14,
-                    fontWeight: 800,
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    border: "none",
-                    borderRadius: 10,
-                    cursor: (loading || done || (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)) ? "not-allowed" : "pointer",
-                    transition: "background 0.15s, transform 0.1s",
+                    width: '100%', padding: '11px',
+                    background: (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)
+                        ? 'transparent' : '#f97316',
+                    color: (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)
+                        ? '#444' : '#000',
+                    border: (mode === 'PIN' && digits.length < 4) || (mode === 'PHOTO' && !photoCaptured)
+                        ? '1px solid #1e2420' : 'none',
+                    borderRadius: 8, cursor: loading ? 'wait' : 'pointer',
+                    fontSize: 11, fontWeight: 800, letterSpacing: '0.14em',
+                    textTransform: 'uppercase', transition: 'background 0.15s',
+                    fontFamily: 'inherit',
                 }}
             >
-                {loading ? "FINALIZING MISSION..." : done ? "MISSION COMPLETE ✓" : "VERIFY & COMPLETE MISSION"}
+                {loading ? 'Confirming…' : 'Complete Delivery'}
             </button>
         </div>
     );

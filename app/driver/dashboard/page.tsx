@@ -344,8 +344,16 @@ export default async function DriverDashboard() {
                 .dd-stat-grid { grid-template-columns: repeat(3, 1fr); }
             }
             @media (max-width: 640px) {
-                .dd-stat-grid { grid-template-columns: 1fr 1fr; }
+                .dd-stat-grid { grid-template-columns: repeat(3, 1fr); }
+                .dd-stat-card { padding: 12px 10px; }
+                .dd-stat-value { font-size: 20px; }
                 .dd-addr-grid { grid-template-columns: 1fr; }
+                .dd-stripe-banner { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 16px; }
+                .dd-stripe-left { align-items: flex-start; }
+                .dd-stripe-btn { text-align: center; justify-content: center; white-space: normal; }
+                .dd-stripe-connected { text-align: center; }
+                .dd-weather-card { padding: 14px 16px; }
+                .dd-weather-temp { font-size: 22px; }
             }
         `}</style>
 

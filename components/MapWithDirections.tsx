@@ -162,14 +162,27 @@ export default function MapWithDirections({
         );
     }
 
-    if (!isLoaded) return <div className="w-full bg-slate-900 animate-pulse rounded-2xl flex items-center justify-center text-slate-500" style={{ height: mapHeight }}>Loading Map...</div>;
+    if (!isLoaded) return (
+        <div style={{ width: '100%', height: mapHeight, background: '#0f1210', border: '1px solid #1e2420', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Loading map…
+        </div>
+    );
 
     if (error) {
         return (
-            <div className="w-full bg-slate-100 rounded-2xl flex flex-col items-center justify-center text-red-500 p-4 border border-red-300" style={{ height: mapHeight }}>
-                <p className="font-bold mb-2">Map Error</p>
-                <p className="text-sm">{error}</p>
-                <p className="text-xs text-slate-500 mt-4 max-w-xs text-center">Check console for details or ensure API key has Directions API enabled.</p>
+            <div style={{
+                width: '100%', height: mapHeight,
+                background: '#0f1210', border: '1px solid rgba(232,64,64,0.25)',
+                borderRadius: 10, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                padding: '16px', textAlign: 'center', gap: 6,
+            }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#e84040', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    Map unavailable
+                </div>
+                <div style={{ fontSize: 10, color: '#555', maxWidth: 220, lineHeight: 1.5 }}>
+                    {error.includes('authorization') ? 'API key domain restriction — add this host in Google Cloud Console.' : error}
+                </div>
             </div>
         );
     }
@@ -189,8 +202,8 @@ export default function MapWithDirections({
 
     if (!mapCenter) {
         return (
-            <div className="w-full bg-slate-900 rounded-2xl flex items-center justify-center text-slate-500 text-sm" style={{ height: mapHeight }}>
-                Waiting for live route coordinates...
+            <div style={{ width: '100%', height: mapHeight, background: '#0f1210', border: '1px solid #1e2420', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                Waiting for route coordinates…
             </div>
         );
     }

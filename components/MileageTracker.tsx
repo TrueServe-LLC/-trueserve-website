@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+
+const MT_CSS = `
+  .mt-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid #1c1f28; }
+  .mt-header-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #1c1f28; gap: 10px; flex-wrap: wrap; }
+  @media (max-width: 480px) {
+    .mt-stats-row { grid-template-columns: 1fr 1fr; }
+    .mt-header-row { gap: 8px; }
+  }
+`;
+let _mtInjected = false;
 import { useRamenStream } from "@/hooks/useRamenStream";
 import { driverLocChannel } from "@/lib/ramen/types";
 import type { DriverLocationPayload } from "@/lib/ramen/types";
@@ -71,6 +81,14 @@ interface Props {
 export default function MileageTracker({ driverId, activeOrderId, activeOrderEarnings = 0 }: Props) {
   const [trips, setTrips] = useState<TripRecord[]>([]);
   const [activeMiles, setActiveMiles] = useState(0);
+
+  useEffect(() => {
+    if (_mtInjected || typeof document === 'undefined') return;
+    const s = document.createElement('style');
+    s.textContent = MT_CSS;
+    document.head.appendChild(s);
+    _mtInjected = true;
+  }, []);
   const lastPos = useRef<{ lat: number; lng: number } | null>(null);
   const activeOrderRef = useRef(activeOrderId);
   activeOrderRef.current = activeOrderId;
@@ -129,10 +147,7 @@ export default function MileageTracker({ driverId, activeOrderId, activeOrderEar
       borderRadius: 12, overflow: "hidden", marginTop: 16,
     }}>
       {/* Header */}
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 16px", borderBottom: "1px solid #1c1f28",
-      }}>
+      <div className="mt-header-row">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#f97316" }} />
           <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#f97316" }}>
@@ -156,7 +171,7 @@ export default function MileageTracker({ driverId, activeOrderId, activeOrderEar
       </div>
 
       {/* Stats row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderBottom: "1px solid #1c1f28" }}>
+      <div className="mt-stats-row">
         {[
           { label: "YTD Miles", value: ytdMiles.toFixed(1) },
           { label: "Tax Deduction", value: `$${totalDeduction.toFixed(0)}` },

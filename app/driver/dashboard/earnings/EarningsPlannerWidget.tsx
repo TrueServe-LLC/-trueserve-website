@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Props {
     weeklyTotal: number;
@@ -8,6 +8,18 @@ interface Props {
 }
 
 const PRESETS = [500, 800, 1000, 1500];
+
+const EPW_CSS = `
+  .epw-prediction-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .epw-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .epw-presets { display: flex; gap: 6px; flex-wrap: wrap; }
+  @media (max-width: 480px) {
+    .epw-prediction-grid { grid-template-columns: 1fr; }
+    .epw-header-row { flex-direction: column; gap: 10px; }
+    .epw-presets { gap: 4px; }
+  }
+`;
+let _epwInjected = false;
 
 export default function EarningsPlannerWidget({ weeklyTotal, daysLeft }: Props) {
     const [weeklyGoal, setWeeklyGoal] = useState(800);
@@ -21,11 +33,19 @@ export default function EarningsPlannerWidget({ weeklyTotal, daysLeft }: Props) 
     const perDay      = remaining / Math.max(daysLeft, 1);
     const goalHit     = weeklyTotal >= weeklyGoal;
 
+    useEffect(() => {
+        if (_epwInjected || typeof document === 'undefined') return;
+        const s = document.createElement('style');
+        s.textContent = EPW_CSS;
+        document.head.appendChild(s);
+        _epwInjected = true;
+    }, []);
+
     return (
         <div style={{
             background: 'linear-gradient(135deg, rgba(249,115,22,0.06) 0%, rgba(0,0,0,0) 60%)',
             border: '1px solid rgba(249,115,22,0.18)',
-            padding: '22px 24px',
+            padding: '18px 20px',
             marginBottom: 28,
             position: 'relative',
             overflow: 'hidden',
@@ -40,7 +60,7 @@ export default function EarningsPlannerWidget({ weeklyTotal, daysLeft }: Props) 
             }} />
 
             {/* Header row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 18, flexWrap: 'wrap' }}>
+            <div className="epw-header-row">
                 <div>
                     <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#f97316', marginBottom: 4 }}>
                         Earnings Forecast
@@ -100,7 +120,7 @@ export default function EarningsPlannerWidget({ weeklyTotal, daysLeft }: Props) 
                     )}
                     {/* Preset chips */}
                     {!editingGoal && (
-                        <div style={{ display: 'flex', gap: 6 }}>
+                        <div className="epw-presets">
                             {PRESETS.map(g => (
                                 <button
                                     key={g}
@@ -171,7 +191,7 @@ export default function EarningsPlannerWidget({ weeklyTotal, daysLeft }: Props) 
                     </div>
                 </div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                <div className="epw-prediction-grid">
                     {[
                         { label: 'Still Needed', value: `$${remaining.toFixed(0)}`, sub: `${pct.toFixed(0)}% there`, color: '#fff' },
                         { label: 'Trips to Goal', value: String(tripsNeeded), sub: `~$${avgPerTrip}/trip avg`, color: '#f97316' },

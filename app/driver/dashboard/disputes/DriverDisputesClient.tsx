@@ -131,6 +131,14 @@ export default function DriverDisputesClient({ driverName, pastDisputes }: Props
 
                 /* ── empty state ── */
                 .empty-state { background: #080808; border: 1px solid #131720; padding: 36px; text-align: center; font-size: 11px; color: #222; font-style: italic; }
+
+                @media (max-width: 640px) {
+                    .disp-title { font-size: 22px; }
+                    .disp-sub { margin-bottom: 18px; }
+                    .disp-card { padding: 16px; }
+                    .disp-card-title { font-size: 15px; margin-bottom: 14px; }
+                    .success-box { padding: 20px 16px; }
+                }
             ` }} />
 
             <div className="disp-title">Report <span>an Issue</span></div>

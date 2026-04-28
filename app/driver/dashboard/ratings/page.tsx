@@ -149,6 +149,19 @@ export default async function DriverRatings() {
                 @media (max-width: 900px) {
                     .rp-wrap { padding: 18px 16px; }
                 }
+                @media (max-width: 640px) {
+                    .rp-wrap { padding: 14px 12px; }
+                    .rp-title { font-size: 22px; margin-bottom: 16px; }
+                    .tier-hero-top { padding: 16px 16px 12px; gap: 12px; }
+                    .tier-icon-wrap { width: 48px; height: 48px; font-size: 22px; border-radius: 12px; }
+                    .tier-name { font-size: 22px; }
+                    .tier-progress-wrap { padding: 0 16px 16px; }
+                    .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+                    .stat-val { font-size: 24px; }
+                    .stat-card { padding: 14px 12px; }
+                    .feedback-section { padding: 16px; }
+                    .roadmap-tier { padding: 14px 12px; }
+                }
             ` }} />
 
             <div className="rp-wrap">

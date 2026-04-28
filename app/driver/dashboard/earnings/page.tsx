@@ -73,8 +73,8 @@ export default async function DriverEarnings() {
                 /* ── layout ── */
                 .two-col-ledger { display: grid; grid-template-columns: 1fr 360px; gap: 1px; background: #1c1f28; border-bottom: 1px solid #1c1f28; }
                 @media (max-width: 1024px) { .two-col-ledger { grid-template-columns: 1fr; } }
-                .ledger-left  { background: #0c0c0e; padding: 32px; }
-                .ledger-right { background: #080808; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
+                .ledger-left  { background: #0c0c0e; padding: 28px 24px; }
+                .ledger-right { background: #080808; padding: 28px 24px; display: flex; flex-direction: column; gap: 16px; }
 
                 /* ── heading ── */
                 .section-hd-title { font-size: 36px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 8px; }
@@ -136,19 +136,38 @@ export default async function DriverEarnings() {
                 .dl-btn { width: 100%; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px; background: transparent; border: 1px solid #2a2f3a; color: #555; cursor: pointer; margin-top: 12px; transition: all .15s; }
                 .dl-btn:hover { border-color: #f97316; color: #f97316; }
 
+                .widget-wrap { padding: 0 32px; margin-top: 28px; }
+                .widget-wrap + .widget-wrap { margin-top: 8px; }
+
+                /* Mobile earnings cards */
+                .ledger-mobile-only { display: none; }
+                .ledger-mobile-row { background: #0f1219; border: 1px solid #1c1f28; border-radius: 8px; padding: 12px 14px; margin-bottom: 6px; }
+                .ledger-mobile-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+                .ledger-mobile-name { font-size: 13px; font-weight: 700; color: #ccc; }
+                .ledger-mobile-total { font-size: 15px; font-weight: 800; color: #3dd68c; }
+                .ledger-mobile-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+                .ledger-mobile-meta span { font-size: 10px; color: #555; background: #141a18; border: 1px solid #1e2420; border-radius: 6px; padding: 2px 8px; font-family: 'DM Mono', monospace; }
                 @media (max-width: 768px) {
-                    .ledger-left, .ledger-right { padding: 18px; }
-                    .section-hd-title { font-size: 34px; }
-                    .stat-card-val { font-size: 22px; }
+                    .ledger-left, .ledger-right { padding: 16px; }
+                    .section-hd-title { font-size: 26px; }
+                    .stat-card-val { font-size: 20px; }
+                    .widget-wrap { padding: 0 16px; }
                 }
                 @media (max-width: 480px) {
-                    .section-hd-title { font-size: 28px; }
-                    .ledger-table th, .ledger-table td { padding: 8px 10px; }
+                    .section-hd-title { font-size: 22px; }
+                    .section-hd-sub { margin-bottom: 16px; }
+                    .ledger-left, .ledger-right { padding: 12px; }
+                    .stat-cards-row { grid-template-columns: 1fr 1fr; }
+                    .ledger-table th, .ledger-table td { padding: 7px 8px; font-size: 11px; }
+                    .liq-balance-val { font-size: 24px; }
+                    .widget-wrap { padding: 0 12px; margin-top: 16px; }
+                    .ledger-desktop-only { display: none; }
+                    .ledger-mobile-only { display: block; }
                 }
             ` }} />
 
             {/* ── Predictive Earnings Planner (client widget) ── */}
-            <div style={{ padding: '0 32px', marginTop: 28 }}>
+            <div className="widget-wrap">
                 <EarningsPlannerWidget
                     weeklyTotal={weeklyTotal}
                     daysLeft={7 - new Date().getDay() || 7}
@@ -156,7 +175,7 @@ export default async function DriverEarnings() {
             </div>
 
             {/* ── You vs DoorDash + Mileage Tax Tracker ── */}
-            <div style={{ padding: '0 32px', marginTop: 8 }}>
+            <div className="widget-wrap">
                 <EarningsComparisonWidget orders={mockOrders} driver={driver} />
             </div>
 
@@ -182,8 +201,8 @@ export default async function DriverEarnings() {
                         </div>
                     </div>
 
-                    {/* Earnings table */}
-                    <div className="ledger-table-wrap">
+                    {/* Earnings — table on desktop, cards on mobile */}
+                    <div className="ledger-table-wrap ledger-desktop-only">
                         <table className="ledger-table">
                             <thead>
                                 <tr>
@@ -208,6 +227,22 @@ export default async function DriverEarnings() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="ledger-mobile-only">
+                        {MOCK_ROWS.map((row, i) => (
+                            <div key={i} className="ledger-mobile-row">
+                                <div className="ledger-mobile-top">
+                                    <span className="ledger-mobile-name">{row.restaurant}</span>
+                                    <span className="ledger-mobile-total">${row.total.toFixed(2)}</span>
+                                </div>
+                                <div className="ledger-mobile-meta">
+                                    <span>{row.date}</span>
+                                    <span>{row.miles.toFixed(1)} mi</span>
+                                    <span>Base ${row.base.toFixed(2)}</span>
+                                    <span className="col-tip">Tip ${row.tip.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     <button className="csv-btn">⬇ Download CSV</button>

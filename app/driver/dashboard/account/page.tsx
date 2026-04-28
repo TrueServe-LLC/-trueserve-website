@@ -127,10 +127,17 @@ export default async function DriverAccount() {
                     color: #3ecf6e; cursor: default;
                 }
 
+                @media (max-width: 640px) {
+                    .acct-wrap { max-width: 100%; }
+                    .acct-title { font-size: 22px; margin-bottom: 14px; }
+                    .acct-hero { padding: 14px 16px; }
+                    .acct-card-body { padding: 12px 14px; }
+                }
                 @media (max-width: 500px) {
                     .acct-hero { flex-direction: column; align-items: flex-start; gap: 12px; }
-                    .acct-info-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+                    .acct-info-row { flex-direction: column; align-items: flex-start; gap: 6px; }
                     .acct-info-val { text-align: left; }
+                    .acct-grid { grid-template-columns: 1fr; }
                 }
             ` }} />
 

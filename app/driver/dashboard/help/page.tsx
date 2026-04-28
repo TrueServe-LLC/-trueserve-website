@@ -1,52 +1,135 @@
 export default function DriverHelp() {
+    const categories = [
+        { icon: '💰', title: 'Pay & Earnings',      desc: 'Missing pay, promotions, cash out issues.' },
+        { icon: '📱', title: 'App Issues',           desc: 'Bugs, crashes, login problems.' },
+        { icon: '🛡️', title: 'Safety & Incidents',  desc: 'Report an accident or safety concern.' },
+        { icon: '👤', title: 'Account Info',         desc: 'Update vehicle, documents, phone number.' },
+    ];
+
+    const faqs = [
+        {
+            q: 'How is pay calculated?',
+            a: 'Pay is based on base fare + mileage + wait time + 100% of tips. TrueServe shows an estimated pay breakdown before you accept every order.',
+        },
+        {
+            q: 'How do I cancel an order?',
+            a: 'Go to Order Details → Help → Cancel Order. Excessive cancellations may affect your acceptance rate and tier standing.',
+        },
+        {
+            q: 'When do I get paid?',
+            a: 'Your balance is available for instant cash-out at any time from the Settlements page. There are no holds or delays.',
+        },
+        {
+            q: 'How do tips work?',
+            a: 'TrueServe passes 100% of customer tips to you. Unlike some platforms, tips are always shown in full before you accept.',
+        },
+    ];
+
     return (
-        <div className="max-w-2xl mx-auto space-y-8 animate-fade-in-up">
-            <h1 className="text-3xl font-bold">Help & Support</h1>
+        <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', maxWidth: 720 }}>
+            <style dangerouslySetInnerHTML={{ __html: `
+                .help-title { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-bottom: 6px; }
+                .help-title span { color: #f97316; }
+                .help-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #444; margin-bottom: 24px; display: block; }
 
-            <section className="card bg-white/5 border-white/10 p-6 text-center">
-                <h2 className="text-xl font-bold mb-2">Need immediate assistance?</h2>
-                <p className="text-slate-400 mb-6 text-sm">Our support team is available 24/7 for active delivery issues.</p>
-                <button className="btn btn-primary w-full py-3 flex items-center justify-center gap-2">
-                    <span>💬</span> Chat with Support
-                </button>
-            </section>
+                .help-cta { background: #141a18; border: 1px solid #1e2420; border-radius: 10px; padding: 20px; margin-bottom: 16px; text-align: center; }
+                .help-cta h2 { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+                .help-cta p { font-size: 12px; color: #666; margin-bottom: 16px; }
+                .help-chat-btn {
+                    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+                    width: 100%; padding: 12px; background: #f97316; color: #000; border: none;
+                    border-radius: 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.12em;
+                    text-transform: uppercase; cursor: pointer; font-family: inherit; transition: background 0.15s;
+                }
+                .help-chat-btn:hover { background: #ea6c10; }
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="card bg-white/5 border-white/10 p-4 hover:bg-white/10 transition-colors cursor-pointer">
-                    <h3 className="font-bold mb-1">💰 Pay & Earnings</h3>
-                    <p className="text-xs text-slate-400">Missing pay, promotions, cash out issues.</p>
-                </div>
-                <div className="card bg-white/5 border-white/10 p-4 hover:bg-white/10 transition-colors cursor-pointer">
-                    <h3 className="font-bold mb-1">📱 App Issues</h3>
-                    <p className="text-xs text-slate-400">Bugs, crashes, login problems.</p>
-                </div>
-                <div className="card bg-white/5 border-white/10 p-4 hover:bg-white/10 transition-colors cursor-pointer">
-                    <h3 className="font-bold mb-1">🛡️ Safety & Incidents</h3>
-                    <p className="text-xs text-slate-400">Report an accident or safety concern.</p>
-                </div>
-                <div className="card bg-white/5 border-white/10 p-4 hover:bg-white/10 transition-colors cursor-pointer">
-                    <h3 className="font-bold mb-1">👤 Account Info</h3>
-                    <p className="text-xs text-slate-400">Update vehicle, documents, phone number.</p>
-                </div>
+                .help-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+                @media (max-width: 480px) { .help-categories { grid-template-columns: 1fr; } }
+                .help-cat-card {
+                    background: #141a18; border: 1px solid #1e2420; border-radius: 10px;
+                    padding: 14px 16px; cursor: pointer; transition: border-color 0.15s, background 0.15s;
+                }
+                .help-cat-card:hover { border-color: rgba(249,115,22,0.35); background: rgba(249,115,22,0.04); }
+                .help-cat-icon { font-size: 18px; margin-bottom: 8px; }
+                .help-cat-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+                .help-cat-desc { font-size: 11px; color: #666; line-height: 1.5; }
+
+                .help-faq-section { background: #141a18; border: 1px solid #1e2420; border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+                .help-faq-hd { padding: 14px 16px; border-bottom: 1px solid #1e2420; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #777; }
+                .help-faq-item { border-bottom: 1px solid #1e2420; }
+                .help-faq-item:last-child { border-bottom: none; }
+                .help-faq-q { padding: 14px 16px; font-size: 13px; font-weight: 700; color: #ccc; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; user-select: none; }
+                .help-faq-q:hover { color: #fff; }
+                .help-faq-chevron { font-size: 10px; color: #555; flex-shrink: 0; transition: transform 0.15s; }
+                .help-faq-chevron.open { transform: rotate(180deg); }
+                .help-faq-a { padding: 0 16px 14px; font-size: 12px; color: #666; line-height: 1.6; }
+
+                .help-contact { background: #0f1210; border: 1px solid #1e2420; border-radius: 10px; padding: 16px; }
+                .help-contact-hd { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-bottom: 10px; }
+                .help-contact-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #131720; }
+                .help-contact-row:last-child { border-bottom: none; }
+                .help-contact-icon { font-size: 16px; flex-shrink: 0; width: 28px; text-align: center; }
+                .help-contact-label { font-size: 12px; font-weight: 700; color: #ccc; }
+                .help-contact-sub { font-size: 10px; color: #555; margin-top: 1px; }
+
+                @media (max-width: 640px) {
+                    .help-title { font-size: 22px; }
+                    .help-sub { margin-bottom: 16px; }
+                }
+            ` }} />
+
+            <div className="help-title">Help <span>&amp; Support</span></div>
+            <span className="help-sub">24/7 assistance for drivers</span>
+
+            {/* CTA */}
+            <div className="help-cta">
+                <h2>Need immediate help?</h2>
+                <p>Our support team is available around the clock for active delivery issues.</p>
+                <button className="help-chat-btn">💬 Chat with Support</button>
             </div>
 
-            <section className="card bg-white/5 border-white/10 p-6 space-y-4">
-                <h2 className="text-lg font-bold">Common Questions</h2>
-                <div className="collapse collapse-arrow bg-black/20 border border-white/5 rounded-box">
-                    <input type="radio" name="my-accordion-2" />
-                    <div className="collapse-title font-medium">How is pay calculated?</div>
-                    <div className="collapse-content text-sm text-slate-400">
-                        <p>Pay is based on base fare + mileage + wait time + 100% of tips. TrueServe provides an estimated pay projection.</p>
+            {/* Categories */}
+            <div className="help-categories">
+                {categories.map(cat => (
+                    <div key={cat.title} className="help-cat-card">
+                        <div className="help-cat-icon">{cat.icon}</div>
+                        <div className="help-cat-title">{cat.title}</div>
+                        <div className="help-cat-desc">{cat.desc}</div>
                     </div>
-                </div>
-                <div className="collapse collapse-arrow bg-black/20 border border-white/5 rounded-box">
-                    <input type="radio" name="my-accordion-2" />
-                    <div className="collapse-title font-medium">How do I cancel an order?</div>
-                    <div className="collapse-content text-sm text-slate-400">
-                        <p>Go to Order Details {'>'} Help {'>'} Cancel Order. Please note excessive cancellations may affect your rating.</p>
+                ))}
+            </div>
+
+            {/* FAQs */}
+            <div className="help-faq-section">
+                <div className="help-faq-hd">Common Questions</div>
+                {faqs.map((faq, i) => (
+                    <details key={i} className="help-faq-item">
+                        <summary className="help-faq-q">
+                            {faq.q}
+                            <span className="help-faq-chevron">▼</span>
+                        </summary>
+                        <div className="help-faq-a">{faq.a}</div>
+                    </details>
+                ))}
+            </div>
+
+            {/* Contact */}
+            <div className="help-contact">
+                <div className="help-contact-hd">Other Ways to Reach Us</div>
+                {[
+                    { icon: '📧', label: 'Email Support', sub: 'drivers@trueserve.com — reply within 4 hours' },
+                    { icon: '📞', label: 'Phone (Active Delivery)', sub: '1-800-TRUESERVE — press 2 for drivers' },
+                    { icon: '🚨', label: 'Emergency Only', sub: 'For safety incidents during an active order' },
+                ].map(item => (
+                    <div key={item.label} className="help-contact-row">
+                        <div className="help-contact-icon">{item.icon}</div>
+                        <div>
+                            <div className="help-contact-label">{item.label}</div>
+                            <div className="help-contact-sub">{item.sub}</div>
+                        </div>
                     </div>
-                </div>
-            </section>
+                ))}
+            </div>
         </div>
     );
 }
