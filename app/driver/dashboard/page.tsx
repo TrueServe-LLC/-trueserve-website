@@ -11,6 +11,7 @@ import DriverMap from "@/components/DriverMap";
 import DriverRouteMap from "./DriverRouteMap";
 import DriverLocationTracker from "@/components/DriverLocationTracker";
 import WeatherCard from "@/components/WeatherCard";
+import { OrderTransparencyCard } from "./page-pilot-widgets";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +41,28 @@ export default async function DriverDashboard() {
     let stats = { totalEarnings: 0, balance: 0, trips: 0, rating: 0 };
 
     if (isPreview) {
-        availableOrders = [];
+        availableOrders = [
+            {
+                id: "preview-avail-001",
+                status: "PENDING",
+                total: 32.00,
+                totalPay: 14.25,
+                tip: 6.00,
+                distance: 2.3,
+                deliveryAddress: "500 N College St, Charlotte NC",
+                restaurant: { name: "The Noodle House", address: "220 S Tryon St, Charlotte NC", complianceScore: 88, complianceStatus: "ACTIVE" },
+            },
+            {
+                id: "preview-avail-002",
+                status: "PENDING",
+                total: 27.50,
+                totalPay: 11.50,
+                tip: null,
+                distance: 1.8,
+                deliveryAddress: "1234 Central Ave, Charlotte NC",
+                restaurant: { name: "Sakura Sushi", address: "401 N Tryon St, Charlotte NC", complianceScore: 92, complianceStatus: "ACTIVE" },
+            },
+        ];
         myActiveOrders = [{
             id: "preview-order-001",
             status: "PICKED_UP",
@@ -498,41 +520,17 @@ export default async function DriverDashboard() {
                 {availableOrders.length === 0 ? (
                     <div className="dd-empty-state">No nearby opportunities right now.</div>
                 ) : (
-                    availableOrders.slice(0, 4).map((order: any) => {
-                        const complianceScore = order.restaurant?.complianceScore || 0;
-                        const complianceStatus = order.restaurant?.complianceStatus || 'UNKNOWN';
-                        const isCompliant = complianceStatus !== 'FLAGGED' && complianceScore >= 50;
-                        return (
-                            <div key={order.id} className="dd-avail-card">
-                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                                    <div className="dd-avail-name">{order.restaurant?.name}</div>
-                                    <span style={{ fontSize: 10, color: '#5bcfd4', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Live</span>
-                                </div>
-                                <div className="dd-avail-addr">{order.restaurant?.address}</div>
-                                <div className="dd-badge-row">
-                                    <span className="dd-badge dd-badge-green">${(order.totalPay || order.total)?.toFixed(2)} payout</span>
-                                    <span className="dd-badge dd-badge-muted">{order.distance?.toFixed(1) || '1.2'} mi</span>
-                                    {isCompliant
-                                        ? <span className="dd-badge dd-badge-green">✓ Compliant</span>
-                                        : <span className="dd-badge dd-badge-red">⚠ Flagged</span>
-                                    }
-                                </div>
-                                <form action={async (formData) => {
-                                    "use server";
-                                    const id = formData.get("orderId") as string;
-                                    await acceptOrder(id);
-                                }}>
-                                    <input type="hidden" name="orderId" value={order.id} />
-                                    <button
-                                        className="dd-accept-btn"
-                                        disabled={!isCompliant}
-                                    >
-                                        {isCompliant ? 'Accept Order' : 'Cannot Accept — Flagged Restaurant'}
-                                    </button>
-                                </form>
-                            </div>
-                        );
-                    })
+                    availableOrders.slice(0, 4).map((order: any) => (
+                        <OrderTransparencyCard
+                            key={order.id}
+                            order={order}
+                            trustScore={null}
+                            acceptAction={async (formData) => {
+                                "use server";
+                                await acceptOrder(formData.get("orderId") as string);
+                            }}
+                        />
+                    ))
                 )}
             </div>
 

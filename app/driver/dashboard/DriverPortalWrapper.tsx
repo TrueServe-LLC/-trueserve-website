@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/app/auth/actions';
 
@@ -12,6 +13,18 @@ interface DriverPortalWrapperProps {
 
 export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle }: DriverPortalWrapperProps) {
   const pathname = usePathname();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = mobileNavOpen ? 'hidden' : prev;
+    return () => { document.body.style.overflow = prev; };
+  }, [mobileNavOpen]);
 
   const navItems = [
     { href: '/driver/dashboard', label: 'Dashboard', icon: '📊', tour: 'driver-nav-dashboard' },
@@ -178,14 +191,91 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
           letter-spacing: 0.08em !important;
           font-weight: 600 !important;
         }
-        @media (max-width: 768px) {
-          .drv-sidebar { width: 160px !important; min-width: 160px !important; }
-          .drv-main { margin-left: 160px !important; padding: 16px !important; }
+        /* ── Mobile: hamburger drawer (mirrors merchant portal) ── */
+        .drv-mobile-topbar { display: none !important; }
+        .drv-mobile-overlay { display: none !important; }
+        .drv-mobile-nav-btn {
+          width: 42px !important; height: 42px !important;
+          border-radius: 12px !important;
+          border: 1px solid rgba(249,115,22,0.28) !important;
+          background: rgba(255,255,255,0.04) !important;
+          color: #f97316 !important;
+          display: inline-flex !important;
+          align-items: center !important; justify-content: center !important;
+          font-size: 18px !important; cursor: pointer !important;
+          flex-shrink: 0 !important;
+        }
+        .drv-mobile-eyebrow {
+          color: #6e7782 !important; font-size: 10px !important;
+          font-weight: 800 !important; letter-spacing: .14em !important;
+          text-transform: uppercase !important; margin-bottom: 4px !important;
+        }
+        .drv-mobile-title {
+          color: #fff !important; font-size: 16px !important;
+          font-weight: 900 !important; line-height: 1.1 !important;
+          white-space: nowrap !important; overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+        .drv-mobile-status {
+          display: inline-flex !important; align-items: center !important;
+          gap: 6px !important; padding: 6px 10px !important;
+          border-radius: 999px !important;
+          border: 1px solid rgba(249,115,22,0.22) !important;
+          background: rgba(249,115,22,0.08) !important;
+          color: #f97316 !important; font-size: 10px !important;
+          font-weight: 800 !important; letter-spacing: .1em !important;
+          text-transform: uppercase !important; flex-shrink: 0 !important;
+        }
+
+        @media (max-width: 767px) {
+          .drv-layout { display: block !important; }
+          .drv-mobile-topbar {
+            display: flex !important;
+            align-items: center !important; gap: 12px !important;
+            justify-content: space-between !important;
+            position: sticky !important; top: 0 !important; z-index: 120 !important;
+            padding: 14px 16px !important;
+            margin: -14px -14px 16px !important;
+            background: rgba(10,12,9,0.94) !important;
+            backdrop-filter: blur(14px) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+          }
+          .drv-mobile-overlay {
+            display: block !important;
+            position: fixed !important; inset: 0 !important;
+            background: rgba(0,0,0,0.62) !important;
+            backdrop-filter: blur(3px) !important;
+            z-index: 109 !important;
+          }
+          .drv-sidebar {
+            width: min(82vw, 260px) !important;
+            min-width: min(82vw, 260px) !important;
+            max-width: min(82vw, 260px) !important;
+            transform: translateX(-105%) !important;
+            transition: transform .22s ease !important;
+            box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
+            z-index: 130 !important;
+          }
+          .drv-sidebar.drv-sidebar-open { transform: translateX(0) !important; }
+          .drv-main { margin-left: 0 !important; padding: 14px !important; min-height: 100dvh !important; }
+          .dd-two-col, .dd-bottom-grid { grid-template-columns: 1fr !important; }
+          .dd-stat-grid { grid-template-columns: 1fr 1fr !important; }
+          .dd-addr-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── Tablet: slimmer sidebar ── */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .drv-sidebar { width: 160px !important; min-width: 160px !important; max-width: 160px !important; }
+          .drv-main { margin-left: 160px !important; padding: 16px 18px !important; }
         }
       `}</style>
 
       <div className="drv-layout">
-        <aside className="drv-sidebar">
+        {mobileNavOpen && (
+          <button className="drv-mobile-overlay" aria-label="Close navigation" onClick={() => setMobileNavOpen(false)} />
+        )}
+
+        <aside className={`drv-sidebar${mobileNavOpen ? ' drv-sidebar-open' : ''}`}>
           <div className="drv-logo">
             <img
               src="/logo.png"
@@ -233,6 +323,22 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
         </aside>
 
         <main className="drv-main">
+          {/* Mobile top bar */}
+          <div className="drv-mobile-topbar">
+            <button className="drv-mobile-nav-btn" aria-label="Open navigation" onClick={() => setMobileNavOpen(true)}>
+              ☰
+            </button>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="drv-mobile-eyebrow">Driver Portal</div>
+              <div className="drv-mobile-title">
+                {navItems.find(i => pathname === i.href || (i.href !== '/driver/dashboard' && pathname.startsWith(i.href)))?.label || 'Dashboard'}
+              </div>
+            </div>
+            <div className="drv-mobile-status">
+              {navItems.find(i => pathname === i.href || (i.href !== '/driver/dashboard' && pathname.startsWith(i.href)))?.label || 'Dashboard'}
+            </div>
+          </div>
+
           {pageTitle || pageSubtitle ? (
             <>
               {pageTitle ? <div className="drv-page-title">{pageTitle}</div> : null}

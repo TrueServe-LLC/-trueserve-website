@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createDriverPayout, createDriverStripeAccount } from "../../actions";
+import EarningsComparisonWidget from "./EarningsComparisonWidget";
 
 
 interface DriverEarningsClientProps {
@@ -110,6 +111,9 @@ export default function DriverEarningsClient({ driver, orders }: DriverEarningsC
 
                 </div>
             </header>
+
+            {/* ── You vs DoorDash + Mileage Tax Tracker ── */}
+            <EarningsComparisonWidget orders={orders} driver={driver} />
 
             {/* ── Predictive Earnings Planner ── */}
             <section className="card border-orange-500/20 p-6 md:p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.05) 0%, rgba(0,0,0,0) 60%)' }}>

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import MileageTracker from "@/components/MileageTracker";
 import EarningsPlannerWidget from "./EarningsPlannerWidget";
+import EarningsComparisonWidget from "./EarningsComparisonWidget";
 
 export const dynamic = 'force-dynamic';
 
@@ -38,6 +39,15 @@ export default async function DriverEarnings() {
     const driver = isPreview
         ? { id: "preview", name: "Jordan Rivers", balance: 247.50, currentLat: 35.2271, currentLng: -80.8431 }
         : await getDriverOrRedirect();
+
+    // Mock orders for comparison widget (real data would come from DB)
+    const mockOrders = MOCK_ROWS.map((r, i) => ({
+        id: `mock-${i}`,
+        status: 'DELIVERED',
+        totalPay: r.base,
+        tip: r.tip,
+        createdAt: r.date,
+    }));
 
     const balance = driver?.balance || 0;
 
@@ -143,6 +153,11 @@ export default async function DriverEarnings() {
                     weeklyTotal={weeklyTotal}
                     daysLeft={7 - new Date().getDay() || 7}
                 />
+            </div>
+
+            {/* ── You vs DoorDash + Mileage Tax Tracker ── */}
+            <div style={{ padding: '0 32px', marginTop: 8 }}>
+                <EarningsComparisonWidget orders={mockOrders} driver={driver} />
             </div>
 
             <div className="two-col-ledger">
