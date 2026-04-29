@@ -301,7 +301,7 @@ export default async function RewardsPage({
                             <p className="food-kicker mb-2">Membership</p>
                             <h2 className="food-heading">Choose Your Tier</h2>
                         </div>
-                        <Link href="/user/settings#wallet" className="btn btn-ghost">Manage Wallet</Link>
+                        <Link href="/account#wallet" className="btn btn-ghost">Manage Wallet</Link>
                     </div>
 
                     <div className="grid gap-6 md:grid-cols-3">
