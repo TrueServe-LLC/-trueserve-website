@@ -41,33 +41,39 @@ export default function MerchantSignupPage() {
           <section className="food-hero-card food-auth-hero">
             <div className="food-auth-image" style={{ backgroundImage: "url('/merchant_hero.png')" }} />
             <div className="food-auth-hero-inner">
-              <div className="food-eyebrow">🤝 Founding Partner Program</div>
+              <div className="food-eyebrow">Founding Partner Program · Limited spots</div>
               <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[56px]">Lock In Your Rate. <span className="accent">Keep Every Dollar.</span></h1>
+                <h1 className="food-heading !text-[56px]">List your restaurant. <span className="accent">Keep more of every order.</span></h1>
                 <p className="food-subtitle !max-w-[520px]">
-                  Join as a Founding Partner — first 30 days free, your rate locked forever, and zero commission on every order you take.
+                  Founding partners lock in a 15% flat split — forever. No monthly fees on the base plan. No surprise rate hikes. Your first 30 days are free while we set everything up together.
                 </p>
               </div>
               <ul className="food-auth-list">
                 <li>
-                  <div className="food-auth-icon">1</div>
+                  <div className="food-auth-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
                   <div>
-                    <div className="font-extrabold">30 days free</div>
-                    <div className="text-sm text-white/65">No charge for your first month. Start taking orders risk-free.</div>
+                    <div className="font-extrabold">First 30 days free</div>
+                    <div className="text-sm text-white/65">Start taking orders at zero cost. We onboard you, set up your menu, and get your store live together.</div>
                   </div>
                 </li>
                 <li>
-                  <div className="food-auth-icon">2</div>
+                  <div className="food-auth-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
                   <div>
-                    <div className="font-extrabold">Rate locked forever</div>
-                    <div className="text-sm text-white/65">Your founding rate never increases — even as TrueServe grows.</div>
+                    <div className="font-extrabold">15% flat split, locked</div>
+                    <div className="text-sm text-white/65">Your founding rate never increases — even as TrueServe grows and adds more features.</div>
                   </div>
                 </li>
                 <li>
-                  <div className="food-auth-icon">3</div>
+                  <div className="food-auth-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
                   <div>
-                    <div className="font-extrabold">Zero commission</div>
-                    <div className="text-sm text-white/65">Keep 100% of every order. Flat monthly fee, nothing more.</div>
+                    <div className="font-extrabold">Compliance tools included</div>
+                    <div className="text-sm text-white/65">Health score tracking, order management, and a real operations dashboard — not just a storefront.</div>
                   </div>
                 </li>
               </ul>
@@ -76,9 +82,9 @@ export default function MerchantSignupPage() {
 
           <section className="food-panel food-auth-form">
             <Link href="/" className="su-back">← Back to Home</Link>
-            <p className="food-kicker mb-3">🤝 Founding Partner Application</p>
+            <p className="food-kicker mb-3">Founding Partner Application</p>
             <h1 className="food-heading !text-[36px]">Apply as a Founding Partner</h1>
-            <p className="lead mt-2">First 30 days free · Rate locked forever · Zero commission.</p>
+            <p className="lead mt-2">First 30 days free · 15% flat split locked forever · No setup fee.</p>
 
             {stateData?.message && (
               <div className={`mt-4 rounded-xl border px-4 py-3 text-xs font-bold uppercase tracking-[0.11em] ${
@@ -162,28 +168,14 @@ export default function MerchantSignupPage() {
                       </select>
                     </div>
                     <div className="fg">
-                      <label>POS System</label>
+                      <label>POS System <span style={{ fontWeight: 400, color: 'var(--t3)' }}>(optional)</span></label>
                       <select value={posSystem} onChange={(e) => setPosSystem(e.target.value)} className="w-full bg-[#0c0e13] border border-[#1c1f28] rounded-lg p-3">
+                        <option value="None">None / I&apos;ll connect later</option>
                         <option value="Toast">Toast</option>
                         <option value="Square">Square</option>
                         <option value="Clover">Clover</option>
-                        <option value="None">None</option>
                       </select>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="fg"><label>POS Client ID (Optional)</label><input type="text" placeholder="Client ID" value={posClientId} onChange={(e) => setPosClientId(e.target.value)} /></div>
-                      <div className="fg"><label>POS Client Secret (Optional)</label><input type="password" placeholder="Client secret" value={posClientSecret} onChange={(e) => setPosClientSecret(e.target.value)} /></div>
-                    </div>
-                    <div className="fg">
-                      <label>Go High Level (GHL) Iframe URL (Optional)</label>
-                      <input
-                        id="m-ghl-url"
-                        type="text"
-                        placeholder="https://api.leadconnectorhq.com/widget/booking/..."
-                      />
-                      <p style={{ fontSize: '11px', color: 'var(--t3)', marginTop: '4px' }}>
-                        Pasting your GHL booking/ordering iframe URL here will enable direct widget ordering.
-                      </p>
+                      <p style={{ fontSize: '11px', color: 'var(--t3)', marginTop: '4px' }}>You can connect your POS and any integrations inside the dashboard after approval.</p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -199,9 +191,11 @@ export default function MerchantSignupPage() {
             {step === 3 && (
               <div id="ms-3" className="step active">
                 <div className="done-card">
-                  <div className="done-ico">🎉</div>
-                  <h3>You're in! Application Submitted.</h3>
-                  <p>We'll review your application within 24 hours and send setup instructions straight to your inbox.</p>
+                  <div className="done-ico">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
+                  <h3>Application Submitted</h3>
+                  <p>We'll review your application within 24 hours and reach out directly with your onboarding link. Check your inbox — we'll get your store live together.</p>
                   <button className="place-btn" onClick={() => router.push('/merchant/dashboard?tour=1')}>Go to Portal</button>
                 </div>
               </div>

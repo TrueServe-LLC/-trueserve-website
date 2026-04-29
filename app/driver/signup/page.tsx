@@ -60,33 +60,39 @@ export default function DriverSignupPage() {
           <section className="food-hero-card food-auth-hero">
             <div className="food-auth-image" style={{ backgroundImage: "url('/diverse_drivers.png')" }} />
             <div className="food-auth-hero-inner">
-              <div className="food-eyebrow">Driver onboarding</div>
+              <div className="food-eyebrow">Now accepting drivers · Charlotte &amp; Rock Hill</div>
               <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[56px]">Drive With TrueServe. <span className="accent">Earn More Per Hour.</span></h1>
+                <h1 className="food-heading !text-[56px]">Your schedule. <span className="accent">Your earnings.</span></h1>
                 <p className="food-subtitle !max-w-[520px]">
-                  The driver application is fully wired for production with document upload, phone verification readiness, and onboarding instructions by email and SMS.
+                  TrueServe pays per delivery — no subscription, no hidden cuts. See exactly what each trip pays before you accept it, and get settled within 48 hours.
                 </p>
               </div>
               <ul className="food-auth-list">
                 <li>
-                  <div className="food-auth-icon">1</div>
+                  <div className="food-auth-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
                   <div>
-                    <div className="font-extrabold">Higher earning potential</div>
-                    <div className="text-sm text-white/65">Competitive payouts with fair routing logic.</div>
+                    <div className="font-extrabold">Transparent pay, every trip</div>
+                    <div className="text-sm text-white/65">See the payout before you accept. No surprise deductions after the fact.</div>
                   </div>
                 </li>
                 <li>
-                  <div className="food-auth-icon">2</div>
+                  <div className="food-auth-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
                   <div>
-                    <div className="font-extrabold">Smart dispatch</div>
-                    <div className="text-sm text-white/65">Fewer dead miles and better trip density.</div>
+                    <div className="font-extrabold">Settle within 48 hours</div>
+                    <div className="text-sm text-white/65">Earnings hit your account fast — not weekly, not whenever they feel like it.</div>
                   </div>
                 </li>
                 <li>
-                  <div className="food-auth-icon">3</div>
+                  <div className="food-auth-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
                   <div>
-                    <div className="font-extrabold">Secure onboarding</div>
-                    <div className="text-sm text-white/65">ID, insurance, registration, and agreement compliance included.</div>
+                    <div className="font-extrabold">Drive when you want</div>
+                    <div className="text-sm text-white/65">No minimum hours, no penalties for taking time off. You set your own schedule.</div>
                   </div>
                 </li>
               </ul>
@@ -207,9 +213,11 @@ export default function DriverSignupPage() {
               {step === 3 && (
                 <div id="ds-3" className="step active">
                   <div className="done-card">
-                    <div className="done-ico">🚚</div>
+                    <div className="done-ico">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
                     <h3>Application Received</h3>
-                    <p>We sent your next-step instructions by email and SMS. Once approved, you can log in with phone OTP at the driver portal.</p>
+                    <p>We'll review your documents and reach out within 1–2 business days with your next steps. Once approved, log in at the driver portal to start accepting deliveries.</p>
                     <Link href="/driver/login?tour=1" className="place-btn inline-flex items-center justify-center">Go to Driver Login</Link>
                   </div>
                 </div>
