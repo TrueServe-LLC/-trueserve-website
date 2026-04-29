@@ -1047,6 +1047,31 @@ nav {
 }
 .home-bg-img { display: none; }
 .home-bg-grad { display: none; }
+
+/* Hero looping video background — activated when /public/hero.mp4 exists */
+.home-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.28;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Static image fallback sits on top of video; remove this rule once video is added */
+.food-app-shell.home-shell {
+  background:
+    linear-gradient(to bottom,
+      rgba(9,10,12,0.30) 0%,
+      rgba(9,10,12,0.10) 18%,
+      rgba(9,10,12,0.82) 78%,
+      rgba(9,10,12,1.00) 100%),
+    url('/hero_food_delivery.png') center top / cover no-repeat,
+    #0d0b0a;
+}
 .home-inner { text-align: center; max-width: 560px; width: 100%; position: relative; z-index: 2; }
 
 .home-h1 {

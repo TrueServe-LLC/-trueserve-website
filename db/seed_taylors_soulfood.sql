@@ -92,7 +92,7 @@ VALUES (
     'Soul food done right — straight from the heart of Rock Hill. Famous for loaded baked potatoes stacked with your choice of meats, veggies, and all the fixings.',
     34.9249,
     -81.0251,
-    'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80',
+    'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80',
     '11:00:00',
     '21:00:00',
     'VISIBLE',

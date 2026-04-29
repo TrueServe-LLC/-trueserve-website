@@ -58,7 +58,7 @@ export default function DriverSignupPage() {
       <main className="food-auth-wrap">
         <div className="food-auth-grid">
           <section className="food-hero-card food-auth-hero">
-            <div className="food-auth-image" style={{ backgroundImage: "url('/diverse_drivers.png')" }} />
+            <div className="food-auth-image" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80')" }} />
             <div className="food-auth-hero-inner">
               <div className="food-eyebrow">Now accepting drivers · Charlotte &amp; Rock Hill</div>
               <div className="mt-5 space-y-4">

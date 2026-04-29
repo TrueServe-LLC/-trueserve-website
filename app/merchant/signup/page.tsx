@@ -97,10 +97,13 @@ export default function MerchantSignupPage() {
             )}
             
             <div className="food-auth-gallery">
-              <div className="food-auth-thumb"><img src="/merchant_hero.png" alt="Restaurant kitchen operations" /></div>
-              <div className="food-auth-thumb"><img src="/merchant_section.png" alt="Restaurant owner working" /></div>
-              <div className="food-auth-thumb"><img src="/merchant_login_bg_restaurant.png" alt="Restaurant storefront and dining area" /></div>
+              <div className="food-auth-thumb" style={{ gridColumn: "span 3", minHeight: 140 }}>
+                <img src="/merchant_dashboard_preview.jpg" alt="TrueServe merchant dashboard — order management, compliance, and payouts" style={{ opacity: 0.92 }} />
+              </div>
             </div>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 8, textAlign: "center", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>
+              Your actual dashboard after approval
+            </p>
             
             <div className="prog mt-6">
               <div className={`prog-s ${step >= 1 ? 'on' : ''}`}></div>

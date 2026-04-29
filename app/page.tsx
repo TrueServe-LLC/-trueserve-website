@@ -278,6 +278,17 @@ export default function Home() {
           {/* Ambient background orbs */}
           <div className="ts-orb ts-orb-a" aria-hidden="true" />
           <div className="ts-orb ts-orb-b" aria-hidden="true" />
+          {/* Hero video — drop /public/hero.mp4 to activate. Falls back to hero_food_delivery.png */}
+          <video
+            className="home-hero-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+          >
+            <source src="/hero.mp4" type="video/mp4" />
+          </video>
           <div className="home-bg-img"></div>
           <div className="home-bg-grad"></div>
           <div className="food-hero-content">
