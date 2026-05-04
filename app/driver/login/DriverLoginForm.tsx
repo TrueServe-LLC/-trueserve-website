@@ -45,6 +45,20 @@ export default function DriverLoginForm() {
         return `+${digits}`;
     };
 
+    const requestOtpForPhone = async (formattedPhone: string) => {
+        const { error } = await supabase.auth.signInWithOtp({
+            phone: formattedPhone,
+            options: { shouldCreateUser: false }
+        });
+
+        if (error) {
+            if (error.message.includes("Signups not allowed")) {
+                throw new Error("This phone number is not registered to a driver application yet.");
+            }
+            throw error;
+        }
+    };
+
     const handleSendOTP = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
@@ -58,17 +72,7 @@ export default function DriverLoginForm() {
         }
 
         try {
-            const { error } = await supabase.auth.signInWithOtp({
-                phone: formattedPhone,
-                options: { shouldCreateUser: false }
-            });
-
-            if (error) {
-                if (error.message.includes("Signups not allowed")) {
-                    throw new Error("This phone number is not registered to an approved driver.");
-                }
-                throw error;
-            }
+            await requestOtpForPhone(formattedPhone);
 
             setPhone(formattedPhone);
             setStep("otp");
@@ -107,6 +111,20 @@ export default function DriverLoginForm() {
             }
         } catch (err: any) {
             setMessage({ text: "Invalid or expired code. Please request a new one.", error: true });
+            setIsLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        setIsLoading(true);
+        setMessage(null);
+
+        try {
+            await requestOtpForPhone(phone);
+            setMessage({ text: "We sent a fresh code to your phone.", error: false });
+        } catch (err: any) {
+            setMessage({ text: err.message || "Failed to resend code.", error: true });
+        } finally {
             setIsLoading(false);
         }
     };
@@ -196,6 +214,19 @@ export default function DriverLoginForm() {
                     >
                         Cancel and try again
                     </button>
+
+                    <button
+                        type="button"
+                        onClick={handleResendCode}
+                        disabled={isLoading}
+                        className="w-full text-[10px] font-bold uppercase tracking-widest text-[#3dd68c] hover:text-white transition-colors disabled:opacity-40"
+                    >
+                        Resend code
+                    </button>
+
+                    <div className="text-center text-[11px] text-[#6a7280]">
+                        Changed your phone number? <Link href="/contact" className="font-bold text-[#3dd68c]">Contact support</Link> so we can update your driver login.
+                    </div>
                 </form>
             )}
         </div>

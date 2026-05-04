@@ -18,10 +18,12 @@ export default function MerchantSignupPage() {
   const [city, setCity] = useState("");
   const [stateName, setStateName] = useState("");
   const [zip, setZip] = useState("");
+  const [cuisineType, setCuisineType] = useState("");
   const [plan, setPlan] = useState("Flex Options");
   const [posSystem, setPosSystem] = useState("Toast");
   const [posClientId, setPosClientId] = useState("");
   const [posClientSecret, setPosClientSecret] = useState("");
+  const [ghlUrl, setGhlUrl] = useState("");
   const [stateData, formAction, isPending] = useActionState(submitMerchantInquiry, { message: "" });
 
   useEffect(() => {
@@ -113,10 +115,12 @@ export default function MerchantSignupPage() {
               <input type="hidden" name="city" value={city} />
               <input type="hidden" name="state" value={stateName} />
               <input type="hidden" name="zip" value={zip} />
+              <input type="hidden" name="cuisineType" value={cuisineType} />
               <input type="hidden" name="plan" value={plan} />
               <input type="hidden" name="posSystem" value={posSystem} />
               <input type="hidden" name="posClientId" value={posClientId} />
               <input type="hidden" name="posClientSecret" value={posClientSecret} />
+              <input type="hidden" name="ghlUrl" value={ghlUrl} />
 
               {step === 1 && (
                 <div id="ms-1" className="step active">
@@ -124,7 +128,7 @@ export default function MerchantSignupPage() {
                     <h3><span className="sn">1</span> Restaurant Info</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="fg"><label>Restaurant Name</label><input type="text" placeholder="Your restaurant name" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)} required /></div>
-                      <div className="fg"><label>Cuisine Type</label><input type="text" placeholder="Cuisine category"/></div>
+                      <div className="fg"><label>Cuisine Type</label><input type="text" placeholder="Cuisine category" value={cuisineType} onChange={(e) => setCuisineType(e.target.value)} /></div>
                     </div>
                     <div className="fg"><label>Street Address</label><input type="text" placeholder="123 Main St" value={address} onChange={(e) => setAddress(e.target.value)} required /></div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -156,14 +160,14 @@ export default function MerchantSignupPage() {
                     </div>
                     <div className="fg">
                       <label>Plan</label>
-                      <select value={plan} onChange={(e) => setPlan(e.target.value)} className="w-full bg-[#0c0e13] border border-[#1c1f28] rounded-lg p-3">
+                      <select value={plan} onChange={(e) => setPlan(e.target.value)} className="w-full rounded-lg border border-[#1c1f28] bg-[#0c0e13] p-3 text-white">
                         <option value="Flex Options">Flex Options</option>
                         <option value="Pro Subscription">Pro Subscription</option>
                       </select>
                     </div>
                     <div className="fg">
                       <label>POS System</label>
-                      <select value={posSystem} onChange={(e) => setPosSystem(e.target.value)} className="w-full bg-[#0c0e13] border border-[#1c1f28] rounded-lg p-3">
+                      <select value={posSystem} onChange={(e) => setPosSystem(e.target.value)} className="w-full rounded-lg border border-[#1c1f28] bg-[#0c0e13] p-3 text-white">
                         <option value="Toast">Toast</option>
                         <option value="Square">Square</option>
                         <option value="Clover">Clover</option>
@@ -180,6 +184,8 @@ export default function MerchantSignupPage() {
                         id="m-ghl-url"
                         type="text"
                         placeholder="https://api.leadconnectorhq.com/widget/booking/..."
+                        value={ghlUrl}
+                        onChange={(e) => setGhlUrl(e.target.value)}
                       />
                       <p style={{ fontSize: '11px', color: 'var(--t3)', marginTop: '4px' }}>
                         Pasting your GHL booking/ordering iframe URL here will enable direct widget ordering.
@@ -201,8 +207,9 @@ export default function MerchantSignupPage() {
                 <div className="done-card">
                   <div className="done-ico">🎉</div>
                   <h3>You're in! Application Submitted.</h3>
-                  <p>We'll review your application within 24 hours and send setup instructions straight to your inbox.</p>
-                  <button className="place-btn" onClick={() => router.push('/merchant/dashboard?tour=1')}>Go to Portal</button>
+                  <p>We&apos;ll review your application and notify you by email as soon as your account is approved and ready for portal access.</p>
+                  <button className="place-btn" type="button" onClick={() => router.push('/')}>You&apos;ll Be Notified When Your Account Is Approved</button>
+                  <button type="button" className="btn btn-ghost w-full mt-3" onClick={() => router.push('/contact')}>Need Help? Contact Us</button>
                 </div>
               </div>
             )}

@@ -3,11 +3,14 @@
 
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const MIN_PASSWORD_LENGTH = 8;
 
 function UpdatePasswordContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [supabase] = useState(() => createClient());
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
@@ -30,6 +33,10 @@ function UpdatePasswordContent() {
 
     const handleUpdate = async () => {
         if (!password) return;
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            setMessage({ text: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`, type: 'error' });
+            return;
+        }
         setLoading(true);
         setMessage(null);
 
@@ -41,9 +48,6 @@ function UpdatePasswordContent() {
             } else {
                 setMessage({ text: "Password updated successfully! Redirecting...", type: 'success' });
                 setTimeout(() => {
-                    const params = new FormData();
-                    // params.append('email', (supabase.auth.getUser() as any)?.email || ""); // Try to get email? 
-                    // Actually, just redirect to login
                     router.push("/login");
                 }, 2000);
             }
@@ -69,16 +73,20 @@ function UpdatePasswordContent() {
                     <label className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block">New Password</label>
                     <input
                         type="password"
+                        minLength={MIN_PASSWORD_LENGTH}
                         className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-colors"
-                        placeholder="••••••••"
+                        placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                    <p className="mt-2 text-xs text-slate-400">
+                        Use at least {MIN_PASSWORD_LENGTH} characters.
+                    </p>
                 </div>
 
                 <button
                     onClick={handleUpdate}
-                    disabled={loading || !password}
+                    disabled={loading || password.length < MIN_PASSWORD_LENGTH}
                     className="w-full btn btn-primary py-3 font-bold shadow-lg shadow-primary/20 disabled:opacity-50"
                 >
                     {loading ? "Updating..." : "Update Password"}
