@@ -2,6 +2,29 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 
 export default function DriverPendingReviewPage() {
+  const reviewSteps = [
+    {
+      label: "Application received",
+      detail: "Your basic profile, phone, and delivery details are already on file.",
+      state: "done",
+    },
+    {
+      label: "Document review",
+      detail: "We’re checking your license, insurance, and registration right now.",
+      state: "active",
+    },
+    {
+      label: "Payout and compliance check",
+      detail: "We make sure your payout setup and driver readiness details are complete before activation.",
+      state: "upcoming",
+    },
+    {
+      label: "Dashboard unlock",
+      detail: "Once approved, you can accept orders and start delivering immediately.",
+      state: "upcoming",
+    },
+  ] as const;
+
   return (
     <div className="food-app-shell">
       <nav className="food-app-nav">
@@ -41,9 +64,44 @@ export default function DriverPendingReviewPage() {
               </ul>
             </div>
 
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#f97316]">Approval tracker</p>
+                  <h3 className="mt-2 text-xl font-black uppercase tracking-[0.05em] text-white">Where your application stands</h3>
+                </div>
+                <div className="rounded-full border border-[#f97316]/30 bg-[#f97316]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#f97316]">
+                  2 of 4
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {reviewSteps.map((step, index) => (
+                  <div key={step.label} className="flex items-start gap-3 rounded-xl border border-white/8 bg-black/20 px-4 py-3">
+                    <div className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-black ${
+                      step.state === "done"
+                        ? "bg-emerald-500/15 text-emerald-300"
+                        : step.state === "active"
+                          ? "bg-[#f97316]/15 text-[#f97316]"
+                          : "bg-white/8 text-white/45"
+                    }`}>
+                      {step.state === "done" ? "✓" : index + 1}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{step.label}</p>
+                      <p className="mt-1 text-xs leading-6 text-white/55">{step.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="mt-6 flex flex-col gap-3">
               <Link href="/driver/login" className="place-btn inline-flex items-center justify-center">
                 Back to Driver Login
+              </Link>
+              <Link href="/driver/recover" className="btn btn-ghost w-full text-center">
+                Changed Numbers? Update Login Access
               </Link>
               <Link href="/contact" className="btn btn-ghost w-full text-center">
                 Need Help? Contact Support

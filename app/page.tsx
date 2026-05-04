@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, BadgeDollarSign, CarFront, MapPin, Menu, Route, Share2, ShoppingBag, Star, Store, UtensilsCrossed, X } from "lucide-react";
+import { ArrowRight, CarFront, MapPin, Menu, Route, Share2, ShoppingBag, Star, Store, UtensilsCrossed, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion, useInView, animate, useMotionValue } from "motion/react";
 
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -20,7 +20,7 @@ const FacebookIcon = ({ className }: { className?: string }) => (
 );
 import Logo from "@/components/Logo";
 import LandingSearch from "@/components/LandingSearch";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import {
   getLiveRestaurants,
   summarizeRestaurantNetwork,
@@ -133,13 +133,13 @@ export default function Home() {
     {
       step: "01",
       title: "Drop your address",
-      detail: "Start with your delivery location so we can route you into the right market and handoff flow.",
+      detail: "Start with your delivery location so we can match you to active restaurant partners and the right delivery zone.",
       icon: MapPin,
     },
     {
       step: "02",
-      title: "Place the order fast",
-      detail: "Move from search to checkout with a cleaner, lower-friction flow designed for repeat local ordering.",
+      title: "Order direct with confidence",
+      detail: "Move from search to checkout with transparent pricing, saved details, and a cleaner repeat-order flow.",
       icon: ShoppingBag,
     },
     {
@@ -149,24 +149,41 @@ export default function Home() {
       icon: Route,
     },
   ];
+  const trueServeWay = [
+    {
+      title: "Direct and transparent",
+      detail: "Cleaner checkout, fewer surprises, and pricing that stays easier to trust from first tap to final total.",
+      icon: ShoppingBag,
+    },
+    {
+      title: "Built around merchants",
+      detail: "Restaurants get branded storefront tools, direct-order support, and a platform that helps them keep more control.",
+      icon: Store,
+    },
+    {
+      title: "Human support when it matters",
+      detail: "Customers, drivers, and merchants all get clear status updates plus fast ways to reach real help when needed.",
+      icon: Route,
+    },
+  ];
   const platformPaths = [
     {
       title: "For Customers",
-      detail: "Save addresses, earn rewards, and track every order from kitchen to doorstep.",
+      detail: "Save favorites, reorder quickly, track each handoff, and keep your go-to delivery details in one place.",
       href: userId ? accountHref : "/signup",
       cta: userId ? "Open Account" : "Create Account",
       icon: UtensilsCrossed,
     },
     {
       title: "For Merchants",
-      detail: "Launch a branded storefront, share direct-order links, and give your team better operational tools.",
+      detail: "Launch a branded storefront, share direct-order tools, and guide your team through a clearer day-one checklist.",
       href: "/merchant/signup",
       cta: "Grow With TrueServe",
       icon: Store,
     },
     {
       title: "For Drivers",
-      detail: "Onboard cleanly, upload docs, complete payout setup, and stay supported while you deliver.",
+      detail: "Onboard cleanly, upload docs, track approval status, complete payouts, and stay supported while you deliver.",
       href: "/driver/signup",
       cta: "Apply To Drive",
       icon: CarFront,
@@ -180,6 +197,8 @@ export default function Home() {
   const heroVisuals = HERO_FALLBACK_VISUALS;
 
   useEffect(() => {
+    const supabase = createClient();
+
     const match = document.cookie.match(new RegExp('(^| )userId=([^;]+)'));
     if (match) setUserId(match[2]);
     supabase.auth.getUser().then(async ({ data }) => {
@@ -232,12 +251,34 @@ export default function Home() {
           <Logo size="sm" />
         </div>
         <div className="nav-links hidden md:flex">
-          <Link href="/restaurants">Order Food</Link>
-          <Link href="/rewards">Rewards</Link>
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/merchant/signup">For Merchants</Link>
-          <Link href="/driver/signup">For Drivers</Link>
-          <Link href="/contact">Contact</Link>
+          {[
+            { href: "/restaurants", label: "Order Food" },
+            { href: "/rewards", label: "Rewards" },
+            { href: "/merchant/signup", label: "For Merchants" },
+            { href: "/driver/signup", label: "For Drivers" },
+            { href: "/contact", label: "Contact" },
+          ].map((item) => (
+            <motion.div key={item.href} style={{ position: "relative" }}>
+              <Link href={item.href} style={{ position: "relative", display: "inline-block" }}>
+                {item.label}
+                <motion.span
+                  style={{
+                    position: "absolute",
+                    bottom: -2,
+                    left: 0,
+                    height: 2,
+                    background: "#f97316",
+                    borderRadius: 2,
+                    width: "100%",
+                    scaleX: 0,
+                    transformOrigin: "left",
+                  }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                />
+              </Link>
+            </motion.div>
+          ))}
         </div>
         <div className="nav-r">
           {userId ? (
@@ -279,7 +320,6 @@ export default function Home() {
                   { href:"/merchant/signup", icon:Store, label:"For Merchants", sub:"List your restaurant" },
                   { href:"/restaurants", icon:UtensilsCrossed, label:"Order Food", sub:"Browse local restaurants" },
                   { href:"/rewards", icon:Star, label:"Rewards", sub:"Earn points on every order" },
-                  { href:"/pricing", icon:BadgeDollarSign, label:"Pricing", sub:"Zero commission plans" },
                 ].map((item, index) => (
                   <motion.div
                     key={item.href}
@@ -350,7 +390,7 @@ export default function Home() {
                   animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                   transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.12 }}
                 >
-                  Browse local favorites, place your order in seconds, and watch your food travel from kitchen to doorstep in real time.
+                  Order from local restaurant partners with a cleaner checkout, transparent updates, and support that stays close when you need it.
                 </motion.p>
               </div>
 
@@ -369,9 +409,9 @@ export default function Home() {
                 transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.26 }}
               >
                 {[
-                  "Local restaurants",
+                  "Local partners",
                   "Live tracking",
-                  "Avg. 30 min",
+                  "Direct-order ready",
                 ].map((feature) => (
                   <motion.div
                     key={feature}
@@ -396,7 +436,7 @@ export default function Home() {
                 <p className="food-kicker">Ready to eat?</p>
                 <h2 className="food-heading">Pick a spot. <span className="accent">Dig in.</span></h2>
                 <p className="food-subtitle !text-sm !max-w-none">
-                  From breakfast burritos to late-night pizza — find what you're craving from local restaurants near you.
+                  TrueServe is built to feel more direct, more transparent, and more useful for everyone involved in the order.
                 </p>
               </div>
 
@@ -520,6 +560,47 @@ export default function Home() {
           </div>
         </motion.section>
 
+        <motion.section
+          className="mt-8 food-panel"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
+          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={revealTransition}
+        >
+          <div className="mb-5">
+            <p className="food-kicker mb-2">The TrueServe way</p>
+            <h2 className="food-heading">Built to feel <span className="accent">clearer, fairer, and more supportive</span></h2>
+          </div>
+          <div className="grid gap-4">
+            {trueServeWay.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  className="flex flex-col gap-4 rounded-[24px] border border-white/8 bg-white/[0.02] px-5 py-5 md:flex-row md:items-center md:justify-between"
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+                  whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.35 }}
+                  transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: index * 0.05 }}
+                >
+                  <div className="flex items-start gap-4">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-orange-500/20 bg-orange-500/10 text-orange-400">
+                      <Icon size={20} strokeWidth={2.1} />
+                    </span>
+                    <div>
+                      <h3 className="text-[22px] font-black uppercase tracking-[0.05em] text-white">{item.title}</h3>
+                      <p className="mt-2 max-w-3xl text-sm leading-7 text-white/62">{item.detail}</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.24em] text-white/32 md:pl-6">
+                    Why teams choose us
+                  </span>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.section>
+
 
         <motion.section
           className="mt-8"
@@ -530,7 +611,7 @@ export default function Home() {
         >
           <div className="mb-5">
             <p className="food-kicker mb-2">How TrueServe works</p>
-            <h2 className="food-heading">A cleaner path from <span className="accent">search to delivery</span></h2>
+            <h2 className="food-heading">A cleaner path from <span className="accent">address to arrival</span></h2>
           </div>
           <div className="home-steps-grid grid gap-4 md:grid-cols-3">
             {howItWorks.map((item, index) => {
@@ -573,22 +654,44 @@ export default function Home() {
           <div className="home-paths-grid grid gap-4 lg:grid-cols-3">
             {platformPaths.map((path, index) => {
               const Icon = path.icon;
+              const isCustomer = index === 0;
               return (
                 <motion.div
                   key={path.title}
                   className="food-card home-path-card"
+                  style={isCustomer ? {
+                    border: "1px solid rgba(249,115,22,0.35)",
+                    background: "rgba(249,115,22,0.06)",
+                    position: "relative",
+                    overflow: "hidden",
+                  } : {}}
                   initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
                   whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.25 }}
                   transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: index * 0.07 }}
-                  whileHover={shouldReduceMotion ? undefined : { y: -4 }}
+                  whileHover={shouldReduceMotion ? undefined : { y: -6, transition: { duration: 0.2 } }}
                 >
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[16px] border border-white/10 bg-white/5 text-white/80">
+                  {isCustomer && (
+                    <motion.div
+                      style={{
+                        position: "absolute",
+                        top: 0, left: 0, right: 0,
+                        height: 3,
+                        background: "linear-gradient(90deg, #f97316, #fb923c)",
+                        borderRadius: "3px 3px 0 0",
+                      }}
+                      initial={shouldReduceMotion ? false : { scaleX: 0, transformOrigin: "left" }}
+                      whileInView={shouldReduceMotion ? undefined : { scaleX: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  )}
+                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-[16px] border ${isCustomer ? "border-orange-500/30 bg-orange-500/10 text-orange-400" : "border-white/10 bg-white/5 text-white/80"}`}>
                     <Icon size={22} strokeWidth={2.1} />
                   </div>
                   <h3 className="mb-3 text-[30px] font-black uppercase tracking-[0.06em] text-white">{path.title}</h3>
                   <p className="mb-6 text-sm leading-7 text-white/68">{path.detail}</p>
-                  <Link href={path.href} className="portal-btn-outline portal-btn-outline-block home-inline-cta">
+                  <Link href={path.href} className={isCustomer ? "portal-btn-gold portal-btn-gold-block home-inline-cta" : "portal-btn-outline portal-btn-outline-block home-inline-cta"}>
                     <span>{path.cta}</span>
                     <ArrowRight size={15} strokeWidth={2.2} />
                   </Link>
@@ -598,29 +701,41 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* CTA strip replacing redundant utility cards */}
+        {/* CTA strip */}
         <motion.section
-          className="mt-8 food-panel"
+          className="mt-8"
+          style={{
+            background: "linear-gradient(135deg, rgba(249,115,22,0.12) 0%, rgba(249,115,22,0.04) 50%, rgba(255,255,255,0.02) 100%)",
+            border: "1px solid rgba(249,115,22,0.2)",
+            borderRadius: 20,
+            padding: "40px 36px",
+          }}
           initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
           whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={revealTransition}
         >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <p className="food-kicker mb-2">Built for every side</p>
-              <h2 className="food-heading !text-[28px] md:!text-[34px]">Local. Direct. <span className="accent">Fair to everyone.</span></h2>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-center md:text-left">
+              <p className="food-kicker mb-3">Ready to experience the difference?</p>
+              <h2 className="food-heading !text-[32px] md:!text-[42px] leading-tight">
+                Local. Direct. <span className="accent">Fair to everyone.</span>
+              </h2>
+              <p className="mt-3 text-sm text-white/50 max-w-[420px]">
+                No hidden fees. No inflated prices. Just real restaurants, real drivers, and food that actually arrives.
+              </p>
             </div>
-            <div className="flex flex-wrap gap-3 shrink-0">
-              <Link href="/rewards" className="portal-btn-outline flex items-center gap-2 whitespace-nowrap">
-                <Star size={14} /> Rewards
-              </Link>
-              <Link href="/pricing" className="portal-btn-outline flex items-center gap-2 whitespace-nowrap">
-                <BadgeDollarSign size={14} /> Pricing
-              </Link>
-              <Link href="/restaurants" className="portal-btn-gold flex items-center gap-2 whitespace-nowrap">
-                Order Now <ArrowRight size={14} />
-              </Link>
+            <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto">
+              <motion.div whileHover={shouldReduceMotion ? undefined : { y: -2 }} transition={{ duration: 0.18 }}>
+                <Link href="/restaurants" className="portal-btn-gold portal-btn-gold-block flex items-center justify-center gap-2 whitespace-nowrap !text-base !py-4 !px-8">
+                  Start Ordering <ArrowRight size={16} />
+                </Link>
+              </motion.div>
+              <motion.div whileHover={shouldReduceMotion ? undefined : { y: -2 }} transition={{ duration: 0.18 }}>
+                <Link href="/rewards" className="portal-btn-outline portal-btn-outline-block flex items-center justify-center gap-2 whitespace-nowrap">
+                  <Star size={14} /> View Rewards
+                </Link>
+              </motion.div>
             </div>
           </div>
         </motion.section>
@@ -632,7 +747,6 @@ export default function Home() {
             <div className="flex items-center justify-center gap-6 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
               <Link href="/rewards" className="hover:text-[#f97316] transition-colors">Rewards</Link>
-              <Link href="/pricing" className="hover:text-[#f97316] transition-colors">Pricing</Link>
               <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
               <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
               <Link href="/contact" className="hover:text-[#f97316] transition-colors">Contact</Link>
