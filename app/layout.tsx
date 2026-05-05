@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, DM_Sans, DM_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
+import PostHogAuthSync from "@/components/PostHogAuthSync";
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas",
@@ -39,6 +40,28 @@ export const metadata: Metadata = {
   icons: {
     icon: '/logo.png',
   },
+  openGraph: {
+    title: "TrueServe | Order Food Delivery Near You",
+    description: "Local restaurants. Real drivers. No hidden fees. Order food delivery from your neighborhood favorites.",
+    url: "https://trueserve.delivery",
+    siteName: "TrueServe",
+    images: [
+      {
+        url: "https://trueserve.delivery/logo.png",
+        width: 512,
+        height: 512,
+        alt: "TrueServe — Local Food Delivery",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "TrueServe | Order Food Delivery Near You",
+    description: "Local restaurants. Real drivers. No hidden fees.",
+    images: ["https://trueserve.delivery/logo.png"],
+  },
 };
 
 export default function RootLayout({
@@ -49,6 +72,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${bebasNeue.variable} ${dmSans.variable} ${dmMono.variable} ${barlowCond.variable}`}>
       <body className="antialiased">
+        <PostHogAuthSync />
         {children}
       </body>
     </html>
