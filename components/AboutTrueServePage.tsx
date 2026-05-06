@@ -10,8 +10,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 const navItems = [
   { href: "/restaurants", label: "Order Food" },
   { href: "/about", label: "About" },
-  { href: "/merchant/signup", label: "For Merchants" },
-  { href: "/driver/signup", label: "For Drivers" },
+  { href: "/merchant", label: "For Merchants" },
+  { href: "/driver", label: "For Drivers" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -356,7 +356,7 @@ export default function AboutTrueServePage() {
                 <Link href="/signup" className="portal-btn-gold portal-btn-gold-block flex items-center justify-center gap-2 whitespace-nowrap !text-base !py-4 !px-8">
                   Create Account <ArrowRight size={16} />
                 </Link>
-                <Link href="/merchant/signup" className="portal-btn-outline portal-btn-outline-block flex items-center justify-center gap-2 whitespace-nowrap !text-base !py-4 !px-8">
+                <Link href="/merchant" className="portal-btn-outline portal-btn-outline-block flex items-center justify-center gap-2 whitespace-nowrap !text-base !py-4 !px-8">
                   Partner With TrueServe
                 </Link>
               </div>
@@ -370,8 +370,8 @@ export default function AboutTrueServePage() {
           <Logo size="md" />
           <div className="flex items-center justify-center gap-6 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex-wrap">
             <Link href="/about" className="hover:text-[#f97316] transition-colors">About</Link>
-            <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
-            <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
+            <Link href="/merchant" className="hover:text-[#f97316] transition-colors">Merchants</Link>
+            <Link href="/driver" className="hover:text-[#f97316] transition-colors">Drivers</Link>
             <Link href="/contact" className="hover:text-[#f97316] transition-colors">Contact</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>

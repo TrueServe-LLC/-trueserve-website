@@ -166,7 +166,7 @@ export default function Home() {
       eyebrow: "Keep the brand close",
       title: "For Merchants",
       detail: "Launch a branded storefront, share direct-order tools, and guide your team through a clearer day-one checklist.",
-      href: "/merchant/signup",
+      href: "/merchant",
       cta: "Grow With TrueServe",
       icon: Store,
     },
@@ -174,7 +174,7 @@ export default function Home() {
       eyebrow: "Stay in motion",
       title: "For Drivers",
       detail: "Onboard cleanly, upload docs, track approval status, complete payouts, and stay supported while you deliver.",
-      href: "/driver/signup",
+      href: "/driver",
       cta: "Apply To Drive",
       icon: CarFront,
     },
@@ -286,8 +286,8 @@ export default function Home() {
             { href: "/restaurants", label: "Order Food" },
             { href: "/about", label: "About" },
             { href: "/rewards", label: "Rewards" },
-            { href: "/merchant/signup", label: "For Merchants" },
-            { href: "/driver/signup", label: "For Drivers" },
+            { href: "/merchant", label: "For Merchants" },
+            { href: "/driver", label: "For Drivers" },
             { href: "/contact", label: "Contact" },
           ].map((item) => (
             <motion.div key={item.href} style={{ position: "relative" }}>
@@ -349,8 +349,8 @@ export default function Home() {
               <div style={{display:"flex",flexDirection:"column",gap:8,paddingTop:8}}>
                 {[
                   { href:"/about", icon:UsersRound, label:"About TrueServe", sub:"Why we built the platform" },
-                  { href:"/driver/signup", icon:CarFront, label:"For Drivers", sub:"Earn delivering food" },
-                  { href:"/merchant/signup", icon:Store, label:"For Merchants", sub:"List your restaurant" },
+                  { href:"/driver", icon:CarFront, label:"For Drivers", sub:"Earn delivering food" },
+                  { href:"/merchant", icon:Store, label:"For Merchants", sub:"List your restaurant" },
                   { href:"/restaurants", icon:UtensilsCrossed, label:"Order Food", sub:"Browse local restaurants" },
                   { href:"/rewards", icon:Star, label:"Rewards", sub:"Earn points on every order" },
                 ].map((item, index) => (
@@ -842,8 +842,8 @@ export default function Home() {
             <div className="home-footer-nav">
               <Link href="/restaurants" className="hover:text-[#f97316] transition-colors">Order Food</Link>
               <Link href="/about" className="hover:text-[#f97316] transition-colors">About</Link>
-              <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
-              <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
+              <Link href="/merchant" className="hover:text-[#f97316] transition-colors">Merchants</Link>
+              <Link href="/driver" className="hover:text-[#f97316] transition-colors">Drivers</Link>
               <Link href="/contact" className="hover:text-[#f97316] transition-colors">Contact</Link>
             </div>
             <div className="flex items-center gap-5">

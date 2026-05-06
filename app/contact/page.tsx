@@ -53,8 +53,8 @@ export default function ContactPage() {
                 <div className="nav-links hidden md:flex">
                     <Link href="/restaurants">Order Food</Link>
                     <Link href="/about">About</Link>
-                    <Link href="/merchant/signup">For Merchants</Link>
-                    <Link href="/driver/signup">For Drivers</Link>
+                    <Link href="/merchant">For Merchants</Link>
+                    <Link href="/driver">For Drivers</Link>
                 </div>
                 <div className="hidden md:flex gap-2">
                     <Link href="/login" className="btn btn-ghost">Sign In</Link>
@@ -76,8 +76,8 @@ export default function ContactPage() {
                         {[
                             { href: "/restaurants", label: "Order Food" },
                             { href: "/about", label: "About" },
-                            { href: "/merchant/signup", label: "For Merchants" },
-                            { href: "/driver/signup", label: "For Drivers" },
+                            { href: "/merchant", label: "For Merchants" },
+                            { href: "/driver", label: "For Drivers" },
                             { href: "/login", label: "Sign In" },
                         ].map((item, index) => (
                             <motion.div
