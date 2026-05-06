@@ -2863,6 +2863,113 @@ nav {
   .food-grid-2, .food-auth-grid, .track-grid, .menu-body { grid-template-columns: 1fr; }
   .food-panel, .food-card, .food-auth-form, .food-auth-hero, .menu-items, .cart, .status-box, .driver-box { padding: 20px; }
   .food-auth-hero { min-height: 420px; }
+  .merchant-landing-grid { gap: 16px; }
+  .merchant-landing-hero {
+    min-height: 0;
+    padding: 20px 18px 22px;
+  }
+  .merchant-landing-hero .food-auth-video,
+  .merchant-landing-hero .food-auth-image {
+    opacity: 0.24;
+  }
+  .merchant-landing-hero .food-heading,
+  .merchant-landing-panel .food-heading,
+  .driver-landing-panel .food-heading {
+    font-size: clamp(34px, 11vw, 42px) !important;
+    line-height: 0.96;
+  }
+  .merchant-landing-hero .food-subtitle,
+  .merchant-landing-panel .lead,
+  .driver-landing-panel .lead {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .food-auth-list {
+    gap: 12px;
+    margin-top: 22px;
+  }
+  .food-auth-list li {
+    gap: 10px;
+  }
+  .food-auth-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+  }
+  .merchant-landing-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .merchant-landing-gallery .food-auth-thumb {
+    min-height: 88px;
+  }
+  .merchant-landing-gallery .food-auth-thumb:first-child {
+    grid-column: span 2;
+    min-height: 136px;
+  }
+  .merchant-landing-panel,
+  .driver-landing-panel {
+    padding: 22px 18px;
+  }
+  .merchant-box-section {
+    gap: 18px;
+  }
+  .merchant-box-head {
+    gap: 10px;
+  }
+  .merchant-box-grid {
+    gap: 12px;
+  }
+  .merchant-box {
+    padding: 18px;
+    border-radius: 22px;
+  }
+  .merchant-box-title {
+    margin-top: 12px;
+    font-size: 24px;
+    line-height: 1.02;
+  }
+  .merchant-box-copy {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .merchant-box-list {
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .merchant-box-list-item {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 12px;
+    padding-top: 12px;
+  }
+  .merchant-box-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+  }
+  .merchant-box-item-title {
+    font-size: 19px;
+    line-height: 1.12;
+  }
+  .merchant-box-item-copy {
+    font-size: 13px;
+    line-height: 1.68;
+  }
+  .merchant-mini-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .merchant-mini-stat {
+    padding: 14px;
+    border-radius: 18px;
+  }
+  .merchant-mini-stat strong {
+    font-size: 24px;
+  }
+  .merchant-mini-stat span {
+    font-size: 11px;
+  }
 
   /* Preserve Tailwind's `hidden` on mobile for the public nav */
   .food-app-nav .nav-links.hidden { display: none; }
@@ -3124,6 +3231,18 @@ nav {
     .food-auth-wrap { padding-top: 20px; }
     .food-title { font-size: 38px; line-height: 1; }
     .food-heading { font-size: 28px; line-height: 1.04; }
+    .merchant-landing-hero {
+      padding: 18px 16px 20px;
+    }
+    .merchant-landing-hero .food-heading,
+    .merchant-landing-panel .food-heading,
+    .driver-landing-panel .food-heading {
+      font-size: clamp(30px, 10.5vw, 36px) !important;
+      line-height: 0.98;
+    }
+    .merchant-landing-gallery .food-auth-thumb:first-child {
+      min-height: 118px;
+    }
     .merchant-stat-grid,
     .driver-stat-grid { grid-template-columns: 1fr; }
     .merchant-offer-banner,
@@ -3132,6 +3251,16 @@ nav {
     .driver-next-steps { padding: 16px; }
     .merchant-next-step,
     .driver-next-step { grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
+    .merchant-box {
+      padding: 16px;
+      border-radius: 20px;
+    }
+    .merchant-box-title {
+      font-size: 22px;
+    }
+    .merchant-box-item-title {
+      font-size: 18px;
+    }
     .home-bg-img { filter: none; }
     .portal-controls { gap: 5px; }
     .portal-btn-compact { padding: 7px 10px; font-size: 9px; }
