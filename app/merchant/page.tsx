@@ -174,7 +174,7 @@ export default function MerchantLanding() {
               preload="metadata"
               aria-hidden="true"
             >
-              <source src="/brand/brand_merchant_hero.mp4" type="video/mp4" />
+              <source src="/brand/brand_merchant_landing_hero.mp4" type="video/mp4" />
             </video>
             <div className="food-auth-hero-inner">
               <div className="food-eyebrow">Founding Partner Program</div>

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import Logo from "@/components/Logo";
 import FadeInSection from "@/components/FadeInSection";
 import { getAuthSession } from "@/app/auth/actions";
+import { getAccountHomeHref, isCustomerRole } from "@/lib/account-routing";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { joinRewardsTier } from "./actions";
 import {
@@ -296,13 +297,24 @@ export default async function RewardsPage({
   searchParams?: Promise<{ update?: string; tier?: string }>;
 }) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const { isAuth, userId } = await getAuthSession();
+  const { isAuth, userId, role } = await getAuthSession();
   const snapshot = await getSnapshot(userId);
   const currentPlan = snapshot?.plan || "Basic";
   const isSignedIn = Boolean(isAuth && userId);
+  const isCustomer = isCustomerRole(role);
   const canChoosePaid = Boolean(snapshot?.hasPaymentMethod);
   const safePoints = snapshot?.points ?? 0;
   const journey = getJourney(safePoints, currentPlan);
+  const walletHref = !isSignedIn ? "/login" : isCustomer ? "/user/settings#wallet" : getAccountHomeHref(role);
+  const walletLabel = !isSignedIn ? "Sign In To Manage Wallet" : isCustomer ? "Manage Wallet" : "Open Your Dashboard";
+  const paidTierHref = !isSignedIn ? "/login" : !isCustomer ? getAccountHomeHref(role) : !canChoosePaid ? "/user/settings#wallet" : undefined;
+  const paidTierLabel = !isSignedIn
+    ? "Sign In To Join"
+    : !isCustomer
+      ? "Open Your Dashboard"
+      : !canChoosePaid
+        ? "Add Wallet To Join"
+        : undefined;
 
   return (
     <div className="food-app-shell">
@@ -438,8 +450,8 @@ export default async function RewardsPage({
               <p className="food-kicker mb-2">Membership Tiers</p>
               <h2 className="food-heading">Choose the lane that fits your order rhythm</h2>
             </div>
-            <Link href="/user/settings#wallet" className="btn btn-ghost">
-              Manage Wallet
+            <Link href={walletHref} className="btn btn-ghost">
+              {walletLabel}
             </Link>
           </div>
 
@@ -465,8 +477,8 @@ export default async function RewardsPage({
               price="$9.99 / month"
               currentPlan={currentPlan}
               canSubmit={isSignedIn && canChoosePaid}
-              ctaHref={!isSignedIn ? "/login" : !canChoosePaid ? "/account#wallet" : undefined}
-              ctaLabel={!isSignedIn ? "Sign In To Join" : !canChoosePaid ? "Add Wallet To Join" : undefined}
+              ctaHref={paidTierHref}
+              ctaLabel={paidTierLabel}
               badge="Most Balanced"
               icon={<Star size={17} />}
               features={[
@@ -481,8 +493,8 @@ export default async function RewardsPage({
               price="$19.99 / month"
               currentPlan={currentPlan}
               canSubmit={isSignedIn && canChoosePaid}
-              ctaHref={!isSignedIn ? "/login" : !canChoosePaid ? "/account#wallet" : undefined}
-              ctaLabel={!isSignedIn ? "Sign In To Join" : !canChoosePaid ? "Add Wallet To Join" : undefined}
+              ctaHref={paidTierHref}
+              ctaLabel={paidTierLabel}
               badge="Top Perks"
               icon={<ShieldCheck size={17} />}
               features={[
