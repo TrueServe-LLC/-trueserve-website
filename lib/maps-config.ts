@@ -1,5 +1,5 @@
 
-export const GOOGLE_MAPS_LIBRARIES: ("places" | "drawing" | "geometry" | "visualization")[] = ["places", "geometry", "drawing", "visualization"];
+export const GOOGLE_MAPS_LIBRARIES: ("places" | "drawing" | "geometry" | "marker")[] = ["places", "geometry", "drawing", "marker"];
 
 export const GOOGLE_MAPS_SCRIPT_ID = 'google-map-script';
 
