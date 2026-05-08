@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Clock3, MapPin, ReceiptText, Route, ShieldCheck, Sparkles, X, ZoomIn, ZoomOut } from "lucide-react";
 import { placeOrder, createPaymentIntent } from "../actions";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -19,6 +20,9 @@ const DELIVERY_STORAGE_KEYS = {
     lng: "ts.delivery.lng",
 } as const;
 
+const MENU_ZOOM_LEVELS = ["compact", "comfortable", "large"] as const;
+type MenuZoomLevel = typeof MENU_ZOOM_LEVELS[number];
+
 interface MenuItem {
     id: string;
     name: string;
@@ -26,6 +30,8 @@ interface MenuItem {
     price: number;
     imageUrl: string | null;
     category?: string | null;
+    saleUntil?: string | null;
+    originalPrice?: number | null;
 }
 
 interface MenuClientProps {
@@ -78,6 +84,7 @@ export default function MenuClient({
     const [redeemPoints, setRedeemPoints] = useState(false);
     const [checkoutEta, setCheckoutEta] = useState<string>("Calculating...");
     const [checkoutDistance, setCheckoutDistance] = useState<string>("");
+    const [menuZoom, setMenuZoom] = useState<MenuZoomLevel>("comfortable");
     
     // GHL State
     const [isGHLOpen, setIsGHLOpen] = useState(false);
@@ -114,9 +121,13 @@ export default function MenuClient({
         : "Select delivery address";
     const restaurantLat = typeof restaurant.lat === "number" ? restaurant.lat : Number(restaurant.lat);
     const restaurantLng = typeof restaurant.lng === "number" ? restaurant.lng : Number(restaurant.lng);
+    const hasRestaurantLocation = Number.isFinite(restaurantLat) && Number.isFinite(restaurantLng);
+    const restaurantAddressLabel = [restaurant.address, restaurant.city, restaurant.state].filter(Boolean).join(", ");
+    const restaurantMapSrc = hasRestaurantLocation
+        ? `https://www.google.com/maps?q=${restaurantLat},${restaurantLng}&z=15&output=embed`
+        : `https://www.google.com/maps?q=${encodeURIComponent(restaurantAddressLabel || restaurant.name)}&z=15&output=embed`;
     const hasCheckoutRoute =
-        Number.isFinite(restaurantLat) &&
-        Number.isFinite(restaurantLng) &&
+        hasRestaurantLocation &&
         deliveryLat !== null &&
         deliveryLng !== null;
     const isDhansKitchen = Boolean(restaurant?.name?.toLowerCase?.().includes("dhan"));
@@ -188,7 +199,9 @@ export default function MenuClient({
     const normalizedItems = items.map((item) => ({
         ...item,
         category: typeof item.category === "string" ? item.category : (item as any).category ?? null,
+        originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
     }));
+    const activeSpecials = normalizedItems.filter((item) => item.saleUntil && new Date(item.saleUntil) > new Date());
 
     const categoryLabelFor = (item: MenuItem) => {
         const raw = typeof item.category === "string" ? item.category.trim() : "";
@@ -468,8 +481,21 @@ export default function MenuClient({
         return `${h12}:${mStr} ${period}`;
     }
 
+    function menuAnchor(label: string): string {
+        return `menu-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`;
+    }
+
+    function changeMenuZoom(direction: -1 | 1) {
+        setMenuZoom((current) => {
+            const index = MENU_ZOOM_LEVELS.indexOf(current);
+            const nextIndex = Math.min(MENU_ZOOM_LEVELS.length - 1, Math.max(0, index + direction));
+            return MENU_ZOOM_LEVELS[nextIndex];
+        });
+    }
+
     return (
         <div className="menu-body">
+            <div className="menu-content-column">
             {pendingOrderId && (
                 <OrderConfirmAnimation
                     restaurantName={restaurant.name}
@@ -477,31 +503,72 @@ export default function MenuClient({
                 />
             )}
 
-            {/* Closed Banner */}
+            {/* Closed notice */}
             {!isOpen && (
                 <div style={{
-                    background: 'rgba(248,113,113,0.08)',
-                    border: '1px solid rgba(248,113,113,0.25)',
-                    borderRadius: 10,
-                    padding: '14px 18px',
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.025))',
+                    border: '1px solid rgba(255,255,255,0.09)',
+                    borderRadius: 14,
+                    padding: '14px 16px',
                     marginBottom: 16,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0,1fr)',
+                    gap: 10,
+                    boxShadow: '0 14px 34px rgba(0,0,0,0.16)',
                 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                        <div>
+                            <div style={{ fontSize: 13, fontWeight: 900, color: '#fff' }}>
+                                Closed right now
+                            </div>
+                            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.52)', marginTop: 3, lineHeight: 1.5 }}>
+                                You can still browse the menu. Ordering reopens during listed hours.
+                            </div>
+                        </div>
+                        <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 7,
+                            border: '1px solid rgba(249,115,22,0.22)',
+                            background: 'rgba(249,115,22,0.08)',
+                            color: '#f97316',
+                            borderRadius: 999,
+                            padding: '7px 10px',
+                            fontSize: 10,
+                            fontWeight: 900,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                        }}>
+                            <Clock3 size={13} />
+                            {to12h(openTimeDisplay)} – {to12h(closeTimeDisplay)}
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, color: 'rgba(255,255,255,0.52)', fontSize: 11, lineHeight: 1.5 }}>
+                        <MapPin size={13} style={{ color: '#f97316', flexShrink: 0 }} />
+                        <span>{restaurantAddressLabel}</span>
+                    </div>
                     <div style={{
-                        width: 36, height: 36, borderRadius: '50%',
-                        background: 'rgba(248,113,113,0.12)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 18, flexShrink: 0,
-                    }}>🔒</div>
-                    <div>
-                        <div style={{ fontSize: 13, fontWeight: 800, color: '#f87171' }}>
-                            {restaurant.name} is currently closed
-                        </div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-                            Hours: {to12h(openTimeDisplay)} – {to12h(closeTimeDisplay)} · You can still browse the menu
-                        </div>
+                        position: 'relative',
+                        height: 170,
+                        overflow: 'hidden',
+                        borderRadius: 12,
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        background: 'rgba(0,0,0,0.18)',
+                    }}>
+                        <iframe
+                            title={`${restaurant.name} location map`}
+                            src={restaurantMapSrc}
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            style={{
+                                position: 'absolute',
+                                inset: 0,
+                                width: '100%',
+                                height: '100%',
+                                border: 0,
+                                filter: 'grayscale(0.18) contrast(1.02)',
+                            }}
+                        />
                     </div>
                 </div>
             )}
@@ -512,7 +579,7 @@ export default function MenuClient({
                     <div className="ghl-card" onClick={e => e.stopPropagation()}>
                         <div className="ghl-hd">
                             <span style={{ fontWeight: 800 }}>{restaurant.name} Assistant</span>
-                            <button onClick={() => setIsGHLOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
+                            <button onClick={() => setIsGHLOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>Close</button>
                         </div>
                         <div style={{ position: 'relative', flex: 1 }}>
                             {ghlLoading && (
@@ -531,31 +598,126 @@ export default function MenuClient({
                 </div>
             )}
             
-            <div className="menu-items">
+            <div className={`menu-items menu-zoom-${menuZoom}`}>
                 {ghlUrl && (
                     <button type="button" className="ghl-btn !bg-[#f97316] !text-black shadow-lg" onClick={openGHL}>
-                        <span style={{ fontSize: '16px' }}>⚡️</span> 
+                        <span style={{ fontSize: '16px' }}>Fast</span> 
                         Order with Fast Assist
                     </button>
                 )}
-                {!hasCategories ? <div className="cat">Main Menu</div> : null}
-                {menuSections.map((section) => (
-                    <div key={section.label}>
-                        {hasCategories ? <div className="cat">{section.label}</div> : null}
-                        {section.items.map(item => (
-                            <div key={item.id} className="m-item">
-                                <div>
-                                    <div className="m-name">{item.name}</div>
-                                    <div className="m-desc">{item.description}</div>
-                                </div>
-                                <div className="m-r">
-                                    <span className="m-price">${item.price.toFixed(2)}</span>
-                                    <button type="button" className="add-btn" onClick={() => addItem(item.id)}>+</button>
-                                </div>
-                            </div>
+                <div className="menu-list-head">
+                    <div>
+                        <div className="food-kicker">Menu</div>
+                        <h3>Choose your favorites</h3>
+                    </div>
+                    <div className="menu-view-tools" aria-label="Menu view controls">
+                        <span>{items.length} items</span>
+                        <div className="menu-zoom-controls">
+                            <button
+                                type="button"
+                                onClick={() => changeMenuZoom(-1)}
+                                disabled={menuZoom === "compact"}
+                                aria-label="Zoom menu out"
+                            >
+                                <ZoomOut size={15} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => changeMenuZoom(1)}
+                                disabled={menuZoom === "large"}
+                                aria-label="Zoom menu in"
+                            >
+                                <ZoomIn size={15} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {hasCategories && (
+                    <div className="menu-category-nav" aria-label="Menu categories">
+                        {activeSpecials.length > 0 && (
+                            <a href="#menu-specials" className="menu-category-pill">
+                                Specials
+                            </a>
+                        )}
+                        {menuSections.map((section) => (
+                            <a key={section.label} href={`#${menuAnchor(section.label)}`} className="menu-category-pill">
+                                {section.label}
+                            </a>
                         ))}
                     </div>
+                )}
+                {activeSpecials.length > 0 && (
+                    <section id="menu-specials" className="menu-section">
+                        <div className="cat" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <Sparkles size={16} />
+                            Local specials
+                        </div>
+                        <div className="menu-shelf">
+                            {activeSpecials.map(item => (
+                                <div key={`special-${item.id}`} className="m-item no-image">
+                                    <div className="m-copy">
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                                            <div className="m-name">{item.name}</div>
+                                            <span style={{
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                gap: 5,
+                                                border: "1px solid rgba(249,115,22,.28)",
+                                                background: "rgba(249,115,22,.08)",
+                                                color: "#f97316",
+                                                borderRadius: 999,
+                                                padding: "3px 7px",
+                                                fontSize: 9,
+                                                fontWeight: 900,
+                                                letterSpacing: ".1em",
+                                                textTransform: "uppercase",
+                                            }}>
+                                                <Sparkles size={10} /> Special
+                                            </span>
+                                        </div>
+                                        {item.description ? <div className="m-desc">{item.description}</div> : null}
+                                    </div>
+                                    <div className="m-r">
+                                        <span style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
+                                            {item.originalPrice && item.originalPrice > item.price ? (
+                                                <span style={{ color: "#747c78", fontSize: 12, fontWeight: 800, textDecoration: "line-through" }}>
+                                                    ${item.originalPrice.toFixed(2)}
+                                                </span>
+                                            ) : null}
+                                            <span className="m-price">${item.price.toFixed(2)}</span>
+                                        </span>
+                                        <button type="button" className="add-btn" onClick={() => addItem(item.id)} aria-label={`Add ${item.name}`}>
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+                {!hasCategories ? <div className="cat">Main Menu</div> : null}
+                {menuSections.map((section) => (
+                    <section key={section.label} id={menuAnchor(section.label)} className="menu-section">
+                        {hasCategories ? <div className="cat">{section.label}</div> : null}
+                        <div className="menu-shelf">
+                            {section.items.map(item => (
+                                <div key={item.id} className="m-item no-image">
+                                    <div className="m-copy">
+                                        <div className="m-name">{item.name}</div>
+                                        {item.description ? <div className="m-desc">{item.description}</div> : null}
+                                    </div>
+                                    <div className="m-r">
+                                        <span className="m-price">${item.price.toFixed(2)}</span>
+                                        <button type="button" className="add-btn" onClick={() => addItem(item.id)} aria-label={`Add ${item.name}`}>
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
                 ))}
+            </div>
             </div>
 
             <div className="cart">
@@ -582,7 +744,7 @@ export default function MenuClient({
                                         aria-label={`Remove ${item.name} from order`}
                                         onClick={() => removeItem(id)}
                                     >
-                                        ✕
+                                        <X size={14} aria-hidden="true" />
                                     </button>
                                 </div>
                             );
@@ -592,6 +754,20 @@ export default function MenuClient({
 
                 {cartItems.length > 0 && (
                     <div className="cart-ft" style={{ display: 'block', padding: '20px', borderTop: '1px solid var(--border)' }}>
+                        <div className="checkout-clarity-panel" aria-label="Checkout transparency">
+                            <div>
+                                <ReceiptText size={14} aria-hidden="true" />
+                                <span>No surprise fees. Delivery, tax, rewards, and tip are shown before payment.</span>
+                            </div>
+                            <div>
+                                <Route size={14} aria-hidden="true" />
+                                <span>Enter a suggested address to preview route distance and ETA.</span>
+                            </div>
+                            <div>
+                                <ShieldCheck size={14} aria-hidden="true" />
+                                <span>Orders are paused automatically when the restaurant is closed.</span>
+                            </div>
+                        </div>
                         <div className="tr"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
                         <div className="tr"><span>Delivery Fee</span><span>$2.99</span></div>
                         <div className="tr"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
@@ -630,7 +806,7 @@ export default function MenuClient({
                                 }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <span style={{ fontSize: 16 }}>🎁</span>
+                                    <span style={{ fontSize: 16 }}>Gift</span>
                                     <div style={{ textAlign: 'left' }}>
                                         <div style={{ fontSize: 12, fontWeight: 800, color: isGift ? '#f97316' : '#fff' }}>Send as a Gift</div>
                                         <div style={{ fontSize: 10, color: '#555' }}>Deliver to someone else with a personal note</div>
@@ -674,7 +850,7 @@ export default function MenuClient({
                                     <div>
                                         <label style={{ fontSize: 10, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Personal Note</label>
                                         <textarea
-                                            placeholder="Thinking of you! Enjoy your meal 🍜"
+                                            placeholder="Thinking of you! Enjoy your meal "
                                             value={giftNote}
                                             onChange={e => setGiftNote(e.target.value)}
                                             rows={2}
@@ -731,12 +907,12 @@ export default function MenuClient({
                                         }}
                                     />
                                     <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
-                                        <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                                            <div>
+                                        <div className="px-4 py-3 border-b border-white/10 flex flex-wrap items-start justify-between gap-3">
+                                            <div className="min-w-0 flex-1">
                                                 <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Delivery Route</div>
-                                                <div className="text-[11px] font-semibold text-white/70 mt-1">{locationLabel}</div>
+                                                <div className="text-[11px] font-semibold text-white/70 mt-1 break-words leading-snug">{locationLabel}</div>
                                             </div>
-                                            <div className="text-[10px] font-black uppercase tracking-widest text-[#f97316] text-right">
+                                            <div className="shrink-0 text-[10px] font-black uppercase tracking-widest text-[#f97316] text-right">
                                                 {hasCheckoutRoute ? (
                                                     <>
                                                         <div>{`ETA ${checkoutEta}`}</div>
@@ -762,7 +938,7 @@ export default function MenuClient({
                                         ) : (
                                             <div className="h-[220px] px-6 py-6 flex items-center justify-center text-center">
                                                 <div className="max-w-[280px]">
-                                                    <div className="text-2xl mb-3 opacity-70">🗺️</div>
+                                                    <div className="text-2xl mb-3 opacity-70">Map</div>
                                                     <div className="text-sm font-semibold text-white/70">Select a suggested address</div>
                                                     <div className="mt-2 text-xs text-slate-500">
                                                         Choose an address from Google suggestions to preview the route and distance.
@@ -777,16 +953,16 @@ export default function MenuClient({
                         {!isOpen ? (
                             <div style={{
                                 marginTop: '20px',
-                                padding: '14px',
-                                borderRadius: 8,
-                                background: 'rgba(248,113,113,0.07)',
-                                border: '1px solid rgba(248,113,113,0.2)',
+                                padding: '13px 14px',
+                                borderRadius: 12,
+                                background: 'rgba(255,255,255,0.04)',
+                                border: '1px solid rgba(255,255,255,0.09)',
                                 textAlign: 'center',
                                 fontSize: '12px',
-                                color: '#f87171',
-                                fontWeight: 700,
+                                color: 'rgba(255,255,255,0.68)',
+                                fontWeight: 800,
                             }}>
-                                Ordering is unavailable · Opens at {to12h(openTimeDisplay)}
+                                Ordering is paused while this restaurant is closed. Opens at {to12h(openTimeDisplay)}.
                             </div>
                         ) : userId ? (
                             clientSecret ? (
