@@ -388,7 +388,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div
-              className="food-panel food-hero-right flex-col gap-5"
+              className="food-panel food-hero-right hidden md:flex flex-col gap-5"
               initial={shouldReduceMotion ? false : { opacity: 0, x: 22 }}
               animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
               transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.16 }}
