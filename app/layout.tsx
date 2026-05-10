@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Barlow_Condensed, DM_Sans, DM_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import PostHogAuthSync from "@/components/PostHogAuthSync";
+import MobileTabBar from "@/components/MobileTabBar";
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas",
@@ -74,6 +75,7 @@ export default function RootLayout({
       <body className="antialiased">
         <PostHogAuthSync />
         {children}
+        <MobileTabBar />
       </body>
     </html>
   );
