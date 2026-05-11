@@ -8,6 +8,12 @@ import { validateCloverSignature } from '@/lib/posWebhooks';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
+    // Handle Clover webhook verification challenge before any other processing
+    if (body.verificationCode) {
+      return NextResponse.json({ verificationCode: body.verificationCode });
+    }
+
     const signature = req.headers.get('X-Clover-Signature');
 
     // Security validation placeholder
@@ -16,11 +22,6 @@ export async function POST(req: Request) {
     // }
 
     const supabase = await createClient();
-
-    // Handle Clover webhook verification challenge
-    if (body.verificationCode) {
-      return NextResponse.json({ verificationCode: body.verificationCode });
-    }
 
     // Map Clover Order Event
     if (body.type === 'ORDER_CREATED') {
