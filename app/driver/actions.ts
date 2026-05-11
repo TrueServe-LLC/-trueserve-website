@@ -1446,3 +1446,90 @@ export async function performAISpotCheck(formData: FormData) {
         return { success: false, error: e.message || "Unknown error during AI face verification." };
     }
 }
+
+export type DriverRecoveryState = {
+    message: string;
+    success?: boolean;
+    error?: string;
+};
+
+export async function requestDriverPhoneUpdate(
+    prevState: DriverRecoveryState,
+    formData: FormData
+): Promise<DriverRecoveryState> {
+    try {
+        const supabase = await createClient();
+        const phone = formData.get('phone') as string;
+        const email = formData.get('email') as string;
+
+        if (!phone || !email) {
+            return { message: "Phone and email are required.", error: "missing_fields" };
+        }
+
+        const { data: driver, error: lookupError } = await supabase
+            .from('Driver')
+            .select('id, userId')
+            .eq('email', email.toLowerCase().trim())
+            .single();
+
+        if (lookupError || !driver) {
+            return { message: "No driver account found with that email.", error: "not_found" };
+        }
+
+        const { error: updateError } = await supabase
+            .from('Driver')
+            .update({ pendingPhone: phone.trim(), updatedAt: new Date().toISOString() })
+            .eq('id', driver.id);
+
+        if (updateError) {
+            return { message: "Failed to submit request. Please try again.", error: updateError.message };
+        }
+
+        return { message: "Your phone update request has been submitted. Our team will verify and update your account within 24 hours.", success: true };
+    } catch (e: any) {
+        return { message: "An unexpected error occurred.", error: e.message };
+    }
+}
+
+export async function submitDriverPhotoReport(formData: FormData) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { success: false, error: "Unauthorized" };
+
+        const orderId = formData.get('orderId') as string | null;
+        const reportType = (formData.get('reportType') as string) || 'general';
+        const notes = (formData.get('notes') as string) || '';
+        const file = formData.get('photo') as File | null;
+
+        if (!file) return { success: false, error: "No photo provided" };
+
+        const ext = file.name.split('.').pop() || 'jpg';
+        const path = `driver-reports/${user.id}/${Date.now()}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from('driver-photos')
+            .upload(path, file, { upsert: false });
+
+        if (uploadError) return { success: false, error: uploadError.message };
+
+        const { data: urlData } = supabase.storage.from('driver-photos').getPublicUrl(path);
+
+        const { error: dbError } = await supabase
+            .from('DriverPhotoReport')
+            .insert({
+                driverUserId: user.id,
+                orderId: orderId || null,
+                reportType,
+                notes,
+                photoUrl: urlData.publicUrl,
+                createdAt: new Date().toISOString(),
+            });
+
+        if (dbError) return { success: false, error: dbError.message };
+
+        return { success: true, message: "Photo report submitted successfully." };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}

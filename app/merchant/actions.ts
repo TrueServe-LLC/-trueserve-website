@@ -1284,3 +1284,50 @@ export async function getMerchantRestaurants() {
         return { error: e.message, restaurants: [] };
     }
 }
+
+export async function createMerchantTestOrder() {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('id, name')
+            .eq('ownerId', user.id)
+            .limit(1)
+            .single();
+
+        if (!restaurant) return { error: "No restaurant found" };
+
+        const { data: menuItem } = await supabase
+            .from('MenuItem')
+            .select('id, name, price')
+            .eq('restaurantId', restaurant.id)
+            .eq('isAvailable', true)
+            .limit(1)
+            .single();
+
+        if (!menuItem) return { error: "Add at least one menu item before placing a test order" };
+
+        const { data: order, error } = await supabase
+            .from('Order')
+            .insert({
+                restaurantId: restaurant.id,
+                customerId: user.id,
+                status: 'PENDING',
+                totalAmount: menuItem.price,
+                isTestOrder: true,
+                items: [{ menuItemId: menuItem.id, name: menuItem.name, quantity: 1, price: menuItem.price }],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            })
+            .select('id')
+            .single();
+
+        if (error) return { error: error.message };
+        return { success: true, orderId: order.id };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
