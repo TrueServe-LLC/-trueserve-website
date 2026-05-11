@@ -1415,11 +1415,13 @@ nav {
   .tracking-info { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 20px; height: auto; }
   .tracking-map { height: 300px; width: 100%; }
 
-  .food-title { font-size: 30px; line-height: 1; }
-  .food-heading { font-size: 28px; line-height: 1.04; }
-  .food-subtitle { line-height: 1.65; font-size: 14px; }
-  .food-hero-card { padding: 22px 18px; }
-  .food-hero-content { gap: 20px; }
+  .food-title { font-size: 28px; line-height: 1.02; }
+  .food-heading { font-size: 26px; line-height: 1.04; }
+  .food-subtitle { line-height: 1.6; font-size: 13px; color: rgba(255,255,255,0.6); }
+  .food-hero-card { padding: 0; }
+  .food-hero-content { gap: 16px; padding: 24px 16px 28px; }
+  /* Hide the trust bar on mobile — shown in the listing page instead */
+  .home-shell .food-app-main > div[style*="justify-content"] { display: none !important; }
   .food-chip-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1698,4 +1700,204 @@ nav {
   .food-app-shell > main {
     padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   RESTAURANT LISTING — MAINSTREAM MOBILE LAYOUT
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Shell: no extra top/side padding, content fills edge-to-edge */
+.rest-shell .food-app-nav.rest-nav {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.rest-main {
+  padding-top: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* ── Sticky search + chips bar ── */
+.rest-sticky-top {
+  position: sticky;
+  top: 62px; /* below the fixed nav */
+  z-index: 80;
+  background: rgba(9, 10, 15, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.rest-search-area {
+  padding: 12px 14px 8px;
+}
+
+/* Trust strip — TrueServe differentiator (hidden on desktop, visible mobile) */
+.rest-trust-strip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 14px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+.rest-trust-strip::-webkit-scrollbar { display: none; }
+.rest-trust-strip span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4dca80;
+}
+.rest-trust-divider {
+  display: inline-block !important;
+  width: 1px !important;
+  height: 10px;
+  background: rgba(255,255,255,0.15);
+  margin: 0 10px;
+  flex-shrink: 0;
+}
+
+/* ── Filter chip scroll row ── */
+.rest-chip-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.rest-chip-scroll::-webkit-scrollbar { display: none; }
+
+.rest-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.72);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.rest-filter-chip.active {
+  background: #f97316;
+  color: #000;
+  border-color: #f97316;
+}
+.rest-filter-chip:hover:not(.active) {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.18);
+}
+
+/* ── Results area ── */
+.rest-results-wrap {
+  padding: 0;
+}
+
+.rest-results-label {
+  padding: 12px 14px 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.32);
+}
+.rest-results-area {
+  color: rgba(255,255,255,0.55);
+  font-weight: 700;
+}
+
+/* ── Card grid — edge-to-edge on mobile ── */
+.rest-main .rest-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: rgba(255,255,255,0.04);
+}
+
+/* Mobile card: full-width flush tiles like Uber Eats / DoorDash */
+.rest-main .rest-card {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  box-shadow: none;
+  background: #0d0e12;
+}
+.rest-main .rest-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(255,255,255,0.08);
+}
+.rest-main .rc-img {
+  height: 190px;
+}
+.rest-main .rc-info {
+  padding: 12px 14px 14px;
+}
+.rest-main .rc-name {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.rest-main .rc-meta {
+  font-size: 12px;
+  gap: 7px;
+}
+
+/* Google reviews link: much subtler */
+.rc-reviews-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  transition: color 0.15s;
+}
+.rc-reviews-link:hover { color: #f97316; }
+
+/* Empty state */
+.rest-empty {
+  padding: 48px 24px;
+  text-align: center;
+}
+.rest-notify-form {
+  display: flex;
+  gap: 8px;
+  max-width: 340px;
+  margin: 0 auto;
+}
+.rest-notify-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+/* ── Desktop: restore card grid and rounded cards ── */
+@media (min-width: 768px) {
+  .rest-sticky-top { top: 62px; }
+  .rest-main { padding-top: 0 !important; width: min(1180px, calc(100% - 32px)) !important; max-width: 1180px !important; margin: 0 auto; }
+  .rest-main .rest-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; background: transparent; padding: 0; }
+  .rest-main .rest-card { border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 22px 60px rgba(0,0,0,.22); background: linear-gradient(180deg,rgba(18,24,21,.94),rgba(12,15,13,.96)); }
+  .rest-main .rest-card:hover { transform: translateY(-6px); border-color: rgba(249,115,22,.36); box-shadow: 0 28px 70px rgba(0,0,0,.32); }
+  .rest-main .rc-img { height: 220px; }
+  .rest-main .rc-info { padding: 20px; }
+  .rest-main .rc-name { font-size: 24px; margin-bottom: 8px; }
+  .rest-main .rc-meta { font-size: 13px; gap: 12px; }
+  .rest-trust-strip { display: none; }
+  .rest-results-wrap { padding: 0 0 32px; }
 }

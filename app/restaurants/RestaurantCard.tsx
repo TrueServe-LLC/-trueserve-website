@@ -281,7 +281,7 @@ export default function RestaurantCard({
 
         <button
           type="button"
-          className="mt-2 inline-flex text-[11px] uppercase tracking-[0.14em] font-bold text-[#f97316] hover:text-white transition-colors"
+          className="rc-reviews-link"
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -292,7 +292,7 @@ export default function RestaurantCard({
             );
           }}
         >
-          View Google Reviews
+          Google reviews ↗
         </button>
       </div>
       </motion.article>
