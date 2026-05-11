@@ -33,6 +33,11 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const verificationCode = searchParams.get('verificationCode');
+  if (verificationCode) {
+    return new NextResponse(verificationCode, { status: 200 });
+  }
   return new NextResponse('Clover Protocol Active', { status: 200 });
 }
