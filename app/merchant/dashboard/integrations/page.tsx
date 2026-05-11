@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import POSIntegration from "../POSIntegration";
 import AggregatorSection from "../AggregatorSection";
+import POSPartnershipGuide from "../POSPartnershipGuide";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,7 @@ export default async function IntegrationsPage() {
                 currentAggregatorApiKey={restaurant.aggregatorApiKey}
                 currentAggregatorLocationId={restaurant.aggregatorLocationId}
             />
+            <POSPartnershipGuide />
             <POSIntegration
                 currentApiKey={restaurant.apiKey}
                 posType={restaurant.posType || "None"}

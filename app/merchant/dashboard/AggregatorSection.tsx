@@ -48,6 +48,7 @@ export default function AggregatorSection({
   const [error, setError] = useState("");
 
   const aggregator = AGGREGATORS.find((a) => a.id === selected);
+  const isConnected = Boolean(currentAggregatorType && currentAggregatorApiKey);
 
   const handleSave = async () => {
     if (!selected || !apiKey || !locationId) {
@@ -65,8 +66,6 @@ export default function AggregatorSection({
       setTimeout(() => setSaved(false), 3000);
     }
   };
-
-  const isConnected = Boolean(currentAggregatorType && currentAggregatorApiKey);
 
   return (
     <div style={{
