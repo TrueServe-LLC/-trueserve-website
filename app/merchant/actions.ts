@@ -22,6 +22,9 @@ export type MerchantActionState = {
     error?: boolean;
 };
 
+const MIN_PASSWORD_LENGTH = 8;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function addMenuItem(prevState: MerchantActionState, formData: FormData): Promise<MerchantActionState> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -30,12 +33,6 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
-    const category = String(formData.get("category") || "").trim();
-    const isSpecial = formData.get("isSpecial") === "on";
-    const originalPriceRaw = String(formData.get("originalPrice") || "").trim();
-    const originalPrice = originalPriceRaw ? parseFloat(originalPriceRaw) : null;
-    const specialHoursRaw = String(formData.get("specialHours") || "24").trim();
-    const specialHours = Math.max(1, Math.min(168, parseInt(specialHoursRaw, 10) || 24));
     const image = formData.get("image") as File;
 
     if (!name || isNaN(price)) {
@@ -82,8 +79,6 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
             imageUrl = publicUrlData.publicUrl;
         }
 
-        const saleUntil = isSpecial ? new Date(Date.now() + specialHours * 60 * 60 * 1000).toISOString() : null;
-
         const { error } = await supabase
             .from('MenuItem')
             .insert({
@@ -92,10 +87,7 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
                 name,
                 price,
                 description,
-                category: category || null,
                 imageUrl,
-                originalPrice: isSpecial && originalPrice && originalPrice > price ? originalPrice : null,
-                saleUntil,
                 status: 'APPROVED',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
@@ -115,8 +107,6 @@ export async function addMenuItem(prevState: MerchantActionState, formData: Form
         await logAuditAction({ action: "ADD_MENU_ITEM", targetId: restaurant.id, entityType: "Restaurant", message: `Added item: ${name}`, after: { name, price } });
 
         revalidatePath('/merchant/dashboard');
-        revalidatePath('/merchant/dashboard/menu');
-        revalidatePath('/restaurants');
         return { success: true, message: "Item added successfully" };
     } catch (e: any) {
         console.error("Add Item Error:", e);
@@ -133,12 +123,6 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
-    const category = String(formData.get("category") || "").trim();
-    const isSpecial = formData.get("isSpecial") === "on";
-    const originalPriceRaw = String(formData.get("originalPrice") || "").trim();
-    const originalPrice = originalPriceRaw ? parseFloat(originalPriceRaw) : null;
-    const specialHoursRaw = String(formData.get("specialHours") || "24").trim();
-    const specialHours = Math.max(1, Math.min(168, parseInt(specialHoursRaw, 10) || 24));
     const ingredientsRaw = formData.get("ingredients") as string;
     const ingredients = ingredientsRaw ? ingredientsRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "") : [];
     const image = formData.get("image") as File;
@@ -166,19 +150,14 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
             }
         }
 
-        const saleUntil = isSpecial ? new Date(Date.now() + specialHours * 60 * 60 * 1000).toISOString() : null;
-
         const { error } = await supabase
             .from('MenuItem')
             .update({
                 name,
                 price,
                 description,
-                category: category || null,
                 imageUrl,
                 ingredients,
-                originalPrice: isSpecial && originalPrice && originalPrice > price ? originalPrice : null,
-                saleUntil,
                 updatedAt: new Date().toISOString()
             })
             .eq('id', itemId);
@@ -198,66 +177,10 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
         await logAuditAction({ action: "UPDATE_MENU_ITEM", targetId: itemId, entityType: "MenuItem", after: { name, price } });
 
         revalidatePath('/merchant/dashboard');
-        revalidatePath('/merchant/dashboard/menu');
-        revalidatePath('/restaurants');
         return { success: true, message: "Item updated successfully" };
     } catch (e: any) {
         console.error("Update Item Error:", e);
         return { error: true, message: e.message || "Failed to update item" };
-    }
-}
-
-export async function archiveMenuItem(itemId: string) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { error: "Unauthorized" };
-
-    try {
-        const { data: item, error: itemError } = await supabase
-            .from('MenuItem')
-            .select('id, name, restaurantId')
-            .eq('id', itemId)
-            .single();
-
-        if (itemError || !item) throw itemError || new Error("Menu item not found");
-
-        const { data: restaurant, error: restaurantError } = await supabase
-            .from('Restaurant')
-            .select('id, ownerId')
-            .eq('id', item.restaurantId)
-            .single();
-
-        if (restaurantError || !restaurant || restaurant.ownerId !== user.id) {
-            throw new Error("You do not have permission to remove this item.");
-        }
-
-        const { error } = await supabase
-            .from('MenuItem')
-            .update({
-                status: 'ARCHIVED',
-                isAvailable: false,
-                saleUntil: null,
-                updatedAt: new Date().toISOString()
-            })
-            .eq('id', itemId);
-
-        if (error) throw error;
-
-        await logAuditAction({
-            action: "ARCHIVE_MENU_ITEM",
-            targetId: itemId,
-            entityType: "MenuItem",
-            before: { status: "VISIBLE" },
-            after: { status: "ARCHIVED", name: item.name }
-        });
-
-        revalidatePath('/merchant/dashboard');
-        revalidatePath('/merchant/dashboard/menu');
-        revalidatePath('/restaurants');
-        return { success: true };
-    } catch (e: any) {
-        console.error("Archive Menu Item Error:", e);
-        return { error: e.message || "Failed to remove item" };
     }
 }
 
@@ -374,10 +297,10 @@ export async function updateOrderStatus(orderId: string, nextStatus: string, rea
                 let message = `Your order from ${restaurantName} is now ${nextStatus.toLowerCase().replace('_', ' ')}.`;
 
                 if (nextStatus === 'PREPARING') {
-                    title = "Kitchen is cooking! Kitchen";
+                    title = "Kitchen is cooking! 👨‍🍳";
                     message = `${restaurantName} has started preparing your order.`;
                 } else if (nextStatus === 'READY_FOR_PICKUP') {
-                    title = "Order Ready! Order";
+                    title = "Order Ready! 🍕";
                     message = `Your order is ready. A driver will pick it up shortly.`;
                 } else if (nextStatus === 'CANCELLED') {
                     title = "Order Cancelled";
@@ -417,9 +340,9 @@ export async function updateOrderStatus(orderId: string, nextStatus: string, rea
                 if (phone) {
                     let smsText = '';
                     if (nextStatus === 'PREPARING') {
-                        smsText = `TrueServe: Kitchen ${restName} is now preparing your order #${ref}. We'll text you when it's ready!`;
+                        smsText = `TrueServe: 👨‍🍳 ${restName} is now preparing your order #${ref}. We'll text you when it's ready!`;
                     } else if (nextStatus === 'READY_FOR_PICKUP') {
-                        smsText = `TrueServe: Done Your order #${ref} from ${restName} is ready! A driver will pick it up shortly.`;
+                        smsText = `TrueServe: ✅ Your order #${ref} from ${restName} is ready! A driver will pick it up shortly.`;
                     } else if (nextStatus === 'CANCELLED') {
                         smsText = `TrueServe: Your order #${ref} from ${restName} was cancelled. ${reason ? `Reason: ${reason}.` : ''} Contact support@trueserve.delivery for help.`;
                     }
@@ -550,20 +473,19 @@ export async function refundOrder(orderId: string) {
 export async function generateApiKey() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id || (await cookies()).get("userId")?.value;
-    if (!userId) return { error: "Unauthorized" };
+    if (!user) return { error: "Unauthorized" };
 
     try {
         const newKey = `ts_${uuidv4().replace(/-/g, '')}`;
-        const { data: restaurant } = await supabaseAdmin
+        const { data: restaurant } = await supabase
             .from('Restaurant')
             .select('id')
-            .eq('ownerId', userId)
+            .eq('ownerId', user.id)
             .single();
 
         if (!restaurant) throw new Error("Restaurant not found");
 
-        const { error } = await supabaseAdmin
+        const { error } = await supabase
             .from('Restaurant')
             .update({ apiKey: newKey, updatedAt: new Date().toISOString() })
             .eq('id', restaurant.id);
@@ -579,20 +501,30 @@ export async function generateApiKey() {
 export async function submitMerchantInquiry(prevState: any, formData: FormData): Promise<MerchantActionState> {
     const restaurantName = formData.get("restaurantName") as string;
     const contactName = formData.get("contactName") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const email = ((formData.get("email") as string) || "").trim().toLowerCase();
+    const password = ((formData.get("password") as string) || "");
     const address = formData.get("address") as string;
     const city = formData.get("city") as string;
     const state = formData.get("state") as string;
     const zip = formData.get("zip") as string;
+    const cuisineType = ((formData.get("cuisineType") as string) || "").trim();
     const plan = formData.get("plan") as string;
     const posSystem = formData.get("posSystem") as string || "None";
     const posClientId = formData.get("posClientId") as string || "";
     const posClientSecret = formData.get("posClientSecret") as string || "";
-    const phone = formData.get("phone") as string || "";
+    const ghlUrl = ((formData.get("ghlUrl") as string) || "").trim();
+    const phone = normalizePhoneNumber((formData.get("phone") as string) || "");
 
     if (!restaurantName || !contactName || !email || !password || !address || !city || !state) {
         return { message: "Please fill in all required fields.", error: true };
+    }
+
+    if (!EMAIL_PATTERN.test(email)) {
+        return { message: "Please enter a valid email address.", error: true };
+    }
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+        return { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`, error: true };
     }
 
     try {
@@ -623,6 +555,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             name: contactName,
             role: 'MERCHANT',
             address: `${address}, ${city}, ${state} ${zip}`,
+            phone: phone || null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
@@ -655,6 +588,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             address: `${address}, ${city}, ${state} ${zip}`,
             city,
             state,
+            cuisineType: cuisineType || null,
             lat,
             lng,
             imageUrl: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200',
@@ -662,7 +596,8 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             posSystem,
             posClientId,
             posClientSecret,
-            phone,
+            ghlUrl: ghlUrl || null,
+            phone: phone || null,
             visibility: 'HIDDEN',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
@@ -685,6 +620,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
                 "Merchant Pending Review",
                 `Plan ${plan || "Flex Options"}`,
                 `POS ${posSystem || "None"}`,
+                ...(cuisineType ? [`Cuisine ${cuisineType}`] : []),
             ],
         });
 
@@ -722,7 +658,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             notificationPromises.push(
                 sendSMS(
                     phone,
-                    `TrueServe: Welcome ${contactName}! ${restaurantName} is now live on our platform. Log in to your dashboard to add menu items and start receiving orders: trueserve.delivery/merchant/login`
+                    `TrueServe: Welcome ${contactName}! We received ${restaurantName}'s application and will text you again once your merchant account is approved.`
                 )
             );
         }
@@ -732,7 +668,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             sendEmail(
                 email,
                 "TrueServe Merchant Application Received",
-                `<h1>Application Received, ${contactName}! Food</h1>
+                `<h1>Application Received, ${contactName}! 🍴</h1>
                 <p>Thanks for applying with <strong>${restaurantName}</strong>.</p>
                 <p>Your merchant account is now in <strong>pending review</strong>. An admin will manually verify and approve your onboarding before you can log into the merchant dashboard.</p>
                 <p>We’ll email you immediately when approved, with next steps for Stripe, POS integration, and launch readiness.</p>
@@ -745,7 +681,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             notificationPromises.push(
                 sendEmail(
                     staffEmail,
-                    `Urgent NEW MERCHANT SIGNUP: ${restaurantName}`,
+                    `🚨 NEW MERCHANT SIGNUP: ${restaurantName}`,
                     `<h1>New Merchant Application</h1>
                     <p><strong>Restaurant:</strong> ${restaurantName}</p>
                     <p><strong>Contact:</strong> ${contactName}</p>
@@ -792,11 +728,7 @@ export async function createStripeAccount(providedId?: string | FormData) {
     let userId: string | undefined;
 
     if (typeof providedId === 'string') userId = providedId;
-    else {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        userId = user?.id || cookieStore.get("userId")?.value;
-    }
+    else userId = cookieStore.get("userId")?.value;
 
     if (!userId) redirect("/login");
 
@@ -912,8 +844,6 @@ export async function toggleBusyMode(restaurantId: string, currentStatus: boolea
             after: { isBusy: !currentStatus } 
         });
         revalidatePath('/merchant/dashboard');
-        revalidatePath('/merchant/dashboard/menu');
-        revalidatePath('/restaurants');
         return { success: true };
     } catch (e: any) {
         return { error: e.message };
@@ -1133,30 +1063,24 @@ import { analyzeMerchantSentiment } from "@/lib/customerPulse";
 export async function savePosCredentials(posSystem: string, clientId: string, clientSecret: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id || (await cookies()).get("userId")?.value;
-    if (!userId) return { error: "Unauthorized" };
+    if (!user) return { error: "Unauthorized" };
 
     try {
-        const updatePayload: Record<string, any> = {
-            posSystem,
-            posClientId: clientId,
-            updatedAt: new Date().toISOString()
-        };
-
-        if (clientSecret) {
-            updatePayload.posClientSecret = clientSecret;
-        }
-
-        const { error } = await supabaseAdmin
+        const { error } = await supabase
             .from('Restaurant')
-            .update(updatePayload)
-            .eq('ownerId', userId);
+            .update({ 
+                posSystem, 
+                posClientId: clientId, 
+                posClientSecret: clientSecret,
+                updatedAt: new Date().toISOString() 
+            })
+            .eq('ownerId', user.id);
 
         if (error) throw error;
         
         await logAuditAction({ 
             action: "UPDATE_POS_CREDENTIALS", 
-            targetId: userId, 
+            targetId: user.id, 
             entityType: "Restaurant", 
             message: `Updated integration for ${posSystem}` 
         });
@@ -1358,5 +1282,52 @@ export async function getMerchantRestaurants() {
         return { success: true, restaurants: data || [] };
     } catch (e: any) {
         return { error: e.message, restaurants: [] };
+    }
+}
+
+export async function createMerchantTestOrder() {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { data: restaurant } = await supabase
+            .from('Restaurant')
+            .select('id, name')
+            .eq('ownerId', user.id)
+            .limit(1)
+            .single();
+
+        if (!restaurant) return { error: "No restaurant found" };
+
+        const { data: menuItem } = await supabase
+            .from('MenuItem')
+            .select('id, name, price')
+            .eq('restaurantId', restaurant.id)
+            .eq('isAvailable', true)
+            .limit(1)
+            .single();
+
+        if (!menuItem) return { error: "Add at least one menu item before placing a test order" };
+
+        const { data: order, error } = await supabase
+            .from('Order')
+            .insert({
+                restaurantId: restaurant.id,
+                customerId: user.id,
+                status: 'PENDING',
+                totalAmount: menuItem.price,
+                isTestOrder: true,
+                items: [{ menuItemId: menuItem.id, name: menuItem.name, quantity: 1, price: menuItem.price }],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            })
+            .select('id')
+            .single();
+
+        if (error) return { error: error.message };
+        return { success: true, orderId: order.id };
+    } catch (e: any) {
+        return { error: e.message };
     }
 }

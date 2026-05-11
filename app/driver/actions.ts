@@ -155,22 +155,21 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         const driveStatus = "OFFLINE";
         const bckStatus = isAutoApproved ? "CLEAR" : "PROCESSING";
 
+        const { error: authError } = await supabaseAdmin.auth.admin.createUser({
+            id: targetUserId,
+            email: email,
+            phone: phone,
+            phone_confirm: true,
+            email_confirm: true,
+            user_metadata: { displayName: name, role: 'DRIVER' }
+        });
+
+        if (authError && !authError.message.includes('already exists')) {
+            console.error("Driver Auth Creation Failed:", authError);
+        }
+
         if (isAutoApproved) {
             console.log(`[DriverApp] 🟢 AI AUTO-APPROVED Application for ${email}!`);
-
-            // Create the true Auth identity here so they can log in via SMS!
-            const { error: authError } = await supabaseAdmin.auth.admin.createUser({
-                id: targetUserId, // link to the raw User row we created earlier
-                email: email,
-                phone: phone,
-                phone_confirm: true,
-                email_confirm: true,
-                user_metadata: { displayName: name, role: 'DRIVER' }
-            });
-
-            if (authError && !authError.message.includes('already exists')) {
-                console.error("Auto-Approve Auth Creation Failed:", authError);
-            }
         } else {
             console.log(`[DriverApp] 🟡 AI Sent to Manual Review for ${email}. Reason: Scans failed automated compliance checks.`);
         }
@@ -553,6 +552,16 @@ export async function confirmPickupWithPhoto(formData: FormData) {
             throw new Error("Order not ready for pickup.");
         }
 
+        // Ownership check: only the assigned driver can confirm pickup
+        const { data: driverRecord } = await supabase
+            .from('Driver')
+            .select('id')
+            .eq('userId', user.id)
+            .single();
+        if (!driverRecord || driverRecord.id !== order.driverId) {
+            throw new Error("Unauthorized: this pickup is not assigned to you.");
+        }
+
         let pickupPhotoUrl = null;
 
         // Upload pickup photo to Supabase Storage
@@ -685,6 +694,13 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
     try {
         const supabase = await createClient();
 
+        // Auth check: ensure a logged-in driver is making this request
+        const { data: { user } } = await supabase.auth.getUser();
+        const cookieStore = await cookies();
+        const cookieUserId = cookieStore.get("userId")?.value;
+        const activeUserId = user?.id || cookieUserId;
+        if (!activeUserId) return { error: "Not authenticated." };
+
         // 1. Fetch order details for payout calculation
         const { data: order } = await supabase
             .from('Order')
@@ -693,6 +709,16 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
             .single();
 
         if (!order) throw new Error("Order not found");
+
+        // Ownership check: only the assigned driver can complete this delivery
+        const { data: driverRecord } = await supabase
+            .from('Driver')
+            .select('id')
+            .eq('userId', activeUserId)
+            .single();
+        if (!driverRecord || driverRecord.id !== order.driverId) {
+            return { error: "Unauthorized: this delivery is not assigned to you." };
+        }
 
         // Geo-Fenced Safe Drop Protocol
         if (driverLat && driverLng && order.deliveryLat && order.deliveryLng) {
@@ -1418,5 +1444,92 @@ export async function performAISpotCheck(formData: FormData) {
     } catch (e: any) {
         console.error("Spot Check Error:", e);
         return { success: false, error: e.message || "Unknown error during AI face verification." };
+    }
+}
+
+export type DriverRecoveryState = {
+    message: string;
+    success?: boolean;
+    error?: string;
+};
+
+export async function requestDriverPhoneUpdate(
+    prevState: DriverRecoveryState,
+    formData: FormData
+): Promise<DriverRecoveryState> {
+    try {
+        const supabase = await createClient();
+        const phone = formData.get('phone') as string;
+        const email = formData.get('email') as string;
+
+        if (!phone || !email) {
+            return { message: "Phone and email are required.", error: "missing_fields" };
+        }
+
+        const { data: driver, error: lookupError } = await supabase
+            .from('Driver')
+            .select('id, userId')
+            .eq('email', email.toLowerCase().trim())
+            .single();
+
+        if (lookupError || !driver) {
+            return { message: "No driver account found with that email.", error: "not_found" };
+        }
+
+        const { error: updateError } = await supabase
+            .from('Driver')
+            .update({ pendingPhone: phone.trim(), updatedAt: new Date().toISOString() })
+            .eq('id', driver.id);
+
+        if (updateError) {
+            return { message: "Failed to submit request. Please try again.", error: updateError.message };
+        }
+
+        return { message: "Your phone update request has been submitted. Our team will verify and update your account within 24 hours.", success: true };
+    } catch (e: any) {
+        return { message: "An unexpected error occurred.", error: e.message };
+    }
+}
+
+export async function submitDriverPhotoReport(formData: FormData) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { success: false, error: "Unauthorized" };
+
+        const orderId = formData.get('orderId') as string | null;
+        const reportType = (formData.get('reportType') as string) || 'general';
+        const notes = (formData.get('notes') as string) || '';
+        const file = formData.get('photo') as File | null;
+
+        if (!file) return { success: false, error: "No photo provided" };
+
+        const ext = file.name.split('.').pop() || 'jpg';
+        const path = `driver-reports/${user.id}/${Date.now()}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from('driver-photos')
+            .upload(path, file, { upsert: false });
+
+        if (uploadError) return { success: false, error: uploadError.message };
+
+        const { data: urlData } = supabase.storage.from('driver-photos').getPublicUrl(path);
+
+        const { error: dbError } = await supabase
+            .from('DriverPhotoReport')
+            .insert({
+                driverUserId: user.id,
+                orderId: orderId || null,
+                reportType,
+                notes,
+                photoUrl: urlData.publicUrl,
+                createdAt: new Date().toISOString(),
+            });
+
+        if (dbError) return { success: false, error: dbError.message };
+
+        return { success: true, message: "Photo report submitted successfully." };
+    } catch (e: any) {
+        return { success: false, error: e.message };
     }
 }
