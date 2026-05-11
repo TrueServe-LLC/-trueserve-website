@@ -1284,3 +1284,136 @@ export async function getMerchantRestaurants() {
         return { error: e.message, restaurants: [] };
     }
 }
+
+// ── Insights: True Profit ────────────────────────────────────────────────────
+
+export async function saveProfitSettings(
+    restaurantId: string,
+    foodCostPct: number,
+    laborCostPct: number
+): Promise<{ success?: boolean; error?: string }> {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { error } = await supabase
+            .from("Restaurant")
+            .update({ foodCostPct, laborCostPct })
+            .eq("id", restaurantId)
+            .eq("ownerId", user.id);
+
+        if (error) return { error: error.message };
+        revalidatePath("/merchant/dashboard/insights");
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+// ── Insights: Menu Engineering ───────────────────────────────────────────────
+
+export async function updateMenuItemCost(
+    itemId: string,
+    costPrice: number
+): Promise<{ success?: boolean; error?: string }> {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { error } = await supabase
+            .from("MenuItem")
+            .update({ costPrice })
+            .eq("id", itemId);
+
+        if (error) return { error: error.message };
+        revalidatePath("/merchant/dashboard/insights");
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+// ── Insights: Order Accuracy Audit ──────────────────────────────────────────
+
+export async function flagOrderDispute(
+    orderId: string,
+    disputeType: string
+): Promise<{ success?: boolean; error?: string }> {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { error } = await supabase
+            .from("Order")
+            .update({ disputeFlag: true, disputeType })
+            .eq("id", orderId);
+
+        if (error) return { error: error.message };
+
+        await logAuditAction({
+            action: "ORDER_DISPUTE_FLAGGED",
+            targetId: orderId,
+            entityType: "Order",
+            message: `Dispute flagged: ${disputeType}`,
+            after: { disputeType },
+        });
+
+        revalidatePath("/merchant/dashboard");
+        revalidatePath("/merchant/dashboard/insights");
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function resolveOrderDispute(
+    orderId: string
+): Promise<{ success?: boolean; error?: string }> {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { error } = await supabase
+            .from("Order")
+            .update({ disputeFlag: false, disputeType: null })
+            .eq("id", orderId);
+
+        if (error) return { error: error.message };
+        revalidatePath("/merchant/dashboard");
+        revalidatePath("/merchant/dashboard/insights");
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+// ── Integrations: Aggregator Route ──────────────────────────────────────────
+
+export async function saveAggregatorSettings(
+    restaurantId: string,
+    aggregatorType: string,
+    aggregatorApiKey: string,
+    aggregatorLocationId: string
+): Promise<{ success?: boolean; error?: string }> {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { error } = await supabase
+            .from("Restaurant")
+            .update({ aggregatorType, aggregatorApiKey, aggregatorLocationId })
+            .eq("id", restaurantId)
+            .eq("ownerId", user.id);
+
+        if (error) return { error: error.message };
+        revalidatePath("/merchant/dashboard/integrations");
+        return { success: true };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}

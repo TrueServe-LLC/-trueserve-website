@@ -3,6 +3,7 @@ import { getAuthSession } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import POSIntegration from "../POSIntegration";
+import AggregatorSection from "../AggregatorSection";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +22,12 @@ export default async function IntegrationsPage() {
 
     if (isPreview) {
         restaurant = {
+            id: "preview",
             apiKey: "ts_test_pk_12345",
-            posType: "Toast"
+            posType: "Toast",
+            aggregatorType: null,
+            aggregatorApiKey: null,
+            aggregatorLocationId: null,
         };
     } else {
         const supabase = await createClient();
@@ -41,8 +46,14 @@ export default async function IntegrationsPage() {
     return (
         <>
             <p style={{ fontSize: 11, color: '#555', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20, marginTop: -4 }}>
-                Manage POS systems, iframes, and API protocols.
+                Manage POS systems, aggregators, and API protocols.
             </p>
+            <AggregatorSection
+                restaurantId={restaurant.id}
+                currentAggregatorType={restaurant.aggregatorType}
+                currentAggregatorApiKey={restaurant.aggregatorApiKey}
+                currentAggregatorLocationId={restaurant.aggregatorLocationId}
+            />
             <POSIntegration
                 currentApiKey={restaurant.apiKey}
                 posType={restaurant.posType || "None"}
