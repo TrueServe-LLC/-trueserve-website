@@ -1628,3 +1628,16 @@ nav {
     text-transform: uppercase;
     font-style: italic;
 }
+
+/* Hide native browser play button and controls on decorative/background videos */
+video.decorative-video::-webkit-media-controls,
+video.decorative-video::-webkit-media-controls-enclosure,
+video.decorative-video::-webkit-media-controls-panel,
+video.decorative-video::-webkit-media-controls-play-button,
+video.decorative-video::-webkit-media-controls-overlay-play-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
+video.decorative-video {
+    pointer-events: none;
+}
