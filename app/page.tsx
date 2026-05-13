@@ -190,7 +190,7 @@ export default function Home() {
     {
       title: "For Drivers",
       detail: "Onboard cleanly, upload docs, track approval status, complete payouts, and stay supported while you deliver.",
-      href: "/driver/signup",
+      href: "/drive",
       cta: "Apply To Drive",
       icon: CarFront,
     },
@@ -262,7 +262,7 @@ export default function Home() {
             { href: "/about", label: "About" },
             { href: "/rewards", label: "Rewards" },
             { href: "/merchant/signup", label: "For Merchants" },
-            { href: "/driver/signup", label: "For Drivers" },
+            { href: "/drive", label: "Drive & Earn" },
             { href: "/contact", label: "Contact" },
           ].map((item) => (
             <motion.div key={item.href} style={{ position: "relative" }}>
@@ -324,7 +324,7 @@ export default function Home() {
               <div style={{display:"flex",flexDirection:"column",gap:8,paddingTop:8}}>
                 {[
                   { href:"/about", icon:UsersRound, label:"About TrueServe", sub:"Why we built the platform" },
-                  { href:"/driver/signup", icon:CarFront, label:"For Drivers", sub:"Earn delivering food" },
+                  { href:"/drive", icon:CarFront, label:"Drive & Earn", sub:"Deliver local, keep 100% tips" },
                   { href:"/merchant/signup", icon:Store, label:"For Merchants", sub:"List your restaurant" },
                   { href:"/restaurants", icon:UtensilsCrossed, label:"Order Food", sub:"Browse local restaurants" },
                   { href:"/rewards", icon:Star, label:"Rewards", sub:"Earn points on every order" },
@@ -676,7 +676,7 @@ export default function Home() {
                 title: "For Drivers",
                 tagline: "Earn more per mile",
                 bullets: ["Smart dispatch, fewer dead miles", "Next-day payouts"],
-                href: "/driver/signup",
+                href: "/drive",
                 cta: "Apply to Drive",
                 icon: CarFront,
               },
@@ -764,7 +764,7 @@ export default function Home() {
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
               <Link href="/rewards" className="hover:text-[#f97316] transition-colors">Rewards</Link>
               <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
-              <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
+              <Link href="/drive" className="hover:text-[#f97316] transition-colors">Drivers</Link>
               <Link href="/contact" className="hover:text-[#f97316] transition-colors">Contact</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             </div>

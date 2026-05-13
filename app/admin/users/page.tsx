@@ -9,6 +9,7 @@ import { resolveDriverDocumentUrl } from "@/lib/driver-documents";
 import { filterAdminUsers, isMockAdminRecord, shouldHideMockAdminData } from "@/lib/admin-data";
 import DriverApplicationActions from "@/components/admin/DriverApplicationActions";
 import MerchantApplicationActions from "@/components/admin/MerchantApplicationActions";
+import DriverPipeline from "@/components/admin/DriverPipeline";
 
 export const dynamic = "force-dynamic";
 
@@ -396,6 +397,16 @@ export default async function UsersPage({
                         )}
                     </div>
                 </div>
+                <DriverPipeline drivers={visibleDriverDocs.map((d: any) => ({
+                    id: d.id,
+                    userId: d.userId,
+                    complianceStatus: d.complianceStatus || d.status || "NEW_APPLICATION",
+                    backgroundCheckStatus: d.backgroundCheckStatus || "PENDING",
+                    vehicleType: d.vehicleType,
+                    createdAt: d.createdAt || new Date().toISOString(),
+                    user: d.user,
+                }))} />
+
                 <div className="um-apps">
                     <h2>Pending Driver Applications</h2>
                     <p>Fresh driver sign-ups appear here with their uploaded documents and approval actions so you can review them right away.</p>
