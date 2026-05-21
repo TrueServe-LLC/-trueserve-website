@@ -519,11 +519,11 @@ export default function Home() {
               </h3>
               <p>Real neighborhood restaurants. Not chains, not ghost kitchens.</p>
               <div className="ts-fig-trust-emojis" aria-hidden="true">
-                <span>ETA</span>
-                <span>GPS</span>
-                <span>Pay</span>
-                <span>Tips</span>
-                <span>Care</span>
+                <span>🍕</span>
+                <span>🌮</span>
+                <span>🍜</span>
+                <span>🥙</span>
+                <span>🍱</span>
                 <span className="more">+{Math.max(95, (networkStats.totalRestaurants || 100) - 5)}</span>
               </div>
             </motion.div>
