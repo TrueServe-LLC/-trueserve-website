@@ -1,12 +1,11 @@
 import Link from "next/link";
-import Logo from "@/components/Logo";
+import SiteFooter from "@/components/SiteFooter";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function TermsPage() {
     return (
-        <div className="food-app-shell min-h-screen">
-            <nav className="food-app-nav">
-                <Logo size="sm" />
-            </nav>
+        <div className="ts-fig ts-fig-text-page food-app-shell min-h-screen">
+            <SiteHeader />
             <main className="food-app-main">
                 <section className="food-panel">
                     <p className="food-kicker mb-3">Terms of Service</p>
@@ -50,6 +49,7 @@ export default function TermsPage() {
                     </article>
                 </section>
             </main>
+            <SiteFooter />
         </div>
     );
 }

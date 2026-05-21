@@ -11,15 +11,8 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import Logo from "@/components/Logo";
-
-const NAV_ITEMS = [
-  { label: "Order", href: "/restaurants" },
-  { label: "Rewards", href: "/rewards" },
-  { label: "For Merchants", href: "/merchant" },
-  { label: "Drive & Earn", href: "/drive" },
-  { label: "Help", href: "/contact" },
-];
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 const FAQS = [
   {
@@ -56,21 +49,8 @@ export default function ContactPage() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <div className="ts-app-shell ts-help-page">
-      <header className="ts-app-header">
-        <Link href="/" aria-label="TrueServe home">
-          <Logo size="sm" />
-        </Link>
-        <nav className="ts-app-desktop-nav" aria-label="Primary navigation">
-          {NAV_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className={item.href === "/contact" ? "active" : ""}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <Link href="/login" className="ts-app-signin">Sign in</Link>
-        <Link href="/restaurants" className="ts-app-order-now">Order now</Link>
-      </header>
+    <div className="ts-fig ts-fig-help-page ts-help-page">
+      <SiteHeader />
 
       <main>
         <section className="ts-help-hero">
@@ -154,6 +134,7 @@ export default function ContactPage() {
           </a>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }

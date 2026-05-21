@@ -11248,6 +11248,230 @@ nav {
   background: rgba(255, 107, 53, .15);
   color: #ffb091;
 }
+
+/* Public page unification pass: Help and auth now share the Figma shell */
+.ts-fig-help-page,
+.ts-fig-auth-page {
+  font-family: var(--fig-sans);
+  background:
+    radial-gradient(720px 420px at 6% 0%, rgba(255,107,53,.16), transparent 68%),
+    radial-gradient(720px 460px at 96% 8%, rgba(20,184,166,.18), transparent 70%),
+    linear-gradient(180deg, #07111B 0%, #0A1018 100%);
+  color: var(--fig-ink-2);
+}
+
+.ts-fig-help-page main {
+  width: min(1180px, calc(100% - 48px));
+  padding-bottom: 0;
+}
+
+.ts-fig-help-page .ts-help-hero {
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.ts-fig-help-page .ts-help-chip {
+  border-color: rgba(255,107,53,.38);
+  background: rgba(255,107,53,.12);
+  color: #ffb091;
+}
+
+.ts-fig-help-page .ts-help-action-card,
+.ts-fig-help-page .ts-help-faq-list article {
+  background: rgba(12,24,36,.88);
+  border-color: rgba(255,255,255,.12);
+  box-shadow: var(--fig-shadow-sm);
+}
+
+.ts-fig-help-page .ts-help-action-card.primary {
+  background: linear-gradient(160deg, var(--fig-orange), var(--fig-orange-deep));
+  color: #07111B;
+}
+
+.ts-fig-help-page .ts-help-human {
+  background: rgba(12,24,36,.88);
+  border-top: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.ts-fig-auth-page {
+  --t1: var(--fig-ink-2);
+  --gold: var(--fig-orange);
+}
+
+.ts-fig-auth-page .food-auth-wrap {
+  min-height: auto;
+  padding: clamp(48px, 7vw, 86px) 0;
+}
+
+.ts-fig-auth-page .food-auth-grid {
+  width: min(1180px, calc(100% - 48px));
+}
+
+.ts-fig-auth-page .food-auth-hero,
+.ts-fig-auth-page .food-auth-form {
+  background: rgba(12,24,36,.88);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
+  box-shadow: var(--fig-shadow-sm);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.ts-fig-auth-page .food-auth-hero {
+  min-height: 560px;
+}
+
+.ts-fig-auth-page .food-auth-image {
+  opacity: .22;
+}
+
+.ts-fig-auth-page .food-auth-hero::after {
+  background:
+    radial-gradient(460px 280px at 14% 0%, rgba(255,107,53,.18), transparent 70%),
+    linear-gradient(180deg, rgba(12,24,36,.18) 0%, rgba(7,17,27,.94) 100%);
+}
+
+.ts-fig-auth-page .food-heading,
+.ts-fig-auth-page .food-auth-hero h1,
+.ts-fig-auth-page .food-auth-form h2 {
+  font-family: var(--fig-serif) !important;
+  letter-spacing: -.03em !important;
+  color: #fff !important;
+}
+
+.ts-fig-auth-page .food-auth-hero .accent {
+  color: var(--fig-orange);
+}
+
+.ts-fig-auth-page .food-subtitle,
+.ts-fig-auth-page .lead,
+.ts-fig-auth-page .food-auth-list li {
+  color: var(--fig-muted) !important;
+}
+
+.ts-fig-auth-page .food-kicker,
+.ts-fig-auth-page .food-eyebrow {
+  color: var(--fig-orange) !important;
+}
+
+.ts-fig-auth-page .fg input {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.12);
+  color: #fff;
+}
+
+.ts-fig-auth-page .fg textarea,
+.ts-fig-auth-page .fg select {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  color: #fff;
+}
+
+.ts-fig-auth-page .fg input:focus,
+.ts-fig-auth-page .fg textarea:focus,
+.ts-fig-auth-page .fg select:focus {
+  outline: none;
+  border-color: var(--fig-orange);
+  box-shadow: 0 0 0 4px rgba(255,107,53,.12), 0 0 22px rgba(255,107,53,.10);
+}
+
+.ts-fig-auth-page .role-tabs {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.12);
+}
+
+.ts-fig-auth-page .auth-submit-btn,
+.ts-fig-auth-page .ts-pill-btn {
+  background: var(--fig-orange);
+  color: #07111B;
+}
+
+@media (max-width: 900px) {
+  .ts-fig-help-page main,
+  .ts-fig-auth-page .food-auth-grid {
+    width: min(100% - 24px, 720px);
+  }
+
+  .ts-fig-auth-page .food-auth-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .ts-fig-auth-page .food-auth-wrap {
+    padding: 24px 0 56px;
+  }
+
+  .ts-fig-auth-page .food-auth-hero {
+    min-height: 360px;
+  }
+
+  .ts-fig-auth-page .food-heading,
+  .ts-fig-auth-page .food-auth-hero h1,
+  .ts-fig-auth-page .food-auth-form h1,
+  .ts-fig-auth-page .food-auth-form h2 {
+    font-size: clamp(34px, 10vw, 42px) !important;
+    line-height: 1.05 !important;
+  }
+
+  .ts-fig-auth-page .food-auth-form,
+  .ts-fig-auth-page .food-auth-hero {
+    border-radius: 20px;
+  }
+}
+
+.ts-fig-text-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(640px 420px at 10% 6%, rgba(255,107,53,.16), transparent 72%),
+    radial-gradient(680px 460px at 92% 2%, rgba(20,184,166,.14), transparent 72%),
+    #07111B !important;
+  color: #E5E7EB;
+  font-family: var(--fig-sans);
+}
+
+.ts-fig-text-page .food-app-main {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 96px) 0;
+}
+
+.ts-fig-text-page .food-panel,
+.ts-fig-text-page .food-card {
+  background: rgba(12,24,36,.88);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 24px;
+  box-shadow: 0 24px 70px -42px rgba(0,0,0,.75);
+}
+
+.ts-fig-text-page .food-heading {
+  font-family: var(--fig-serif) !important;
+  color: #fff !important;
+  letter-spacing: -.03em !important;
+}
+
+.ts-fig-text-page .food-kicker {
+  color: var(--fig-orange) !important;
+}
+
+.ts-fig-text-page .food-subtitle,
+.ts-fig-text-page .food-card p {
+  color: #94A3B8 !important;
+}
+
+@media (max-width: 720px) {
+  .ts-fig-text-page .food-app-main {
+    width: min(100% - 24px, 720px);
+    padding: 28px 0 56px;
+  }
+
+  .ts-fig-text-page .food-heading {
+    font-size: clamp(34px, 11vw, 44px) !important;
+    line-height: 1.05 !important;
+  }
+}
 .ts-fig .ts-fig-rewards-banner.is-error {
   background: rgba(239, 68, 68, .15);
   color: #fca5a5;

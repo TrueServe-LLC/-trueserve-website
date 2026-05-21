@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useState, Suspense } from "react";
-import Logo from "@/components/Logo";
+import SiteFooter from "@/components/SiteFooter";
+import SiteHeader from "@/components/SiteHeader";
 import { signupWithPassword } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/client";
 import { Camera, Home, Mail, MapPin, Moon, Phone, ShieldCheck, UserRound, UtensilsCrossed } from "lucide-react";
@@ -42,10 +43,8 @@ function SignupForm() {
   }, [stateData?.success, router]);
 
   return (
-    <div className="food-app-shell">
-      <nav className="food-app-nav">
-        <Logo size="sm" />
-      </nav>
+    <div className="ts-fig ts-fig-auth-page food-app-shell">
+      <SiteHeader />
 
       <main className="food-auth-wrap">
         <div className="food-auth-grid">
@@ -253,6 +252,7 @@ function SignupForm() {
           </section>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

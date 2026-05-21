@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
-import Logo from "@/components/Logo";
+import SiteFooter from "@/components/SiteFooter";
+import SiteHeader from "@/components/SiteHeader";
 import { submitDriverApplication } from "@/app/driver/actions";
 
 export default function DriverSignupPage() {
@@ -49,10 +50,8 @@ export default function DriverSignupPage() {
   };
 
   return (
-    <div className="food-app-shell">
-      <nav className="food-app-nav">
-        <Logo size="sm" />
-      </nav>
+    <div className="ts-fig ts-fig-auth-page food-app-shell">
+      <SiteHeader />
 
       <main className="food-auth-wrap">
         <div className="food-auth-grid">
@@ -224,6 +223,7 @@ export default function DriverSignupPage() {
           </section>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

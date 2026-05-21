@@ -1,5 +1,6 @@
 import Link from "next/link";
-import Logo from "@/components/Logo";
+import SiteFooter from "@/components/SiteFooter";
+import SiteHeader from "@/components/SiteHeader";
 import { Check, ArrowRight, Zap, TrendingUp, Flame } from "lucide-react";
 
 const PLANS = [
@@ -92,23 +93,8 @@ const FAQS = [
 
 export default function PricingPage() {
   return (
-    <div className="food-app-shell">
-
-      {/* ── NAV ── */}
-      <nav className="food-app-nav">
-        <div className="flex items-center gap-4">
-          <Logo size="sm" />
-        </div>
-        <div className="hidden md:flex items-center gap-5" style={{ fontSize: 13, fontWeight: 700 }}>
-          <Link href="/restaurants" style={{ color: "rgba(255,255,255,0.6)" }} className="hover:text-white transition-colors">Order Food</Link>
-          <Link href="/merchant/signup" style={{ color: "rgba(255,255,255,0.6)" }} className="hover:text-white transition-colors">For Merchants</Link>
-          <Link href="/contact" style={{ color: "rgba(255,255,255,0.6)" }} className="hover:text-white transition-colors">Contact</Link>
-        </div>
-        <div className="flex gap-2 items-center">
-          <Link href="/merchant/login" className="btn btn-ghost">Sign In</Link>
-          <Link href="/merchant/signup" className="btn btn-gold">Get Started</Link>
-        </div>
-      </nav>
+    <div className="ts-fig ts-fig-text-page food-app-shell">
+      <SiteHeader />
 
       <main className="food-app-main">
 
@@ -347,26 +333,7 @@ export default function PricingPage() {
 
       </main>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ marginTop: 32, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "36px 16px 48px", textAlign: "center" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
-          <Logo size="md" />
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 24, flexWrap: "wrap" }}>
-            {[
-              { label: "Privacy",     href: "/privacy" },
-              { label: "Terms",       href: "/terms" },
-              { label: "Contact",     href: "/contact" },
-              { label: "Get Started", href: "/merchant/signup" },
-            ].map(l => (
-              <Link key={l.label} href={l.href} style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em", color: "#555", textDecoration: "none" }}
-                className="hover:text-white transition-colors">{l.label}</Link>
-            ))}
-          </div>
-          <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#444", margin: 0 }}>
-            © {new Date().getFullYear()} TrueServe · Built for local restaurants.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
 
     </div>
   );

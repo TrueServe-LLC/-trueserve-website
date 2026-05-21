@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Logo from "@/components/Logo";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/client";
 import { loginWithPassword } from "@/app/auth/actions";
 
@@ -101,10 +102,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="food-app-shell">
-      <nav className="food-app-nav">
-        <Logo size="sm" />
-      </nav>
+    <div className="ts-fig ts-fig-auth-page food-app-shell">
+      <SiteHeader />
 
       <main className="food-auth-wrap">
         <div className="auth-route-ambient" aria-hidden="true">
@@ -281,6 +280,7 @@ export default function LoginPage() {
           </section>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }
