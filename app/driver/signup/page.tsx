@@ -50,71 +50,73 @@ export default function DriverSignupPage() {
   };
 
   return (
-    <div className="ts-fig ts-fig-auth-page food-app-shell">
+    <div className="ts-fig ts-fig-auth-page">
       <SiteHeader />
 
-      <main className="food-auth-wrap">
-        <div className="food-auth-grid">
-          <section className="food-hero-card food-auth-hero">
-            <div className="food-auth-image" style={{ backgroundImage: "url('/diverse_drivers.png')" }} />
-            <div className="food-auth-hero-inner">
-              <div className="food-eyebrow">Driver onboarding</div>
-              <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[56px]">Finish Your <span className="accent">Driver Setup.</span></h1>
-                <p className="food-subtitle !max-w-[520px]">
-                  Upload your documents, confirm your vehicle details, and get your account ready for route review.
-                </p>
-              </div>
-              <ul className="food-auth-list">
+      <main className="ts-fig-auth">
+        <div className="ts-fig-auth-grid">
+          <aside className="ts-fig-auth-side">
+            <div
+              className="ts-fig-auth-side-image"
+              style={{ backgroundImage: "url('/driver_hero_real.png')" }}
+              aria-hidden="true"
+            />
+            <div className="ts-fig-auth-side-inner">
+              <span className="ts-fig-chip">
+                <span className="ts-fig-chip-dot" />
+                Local driver routes
+              </span>
+              <h1>
+                Drive your block. <span className="t">Keep every tip.</span>
+              </h1>
+              <p className="ts-fig-auth-side-sub">
+                $20/hr base pay + 100% of tips. Daily payout. No schedules — go online whenever you want.
+              </p>
+              <ul className="ts-fig-auth-perks">
                 <li>
-                  <div className="food-auth-icon">1</div>
+                  <span className="ts-fig-auth-perk-dot">1</span>
                   <div>
-                    <div className="font-extrabold">Document upload</div>
-                    <div className="text-sm text-white/65">License, insurance, and vehicle registration in one place.</div>
+                    <strong>Document upload</strong>
+                    <span>License, insurance, and vehicle registration in one place.</span>
                   </div>
                 </li>
                 <li>
-                  <div className="food-auth-icon">2</div>
+                  <span className="ts-fig-auth-perk-dot">2</span>
                   <div>
-                    <div className="font-extrabold">Smart dispatch</div>
-                    <div className="text-sm text-white/65">Fewer dead miles and better trip density.</div>
+                    <strong>Smart dispatch</strong>
+                    <span>Fewer dead miles and better trip density.</span>
                   </div>
                 </li>
                 <li>
-                  <div className="food-auth-icon">3</div>
+                  <span className="ts-fig-auth-perk-dot">3</span>
                   <div>
-                    <div className="font-extrabold">Secure onboarding</div>
-                    <div className="text-sm text-white/65">ID, insurance, registration, and agreement compliance included.</div>
+                    <strong>Secure onboarding</strong>
+                    <span>ID, insurance, registration, and agreement compliance included.</span>
                   </div>
                 </li>
               </ul>
             </div>
-          </section>
+          </aside>
 
-          <section className="food-panel food-auth-form">
-            <Link href="/" className="su-back">← Back to Home</Link>
-            <p className="food-kicker mb-3">Driver account</p>
-            <h1 className="food-heading !text-[36px]">Join the Fleet</h1>
-            <p className="lead mt-2">Submit your profile and documents to unlock OTP login access.</p>
+          <section className="ts-fig-auth-form">
+            <span className="ts-fig-kicker teal">Driver application</span>
+            <h2>Start earning this week</h2>
+            <p className="ts-fig-auth-form-sub">Submit your profile and documents — we approve most drivers within 24 hours.</p>
 
             {stateData?.message && (
-              <div className={`mt-4 rounded-xl border px-4 py-3 text-xs font-bold uppercase tracking-[0.11em] ${
-                stateData.error
-                  ? "border-red-500/30 bg-red-500/10 text-red-300"
-                  : "border-[#3dd68c]/30 bg-[#3dd68c]/10 text-[#8ce7b8]"
-              }`}>
+              <div className={`ts-fig-auth-banner ${stateData.error ? "is-error" : "is-success"}`} role="alert">
                 {stateData.message}
               </div>
             )}
 
-            <div className="prog mt-6">
-              <div className={`prog-s ${step >= 1 ? 'on' : ''}`}></div>
-              <div className={`prog-s ${step >= 2 ? 'on' : ''}`}></div>
-              <div className={`prog-s ${step >= 3 ? 'on' : ''}`}></div>
-              <span className="prog-label">{step < 3 ? `Step ${step} of 2` : "Application Sent"}</span>
+            <div className="ts-fig-auth-steps" aria-label={`Step ${step} of 2`}>
+              <div className={`ts-fig-auth-step-dot${step >= 1 ? " is-on" : ""}`} />
+              <div className={`ts-fig-auth-step-dot${step >= 2 ? " is-on" : ""}`} />
+              <div className={`ts-fig-auth-step-dot${step >= 3 ? " is-on" : ""}`} />
+              <span>{step < 3 ? `Step ${step} of 2` : "Application sent"}</span>
             </div>
 
-            <form action={formAction}>
+            <form action={formAction} className="ts-fig-auth-fields">
               <input type="hidden" name="name" value={fullName} />
               <input type="hidden" name="email" value={email} />
               <input type="hidden" name="phone" value={phone} />
@@ -129,97 +131,126 @@ export default function DriverSignupPage() {
               <input type="hidden" name="lng" value={lng} />
 
               {step === 1 && (
-                <div id="ds-1" className="step active">
-                  <div className="sc">
-                    <h3><span className="sn">1</span> Profile and Vehicle</h3>
-                    <div className="fg"><label>Full Name</label><input type="text" placeholder="Alex Smith" value={fullName} onChange={(e) => setFullName(e.target.value)} required /></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="fg"><label>Email</label><input type="email" placeholder="alex@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
-                      <div className="fg"><label>Phone (US)</label><input type="tel" placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required /></div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="fg"><label>Date of Birth</label><input type="date" value={dob} onChange={(e) => setDob(e.target.value)} required /></div>
-                      <div className="fg"><label>Home Address</label><input type="text" placeholder="123 Main St, Charlotte, NC" value={address} onChange={(e) => setAddress(e.target.value)} required /></div>
-                    </div>
-                    <div className="fg">
-                      <label>Vehicle Type</label>
-                      <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className="w-full bg-[#0c0e13] border border-[#1c1f28] rounded-lg p-3">
-                        <option value="CAR">Car</option>
-                        <option value="SCOOTER">Scooter / Moped</option>
-                        <option value="MOTORCYCLE">Motorcycle</option>
-                        <option value="BICYCLE">Bicycle</option>
-                      </select>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="fg"><label>Vehicle Make</label><input type="text" placeholder="Toyota" value={vehicleMake} onChange={(e) => setVehicleMake(e.target.value)} required /></div>
-                      <div className="fg"><label>Vehicle Model</label><input type="text" placeholder="Corolla" value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} required /></div>
-                      <div className="fg"><label>Vehicle Color</label><input type="text" placeholder="Black" value={vehicleColor} onChange={(e) => setVehicleColor(e.target.value)} required /></div>
-                    </div>
-                    <div className="fg"><label>License Plate</label><input type="text" placeholder="ABC-1234" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} required /></div>
+                <>
+                  <label className="ts-fig-auth-field">
+                    <span>Full name</span>
+                    <input type="text" placeholder="Alex Smith" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" />
+                  </label>
+                  <div className="ts-fig-auth-row">
+                    <label className="ts-fig-auth-field">
+                      <span>Email</span>
+                      <input type="email" placeholder="alex@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+                    </label>
+                    <label className="ts-fig-auth-field">
+                      <span>Phone (US)</span>
+                      <input type="tel" placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required autoComplete="tel" />
+                    </label>
                   </div>
+                  <div className="ts-fig-auth-row">
+                    <label className="ts-fig-auth-field">
+                      <span>Date of birth</span>
+                      <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
+                    </label>
+                    <label className="ts-fig-auth-field">
+                      <span>Home address</span>
+                      <input type="text" placeholder="123 Main St, Charlotte, NC" value={address} onChange={(e) => setAddress(e.target.value)} required />
+                    </label>
+                  </div>
+                  <label className="ts-fig-auth-field">
+                    <span>Vehicle type</span>
+                    <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value)}>
+                      <option value="CAR">Car</option>
+                      <option value="SCOOTER">Scooter / Moped</option>
+                      <option value="MOTORCYCLE">Motorcycle</option>
+                      <option value="BICYCLE">Bicycle</option>
+                    </select>
+                  </label>
+                  <div className="ts-fig-auth-row ts-fig-auth-row-3">
+                    <label className="ts-fig-auth-field">
+                      <span>Make</span>
+                      <input type="text" placeholder="Toyota" value={vehicleMake} onChange={(e) => setVehicleMake(e.target.value)} required />
+                    </label>
+                    <label className="ts-fig-auth-field">
+                      <span>Model</span>
+                      <input type="text" placeholder="Corolla" value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} required />
+                    </label>
+                    <label className="ts-fig-auth-field">
+                      <span>Color</span>
+                      <input type="text" placeholder="Black" value={vehicleColor} onChange={(e) => setVehicleColor(e.target.value)} required />
+                    </label>
+                  </div>
+                  <label className="ts-fig-auth-field">
+                    <span>License plate</span>
+                    <input type="text" placeholder="ABC-1234" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} required />
+                  </label>
+
                   <button
-                    className="place-btn"
                     type="button"
+                    className="ts-fig-btn ts-fig-btn-teal ts-fig-auth-submit"
                     onClick={() => setStep(2)}
                     disabled={isPending || !fullName || !email || !phone || !dob || !address || !vehicleMake || !vehicleModel || !vehicleColor || !licensePlate}
                   >
-                    Next: Compliance
+                    Next: Compliance →
                   </button>
-                </div>
+                </>
               )}
 
               {step === 2 && (
-                <div id="ds-2" className="step active">
-                  <div className="sc">
-                    <h3><span className="sn">2</span> Compliance and Documents</h3>
-                    <div className="fg">
-                      <label>Driver License Image</label>
-                      <input name="idDocument" type="file" accept="image/*,.pdf" required />
-                    </div>
-                    <div className="fg">
-                      <label>Insurance Document</label>
-                      <input name="insuranceDocument" type="file" accept="image/*,.pdf" required />
-                    </div>
-                    <div className="fg">
-                      <label>Vehicle Registration</label>
-                      <input name="registrationDocument" type="file" accept="image/*,.pdf" required />
-                    </div>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 mt-3">
-                      <div className="text-[11px] uppercase tracking-[0.14em] text-white/60 mb-2">Optional precision location</div>
-                      <button type="button" className="btn btn-ghost" onClick={useCurrentLocation}>Use Current Location</button>
-                      {geoMessage && <p className="mt-2 text-xs text-white/70">{geoMessage}</p>}
-                    </div>
-                    <label className="mt-4 flex items-start gap-3 text-sm text-white/80">
-                      <input name="hasSignedAgreement" type="checkbox" value="true" required className="mt-1" />
-                      I confirm all provided information is accurate and I agree to the TrueServe driver terms.
-                    </label>
-                    <label className="driver-sms-consent mt-3">
-                      <input name="smsConsent" type="checkbox" value="true" />
-                      <span>
-                        I agree to receive driver recruiting and onboarding text messages from TrueServe at the phone number provided.
-                        Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.
-                        Consent is not required to apply.
-                      </span>
-                    </label>
+                <>
+                  <label className="ts-fig-auth-field">
+                    <span>Driver license image</span>
+                    <input name="idDocument" type="file" accept="image/*,.pdf" required />
+                  </label>
+                  <label className="ts-fig-auth-field">
+                    <span>Insurance document</span>
+                    <input name="insuranceDocument" type="file" accept="image/*,.pdf" required />
+                  </label>
+                  <label className="ts-fig-auth-field">
+                    <span>Vehicle registration</span>
+                    <input name="registrationDocument" type="file" accept="image/*,.pdf" required />
+                  </label>
+
+                  <div className="ts-fig-auth-callout">
+                    <strong>Optional precision location</strong>
+                    <button type="button" className="ts-fig-auth-ghost" onClick={useCurrentLocation}>Use current location</button>
+                    {geoMessage && <small>{geoMessage}</small>}
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <button className="place-btn" type="submit" disabled={isPending}>{isPending ? "Submitting..." : "Submit Application"}</button>
-                    <button className="btn btn-ghost w-full" type="button" onClick={() => setStep(1)} disabled={isPending}>← Back</button>
-                  </div>
-                </div>
+
+                  <label className="ts-fig-auth-consent">
+                    <input name="hasSignedAgreement" type="checkbox" value="true" required />
+                    <span>I confirm all provided information is accurate and I agree to the TrueServe driver terms.</span>
+                  </label>
+                  <label className="ts-fig-auth-consent">
+                    <input name="smsConsent" type="checkbox" value="true" />
+                    <span>
+                      I agree to receive driver recruiting and onboarding text messages from TrueServe at the phone number provided.
+                      Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.
+                      Consent is not required to apply.
+                    </span>
+                  </label>
+
+                  <button className="ts-fig-btn ts-fig-btn-teal ts-fig-auth-submit" type="submit" disabled={isPending}>
+                    {isPending ? "Submitting..." : "Submit application"}
+                  </button>
+                  <button className="ts-fig-auth-ghost" type="button" onClick={() => setStep(1)} disabled={isPending}>
+                    ← Back
+                  </button>
+                </>
               )}
 
               {step === 3 && (
-                <div id="ds-3" className="step active">
-                  <div className="done-card">
-                    <div className="done-ico">TS</div>
-                    <h3>Application Received</h3>
-                    <p>We sent your next-step instructions by email and, if you opted in, SMS. Once approved, you can log in with phone OTP at the driver portal.</p>
-                    <Link href="/driver/login?tour=1" className="place-btn inline-flex items-center justify-center">Go to Driver Login</Link>
-                  </div>
+                <div className="ts-fig-auth-done">
+                  <div className="ts-fig-auth-done-icon">✓</div>
+                  <h3>Application received</h3>
+                  <p>We sent your next-step instructions by email and, if you opted in, SMS. Once approved, you can log in with phone OTP at the driver portal.</p>
+                  <Link href="/driver/login?tour=1" className="ts-fig-btn ts-fig-btn-teal">Go to driver login →</Link>
                 </div>
               )}
             </form>
+
+            <p className="ts-fig-auth-foot">
+              Already a driver? <Link href="/driver/login">Sign in to portal</Link>
+            </p>
           </section>
         </div>
       </main>

@@ -11705,3 +11705,629 @@ nav {
   .ts-fig-rewards-tabs { top: 64px; }
   .ts-fig-rewards-tabs .ts-fig-container { padding: 10px 16px; }
 }
+
+/* ─── ts-fig-auth — login / signup / merchant signup / driver signup ──── */
+.ts-fig-auth {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: stretch;
+  padding: 32px 24px 64px;
+  background: #0B1424;
+}
+.ts-fig-auth-grid {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 0;
+  background: #0F172A;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .6);
+  min-height: 640px;
+}
+
+/* IMAGE SIDE */
+.ts-fig-auth-side {
+  position: relative;
+  padding: 44px;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.ts-fig-auth-side-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+.ts-fig-auth-side::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(15,23,42,.35) 0%, rgba(15,23,42,.55) 50%, rgba(15,23,42,.92) 100%),
+    radial-gradient(420px 280px at 20% 25%, rgba(255,107,53,.22), transparent 65%),
+    radial-gradient(380px 260px at 78% 85%, rgba(20,184,166,.18), transparent 65%);
+}
+.ts-fig-auth-side-inner { position: relative; z-index: 2; }
+.ts-fig-auth-side .ts-fig-chip { margin-bottom: 22px; }
+.ts-fig-auth-side h1 {
+  font-family: var(--fig-serif);
+  font-weight: 700;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -.025em;
+  color: #fff;
+  margin: 0 0 16px;
+}
+.ts-fig-auth-side h1 .o { color: var(--fig-orange); display: block; }
+.ts-fig-auth-side h1 .t { color: var(--fig-teal); display: block; }
+.ts-fig-auth-side-sub {
+  font-size: 15px;
+  color: #cbd5e1;
+  line-height: 1.6;
+  max-width: 380px;
+  margin: 0 0 28px;
+}
+.ts-fig-auth-perks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+.ts-fig-auth-perks li {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: flex-start;
+}
+.ts-fig-auth-perk-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 107, 53, .2);
+  color: var(--fig-orange);
+  font-family: var(--fig-serif);
+  font-weight: 700;
+  font-size: 13px;
+}
+.ts-fig-auth-perks strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.ts-fig-auth-perks span:not(.ts-fig-auth-perk-dot) {
+  font-size: 13px;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+/* FORM SIDE */
+.ts-fig-auth-form {
+  background: #0F172A;
+  padding: 48px 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-left: 1px solid rgba(255, 255, 255, .06);
+}
+.ts-fig-auth-form .ts-fig-kicker { margin-bottom: 0; }
+.ts-fig-auth-form h2 {
+  font-family: var(--fig-serif);
+  font-weight: 700;
+  font-size: clamp(28px, 3vw, 36px);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  color: #fff;
+  margin: 0;
+}
+.ts-fig-auth-form-sub {
+  font-size: 14px;
+  color: #94A3B8;
+  line-height: 1.55;
+  margin: 0 0 8px;
+  max-width: 360px;
+}
+.ts-fig-auth-error {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, .12);
+  border: 1px solid rgba(239, 68, 68, .3);
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Role tabs */
+.ts-fig-auth-roles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 999px;
+  margin-top: 4px;
+}
+.ts-fig-auth-roles button {
+  border: 0;
+  background: transparent;
+  color: #94A3B8;
+  padding: 9px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s var(--fig-ease), color .18s var(--fig-ease);
+}
+.ts-fig-auth-roles button:hover { color: #fff; }
+.ts-fig-auth-roles button.is-active {
+  background: var(--fig-orange);
+  color: #fff;
+  box-shadow: 0 4px 12px -4px rgba(255, 107, 53, .55);
+}
+
+/* Form fields */
+.ts-fig-auth-fields {
+  display: grid;
+  gap: 14px;
+  margin-top: 8px;
+}
+.ts-fig-auth-field {
+  display: grid;
+  gap: 6px;
+}
+.ts-fig-auth-field > span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+  letter-spacing: .02em;
+}
+.ts-fig-auth-field input {
+  background: #182438;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #fff;
+  font-family: var(--fig-sans);
+  transition: border-color .18s var(--fig-ease), box-shadow .18s var(--fig-ease);
+  outline: none;
+}
+.ts-fig-auth-field input::placeholder { color: #64748B; }
+.ts-fig-auth-field input:focus {
+  border-color: var(--fig-orange);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, .15);
+}
+.ts-fig-auth-field input:disabled { opacity: .55; cursor: not-allowed; }
+.ts-fig-auth-forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -2px;
+}
+.ts-fig-auth-forgot a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fig-teal);
+}
+.ts-fig-auth-forgot a:hover { color: var(--fig-teal-deep); }
+
+.ts-fig-auth-submit {
+  width: 100%;
+  justify-content: center;
+  padding: 13px 22px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+.ts-fig-auth-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+/* OR divider */
+.ts-fig-auth-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+  margin: 8px 0 4px;
+}
+.ts-fig-auth-divider::before,
+.ts-fig-auth-divider::after {
+  content: "";
+  height: 1px;
+  background: rgba(255, 255, 255, .08);
+}
+.ts-fig-auth-divider span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748B;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* OAuth button */
+.ts-fig-auth-oauth {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s var(--fig-ease);
+  font-family: var(--fig-sans);
+}
+.ts-fig-auth-oauth:hover { background: rgba(255, 255, 255, .08); }
+.ts-fig-auth-oauth svg { width: 18px; height: 18px; }
+.ts-fig-auth-oauth:disabled { opacity: .55; cursor: not-allowed; }
+
+.ts-fig-auth-foot {
+  text-align: center;
+  font-size: 13px;
+  color: #94A3B8;
+  margin: 12px 0 0;
+}
+.ts-fig-auth-foot a {
+  color: var(--fig-orange);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ts-fig-auth-foot a:hover { color: var(--fig-orange-deep); }
+
+/* Dev / QA section */
+.ts-fig-auth-dev {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, .1);
+  display: grid;
+  gap: 6px;
+}
+.ts-fig-auth-dev p {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #64748B;
+  margin: 0 0 4px;
+}
+.ts-fig-auth-dev button {
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: #cbd5e1;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--fig-sans);
+}
+.ts-fig-auth-dev button:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.ts-fig-auth-dev button:disabled { opacity: .55; cursor: not-allowed; }
+
+@media (max-width: 900px) {
+  .ts-fig-auth { padding: 24px 16px 40px; }
+  .ts-fig-auth-grid { grid-template-columns: 1fr; min-height: 0; }
+  .ts-fig-auth-side { min-height: 280px; padding: 28px; }
+  .ts-fig-auth-form { padding: 28px; border-left: 0; border-top: 1px solid rgba(255, 255, 255, .06); }
+}
+
+/* ─── ts-fig-auth — multi-step signup extensions ──────────────────────── */
+
+/* Banner (referral / success / error) */
+.ts-fig-auth-banner {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+.ts-fig-auth-banner.is-info {
+  background: rgba(255, 107, 53, .12);
+  border-color: rgba(255, 107, 53, .3);
+  color: #ffb091;
+}
+.ts-fig-auth-banner.is-success {
+  background: rgba(20, 184, 166, .12);
+  border-color: rgba(20, 184, 166, .3);
+  color: #5BD9C5;
+}
+.ts-fig-auth-banner.is-error {
+  background: rgba(239, 68, 68, .12);
+  border-color: rgba(239, 68, 68, .3);
+  color: #fca5a5;
+}
+
+/* Step indicator */
+.ts-fig-auth-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+.ts-fig-auth-step-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  transition: background .3s var(--fig-ease);
+  max-width: 72px;
+}
+.ts-fig-auth-step-dot.is-on { background: var(--fig-orange); }
+.ts-fig-auth-steps span {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #64748B;
+}
+
+/* OAuth 2-col row */
+.ts-fig-auth-oauth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Fieldsets — for grouped pill pickers */
+.ts-fig-auth-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.ts-fig-auth-fieldset legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+  letter-spacing: .02em;
+  padding: 0;
+}
+
+/* Pills (avatar / location persona picker) */
+.ts-fig-auth-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ts-fig-auth-pills button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s var(--fig-ease), border-color .18s var(--fig-ease), color .18s var(--fig-ease);
+  font-family: var(--fig-sans);
+}
+.ts-fig-auth-pills button:hover {
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+}
+.ts-fig-auth-pills button.is-active {
+  background: rgba(255, 107, 53, .15);
+  border-color: var(--fig-orange);
+  color: var(--fig-orange);
+}
+
+/* 2-col and 3-col row inside fields */
+.ts-fig-auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.ts-fig-auth-row-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+@media (max-width: 600px) {
+  .ts-fig-auth-row,
+  .ts-fig-auth-row-3 { grid-template-columns: 1fr; }
+}
+
+/* Select + textarea inside .ts-fig-auth-field */
+.ts-fig-auth-field select,
+.ts-fig-auth-field textarea {
+  background: #182438;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #fff;
+  font-family: var(--fig-sans);
+  outline: none;
+  resize: vertical;
+}
+.ts-fig-auth-field select { appearance: none; cursor: pointer; padding-right: 32px; background-image: linear-gradient(45deg, transparent 50%, #94A3B8 50%), linear-gradient(135deg, #94A3B8 50%, transparent 50%); background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+.ts-fig-auth-field textarea::placeholder { color: #64748B; }
+.ts-fig-auth-field select:focus,
+.ts-fig-auth-field textarea:focus {
+  border-color: var(--fig-orange);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, .15);
+}
+.ts-fig-auth-field input[type="file"] {
+  background: rgba(255, 255, 255, .04);
+  border: 1px dashed rgba(255, 255, 255, .14);
+  padding: 12px 14px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.ts-fig-auth-field input[type="file"]::file-selector-button {
+  background: var(--fig-orange);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-weight: 700;
+  font-size: 12px;
+  margin-right: 12px;
+  cursor: pointer;
+  font-family: var(--fig-sans);
+}
+.ts-fig-auth-field input[type="date"] {
+  color-scheme: dark;
+}
+.ts-fig-auth-field small {
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 2px;
+}
+
+/* Upload card (drop-off photo) */
+.ts-fig-auth-upload {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px dashed rgba(255, 255, 255, .14);
+  cursor: pointer;
+  transition: border-color .18s var(--fig-ease), background .18s var(--fig-ease);
+}
+.ts-fig-auth-upload:hover {
+  border-color: var(--fig-orange);
+  background: rgba(255, 107, 53, .04);
+}
+.ts-fig-auth-upload svg { color: var(--fig-orange); }
+.ts-fig-auth-upload strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.ts-fig-auth-upload span {
+  font-size: 12px;
+  color: #94A3B8;
+  line-height: 1.5;
+}
+.ts-fig-auth-upload input[type="file"] {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 8px;
+  padding: 8px;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+/* Ghost back button */
+.ts-fig-auth-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s var(--fig-ease), color .18s var(--fig-ease);
+  font-family: var(--fig-sans);
+}
+.ts-fig-auth-ghost:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+.ts-fig-auth-ghost:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Driver location callout */
+.ts-fig-auth-callout {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(20, 184, 166, .08);
+  border: 1px solid rgba(20, 184, 166, .25);
+  display: grid;
+  gap: 8px;
+}
+.ts-fig-auth-callout strong {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #5BD9C5;
+}
+.ts-fig-auth-callout small {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+/* Checkbox consent rows */
+.ts-fig-auth-consent {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+.ts-fig-auth-consent input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--fig-orange);
+  cursor: pointer;
+}
+
+/* Success / done card */
+.ts-fig-auth-done {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 32px 12px;
+  gap: 12px;
+}
+.ts-fig-auth-done-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, #4dbeae 0%, var(--fig-teal-deep) 100%);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 700;
+  box-shadow: 0 10px 24px -8px rgba(20, 184, 166, .55);
+}
+.ts-fig-auth-done h3 {
+  font-family: var(--fig-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 4px 0 0;
+  letter-spacing: -.015em;
+}
+.ts-fig-auth-done p {
+  font-size: 14px;
+  color: #94A3B8;
+  line-height: 1.55;
+  max-width: 360px;
+  margin: 0;
+}
+.ts-fig-auth-done .ts-fig-btn { margin-top: 8px; }

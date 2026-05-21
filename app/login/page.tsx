@@ -102,179 +102,165 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="ts-fig ts-fig-auth-page food-app-shell">
+    <div className="ts-fig ts-fig-auth-page">
       <SiteHeader />
 
-      <main className="food-auth-wrap">
-        <div className="auth-route-ambient" aria-hidden="true">
-          <svg viewBox="0 0 1200 760" role="presentation" focusable="false">
-            <path className="auth-route-line auth-route-line-base" d="M80 575 C 235 390, 365 640, 515 430 S 760 185, 940 350 S 1085 585, 1160 305" />
-            <path className="auth-route-line auth-route-line-hot" d="M80 575 C 235 390, 365 640, 515 430 S 760 185, 940 350 S 1085 585, 1160 305" />
-            <circle className="auth-route-stop auth-route-stop-one" cx="515" cy="430" r="8" />
-            <circle className="auth-route-stop auth-route-stop-two" cx="940" cy="350" r="8" />
-            <circle className="auth-route-courier" cx="0" cy="0" r="10" />
-          </svg>
-        </div>
-        <div className="food-auth-grid">
-          <section className="food-hero-card food-auth-hero">
+      <main className="ts-fig-auth">
+        <div className="ts-fig-auth-grid">
+          <aside className="ts-fig-auth-side">
             <div
-              className="food-auth-image"
-              style={{ backgroundImage: "url('/hero_food_delivery.png')" }}
+              className="ts-fig-auth-side-image"
+              style={{ backgroundImage: "url('/community_section.png')" }}
+              aria-hidden="true"
             />
-            <div className="food-auth-hero-inner">
-              <div className="food-eyebrow">Customer and team access</div>
-              <div className="mt-5 space-y-4">
-                <h1 className="food-heading !text-[52px] md:!text-[56px]">Welcome Back To <span className="accent">Dinner Mode.</span></h1>
-                <p className="food-subtitle !max-w-[520px]">
-                  The sign-in experience now matches the rest of the food app: warm dark surfaces, clear hierarchy, and straightforward next steps.
-                </p>
-              </div>
-              <ul className="food-auth-list">
+            <div className="ts-fig-auth-side-inner">
+              <span className="ts-fig-chip">
+                <span className="ts-fig-chip-dot" />
+                Welcome back
+              </span>
+              <h1>
+                Sign in to <span className="o">your block.</span>
+              </h1>
+              <p className="ts-fig-auth-side-sub">
+                Your saved addresses, rewards, and order history — right where you left them.
+              </p>
+              <ul className="ts-fig-auth-perks">
                 {[
                   ["Order faster", "Save addresses, past orders, and checkout details."],
                   ["Track live", "Follow prep and delivery progress in one place."],
-                  ["Switch roles", "Customer, merchant, and driver access stays organized here."],
+                  ["Switch roles", "Customer, merchant, and driver access stays organized."],
                 ].map(([title, desc], index) => (
                   <li key={title}>
-                    <div className="food-auth-icon">{index + 1}</div>
+                    <span className="ts-fig-auth-perk-dot">{index + 1}</span>
                     <div>
-                      <div className="font-extrabold">{title}</div>
-                      <div className="text-sm text-white/65">{desc}</div>
+                      <strong>{title}</strong>
+                      <span>{desc}</span>
                     </div>
                   </li>
                 ))}
               </ul>
             </div>
-          </section>
+          </aside>
 
-          <section className="food-panel food-auth-form">
-            <Link href="/" className="portal-btn-outline portal-btn-outline-block !w-auto !px-4 !py-2">← Home</Link>
-            <div className="auth-form-topline">
-              <p className="food-kicker mb-0">Account access</p>
-              <span className="auth-status-chip"><span /> Secure live access</span>
-            </div>
-            <h2 className="food-heading !text-[32px] md:!text-[36px]">Sign In</h2>
-            <p className="lead mt-2 max-w-[360px]">Access your TrueServe account and continue your order flow.</p>
+          <section className="ts-fig-auth-form">
+            <span className="ts-fig-kicker">Account access</span>
+            <h2>Sign in</h2>
+            <p className="ts-fig-auth-form-sub">
+              Access your TrueServe account and continue your order flow.
+            </p>
 
             {errorText && (
-              <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-bold uppercase tracking-[0.11em] text-red-300">
+              <div className="ts-fig-auth-error" role="alert">
                 {errorText}
               </div>
             )}
 
-            <div className="role-tabs mt-6" data-role={role}>
+            <div className="ts-fig-auth-roles" role="tablist" aria-label="Sign in as">
               <button
-                className={`role-tab ${role === 'customer' ? 'on' : ''}`}
+                type="button"
+                role="tab"
+                aria-selected={role === 'customer'}
+                className={role === 'customer' ? 'is-active' : ''}
                 onClick={() => { setRole('customer'); setErrorText(''); }}
               >
                 Customer
               </button>
               <button
-                className={`role-tab ${role === 'merchant' ? 'on' : ''}`}
+                type="button"
+                role="tab"
+                aria-selected={role === 'merchant'}
+                className={role === 'merchant' ? 'is-active' : ''}
                 onClick={() => { setRole('merchant'); setErrorText(''); }}
               >
                 Merchant
               </button>
               <button
-                className={`role-tab ${role === 'driver' ? 'on' : ''}`}
+                type="button"
+                role="tab"
+                aria-selected={role === 'driver'}
+                className={role === 'driver' ? 'is-active' : ''}
                 onClick={() => { setRole('driver'); setErrorText(''); }}
               >
                 Driver
               </button>
             </div>
 
-            <form className="mt-6 auth-login-form" onSubmit={doLogin}>
-              <div className="fg">
-                <label>Email address</label>
+            <form className="ts-fig-auth-fields" onSubmit={doLogin}>
+              <label className="ts-fig-auth-field">
+                <span>Email address</span>
                 <input
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setErrorText(''); }}
                   disabled={isLoading}
+                  autoComplete="email"
                 />
-              </div>
-              <div className="fg">
-                <label>Password</label>
+              </label>
+              <label className="ts-fig-auth-field">
+                <span>Password</span>
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrorText(''); }}
                   disabled={isLoading}
+                  autoComplete="current-password"
                 />
-              </div>
-              <div className="auth-forgot-row">
-                <Link href="/forgot-password">
-                  Forgot password?
-                </Link>
+              </label>
+
+              <div className="ts-fig-auth-forgot">
+                <Link href="/forgot-password">Forgot password?</Link>
               </div>
 
               <button
                 type="submit"
-                className="ts-pill-btn ts-pill-btn-block auth-submit-btn"
+                className="ts-fig-btn ts-fig-auth-submit"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Signing in..." : "Sign in"}
               </button>
             </form>
 
-            <div className="login-or">or continue with</div>
+            <div className="ts-fig-auth-divider"><span>or continue with</span></div>
 
-            <div className="grid grid-cols-1 gap-3">
-              <button type="button" className="google-auth-btn" onClick={() => signInWithProvider('google')} disabled={isLoading}>
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06L5.84 9.9C6.71 7.3 9.14 5.38 12 5.38z" />
-                </svg>
-                Continue with Google
-              </button>
-            </div>
+            <button
+              type="button"
+              className="ts-fig-auth-oauth"
+              onClick={() => signInWithProvider('google')}
+              disabled={isLoading}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06L5.84 9.9C6.71 7.3 9.14 5.38 12 5.38z" />
+              </svg>
+              Continue with Google
+            </button>
 
-            <div className="login-foot">
+            <p className="ts-fig-auth-foot">
               {role === 'customer' ? (
-                <>Don't have an account? <Link href="/signup">Sign up</Link></>
+                <>Don&apos;t have an account? <Link href="/signup">Sign up free</Link></>
               ) : role === 'merchant' ? (
                 <>No account yet? <Link href="/merchant/signup">Sign up as Merchant</Link></>
               ) : (
                 <>No account yet? <Link href="/driver/signup">Sign up as Driver</Link></>
               )}
-            </div>
+            </p>
 
             {IS_DEV && (
-              <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Dev / QA Only</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <button
-                    type="button"
-                    className="portal-btn-outline portal-btn-outline-block"
-                    style={{ fontSize: '13px', padding: '8px 12px' }}
-                    onClick={() => handleDevBypass('customer@demo.test', 'password123', 'Demo Customer')}
-                    disabled={isLoading}
-                  >
-                    Sign in as Demo Customer →
-                  </button>
-                  <button
-                    type="button"
-                    className="portal-btn-outline portal-btn-outline-block"
-                    style={{ fontSize: '13px', padding: '8px 12px' }}
-                    onClick={() => handleDevBypass('merchant@demo.test', 'password123', 'Demo Merchant')}
-                    disabled={isLoading}
-                  >
-                    Sign in as Demo Merchant →
-                  </button>
-                  <button
-                    type="button"
-                    className="portal-btn-outline portal-btn-outline-block"
-                    style={{ fontSize: '13px', padding: '8px 12px' }}
-                    onClick={() => handleDevBypass('qa@trueserve.delivery', 'TrueServeQA_2026!', 'QA Tester')}
-                    disabled={isLoading}
-                  >
-                    Sign in as QA Tester →
-                  </button>
-                </div>
+              <div className="ts-fig-auth-dev">
+                <p>Dev / QA Only</p>
+                <button type="button" onClick={() => handleDevBypass('customer@demo.test', 'password123', 'Demo Customer')} disabled={isLoading}>
+                  Sign in as Demo Customer →
+                </button>
+                <button type="button" onClick={() => handleDevBypass('merchant@demo.test', 'password123', 'Demo Merchant')} disabled={isLoading}>
+                  Sign in as Demo Merchant →
+                </button>
+                <button type="button" onClick={() => handleDevBypass('qa@trueserve.delivery', 'TrueServeQA_2026!', 'QA Tester')} disabled={isLoading}>
+                  Sign in as QA Tester →
+                </button>
               </div>
             )}
           </section>
