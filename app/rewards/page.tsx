@@ -13,6 +13,7 @@ import { Crown, Gift, ShieldCheck, Sparkles, Star, TrendingUp } from "lucide-rea
 
 type RewardsSnapshot = {
     plan: string;
+    role: string;
     hasPaymentMethod: boolean;
     points: number;
     ordersCount: number;
@@ -48,7 +49,7 @@ async function getSnapshot(userId?: string, anniversaryReward?: AnniversaryRewar
 
     const { data: user } = await supabaseAdmin
         .from("User")
-        .select("plan, stripeCustomerId, truePointsBalance, createdAt")
+        .select("plan, role, stripeCustomerId, truePointsBalance, createdAt")
         .eq("id", userId)
         .maybeSingle();
 
@@ -68,6 +69,7 @@ async function getSnapshot(userId?: string, anniversaryReward?: AnniversaryRewar
 
     return {
         plan,
+        role: user.role || "CUSTOMER",
         hasPaymentMethod: Boolean(user.stripeCustomerId),
         points: Number(user.truePointsBalance || 0),
         ordersCount: completed.length,
@@ -209,7 +211,7 @@ export default async function RewardsPage({
     const { isAuth, userId } = await getAuthSession();
     const anniversaryReward = userId ? await grantAnniversaryRewardIfEligible(userId) : undefined;
     const snapshot = await getSnapshot(userId, anniversaryReward);
-    const isSignedIn = Boolean(isAuth && userId);
+    const isSignedIn = Boolean(isAuth && userId && snapshot?.role === "CUSTOMER");
     const currentPlan = isSignedIn ? (snapshot?.plan || "Basic") : "";
     const displayPlan = currentPlan || "Basic";
     const canChoosePaid = Boolean(snapshot?.hasPaymentMethod);
