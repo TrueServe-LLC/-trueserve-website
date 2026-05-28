@@ -130,104 +130,101 @@ export default function DriverLoginForm() {
     };
 
     return (
-        <div className="space-y-7 animate-fade-in relative z-10 w-full overflow-hidden">
+        <div className="ts-fig-driver-login-phone">
             {message && (
-                <div className={`p-4 rounded-lg text-[11px] font-bold uppercase tracking-widest flex items-center gap-3 border ${
-                    message.error ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[#3dd68c]/10 border-[#3dd68c]/20 text-[#3dd68c]'
-                }`}>
+                <div className={`ts-fig-auth-banner ${message.error ? "is-error" : "is-success"}`} role={message.error ? "alert" : "status"}>
                     {message.text}
                 </div>
             )}
 
             {step === "phone" ? (
-                <form onSubmit={handleSendOTP} className="space-y-7">
-                    <div>
-                        <label className="fl">Mobile Identifier (US Only)</label>
-                        <div className="flex gap-[1px] bg-[#1c1f28] border border-[#2a2f3a] rounded-[12px] overflow-hidden">
-                            <div className="px-4 flex items-center text-[#9ca3af] text-[13px] font-bold bg-[#131720] border-r border-[#1c1f28]">US +1</div>
+                <form onSubmit={handleSendOTP} className="ts-fig-auth-fields">
+                    <label className="ts-fig-auth-field">
+                        <span>Mobile number</span>
+                        <div className="ts-fig-driver-phone-field">
+                            <div>US +1</div>
                             <input 
                                 type="tel"
                                 required
                                 placeholder="555 000 0000"
-                                className="fi flex-1 !border-none !rounded-none !bg-[#0f1219]"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 disabled={isLoading}
+                                autoComplete="tel"
                             />
                         </div>
-                    </div>
+                    </label>
 
                     <button 
                         type="submit"
                         disabled={isLoading || phone.length < 10}
-                        className="btn-green h-15 !rounded-[100px] disabled:opacity-40"
+                        className="ts-fig-btn ts-fig-auth-submit"
                     >
-                        {isLoading ? "UPLINKING..." : "Request Access Code →"}
+                        {isLoading ? "Sending code..." : "Text me a sign-in code →"}
                     </button>
                     
-                    <div className="space-y-4 pt-1">
-                        <div className="text-center font-dm-sans text-[12px] text-[#555]">
-                            New to the fleet? <Link href="/driver/signup" className="text-[#3dd68c] font-bold">Apply to partner</Link>
-                        </div>
+                    <div className="ts-fig-driver-login-links">
+                        <p>
+                            New driver? <Link href="/driver/signup">Apply to drive</Link>
+                        </p>
                         {IS_DEV && (
-                            <div className="border-t border-dashed border-[#2a2f3a] pt-4">
-                                <p className="text-center text-[10px] font-bold uppercase tracking-widest text-[#444] mb-2">Dev / QA Only</p>
+                            <div className="ts-fig-auth-dev">
+                                <p>Dev / QA only</p>
                                 <button
                                     type="button"
                                     onClick={handleDevBypass}
                                     disabled={isLoading}
-                                    className="w-full text-[11px] font-bold text-[#3dd68c] border border-[#3dd68c]/20 bg-[#3dd68c]/5 rounded-xl py-2.5 hover:bg-[#3dd68c]/10 transition-colors disabled:opacity-40"
                                 >
-                                    {isLoading ? "Signing in..." : "Sign in as Demo Driver →"}
+                                    {isLoading ? "Signing in..." : "Sign in as demo driver →"}
                                 </button>
                             </div>
                         )}
                     </div>
                 </form>
             ) : (
-                <form onSubmit={handleVerifyOTP} className="space-y-7">
-                    <div className="text-center">
-                        <p className="text-[11px] text-[#555] font-bold uppercase tracking-widest mb-3">Verification code sent to <span className="text-[#3dd68c]">{phone}</span></p>
+                <form onSubmit={handleVerifyOTP} className="ts-fig-auth-fields">
+                    <label className="ts-fig-auth-field ts-fig-driver-code-field">
+                        <span>Code sent to {phone}</span>
                         <input
                             type="text"
                             inputMode="numeric"
                             maxLength={6}
-                            placeholder="••••••"
-                            className="fi text-2xl font-bold tracking-[0.5em] text-center !text-[#3dd68c] h-15"
+                            placeholder="000000"
                             value={token}
                             onChange={(e) => setToken(e.target.value.replace(/\D/g, ""))}
                             disabled={isLoading}
+                            autoComplete="one-time-code"
                         />
-                    </div>
+                    </label>
 
                     <button 
                         type="submit"
                         disabled={isLoading || token.length < 6}
-                        className="btn-green h-15 !rounded-[100px] disabled:opacity-40"
+                        className="ts-fig-btn ts-fig-auth-submit"
                     >
-                        {isLoading ? "AUTHORIZING..." : "Authorize Terminal Done"}
+                        {isLoading ? "Checking code..." : "Open driver dashboard"}
                     </button>
 
                     <button 
                         type="button"
                         onClick={() => { setStep("phone"); setMessage(null); }}
-                        className="w-full text-[10px] font-bold text-[#555] uppercase tracking-widest hover:text-white transition-colors"
+                        className="ts-fig-auth-ghost"
                     >
-                        Cancel and try again
+                        Use a different phone number
                     </button>
 
                     <button
                         type="button"
                         onClick={handleResendCode}
                         disabled={isLoading}
-                        className="w-full text-[10px] font-bold uppercase tracking-widest text-[#3dd68c] hover:text-white transition-colors disabled:opacity-40"
+                        className="ts-fig-driver-resend"
                     >
                         Resend code
                     </button>
 
-                    <div className="text-center text-[11px] text-[#6a7280]">
+                    <p className="ts-fig-auth-foot">
                         Changed your phone number? <Link href="/driver/recover" className="font-bold text-[#3dd68c]">Request a login update</Link>.
-                    </div>
+                    </p>
                 </form>
             )}
         </div>

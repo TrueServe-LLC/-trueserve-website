@@ -83,12 +83,7 @@ function LiveNearYouCard({ kitchens, hasLocation }: { kitchens: LiveKitchen[]; h
   }, [kitchens.length, shouldReduceMotion]);
 
   return (
-    <motion.div
-      className="ts-fig-live-card"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div className="ts-fig-live-card">
       <div className="ts-fig-live-card-head">
         <span className="ts-fig-live-dot">{hasLocation ? "Live near you" : "Ready when you are"}</span>
         <span className="updated">{hasLocation ? "Updated just now" : "Location first"}</span>
@@ -132,7 +127,7 @@ function LiveNearYouCard({ kitchens, hasLocation }: { kitchens: LiveKitchen[]; h
           />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -377,50 +372,28 @@ export default function Home() {
       <section className="ts-fig-hero">
         <div className="ts-fig-container ts-fig-hero-inner">
           <div>
-            <motion.span
-              className="ts-fig-chip"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <span className="ts-fig-chip">
               <span className="ts-fig-chip-dot" />
               Neighborhood kitchens, real food
-            </motion.span>
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </span>
+            <h1>
               Your block&apos;s{" "}
               <span className="o">best food,</span>
               <span className="t">delivered.</span>
-            </motion.h1>
-            <motion.p
-              className="ts-fig-hero-sub"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </h1>
+            <p className="ts-fig-hero-sub">
               Real restaurants from your neighborhood — not ghost kitchens, not chains. Enter your address to discover what&apos;s cooking nearby.
-            </motion.p>
-            <motion.div
-              className="ts-fig-hero-search"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </p>
+            <div className="ts-fig-hero-search">
               <LandingSearch />
-            </motion.div>
-            <motion.button
+            </div>
+            <button
               type="button"
               className="ts-fig-locate"
               onClick={handleLocate}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Navigation size={16} /> Or <u>use my current location</u>
-            </motion.button>
+            </button>
           </div>
 
           <LiveNearYouCard kitchens={liveKitchens} hasLocation={hasLocationContext} />

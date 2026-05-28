@@ -91,6 +91,37 @@ export default function MerchantLanding() {
           </div>
         </section>
 
+        <section className="ts-fig-section ts-fig-merchant-ops-section">
+          <div className="ts-fig-container ts-fig-merchant-ops">
+            <div className="ts-fig-merchant-ops-copy">
+              <span className="ts-fig-kicker teal">Hands-on onboarding</span>
+              <h2>Support that stays close to the kitchen.</h2>
+              <p>
+                TrueServe helps restaurants move from application to live orders with menu setup,
+                support handoffs, and clear operating steps. POS can be connected when you are
+                ready, but smaller teams can start with a simple dashboard first.
+              </p>
+              <div className="ts-fig-merchant-ops-list" aria-label="Merchant support highlights">
+                <span>Menu setup help</span>
+                <span>POS optional at launch</span>
+                <span>Human support handoff</span>
+              </div>
+            </div>
+
+            <div className="ts-fig-merchant-ops-video" aria-label="Restaurant support and service coordination preview">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                src="/videos/merchant-hospitality-support.mp4"
+              />
+              <div className="ts-fig-merchant-ops-badge">Live support flow</div>
+            </div>
+          </div>
+        </section>
+
         <section className="ts-fig-section">
           <div className="ts-fig-container">
             <span className="ts-fig-kicker">Choose your route</span>

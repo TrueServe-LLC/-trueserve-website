@@ -186,7 +186,7 @@ export async function approveDriver(id: string) {
             sendEmail(
                 email,
                 "Your TrueServe Driver Application - APPROVED",
-                `<h1>Welcome to the Fleet! Driver</h1>
+                `<h1>Your TrueServe driver application is approved</h1>
             <p>Hi <span class="accent">${name.split(' ')[0]}</span>,</p>
             <p>Great news! Your driver application for TrueServe has been <strong>approved</strong>.</p>
             <p>You can now log in using your phone number to receive a secure SMS code and start accepting orders immediately.</p>

@@ -105,8 +105,8 @@ function DrivePageContent() {
 
                         <div className="ts-fig-drive-media ts-fig-animate-up">
                             <img
-                                src="/driver-route-interior-trueserve.png"
-                                alt="TrueServe delivery driver on the road at dusk"
+                                src="/driver-hero-delivery-car.png"
+                                alt="TrueServe delivery driver preparing an insulated food bag in the car"
                             />
                             <div className="ts-fig-drive-media-shade" />
                             <div className="ts-fig-drive-route-card" aria-hidden="true">
@@ -188,8 +188,8 @@ function DrivePageContent() {
                             <span className="ts-fig-kicker teal">Apply today</span>
                             <h2>Driver signup should take about a minute.</h2>
                             <p>
-                                If you opt into text messages, TrueServe can send your document upload
-                                link and application updates to your phone while Vonage approval finishes.
+                                If you opt into text messages, TrueServe can send driver onboarding,
+                                application status, account, and delivery notification updates to your phone.
                             </p>
                         </div>
 
@@ -214,9 +214,10 @@ function DrivePageContent() {
                             <label className="ts-fig-drive-consent">
                                 <input name="smsConsent" type="checkbox" value="true" />
                                 <span>
-                                    I agree to receive driver recruiting and onboarding text messages from TrueServe at the phone number provided.
+                                    I agree to receive recurring SMS messages from TrueServe at the phone number provided
+                                    about driver onboarding, application status, account activity, and delivery/order notifications.
                                     Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.
-                                    Consent is not required to apply.
+                                    Consent is not required to apply or make a purchase.
                                 </span>
                             </label>
 

@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation';
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { submitMerchantInquiry } from "@/app/merchant/actions";
-import { Building2, ChefHat, LockKeyhole, Mail, MapPin, Phone, UserRound } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChefHat, Clock3, Mail, ShieldCheck } from "lucide-react";
 
 export default function MerchantSignupPage() {
   const [step, setStep] = useState(1);
   const router = useRouter();
   const [restaurantName, setRestaurantName] = useState("");
+  const [cuisineType, setCuisineType] = useState("");
   const [contactName, setContactName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +25,7 @@ export default function MerchantSignupPage() {
   const [posSystem, setPosSystem] = useState("Toast");
   const [posClientId, setPosClientId] = useState("");
   const [posClientSecret, setPosClientSecret] = useState("");
+  const [ghlUrl, setGhlUrl] = useState("");
   const [stateData, formAction, isPending] = useActionState(submitMerchantInquiry, { message: "" });
 
   useEffect(() => {
@@ -84,7 +86,9 @@ export default function MerchantSignupPage() {
           <section className="ts-fig-auth-form">
             <span className="ts-fig-kicker">Restaurant application</span>
             <h2>Apply as a founding partner</h2>
-            <p className="ts-fig-auth-form-sub">First 30 days free · Rate locked forever · Lower commission.</p>
+            <p className="ts-fig-auth-form-sub">
+              Apply in a few minutes. We review every restaurant before dashboard access opens, then email launch steps within one business day.
+            </p>
 
             {stateData?.message && (
               <div className={`ts-fig-auth-banner ${stateData.error ? "is-error" : "is-success"}`} role="alert">
@@ -99,8 +103,17 @@ export default function MerchantSignupPage() {
               <span>{step < 3 ? `Step ${step} of 2` : "Complete"}</span>
             </div>
 
+            {step < 3 && (
+              <div className="ts-fig-auth-review-strip" aria-label="Merchant review process">
+                <span><CheckCircle2 size={15} aria-hidden="true" /> Submit details</span>
+                <span><ShieldCheck size={15} aria-hidden="true" /> Admin review</span>
+                <span><Clock3 size={15} aria-hidden="true" /> Email update in 1 business day</span>
+              </div>
+            )}
+
             <form action={formAction} className="ts-fig-auth-fields">
               <input type="hidden" name="restaurantName" value={restaurantName} />
+              <input type="hidden" name="cuisineType" value={cuisineType} />
               <input type="hidden" name="contactName" value={contactName} />
               <input type="hidden" name="email" value={email} />
               <input type="hidden" name="password" value={password} />
@@ -113,6 +126,7 @@ export default function MerchantSignupPage() {
               <input type="hidden" name="posSystem" value={posSystem} />
               <input type="hidden" name="posClientId" value={posClientId} />
               <input type="hidden" name="posClientSecret" value={posClientSecret} />
+              <input type="hidden" name="ghlUrl" value={ghlUrl} />
 
               {step === 1 && (
                 <>
@@ -123,7 +137,7 @@ export default function MerchantSignupPage() {
                     </label>
                     <label className="ts-fig-auth-field">
                       <span>Cuisine type</span>
-                      <input type="text" placeholder="Italian, Mexican, etc." />
+                      <input type="text" placeholder="Italian, Mexican, etc." value={cuisineType} onChange={(e) => setCuisineType(e.target.value)} />
                     </label>
                   </div>
                   <label className="ts-fig-auth-field">
@@ -204,7 +218,7 @@ export default function MerchantSignupPage() {
                   </div>
                   <label className="ts-fig-auth-field">
                     <span>Go High Level (GHL) iframe URL (optional)</span>
-                    <input id="m-ghl-url" type="text" placeholder="https://api.leadconnectorhq.com/widget/booking/..." />
+                    <input id="m-ghl-url" type="text" placeholder="https://api.leadconnectorhq.com/widget/booking/..." value={ghlUrl} onChange={(e) => setGhlUrl(e.target.value)} />
                     <small>Pasting your GHL booking/ordering iframe URL here will enable direct widget ordering.</small>
                   </label>
 
@@ -221,9 +235,17 @@ export default function MerchantSignupPage() {
             {step === 3 && (
               <div className="ts-fig-auth-done">
                 <div className="ts-fig-auth-done-icon">✓</div>
-                <h3>You&apos;re in! Application submitted.</h3>
-                <p>We&apos;ll review your application within 24 hours and send setup instructions straight to your inbox.</p>
-                <button className="ts-fig-btn" onClick={() => router.push('/merchant/dashboard?tour=1')}>Go to portal →</button>
+                <h3>Application received.</h3>
+                <p>
+                  TrueServe will review your restaurant details and email approval status within one business day.
+                  After approval, you’ll receive dashboard access and a launch checklist for menu, Stripe, and POS setup.
+                </p>
+                <div className="ts-fig-auth-next-steps">
+                  <span><Mail size={15} aria-hidden="true" /> Watch your inbox for approval</span>
+                  <span><ShieldCheck size={15} aria-hidden="true" /> Admin review is required before going live</span>
+                  <span><ChefHat size={15} aria-hidden="true" /> Menu setup starts after approval</span>
+                </div>
+                <button className="ts-fig-btn" onClick={() => router.push('/merchant')}>Back to merchant page <ArrowRight size={17} aria-hidden="true" /></button>
               </div>
             )}
 

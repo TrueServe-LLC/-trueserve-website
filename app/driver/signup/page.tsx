@@ -223,9 +223,10 @@ export default function DriverSignupPage() {
                   <label className="ts-fig-auth-consent">
                     <input name="smsConsent" type="checkbox" value="true" />
                     <span>
-                      I agree to receive driver recruiting and onboarding text messages from TrueServe at the phone number provided.
-                      Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.
-                      Consent is not required to apply.
+                      I agree to receive recurring SMS messages from TrueServe at the phone number provided about driver
+                      onboarding, application status, account activity, and delivery/order notifications. Message frequency
+                      varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. Consent is not
+                      required to apply or make a purchase.
                     </span>
                   </label>
 
@@ -242,7 +243,16 @@ export default function DriverSignupPage() {
                 <div className="ts-fig-auth-done">
                   <div className="ts-fig-auth-done-icon">✓</div>
                   <h3>Application received</h3>
-                  <p>We sent your next-step instructions by email and, if you opted in, SMS. Once approved, you can log in with phone OTP at the driver portal.</p>
+                  <p>
+                    Driver Ops will review your application and documents before activation. We sent next-step
+                    instructions by email and, if you opted in, SMS. You’ll receive another email when your
+                    status changes or when more information is needed.
+                  </p>
+                  <div className="ts-fig-auth-next-steps">
+                    <span>Driver Ops reviews your application</span>
+                    <span>Admins verify documents before activation</span>
+                    <span>Approval updates are sent by email</span>
+                  </div>
                   <Link href="/driver/login?tour=1" className="ts-fig-btn ts-fig-btn-teal">Go to driver login →</Link>
                 </div>
               )}

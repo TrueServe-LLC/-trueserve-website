@@ -25,10 +25,10 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
             ];
 
     const welcomeCopy = role === "CUSTOMER"
-        ? "I’m Serv, your TrueServe helper. Pick a common question or send a short note. If it needs a person, I will hand it off."
+        ? "Serv can help with quick TrueServe questions. Send a short note, and if it needs a person, we will hand it to the right support lane."
         : role === "DRIVER"
-            ? "I’m Serv. Send the issue and I will route driver support to the right place."
-            : "I’m Serv. Send the issue and I will help with orders, menus, POS, or payouts.";
+            ? "Serv can collect the first details for Driver Ops. Send the issue and we will route it to the right place."
+            : "Serv can collect the first details for Restaurant Onboarding. Send the issue and we will help with orders, menus, POS, or payouts.";
 
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
@@ -52,7 +52,7 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
             setMessages([{
                 id: 'login-required',
                 sender: 'BOT',
-                content: `Please sign in to contact support so we can securely help with your order.`,
+                content: `Please sign in so TrueServe support can securely help with your account.`,
             }]);
         } else {
             setMessages([{
@@ -247,7 +247,7 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
                         </div>
                         <div>
                             <div id="support-dialog-title" className="chat-title">Ask Serv</div>
-                            <div className="chat-status"><span className="live-dot" aria-hidden="true"></span> Answers with human handoff</div>
+                            <div className="chat-status"><span className="live-dot" aria-hidden="true"></span> Quick answers with human handoff</div>
                         </div>
                         <button className="chat-close" onClick={() => setIsOpen(false)} aria-label="Close support chat">Close</button>
                     </div>
@@ -288,7 +288,7 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
                         {isTyping && (
                             <div className="msg-group">
                                 <div className="msg-icon animate-pulse" aria-hidden="true">...</div>
-                                <div className="bubble">Thinking...</div>
+                                <div className="bubble">Checking...</div>
                             </div>
                         )}
                         <div ref={messagesEndRef} />

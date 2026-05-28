@@ -10,7 +10,6 @@ const HIDDEN_PREFIXES = [
   "/merchant",
   "/merchant/dashboard",
   "/restaurants",
-  "/rewards",
   "/login",
   "/signup",
   "/driver/login",

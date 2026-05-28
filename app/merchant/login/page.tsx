@@ -75,7 +75,7 @@ export default function MerchantLoginPage() {
               <ul className="food-auth-list">
                 <li><div className="food-auth-icon">1</div><div><div className="font-extrabold">Operational dashboard</div><div className="text-sm text-white/65">Monitor order flow, prep, and store status.</div></div></li>
                 <li><div className="food-auth-icon">2</div><div><div className="font-extrabold">Integration control</div><div className="text-sm text-white/65">Manage Stripe, POS, and embedded ordering tools.</div></div></li>
-                <li><div className="food-auth-icon">3</div><div><div className="font-extrabold">Support access</div><div className="text-sm text-white/65">Reach TrueServe AI support from inside the portal.</div></div></li>
+                <li><div className="food-auth-icon">3</div><div><div className="font-extrabold">Support access</div><div className="text-sm text-white/65">Reach Restaurant Onboarding and support from inside the portal.</div></div></li>
               </ul>
             </div>
           </section>

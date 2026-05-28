@@ -20,6 +20,8 @@ const HIDDEN_PREFIXES = [
   "/restaurants/",
   "/rewards",
   "/rewards/",
+  "/contact",
+  "/legal",
   "/orders",
   "/orders/",
 ];

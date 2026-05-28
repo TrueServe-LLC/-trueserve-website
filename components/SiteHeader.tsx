@@ -39,6 +39,10 @@ export default function SiteHeader() {
     };
   }, []);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
@@ -66,13 +70,15 @@ export default function SiteHeader() {
             type="button"
             className="ts-fig-mobile-toggle"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-controls="site-mobile-menu"
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
-      <div className={`ts-fig-mobile-menu${menuOpen ? " is-open" : ""}`}>
+      <div id="site-mobile-menu" className={`ts-fig-mobile-menu${menuOpen ? " is-open" : ""}`}>
         {NAV_LINKS.map((link) => (
           <Link
             key={link.href}
@@ -83,8 +89,11 @@ export default function SiteHeader() {
             {link.label}
           </Link>
         ))}
-        <Link href={userId ? accountHref : "/login"} onClick={() => setMenuOpen(false)}>
+        <Link className="ts-fig-mobile-menu-secondary" href={userId ? accountHref : "/login"} onClick={() => setMenuOpen(false)}>
           {userId ? "Account" : "Sign In"}
+        </Link>
+        <Link className="ts-fig-mobile-menu-primary" href={userId ? "/restaurants" : "/signup"} onClick={() => setMenuOpen(false)}>
+          {userId ? "Order now" : "Sign Up"}
         </Link>
       </div>
     </header>

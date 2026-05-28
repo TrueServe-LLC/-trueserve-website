@@ -25,8 +25,31 @@ export default function DriveSuccessPage() {
                             Your application is in.
                         </p>
                         <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.65 }}>
-                            If you opted into texts, we'll send your document upload link by SMS. You can also continue through the driver signup page. Once submitted, our team reviews and activates your account — usually same day.
+                            If you opted into texts, we'll send your document upload link by SMS. Driver Ops also sends
+                            email updates, so you are not waiting on a chatbot. Once your documents are submitted,
+                            admins review and activate approved accounts — usually same day.
                         </p>
+                    </div>
+
+                    <div style={{
+                        display: "grid",
+                        gap: 10,
+                        textAlign: "left",
+                        background: "rgba(255,255,255,0.035)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 16,
+                        padding: "18px",
+                        marginBottom: 28,
+                    }}>
+                        {[
+                            "Driver Ops reviews your application",
+                            "Admins verify license, insurance, and vehicle documents",
+                            "Approval status is sent by email before activation",
+                        ].map((item) => (
+                            <div key={item} style={{ color: "rgba(255,255,255,0.72)", fontSize: 13, fontWeight: 700 }}>
+                                ✓ {item}
+                            </div>
+                        ))}
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>

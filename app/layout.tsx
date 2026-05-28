@@ -1,5 +1,5 @@
 // Deployment Trigger: 2026-04-04 04:10
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, DM_Mono, Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import MobileTabBar from "@/components/MobileTabBar";
@@ -40,6 +40,13 @@ export const metadata: Metadata = {
   icons: {
     icon: '/logo.png',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#0F172A',
 };
 
 export default function RootLayout({

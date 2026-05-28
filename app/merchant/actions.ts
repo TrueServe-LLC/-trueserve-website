@@ -15,6 +15,7 @@ import { logAuditAction } from "@/lib/audit";
 import { pushMenuItemToGHL, syncSignupLeadToGHL } from "@/lib/ghl-sync";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { normalizePhoneNumber } from "@/lib/phoneUtils";
+import { getAdminNotificationEmails } from "@/lib/admin-config";
 
 export type MerchantActionState = {
     message: string;
@@ -582,6 +583,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const address = formData.get("address") as string;
+    const cuisineType = String(formData.get("cuisineType") || "").trim();
     const city = formData.get("city") as string;
     const state = formData.get("state") as string;
     const zip = formData.get("zip") as string;
@@ -589,6 +591,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
     const posSystem = formData.get("posSystem") as string || "None";
     const posClientId = formData.get("posClientId") as string || "";
     const posClientSecret = formData.get("posClientSecret") as string || "";
+    const ghlUrl = String(formData.get("ghlUrl") || "").trim();
     const phone = formData.get("phone") as string || "";
 
     if (!restaurantName || !contactName || !email || !password || !address || !city || !state) {
@@ -652,6 +655,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             id: restaurantId,
             ownerId: userId,
             name: restaurantName,
+            cuisineType: cuisineType || null,
             address: `${address}, ${city}, ${state} ${zip}`,
             city,
             state,
@@ -662,6 +666,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             posSystem,
             posClientId,
             posClientSecret,
+            ghlUrl: ghlUrl || null,
             phone,
             visibility: 'HIDDEN',
             createdAt: new Date().toISOString(),
@@ -683,6 +688,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             source: "TrueServe Merchant Signup",
             tags: [
                 "Merchant Pending Review",
+                cuisineType ? `Cuisine ${cuisineType}` : "Cuisine Pending",
                 `Plan ${plan || "Flex Options"}`,
                 `POS ${posSystem || "None"}`,
             ],
@@ -704,11 +710,12 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             .in('role', ['ADMIN', 'OPS', 'SUPPORT', 'FINANCE', 'PM']);
 
         const staffRecords = (staffMembers || []).filter((member: any) => member?.email);
-        const staffEmails = Array.from(new Set(
-            staffRecords
+        const staffEmails = Array.from(new Set([
+            ...getAdminNotificationEmails(),
+            ...staffRecords
                 .map((member: any) => member.email.trim().toLowerCase())
-                .filter(Boolean)
-        )) as string[];
+                .filter(Boolean),
+        ])) as string[];
         const staffPhones = Array.from(new Set(
             staffRecords
                 .map((member: any) => normalizePhoneNumber(member.phone || ""))
@@ -722,7 +729,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             notificationPromises.push(
                 sendSMS(
                     phone,
-                    `TrueServe: Welcome ${contactName}! ${restaurantName} is now live on our platform. Log in to your dashboard to add menu items and start receiving orders: trueserve.delivery/merchant/login`
+                    `TrueServe: Thanks for applying, ${contactName}. We received ${restaurantName}'s merchant application and will email next steps after review. Reply STOP to opt out.`
                 )
             );
         }
@@ -732,10 +739,10 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             sendEmail(
                 email,
                 "TrueServe Merchant Application Received",
-                `<h1>Application Received, ${contactName}! Food</h1>
+                `<h1>Application Received, ${contactName}</h1>
                 <p>Thanks for applying with <strong>${restaurantName}</strong>.</p>
-                <p>Your merchant account is now in <strong>pending review</strong>. An admin will manually verify and approve your onboarding before you can log into the merchant dashboard.</p>
-                <p>We’ll email you immediately when approved, with next steps for Stripe, POS integration, and launch readiness.</p>
+                <p>Your merchant account is now in <strong>pending review</strong>. Our team will verify your restaurant details before activating dashboard access.</p>
+                <p>You can expect an update by email within <strong>one business day</strong>. Once approved, we’ll send next steps for menu setup, Stripe, POS integration, and launch readiness.</p>
                 <p>Best,<br>The TrueServe Team</p>`
             )
         );
@@ -748,13 +755,15 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
                     `Urgent NEW MERCHANT SIGNUP: ${restaurantName}`,
                     `<h1>New Merchant Application</h1>
                     <p><strong>Restaurant:</strong> ${restaurantName}</p>
+                    <p><strong>Cuisine:</strong> ${cuisineType || 'Not provided'}</p>
                     <p><strong>Contact:</strong> ${contactName}</p>
                     <p><strong>Email:</strong> ${email}</p>
                     <p><strong>Address:</strong> ${address}, ${city}, ${state} ${zip}</p>
                     <p><strong>Selected Plan:</strong> ${plan || 'Flex'}</p>
                     <p><strong>POS System:</strong> ${posSystem}</p>
+                    <p><strong>GHL URL:</strong> ${ghlUrl || 'Not provided'}</p>
                     <hr />
-                    <p>Please review and approve the merchant in the Admin Registry.</p>`
+                    <p>Please review and approve the merchant in Admin → Users → Pending Merchant Applications.</p>`
                 )
             );
         }
