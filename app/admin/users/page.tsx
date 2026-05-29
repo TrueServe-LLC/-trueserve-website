@@ -256,6 +256,12 @@ export default async function UsersPage({
                 .um-table td { padding: 10px 16px; color: #aaa; border-bottom: 1px solid #1e2420; }
                 .um-table tr:last-child td { border-bottom: none; }
                 .um-role-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+                .um-review-guide { background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(52,211,153,0.07)); border: 1px solid rgba(249,115,22,0.25); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+                .um-review-guide h2 { font-size: 15px; font-weight: 600; color: #fff; margin: 0 0 6px; }
+                .um-review-guide p { font-size: 12px; color: #c7ccd1; margin: 0 0 12px; line-height: 1.55; max-width: 900px; }
+                .um-review-guide-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+                .um-review-guide-actions a { display: inline-flex; align-items: center; justify-content: center; padding: 8px 11px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.22); color: #fff; text-decoration: none; font-size: 11px; font-weight: 700; }
+                .um-review-guide-actions a.primary { background: #f97316; color: #0b0f0d; border-color: #f97316; }
             `}</style>
 
             <div className="adm-page-header">
@@ -309,6 +315,17 @@ export default async function UsersPage({
                 </form>
             </div>
             <div className="adm-page-body">
+                <div className="um-review-guide">
+                    <h2>Driver Documents Live Here</h2>
+                    <p>
+                        Use Pending Driver Applications for approval decisions and Driver Document Review for the signed document links. Drivers only have documents after they finish the full driver signup; the /drive interest form is just a lead and will not include license or insurance files.
+                    </p>
+                    <div className="um-review-guide-actions">
+                        <a className="primary" href="#pending-driver-applications">Open pending applications</a>
+                        <a href="#driver-document-review">Open document review</a>
+                        <a href="/driver/signup" target="_blank" rel="noreferrer">Open driver signup flow ↗</a>
+                    </div>
+                </div>
                 <div className="um-summary">
                     {Object.entries(byRole).sort((a, b) => b[1] - a[1]).map(([r, count]) => (
                         <div key={r} className="um-badge">
@@ -390,7 +407,7 @@ export default async function UsersPage({
                         )}
                     </div>
                 </div>
-                <div className="um-apps">
+                <div id="pending-driver-applications" className="um-apps">
                     <h2>Driver Signup History</h2>
                     <p>Historical driver user records appear here even if document review is still pending, so earlier submissions never disappear.</p>
                     <div className="um-app-list">
@@ -479,7 +496,7 @@ export default async function UsersPage({
                         )}
                     </div>
                 </div>
-                <div className="um-docs">
+                <div id="driver-document-review" className="um-docs">
                     <h2>Driver Application Alerts</h2>
                     <p>Every submitted application also logs a staff notification so you can spot new signups even if a later step needs attention.</p>
                     <div className="um-doc-list">

@@ -155,10 +155,10 @@ export default function DriverPipeline({ drivers }: Props) {
                                                 {driver.vehicleType || "—"} · {timeAgo(driver.createdAt)}
                                             </span>
                                             <a
-                                                href={`/admin/users?q=${encodeURIComponent(driver.user?.email || "")}`}
+                                                href={`/admin/users?q=${encodeURIComponent(driver.user?.email || "")}#driver-document-review`}
                                                 style={{ fontSize: 10, color: bucket.color, textDecoration: "none" }}
                                             >
-                                                Review →
+                                                Review docs →
                                             </a>
                                         </div>
                                     </div>
