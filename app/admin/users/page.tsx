@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
 import { canAccessAdminSection } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { approveDriver, approveMerchant, markDriverReadyForReview, rejectDriver, rejectMerchant } from "../actions";
+import { approveDriver, approveMerchant, markDriverReadyForReview, rejectDriver, rejectMerchant, requestDriverDocuments } from "../actions";
 import AdminPortalWrapper from "../AdminPortalWrapper";
 import { resolveDriverDocumentUrl } from "@/lib/driver-documents";
 import { filterAdminUsers, isMockAdminRecord, shouldHideMockAdminData } from "@/lib/admin-data";
@@ -428,7 +428,7 @@ export default async function UsersPage({
                         )}
                     </div>
                 </div>
-                <div id="pending-driver-applications" className="um-apps">
+                <div id="driver-signup-history" className="um-apps">
                     <h2>Driver Signup History</h2>
                     <p>Historical driver user records appear here even if document review is still pending, so earlier submissions never disappear.</p>
                     <div className="um-app-list">
@@ -458,8 +458,14 @@ export default async function UsersPage({
                     backgroundCheckStatus: d.backgroundCheckStatus || "PENDING",
                     vehicleType: d.vehicleType,
                     createdAt: d.createdAt || new Date().toISOString(),
+                    docCount: driverDocCount(d),
                     user: d.user,
-                }))} />
+                }))}
+                    requestDocsAction={requestDriverDocuments}
+                    readyAction={markDriverReadyForReview}
+                    approveAction={approveDriver}
+                    rejectAction={rejectDriver}
+                />
 
                 <div id="pending-driver-applications" className="um-apps">
                     <h2>Pending Driver Applications</h2>

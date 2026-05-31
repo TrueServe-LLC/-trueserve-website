@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { AlertTriangle, ExternalLink, ListTodo, RefreshCw, Settings } from "lucide-react";
+import { AlertTriangle, ExternalLink, ListTodo, RefreshCw } from "lucide-react";
 
 interface ClickUpTask {
     id: string;
@@ -136,63 +136,59 @@ export default function ClickUpBoard() {
     if (error) {
         const readableError = getReadableError(error);
         return (
-            <section className="overflow-hidden rounded-2xl border border-[#f97316]/20 bg-[#111815]">
-                <div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
-                    <div className="flex min-w-0 gap-4">
-                        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-[#f97316]/25 bg-[#f97316]/10 text-[#f97316]">
-                            <AlertTriangle className="h-5 w-5" aria-hidden="true" />
-                        </div>
+            <section className="adm-card">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="flex min-w-0 flex-1 gap-3">
+                        <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#f97316]/20 bg-[#f97316]/10 text-[#f97316]">
+                            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                        </span>
                         <div className="min-w-0">
-                            <p className="text-base font-semibold text-white">ClickUp is not connected yet</p>
-                            <p className="mt-1 max-w-3xl text-sm leading-6 text-white/55">
-                                The team board will load here once the ClickUp environment variables are available.
-                                This is a setup state, not a broken admin screen.
+                            <p className="m-0 text-sm font-semibold text-white">ClickUp setup needed</p>
+                            <p className="mt-1 max-w-3xl text-xs leading-5 text-white/50">
+                                Add the required ClickUp variables in Vercel and this section will turn into the live QA/task board.
                             </p>
                         </div>
                     </div>
 
-                    <button
-                        onClick={fetchBoard}
-                        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#f97316] px-4 text-sm font-bold text-black transition hover:bg-[#ff8a2a]"
-                    >
-                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
-                        Retry
-                    </button>
-                </div>
-
-                <div className="border-t border-white/10 p-5">
-                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                        {["CLICKUP_API_TOKEN", "CLICKUP_SPACE_ID", "CLICKUP_LIST_ID", "CLICKUP_TEAM_ID"].map((key, index) => (
-                            <div key={key} className="rounded-xl border border-white/10 bg-black/20 p-3">
-                                <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/40">
-                                    <Settings className="h-3.5 w-3.5" aria-hidden="true" />
-                                    {index < 2 ? "Required" : "Optional"}
-                                </div>
-                                <code className="block break-all font-mono text-xs text-[#f97316]">{key}</code>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-                        <p className="text-sm text-white/55">
-                            Set these in Vercel, redeploy, then reload this page.
-                        </p>
+                    <div className="flex shrink-0 flex-wrap gap-2">
+                        <button
+                            onClick={fetchBoard}
+                            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-white/75 transition hover:bg-white/10"
+                        >
+                            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                            Retry
+                        </button>
                         <a
                             href="https://app.clickup.com/settings/apps"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-[#f97316] hover:text-[#ff8a2a]"
+                            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg bg-[#f97316] px-3 text-xs font-bold text-black transition hover:bg-[#ff8a2a]"
                         >
-                            Open ClickUp API settings
-                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                            API settings
+                            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                         </a>
                     </div>
-
-                    <details className="mt-3 text-xs text-white/35">
-                        <summary className="cursor-pointer select-none text-white/45">Technical detail</summary>
-                        <pre className="mt-2 overflow-x-auto rounded-lg border border-white/10 bg-black/25 p-3 whitespace-pre-wrap">{readableError}</pre>
-                    </details>
                 </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                    {["CLICKUP_API_TOKEN", "CLICKUP_SPACE_ID", "CLICKUP_LIST_ID", "CLICKUP_TEAM_ID"].map((key, index) => (
+                        <code
+                            key={key}
+                            className={`rounded-full border px-2.5 py-1 font-mono text-[10px] ${
+                                index < 2
+                                    ? "border-[#f97316]/20 bg-[#f97316]/10 text-[#f97316]"
+                                    : "border-white/10 bg-white/[0.035] text-white/45"
+                            }`}
+                        >
+                            {index < 2 ? "required: " : "optional: "}{key}
+                        </code>
+                    ))}
+                </div>
+
+                <details className="mt-3 text-xs text-white/35">
+                    <summary className="cursor-pointer select-none text-white/45">Technical detail</summary>
+                    <pre className="mt-2 overflow-x-auto rounded-lg border border-white/10 bg-black/25 p-3 whitespace-pre-wrap">{readableError}</pre>
+                </details>
             </section>
         );
     }

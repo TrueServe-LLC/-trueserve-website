@@ -261,6 +261,67 @@ export async function rejectDriver(id: string) {
     }
 }
 
+export async function requestDriverDocuments(id: string) {
+    try {
+        await requireAdminPermissions('approve_drivers');
+        const requestedAt = new Date().toISOString();
+        const { data: driver, error: fetchError } = await supabaseAdmin
+            .from('Driver')
+            .select('id, status, complianceStatus, user:User(email, name)')
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !driver) throw new Error("Driver not found");
+
+        const { error: statusError } = await supabaseAdmin
+            .from('Driver')
+            .update({
+                complianceStatus: "PENDING",
+                backgroundCheckStatus: "PROCESSING",
+                vehicleVerified: false,
+                updatedAt: requestedAt
+            })
+            .eq('id', id);
+
+        if (statusError) throw statusError;
+
+        await logAuditAction({
+            action: "REQUEST_DRIVER_DOCUMENTS",
+            targetId: id,
+            entityType: "Driver",
+            before: { complianceStatus: driver.complianceStatus || "NEW_APPLICATION" },
+            after: { complianceStatus: "PENDING", backgroundCheckStatus: "PROCESSING" }
+        });
+
+        const email = (driver.user as any)?.email;
+        const name = (driver.user as any)?.name || "there";
+        if (email) {
+            const result = await Promise.allSettled([
+                sendEmail(
+                    email,
+                    "Finish Your TrueServe Driver Documents",
+                    `<h1>Finish your TrueServe driver documents</h1>
+                    <p>Hi ${String(name).split(" ")[0]},</p>
+                    <p>We received your driver interest form. The next step is uploading your license, insurance, and registration so our team can review your application.</p>
+                    <a href="https://trueserve.delivery/driver/signup" class="button">Upload Driver Documents</a>
+                    <p style="margin-top: 30px;">Thanks,<br>The TrueServe Team</p>`
+                )
+            ]);
+
+            if (result[0]?.status === "rejected") {
+                console.error("Driver document request email failed:", result[0].reason);
+            }
+        }
+
+        revalidatePath("/admin/users");
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to request driver documents:", e);
+        return { success: false, error: e.message || "Failed to request driver documents." };
+    }
+}
+
 export async function markDriverReadyForReview(id: string) {
     try {
         await requireAdminPermissions('approve_drivers');
