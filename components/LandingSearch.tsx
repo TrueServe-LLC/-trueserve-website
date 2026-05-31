@@ -139,7 +139,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
             <div className={`w-full relative ${isCompact ? "max-w-full" : "max-w-3xl"}`}>
                 <form
                     onSubmit={handleManualSearch}
-                    className={`relative z-20 w-full border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-2xl p-1.5" : "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[24px] p-2 md:rounded-[28px]"}`}
+                    className={`relative z-20 w-full border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-2xl p-1.5 max-[520px]:grid-cols-1 max-[520px]:p-2" : "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[24px] p-2 md:rounded-[28px] max-[520px]:grid-cols-1 max-[520px]:rounded-[20px]"}`}
                 >
                     <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[18px] px-4 md:px-5"}`}>
                         <span
@@ -159,7 +159,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                     <button
                         type="submit"
-                        className={`place-btn place-btn-inline shrink-0 ${isCompact ? "h-12 px-6 md:px-8" : "h-12 px-5 rounded-[16px] text-[14px] md:h-14 md:px-9 md:rounded-[20px] md:text-[15px]"}`}
+                        className={`place-btn place-btn-inline shrink-0 max-[520px]:w-full max-[520px]:justify-center ${isCompact ? "h-12 px-6 md:px-8" : "h-12 px-5 rounded-[16px] text-[14px] md:h-14 md:px-9 md:rounded-[20px] md:text-[15px] max-[520px]:h-[50px] max-[520px]:rounded-[14px]"}`}
                     >
                         Find Food
                     </button>
@@ -174,7 +174,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
             <form
                 onSubmit={handleManualSearch}
-                className={`relative z-20 w-full border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-2xl p-1.5" : "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[24px] p-2 md:rounded-[28px]"}`}
+                className={`relative z-20 w-full border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-2xl p-1.5 max-[520px]:grid-cols-1 max-[520px]:p-2" : "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[24px] p-2 md:rounded-[28px] max-[520px]:grid-cols-1 max-[520px]:rounded-[20px]"}`}
             >
                 <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[18px] px-4 md:px-5"}`}>
                     <span
@@ -200,7 +200,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                 <button
                     type="submit"
-                    className={`place-btn place-btn-inline shrink-0 ${isCompact ? "h-12 px-6 md:px-8" : "h-12 px-5 rounded-[16px] text-[14px] md:h-14 md:px-9 md:rounded-[20px] md:text-[15px]"}`}
+                    className={`place-btn place-btn-inline shrink-0 max-[520px]:w-full max-[520px]:justify-center ${isCompact ? "h-12 px-6 md:px-8" : "h-12 px-5 rounded-[16px] text-[14px] md:h-14 md:px-9 md:rounded-[20px] md:text-[15px] max-[520px]:h-[50px] max-[520px]:rounded-[14px]"}`}
                 >
                     Find Food
                 </button>
