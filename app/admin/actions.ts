@@ -261,6 +261,72 @@ export async function rejectDriver(id: string) {
     }
 }
 
+export async function markDriverReadyForReview(id: string) {
+    try {
+        await requireAdminPermissions('approve_drivers');
+        const readyAt = new Date().toISOString();
+        const { data: driver, error: fetchError } = await supabaseAdmin
+            .from('Driver')
+            .select(`
+                id,
+                status,
+                complianceStatus,
+                backgroundCheckStatus,
+                insuranceDocumentUrl,
+                registrationDocumentUrl,
+                aiMetadata,
+                user:User(email, name)
+            `)
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !driver) throw new Error("Driver not found");
+
+        const documentPaths = (driver.aiMetadata as any)?.documentPaths || {};
+        const uploadedDocs = [
+            documentPaths.idDocumentPath,
+            documentPaths.insuranceDocumentPath || driver.insuranceDocumentUrl,
+            documentPaths.registrationDocumentPath || driver.registrationDocumentUrl,
+        ].filter(Boolean).length;
+
+        if (uploadedDocs < 3) {
+            throw new Error(`This driver has ${uploadedDocs}/3 documents. Upload license, insurance, and registration before moving to review.`);
+        }
+
+        const { error: statusError } = await supabaseAdmin
+            .from('Driver')
+            .update({
+                complianceStatus: "READY_FOR_REVIEW",
+                backgroundCheckStatus: driver.backgroundCheckStatus || "PROCESSING",
+                updatedAt: readyAt
+            })
+            .eq('id', id);
+
+        if (statusError) throw statusError;
+
+        await logAuditAction({
+            action: "MARK_DRIVER_READY_FOR_REVIEW",
+            targetId: id,
+            entityType: "Driver",
+            before: {
+                status: driver.status || "PENDING",
+                complianceStatus: driver.complianceStatus || "PENDING_DOCUMENTS"
+            },
+            after: {
+                status: driver.status || "PENDING",
+                complianceStatus: "READY_FOR_REVIEW"
+            }
+        });
+
+        revalidatePath("/admin/users");
+        revalidatePath("/admin/dashboard");
+        return { success: true };
+    } catch (e: any) {
+        console.error("Failed to mark driver ready for review:", e);
+        return { success: false, error: e.message || "Failed to mark driver ready for review." };
+    }
+}
+
 export async function approveMerchant(restaurantId: string) {
     try {
         await requireAdminPermissions('approve_restaurants');

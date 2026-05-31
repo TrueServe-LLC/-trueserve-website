@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { syncAllServiceCosts, checkAndCreateAnomalies } from "@/app/admin/cost-management/actions";
-import { RefreshCw, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { RefreshCw, AlertCircle, CheckCircle, Clock, KeyRound, PlugZap } from "lucide-react";
 
 interface SyncStatus {
     isLoading: boolean;
@@ -26,6 +26,19 @@ const providers = [
     { name: "Mapbox", active: false, note: "Needs API + username" },
     { name: "Resend", active: false, note: "Needs API key" },
     { name: "Vonage", active: false, note: "Needs API key + secret" },
+];
+
+const envChecklist = [
+    { key: "STRIPE_SECRET_KEY", example: "sk_...", required: true },
+    { key: "GCP_PROJECT_ID", example: "your-project-id" },
+    { key: "GCP_BILLING_ACCOUNT_ID", example: "000000-000000-000000" },
+    { key: "SUPABASE_PROJECT_ID", example: "your-project-id" },
+    { key: "SUPABASE_ACCESS_TOKEN", example: "sbpa_..." },
+    { key: "MAPBOX_ACCESS_TOKEN", example: "pk_..." },
+    { key: "MAPBOX_USERNAME", example: "your-username" },
+    { key: "RESEND_API_KEY", example: "re_..." },
+    { key: "VONAGE_API_KEY", example: "your-api-key" },
+    { key: "VONAGE_API_SECRET", example: "your-api-secret" },
 ];
 
 export default function CostSyncManager() {
@@ -101,7 +114,7 @@ export default function CostSyncManager() {
 
     return (
         <div className="adm-card">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-5">
                 <div className="min-w-0 flex-1">
                     <div className="mb-2 flex items-center gap-2">
                         <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#f97316]" />
@@ -128,11 +141,11 @@ export default function CostSyncManager() {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex shrink-0 flex-wrap gap-3">
                     <button
                         onClick={handleSync}
                         disabled={syncStatus.isLoading}
-                        className="inline-flex items-center gap-2 rounded-md border border-[#f97316]/30 bg-[#f97316] px-4 py-2 text-sm font-semibold text-black transition hover:bg-[#ff8a2a] disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[#f97316]/30 bg-[#f97316] px-4 py-2 text-sm font-semibold text-black shadow-[0_10px_24px_rgba(249,115,22,0.18)] transition hover:bg-[#ff8a2a] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <RefreshCw className={`h-4 w-4 ${syncStatus.isLoading ? "animate-spin" : ""}`} />
                         {syncStatus.isLoading ? "Syncing..." : "Sync Costs"}
@@ -141,7 +154,7 @@ export default function CostSyncManager() {
                     <button
                         onClick={handleAnomalyCheck}
                         disabled={syncStatus.isLoading}
-                        className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <AlertCircle className="h-4 w-4" />
                         Check Anomalies
@@ -238,9 +251,12 @@ export default function CostSyncManager() {
                 </div>
             )}
 
-            <div className="mt-6 rounded-md border border-[#1e2420] bg-black/20 p-4">
-                <div className="mb-3 flex items-center gap-2">
-                    <span className="text-sm font-semibold text-[#8dc7ff]">Checklist Setup Required</span>
+            <div className="mt-6 rounded-2xl border border-white/[0.08] bg-black/20 p-5">
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#8dc7ff]/20 bg-[#8dc7ff]/10 text-[#8dc7ff]">
+                        <KeyRound className="h-4 w-4" />
+                    </span>
+                    <span className="text-sm font-semibold text-[#8dc7ff]">Provider Setup Checklist</span>
                     <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.08em] text-white/45">
                         Admin only
                     </span>
@@ -250,31 +266,46 @@ export default function CostSyncManager() {
                     skipped until its credentials are present.
                 </p>
 
-                <div className="mt-3 grid gap-2 font-mono text-[11px] text-white/55 sm:grid-cols-2">
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">STRIPE_SECRET_KEY=sk_...</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">GCP_PROJECT_ID=your-project-id</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">GCP_BILLING_ACCOUNT_ID=000000-000000-000000</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">SUPABASE_PROJECT_ID=your-project-id</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">SUPABASE_ACCESS_TOKEN=sbpa_...</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">MAPBOX_ACCESS_TOKEN=pk_...</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">MAPBOX_USERNAME=your-username</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">RESEND_API_KEY=re_...</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">VONAGE_API_KEY=your-api-key</div>
-                    <div className="rounded border border-white/8 bg-white/5 px-3 py-2">VONAGE_API_SECRET=your-api-secret</div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    {envChecklist.map((item) => (
+                        <div
+                            key={item.key}
+                            className="rounded-xl border border-white/[0.08] bg-white/[0.035] p-3"
+                        >
+                            <div className="mb-2 flex items-center justify-between gap-3">
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">
+                                    {item.required ? "Required" : "Optional"}
+                                </span>
+                                <span
+                                    className={`h-2 w-2 rounded-full ${
+                                        item.required ? "bg-[#f97316]" : "bg-white/25"
+                                    }`}
+                                />
+                            </div>
+                            <code className="block break-all font-mono text-[11px] leading-5 text-white/70">
+                                {item.key}=<span className="text-white/35">{item.example}</span>
+                            </code>
+                        </div>
+                    ))}
                 </div>
 
-                <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {providers.map((provider) => (
                         <div
                             key={provider.name}
-                            className="flex items-center justify-between rounded-md border border-white/8 bg-white/5 px-3 py-2 text-xs"
+                            className="flex min-h-24 items-start justify-between gap-4 rounded-xl border border-white/[0.08] bg-white/[0.035] p-4 text-xs"
                         >
-                            <div>
-                                <div className="font-semibold text-white/80">{provider.name}</div>
-                                <div className="text-white/40">{provider.note}</div>
+                            <div className="flex min-w-0 gap-3">
+                                <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/25 text-white/55">
+                                    <PlugZap className="h-4 w-4" />
+                                </span>
+                                <div className="min-w-0">
+                                    <div className="font-semibold text-white/80">{provider.name}</div>
+                                    <div className="mt-1 leading-5 text-white/40">{provider.note}</div>
+                                </div>
                             </div>
                             <span
-                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${
+                                className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${
                                     provider.active
                                         ? "border border-green-500/30 bg-green-500/10 text-green-300"
                                         : "border border-white/10 bg-white/5 text-white/45"

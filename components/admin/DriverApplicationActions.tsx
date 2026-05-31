@@ -12,26 +12,37 @@ type DriverApplicationActionsProps = {
     driverId: string;
     approveAction: (driverId: string) => Promise<DriverActionResult>;
     rejectAction: (driverId: string) => Promise<DriverActionResult>;
+    readyAction?: (driverId: string) => Promise<DriverActionResult>;
+    readyDisabled?: boolean;
+    readyDisabledReason?: string;
 };
 
 export default function DriverApplicationActions({
     driverId,
     approveAction,
-    rejectAction
+    rejectAction,
+    readyAction,
+    readyDisabled = false,
+    readyDisabledReason = "All three documents are required before this driver can move to review."
 }: DriverApplicationActionsProps) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-    const runAction = (actionType: "approve" | "reject") => {
+    const runAction = (actionType: "ready" | "approve" | "reject") => {
         setMessage(null);
         startTransition(async () => {
-            let result: DriverActionResult;
+            let result: DriverActionResult | null = null;
 
             try {
-                result = actionType === "approve"
-                    ? await approveAction(driverId)
-                    : await rejectAction(driverId);
+                if (actionType === "ready") {
+                    if (!readyAction) return;
+                    result = await readyAction(driverId);
+                } else {
+                    result = actionType === "approve"
+                        ? await approveAction(driverId)
+                        : await rejectAction(driverId);
+                }
             } catch (error) {
                 console.error(`Driver ${actionType} action failed:`, error);
                 setMessage({
@@ -41,12 +52,16 @@ export default function DriverApplicationActions({
                 return;
             }
 
+            if (!result) return;
+
             if (result?.success) {
                 setMessage({
                     type: "success",
-                    text: actionType === "approve"
-                        ? "Approved — login, compliance, email, and SMS are now active."
-                        : "Rejected — applicant record was updated."
+                    text: actionType === "ready"
+                        ? "Moved to Ready for Review. The driver now appears in the review lane."
+                        : actionType === "approve"
+                            ? "Approved — login, compliance, email, and SMS are now active."
+                            : "Rejected — applicant record was updated."
                 });
                 router.refresh();
                 return;
@@ -62,6 +77,17 @@ export default function DriverApplicationActions({
     return (
         <div className="um-app-action-stack">
             <div className="um-app-action-row">
+                {readyAction && (
+                    <button
+                        type="button"
+                        className="um-app-btn ready"
+                        disabled={isPending || readyDisabled}
+                        title={readyDisabled ? readyDisabledReason : "Move this driver into the Ready for Review lane"}
+                        onClick={() => runAction("ready")}
+                    >
+                        {isPending ? "Working..." : "Move to review"}
+                    </button>
+                )}
                 <button
                     type="button"
                     className="um-app-btn approve"

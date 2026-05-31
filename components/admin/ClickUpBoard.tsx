@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { AlertTriangle, ExternalLink, ListTodo, RefreshCw, Settings } from "lucide-react";
 
 interface ClickUpTask {
     id: string;
@@ -110,13 +111,22 @@ export default function ClickUpBoard() {
         }
     };
 
+    function getReadableError(raw: string) {
+        try {
+            const parsed = JSON.parse(raw);
+            return parsed?.error || raw;
+        } catch {
+            return raw;
+        }
+    }
+
     const allTasks = board ? Object.values(board.tasksPerList).flat() : [];
     const totalOpen = allTasks.filter(t => !["done", "closed"].includes(t.status.status.toLowerCase())).length;
     const totalDone = allTasks.filter(t => ["done", "closed"].includes(t.status.status.toLowerCase())).length;
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-48 text-white/40 gap-3">
+            <div className="flex min-h-48 items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] text-white/55">
                 <div className="w-4 h-4 border-2 border-[#f97316] border-t-transparent rounded-full animate-spin" />
                 Loading ClickUp board…
             </div>
@@ -124,16 +134,66 @@ export default function ClickUpBoard() {
     }
 
     if (error) {
+        const readableError = getReadableError(error);
         return (
-            <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center">
-                <p className="text-red-400 font-bold mb-1">Failed to load ClickUp board</p>
-                <p className="text-white/40 text-sm mb-4">{error}</p>
-                <p className="text-white/30 text-xs mb-4">
-                    Make sure <code className="text-[#f97316]">CLICKUP_API_TOKEN</code> and{" "}
-                    <code className="text-[#f97316]">CLICKUP_SPACE_ID</code> are set in Vercel env vars.
-                </p>
-                <button onClick={fetchBoard} className="px-4 py-2 rounded-lg bg-[#f97316] text-black text-sm font-bold">Retry</button>
-            </div>
+            <section className="overflow-hidden rounded-2xl border border-[#f97316]/20 bg-[#111815]">
+                <div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+                    <div className="flex min-w-0 gap-4">
+                        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-[#f97316]/25 bg-[#f97316]/10 text-[#f97316]">
+                            <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-base font-semibold text-white">ClickUp is not connected yet</p>
+                            <p className="mt-1 max-w-3xl text-sm leading-6 text-white/55">
+                                The team board will load here once the ClickUp environment variables are available.
+                                This is a setup state, not a broken admin screen.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={fetchBoard}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#f97316] px-4 text-sm font-bold text-black transition hover:bg-[#ff8a2a]"
+                    >
+                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                        Retry
+                    </button>
+                </div>
+
+                <div className="border-t border-white/10 p-5">
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                        {["CLICKUP_API_TOKEN", "CLICKUP_SPACE_ID", "CLICKUP_LIST_ID", "CLICKUP_TEAM_ID"].map((key, index) => (
+                            <div key={key} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                                <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/40">
+                                    <Settings className="h-3.5 w-3.5" aria-hidden="true" />
+                                    {index < 2 ? "Required" : "Optional"}
+                                </div>
+                                <code className="block break-all font-mono text-xs text-[#f97316]">{key}</code>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                        <p className="text-sm text-white/55">
+                            Set these in Vercel, redeploy, then reload this page.
+                        </p>
+                        <a
+                            href="https://app.clickup.com/settings/apps"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-sm font-semibold text-[#f97316] hover:text-[#ff8a2a]"
+                        >
+                            Open ClickUp API settings
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                        </a>
+                    </div>
+
+                    <details className="mt-3 text-xs text-white/35">
+                        <summary className="cursor-pointer select-none text-white/45">Technical detail</summary>
+                        <pre className="mt-2 overflow-x-auto rounded-lg border border-white/10 bg-black/25 p-3 whitespace-pre-wrap">{readableError}</pre>
+                    </details>
+                </div>
+            </section>
         );
     }
 
@@ -143,13 +203,17 @@ export default function ClickUpBoard() {
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-4">
+                    <ListTodo className="h-5 w-5 text-[#f97316]" aria-hidden="true" />
                     <h2 className="text-lg font-bold text-white">ClickUp Board</h2>
                     <span className="text-xs text-white/40 bg-white/5 border border-white/10 rounded-full px-3 py-1">
                         {totalOpen} open · {totalDone} done
                     </span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={fetchBoard} className="px-3 py-1.5 rounded-lg border border-white/10 text-white/50 text-xs hover:text-white hover:border-white/20 transition-colors">↻ Refresh</button>
+                    <button onClick={fetchBoard} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-white/50 text-xs hover:text-white hover:border-white/20 transition-colors">
+                        <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                        Refresh
+                    </button>
                     <button onClick={() => setShowForm(v => !v)} className="px-3 py-1.5 rounded-lg bg-[#f97316] text-black text-xs font-bold hover:bg-[#ea6c0a] transition-colors">+ New Task</button>
                 </div>
             </div>
@@ -174,8 +238,8 @@ export default function ClickUpBoard() {
                 {board.lists.map((list) => {
                     const tasks = board.tasksPerList[list.id] ?? [];
                     return (
-                        <div key={list.id} className="rounded-xl border border-white/8 bg-white/3 overflow-hidden">
-                            <div className="flex items-center justify-between px-4 py-3 border-b border-white/8 bg-white/4">
+                        <div key={list.id} className="rounded-xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-white/[0.04]">
                                 <div className="flex items-center gap-2">
                                     <span>{getListIcon(list.name)}</span>
                                     <span className="text-sm font-bold text-white">{list.name}</span>
@@ -188,7 +252,7 @@ export default function ClickUpBoard() {
                                     const isExpanded = expandedTask === task.id;
                                     const overdue = isPastDue(task.due_date) && !["done", "closed"].includes(task.status.status.toLowerCase());
                                     return (
-                                        <div key={task.id} className="rounded-lg border border-white/8 bg-[#0d1117] p-3 cursor-pointer hover:border-white/15 transition-all" onClick={() => setExpandedTask(isExpanded ? null : task.id)}>
+                                        <div key={task.id} className="rounded-lg border border-white/[0.08] bg-[#0d1117] p-3 cursor-pointer hover:border-white/15 transition-all" onClick={() => setExpandedTask(isExpanded ? null : task.id)}>
                                             <div className="flex items-start justify-between gap-2">
                                                 <p className="text-sm text-white font-medium leading-snug flex-1">{task.name}</p>
                                                 {task.priority && (
@@ -211,7 +275,7 @@ export default function ClickUpBoard() {
                                                 </div>
                                             )}
                                             {isExpanded && (
-                                                <div className="mt-3 pt-3 border-t border-white/8 space-y-2">
+                                                <div className="mt-3 pt-3 border-t border-white/[0.08] space-y-2">
                                                     {task.description && (<p className="text-xs text-white/50 leading-relaxed">{task.description.slice(0, 300)}{task.description.length > 300 ? "…" : ""}</p>)}
                                                     <a href={task.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[10px] text-[#f97316] hover:underline" onClick={e => e.stopPropagation()}>Open in ClickUp ↗</a>
                                                 </div>

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
 import { canAccessAdminSection } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { approveDriver, approveMerchant, rejectDriver, rejectMerchant } from "../actions";
+import { approveDriver, approveMerchant, markDriverReadyForReview, rejectDriver, rejectMerchant } from "../actions";
 import AdminPortalWrapper from "../AdminPortalWrapper";
 import { resolveDriverDocumentUrl } from "@/lib/driver-documents";
 import { filterAdminUsers, isMockAdminRecord, shouldHideMockAdminData } from "@/lib/admin-data";
@@ -159,9 +159,20 @@ export default async function UsersPage({
         .filter((restaurant: any) => String(restaurant.visibility || "HIDDEN").toUpperCase() !== "VISIBLE")
         .slice(0, 10);
 
+    const driverDocCount = (driver: any) => [driver.licenseUrl, driver.insuranceUrl, driver.registrationUrl].filter(Boolean).length;
+
     const docState = (driver: any) => {
-        const readyDocs = [driver.licenseUrl, driver.insuranceUrl, driver.registrationUrl].filter(Boolean).length;
+        const readyDocs = driverDocCount(driver);
         return `${readyDocs}/3 docs`;
+    };
+
+    const driverReviewNextStep = (driver: any) => {
+        const readyDocs = driverDocCount(driver);
+        const compliance = String(driver.complianceStatus || "").toUpperCase();
+        if (driver.vehicleVerified || compliance === "ACTIVE") return "Approved and active";
+        if (readyDocs < 3) return "Waiting on missing documents";
+        if (compliance === "READY_FOR_REVIEW" || compliance === "IN_REVIEW") return "Ready for approval decision";
+        return "Move to review after opening the documents";
     };
 
     const recentDriverAlerts = (driverAlerts || []).map((alert: any) => ({
@@ -239,6 +250,8 @@ export default async function UsersPage({
                 .um-app-btn:hover { border-color: rgba(249,115,22,0.35); color: #fff; }
                 .um-app-btn.approve { border-color: rgba(52,211,153,0.25); color: #34d399; }
                 .um-app-btn.approve:hover { background: rgba(52,211,153,0.08); }
+                .um-app-btn.ready { border-color: rgba(249,115,22,0.28); color: #f97316; }
+                .um-app-btn.ready:hover { background: rgba(249,115,22,0.09); }
                 .um-app-btn.reject { border-color: rgba(248,113,113,0.22); color: #f87171; }
                 .um-app-btn.reject:hover { background: rgba(248,113,113,0.08); }
                 .um-doc-list { display: flex; flex-direction: column; gap: 10px; }
@@ -250,6 +263,8 @@ export default async function UsersPage({
                 .um-doc-link { display: inline-flex; align-items: center; gap: 6px; background: #0f1311; border: 1px solid #24302a; color: #34d399; border-radius: 6px; padding: 7px 10px; font-size: 11px; font-weight: 500; text-decoration: none; }
                 .um-doc-link:hover { border-color: rgba(52,211,153,0.45); }
                 .um-doc-link.missing { color: #555; border-color: #1e2420; background: #0c0f0d; cursor: not-allowed; }
+                .um-next-step { margin-top: 8px; color: #c7ccd1; font-size: 11px; line-height: 1.45; }
+                .um-next-step strong { color: #fff; font-weight: 600; }
                 .um-table-wrap { background: #141a18; border: 1px solid #1e2420; border-radius: 8px; overflow-x: auto; }
                 .um-table { width: 100%; border-collapse: collapse; font-size: 13px; }
                 .um-table th { padding: 10px 16px; text-align: left; color: #555; font-weight: 500; border-bottom: 1px solid #1e2420; }
@@ -262,6 +277,12 @@ export default async function UsersPage({
                 .um-review-guide-actions { display: flex; flex-wrap: wrap; gap: 8px; }
                 .um-review-guide-actions a { display: inline-flex; align-items: center; justify-content: center; padding: 8px 11px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.22); color: #fff; text-decoration: none; font-size: 11px; font-weight: 700; }
                 .um-review-guide-actions a.primary { background: #f97316; color: #0b0f0d; border-color: #f97316; }
+                @media (max-width: 760px) {
+                    .um-app-item, .um-doc-item { flex-direction: column; align-items: stretch; }
+                    .um-app-actions, .um-doc-links, .um-app-action-stack, .um-app-action-row { justify-content: flex-start; align-items: stretch; }
+                    .um-app-btn, .um-doc-link { flex: 1 1 auto; min-height: 38px; }
+                    .um-app-action-message { max-width: none; text-align: left; }
+                }
             `}</style>
 
             <div className="adm-page-header">
@@ -440,7 +461,7 @@ export default async function UsersPage({
                     user: d.user,
                 }))} />
 
-                <div className="um-apps">
+                <div id="pending-driver-applications" className="um-apps">
                     <h2>Pending Driver Applications</h2>
                     <p>Fresh driver sign-ups appear here with their uploaded documents and approval actions so you can review them right away.</p>
                     {shouldHideMockAdminData() && (
@@ -457,6 +478,7 @@ export default async function UsersPage({
                                         {driver.user?.phone || 'No phone'} · {driver.status || 'Unknown status'} · Vehicle {driver.vehicleVerified ? 'verified' : 'pending'} · Background {driver.backgroundCheckStatus || 'PENDING'}
                                     </div>
                                     <div className="um-app-status">{docState(driver)}</div>
+                                    <div className="um-next-step"><strong>Next:</strong> {driverReviewNextStep(driver)}</div>
                                 </div>
                                 <div className="um-app-actions">
                                     <a
@@ -485,6 +507,9 @@ export default async function UsersPage({
                                     </a>
                                     <DriverApplicationActions
                                         driverId={driver.id}
+                                        readyAction={markDriverReadyForReview}
+                                        readyDisabled={driverDocCount(driver) < 3}
+                                        readyDisabledReason={`${docState(driver)} uploaded. License, insurance, and registration are required before review.`}
                                         approveAction={approveDriver}
                                         rejectAction={rejectDriver}
                                     />
@@ -496,7 +521,7 @@ export default async function UsersPage({
                         )}
                     </div>
                 </div>
-                <div id="driver-document-review" className="um-docs">
+                <div className="um-docs">
                     <h2>Driver Application Alerts</h2>
                     <p>Every submitted application also logs a staff notification so you can spot new signups even if a later step needs attention.</p>
                     <div className="um-doc-list">
@@ -514,7 +539,7 @@ export default async function UsersPage({
                         )}
                     </div>
                 </div>
-                <div className="um-docs">
+                <div id="driver-document-review" className="um-docs">
                     <h2>Driver Document Review</h2>
                     <p>Driver documents stay private in storage. Admins can open time-limited signed links from here for vetting and approval.</p>
                     {shouldHideMockAdminData() && (
@@ -530,6 +555,8 @@ export default async function UsersPage({
                                     <div className="um-doc-sub">
                                         {driver.status || 'Unknown status'} · Vehicle {driver.vehicleVerified ? 'verified' : 'pending'} · Background {driver.backgroundCheckStatus || 'PENDING'}
                                     </div>
+                                    <div className="um-app-status">{docState(driver)}</div>
+                                    <div className="um-next-step"><strong>Next:</strong> {driverReviewNextStep(driver)}</div>
                                 </div>
                                 <div className="um-doc-links">
                                     <a
@@ -556,6 +583,14 @@ export default async function UsersPage({
                                     >
                                         Registration
                                     </a>
+                                    <DriverApplicationActions
+                                        driverId={driver.id}
+                                        readyAction={markDriverReadyForReview}
+                                        readyDisabled={driverDocCount(driver) < 3}
+                                        readyDisabledReason={`${docState(driver)} uploaded. License, insurance, and registration are required before review.`}
+                                        approveAction={approveDriver}
+                                        rejectAction={rejectDriver}
+                                    />
                                 </div>
                             </div>
                         ))}
