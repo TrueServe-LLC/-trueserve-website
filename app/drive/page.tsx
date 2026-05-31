@@ -103,37 +103,41 @@ function DrivePageContent() {
                             </div>
                         </div>
 
-                        <div className="ts-fig-drive-media ts-fig-animate-up">
-                            <img
-                                src="/driver-hero-delivery-car.png"
-                                alt="TrueServe delivery driver preparing an insulated food bag in the car"
-                            />
-                            <div className="ts-fig-drive-media-shade" />
-                            <div className="ts-fig-drive-route-card" aria-hidden="true">
-                                <svg viewBox="0 0 320 120" role="presentation">
-                                    <path className="soft" d="M24 82C72 34 110 40 148 62C192 88 218 24 292 32" />
-                                    <path className="line" d="M24 82C72 34 110 40 148 62C192 88 218 24 292 32" />
-                                    <circle cx="24" cy="82" r="8" />
-                                    <circle cx="148" cy="62" r="7" />
-                                    <circle cx="292" cy="32" r="8" />
-                                </svg>
-                                <span>Live route preview</span>
-                                <strong>Nearby pickups, clear drop-offs</strong>
+                        <div className="ts-fig-drive-visual-stack ts-fig-animate-up">
+                            <div className="ts-fig-drive-media">
+                                <img
+                                    src="/driver-hero-delivery-car.png"
+                                    alt="TrueServe delivery driver preparing an insulated food bag in the car"
+                                />
+                                <div className="ts-fig-drive-media-shade" />
                             </div>
-                            <div className="ts-fig-drive-floating-pay" aria-hidden="true">
-                                <MapPinned size={16} />
-                                <div>
-                                    <span>Tonight&apos;s route</span>
-                                    <strong>$20/hr + tips</strong>
+
+                            <div className="ts-fig-drive-proof-grid" aria-label="Driver earning and route proof">
+                                <div className="ts-fig-drive-proof-card route">
+                                    <svg viewBox="0 0 320 96" role="presentation" aria-hidden="true">
+                                        <path className="soft" d="M24 70C72 22 110 32 148 52C192 78 218 18 292 26" />
+                                        <path className="line" d="M24 70C72 22 110 32 148 52C192 78 218 18 292 26" />
+                                        <circle cx="24" cy="70" r="7" />
+                                        <circle cx="148" cy="52" r="6" />
+                                        <circle cx="292" cy="26" r="7" />
+                                    </svg>
+                                    <span>Route clarity</span>
+                                    <strong>Pickup and drop-off notes stay visible.</strong>
                                 </div>
-                            </div>
-                            <div className="ts-fig-drive-earn-card" aria-hidden="true">
-                                <span>This week&apos;s earnings</span>
-                                <strong>$233</strong>
-                                <div>
-                                    {[28, 52, 36, 64, 78, 44, 20].map((height, index) => (
-                                        <i key={index} style={{ height }} />
-                                    ))}
+                                <div className="ts-fig-drive-proof-card">
+                                    <MapPinned size={18} />
+                                    <span>Tonight&apos;s route</span>
+                                    <strong>$20/hr + 100% tips</strong>
+                                </div>
+                                <div className="ts-fig-drive-proof-card earnings">
+                                    <WalletCards size={18} />
+                                    <span>This week</span>
+                                    <strong>$233</strong>
+                                    <div>
+                                        {[28, 52, 36, 64, 78, 44, 20].map((height, index) => (
+                                            <i key={index} style={{ height }} />
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>

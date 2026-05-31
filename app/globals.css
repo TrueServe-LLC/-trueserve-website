@@ -9749,9 +9749,13 @@ nav {
 .ts-fig-drive-login {
   color: #cbd5e1;
 }
+.ts-fig-drive-visual-stack {
+  display: grid;
+  gap: 14px;
+}
 .ts-fig-drive-media {
   position: relative;
-  min-height: 520px;
+  min-height: 460px;
   border-radius: 28px;
   overflow: hidden;
   background: #fff;
@@ -9760,7 +9764,7 @@ nav {
 .ts-fig-drive-media img {
   width: 100%;
   height: 100%;
-  min-height: 520px;
+  min-height: 460px;
   object-fit: cover;
   display: block;
 }
@@ -9768,104 +9772,83 @@ nav {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(15,23,42,.08), rgba(15,23,42,.74)),
-    radial-gradient(circle at 78% 18%, rgba(255,107,53,.26), transparent 42%);
+    linear-gradient(180deg, rgba(7,17,27,.02) 0%, rgba(7,17,27,.08) 48%, rgba(7,17,27,.42) 100%);
 }
-.ts-fig-drive-route-card,
-.ts-fig-drive-floating-pay,
-.ts-fig-drive-earn-card {
-  position: absolute;
-  z-index: 2;
-  border-radius: 18px;
-  background: rgba(255,255,255,.92);
-  color: var(--fig-ink);
-  border: 1px solid rgba(255,255,255,.55);
-  box-shadow: 0 18px 38px -20px rgba(15,23,42,.45);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+.ts-fig-drive-proof-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, .9fr) minmax(0, .9fr);
+  gap: 12px;
 }
-.ts-fig-drive-route-card {
-  left: 18px;
-  right: 18px;
-  bottom: 22px;
+.ts-fig-drive-proof-card {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-width: 0;
+  min-height: 132px;
   padding: 16px;
+  border-radius: 20px;
+  background: rgba(12,24,36,.9);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 38px -24px rgba(0,0,0,.58);
 }
-.ts-fig-drive-route-card svg {
+.ts-fig-drive-proof-card > svg:not([viewBox]),
+.ts-fig-drive-proof-card > svg[width] {
+  color: var(--fig-orange);
+}
+.ts-fig-drive-proof-card.route svg {
   width: 100%;
-  height: 96px;
+  height: 58px;
   display: block;
   overflow: visible;
 }
-.ts-fig-drive-route-card path {
+.ts-fig-drive-proof-card.route path {
   fill: none;
   stroke-linecap: round;
 }
-.ts-fig-drive-route-card .soft {
-  stroke: rgba(20,184,166,.2);
-  stroke-width: 12;
+.ts-fig-drive-proof-card.route .soft {
+  stroke: rgba(20,184,166,.18);
+  stroke-width: 10;
 }
-.ts-fig-drive-route-card .line {
-  stroke: url(#none);
+.ts-fig-drive-proof-card.route .line {
   stroke: var(--fig-orange);
-  stroke-width: 4;
+  stroke-width: 3.5;
   stroke-dasharray: 10 12;
   animation: figRouteDash 3.5s linear infinite;
 }
-.ts-fig-drive-route-card circle {
-  fill: #fff;
+.ts-fig-drive-proof-card.route circle {
+  fill: #07111B;
   stroke: var(--fig-teal);
-  stroke-width: 4;
+  stroke-width: 3.5;
 }
-.ts-fig-drive-route-card span,
-.ts-fig-drive-floating-pay span,
-.ts-fig-drive-earn-card span {
+.ts-fig-drive-proof-card span {
   display: block;
-  color: var(--fig-muted);
+  color: #94A3B8;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: .1em;
   text-transform: uppercase;
 }
-.ts-fig-drive-route-card strong,
-.ts-fig-drive-floating-pay strong {
+.ts-fig-drive-proof-card strong {
   display: block;
-  margin-top: 4px;
   font-size: 15px;
+  line-height: 1.35;
 }
-.ts-fig-drive-floating-pay {
-  top: 22px;
-  left: 22px;
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  gap: 10px;
-  align-items: center;
-  padding: 12px 14px;
-}
-.ts-fig-drive-floating-pay svg {
-  color: var(--fig-orange);
-}
-.ts-fig-drive-earn-card {
-  top: 22px;
-  right: 22px;
-  width: min(210px, 48%);
-  padding: 16px;
-}
-.ts-fig-drive-earn-card strong {
-  display: block;
+.ts-fig-drive-proof-card.earnings strong {
   font-family: var(--fig-serif);
-  font-size: 40px;
+  font-size: 32px;
   line-height: 1;
-  margin: 8px 0 14px;
   color: var(--fig-orange);
 }
-.ts-fig-drive-earn-card div {
+.ts-fig-drive-proof-card.earnings div {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   align-items: end;
-  gap: 8px;
-  height: 86px;
+  gap: 5px;
+  height: 38px;
+  margin-top: 4px;
 }
-.ts-fig-drive-earn-card i {
+.ts-fig-drive-proof-card.earnings i {
   display: block;
   border-radius: 5px;
   background: linear-gradient(180deg, var(--fig-teal), var(--fig-orange));
@@ -10125,6 +10108,10 @@ nav {
   font-size: 13px;
   font-weight: 800;
 }
+.ts-fig-merchant-ops-media {
+  display: grid;
+  gap: 12px;
+}
 .ts-fig-merchant-ops-video {
   position: relative;
   min-height: 340px;
@@ -10151,24 +10138,28 @@ nav {
     linear-gradient(180deg, rgba(7,17,27,.08) 0%, rgba(7,17,27,.08) 50%, rgba(7,17,27,.5) 100%),
     radial-gradient(420px 220px at 12% 90%, rgba(255,107,53,.2), transparent 70%);
 }
-.ts-fig-merchant-ops-badge {
-  position: absolute;
-  left: 18px;
-  bottom: 18px;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  min-height: 38px;
-  padding: 0 16px;
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 999px;
-  background: rgba(7,17,27,.74);
+.ts-fig-merchant-ops-caption {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px;
+  background: rgba(7,17,27,.68);
   color: #fff;
+  box-shadow: 0 18px 38px -28px rgba(0,0,0,.72);
+}
+.ts-fig-merchant-ops-caption span {
+  color: var(--fig-orange);
   font-size: 13px;
   font-weight: 900;
   letter-spacing: .03em;
   text-transform: uppercase;
-  backdrop-filter: blur(14px);
+}
+.ts-fig-merchant-ops-caption strong {
+  color: #E2E8F0;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 700;
 }
 .ts-fig-merchant-routes {
   display: grid;
@@ -10742,6 +10733,17 @@ nav {
     margin: 0 auto;
     width: 100%;
   }
+  .ts-fig-drive-visual-stack {
+    max-width: 640px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .ts-fig-drive-proof-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ts-fig-drive-proof-card.route {
+    grid-column: 1 / -1;
+  }
   .ts-fig-drive-perks {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -10846,17 +10848,20 @@ nav {
   .ts-fig-drive-media img {
     min-height: 440px;
   }
-  .ts-fig-drive-earn-card {
-    width: 176px;
-    padding: 13px;
+  .ts-fig-drive-proof-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
-  .ts-fig-drive-earn-card strong {
-    font-size: 32px;
+  .ts-fig-drive-proof-card.route {
+    grid-column: auto;
   }
-  .ts-fig-drive-route-card {
-    left: 12px;
-    right: 12px;
-    bottom: 14px;
+  .ts-fig-drive-proof-card {
+    min-height: 0;
+    padding: 14px;
+    border-radius: 18px;
+  }
+  .ts-fig-drive-proof-card.route svg {
+    height: 48px;
   }
   .ts-fig-drive-perks {
     grid-template-columns: 1fr;

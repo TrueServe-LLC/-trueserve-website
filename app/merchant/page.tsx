@@ -108,16 +108,21 @@ export default function MerchantLanding() {
               </div>
             </div>
 
-            <div className="ts-fig-merchant-ops-video" aria-label="Restaurant support and service coordination preview">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                src="/videos/merchant-hospitality-support.mp4"
-              />
-              <div className="ts-fig-merchant-ops-badge">Live support flow</div>
+            <div className="ts-fig-merchant-ops-media" aria-label="Restaurant support and service coordination preview">
+              <div className="ts-fig-merchant-ops-video">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  src="/videos/merchant-hospitality-support.mp4"
+                />
+              </div>
+              <div className="ts-fig-merchant-ops-caption">
+                <span>Live support flow</span>
+                <strong>Onboarding, menu setup, and handoff questions stay connected to a real support lane.</strong>
+              </div>
             </div>
           </div>
         </section>
