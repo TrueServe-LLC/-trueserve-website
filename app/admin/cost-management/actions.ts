@@ -42,6 +42,11 @@ interface VendorInvoiceRecord {
     metadata?: Record<string, unknown>;
 }
 
+function isMissingTableError(error: unknown) {
+    const message = error instanceof Error ? error.message : typeof error === "string" ? error : "";
+    return message.includes("Could not find the table") || message.includes("does not exist") || message.includes("PGRST205");
+}
+
 function toDateStringFromUnix(seconds?: number | null, fallback: string | null = new Date().toISOString().slice(0, 10)) {
     if (!seconds) return fallback;
     return new Date(seconds * 1000).toISOString().slice(0, 10);
@@ -192,7 +197,9 @@ async function upsertVendorInvoices(records: VendorInvoiceRecord[]) {
         return {
             success: false,
             synced: 0,
-            message: error.message,
+            message: isMissingTableError(error)
+                ? 'VendorInvoice table is not installed yet. Run db/cost_management_schema.sql in Supabase, then refresh invoices.'
+                : error.message,
         };
     }
 
@@ -498,6 +505,8 @@ export async function syncAllServiceCosts(targetMonth?: string) {
 
         console.log(`Starting cost sync for ${month}...`);
 
+        const invoiceResult = await syncVendorInvoices(month);
+
         // Fetch costs from all service APIs in parallel
         const [stripeCost, gcpCost, supabaseCost, mapboxCost, resendCost, vonageCost] =
             await Promise.all([
@@ -520,7 +529,6 @@ export async function syncAllServiceCosts(targetMonth?: string) {
 
         if (records.length === 0) {
             console.warn(`No service costs fetched for ${month}. Check API credentials.`);
-            const invoiceResult = await syncVendorInvoices(month);
             return {
                 success: invoiceResult.success,
                 message: invoiceResult.success
@@ -545,14 +553,24 @@ export async function syncAllServiceCosts(targetMonth?: string) {
 
         if (error) {
             console.error("Error inserting service costs:", error);
+            if (isMissingTableError(error)) {
+                return {
+                    success: invoiceResult.success,
+                    message: invoiceResult.success
+                        ? `Invoice sync completed (${invoiceResult.synced} invoices). Cost analytics are waiting on db/cost_management_schema.sql in Supabase.`
+                        : `Cost analytics schema is missing and invoice sync also failed: ${invoiceResult.message}`,
+                    synced: 0,
+                    invoicesSynced: invoiceResult.synced,
+                    invoiceMessage: invoiceResult.message,
+                    setupRequired: true,
+                };
+            }
             return {
                 success: false,
                 message: `Database error: ${error.message}`,
                 synced: 0,
             };
         }
-
-        const invoiceResult = await syncVendorInvoices(month);
 
         console.log(`Successfully synced ${records.length} service costs for ${month}`);
         return {
@@ -687,6 +705,12 @@ export async function checkAndCreateAnomalies() {
         };
     } catch (error) {
         console.error("Error checking anomalies:", error);
+        if (isMissingTableError(error)) {
+            return {
+                success: true,
+                message: "Cost analytics tables are not installed yet. Invoice tracking can still run.",
+            };
+        }
         return {
             success: false,
             message: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,

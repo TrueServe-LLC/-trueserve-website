@@ -9,6 +9,7 @@ import VendorInvoiceLedger from "@/components/admin/VendorInvoiceLedger";
 import { analyzeCosts } from "@/lib/costAnalytics";
 import type { MonthlyCost } from "@/lib/costAnalytics";
 import AdminPortalWrapper from "../AdminPortalWrapper";
+import { ArrowUpRight, Inbox, ReceiptText, ShieldCheck, TrendingUp } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,17 @@ export default async function CostManagementPage() {
 
     const analysis = analyzeCosts(monthlyCosts, budgets as any);
     const currentMonth = new Date().toISOString().slice(0, 7);
+    const outstandingTotal = (vendorInvoices as any[])
+        .filter((invoice) => ["outstanding", "open"].includes(String(invoice.status).toLowerCase()))
+        .reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0);
+    const reviewCount = (vendorInvoices as any[]).filter(
+        (invoice) => String(invoice.status).toLowerCase() === "needs_review"
+    ).length;
+    const latestInvoiceSync = (vendorInvoices as any[])
+        .map((invoice) => invoice.lastSyncedAt)
+        .filter(Boolean)
+        .sort()
+        .at(-1);
 
     const budgetWarnings = monthlyCosts.length > 0 && budgets.length > 0
         ? Object.entries(monthlyCosts.find((m) => m.month === currentMonth)?.byService || {})
@@ -107,45 +119,50 @@ export default async function CostManagementPage() {
             </div>
             <div className="adm-page-body">
                 <div className="space-y-4">
-                    <div className="adm-card">
-                        <div className="adm-card-title">What this page does</div>
-                        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-                            <div className="space-y-3 text-sm leading-6 text-white/60">
-                                <p>
-                                    This page pulls live service spend into Supabase, compares it against budget thresholds, and
-                                    lets the admin team run anomaly checks.
-                                </p>
-                                <p>
-                                    Right now Stripe is the active source. The other providers stay ready in the UI until their
-                                    credentials are configured in Vercel.
-                                </p>
+                    <div className="grid gap-3 md:grid-cols-4">
+                        <div className="adm-card">
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
+                                    Outstanding
+                                </span>
+                                <ReceiptText className="h-4 w-4 text-[#ff6b35]" />
                             </div>
-                            <div className="grid gap-2 sm:grid-cols-2">
-                                {[
-                                    { name: "Stripe", link: "https://dashboard.stripe.com", active: true },
-                                    { name: "Supabase", link: "https://supabase.com/dashboard", active: false },
-                                    { name: "Google Workspace", link: "https://admin.google.com", active: false },
-                                    { name: "Google Cloud", link: "https://console.cloud.google.com", active: false },
-                                    { name: "Resend", link: "https://resend.com/dashboard", active: false },
-                                    { name: "Telnyx", link: "https://portal.telnyx.com", active: false },
-                                    { name: "Vonage", link: "https://dashboard.nexmo.com", active: false },
-                                ].map((s) => (
-                                    <a
-                                        key={s.name}
-                                        href={s.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={`rounded-md border px-3 py-2 text-sm font-medium transition ${
-                                            s.active
-                                                ? "border-[#f97316]/30 bg-[#f97316] text-black hover:bg-[#ff8a2a]"
-                                                : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
-                                        }`}
-                                    >
-                                        {s.name}
-                                        <span className="ml-1">Open</span>
-                                    </a>
-                                ))}
+                            <div className="mt-3 text-2xl font-semibold text-white">
+                                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(outstandingTotal)}
                             </div>
+                            <p className="mt-1 text-xs text-white/45">Bills that still need payment or review.</p>
+                        </div>
+                        <div className="adm-card">
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
+                                    Review Queue
+                                </span>
+                                <ShieldCheck className="h-4 w-4 text-[#8dc7ff]" />
+                            </div>
+                            <div className="mt-3 text-2xl font-semibold text-white">{reviewCount}</div>
+                            <p className="mt-1 text-xs text-white/45">Imported invoices that need a human check.</p>
+                        </div>
+                        <div className="adm-card">
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
+                                    Tracked Invoices
+                                </span>
+                                <Inbox className="h-4 w-4 text-[#2dd4bf]" />
+                            </div>
+                            <div className="mt-3 text-2xl font-semibold text-white">{vendorInvoices.length}</div>
+                            <p className="mt-1 text-xs text-white/45">Pulled from APIs, inboxes, and manual entries.</p>
+                        </div>
+                        <div className="adm-card">
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
+                                    Last Sync
+                                </span>
+                                <TrendingUp className="h-4 w-4 text-[#ff6b35]" />
+                            </div>
+                            <div className="mt-3 text-sm font-semibold text-white">
+                                {latestInvoiceSync ? new Date(latestInvoiceSync).toLocaleString() : "Not synced yet"}
+                            </div>
+                            <p className="mt-1 text-xs text-white/45">Nightly inbox checks can keep this current.</p>
                         </div>
                     </div>
 
@@ -153,13 +170,58 @@ export default async function CostManagementPage() {
 
                     <VendorInvoiceLedger invoices={vendorInvoices as any} />
 
+                    <div className="adm-card">
+                        <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+                            <div>
+                                <div className="adm-card-title">Vendor Portals</div>
+                                <p className="max-w-2xl text-sm leading-6 text-white/55">
+                                    Use these only when the inbox import needs a manual check. The normal flow is: vendor sends invoice
+                                    to the billing inbox, TrueServe imports it, then admins review status here.
+                                </p>
+                            </div>
+                            <span className="rounded-full border border-[#2dd4bf]/25 bg-[#2dd4bf]/10 px-3 py-1 text-xs font-semibold text-[#9ff7ea]">
+                                Delivery-app style ledger
+                            </span>
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                            {[
+                                { name: "Stripe", link: "https://dashboard.stripe.com" },
+                                { name: "Supabase", link: "https://supabase.com/dashboard" },
+                                { name: "Vercel", link: "https://vercel.com/dashboard" },
+                                { name: "Zoho Mail", link: "https://mail.zoho.com" },
+                                { name: "Telnyx", link: "https://portal.telnyx.com" },
+                                { name: "Google Cloud", link: "https://console.cloud.google.com" },
+                                { name: "Resend", link: "https://resend.com/dashboard" },
+                                { name: "Vonage", link: "https://dashboard.nexmo.com" },
+                            ].map((s) => (
+                                <a
+                                    key={s.name}
+                                    href={s.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white/75 transition hover:border-[#ff6b35]/35 hover:bg-[#ff6b35]/10 hover:text-white"
+                                >
+                                    {s.name}
+                                    <ArrowUpRight className="h-3.5 w-3.5" />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
                     {monthlyCosts.length === 0 ? (
-                        <div className="adm-card text-center">
-                            <div className="mb-3 text-3xl">Analytics</div>
-                            <div className="mb-2 text-sm font-semibold text-white">No cost data yet</div>
-                            <div className="mx-auto mb-5 max-w-xl text-sm leading-6 text-white/55">
-                                Use the sync manager above to import spending data from your service providers. Once Stripe data
-                                exists, the dashboard below will render cost trends, forecasts, and budget warnings.
+                        <div className="adm-card">
+                            <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
+                                <div>
+                                    <div className="adm-card-title">Cost Analytics</div>
+                                    <p className="text-sm leading-6 text-white/55">
+                                        Invoice tracking is the source of truth. Cost analytics will appear after the
+                                        `ServiceCost` schema is installed and provider spend starts syncing.
+                                    </p>
+                                </div>
+                                <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-4 text-sm leading-6 text-white/55">
+                                    Setup needed: run <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">db/cost_management_schema.sql</code>{" "}
+                                    in Supabase SQL editor, then click <span className="font-semibold text-white">Sync costs</span>.
+                                </div>
                             </div>
                         </div>
                     ) : (

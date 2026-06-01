@@ -71,12 +71,14 @@ export async function GET(request: Request) {
 
         console.log("[Cost Sync Cron] Automated cost sync started");
 
-        // Sync last month's costs
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
-        const monthStr = lastMonth.toISOString().slice(0, 7);
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const previousMonthDate = new Date();
+        previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
+        const previousMonth = previousMonthDate.toISOString().slice(0, 7);
 
-        const syncResult = await syncAllServiceCosts(monthStr);
+        const syncResult = await syncAllServiceCosts(currentMonth);
+        const previousMonthResult =
+            previousMonth === currentMonth ? null : await syncAllServiceCosts(previousMonth);
 
         // Check for anomalies
         const anomalyResult = await checkAndCreateAnomalies();
@@ -85,6 +87,7 @@ export async function GET(request: Request) {
             success: true,
             message: "Automated cost sync completed",
             syncResult,
+            previousMonthResult,
             anomalyResult,
             timestamp: new Date().toISOString(),
         });
