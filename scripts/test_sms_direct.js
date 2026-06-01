@@ -11,9 +11,10 @@ if (!phone) {
 async function run() {
     console.log(`Sending test message to ${phone}...`);
     try {
-        const result = await sendSMS(phone, "TrueServe Test: System Verification ✅");
+        const result = await sendSMS(phone, "TrueServe: Production SMS connectivity test successful.");
         if (result.success) {
             console.log("✅ SMS Sent Successfully! SID:", result.sid);
+            console.log("Provider:", result.provider || "unknown");
         } else {
             console.error("❌ SMS Failed:", result.error);
         }
