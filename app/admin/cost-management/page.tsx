@@ -115,7 +115,7 @@ export default async function CostManagementPage() {
         <AdminPortalWrapper role={role}>
             <div className="adm-page-header">
                 <h1>Cost Management</h1>
-                <p>Track real spending across service APIs and surface budget alerts when costs move outside the expected range.</p>
+                <p>Track vendor invoices from the billing inbox first, then add direct API cost analytics where providers support it cleanly.</p>
             </div>
             <div className="adm-page-body">
                 <div className="space-y-4">
@@ -150,7 +150,7 @@ export default async function CostManagementPage() {
                                 <Inbox className="h-4 w-4 text-[#2dd4bf]" />
                             </div>
                             <div className="mt-3 text-2xl font-semibold text-white">{vendorInvoices.length}</div>
-                            <p className="mt-1 text-xs text-white/45">Pulled from APIs, inboxes, and manual entries.</p>
+                            <p className="mt-1 text-xs text-white/45">Pulled from the billing inbox, APIs, and manual entries.</p>
                         </div>
                         <div className="adm-card">
                             <div className="flex items-center justify-between gap-3">
@@ -214,13 +214,13 @@ export default async function CostManagementPage() {
                                 <div>
                                     <div className="adm-card-title">Cost Analytics</div>
                                     <p className="text-sm leading-6 text-white/55">
-                                        Invoice tracking is the source of truth. Cost analytics will appear after the
-                                        `ServiceCost` schema is installed and provider spend starts syncing.
+                                        Invoice tracking is the source of truth. Monthly analytics are optional and will appear after the
+                                        ServiceCost schema is installed and provider spend starts syncing.
                                     </p>
                                 </div>
                                 <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-4 text-sm leading-6 text-white/55">
                                     Setup needed: run <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">db/cost_management_schema.sql</code>{" "}
-                                    in Supabase SQL editor, then click <span className="font-semibold text-white">Sync costs</span>.
+                                    in Supabase SQL editor, then click <span className="font-semibold text-white">Sync invoices</span>.
                                 </div>
                             </div>
                         </div>

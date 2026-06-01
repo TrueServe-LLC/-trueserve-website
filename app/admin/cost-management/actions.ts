@@ -42,9 +42,21 @@ interface VendorInvoiceRecord {
     metadata?: Record<string, unknown>;
 }
 
+function getErrorMessage(error: unknown) {
+    if (error instanceof Error) return error.message;
+    if (typeof error === "string") return error;
+    if (error && typeof error === "object") {
+        const maybeError = error as { message?: unknown; code?: unknown; details?: unknown; hint?: unknown };
+        return [maybeError.message, maybeError.code, maybeError.details, maybeError.hint]
+            .filter((value): value is string => typeof value === "string")
+            .join(" ");
+    }
+    return "";
+}
+
 function isMissingTableError(error: unknown) {
-    const message = error instanceof Error ? error.message : typeof error === "string" ? error : "";
-    return message.includes("Could not find the table") || message.includes("does not exist") || message.includes("PGRST205");
+    const message = getErrorMessage(error);
+    return /Could not find the table|does not exist|PGRST205/i.test(message);
 }
 
 function toDateStringFromUnix(seconds?: number | null, fallback: string | null = new Date().toISOString().slice(0, 10)) {
@@ -216,7 +228,6 @@ export async function syncVendorInvoices(targetMonth?: string) {
         let month = targetMonth;
         if (!month) {
             const now = new Date();
-            now.setMonth(now.getMonth() - 1);
             month = now.toISOString().slice(0, 7);
         }
 
@@ -233,7 +244,7 @@ export async function syncVendorInvoices(targetMonth?: string) {
         return {
             success: false,
             synced: 0,
-            message: error instanceof Error ? error.message : "Unknown invoice sync error",
+            message: getErrorMessage(error) || "Unknown invoice sync error",
         };
     }
 }
@@ -491,15 +502,14 @@ async function syncVonageCosts(month: string): Promise<ServiceCostRecord | null>
 
 /**
  * Sync costs for all services and store in database
- * Fetches data for the previous month by default
+ * Fetches data for the current month by default.
+ * The cron route also calls this for the previous month to catch late invoices.
  */
 export async function syncAllServiceCosts(targetMonth?: string) {
     try {
-        // Default to previous month if not specified
         let month = targetMonth;
         if (!month) {
             const now = new Date();
-            now.setMonth(now.getMonth() - 1);
             month = now.toISOString().slice(0, 7);
         }
 
@@ -584,7 +594,7 @@ export async function syncAllServiceCosts(targetMonth?: string) {
         console.error("Error in syncAllServiceCosts:", error);
         return {
             success: false,
-            message: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+            message: `Error: ${getErrorMessage(error) || "Unknown error"}`,
             synced: 0,
         };
     }
@@ -713,7 +723,7 @@ export async function checkAndCreateAnomalies() {
         }
         return {
             success: false,
-            message: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+            message: `Error: ${getErrorMessage(error) || "Unknown error"}`,
         };
     }
 }
