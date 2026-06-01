@@ -41,6 +41,7 @@ function statusTone(status: string) {
     const normalized = status.toLowerCase();
     if (normalized === "paid") return "border-green-400/30 bg-green-500/10 text-green-200";
     if (normalized === "outstanding" || normalized === "open") return "border-[#ff6b35]/35 bg-[#ff6b35]/10 text-[#ffb08f]";
+    if (normalized === "needs_review") return "border-yellow-300/30 bg-yellow-300/10 text-yellow-100";
     if (normalized === "voided") return "border-white/15 bg-white/5 text-white/50";
     return "border-[#8dc7ff]/25 bg-[#8dc7ff]/10 text-[#8dc7ff]";
 }
@@ -52,6 +53,7 @@ export default function VendorInvoiceLedger({ invoices }: { invoices: VendorInvo
     const paidTotal = invoices
         .filter((invoice) => invoice.status.toLowerCase() === "paid")
         .reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0);
+    const reviewCount = invoices.filter((invoice) => invoice.status.toLowerCase() === "needs_review").length;
     const latestSync = invoices
         .map((invoice) => invoice.lastSyncedAt)
         .filter(Boolean)
@@ -69,7 +71,7 @@ export default function VendorInvoiceLedger({ invoices }: { invoices: VendorInvo
                         <div>
                             <h2 className="text-lg font-semibold text-white">Vendor Invoice Ledger</h2>
                             <p className="mt-1 text-sm leading-6 text-white/55">
-                                Track platform bills, PDFs, paid status, and outstanding balances in one admin view.
+                                Track platform bills, PDFs, paid status, inbox-imported invoices, and outstanding balances in one admin view.
                             </p>
                         </div>
                     </div>
@@ -86,7 +88,7 @@ export default function VendorInvoiceLedger({ invoices }: { invoices: VendorInvo
                 </form>
             </div>
 
-            <div className="mb-5 grid gap-3 md:grid-cols-3">
+            <div className="mb-5 grid gap-3 md:grid-cols-4">
                 <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">Outstanding</div>
                     <div className="mt-2 text-2xl font-semibold text-[#ffb08f]">{money(outstandingTotal)}</div>
@@ -94,6 +96,10 @@ export default function VendorInvoiceLedger({ invoices }: { invoices: VendorInvo
                 <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">Paid tracked</div>
                     <div className="mt-2 text-2xl font-semibold text-green-200">{money(paidTotal)}</div>
+                </div>
+                <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">Needs review</div>
+                    <div className="mt-2 text-2xl font-semibold text-yellow-100">{reviewCount}</div>
                 </div>
                 <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">Last sync</div>

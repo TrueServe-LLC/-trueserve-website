@@ -21,9 +21,10 @@ interface SyncStatus {
 
 const providers = [
     { name: "Stripe", active: true, note: "Primary sync source" },
+    { name: "Billing Inbox", active: true, note: "Reads Zoho invoice emails nightly" },
     { name: "Telnyx", active: false, note: "SMS invoices + usage when API is added" },
     { name: "Supabase", active: false, note: "Needs access token" },
-    { name: "Google Workspace", active: false, note: "Tracked from invoice ledger" },
+    { name: "Google Workspace", active: false, note: "Tracked from billing inbox" },
     { name: "Google Cloud", active: false, note: "Needs billing export" },
     { name: "Mapbox", active: false, note: "Needs API + username" },
     { name: "Resend", active: false, note: "Needs API key" },
@@ -32,6 +33,12 @@ const providers = [
 
 const envChecklist = [
     { key: "STRIPE_SECRET_KEY", example: "sk_...", required: true },
+    { key: "BILLING_INBOX_HOST", example: "imap.zoho.com", required: true },
+    { key: "BILLING_INBOX_PORT", example: "993", required: true },
+    { key: "BILLING_INBOX_USER", example: "billing@trueserve.delivery", required: true },
+    { key: "BILLING_INBOX_PASSWORD", example: "Zoho app password", required: true },
+    { key: "BILLING_INBOX_SECURE", example: "true", required: true },
+    { key: "BILLING_INBOX_FOLDER", example: "INBOX" },
     { key: "GCP_PROJECT_ID", example: "your-project-id" },
     { key: "GCP_BILLING_ACCOUNT_ID", example: "000000-000000-000000" },
     { key: "SUPABASE_PROJECT_ID", example: "your-project-id" },
@@ -266,8 +273,8 @@ export default function CostSyncManager() {
                     </span>
                 </div>
                 <p className="text-xs leading-6 text-white/55">
-                    Add the matching environment variables in Vercel to enable additional provider syncs. Invoice records can
-                    still be tracked manually while a provider API is being connected.
+                    Add the matching environment variables in Vercel to enable provider syncs. The billing inbox is the default
+                    source for vendor invoices that do not expose clean billing APIs.
                 </p>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -322,8 +329,8 @@ export default function CostSyncManager() {
                 </div>
 
                 <p className="mt-3 text-xs text-white/45">
-                    Stripe invoices sync automatically when the Stripe key is present. Google Workspace and other manually
-                    entered bills are kept in the invoice ledger so Eric can see what is paid and what is outstanding.
+                    Stripe invoices sync automatically when the Stripe key is present. The billing inbox importer reads invoice
+                    emails from Zoho, extracts the vendor, amount, invoice number, and status, then flags uncertain matches for review.
                 </p>
             </div>
         </div>

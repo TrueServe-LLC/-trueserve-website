@@ -1,6 +1,7 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { syncBillingInboxInvoices } from "@/lib/billing-inbox";
 import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 
@@ -212,9 +213,12 @@ export async function syncVendorInvoices(targetMonth?: string) {
             month = now.toISOString().slice(0, 7);
         }
 
-        const [stripeInvoices] = await Promise.all([syncStripeVendorInvoices(month)]);
+        const [stripeInvoices, inboxInvoices] = await Promise.all([
+            syncStripeVendorInvoices(month),
+            syncBillingInboxInvoices(),
+        ]);
         const manualInvoices = getManualTrackedInvoices();
-        const result = await upsertVendorInvoices([...manualInvoices, ...stripeInvoices]);
+        const result = await upsertVendorInvoices([...manualInvoices, ...stripeInvoices, ...inboxInvoices]);
 
         return result;
     } catch (error) {
