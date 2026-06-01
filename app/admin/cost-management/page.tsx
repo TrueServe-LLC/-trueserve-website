@@ -9,11 +9,30 @@ import VendorInvoiceLedger from "@/components/admin/VendorInvoiceLedger";
 import { analyzeCosts } from "@/lib/costAnalytics";
 import type { MonthlyCost } from "@/lib/costAnalytics";
 import AdminPortalWrapper from "../AdminPortalWrapper";
-import { ArrowUpRight, Inbox, ReceiptText, ShieldCheck, TrendingUp } from "lucide-react";
+import { AlertCircle, Inbox, ReceiptText, ShieldCheck, TrendingUp } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-async function getServiceCosts() {
+type DbResult<T> = {
+    data: T[];
+    error?: string;
+    missingSchema?: boolean;
+};
+
+function getErrorMessage(error: unknown) {
+    if (error instanceof Error) return error.message;
+    if (error && typeof error === "object" && "message" in error) {
+        return String((error as { message?: unknown }).message);
+    }
+    return String(error || "");
+}
+
+function isMissingSchemaError(error: unknown) {
+    const message = getErrorMessage(error);
+    return /could not find the table|does not exist|schema cache|pgrst205/i.test(message);
+}
+
+async function getServiceCosts(): Promise<DbResult<any>> {
     try {
         const { data, error } = await supabaseAdmin
             .from("ServiceCost")
@@ -21,25 +40,33 @@ async function getServiceCosts() {
             .order("month", { ascending: false })
             .limit(24);
         if (error) throw error;
-        return data || [];
+        return { data: data || [] };
     } catch (e) {
         console.error("Error fetching service costs:", e);
-        return [];
+        return {
+            data: [],
+            error: getErrorMessage(e),
+            missingSchema: isMissingSchemaError(e),
+        };
     }
 }
 
-async function getBudgetAlerts() {
+async function getBudgetAlerts(): Promise<DbResult<any>> {
     try {
         const { data, error } = await supabaseAdmin.from("BudgetAlert").select("*");
         if (error) throw error;
-        return data || [];
+        return { data: data || [] };
     } catch (e) {
         console.error("Error fetching budget alerts:", e);
-        return [];
+        return {
+            data: [],
+            error: getErrorMessage(e),
+            missingSchema: isMissingSchemaError(e),
+        };
     }
 }
 
-async function getVendorInvoices() {
+async function getVendorInvoices(): Promise<DbResult<any>> {
     try {
         const { data, error } = await supabaseAdmin
             .from("VendorInvoice")
@@ -47,10 +74,14 @@ async function getVendorInvoices() {
             .order("invoiceDate", { ascending: false })
             .limit(20);
         if (error) throw error;
-        return data || [];
+        return { data: data || [] };
     } catch (e) {
         console.error("Error fetching vendor invoices:", e);
-        return [];
+        return {
+            data: [],
+            error: getErrorMessage(e),
+            missingSchema: isMissingSchemaError(e),
+        };
     }
 }
 
@@ -61,9 +92,12 @@ export default async function CostManagementPage() {
     const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'cost-management'));
     if (!isAuthorized) redirect("/admin/login");
 
-    const realCosts = await getServiceCosts();
-    const budgets = await getBudgetAlerts();
-    const vendorInvoices = await getVendorInvoices();
+    const serviceCostResult = await getServiceCosts();
+    const budgetResult = await getBudgetAlerts();
+    const vendorInvoiceResult = await getVendorInvoices();
+    const realCosts = serviceCostResult.data;
+    const budgets = budgetResult.data;
+    const vendorInvoices = vendorInvoiceResult.data;
 
     // Build monthly costs from real data only — no mock fallback
     let monthlyCosts: MonthlyCost[] = [];
@@ -110,6 +144,37 @@ export default async function CostManagementPage() {
             })
             .filter(Boolean) as any[]
         : [];
+    const schemaErrors = [
+        serviceCostResult.missingSchema ? "ServiceCost" : null,
+        vendorInvoiceResult.missingSchema ? "VendorInvoice" : null,
+    ].filter(Boolean);
+
+    const metrics = [
+        {
+            label: "Outstanding",
+            value: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(outstandingTotal),
+            note: "Bills needing payment",
+            icon: ReceiptText,
+        },
+        {
+            label: "Review Queue",
+            value: String(reviewCount),
+            note: "Need human check",
+            icon: ShieldCheck,
+        },
+        {
+            label: "Tracked Invoices",
+            value: String(vendorInvoices.length),
+            note: "From inbox, APIs, manual",
+            icon: Inbox,
+        },
+        {
+            label: "Last Sync",
+            value: latestInvoiceSync ? new Date(latestInvoiceSync).toLocaleString() : "Not synced",
+            note: "Nightly checks available",
+            icon: TrendingUp,
+        },
+    ];
 
     return (
         <AdminPortalWrapper role={role}>
@@ -118,119 +183,54 @@ export default async function CostManagementPage() {
                 <p>Track vendor invoices from the billing inbox first, then add direct API cost analytics where providers support it cleanly.</p>
             </div>
             <div className="adm-page-body">
-                <div className="space-y-4">
-                    <div className="grid gap-3 md:grid-cols-4">
-                        <div className="adm-card">
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
-                                    Outstanding
-                                </span>
-                                <ReceiptText className="h-4 w-4 text-[#ff6b35]" />
+                <div className="mx-auto max-w-[1180px] space-y-8">
+                    {schemaErrors.length > 0 ? (
+                        <div className="rounded-3xl border border-red-400/30 bg-red-500/20 px-6 py-5 text-red-100 shadow-[0_18px_40px_rgba(0,0,0,0.18)]">
+                            <div className="flex gap-4">
+                                <AlertCircle className="mt-1 h-5 w-5 shrink-0 text-red-200" />
+                                <div>
+                                    <h2 className="text-lg font-semibold text-red-100">Sync needs attention</h2>
+                                    <p className="mt-2 max-w-4xl text-sm leading-7 text-red-100/80">
+                                        Database setup is missing {schemaErrors.join(" and ")}. Run{" "}
+                                        <code className="rounded bg-black/20 px-2 py-1 font-mono text-red-50">
+                                            db/cost_management_schema.sql
+                                        </code>{" "}
+                                        in Supabase, then refresh invoices.
+                                    </p>
+                                </div>
                             </div>
-                            <div className="mt-3 text-2xl font-semibold text-white">
-                                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(outstandingTotal)}
-                            </div>
-                            <p className="mt-1 text-xs text-white/45">Bills that still need payment or review.</p>
                         </div>
-                        <div className="adm-card">
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
-                                    Review Queue
-                                </span>
-                                <ShieldCheck className="h-4 w-4 text-[#8dc7ff]" />
-                            </div>
-                            <div className="mt-3 text-2xl font-semibold text-white">{reviewCount}</div>
-                            <p className="mt-1 text-xs text-white/45">Imported invoices that need a human check.</p>
-                        </div>
-                        <div className="adm-card">
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
-                                    Tracked Invoices
-                                </span>
-                                <Inbox className="h-4 w-4 text-[#2dd4bf]" />
-                            </div>
-                            <div className="mt-3 text-2xl font-semibold text-white">{vendorInvoices.length}</div>
-                            <p className="mt-1 text-xs text-white/45">Pulled from the billing inbox, APIs, and manual entries.</p>
-                        </div>
-                        <div className="adm-card">
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
-                                    Last Sync
-                                </span>
-                                <TrendingUp className="h-4 w-4 text-[#ff6b35]" />
-                            </div>
-                            <div className="mt-3 text-sm font-semibold text-white">
-                                {latestInvoiceSync ? new Date(latestInvoiceSync).toLocaleString() : "Not synced yet"}
-                            </div>
-                            <p className="mt-1 text-xs text-white/45">Nightly inbox checks can keep this current.</p>
-                        </div>
+                    ) : null}
+
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        {metrics.map((metric) => {
+                            const Icon = metric.icon;
+                            return (
+                                <div key={metric.label} className="rounded-3xl border border-white/[0.04] bg-white/[0.06] p-6">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-white/60">
+                                            {metric.label}
+                                        </span>
+                                        <Icon className="h-4 w-4 text-[#ff6b35]/80" />
+                                    </div>
+                                    <div className="mt-3 text-3xl font-semibold leading-none text-white">{metric.value}</div>
+                                    <p className="mt-2 text-sm font-medium text-white/65">{metric.note}</p>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     <CostSyncManager />
 
-                    <VendorInvoiceLedger invoices={vendorInvoices as any} />
+                    <VendorInvoiceLedger invoices={vendorInvoices as any} showCostAnalyticsSetup={monthlyCosts.length === 0} />
 
-                    <div className="adm-card">
-                        <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-                            <div>
-                                <div className="adm-card-title">Vendor Portals</div>
-                                <p className="max-w-2xl text-sm leading-6 text-white/55">
-                                    Use these only when the inbox import needs a manual check. The normal flow is: vendor sends invoice
-                                    to the billing inbox, TrueServe imports it, then admins review status here.
-                                </p>
-                            </div>
-                            <span className="rounded-full border border-[#2dd4bf]/25 bg-[#2dd4bf]/10 px-3 py-1 text-xs font-semibold text-[#9ff7ea]">
-                                Delivery-app style ledger
-                            </span>
-                        </div>
-                        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                            {[
-                                { name: "Stripe", link: "https://dashboard.stripe.com" },
-                                { name: "Supabase", link: "https://supabase.com/dashboard" },
-                                { name: "Vercel", link: "https://vercel.com/dashboard" },
-                                { name: "Zoho Mail", link: "https://mail.zoho.com" },
-                                { name: "Telnyx", link: "https://portal.telnyx.com" },
-                                { name: "Google Cloud", link: "https://console.cloud.google.com" },
-                                { name: "Resend", link: "https://resend.com/dashboard" },
-                                { name: "Vonage", link: "https://dashboard.nexmo.com" },
-                            ].map((s) => (
-                                <a
-                                    key={s.name}
-                                    href={s.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white/75 transition hover:border-[#ff6b35]/35 hover:bg-[#ff6b35]/10 hover:text-white"
-                                >
-                                    {s.name}
-                                    <ArrowUpRight className="h-3.5 w-3.5" />
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-
-                    {monthlyCosts.length === 0 ? (
-                        <div className="adm-card">
-                            <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
-                                <div>
-                                    <div className="adm-card-title">Cost Analytics</div>
-                                    <p className="text-sm leading-6 text-white/55">
-                                        Invoice tracking is the source of truth. Monthly analytics are optional and will appear after the
-                                        ServiceCost schema is installed and provider spend starts syncing.
-                                    </p>
-                                </div>
-                                <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-4 text-sm leading-6 text-white/55">
-                                    Setup needed: run <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">db/cost_management_schema.sql</code>{" "}
-                                    in Supabase SQL editor, then click <span className="font-semibold text-white">Sync invoices</span>.
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
+                    {monthlyCosts.length > 0 ? (
                         <CostDashboard
                             analysis={analysis}
                             currentMonth={currentMonth}
                             budgetWarnings={budgetWarnings}
                         />
-                    )}
+                    ) : null}
                 </div>
             </div>
         </AdminPortalWrapper>
