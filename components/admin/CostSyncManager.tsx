@@ -21,7 +21,9 @@ interface SyncStatus {
 
 const providers = [
     { name: "Stripe", active: true, note: "Primary sync source" },
+    { name: "Telnyx", active: false, note: "SMS invoices + usage when API is added" },
     { name: "Supabase", active: false, note: "Needs access token" },
+    { name: "Google Workspace", active: false, note: "Tracked from invoice ledger" },
     { name: "Google Cloud", active: false, note: "Needs billing export" },
     { name: "Mapbox", active: false, note: "Needs API + username" },
     { name: "Resend", active: false, note: "Needs API key" },
@@ -37,6 +39,8 @@ const envChecklist = [
     { key: "MAPBOX_ACCESS_TOKEN", example: "pk_..." },
     { key: "MAPBOX_USERNAME", example: "your-username" },
     { key: "RESEND_API_KEY", example: "re_..." },
+    { key: "TELNYX_API_KEY", example: "KEY..." },
+    { key: "TELNYX_FROM_NUMBER", example: "+18337231112" },
     { key: "VONAGE_API_KEY", example: "your-api-key" },
     { key: "VONAGE_API_SECRET", example: "your-api-secret" },
 ];
@@ -121,8 +125,8 @@ export default function CostSyncManager() {
                         <h2 className="text-[15px] font-semibold text-white">Data Synchronization</h2>
                     </div>
                     <p className="max-w-3xl text-sm leading-6 text-white/55">
-                        Sync live service spending from connected APIs and keep budget alerts current. This is a real sync
-                        console; Stripe is active today and the other providers remain skipped until their credentials are added.
+                        Sync live service spending, vendor invoices, and budget alerts from connected APIs. Providers without
+                        credentials stay visible as setup items instead of throwing broken admin screens.
                     </p>
 
                     <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-white/45">
@@ -262,8 +266,8 @@ export default function CostSyncManager() {
                     </span>
                 </div>
                 <p className="text-xs leading-6 text-white/55">
-                    Add the matching environment variables in Vercel to enable additional provider syncs. Each provider stays
-                    skipped until its credentials are present.
+                    Add the matching environment variables in Vercel to enable additional provider syncs. Invoice records can
+                    still be tracked manually while a provider API is being connected.
                 </p>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -318,7 +322,8 @@ export default function CostSyncManager() {
                 </div>
 
                 <p className="mt-3 text-xs text-white/45">
-                    Currently configured: Stripe only. Everything else will stay inactive until the matching credentials are added.
+                    Stripe invoices sync automatically when the Stripe key is present. Google Workspace and other manually
+                    entered bills are kept in the invoice ledger so Eric can see what is paid and what is outstanding.
                 </p>
             </div>
         </div>

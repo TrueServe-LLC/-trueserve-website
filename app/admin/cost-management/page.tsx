@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import CostDashboard from "@/components/admin/CostDashboard";
 import CostSyncManager from "@/components/admin/CostSyncManager";
+import VendorInvoiceLedger from "@/components/admin/VendorInvoiceLedger";
 import { analyzeCosts } from "@/lib/costAnalytics";
 import type { MonthlyCost } from "@/lib/costAnalytics";
 import AdminPortalWrapper from "../AdminPortalWrapper";
@@ -37,6 +38,21 @@ async function getBudgetAlerts() {
     }
 }
 
+async function getVendorInvoices() {
+    try {
+        const { data, error } = await supabaseAdmin
+            .from("VendorInvoice")
+            .select("*")
+            .order("invoiceDate", { ascending: false })
+            .limit(20);
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        console.error("Error fetching vendor invoices:", e);
+        return [];
+    }
+}
+
 export default async function CostManagementPage() {
     const cookieStore = await cookies();
     const adminSession = cookieStore.get("admin_session");
@@ -46,6 +62,7 @@ export default async function CostManagementPage() {
 
     const realCosts = await getServiceCosts();
     const budgets = await getBudgetAlerts();
+    const vendorInvoices = await getVendorInvoices();
 
     // Build monthly costs from real data only — no mock fallback
     let monthlyCosts: MonthlyCost[] = [];
@@ -107,8 +124,10 @@ export default async function CostManagementPage() {
                                 {[
                                     { name: "Stripe", link: "https://dashboard.stripe.com", active: true },
                                     { name: "Supabase", link: "https://supabase.com/dashboard", active: false },
+                                    { name: "Google Workspace", link: "https://admin.google.com", active: false },
                                     { name: "Google Cloud", link: "https://console.cloud.google.com", active: false },
                                     { name: "Resend", link: "https://resend.com/dashboard", active: false },
+                                    { name: "Telnyx", link: "https://portal.telnyx.com", active: false },
                                     { name: "Vonage", link: "https://dashboard.nexmo.com", active: false },
                                 ].map((s) => (
                                     <a
@@ -131,6 +150,8 @@ export default async function CostManagementPage() {
                     </div>
 
                     <CostSyncManager />
+
+                    <VendorInvoiceLedger invoices={vendorInvoices as any} />
 
                     {monthlyCosts.length === 0 ? (
                         <div className="adm-card text-center">

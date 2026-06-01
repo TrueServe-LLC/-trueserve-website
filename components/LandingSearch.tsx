@@ -136,14 +136,14 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
     if (!isLoaded) {
         return (
-            <div className={`w-full relative ${isCompact ? "max-w-full" : "max-w-3xl"}`}>
+            <div className={`landing-search ${isCompact ? "landing-search-compact" : ""}`}>
                 <form
                     onSubmit={handleManualSearch}
-                    className={`relative z-20 w-full border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-2xl p-1.5 max-[520px]:grid-cols-1 max-[520px]:p-2" : "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[24px] p-2 md:rounded-[28px] max-[520px]:grid-cols-1 max-[520px]:rounded-[20px]"}`}
+                    className="landing-search-form"
                 >
-                    <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[18px] px-4 md:px-5"}`}>
+                    <div className="landing-search-field">
                         <span
-                            className="mr-2 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-primary"
+                            className="landing-search-icon"
                             aria-hidden="true"
                         >
                             <MapPin size={16} strokeWidth={2.2} />
@@ -151,7 +151,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                         <input
                             type="text"
                             placeholder="Enter delivery address..."
-                            className={`min-w-0 flex-1 bg-transparent px-1 font-bold tracking-tight text-white placeholder:text-white/45 focus:outline-none ${isCompact ? "h-12 text-[17px]" : "h-12 text-[16px] md:h-14 md:text-[20px]"}`}
+                            className="landing-search-input"
                             value={inputValue}
                             onChange={handleInput}
                         />
@@ -159,7 +159,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                     <button
                         type="submit"
-                        className={`place-btn place-btn-inline shrink-0 max-[520px]:w-full max-[520px]:justify-center ${isCompact ? "h-12 px-6 md:px-8" : "h-12 px-5 rounded-[16px] text-[14px] md:h-14 md:px-9 md:rounded-[20px] md:text-[15px] max-[520px]:h-[50px] max-[520px]:rounded-[14px]"}`}
+                        className="landing-search-submit"
                     >
                         Find Food
                     </button>
@@ -169,16 +169,16 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
     }
 
     return (
-        <div className={`w-full relative animate-fade-in group ${isCompact ? "max-w-full" : "max-w-3xl"}`}>
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/25 via-transparent to-primary/25 rounded-[28px] blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+        <div className={`landing-search animate-fade-in ${isCompact ? "landing-search-compact" : ""}`}>
+            <div className="landing-search-glow"></div>
 
             <form
                 onSubmit={handleManualSearch}
-                className={`relative z-20 w-full border border-white/10 bg-[#0a0a0b]/85 shadow-2xl backdrop-blur-3xl ${isCompact ? "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-2xl p-1.5 max-[520px]:grid-cols-1 max-[520px]:p-2" : "grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 rounded-[24px] p-2 md:rounded-[28px] max-[520px]:grid-cols-1 max-[520px]:rounded-[20px]"}`}
+                className="landing-search-form"
             >
-                <div className={`flex min-w-0 items-center border border-white/5 bg-black/25 ${isCompact ? "rounded-xl px-3 md:px-4" : "rounded-[18px] px-4 md:px-5"}`}>
+                <div className="landing-search-field">
                     <span
-                        className="mr-2 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-primary"
+                        className="landing-search-icon"
                         aria-hidden="true"
                     >
                         <MapPin size={16} strokeWidth={2.2} />
@@ -186,7 +186,7 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
                     <input
                         type="text"
                         placeholder="Enter delivery address..."
-                        className={`min-w-0 flex-1 bg-transparent px-1 font-bold tracking-tight text-white placeholder:text-white/45 focus:outline-none ${isCompact ? "h-12 text-[17px]" : "h-12 text-[16px] md:h-14 md:text-[20px]"}`}
+                        className="landing-search-input"
                         value={inputValue}
                         onChange={handleInput}
                         onFocus={() => {
@@ -200,14 +200,14 @@ export default function LandingSearch({ locations = [], initialValue = "", isCom
 
                 <button
                     type="submit"
-                    className={`place-btn place-btn-inline shrink-0 max-[520px]:w-full max-[520px]:justify-center ${isCompact ? "h-12 px-6 md:px-8" : "h-12 px-5 rounded-[16px] text-[14px] md:h-14 md:px-9 md:rounded-[20px] md:text-[15px] max-[520px]:h-[50px] max-[520px]:rounded-[14px]"}`}
+                    className="landing-search-submit"
                 >
                     Find Food
                 </button>
             </form>
 
             {isDropdownOpen && predictions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-10 animate-fade-in-up">
+                <div className="landing-search-dropdown animate-fade-in-up">
                     <ul className="max-h-60 overflow-y-auto">
                         {predictions.map((p) => (
                             <li

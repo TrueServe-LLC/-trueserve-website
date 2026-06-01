@@ -1,6 +1,7 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 
 let _stripe: Stripe | null = null;
@@ -19,6 +20,215 @@ interface ServiceCostRecord {
     cost: number;
     usageMetric: string;
     apiSource: string;
+}
+
+interface VendorInvoiceRecord {
+    provider: string;
+    providerDisplayName: string;
+    invoiceNumber: string;
+    invoiceDate: string;
+    periodStart?: string | null;
+    periodEnd?: string | null;
+    amount: number;
+    currency: string;
+    status: string;
+    category?: string | null;
+    description?: string | null;
+    paymentUrl?: string | null;
+    invoicePdfUrl?: string | null;
+    externalId?: string | null;
+    apiSource: string;
+    metadata?: Record<string, unknown>;
+}
+
+function toDateStringFromUnix(seconds?: number | null, fallback: string | null = new Date().toISOString().slice(0, 10)) {
+    if (!seconds) return fallback;
+    return new Date(seconds * 1000).toISOString().slice(0, 10);
+}
+
+function normalizeInvoiceStatus(status?: string | null) {
+    if (!status) return "unknown";
+    if (status === "open" || status === "uncollectible") return "outstanding";
+    if (status === "void") return "voided";
+    return status;
+}
+
+function getManualTrackedInvoices(): VendorInvoiceRecord[] {
+    return [
+        {
+            provider: "google-workspace",
+            providerDisplayName: "Google Workspace",
+            invoiceNumber: "5579115006",
+            invoiceDate: "2026-05-31",
+            periodStart: "2026-05-01",
+            periodEnd: "2026-05-31",
+            amount: 26.4,
+            currency: "USD",
+            status: "paid",
+            category: "workspace",
+            description: "Google Workspace subscription for May 2026",
+            apiSource: "manual_google_invoice",
+            metadata: {
+                billingId: "2473-9286-8995",
+                billedTo: "Leon King",
+            },
+        },
+        {
+            provider: "platform-services",
+            providerDisplayName: "Platform Services",
+            invoiceNumber: "VLCLMN-00007",
+            invoiceDate: "2026-05-31",
+            amount: 55,
+            currency: "USD",
+            status: "outstanding",
+            category: "operations",
+            description: "Tracked platform invoice awaiting payment",
+            apiSource: "manual_invoice_entry",
+        },
+        {
+            provider: "platform-services",
+            providerDisplayName: "Platform Services",
+            invoiceNumber: "VLCLMN-00006",
+            invoiceDate: "2026-04-30",
+            amount: 53.39,
+            currency: "USD",
+            status: "paid",
+            category: "operations",
+            description: "Tracked platform invoice",
+            apiSource: "manual_invoice_entry",
+        },
+        {
+            provider: "platform-services",
+            providerDisplayName: "Platform Services",
+            invoiceNumber: "VLCLMN-00005",
+            invoiceDate: "2026-04-01",
+            amount: 0,
+            currency: "USD",
+            status: "paid",
+            category: "operations",
+            description: "Tracked platform invoice",
+            apiSource: "manual_invoice_entry",
+        },
+        {
+            provider: "platform-services",
+            providerDisplayName: "Platform Services",
+            invoiceNumber: "VLCLMN-00004",
+            invoiceDate: "2026-04-01",
+            amount: 25,
+            currency: "USD",
+            status: "paid",
+            category: "operations",
+            description: "Tracked platform invoice",
+            apiSource: "manual_invoice_entry",
+        },
+        {
+            provider: "platform-services",
+            providerDisplayName: "Platform Services",
+            invoiceNumber: "VLCLMN-00003",
+            invoiceDate: "2026-03-29",
+            amount: 0,
+            currency: "USD",
+            status: "paid",
+            category: "operations",
+            description: "Tracked platform invoice",
+            apiSource: "manual_invoice_entry",
+        },
+    ];
+}
+
+async function syncStripeVendorInvoices(month: string): Promise<VendorInvoiceRecord[]> {
+    if (!process.env.STRIPE_SECRET_KEY) return [];
+
+    const [year, monthStr] = month.split("-");
+    const startDate = new Date(`${year}-${monthStr}-01T00:00:00.000Z`);
+    const endDate = new Date(startDate);
+    endDate.setUTCMonth(endDate.getUTCMonth() + 1);
+
+    const invoices = await getStripe().invoices.list({
+        created: {
+            gte: Math.floor(startDate.getTime() / 1000),
+            lt: Math.floor(endDate.getTime() / 1000),
+        },
+        limit: 100,
+    });
+
+    return invoices.data.map((invoice) => ({
+        provider: "stripe",
+        providerDisplayName: "Stripe",
+        invoiceNumber: invoice.number || invoice.id,
+        invoiceDate: toDateStringFromUnix(invoice.created),
+        periodStart: toDateStringFromUnix((invoice as any).period_start, null),
+        periodEnd: toDateStringFromUnix((invoice as any).period_end, null),
+        amount: Number((invoice.total / 100).toFixed(2)),
+        currency: (invoice.currency || "usd").toUpperCase(),
+        status: normalizeInvoiceStatus(invoice.status),
+        category: "payments",
+        description: invoice.description || "Stripe invoice",
+        paymentUrl: invoice.hosted_invoice_url || null,
+        invoicePdfUrl: invoice.invoice_pdf || null,
+        externalId: invoice.id,
+        apiSource: "stripe_api",
+        metadata: {
+            customer: typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id || null,
+            collectionMethod: invoice.collection_method,
+        },
+    }));
+}
+
+async function upsertVendorInvoices(records: VendorInvoiceRecord[]) {
+    if (records.length === 0) return { success: true, synced: 0, message: "No invoices to sync" };
+
+    const { error } = await supabaseAdmin.from("VendorInvoice").upsert(
+        records.map((record) => ({
+            ...record,
+            lastSyncedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        })),
+        { onConflict: "provider,invoiceNumber" }
+    );
+
+    if (error) {
+        return {
+            success: false,
+            synced: 0,
+            message: error.message,
+        };
+    }
+
+    revalidatePath("/admin/cost-management");
+    return {
+        success: true,
+        synced: records.length,
+        message: `Synced ${records.length} invoices`,
+    };
+}
+
+export async function syncVendorInvoices(targetMonth?: string) {
+    try {
+        let month = targetMonth;
+        if (!month) {
+            const now = new Date();
+            now.setMonth(now.getMonth() - 1);
+            month = now.toISOString().slice(0, 7);
+        }
+
+        const [stripeInvoices] = await Promise.all([syncStripeVendorInvoices(month)]);
+        const manualInvoices = getManualTrackedInvoices();
+        const result = await upsertVendorInvoices([...manualInvoices, ...stripeInvoices]);
+
+        return result;
+    } catch (error) {
+        console.error("Error syncing vendor invoices:", error);
+        return {
+            success: false,
+            synced: 0,
+            message: error instanceof Error ? error.message : "Unknown invoice sync error",
+        };
+    }
+}
+
+export async function refreshVendorInvoices() {
+    return syncVendorInvoices();
 }
 
 /**
@@ -306,10 +516,15 @@ export async function syncAllServiceCosts(targetMonth?: string) {
 
         if (records.length === 0) {
             console.warn(`No service costs fetched for ${month}. Check API credentials.`);
+            const invoiceResult = await syncVendorInvoices(month);
             return {
-                success: false,
-                message: "No service costs fetched. Verify API credentials.",
+                success: invoiceResult.success,
+                message: invoiceResult.success
+                    ? `No service costs fetched, but synced ${invoiceResult.synced} invoices for ${month}`
+                    : "No service costs fetched. Verify API credentials.",
                 synced: 0,
+                invoicesSynced: invoiceResult.synced,
+                invoiceMessage: invoiceResult.message,
             };
         }
 
@@ -333,11 +548,15 @@ export async function syncAllServiceCosts(targetMonth?: string) {
             };
         }
 
+        const invoiceResult = await syncVendorInvoices(month);
+
         console.log(`Successfully synced ${records.length} service costs for ${month}`);
         return {
             success: true,
-            message: `Synced ${records.length} service costs for ${month}`,
+            message: `Synced ${records.length} service costs and ${invoiceResult.synced} invoices for ${month}`,
             synced: records.length,
+            invoicesSynced: invoiceResult.synced,
+            invoiceMessage: invoiceResult.message,
         };
     } catch (error) {
         console.error("Error in syncAllServiceCosts:", error);
