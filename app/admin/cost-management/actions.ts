@@ -210,7 +210,7 @@ async function upsertVendorInvoices(records: VendorInvoiceRecord[]) {
             success: false,
             synced: 0,
             message: isMissingTableError(error)
-                ? 'VendorInvoice table is not installed yet. Run db/cost_management_schema.sql in Supabase, then refresh invoices.'
+                ? 'VendorInvoice table is not installed yet. Run db/admin_cost_invoice_minimal_setup.sql in Supabase, then refresh invoices.'
                 : error.message,
         };
     }
@@ -567,7 +567,7 @@ export async function syncAllServiceCosts(targetMonth?: string) {
                 return {
                     success: invoiceResult.success,
                     message: invoiceResult.success
-                        ? `Invoice sync completed (${invoiceResult.synced} invoices). Cost analytics are waiting on db/cost_management_schema.sql in Supabase.`
+                        ? `Invoice sync completed (${invoiceResult.synced} invoices). Cost analytics are waiting on db/admin_cost_invoice_minimal_setup.sql in Supabase.`
                         : `Cost analytics schema is missing and invoice sync also failed: ${invoiceResult.message}`,
                     synced: 0,
                     invoicesSynced: invoiceResult.synced,

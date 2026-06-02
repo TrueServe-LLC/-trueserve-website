@@ -193,9 +193,9 @@ export default async function CostManagementPage() {
                                     <p className="mt-2 max-w-4xl text-sm leading-7 text-red-100/80">
                                         Database setup is missing {schemaErrors.join(" and ")}. Run{" "}
                                         <code className="rounded bg-black/20 px-2 py-1 font-mono text-red-50">
-                                            db/cost_management_schema.sql
+                                            db/admin_cost_invoice_minimal_setup.sql
                                         </code>{" "}
-                                        in Supabase, then refresh invoices.
+                                        in Supabase, then click Sync invoices.
                                     </p>
                                 </div>
                             </div>
