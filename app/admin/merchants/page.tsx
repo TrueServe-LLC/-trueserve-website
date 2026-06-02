@@ -4,7 +4,7 @@ import { getAuthSession } from "@/app/auth/actions";
 import AdminPortalWrapper from "@/app/admin/AdminPortalWrapper";
 import { approveMerchant, rejectMerchant } from "@/app/admin/actions";
 import MerchantApplicationActions from "@/components/admin/MerchantApplicationActions";
-import { filterAdminUsers, isMockAdminRecord, shouldHideMockAdminData } from "@/lib/admin-data";
+import { isMockAdminRecord, shouldHideMockAdminData } from "@/lib/admin-data";
 import { canAccessAdminSection } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -12,6 +12,23 @@ export const dynamic = "force-dynamic";
 
 function money(value: number) {
     return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+const DEMO_RESTAURANT_PATTERN = /\b(mock|demo|test|seed|sandbox|preview|sample|qa|staging)\b/i;
+
+function isDemoRestaurant(restaurant: any) {
+    const text = [
+        restaurant.name,
+        restaurant.address,
+        restaurant.city,
+        restaurant.state,
+        restaurant.owner?.name,
+        restaurant.owner?.email,
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+    return restaurant.isMock === true || DEMO_RESTAURANT_PATTERN.test(text);
 }
 
 function posHealth(restaurant: any) {
@@ -53,6 +70,7 @@ export default async function AdminMerchantsPage({
             state,
             phone,
             visibility,
+            isMock,
             plan,
             posSystem,
             createdAt,
@@ -67,9 +85,11 @@ export default async function AdminMerchantsPage({
         .select("id, restaurantId, status, totalAmount, createdAt")
         .limit(2000);
 
+    const realRestaurants = (restaurants || []).filter((restaurant: any) => !isDemoRestaurant(restaurant));
+
     const merchantRows = (shouldHideMockAdminData()
-        ? (restaurants || []).filter((restaurant: any) => !isMockAdminRecord(restaurant.owner))
-        : (restaurants || [])
+        ? realRestaurants.filter((restaurant: any) => !isMockAdminRecord(restaurant.owner))
+        : realRestaurants
     ).filter((restaurant: any) => {
         if (!query) return true;
         return [restaurant.name, restaurant.address, restaurant.city, restaurant.state, restaurant.posSystem, restaurant.owner?.email].some((value) =>
@@ -125,7 +145,7 @@ export default async function AdminMerchantsPage({
             `}</style>
             <div className="adm-page-header">
                 <h1>Merchants</h1>
-                <p>Restaurant onboarding, POS status, 7% commission tier, GMV, kitchen verification, and owner contact.</p>
+                <p>Restaurant onboarding, POS status, 7% commission tier, GMV, kitchen verification, and owner contact. Demo and test merchants are hidden from this operating view.</p>
                 <form method="get" className="mer-search">
                     <input className="mer-input" name="q" defaultValue={resolvedSearchParams.q || ""} placeholder="Search restaurants, cities, POS..." />
                     <button className="mer-btn" type="submit">Search</button>

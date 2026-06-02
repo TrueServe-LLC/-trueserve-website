@@ -101,25 +101,30 @@ export default async function AdminDriversPage({
                 .drv-step-num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; background: rgba(249,115,22,0.12); color: #f97316; font-size: 12px; font-weight: 900; margin-bottom: 12px; }
                 .drv-step strong { display: block; color: #fff; font-size: 13px; margin-bottom: 5px; }
                 .drv-step span { display: block; color: rgba(255,255,255,0.54); font-size: 12px; line-height: 1.5; }
-                .drv-row { display: flex; justify-content: space-between; gap: 16px; padding: 14px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; background: rgba(255,255,255,0.035); margin-bottom: 10px; }
+                .drv-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 14px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; background: rgba(255,255,255,0.035); margin-bottom: 10px; }
                 .drv-name { color: #fff; font-weight: 800; font-size: 13px; }
                 .drv-meta { color: #888; font-size: 12px; margin-top: 4px; }
-                .drv-docs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; }
-                .drv-link { display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(52,211,153,.22); background: rgba(52,211,153,.07); color: #34d399; min-height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 11px; font-weight: 800; }
+                .drv-review-tools { display: grid; gap: 10px; justify-items: end; min-width: min(520px, 100%); }
+                .drv-docs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; max-width: 100%; }
+                .drv-link { display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(52,211,153,.22); background: rgba(52,211,153,.07); color: #34d399; min-height: 34px; padding: 0 12px; border-radius: 10px; text-decoration: none; font-size: 11px; font-weight: 800; white-space: nowrap; }
                 .drv-link.missing { color: #666; border-color: #1e2420; background: rgba(255,255,255,.02); pointer-events: none; }
-                .um-app-action-stack { display: flex; flex-direction: column; gap: 7px; min-width: 240px; }
-                .um-app-action-row { display: flex; justify-content: flex-end; align-items: center; gap: 7px; flex-wrap: wrap; }
+                .um-app-action-stack { display: flex; flex-direction: column; gap: 7px; width: min(420px, 100%); align-items: flex-end; }
+                .um-app-action-row { display: grid; grid-template-columns: repeat(3, minmax(112px, 1fr)); justify-content: end; align-items: center; gap: 8px; width: 100%; }
                 .um-app-btn {
-                    min-height: 32px;
-                    border-radius: 9px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 38px;
+                    border-radius: 12px;
                     border: 1px solid rgba(255,255,255,0.08);
                     background: rgba(255,255,255,0.04);
                     color: rgba(255,255,255,0.78);
-                    padding: 0 10px;
-                    font-size: 10px;
+                    padding: 0 12px;
+                    font-size: 10.5px;
                     font-weight: 900;
                     letter-spacing: 0.08em;
                     text-transform: uppercase;
+                    white-space: nowrap;
                     cursor: pointer;
                     transition: transform 120ms ease, border-color 120ms ease, background-color 120ms ease;
                 }
@@ -131,8 +136,8 @@ export default async function AdminDriversPage({
                 .um-app-action-message { max-width: 360px; margin-left: auto; border-radius: 10px; padding: 8px 10px; font-size: 11px; line-height: 1.45; }
                 .um-app-action-message.success { color: #bbf7d0; background: rgba(22,163,74,0.12); border: 1px solid rgba(34,197,94,0.2); }
                 .um-app-action-message.error { color: #fecaca; background: rgba(220,38,38,0.12); border: 1px solid rgba(248,113,113,0.2); }
-                @media (max-width: 980px) { .drv-grid { grid-template-columns: repeat(2, 1fr); } .drv-workflow { grid-template-columns: repeat(2, 1fr); } .drv-step:nth-child(2) { border-right: none; } .drv-row { flex-direction: column; } .drv-docs { justify-content: flex-start; } .um-app-action-stack { min-width: 0; width: 100%; } .um-app-action-row { justify-content: flex-start; } .um-app-action-message { margin-left: 0; } }
-                @media (max-width: 640px) { .drv-grid { grid-template-columns: 1fr; } .drv-input { min-width: 0; width: 100%; } }
+                @media (max-width: 980px) { .drv-grid { grid-template-columns: repeat(2, 1fr); } .drv-workflow { grid-template-columns: repeat(2, 1fr); } .drv-step:nth-child(2) { border-right: none; } .drv-row { flex-direction: column; } .drv-review-tools { width: 100%; justify-items: start; } .drv-docs { justify-content: flex-start; } .um-app-action-stack { width: 100%; align-items: stretch; } .um-app-action-row { justify-content: stretch; } .um-app-action-message { margin-left: 0; max-width: none; } }
+                @media (max-width: 640px) { .drv-grid { grid-template-columns: 1fr; } .drv-input { min-width: 0; width: 100%; } .um-app-action-row { grid-template-columns: 1fr; } }
             `}</style>
             <div className="adm-page-header">
                 <h1>Drivers</h1>
@@ -181,10 +186,12 @@ export default async function AdminDriversPage({
                                 <div className="drv-name">{driver.user?.name || "Driver"} · {driver.user?.email || "No email"}</div>
                                 <div className="drv-meta">{driver.user?.phone || "No phone"} · {docCount(driver)}/3 docs · {driver.complianceStatus || driver.status || "NEW_APPLICATION"}</div>
                             </div>
-                            <div className="drv-docs">
-                                <a className={`drv-link${driver.licenseUrl ? "" : " missing"}`} href={driver.licenseUrl || "#"} target="_blank" rel="noreferrer">License</a>
-                                <a className={`drv-link${driver.insuranceUrl ? "" : " missing"}`} href={driver.insuranceUrl || "#"} target="_blank" rel="noreferrer">Insurance</a>
-                                <a className={`drv-link${driver.registrationUrl ? "" : " missing"}`} href={driver.registrationUrl || "#"} target="_blank" rel="noreferrer">Registration</a>
+                            <div className="drv-review-tools">
+                                <div className="drv-docs" aria-label="Driver documents">
+                                    <a className={`drv-link${driver.licenseUrl ? "" : " missing"}`} href={driver.licenseUrl || "#"} target="_blank" rel="noreferrer">License</a>
+                                    <a className={`drv-link${driver.insuranceUrl ? "" : " missing"}`} href={driver.insuranceUrl || "#"} target="_blank" rel="noreferrer">Insurance</a>
+                                    <a className={`drv-link${driver.registrationUrl ? "" : " missing"}`} href={driver.registrationUrl || "#"} target="_blank" rel="noreferrer">Registration</a>
+                                </div>
                                 <DriverApplicationActions
                                     driverId={driver.id}
                                     readyAction={markDriverReadyForReview}
