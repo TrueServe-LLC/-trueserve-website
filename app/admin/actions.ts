@@ -206,6 +206,7 @@ export async function approveDriver(id: string) {
         });
 
         revalidatePath("/admin/users");
+        revalidatePath("/admin/drivers");
         revalidatePath("/admin/dashboard");
         revalidatePath("/driver/dashboard");
         revalidatePath("/driver/dashboard/compliance");
@@ -253,6 +254,7 @@ export async function rejectDriver(id: string) {
         }
 
         revalidatePath("/admin/users");
+        revalidatePath("/admin/drivers");
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e: any) {
@@ -314,6 +316,7 @@ export async function requestDriverDocuments(id: string) {
         }
 
         revalidatePath("/admin/users");
+        revalidatePath("/admin/drivers");
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e: any) {
@@ -380,6 +383,7 @@ export async function markDriverReadyForReview(id: string) {
         });
 
         revalidatePath("/admin/users");
+        revalidatePath("/admin/drivers");
         revalidatePath("/admin/dashboard");
         return { success: true };
     } catch (e: any) {
@@ -475,6 +479,7 @@ export async function approveMerchant(restaurantId: string) {
         });
 
         revalidatePath("/admin/users");
+        revalidatePath("/admin/merchants");
         revalidatePath("/admin/dashboard");
         revalidatePath("/merchant/dashboard");
         revalidatePath("/merchant/dashboard/storefront");
@@ -535,6 +540,7 @@ export async function rejectMerchant(restaurantId: string) {
         }
 
         revalidatePath("/admin/users");
+        revalidatePath("/admin/merchants");
         revalidatePath("/admin/dashboard");
         revalidatePath("/restaurants");
         return { success: true };

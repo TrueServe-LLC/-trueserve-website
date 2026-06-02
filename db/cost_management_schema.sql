@@ -6,15 +6,15 @@ CREATE TABLE IF NOT EXISTS "ServiceCost" (
   service VARCHAR(50) NOT NULL, -- 'stripe', 'supabase', 'google-cloud', 'mapbox', 'resend', 'vonage'
   month DATE NOT NULL,
   cost DECIMAL(12, 2) NOT NULL,
-  usageMetric VARCHAR(255), -- e.g., "50M API calls", "100GB storage"
+  "usageMetric" VARCHAR(255), -- e.g., "50M API calls", "100GB storage"
   notes TEXT,
 
   -- API metadata for tracking source of data
-  apiSource VARCHAR(100), -- 'stripe_api', 'gcp_billing_api', 'supabase_api', etc.
-  lastSyncedAt TIMESTAMP DEFAULT now(),
+  "apiSource" VARCHAR(100), -- 'stripe_api', 'gcp_billing_api', 'supabase_api', etc.
+  "lastSyncedAt" TIMESTAMP DEFAULT now(),
 
-  createdAt TIMESTAMP DEFAULT now(),
-  updatedAt TIMESTAMP DEFAULT now(),
+  "createdAt" TIMESTAMP DEFAULT now(),
+  "updatedAt" TIMESTAMP DEFAULT now(),
 
   -- Uniqueness constraint: one cost record per service per month
   UNIQUE(service, month)
@@ -24,43 +24,43 @@ CREATE TABLE IF NOT EXISTS "ServiceCost" (
 CREATE TABLE IF NOT EXISTS "VendorInvoice" (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   provider VARCHAR(80) NOT NULL,
-  providerDisplayName VARCHAR(120) NOT NULL,
-  invoiceNumber VARCHAR(120) NOT NULL,
-  invoiceDate DATE NOT NULL,
-  periodStart DATE,
-  periodEnd DATE,
+  "providerDisplayName" VARCHAR(120) NOT NULL,
+  "invoiceNumber" VARCHAR(120) NOT NULL,
+  "invoiceDate" DATE NOT NULL,
+  "periodStart" DATE,
+  "periodEnd" DATE,
   amount DECIMAL(12, 2) NOT NULL DEFAULT 0,
   currency VARCHAR(10) NOT NULL DEFAULT 'USD',
   status VARCHAR(40) NOT NULL DEFAULT 'unknown',
   category VARCHAR(80),
   description TEXT,
-  paymentUrl TEXT,
-  invoicePdfUrl TEXT,
-  externalId VARCHAR(180),
-  apiSource VARCHAR(100),
+  "paymentUrl" TEXT,
+  "invoicePdfUrl" TEXT,
+  "externalId" VARCHAR(180),
+  "apiSource" VARCHAR(100),
   metadata JSONB DEFAULT '{}'::jsonb,
-  lastSyncedAt TIMESTAMP DEFAULT now(),
-  createdAt TIMESTAMP DEFAULT now(),
-  updatedAt TIMESTAMP DEFAULT now(),
+  "lastSyncedAt" TIMESTAMP DEFAULT now(),
+  "createdAt" TIMESTAMP DEFAULT now(),
+  "updatedAt" TIMESTAMP DEFAULT now(),
 
-  UNIQUE(provider, invoiceNumber)
+  UNIQUE(provider, "invoiceNumber")
 );
 
 -- BudgetAlert: Configure spending limits and alert thresholds
 CREATE TABLE IF NOT EXISTS "BudgetAlert" (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   service VARCHAR(50) NOT NULL,
-  monthlyLimit DECIMAL(12, 2) NOT NULL,
-  alertEmail VARCHAR(255),
-  alertThreshold INT DEFAULT 80, -- Alert at 80% of budget
+  "monthlyLimit" DECIMAL(12, 2) NOT NULL,
+  "alertEmail" VARCHAR(255),
+  "alertThreshold" INT DEFAULT 80, -- Alert at 80% of budget
   enabled BOOLEAN DEFAULT TRUE,
 
   -- Alert history
-  lastAlertSentAt TIMESTAMP,
-  lastAlertType VARCHAR(50), -- 'warning', 'critical'
+  "lastAlertSentAt" TIMESTAMP,
+  "lastAlertType" VARCHAR(50), -- 'warning', 'critical'
 
-  createdAt TIMESTAMP DEFAULT now(),
-  updatedAt TIMESTAMP DEFAULT now(),
+  "createdAt" TIMESTAMP DEFAULT now(),
+  "updatedAt" TIMESTAMP DEFAULT now(),
 
   -- One budget alert per service
   UNIQUE(service)
@@ -72,14 +72,14 @@ CREATE TABLE IF NOT EXISTS "CostTrend" (
   service VARCHAR(50) NOT NULL,
   month DATE NOT NULL,
   cost DECIMAL(12, 2) NOT NULL,
-  previousMonthCost DECIMAL(12, 2),
-  percentChange DECIMAL(5, 2), -- Percent change from previous month
+  "previousMonthCost" DECIMAL(12, 2),
+  "percentChange" DECIMAL(5, 2), -- Percent change from previous month
 
   -- Forecasting data
-  forecastedCost DECIMAL(12, 2),
-  forecastConfidence VARCHAR(10), -- 'HIGH', 'MEDIUM', 'LOW'
+  "forecastedCost" DECIMAL(12, 2),
+  "forecastConfidence" VARCHAR(10), -- 'HIGH', 'MEDIUM', 'LOW'
 
-  createdAt TIMESTAMP DEFAULT now(),
+  "createdAt" TIMESTAMP DEFAULT now(),
 
   UNIQUE(service, month)
 );
@@ -89,21 +89,21 @@ CREATE TABLE IF NOT EXISTS "CostAnomaly" (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   service VARCHAR(50) NOT NULL,
   month DATE NOT NULL,
-  actualCost DECIMAL(12, 2) NOT NULL,
-  expectedCost DECIMAL(12, 2) NOT NULL,
-  percentDeviation DECIMAL(5, 2), -- How much higher/lower than expected
+  "actualCost" DECIMAL(12, 2) NOT NULL,
+  "expectedCost" DECIMAL(12, 2) NOT NULL,
+  "percentDeviation" DECIMAL(5, 2), -- How much higher/lower than expected
   severity VARCHAR(20), -- 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'
 
   -- Context
   description TEXT,
-  rootCauseAnalysis TEXT, -- What might have caused this?
+  "rootCauseAnalysis" TEXT, -- What might have caused this?
 
   -- Notification status
-  alertSentAt TIMESTAMP,
+  "alertSentAt" TIMESTAMP,
   acknowledged BOOLEAN DEFAULT FALSE,
 
-  createdAt TIMESTAMP DEFAULT now(),
-  updatedAt TIMESTAMP DEFAULT now()
+  "createdAt" TIMESTAMP DEFAULT now(),
+  "updatedAt" TIMESTAMP DEFAULT now()
 );
 
 -- ServiceUsageMetrics: Track actual usage for cost per unit calculations
@@ -113,35 +113,35 @@ CREATE TABLE IF NOT EXISTS "ServiceUsageMetrics" (
   month DATE NOT NULL,
 
   -- Stripe specific
-  stripePaymentVolume DECIMAL(15, 2), -- Total payment volume
-  stripeFailedTransactions INT,
-  stripeChargebacks INT,
-  stripeTransactionCount INT,
+  "stripePaymentVolume" DECIMAL(15, 2), -- Total payment volume
+  "stripeFailedTransactions" INT,
+  "stripeChargebacks" INT,
+  "stripeTransactionCount" INT,
 
   -- Google Cloud specific
-  gcpApiCallsCount BIGINT, -- Total API calls
-  gcpDataTransferGB DECIMAL(12, 2), -- Data transfer in GB
-  gcpComputeHours DECIMAL(12, 2), -- Compute hours used
+  "gcpApiCallsCount" BIGINT, -- Total API calls
+  "gcpDataTransferGB" DECIMAL(12, 2), -- Data transfer in GB
+  "gcpComputeHours" DECIMAL(12, 2), -- Compute hours used
 
   -- Supabase specific
-  supabaseDatabaseQueries BIGINT,
-  supabaseStorageGB DECIMAL(12, 2),
-  supabaseRealtimeConnections INT,
+  "supabaseDatabaseQueries" BIGINT,
+  "supabaseStorageGB" DECIMAL(12, 2),
+  "supabaseRealtimeConnections" INT,
 
   -- Mapbox specific
-  mapboxRequestCount BIGINT,
-  mapboxRoutingRequestCount INT,
+  "mapboxRequestCount" BIGINT,
+  "mapboxRoutingRequestCount" INT,
 
   -- Vonage specific
-  vonageSMSSent BIGINT,
-  vonageMinutesUsed DECIMAL(12, 2),
+  "vonageSMSSent" BIGINT,
+  "vonageMinutesUsed" DECIMAL(12, 2),
 
   -- Resend specific
-  resendEmailsSent BIGINT,
-  resendBounceRate DECIMAL(5, 2),
+  "resendEmailsSent" BIGINT,
+  "resendBounceRate" DECIMAL(5, 2),
 
-  createdAt TIMESTAMP DEFAULT now(),
-  updatedAt TIMESTAMP DEFAULT now(),
+  "createdAt" TIMESTAMP DEFAULT now(),
+  "updatedAt" TIMESTAMP DEFAULT now(),
 
   UNIQUE(service, month)
 );
@@ -150,31 +150,31 @@ CREATE TABLE IF NOT EXISTS "ServiceUsageMetrics" (
 CREATE TABLE IF NOT EXISTS "CostOptimization" (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   service VARCHAR(50) NOT NULL,
-  recommendationType VARCHAR(100), -- 'upgrade_plan', 'reduce_usage', 'enable_caching', etc.
+  "recommendationType" VARCHAR(100), -- 'upgrade_plan', 'reduce_usage', 'enable_caching', etc.
 
   -- Details
   title VARCHAR(255) NOT NULL,
   description TEXT,
-  estimatedSavings DECIMAL(12, 2), -- Potential monthly savings
-  implementationEffort VARCHAR(20), -- 'LOW', 'MEDIUM', 'HIGH'
+  "estimatedSavings" DECIMAL(12, 2), -- Potential monthly savings
+  "implementationEffort" VARCHAR(20), -- 'LOW', 'MEDIUM', 'HIGH'
 
   -- Status
   status VARCHAR(50) DEFAULT 'open', -- 'open', 'in_progress', 'completed', 'dismissed'
-  implementedAt TIMESTAMP,
-  actualSavings DECIMAL(12, 2), -- Realized savings after implementation
+  "implementedAt" TIMESTAMP,
+  "actualSavings" DECIMAL(12, 2), -- Realized savings after implementation
 
-  createdAt TIMESTAMP DEFAULT now(),
-  updatedAt TIMESTAMP DEFAULT now()
+  "createdAt" TIMESTAMP DEFAULT now(),
+  "updatedAt" TIMESTAMP DEFAULT now()
 );
 
 -- Create indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_service_cost_month ON "ServiceCost"(service, month DESC);
-CREATE INDEX IF NOT EXISTS idx_service_cost_created ON "ServiceCost"(createdAt DESC);
-CREATE INDEX IF NOT EXISTS idx_vendor_invoice_provider ON "VendorInvoice"(provider, invoiceDate DESC);
-CREATE INDEX IF NOT EXISTS idx_vendor_invoice_status ON "VendorInvoice"(status, invoiceDate DESC);
-CREATE INDEX IF NOT EXISTS idx_vendor_invoice_date ON "VendorInvoice"(invoiceDate DESC);
+CREATE INDEX IF NOT EXISTS idx_service_cost_created ON "ServiceCost"("createdAt" DESC);
+CREATE INDEX IF NOT EXISTS idx_vendor_invoice_provider ON "VendorInvoice"(provider, "invoiceDate" DESC);
+CREATE INDEX IF NOT EXISTS idx_vendor_invoice_status ON "VendorInvoice"(status, "invoiceDate" DESC);
+CREATE INDEX IF NOT EXISTS idx_vendor_invoice_date ON "VendorInvoice"("invoiceDate" DESC);
 CREATE INDEX IF NOT EXISTS idx_cost_trend_service ON "CostTrend"(service, month DESC);
-CREATE INDEX IF NOT EXISTS idx_cost_anomaly_severity ON "CostAnomaly"(severity, createdAt DESC);
+CREATE INDEX IF NOT EXISTS idx_cost_anomaly_severity ON "CostAnomaly"(severity, "createdAt" DESC);
 CREATE INDEX IF NOT EXISTS idx_usage_metrics_month ON "ServiceUsageMetrics"(month DESC);
 CREATE INDEX IF NOT EXISTS idx_optimization_service ON "CostOptimization"(service, status);
 
@@ -191,19 +191,19 @@ BEGIN
     WHEN 'stripe' THEN
       RETURN QUERY
       SELECT
-        (sc.cost / NULLIF(sum.stripeTransactionCount, 0))::DECIMAL,
+        (sc.cost / NULLIF(usage."stripeTransactionCount", 0))::DECIMAL,
         'cost_per_transaction'::VARCHAR
       FROM "ServiceCost" sc
-      LEFT JOIN "ServiceUsageMetrics" sum ON sc.service = sum.service AND sc.month = sum.month
+      LEFT JOIN "ServiceUsageMetrics" usage ON sc.service = usage.service AND sc.month = usage.month
       WHERE sc.service = 'stripe' AND sc.month = p_month;
 
     WHEN 'google-cloud' THEN
       RETURN QUERY
       SELECT
-        (sc.cost / NULLIF(sum.gcpApiCallsCount, 0))::DECIMAL,
+        (sc.cost / NULLIF(usage."gcpApiCallsCount", 0))::DECIMAL,
         'cost_per_api_call'::VARCHAR
       FROM "ServiceCost" sc
-      LEFT JOIN "ServiceUsageMetrics" sum ON sc.service = sum.service AND sc.month = sum.month
+      LEFT JOIN "ServiceUsageMetrics" usage ON sc.service = usage.service AND sc.month = usage.month
       WHERE sc.service = 'google-cloud' AND sc.month = p_month;
   END CASE;
 END;

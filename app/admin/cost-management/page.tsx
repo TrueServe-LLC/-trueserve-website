@@ -137,7 +137,7 @@ export default async function CostManagementPage() {
         ? Object.entries(monthlyCosts.find((m) => m.month === currentMonth)?.byService || {})
             .map(([service, cost]) => {
                 const budget = budgets.find((b: any) => b.service === service);
-                if (budget && cost >= (budget.monthlyLimit * budget.alert_threshold) / 100) {
+                if (budget && cost >= (budget.monthlyLimit * budget.alertThreshold) / 100) {
                     return { service, spent: cost, limit: budget.monthlyLimit };
                 }
                 return null;

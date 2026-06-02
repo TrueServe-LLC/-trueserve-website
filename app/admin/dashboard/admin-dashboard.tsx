@@ -26,11 +26,14 @@ export default function AdminDashboard({ role, stats, recentActivity }: Dashboar
     !role || canAccessAdminSection(role, section);
 
   const quickCards = [
-    { icon: '💰', title: 'Cost Management', desc: 'Track spending across all services (Stripe, Supabase, Google Cloud, Resend, Vonage)', href: '/admin/cost-management', section: 'cost-management' as const },
-    { icon: '📈', title: 'Analytics', desc: 'Real-time metrics on orders, drivers, merchants, and platform health', href: '/admin/analytics', section: 'analytics' as const },
-    { icon: '👤', title: 'User Management', desc: 'View and manage drivers, merchants, and customer accounts', href: '/admin/users', section: 'users' as const },
-    { icon: '📄', title: 'Driver Documents', desc: 'Review uploaded licenses, insurance, registration, and approve driver applications', href: '/admin/users#driver-document-review', section: 'users' as const },
-    { icon: '🍽️', title: 'Restaurant Photos', desc: 'Upload and manage cover photos for all restaurants', href: '/admin/restaurants', section: 'users' as const },
+    { icon: '🏪', title: 'Merchants', desc: 'Move restaurants from application to POS connected to live, with Square and POS status visible.', href: '/admin/merchants', section: 'merchants' as const },
+    { icon: '💳', title: 'Payouts', desc: 'Track merchant balances, Stripe transfer status, held funds, and estimated amounts owed.', href: '/admin/payouts', section: 'payouts' as const },
+    { icon: '⚠️', title: 'Disputes', desc: 'Review refunds, complaints, order issues, and dollar amount at risk in one queue.', href: '/admin/disputes', section: 'disputes' as const },
+    { icon: '👥', title: 'Customers', desc: 'View customer account status, order history, lifetime value, refunds, and contact info.', href: '/admin/customers', section: 'customers' as const },
+    { icon: '🚗', title: 'Drivers', desc: 'Review driver pipeline, documents, approvals, zones, earnings readiness, and background status.', href: '/admin/drivers', section: 'drivers' as const },
+    { icon: '🗺️', title: 'Zones', desc: 'Plan delivery coverage across Raleigh, Durham, Chapel Hill, Charlotte, and future markets.', href: '/admin/zones', section: 'zones' as const },
+    { icon: '💰', title: 'Cost Management', desc: 'Track spending across Stripe, Supabase, Google Cloud, Resend, Vonage, and vendor invoices.', href: '/admin/cost-management', section: 'cost-management' as const },
+    { icon: '📈', title: 'Analytics', desc: 'Real-time metrics on orders, drivers, merchants, and platform health.', href: '/admin/analytics', section: 'analytics' as const },
   ].filter((card) => canView(card.section));
 
   const quickActions = [

@@ -197,7 +197,7 @@ export async function submitDriveApplication(prevState: any, formData: FormData)
                         <p><strong>Source:</strong> ${referralSource} (${utmSource})</p>
                         <p><strong>Applicant SMS:</strong> ${smsResult.success ? `Sent (${smsResult.sid})` : `Not sent: ${smsResult.error}`}</p>
                         <p>This is the first-step driver lead. The driver must still finish the full document upload at /driver/signup before documents appear in Admin.</p>
-                        <p><a href="${getAppBaseUrl()}/admin/users">Review in Admin Portal</a></p>
+                        <p><a href="${getAppBaseUrl()}/admin/drivers">Review in Admin Portal</a></p>
                     `
                 )
             ));
@@ -208,6 +208,7 @@ export async function submitDriveApplication(prevState: any, formData: FormData)
 
         try {
             revalidatePath("/admin/users");
+            revalidatePath("/admin/drivers");
             revalidatePath("/drive/success");
         } catch (revalidateErr) {
             console.warn("[Drive Apply] Revalidation skipped:", revalidateErr);

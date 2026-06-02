@@ -24,6 +24,12 @@ export type Permission =
 export type AdminSection =
     | 'dashboard'
     | 'analytics'
+    | 'customers'
+    | 'merchants'
+    | 'drivers'
+    | 'payouts'
+    | 'disputes'
+    | 'zones'
     | 'team'
     | 'support'
     | 'live-chats'
@@ -195,6 +201,12 @@ export const ROLE_PERMISSIONS: Record<AppRole, Permission[]> = {
 export const ADMIN_SECTION_PERMISSIONS: Record<AdminSection, Permission[]> = {
     dashboard: ['view_dashboard'],
     analytics: ['view_analytics'],
+    customers: ['view_users'],
+    merchants: ['approve_restaurants'],
+    drivers: ['approve_drivers', 'review_driver_documents'],
+    payouts: ['manage_payouts'],
+    disputes: ['intervene_orders'],
+    zones: ['manage_system_settings'],
     team: ['manage_team'],
     support: ['intervene_orders'],
     'live-chats': ['intervene_orders'],
@@ -210,6 +222,12 @@ export const ADMIN_SECTION_PERMISSIONS: Record<AdminSection, Permission[]> = {
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: 'Analytics', section: 'dashboard' },
+    { href: '/admin/merchants', label: 'Merchants', icon: 'Store', section: 'merchants' },
+    { href: '/admin/payouts', label: 'Payouts', icon: 'Wallet', section: 'payouts' },
+    { href: '/admin/disputes', label: 'Disputes', icon: 'Dispute', section: 'disputes' },
+    { href: '/admin/customers', label: 'Customers', icon: 'Customer', section: 'customers' },
+    { href: '/admin/drivers', label: 'Drivers', icon: 'Driver', section: 'drivers' },
+    { href: '/admin/zones', label: 'Zones', icon: 'Map', section: 'zones' },
     { href: '/admin/cost-management', label: 'Cost Management', icon: 'Cost', section: 'cost-management' },
     { href: '/admin/pricing', label: 'Pricing', icon: 'Payment', section: 'pricing' },
     { href: '/admin/feature-switches', label: 'Feature Switches', icon: 'Tools', section: 'feature-switches' },
@@ -217,7 +235,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     { href: '/admin/support', label: 'Support', icon: 'Support', section: 'support' },
     { href: '/admin/content', label: 'Content', icon: 'Note', section: 'content' },
     { href: '/admin/analytics', label: 'Analytics', icon: 'Trend', section: 'analytics' },
-    { href: '/admin/users', label: 'Users', icon: 'User', section: 'users' },
+    { href: '/admin/users', label: 'Legacy Users', icon: 'User', section: 'users' },
     { href: '/admin/settings', label: 'Settings', icon: '⚙️', section: 'settings' },
     { href: '/admin/stripe-testing', label: 'Stripe Testing', icon: 'Test', section: 'stripe-testing' },
     { href: '/admin/dev-hub', label: 'Dev & QA Hub', icon: 'Checklist', section: 'dev-hub' },

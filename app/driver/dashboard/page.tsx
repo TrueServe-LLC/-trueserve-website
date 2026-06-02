@@ -153,6 +153,12 @@ export default async function DriverDashboard() {
     const stripeReady = Boolean((driver as any)?.stripeAccountId && (driver as any)?.stripeOnboardingComplete);
     const primaryOrder = myActiveOrders[0] || null;
     const additionalOrders = myActiveOrders.slice(1);
+    const activeCustomerTotal = Number(primaryOrder?.total || 0);
+    const activeBasePay = Number(primaryOrder?.totalPay || primaryOrder?.driverPay || 0);
+    const activeTip = Number(primaryOrder?.tip || 0);
+    const activeDriverEarns = activeBasePay + activeTip;
+    const activeRemainder = Math.max(activeCustomerTotal - activeDriverEarns, 0);
+    const todayShiftHours = todayShiftMinutes / 60;
     const pickupAddress = primaryOrder?.restaurant?.address || "";
     const dropoffAddress = primaryOrder?.deliveryAddress || "";
     const pickupMapUrl = pickupAddress ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pickupAddress)}` : "";
@@ -772,11 +778,121 @@ export default async function DriverDashboard() {
                 font-size: 12px;
                 line-height: 1.5;
             }
+            .dd-transparency {
+                margin: 0 0 16px;
+                border: 1px solid rgba(255,255,255,0.08);
+                background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+                border-radius: 14px;
+                overflow: hidden;
+                box-shadow: 0 18px 45px rgba(0,0,0,0.2);
+            }
+            .dd-transparency-head {
+                padding: 18px;
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 16px;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+            }
+            .dd-transparency-kicker {
+                margin: 0 0 5px;
+                color: #3ecf6e;
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+            }
+            .dd-transparency-head h2 {
+                margin: 0;
+                color: #fff;
+                font-size: 20px;
+                font-weight: 900;
+                letter-spacing: -0.02em;
+            }
+            .dd-transparency-head p {
+                margin: 6px 0 0;
+                color: #9ca3af;
+                font-size: 12px;
+                line-height: 1.55;
+                max-width: 680px;
+            }
+            .dd-pay-pill {
+                display: inline-flex;
+                align-items: center;
+                border: 1px solid rgba(62,207,110,0.28);
+                background: rgba(62,207,110,0.08);
+                color: #3ecf6e;
+                border-radius: 999px;
+                padding: 7px 11px;
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+            .dd-transparency-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+            .dd-transparency-card {
+                padding: 18px;
+                border-right: 1px solid rgba(255,255,255,0.07);
+                min-height: 168px;
+            }
+            .dd-transparency-card:last-child { border-right: 0; }
+            .dd-transparency-label {
+                color: #a3a3a3;
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                margin-bottom: 12px;
+            }
+            .dd-transparency-value {
+                color: #fff;
+                font-size: 26px;
+                font-weight: 900;
+                letter-spacing: -0.03em;
+                line-height: 1;
+                margin-bottom: 8px;
+            }
+            .dd-transparency-card p {
+                color: #9ca3af;
+                font-size: 12px;
+                line-height: 1.5;
+                margin: 0;
+            }
+            .dd-pay-row {
+                display: flex;
+                justify-content: space-between;
+                gap: 14px;
+                color: #d4d4d4;
+                font-size: 12px;
+                padding: 7px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.06);
+            }
+            .dd-pay-row:last-child { border-bottom: 0; }
+            .dd-pay-row strong { color: #fff; font-weight: 900; }
+            .dd-transparency-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                margin-top: 13px;
+                color: #f97316;
+                font-size: 11px;
+                font-weight: 900;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                text-decoration: none;
+            }
 
             @media (max-width: 1024px) {
                 .dd-two-col, .dd-bottom-grid { grid-template-columns: 1fr; }
                 .dd-stat-grid { grid-template-columns: repeat(3, 1fr); }
                 .driver-shift-grid { grid-template-columns: repeat(2, 1fr); }
+                .dd-transparency-grid { grid-template-columns: 1fr 1fr; }
+                .dd-transparency-card:nth-child(2) { border-right: 0; }
+                .dd-transparency-card:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.07); }
             }
             @media (max-width: 640px) {
                 .driver-app-card { align-items: stretch; flex-direction: column; padding: 14px; }
@@ -801,6 +917,14 @@ export default async function DriverDashboard() {
                 .driver-shift-top { flex-direction: column; gap: 10px; }
                 .driver-shift-grid { grid-template-columns: 1fr; }
                 .driver-shift-btn, .driver-shift-actions form { width: 100%; }
+                .dd-transparency-head { flex-direction: column; }
+                .dd-transparency-grid { grid-template-columns: 1fr; }
+                .dd-transparency-card {
+                    border-right: 0;
+                    border-bottom: 1px solid rgba(255,255,255,0.07);
+                    min-height: auto;
+                }
+                .dd-transparency-card:last-child { border-bottom: 0; }
             }
         `}</style>
 
@@ -847,6 +971,53 @@ export default async function DriverDashboard() {
             stripeReady={stripeReady}
             balance={Number(driver.balance || 0)}
         />
+
+        <section className="dd-transparency" aria-label="Driver transparency center">
+            <div className="dd-transparency-head">
+                <div>
+                    <div className="dd-transparency-kicker">Pay and access transparency</div>
+                    <h2>See earnings, zones, appeals, and support before every shift.</h2>
+                    <p>
+                        Drivers should never guess what they earned, where they can work, or how to get help.
+                        This keeps daily pay, per-delivery breakdowns, and review paths visible.
+                    </p>
+                </div>
+                <span className="dd-pay-pill">$20/hr daily pay active</span>
+            </div>
+            <div className="dd-transparency-grid">
+                <div className="dd-transparency-card">
+                    <div className="dd-transparency-label">Active delivery breakdown</div>
+                    {primaryOrder ? (
+                        <>
+                            <div className="dd-pay-row"><span>Customer paid</span><strong>${activeCustomerTotal.toFixed(2)}</strong></div>
+                            <div className="dd-pay-row"><span>Base delivery pay</span><strong>${activeBasePay.toFixed(2)}</strong></div>
+                            <div className="dd-pay-row"><span>Tip</span><strong>${activeTip.toFixed(2)}</strong></div>
+                            <div className="dd-pay-row"><span>Food/platform remainder</span><strong>${activeRemainder.toFixed(2)}</strong></div>
+                        </>
+                    ) : (
+                        <p>Accept an order to see the customer total, base delivery pay, tip, and remaining food/platform amount.</p>
+                    )}
+                </div>
+                <div className="dd-transparency-card">
+                    <div className="dd-transparency-label">Today</div>
+                    <div className="dd-transparency-value">${todayShiftPay.toFixed(2)}</div>
+                    <p>{todayShiftHours.toFixed(1)} shift hour{todayShiftHours === 1 ? "" : "s"} tracked today. Stripe controls whether cash-out can move immediately.</p>
+                    <Link className="dd-transparency-link" href="/driver/dashboard/earnings">View earnings</Link>
+                </div>
+                <div className="dd-transparency-card">
+                    <div className="dd-transparency-label">Zone + availability</div>
+                    <div className="dd-transparency-value">{availableOrders.length}</div>
+                    <p>Available order{availableOrders.length === 1 ? "" : "s"} in your current market. Manage preferred zones and availability windows.</p>
+                    <Link className="dd-transparency-link" href="/driver/dashboard/preferences">Manage zones</Link>
+                </div>
+                <div className="dd-transparency-card">
+                    <div className="dd-transparency-label">Appeals + support SLA</div>
+                    <div className="dd-transparency-value">&lt; 4h</div>
+                    <p>Appeals, document questions, and payout support should move through a visible case path with response timing.</p>
+                    <Link className="dd-transparency-link" href="/driver/dashboard/help">Get support</Link>
+                </div>
+            </div>
+        </section>
 
         {/* STRIPE BANNER */}
         {!hasStripe ? (

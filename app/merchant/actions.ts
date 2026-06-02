@@ -763,7 +763,7 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
                     <p><strong>POS System:</strong> ${posSystem}</p>
                     <p><strong>GHL URL:</strong> ${ghlUrl || 'Not provided'}</p>
                     <hr />
-                    <p>Please review and approve the merchant in Admin → Users → Pending Merchant Applications.</p>`
+                    <p>Please review and approve the merchant in Admin → Merchants.</p>`
                 )
             );
         }
@@ -778,13 +778,14 @@ export async function submitMerchantInquiry(prevState: any, formData: FormData):
             notificationPromises.push(createNotification({
                 userId: staffMember.id,
                 title: "New Merchant Signup",
-                message: `${restaurantName} (${contactName}) submitted a merchant application and should appear in Admin → Users for review.`,
+                message: `${restaurantName} (${contactName}) submitted a merchant application and should appear in Admin → Merchants for review.`,
                 type: "MERCHANT_APPLICATION",
             }));
         }
 
         await Promise.allSettled(notificationPromises);
         revalidatePath("/admin/users");
+        revalidatePath("/admin/merchants");
         revalidatePath("/admin/dashboard");
         
         return { success: true, message: "Application submitted. We’ll notify you once approved." };

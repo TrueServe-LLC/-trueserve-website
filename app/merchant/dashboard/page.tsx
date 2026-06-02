@@ -116,6 +116,22 @@ export default async function MerchantDashboard({
         { label: "Photo", done: Boolean(restaurant.imageUrl) },
         { label: "Live", done: restaurant.visibility === "VISIBLE" },
     ];
+    const launchDoneCount = launchReadyItems.filter((item) => item.done).length;
+    const launchReadyPercent = Math.round((launchDoneCount / launchReadyItems.length) * 100);
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - 7);
+    const weeklyOrders = (restaurant.orders || []).filter((order: any) => {
+        const createdAt = order.createdAt || order.created_at;
+        return createdAt ? new Date(createdAt) >= weekStart : false;
+    });
+    const weeklyRevenue = weeklyOrders.reduce((sum: number, order: any) => sum + Number(order.total || 0), 0);
+    const commissionRate = Number(restaurant.commissionRate ?? restaurant.platformFeeRate ?? 0);
+    const trueServeFee = weeklyRevenue * (commissionRate / 100);
+    const posName = restaurant.posSystem || restaurant.posType || (hasPos ? "Connected POS" : "Not connected");
+    const posStatus = hasPos ? "Connected" : "Pending setup";
+    const disputeCount = (restaurant.orders || []).filter((order: any) =>
+        ["DISPUTED", "REFUND_REQUESTED", "ISSUE_REPORTED"].includes(String(order.status || ""))
+    ).length;
 
     return (
         <>
@@ -268,9 +284,136 @@ export default async function MerchantDashboard({
                     gap: 10px;
                     margin-bottom: 14px;
                 }
+                .mch-transparency {
+                    margin: 0 0 14px;
+                    border: 1px solid rgba(255,255,255,0.08);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+                    border-radius: 14px;
+                    overflow: hidden;
+                    box-shadow: 0 18px 45px rgba(0,0,0,0.2);
+                }
+                .mch-transparency-head {
+                    padding: 18px;
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: space-between;
+                    gap: 16px;
+                    border-bottom: 1px solid rgba(255,255,255,0.07);
+                }
+                .mch-transparency-kicker {
+                    margin: 0 0 5px;
+                    color: #f97316;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.16em;
+                    text-transform: uppercase;
+                }
+                .mch-transparency-head h2 {
+                    margin: 0;
+                    color: #fff;
+                    font-size: 20px;
+                    font-weight: 900;
+                    letter-spacing: -0.02em;
+                }
+                .mch-transparency-head p {
+                    margin: 6px 0 0;
+                    color: #9ca3af;
+                    font-size: 12px;
+                    line-height: 1.55;
+                    max-width: 660px;
+                }
+                .mch-status-pill {
+                    display: inline-flex;
+                    align-items: center;
+                    border: 1px solid rgba(62,207,110,0.28);
+                    background: rgba(62,207,110,0.08);
+                    color: #3ecf6e;
+                    border-radius: 999px;
+                    padding: 7px 11px;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    white-space: nowrap;
+                }
+                .mch-status-pill.pending {
+                    border-color: rgba(249,115,22,0.3);
+                    background: rgba(249,115,22,0.08);
+                    color: #f97316;
+                }
+                .mch-transparency-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                }
+                .mch-transparency-card {
+                    padding: 18px;
+                    border-right: 1px solid rgba(255,255,255,0.07);
+                    min-height: 178px;
+                }
+                .mch-transparency-card:last-child { border-right: 0; }
+                .mch-transparency-label {
+                    color: #a3a3a3;
+                    font-size: 10px;
+                    font-weight: 900;
+                    letter-spacing: 0.14em;
+                    text-transform: uppercase;
+                    margin-bottom: 12px;
+                }
+                .mch-transparency-value {
+                    color: #fff;
+                    font-size: 26px;
+                    font-weight: 900;
+                    letter-spacing: -0.03em;
+                    line-height: 1;
+                    margin-bottom: 8px;
+                }
+                .mch-transparency-card p {
+                    color: #9ca3af;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    margin: 0;
+                }
+                .mch-fee-row {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 14px;
+                    color: #d4d4d4;
+                    font-size: 12px;
+                    padding: 7px 0;
+                    border-bottom: 1px solid rgba(255,255,255,0.06);
+                }
+                .mch-fee-row:last-child { border-bottom: 0; }
+                .mch-fee-row strong { color: #fff; font-weight: 900; }
+                .mch-progress-track {
+                    height: 8px;
+                    border-radius: 999px;
+                    background: rgba(255,255,255,0.08);
+                    overflow: hidden;
+                    margin: 13px 0 10px;
+                }
+                .mch-progress-fill {
+                    height: 100%;
+                    border-radius: inherit;
+                    background: linear-gradient(90deg, #f97316, #14b8a6);
+                }
+                .mch-transparency-link {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    margin-top: 13px;
+                    color: #f97316;
+                    font-size: 11px;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    text-decoration: none;
+                }
                 @media (max-width: 900px) {
                     .mch-stat-grid { grid-template-columns: 1fr 1fr; }
                     .mch-two-col, .mch-four-col { grid-template-columns: 1fr; }
+                    .mch-transparency-grid { grid-template-columns: 1fr 1fr; }
+                    .mch-transparency-card:nth-child(2) { border-right: 0; }
+                    .mch-transparency-card:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.07); }
                 }
                 @media (max-width: 768px) {
                     .mch-stat-grid {
@@ -299,6 +442,14 @@ export default async function MerchantDashboard({
                         width: 100%;
                         text-align: center;
                     }
+                    .mch-transparency-head { flex-direction: column; }
+                    .mch-transparency-grid { grid-template-columns: 1fr; }
+                    .mch-transparency-card {
+                        border-right: 0;
+                        border-bottom: 1px solid rgba(255,255,255,0.07);
+                        min-height: auto;
+                    }
+                    .mch-transparency-card:last-child { border-bottom: 0; }
                 }
             `}</style>
 
@@ -331,6 +482,49 @@ export default async function MerchantDashboard({
                 storefrontPath={storefrontPath}
                 readyItems={launchReadyItems}
             />
+
+            <section className="mch-transparency" aria-label="Merchant transparency center">
+                <div className="mch-transparency-head">
+                    <div>
+                        <div className="mch-transparency-kicker">Radical transparency</div>
+                        <h2>Every fee, payout, POS state, and issue in one place.</h2>
+                        <p>
+                            This is the restaurant control room: onboarding progress, weekly earnings, POS connection status,
+                            and dispute paths stay visible before the kitchen goes live.
+                        </p>
+                    </div>
+                    <span className={`mch-status-pill${launchReadyPercent === 100 ? "" : " pending"}`}>
+                        {launchReadyPercent === 100 ? "Ready to operate" : `${launchReadyPercent}% setup`}
+                    </span>
+                </div>
+                <div className="mch-transparency-grid">
+                    <div className="mch-transparency-card">
+                        <div className="mch-transparency-label">Per-order fee logic</div>
+                        <div className="mch-fee-row"><span>Food revenue</span><strong>${weeklyRevenue.toFixed(2)}</strong></div>
+                        <div className="mch-fee-row"><span>TrueServe rate</span><strong>{commissionRate.toFixed(1)}%</strong></div>
+                        <div className="mch-fee-row"><span>Estimated deduction</span><strong>${trueServeFee.toFixed(2)}</strong></div>
+                        <p>No hidden deductions: every order should reconcile against this model.</p>
+                    </div>
+                    <div className="mch-transparency-card">
+                        <div className="mch-transparency-label">Onboarding tracker</div>
+                        <div className="mch-transparency-value">{launchDoneCount}/{launchReadyItems.length}</div>
+                        <p>Menu, payout, hours, POS, customer follow-up, photo, and visibility checks.</p>
+                        <div className="mch-progress-track"><div className="mch-progress-fill" style={{ width: `${launchReadyPercent}%` }} /></div>
+                    </div>
+                    <div className="mch-transparency-card">
+                        <div className="mch-transparency-label">POS connection</div>
+                        <div className="mch-transparency-value">{posStatus}</div>
+                        <p>{posName}. Keep this connected so menu and order handoffs stay reliable.</p>
+                        <Link className="mch-transparency-link" href="/merchant/dashboard/integrations">Manage POS <ArrowRight size={13} /></Link>
+                    </div>
+                    <div className="mch-transparency-card">
+                        <div className="mch-transparency-label">Weekly earnings + disputes</div>
+                        <div className="mch-transparency-value">${weeklyRevenue.toFixed(0)}</div>
+                        <p>{weeklyOrders.length} orders this week. {disputeCount} dispute or refund item{disputeCount === 1 ? "" : "s"} flagged.</p>
+                        <Link className="mch-transparency-link" href="/merchant/dashboard/billing">View billing <ArrowRight size={13} /></Link>
+                    </div>
+                </div>
+            </section>
 
             {/* KPI CARDS */}
             <div className="mch-stat-grid">

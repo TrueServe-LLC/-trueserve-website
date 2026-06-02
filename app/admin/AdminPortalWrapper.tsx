@@ -6,6 +6,7 @@ import type { ElementType } from 'react';
 import { logout } from '@/app/auth/actions';
 import { ADMIN_NAV_ITEMS, canAccessAdminSection, getRoleLabel } from '@/lib/rbac';
 import {
+  CarFront,
   ClipboardCheck,
   CreditCard,
   DollarSign,
@@ -14,10 +15,14 @@ import {
   Headphones,
   LayoutDashboard,
   LogOut,
+  MapPinned,
   Settings,
+  ShieldAlert,
   SlidersHorizontal,
+  Store,
   TrendingUp,
   Users,
+  WalletCards,
 } from 'lucide-react';
 
 interface AdminPortalWrapperProps {
@@ -33,6 +38,12 @@ export default function AdminPortalWrapper({ children, role }: AdminPortalWrappe
 
   const iconMap: Record<string, ElementType> = {
     Analytics: LayoutDashboard,
+    Customer: Users,
+    Driver: CarFront,
+    Dispute: ShieldAlert,
+    Map: MapPinned,
+    Store,
+    Wallet: WalletCards,
     Cost: DollarSign,
     Payment: CreditCard,
     Tools: SlidersHorizontal,
@@ -52,8 +63,10 @@ export default function AdminPortalWrapper({ children, role }: AdminPortalWrappe
         .adm-portal {
           display: flex !important;
           min-height: 100vh !important;
-          background: #0a0c09 !important;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+          background:
+            radial-gradient(circle at top left, rgba(249,115,22,0.06), transparent 34%),
+            linear-gradient(180deg, #0a0c09 0%, #070907 100%) !important;
+          font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
           color: #e0e0e0 !important;
         }
         .adm-sidebar {
@@ -109,7 +122,7 @@ export default function AdminPortalWrapper({ children, role }: AdminPortalWrappe
           gap: 10px !important;
           border-left: 2px solid transparent !important;
           white-space: nowrap !important;
-          transition: all 150ms !important;
+          transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease !important;
           background: transparent !important;
           width: 100% !important;
           justify-content: flex-start !important;
@@ -153,7 +166,9 @@ export default function AdminPortalWrapper({ children, role }: AdminPortalWrappe
           display: flex !important;
           flex-direction: column !important;
           min-height: 100vh !important;
-          overflow: auto !important;
+          overflow-y: auto !important;
+          overflow-x: hidden !important;
+          contain: paint !important;
         }
         .adm-page-header {
           padding: 20px 24px 16px !important;
@@ -175,9 +190,9 @@ export default function AdminPortalWrapper({ children, role }: AdminPortalWrappe
           flex: 1 !important;
         }
         .adm-card {
-          background: #141a18 !important;
-          border: 1px solid #1e2420 !important;
-          border-radius: 8px !important;
+          background: rgba(20,26,24,0.92) !important;
+          border: 1px solid rgba(255,255,255,0.07) !important;
+          border-radius: 16px !important;
           padding: 18px !important;
         }
         .adm-card-title {

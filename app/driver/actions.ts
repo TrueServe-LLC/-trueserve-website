@@ -235,6 +235,62 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             throw driverError;
         }
 
+        const documentReviewStatus = isAutoApproved ? "verified" : "pending";
+        const documentRecords = [
+            {
+                docType: "drivers_license",
+                upload: idDocumentUpload,
+                file: idDocument,
+                scan: idScan,
+                valid: isIdValid,
+            },
+            {
+                docType: "insurance",
+                upload: insuranceUpload,
+                file: insuranceDocument,
+                scan: insuranceScan,
+                valid: isInsuranceValid,
+            },
+            {
+                docType: "registration",
+                upload: registrationUpload,
+                file: registrationDocument,
+                scan: registrationScan,
+                valid: isRegistrationValid,
+            },
+        ].filter((record) => record.upload.path);
+
+        if (documentRecords.length > 0) {
+            const { error: documentMetadataError } = await supabaseAdmin
+                .from("DriverDocument")
+                .upsert(
+                    documentRecords.map((record) => ({
+                        driverId,
+                        userId: targetUserId,
+                        docType: record.docType,
+                        storageBucket: "driver-documents",
+                        storagePath: record.upload.path,
+                        originalFileName: record.file.name || null,
+                        mimeType: record.file.type || null,
+                        fileSize: record.file.size || null,
+                        status: isAutoApproved && record.valid ? documentReviewStatus : "pending",
+                        reviewedAt: isAutoApproved && record.valid ? new Date().toISOString() : null,
+                        notes: isAutoApproved && record.valid
+                            ? "Auto-verified during driver signup document scan."
+                            : "Uploaded during driver signup and waiting for admin review.",
+                        scanResult: record.scan || {},
+                    })),
+                    { onConflict: "driverId,docType" }
+                );
+
+            if (documentMetadataError) {
+                console.warn(
+                    "[DriverDocs] DriverDocument metadata table is not ready yet; file uploads were still stored in Supabase Storage.",
+                    documentMetadataError.message
+                );
+            }
+        }
+
         const ghlLeadResult = await syncSignupLeadToGHL({
             type: "DRIVER",
             name,
@@ -374,7 +430,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
             notificationPromises.push(createNotification({
                 userId: staffMember.id,
                 title: "New Driver Application",
-                message: `${name} (${email}) submitted a driver application and should appear in Admin → Users for review.`,
+                message: `${name} (${email}) submitted a driver application and should appear in Admin → Drivers for review.`,
                 type: "DRIVER_APPLICATION",
             }));
         }
@@ -382,6 +438,7 @@ export async function submitDriverApplication(prevState: any, formData: FormData
         await Promise.allSettled(notificationPromises);
         try {
             revalidatePath("/admin/users");
+            revalidatePath("/admin/drivers");
             revalidatePath("/admin/dashboard");
         } catch (revalidateErr) {
             console.warn("[DriverApp] Revalidation skipped:", revalidateErr);

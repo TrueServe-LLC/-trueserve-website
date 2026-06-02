@@ -33,8 +33,8 @@ export default async function ContentCMSPage() {
     return (
         <AdminPortalWrapper role={role}>
             <div className="adm-page-header">
-                <h1>Content CMS</h1>
-                <p>Manage policies, FAQs, legal docs, and in-app content</p>
+                <h1>Content Library</h1>
+                <p>Manage policies, FAQs, legal docs, and in-app content from one admin workspace.</p>
             </div>
             <div className="adm-page-body">
                 <PolicyCMS

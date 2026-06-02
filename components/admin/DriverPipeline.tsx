@@ -135,7 +135,7 @@ export default function DriverPipeline({
     const renderActions = (driver: Driver, bucketKey: string, color: string) => {
         const docCount = driver.docCount || 0;
         const busy = isPending && activeDriverId === driver.id;
-        const reviewHref = `/admin/users?q=${encodeURIComponent(driver.user?.email || "")}#driver-document-review`;
+        const reviewHref = `/admin/drivers?q=${encodeURIComponent(driver.user?.email || "")}#driver-document-review`;
 
         return (
             <div className="dp-actions">
