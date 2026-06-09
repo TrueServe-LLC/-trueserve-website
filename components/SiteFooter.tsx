@@ -28,7 +28,7 @@ export default function SiteFooter() {
             <ul>
               <li><Link href="/restaurants">Order Food</Link></li>
               <li><Link href="/signup">Sign Up</Link></li>
-              <li><Link href="/about">Download App</Link></li>
+              <li><Link href="/driver/app">Driver App</Link></li>
               <li><Link href="/rewards">Rewards</Link></li>
             </ul>
           </div>

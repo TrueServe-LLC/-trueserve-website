@@ -24,8 +24,8 @@ export type SupportMessage = {
 };
 
 /**
- * Driver Support Bot
- * Handles common driver questions about earnings, payments, technical issues, and complaints
+ * Serv driver support
+ * Handles common driver questions about onboarding, documents, earnings, payments, and technical issues.
  */
 export async function getDriverSupport(
     question: string,
@@ -35,7 +35,7 @@ export async function getDriverSupport(
         return {
             id: Date.now().toString(),
             sender: 'BOT',
-            content: "I'm the Driver Support Bot. I can help answer questions about earnings, payments, and technical issues. Please check back when the system is fully configured.",
+            content: "I'm Serv, TrueServe's driver guide. I can explain onboarding, documents, payouts, zones, and technical issues, but a human admin still reviews approvals, rejected documents, safety incidents, and payout exceptions.",
             timestamp: new Date(),
         };
     }
@@ -43,14 +43,15 @@ export async function getDriverSupport(
     const contextSummary = buildDriverContextSummary(context);
     const shouldEscalate = detectEscalationNeeded(question, context);
 
-    const systemPrompt = `You are a helpful Driver Support Assistant for TrueServe.
+    const systemPrompt = `You are Serv, a helpful Driver Support Assistant for TrueServe.
 You help drivers with:
-- Earnings and payment questions (payout schedules, tax info, fees)
+- Onboarding next steps (profile, documents, zones, payout setup)
+- Earnings and payment questions ($20/hr daily pay, tips, payout readiness, tax info)
 - Technical issues (app crashes, GPS problems, order tracking)
-- Account and ratings (how ratings work, improvement tips)
+- Account, documents, and ratings (how ratings work, missing document guidance, improvement tips)
 - General questions about TrueServe policies
 
-Be friendly, empathetic, and solution-focused. For complex issues, suggest escalation to support team.
+Be friendly, empathetic, and solution-focused. Serv can guide and explain, but must not claim to approve documents, background checks, account activation, safety incidents, or payout exceptions. Those require human admin review.
 Keep responses concise (2-3 sentences).`;
 
     const prompt = `
@@ -131,7 +132,9 @@ function detectEscalationNeeded(question: string, context: DriverContext): boole
     const escalationKeywords = [
         'dispute', 'complaint', 'unfair', 'scam', 'fraud', 'stolen', 'accident',
         'injury', 'damage', 'cancel', 'refund', 'payment issue', 'missing money',
-        'account suspended', 'deactivated', 'terminated', 'urgent', 'emergency'
+        'account suspended', 'deactivated', 'terminated', 'urgent', 'emergency',
+        'document', 'license', 'insurance', 'registration', 'approval', 'approve',
+        'rejected', 'background check'
     ];
 
     const lowerQuestion = question.toLowerCase();
@@ -163,6 +166,16 @@ function determineEscalationReason(question: string): string {
     if (lowerQuestion.includes('account') || lowerQuestion.includes('suspended')) {
         return 'Account Status - Admin review needed';
     }
+    if (
+        lowerQuestion.includes('document') ||
+        lowerQuestion.includes('license') ||
+        lowerQuestion.includes('insurance') ||
+        lowerQuestion.includes('registration') ||
+        lowerQuestion.includes('approval') ||
+        lowerQuestion.includes('background check')
+    ) {
+        return 'Onboarding/Document Review - Human admin needed';
+    }
 
     return 'Complex Issue - Escalating to support team';
 }
@@ -175,12 +188,12 @@ export function generateDriverTip(context: DriverContext): string {
         return "Rating Tip: Your rating is below 4.0. Focus on being professional, communicating with customers, and delivering orders on time to improve your rating.";
     }
     if (context.totalDeliveries < 10) {
-        return "Launch Tip: New drivers get bonus pay for their first 10 deliveries! Complete these to unlock better earnings and access to peak hours.";
+        return "Start Tip: Complete your onboarding checklist, connect Stripe, and keep documents current so your first shift is not delayed.";
     }
     if (context.currentStatus === 'OFFLINE') {
         return "Phone Tip: Go online to start receiving delivery offers. You can set your availability preferences to work on your schedule.";
     }
-    return "Cost Tip: High ratings lead to better trip offers and higher earnings. Keep providing great service!";
+    return "Pay Tip: $20/hr daily pay works best when your shift, zone, and payout setup are all current before accepting orders.";
 }
 
 /**
@@ -189,11 +202,19 @@ export function generateDriverTip(context: DriverContext): string {
 export const COMMON_DRIVER_QUESTIONS = [
     {
         question: "How do I get paid?",
-        answer: "You earn money per delivery based on distance, time, and demand. Payouts are processed weekly via Stripe Direct. You can view detailed earnings in the Settlements tab.",
+        answer: "Drivers earn $20/hr daily pay for tracked shift time plus 100% of tips. Your Stripe payout account must be complete before funds can move to your bank.",
     },
     {
         question: "When is my payment scheduled?",
-        answer: "Payouts happen every Tuesday for deliveries completed the previous week. You can check your settlement schedule in the Settlements tab.",
+        answer: "Approved drivers are paid daily after tracked shift time is reviewed and Stripe is payout-ready. Your dashboard shows whether payouts are connected, pending, or blocked.",
+    },
+    {
+        question: "What do I do after I sign up?",
+        answer: "Open the driver start guide, confirm your profile, upload license/insurance/registration, connect Stripe, and set your zones. Admins review the documents before you can be marked active.",
+    },
+    {
+        question: "Can Serv approve my documents?",
+        answer: "No. Serv can explain what is missing and where to upload it, but human admins verify, reject, or approve driver documents.",
     },
     {
         question: "Why is my rating low?",

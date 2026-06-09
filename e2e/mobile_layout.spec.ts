@@ -11,26 +11,23 @@ test.describe('Mobile Landing Page Layout', () => {
         const heroHeading = page.locator('h1').first();
         await expect(heroHeading).toBeVisible({ timeout: 10000 });
 
-        // 2. Verify CTA links exist (Browse Restaurants, For Businesses)
-        const browseRestaurantsBtn = page.getByRole('link', { name: /Browse Restaurants/i });
-        const forBusinessesBtn = page.getByRole('link', { name: /For Businesses|Merchant/i });
-
-        // At least one primary CTA should be visible
-        const hasBrowse = await browseRestaurantsBtn.isVisible().catch(() => false);
-        const hasBusiness = await forBusinessesBtn.isVisible().catch(() => false);
-        expect(hasBrowse || hasBusiness).toBeTruthy();
+        // 2. Verify the current conversion path is visible.
+        await expect(page.getByRole('textbox', { name: /enter delivery address/i })).toBeVisible();
+        await expect(page.getByRole('button', { name: /find food/i })).toBeVisible();
     });
 
     test('should have a functional mobile header', async ({ page }) => {
         await page.goto('/');
         await page.waitForLoadState('networkidle');
 
-        // Logo/branding should be visible (uses Logo component, not necessarily h1)
-        const branding = page.locator('nav').first();
-        await expect(branding).toBeVisible();
+        // Logo/branding should be visible.
+        await expect(page.getByRole('banner')).toBeVisible();
 
-        // Get Started button should be visible in navigation
-        const getStartedNav = page.locator('nav').getByRole('link', { name: /Get Started/i });
-        await expect(getStartedNav).toBeVisible({ timeout: 5000 });
+        // Mobile public pages use the hamburger menu in the top-right.
+        await page.getByRole('button', { name: /open menu/i }).click();
+        const mobileMenu = page.locator('#site-mobile-menu');
+        await expect(mobileMenu.getByRole('link', { name: /^home$/i })).toBeVisible();
+        await expect(mobileMenu.getByRole('link', { name: /^rewards$/i })).toBeVisible();
+        await expect(mobileMenu.getByRole('link', { name: /^help$/i })).toBeVisible();
     });
 });

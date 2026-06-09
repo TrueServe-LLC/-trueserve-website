@@ -63,17 +63,19 @@ export default function MerchantDashboardWrapper({ restaurantName, hasMultipleLo
         .mch-layout {
           display: flex !important;
           min-height: 100vh !important;
-          background: #0f0f0f !important;
-          font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+          background:
+            radial-gradient(circle at top left, rgba(249,115,22,0.08), transparent 34%),
+            linear-gradient(180deg, #0a0c09 0%, #080a08 100%) !important;
+          font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
           color: #e0e0e0 !important;
           font-size: 13px !important;
         }
         .mch-sidebar {
-          width: 176px !important;
-          min-width: 176px !important;
-          max-width: 176px !important;
-          background: #111 !important;
-          border-right: 0.5px solid #2a2a2a !important;
+          width: 200px !important;
+          min-width: 200px !important;
+          max-width: 200px !important;
+          background: rgba(15,18,16,0.98) !important;
+          border-right: 1px solid #1e2420 !important;
           display: flex !important;
           flex-direction: column !important;
           padding: 16px 0 !important;
@@ -91,10 +93,10 @@ export default function MerchantDashboardWrapper({ restaurantName, hasMultipleLo
           align-items: center !important;
           gap: 8px !important;
           padding: 0 16px 18px !important;
-          font-weight: 600 !important;
-          font-size: 13px !important;
+          font-weight: 800 !important;
+          font-size: 14px !important;
           color: #fff !important;
-          border-bottom: 0.5px solid #2a2a2a !important;
+          border-bottom: 1px solid #1e2420 !important;
           margin-bottom: 8px !important;
         }
         .mch-nav-item {
@@ -103,19 +105,19 @@ export default function MerchantDashboardWrapper({ restaurantName, hasMultipleLo
           gap: 9px !important;
           padding: 9px 16px !important;
           font-size: 12px !important;
-          color: #999 !important;
+          color: rgba(255,255,255,0.56) !important;
           text-decoration: none !important;
           border-left: 2px solid transparent !important;
           transition: background 0.15s, color 0.15s !important;
           white-space: nowrap !important;
         }
         .mch-nav-item:hover {
-          background: #161616 !important;
-          color: #ccc !important;
+          background: rgba(249,115,22,0.06) !important;
+          color: #f97316 !important;
         }
         .mch-nav-item.mch-active {
-          color: #fff !important;
-          background: #1a1a1a !important;
+          color: #f97316 !important;
+          background: rgba(249,115,22,0.08) !important;
           border-left-color: #f97316 !important;
         }
         .mch-nav-dot {
@@ -132,7 +134,7 @@ export default function MerchantDashboardWrapper({ restaurantName, hasMultipleLo
         .mch-sidebar-footer {
           margin-top: auto !important;
           padding: 12px 16px !important;
-          border-top: 0.5px solid #2a2a2a !important;
+          border-top: 1px solid #1e2420 !important;
           display: flex !important;
           flex-direction: column !important;
           gap: 6px !important;
@@ -141,8 +143,8 @@ export default function MerchantDashboardWrapper({ restaurantName, hasMultipleLo
           display: flex !important;
           align-items: center !important;
           gap: 7px !important;
-          background: #1e1e1e !important;
-          border: 0.5px solid #333 !important;
+          background: #141a18 !important;
+          border: 1px solid #1e2420 !important;
           border-radius: 8px !important;
           padding: 8px 12px !important;
           color: #888 !important;
@@ -241,11 +243,13 @@ export default function MerchantDashboardWrapper({ restaurantName, hasMultipleLo
         }
         .mch-main {
           flex: 1 !important;
-          margin-left: 176px !important;
-          padding: 24px !important;
+          margin-left: 200px !important;
+          padding: 20px 24px 40px !important;
           min-height: 100vh !important;
           overflow: auto !important;
-          background: #0f0f0f !important;
+          background:
+            radial-gradient(circle at top right, rgba(20,184,166,0.06), transparent 30%),
+            linear-gradient(180deg, #0a0c09 0%, #080a08 100%) !important;
         }
         .mch-page-title {
           font-size: 21px !important;

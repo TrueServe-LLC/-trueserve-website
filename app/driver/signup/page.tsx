@@ -109,11 +109,11 @@ export default function DriverSignupPage() {
               </div>
             )}
 
-            <div className="ts-fig-auth-steps" aria-label={`Step ${step} of 2`}>
+            <div className="ts-fig-auth-steps" aria-label={step < 3 ? `Step ${step} of 3` : "Application submitted"}>
               <div className={`ts-fig-auth-step-dot${step >= 1 ? " is-on" : ""}`} />
               <div className={`ts-fig-auth-step-dot${step >= 2 ? " is-on" : ""}`} />
               <div className={`ts-fig-auth-step-dot${step >= 3 ? " is-on" : ""}`} />
-              <span>{step < 3 ? `Step ${step} of 2` : "Application sent"}</span>
+              <span>{step === 1 ? "Profile" : step === 2 ? "Documents" : "Application sent"}</span>
             </div>
 
             <form action={formAction} className="ts-fig-auth-fields">

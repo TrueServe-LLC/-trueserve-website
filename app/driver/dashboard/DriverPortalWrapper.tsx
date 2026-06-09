@@ -47,6 +47,7 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
     { href: '/driver/dashboard/disputes',  label: 'Disputes',  icon: AlertTriangle, tour: 'driver-nav-disputes'  },
     { href: '/driver/dashboard/help',      label: 'Help',      icon: CircleHelp, tour: 'driver-nav-help'      },
   ];
+  const activeLabel = navItems.find(i => pathname === i.href || (i.href !== '/driver/dashboard' && pathname.startsWith(i.href)))?.label || 'Dashboard';
 
   return (
     <>
@@ -54,8 +55,10 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
         .drv-layout {
           display: flex !important;
           min-height: 100vh !important;
-          background: #0a0c09 !important;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+          background:
+            radial-gradient(circle at top left, rgba(249,115,22,0.08), transparent 34%),
+            linear-gradient(180deg, #0a0c09 0%, #080a08 100%) !important;
+          font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
           color: #e0e0e0 !important;
           font-size: 13px !important;
         }
@@ -63,7 +66,7 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
           width: 200px !important;
           min-width: 200px !important;
           max-width: 200px !important;
-          background: #0f1210 !important;
+          background: rgba(15,18,16,0.98) !important;
           border-right: 1px solid #1e2420 !important;
           display: flex !important;
           flex-direction: column !important;
@@ -81,7 +84,7 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
           gap: 8px !important;
           padding: 0 16px 16px !important;
           font-weight: 700 !important;
-          font-size: 13px !important;
+          font-size: 14px !important;
           color: #fff !important;
           border-bottom: 1px solid #1e2420 !important;
           margin-bottom: 8px !important;
@@ -177,7 +180,9 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
           padding: 20px 24px 40px !important;
           min-height: 100vh !important;
           overflow: auto !important;
-          background: #0a0c09 !important;
+          background:
+            radial-gradient(circle at top right, rgba(20,184,166,0.06), transparent 30%),
+            linear-gradient(180deg, #0a0c09 0%, #080a08 100%) !important;
         }
         .drv-main [class*="rounded-2xl"],
         .drv-main [class*="rounded-3xl"],
@@ -187,7 +192,7 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
         .drv-main [class*="rounded-[24px]"],
         .drv-main [class*="rounded-[28px]"],
         .drv-main [class*="rounded-[32px]"] {
-          border-radius: 8px !important;
+          border-radius: 12px !important;
         }
         .drv-page-title {
           font-size: 20px !important;
@@ -206,6 +211,20 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
         }
         /* ── Mobile: hamburger drawer (mirrors merchant portal) ── */
         .drv-mobile-topbar { display: none !important; }
+        .drv-mobile-brand {
+          display: flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+          min-width: 0 !important;
+          flex: 1 !important;
+        }
+        .drv-mobile-brand img {
+          width: 32px !important;
+          height: 32px !important;
+          border-radius: 999px !important;
+          box-shadow: 0 0 12px rgba(249,115,22,0.35) !important;
+          flex-shrink: 0 !important;
+        }
         .drv-mobile-overlay { display: none !important; }
         .drv-mobile-nav-btn {
           width: 42px !important; height: 42px !important;
@@ -273,26 +292,11 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
             z-index: 130 !important;
           }
           .drv-sidebar.drv-sidebar-open { transform: translateX(0) !important; }
-          .drv-main { margin-left: 0 !important; padding: 14px 14px 96px !important; min-height: 100dvh !important; }
+          .drv-main { margin-left: 0 !important; padding: 14px 14px 32px !important; min-height: 100dvh !important; }
           .dd-two-col, .dd-bottom-grid { grid-template-columns: 1fr !important; }
           .dd-stat-grid { grid-template-columns: 1fr 1fr !important; }
           .dd-addr-grid { grid-template-columns: 1fr !important; }
-          .drv-bottom-nav {
-            display: grid !important;
-            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-            gap: 4px !important;
-            position: fixed !important;
-            left: 10px !important;
-            right: 10px !important;
-            bottom: calc(10px + env(safe-area-inset-bottom)) !important;
-            z-index: 125 !important;
-            padding: 8px !important;
-            border-radius: 18px !important;
-            border: 1px solid rgba(255,255,255,0.08) !important;
-            background: rgba(12,15,13,0.94) !important;
-            backdrop-filter: blur(18px) !important;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.4) !important;
-          }
+          .drv-bottom-nav { display: none !important; }
           .drv-bottom-link {
             min-width: 0 !important;
             display: flex !important;
@@ -381,18 +385,16 @@ export default function DriverPortalWrapper({ children, pageTitle, pageSubtitle 
         <main className="drv-main">
           {/* Mobile top bar */}
           <div className="drv-mobile-topbar">
+            <div className="drv-mobile-brand">
+              <img src="/logo.png" alt="TrueServe" />
+              <div style={{ minWidth: 0 }}>
+                <div className="drv-mobile-eyebrow">TrueServe Driver</div>
+                <div className="drv-mobile-title">{activeLabel}</div>
+              </div>
+            </div>
             <button className="drv-mobile-nav-btn" aria-label="Open navigation" onClick={() => setMobileNavOpen(true)}>
               <MenuIcon size={20} aria-hidden="true" />
             </button>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="drv-mobile-eyebrow">Driver Portal</div>
-              <div className="drv-mobile-title">
-                {navItems.find(i => pathname === i.href || (i.href !== '/driver/dashboard' && pathname.startsWith(i.href)))?.label || 'Dashboard'}
-              </div>
-            </div>
-            <div className="drv-mobile-status">
-              {navItems.find(i => pathname === i.href || (i.href !== '/driver/dashboard' && pathname.startsWith(i.href)))?.label || 'Dashboard'}
-            </div>
           </div>
 
           {pageTitle || pageSubtitle ? (

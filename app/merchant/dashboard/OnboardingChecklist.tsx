@@ -38,8 +38,8 @@ export default function OnboardingChecklist({
   const steps: Step[] = [
     {
       id: "menu",
-      label: "Add your first menu item",
-      description: "Customers can't order until your menu is live.",
+      label: "Build the menu customers can order from",
+      description: "Add your first real item, price, and description so checkout has something to route.",
       href: "/merchant/dashboard/menu",
       cta: "Build Menu",
       done: hasMenuItems,
@@ -47,7 +47,7 @@ export default function OnboardingChecklist({
     {
       id: "hours",
       label: "Confirm ordering hours",
-      description: "Customers should see when ordering is available and when it reopens.",
+      description: "Set when your kitchen accepts delivery orders and when ordering reopens.",
       href: "/merchant/dashboard/storefront",
       cta: "Set Hours",
       done: Boolean(hasHours),
@@ -55,7 +55,7 @@ export default function OnboardingChecklist({
     {
       id: "stripe",
       label: "Connect your payout account",
-      description: "Link Stripe to receive payments directly to your bank.",
+      description: "Link Stripe so approved payouts can move to the right bank account.",
       href: "/merchant/dashboard",
       cta: "Connect Stripe",
       done: hasStripe,
@@ -63,15 +63,15 @@ export default function OnboardingChecklist({
     {
       id: "pos",
       label: "Confirm POS or direct ordering",
-      description: "Connect Toast, Square, Clover, or mark the store as direct ordering.",
+      description: "Choose Square, Toast, Clover, or direct ordering so staff know how orders arrive.",
       href: "/merchant/dashboard/integrations",
       cta: "Review POS",
       done: Boolean(hasPos),
     },
     {
       id: "ghl",
-      label: "Add the merchant support link",
-      description: "Save the restaurant's GHL booking or support URL so help stays one tap away.",
+      label: "Add the best support contact path",
+      description: "Save the booking, calendar, or support URL admins should use when a human needs to step in.",
       href: "/merchant/dashboard",
       cta: "Add Link",
       done: Boolean(hasGhl),
@@ -79,7 +79,7 @@ export default function OnboardingChecklist({
     {
       id: "image",
       label: "Add a restaurant photo",
-      description: "Restaurants with photos get significantly more clicks.",
+      description: "Use a real kitchen or food photo so customers recognize the restaurant as trustworthy.",
       href: "/merchant/dashboard/storefront",
       cta: "Upload Photo",
       done: hasImage,
@@ -87,7 +87,7 @@ export default function OnboardingChecklist({
     {
       id: "live",
       label: "Set your restaurant live",
-      description: "Flip your visibility on so customers can find you.",
+      description: "Turn on customer visibility only after menu, hours, payout, and routing are ready.",
       href: "/merchant/dashboard/storefront",
       cta: "Go Live",
       done: isVisible,
@@ -95,7 +95,7 @@ export default function OnboardingChecklist({
     {
       id: "test-order",
       label: "Run a test order",
-      description: "Confirm orders appear in the merchant portal before launch day.",
+      description: "Place a controlled test order so the kitchen, portal, and admin flow are all confirmed.",
       href: "/merchant/dashboard",
       cta: "Test Order",
       done: Boolean(hasTestOrder),
@@ -331,13 +331,13 @@ export default function OnboardingChecklist({
                 }}
               >
                 <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: "#f97316", marginBottom: 8 }}>
-                  Need launch help?
+                  Serv + human launch help
                 </div>
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.72)", lineHeight: 1.6, marginBottom: 10 }}>
-                  We can help with menu setup, Stripe payouts, storefront branding, and getting your restaurant visible.
+                  Serv can explain what each setup step means. A TrueServe admin still reviews launch readiness, payouts, and anything that affects customer orders.
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  <Link href="/contact" style={{
+                  <Link href="/contact?topic=merchant-onboarding" style={{
                     background: "rgba(249,115,22,0.14)",
                     border: "1px solid rgba(249,115,22,0.34)",
                     color: "#f97316",
@@ -349,7 +349,7 @@ export default function OnboardingChecklist({
                     textTransform: "uppercase",
                     textDecoration: "none",
                   }}>
-                    Contact Support
+                    Ask For Help
                   </Link>
                   <Link href="/merchant/dashboard/storefront" style={{
                     border: "1px solid rgba(255,255,255,0.12)",
@@ -366,6 +366,21 @@ export default function OnboardingChecklist({
                   </Link>
                 </div>
               </div>
+            </div>
+            <div
+              style={{
+                marginTop: 12,
+                border: "1px solid rgba(20,184,166,0.18)",
+                background: "rgba(20,184,166,0.05)",
+                borderRadius: 12,
+                padding: "12px 14px",
+                color: "rgba(255,255,255,0.68)",
+                fontSize: 12,
+                lineHeight: 1.55,
+              }}
+            >
+              <strong style={{ color: "#5bd6ca" }}>What happens after this:</strong>{" "}
+              TrueServe confirms menu routing, payout setup, support contact, and test order behavior before customers can rely on the storefront.
             </div>
           </div>
         </div>

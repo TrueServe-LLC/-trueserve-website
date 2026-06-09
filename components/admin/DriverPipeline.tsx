@@ -11,6 +11,7 @@ type DriverActionResult = {
 interface Driver {
     id: string;
     userId: string;
+    status?: string;
     complianceStatus: string;
     backgroundCheckStatus: string;
     vehicleType?: string;
@@ -60,10 +61,20 @@ const BUCKETS = [
         border: "rgba(52,211,153,0.2)",
         desc: "Cleared and able to drive",
     },
+    {
+        key: "REJECTED",
+        label: "Rejected",
+        color: "#f87171",
+        bg: "rgba(248,113,113,0.07)",
+        border: "rgba(248,113,113,0.18)",
+        desc: "Not cleared for delivery access",
+    },
 ];
 
 function toBucket(driver: Driver): string {
     const cs = (driver.complianceStatus || "").toUpperCase();
+    const status = (driver.status || "").toUpperCase();
+    if (cs === "REJECTED" || status === "REJECTED") return "REJECTED";
     if (cs === "NEW_APPLICATION") return "NEW_APPLICATION";
     if (cs === "PENDING" || cs === "TRAINING") return "PENDING_DOCUMENTS";
     if (cs === "READY_FOR_REVIEW" || cs === "IN_REVIEW") return "READY_FOR_REVIEW";
@@ -97,6 +108,7 @@ export default function DriverPipeline({
         PENDING_DOCUMENTS: [],
         READY_FOR_REVIEW: [],
         ACTIVE: [],
+        REJECTED: [],
     };
 
     drivers.forEach((d) => {

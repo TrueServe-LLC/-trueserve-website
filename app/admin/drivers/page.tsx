@@ -165,6 +165,7 @@ export default async function AdminDriversPage({
                     drivers={visibleDrivers.map((driver: any) => ({
                         id: driver.id,
                         userId: driver.userId,
+                        status: driver.status,
                         complianceStatus: driver.complianceStatus || driver.status || "NEW_APPLICATION",
                         backgroundCheckStatus: driver.backgroundCheckStatus || "PENDING",
                         vehicleType: driver.vehicleType,

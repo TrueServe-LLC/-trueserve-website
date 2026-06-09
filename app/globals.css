@@ -1177,6 +1177,591 @@
 .ts-help-search button:hover,
 .ts-help-human a:hover { background: var(--fig-orange-deep); transform: translateY(-1px); }
 
+/* Driver-first mobile app hub */
+.driver-app-page {
+  --driver-bg: #07111d;
+  --driver-panel: rgba(15, 23, 42, 0.86);
+  --driver-border: rgba(148, 163, 184, 0.22);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 82% 10%, rgba(20, 184, 166, 0.22), transparent 34rem),
+    radial-gradient(circle at 8% 20%, rgba(255, 107, 53, 0.18), transparent 32rem),
+    linear-gradient(180deg, #07111d 0%, #0b1220 52%, #060b12 100%);
+  color: #fff;
+  font-family: var(--fig-sans);
+}
+
+.driver-app-page .ts-fig-header {
+  background: rgba(7, 17, 29, 0.82) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.driver-app-page .ts-fig-nav a,
+.driver-app-page .ts-fig-link {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.driver-app-page .ts-fig-nav a.active {
+  background: rgba(255, 107, 53, 0.16) !important;
+  color: #ffb08f !important;
+}
+
+.driver-app-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(3rem, 8vw, 6rem) 0 clamp(3rem, 7vw, 5rem);
+}
+
+.driver-app-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 64px 64px;
+  mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+}
+
+.driver-app-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.82fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+}
+
+.driver-app-chip,
+.driver-app-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: #ffb08f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.driver-app-chip {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(255, 107, 53, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 107, 53, 0.1);
+  margin-bottom: 1.25rem;
+}
+
+.driver-app-chip-dot,
+.driver-app-live span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #14b8a6;
+  box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.72);
+  animation: tsHubPulse 2s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+}
+
+.driver-app-copy h1,
+.driver-app-section-head h2,
+.driver-app-install h2,
+.driver-app-roadmap h2 {
+  margin: 0;
+  font-family: var(--fig-serif);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+
+.driver-app-copy h1 {
+  max-width: 44rem;
+  font-size: clamp(3.1rem, 7vw, 5.9rem);
+}
+
+.driver-app-copy p,
+.driver-app-section-head p,
+.driver-app-install p {
+  max-width: 39rem;
+  margin: 1.3rem 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(1rem, 1.7vw, 1.12rem);
+  line-height: 1.75;
+}
+
+.driver-app-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.driver-app-secondary {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.9rem;
+  padding: 0.8rem 1.2rem;
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 800;
+  transition: transform 0.2s var(--fig-ease), border-color 0.2s var(--fig-ease), background 0.2s var(--fig-ease);
+}
+
+.driver-app-secondary:hover {
+  transform: translateY(-1px);
+  border-color: rgba(20, 184, 166, 0.42);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.driver-app-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  max-width: 34rem;
+  margin-top: 1.5rem;
+}
+
+.driver-app-metrics div {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.055);
+  padding: 1rem;
+}
+
+.driver-app-metrics strong,
+.driver-app-metrics span {
+  display: block;
+}
+
+.driver-app-metrics strong {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.driver-app-metrics span {
+  margin-top: 0.28rem;
+  color: rgba(255, 255, 255, 0.54);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.driver-app-phone-wrap {
+  display: grid;
+  justify-items: center;
+}
+
+.driver-app-phone {
+  width: min(100%, 25rem);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 2.2rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(3, 7, 18, 0.96));
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.42), 0 0 0 0.55rem rgba(255, 255, 255, 0.04);
+  padding: 1.15rem;
+}
+
+.driver-app-phone-top,
+.driver-app-live {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.driver-app-phone-top {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-bottom: 0.9rem;
+}
+
+.driver-app-live {
+  justify-content: flex-start;
+}
+
+.driver-app-photo {
+  overflow: hidden;
+  border-radius: 1.45rem;
+  aspect-ratio: 1.32;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111827;
+}
+
+.driver-app-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.driver-app-offer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: -2rem 1rem 1rem;
+  position: relative;
+  border-radius: 1.35rem;
+  background: linear-gradient(135deg, #ff6b35, #e95d22);
+  color: #101827;
+  padding: 1rem;
+  box-shadow: 0 1.2rem 2.5rem rgba(255, 107, 53, 0.24);
+}
+
+.driver-app-offer span,
+.driver-app-offer small,
+.driver-app-offer strong {
+  display: block;
+}
+
+.driver-app-offer span {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.driver-app-offer strong {
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.driver-app-offer small {
+  margin-top: 0.25rem;
+  font-weight: 700;
+}
+
+.driver-app-route-card {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.driver-app-route-card div {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.95rem;
+  padding: 0.8rem 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.035);
+  font-weight: 700;
+}
+
+.driver-app-route-card svg {
+  color: #14b8a6;
+}
+
+.driver-app-open-dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.1rem;
+  margin-top: 1rem;
+  border-radius: 1rem;
+  background: #fff;
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.driver-app-section,
+.driver-app-install,
+.driver-app-roadmap {
+  padding: clamp(3rem, 7vw, 5rem) 0;
+}
+
+.driver-app-section-head {
+  max-width: 47rem;
+  margin-bottom: 2rem;
+}
+
+.driver-app-section-head h2,
+.driver-app-install h2,
+.driver-app-roadmap h2 {
+  margin-top: 0.8rem;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+}
+
+.driver-app-step-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.driver-app-step-card,
+.driver-app-install-card,
+.driver-app-roadmap-item {
+  border: 1px solid var(--driver-border);
+  background: var(--driver-panel);
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.18);
+}
+
+.driver-app-step-card {
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+}
+
+.driver-app-step-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  color: #ff6b35;
+  background: rgba(255, 107, 53, 0.12);
+  margin-bottom: 1rem;
+}
+
+.driver-app-step-card > span {
+  display: block;
+  color: #14b8a6;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.driver-app-step-card h3 {
+  margin: 0.5rem 0 0;
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+
+.driver-app-step-card p {
+  margin: 0.65rem 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.92rem;
+  line-height: 1.58;
+}
+
+.driver-app-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  color: #ffb08f;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.driver-app-status {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0;
+  background: rgba(3, 7, 18, 0.22);
+}
+
+.driver-app-status .driver-app-section-head {
+  margin-bottom: 1.35rem;
+}
+
+.driver-app-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.driver-app-status-card {
+  position: relative;
+  min-height: 10rem;
+  padding: 1.25rem;
+  border-right: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.driver-app-status-card:last-child {
+  border-right: 0;
+}
+
+.driver-app-status-card::before {
+  content: "";
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  width: calc(100% - 2.5rem);
+  height: 0.35rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff6b35, #14b8a6);
+  opacity: 0.74;
+}
+
+.driver-app-status-card span,
+.driver-app-status-card strong,
+.driver-app-status-card small {
+  display: block;
+}
+
+.driver-app-status-card span {
+  color: #14b8a6;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.driver-app-status-card strong {
+  margin-top: 0.55rem;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.driver-app-status-card small {
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.driver-app-install {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.driver-app-install-grid,
+.driver-app-roadmap-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.72fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.driver-app-install-card {
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+}
+
+.driver-app-install-card svg {
+  color: #14b8a6;
+}
+
+.driver-app-install-card h3 {
+  margin: 1rem 0 0.75rem;
+  font-size: 1.35rem;
+}
+
+.driver-app-install-card ol {
+  margin: 0 0 1.15rem 1.15rem;
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.7;
+}
+
+.driver-app-secondary-light {
+  width: 100%;
+}
+
+.driver-app-roadmap-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.driver-app-roadmap-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  border-radius: 1.1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.driver-app-roadmap-item span {
+  color: #ff6b35;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.driver-app-roadmap-item p {
+  margin: 0.35rem 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.55;
+}
+
+.driver-app-roadmap-item strong {
+  display: block;
+  margin: 0;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+  .driver-app-hero-grid,
+  .driver-app-install-grid,
+  .driver-app-roadmap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-app-phone {
+    width: min(100%, 23rem);
+  }
+
+  .driver-app-step-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .driver-app-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .driver-app-status-card:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .driver-app-status-card:nth-child(-n + 2) {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  }
+}
+
+@media (max-width: 640px) {
+  .driver-app-hero {
+    padding-top: 2.25rem;
+  }
+
+  .driver-app-copy h1 {
+    font-size: clamp(2.75rem, 14vw, 4rem);
+  }
+
+  .driver-app-actions,
+  .driver-app-actions .ts-fig-btn,
+  .driver-app-secondary {
+    width: 100%;
+  }
+
+  .driver-app-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-app-step-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-app-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-app-status-card,
+  .driver-app-status-card:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .driver-app-status-card,
+  .driver-app-status-card:nth-child(-n + 2) {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  }
+
+  .driver-app-status-card:last-child {
+    border-bottom: 0;
+  }
+
+  .driver-app-phone {
+    border-radius: 1.8rem;
+    padding: 0.9rem;
+  }
+}
+
 .ts-help-action-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -13101,8 +13686,19 @@ nav {
   .ts-fig-hero-search form > div:first-child { padding: 12px 16px !important; }
 
   /* Rewards tab strip — already scrolls, but tighter padding */
-  .ts-fig-rewards-tabs .ts-fig-container { padding: 8px 16px; }
-  .ts-fig-rewards-tabs a { padding: 6px 12px; font-size: 12px; }
+  .ts-fig-rewards-tabs .ts-fig-container {
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow-x: visible;
+    padding: 10px 16px;
+  }
+  .ts-fig-rewards-tabs a {
+    flex: 1 1 auto;
+    min-width: fit-content;
+    padding: 6px 12px;
+    font-size: 12px;
+    text-align: center;
+  }
 
   /* Rewards wallet card */
   .ts-fig-rewards-wallet { padding: 22px; border-radius: 18px; }
@@ -13199,6 +13795,290 @@ nav {
   .ts-fig-header-actions .ts-fig-link { display: none; }
   .ts-fig-btn { padding: 8px 12px; font-size: 12px; }
   .ts-fig-rewards-tabs a { padding: 6px 10px; font-size: 11px; }
+}
+
+/* ─── About page: public trust story, aligned to the ts-fig shell ───────── */
+.ts-fig-about-hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(640px 420px at 8% 16%, rgba(255,107,53,.26), transparent 68%),
+    radial-gradient(720px 440px at 92% 10%, rgba(20,184,166,.20), transparent 72%),
+    linear-gradient(135deg, #07111B 0%, #0B1424 52%, #101827 100%);
+}
+.ts-fig-about-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 64px 64px;
+  mask-image: linear-gradient(180deg, #000 0%, #000 65%, transparent 100%);
+}
+.ts-fig-about-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+  gap: clamp(36px, 7vw, 80px);
+  align-items: center;
+  min-height: clamp(560px, 70vh, 760px);
+  padding-block: clamp(72px, 9vw, 124px);
+}
+.ts-fig-about-copy h1 {
+  max-width: 760px;
+  margin: 0 0 24px;
+  font-family: var(--fig-serif);
+  font-size: clamp(48px, 6.8vw, 86px);
+  line-height: 1.04;
+  letter-spacing: -.035em;
+  color: #fff;
+}
+.ts-fig-about-copy p {
+  max-width: 660px;
+  margin: 0;
+  color: #CBD5E1;
+  font-size: clamp(16px, 1.45vw, 19px);
+  line-height: 1.7;
+}
+.ts-fig-about-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+.ts-fig-btn.ts-fig-btn-secondary {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #fff;
+  box-shadow: none;
+}
+.ts-fig-btn.ts-fig-btn-secondary:hover {
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,107,53,.42);
+}
+.ts-fig-about-panel {
+  width: min(100%, 440px);
+  margin-inline-start: auto;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(15,23,42,.76);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 28px 80px -38px rgba(0,0,0,.9);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.ts-fig-about-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: #E2E8F0;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+.ts-fig-about-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.ts-fig-about-panel-row span {
+  color: #94A3B8;
+  font-size: 14px;
+}
+.ts-fig-about-panel-row strong {
+  color: #fff;
+  text-align: right;
+  font-size: 16px;
+}
+.ts-fig-about-panel-note {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  color: #CFEDE8;
+  background: rgba(20,184,166,.12);
+  border: 1px solid rgba(20,184,166,.22);
+  line-height: 1.55;
+  font-size: 14px;
+}
+.ts-fig-about-story {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 48px);
+  max-width: 980px;
+}
+.ts-fig-about-story p {
+  margin: 0;
+  color: #CBD5E1;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.ts-fig-about-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 40px;
+}
+.ts-fig-about-proof {
+  min-height: 280px;
+  padding: 28px;
+  border-radius: 22px;
+  background: #182438;
+  border: 1px solid rgba(255,255,255,.08);
+  color: #E2E8F0;
+}
+.ts-fig-about-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 26px;
+  border-radius: 14px;
+  color: var(--fig-orange);
+  background: rgba(255,107,53,.12);
+}
+.ts-fig-about-proof span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--fig-teal);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.ts-fig-about-proof h3 {
+  margin: 0 0 12px;
+  font-family: var(--fig-serif);
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.1;
+  color: #fff;
+}
+.ts-fig-about-proof p {
+  margin: 0;
+  color: #94A3B8;
+  line-height: 1.65;
+}
+.ts-fig-about-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.ts-fig-about-values article {
+  padding: 28px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+}
+.ts-fig-about-values svg {
+  color: var(--fig-orange);
+  margin-bottom: 18px;
+}
+.ts-fig-about-values h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: 20px;
+}
+.ts-fig-about-values p {
+  margin: 0;
+  color: #94A3B8;
+  line-height: 1.65;
+}
+.ts-fig-about-cta {
+  padding: clamp(64px, 8vw, 108px) 0;
+  background:
+    radial-gradient(520px 320px at 88% 0%, rgba(255,107,53,.18), transparent 70%),
+    linear-gradient(180deg, #111B2E 0%, #0F172A 100%);
+}
+.ts-fig-about-cta-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+.ts-fig-about-cta h2 {
+  max-width: 760px;
+  margin: 0;
+  color: #fff;
+  font-family: var(--fig-serif);
+  font-size: clamp(34px, 4.5vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -.025em;
+}
+.ts-fig-about-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 820px) {
+  .ts-fig-about-hero-grid {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .ts-fig-about-panel {
+    margin-inline-start: 0;
+    width: 100%;
+  }
+  .ts-fig-about-story,
+  .ts-fig-about-proof-grid,
+  .ts-fig-about-values {
+    grid-template-columns: 1fr;
+  }
+  .ts-fig-about-proof {
+    min-height: 0;
+  }
+  .ts-fig-about-cta-inner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .ts-fig-about-cta-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .ts-fig-about-hero-grid {
+    padding-block: 56px 64px;
+  }
+  .ts-fig-about-copy h1 {
+    font-size: clamp(38px, 11vw, 52px);
+  }
+  .ts-fig-about-copy p,
+  .ts-fig-about-story p {
+    font-size: 15px;
+  }
+  .ts-fig-about-actions,
+  .ts-fig-about-cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .ts-fig-about-actions .ts-fig-btn,
+  .ts-fig-about-cta-actions .ts-fig-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .ts-fig-about-panel,
+  .ts-fig-about-proof,
+  .ts-fig-about-values article {
+    border-radius: 18px;
+    padding: 22px;
+  }
+  .ts-fig-about-panel-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ts-fig-about-panel-row strong {
+    text-align: left;
+  }
 }
 
 /* ─── Doc pages: Privacy + Terms ──────────────────────────────────────────

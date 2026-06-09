@@ -837,10 +837,11 @@ export default function MerchantComplianceClient({
                         <div className="mt-4 max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-[#0b0f17] shadow-xl">
                             <div className="h-[320px] max-h-[52vh]">
                                 <ChatBot
-                                    title="Compliance Help"
+                                    title="Serv"
+                                    subtitle="Merchant compliance guidance. Human admins still verify launch readiness."
                                     placeholder="Ask about violations, documents, inspections..."
                                     onSendMessage={handleBotMessage}
-                                    initialMessage="Hi, I can help you understand inspection requirements, document readiness, violation patterns, and next steps before your next review."
+                                    initialMessage="Hi, I'm Serv. I can help you understand inspection requirements, document readiness, violation patterns, and launch next steps before your next review."
                                 />
                             </div>
                         </div>

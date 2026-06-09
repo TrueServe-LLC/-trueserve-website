@@ -59,7 +59,7 @@ export async function middleware(request: NextRequest) {
       "font-src 'self' https://fonts.gstatic.com",
       "worker-src 'self' blob:",
       "img-src 'self' data: blob: https: http:",
-      "connect-src 'self' https://*.supabase.co https://api.stripe.com https://app.launchdarkly.com https://api.launchdarkly.com wss://*.supabase.co https://sentry.io",
+      "connect-src 'self' https://*.supabase.co https://api.stripe.com https://app.launchdarkly.com https://api.launchdarkly.com https://maps.googleapis.com wss://*.supabase.co https://sentry.io",
       "frame-src https://js.stripe.com https://hooks.stripe.com https://www.google.com https://maps.google.com",
       isEmbed ? "frame-ancestors *" : "frame-ancestors 'self'",
       "upgrade-insecure-requests",
@@ -100,25 +100,55 @@ export async function middleware(request: NextRequest) {
 
   const subdomain = isSub && !['www', 'localhost', 'trueserve'].includes(subdomainPiece) ? subdomainPiece : ""
 
-  // --- 2. SUPABASE SESSION SYNC ---
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          cookiesToSet.forEach(({ name, value, options }) => {
-             const sharedOptions = { ...options, domain: cookieDomain }
-             response.cookies.set(name, value, sharedOptions)
-          })
-        },
-      },
-    }
-  )
+  const portals = ['/admin', '/merchant', '/driver']
+  const matchedPortal = portals.find(p => path.startsWith(p))
+  const isPublicPortalPath =
+    path === '/merchant' ||
+    path === '/driver' ||
+    path === '/merchant/login' ||
+    path === '/driver/login' ||
+    path === '/driver/app' ||
+    path === '/driver/pending-review' ||
+    path === '/driver/recover' ||
+    path === '/merchant/tutorial-preview' ||
+    path === '/driver/tutorial-preview' ||
+    path === '/merchant/portal-preview' ||
+    path === '/driver/portal-preview' ||
+    path === '/merchant/signup' ||
+    path === '/merchant/setup' ||
+    path === '/driver/signup' ||
+    path === '/admin/login';
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const adminSession = request.cookies.get('admin_session')?.value === 'true'
+  const isAdminAllowedPath = path === '/login' || path.startsWith('/admin/login') || path.startsWith('/auth/callback')
+  const needsSupabaseUser =
+    (subdomain === 'admin' && !adminSession && !isAdminAllowedPath) ||
+    Boolean(matchedPortal && !isPublicPortalPath && !path.startsWith('/admin'))
+
+  let user: Awaited<ReturnType<ReturnType<typeof createServerClient>['auth']['getUser']>>['data']['user'] | null = null
+
+  // --- 2. SUPABASE SESSION SYNC ---
+  if (needsSupabaseUser) {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll: () => request.cookies.getAll(),
+          setAll: (cookiesToSet) => {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            cookiesToSet.forEach(({ name, value, options }) => {
+               const sharedOptions = { ...options, domain: cookieDomain }
+               response.cookies.set(name, value, sharedOptions)
+            })
+          },
+        },
+      }
+    )
+
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  }
 
   // --- 3. SUBDOMAIN ROUTING & ROLE PROTECTION ---
   const allowedSubdomains = ["admin", "merchant", "driver"]
@@ -126,11 +156,9 @@ export async function middleware(request: NextRequest) {
   if (subdomain && allowedSubdomains.includes(subdomain)) {
     // SECURITY GATE: Only allow internal staff on admin subdomain
     if (subdomain === 'admin') {
-      const isAllowedPath = path === '/login' || path.startsWith('/admin/login') || path.startsWith('/auth/callback')
-      const adminSession = request.cookies.get('admin_session')?.value === 'true'
-      if (!user && !adminSession && !isAllowedPath) return NextResponse.redirect(new URL('/admin/login', request.url))
+      if (!user && !adminSession && !isAdminAllowedPath) return NextResponse.redirect(new URL('/admin/login', request.url))
       
-      if (user && !isAllowedPath) {
+      if (user && !isAdminAllowedPath) {
         const roleResponse = await fetch(
           `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/User?email=eq.${user.email}&select=role`,
           {
@@ -163,25 +191,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // --- 4. PATH-BASED PROTECTION (Fallback) ---
-  const portals = ['/admin', '/merchant', '/driver']
-  const matchedPortal = portals.find(p => path.startsWith(p))
-
   if (matchedPortal) {
-    // PUBLIC PATHS for Portals: Landing pages and enrollment should NOT require login
-    const isPublicPortalPath =
-      path === '/merchant' ||
-      path === '/driver' ||
-      path === '/merchant/login' ||
-      path === '/driver/login' ||
-      path === '/merchant/tutorial-preview' ||
-      path === '/driver/tutorial-preview' ||
-      path === '/merchant/portal-preview' ||
-      path === '/driver/portal-preview' ||
-      path === '/merchant/signup' ||
-      path === '/merchant/setup' ||
-      path === '/driver/signup' ||
-      path === '/admin/login';
-
     // If it's the admin portal and they have a manual admin_session cookie, let the page-layer auth guard handle it
     if (path.startsWith('/admin')) {
       const hasAdminSession = request.cookies.has("admin_session");

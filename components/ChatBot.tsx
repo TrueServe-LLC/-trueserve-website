@@ -13,6 +13,7 @@ export type Message = {
 
 interface ChatBotProps {
     title?: string;
+    subtitle?: string;
     placeholder?: string;
     onSendMessage: (message: string) => Promise<Message>;
     initialMessage?: string;
@@ -23,6 +24,7 @@ interface ChatBotProps {
 
 export default function ChatBot({
     title = "Help Bot",
+    subtitle = "Answers onboarding, billing, documents, and support questions.",
     placeholder = "Ask a question...",
     onSendMessage,
     initialMessage,
@@ -110,7 +112,7 @@ export default function ChatBot({
                     </span>
                     <div>
                         <h3 className="text-sm font-bold text-white">{title}</h3>
-                        <p className="text-[11px] font-medium text-white/45">Answers based on your restaurant compliance profile.</p>
+                        <p className="text-[11px] font-medium text-white/45">{subtitle}</p>
                     </div>
                 </div>
                 {compact && (

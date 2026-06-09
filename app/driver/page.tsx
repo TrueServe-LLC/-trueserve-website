@@ -86,6 +86,9 @@ export default function DriverLanding() {
               <Link href="/driver/signup" className="portal-btn-gold portal-btn-gold-block" style={{ width: "auto", padding: "14px 32px", fontSize: 14 }}>
                 Apply to Drive →
               </Link>
+              <Link href="/driver/app" className="portal-btn-outline portal-btn-outline-block" style={{ width: "auto", padding: "14px 28px", fontSize: 14 }}>
+                Driver App
+              </Link>
               <Link href="/driver/login" className="portal-btn-outline portal-btn-outline-block" style={{ width: "auto", padding: "14px 28px", fontSize: 14 }}>
                 Sign In
               </Link>

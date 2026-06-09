@@ -230,12 +230,24 @@ export async function rejectDriver(id: string) {
 
         const { error: statusError } = await supabaseAdmin
             .from('Driver')
-            .update({ status: "REJECTED", vehicleVerified: false, updatedAt: new Date().toISOString() })
+            .update({
+                status: "REJECTED",
+                complianceStatus: "REJECTED",
+                backgroundCheckStatus: "REJECTED",
+                vehicleVerified: false,
+                updatedAt: new Date().toISOString()
+            })
             .eq('id', id);
 
         if (statusError) throw statusError;
 
-        await logAuditAction({ action: "REJECT_DRIVER", targetId: id, entityType: "Driver", before: { status: "PENDING" }, after: { status: "REJECTED" } });
+        await logAuditAction({
+            action: "REJECT_DRIVER",
+            targetId: id,
+            entityType: "Driver",
+            before: { status: "PENDING" },
+            after: { status: "REJECTED", complianceStatus: "REJECTED" }
+        });
 
         const emailResult = await Promise.allSettled([
             sendEmail(

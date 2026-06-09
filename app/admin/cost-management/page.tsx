@@ -1412,6 +1412,136 @@ export default async function CostManagementPage() {
                         border-bottom: 0 !important;
                     }
                 }
+
+                /* Portal consistency guard: keep billing screens from reverting to the older
+                   dense console layout when content or browser width changes. */
+                .adm-page-body .cost-wrap {
+                    max-width: 1240px !important;
+                    margin-inline: auto !important;
+                    gap: 18px !important;
+                    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+                }
+                .adm-page-body .cost-metrics {
+                    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+                    gap: 14px !important;
+                    align-items: stretch !important;
+                }
+                .adm-page-body .cost-metric,
+                .adm-page-body .cost-panel {
+                    border-radius: 18px !important;
+                    background: rgba(18, 24, 21, .94) !important;
+                    border-color: rgba(255,255,255,.09) !important;
+                    overflow: hidden !important;
+                }
+                .adm-page-body .cost-metric {
+                    min-height: 116px !important;
+                    padding: 16px !important;
+                }
+                .adm-page-body .cost-panel-head {
+                    grid-template-columns: minmax(0, 1fr) auto !important;
+                    min-height: 112px !important;
+                    padding: 18px 20px !important;
+                }
+                .adm-page-body .cost-title-row {
+                    grid-template-columns: 48px minmax(0, 1fr) !important;
+                    gap: 14px !important;
+                }
+                .adm-page-body .cost-icon {
+                    width: 48px !important;
+                    height: 48px !important;
+                    border-radius: 14px !important;
+                    background: rgba(249,115,22,.1) !important;
+                    border-color: rgba(249,115,22,.22) !important;
+                    color: #f97316 !important;
+                }
+                .adm-page-body .cost-title-row h2,
+                .adm-page-body .cost-flow-head h3,
+                .adm-page-body .cost-portals h3,
+                .adm-page-body .cost-analytics-note h3 {
+                    font-size: 17px !important;
+                }
+                .adm-page-body .cost-title-row p,
+                .adm-page-body .cost-source-card p,
+                .adm-page-body .cost-flow-step p,
+                .adm-page-body .cost-portals p,
+                .adm-page-body .cost-analytics-note p,
+                .adm-page-body .cost-empty,
+                .adm-page-body .cost-details-body p {
+                    font-size: 13px !important;
+                    line-height: 1.58 !important;
+                }
+                .adm-page-body .cost-source-grid {
+                    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+                    gap: 0 !important;
+                }
+                .adm-page-body .cost-source-card {
+                    min-height: 150px !important;
+                    border-right: 1px solid rgba(255,255,255,.07) !important;
+                    border-bottom: 0 !important;
+                }
+                .adm-page-body .cost-flow-grid,
+                .adm-page-body .cost-ledger-stats,
+                .adm-page-body .cost-portal-grid {
+                    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+                }
+                .adm-page-body .cost-flow {
+                    padding: 18px 20px !important;
+                }
+                .adm-page-body .cost-flow-grid {
+                    gap: 18px !important;
+                }
+                .adm-page-body .cost-ledger-stats {
+                    gap: 0 !important;
+                }
+                .adm-page-body .cost-ledger-stats div {
+                    min-height: 104px !important;
+                }
+                .adm-page-body .cost-portals {
+                    grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) !important;
+                    align-items: start !important;
+                }
+                .adm-page-body .cost-analytics-note {
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+                }
+                .adm-page-body .cost-sync-message,
+                .adm-page-body .cost-alert {
+                    margin: 0 !important;
+                }
+                @media (max-width: 980px) {
+                    .adm-page-body .cost-wrap {
+                        max-width: none !important;
+                    }
+                    .adm-page-body .cost-panel-head,
+                    .adm-page-body .cost-portals {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .adm-page-body .cost-actions,
+                    .adm-page-body .cost-actions form,
+                    .adm-page-body .cost-actions .cost-btn,
+                    .adm-page-body .cost-panel-head form,
+                    .adm-page-body .cost-panel-head form .cost-btn {
+                        width: 100% !important;
+                    }
+                }
+                @media (max-width: 720px) {
+                    .adm-page-body .cost-metrics,
+                    .adm-page-body .cost-source-grid,
+                    .adm-page-body .cost-flow-grid,
+                    .adm-page-body .cost-ledger-stats,
+                    .adm-page-body .cost-portal-grid,
+                    .adm-page-body .cost-analytics-note {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .adm-page-body .cost-source-card,
+                    .adm-page-body .cost-ledger-stats div {
+                        border-right: 0 !important;
+                        border-bottom: 1px solid rgba(255,255,255,.07) !important;
+                    }
+                    .adm-page-body .cost-source-card:last-child,
+                    .adm-page-body .cost-ledger-stats div:last-child {
+                        border-bottom: 0 !important;
+                    }
+                }
             `}</style>
             <div className="adm-page-header">
                 <h1>Cost Management</h1>

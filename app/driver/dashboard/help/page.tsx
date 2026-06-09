@@ -1,17 +1,25 @@
-import { AlertTriangle, Mail, MessageCircle, Phone, ShieldCheck, Smartphone, UserRound, WalletCards } from "lucide-react";
+import { AlertTriangle, Mail, MessageCircle, ShieldCheck, Smartphone, UserRound, WalletCards } from "lucide-react";
 
 export default function DriverHelp() {
     const categories = [
-        { Icon: WalletCards, title: 'Pay & Earnings',      desc: 'Missing pay, promotions, cash out issues.' },
+        { Icon: WalletCards, title: 'Pay & Earnings',      desc: 'Daily pay, tips, Stripe payouts, cash-out status.' },
         { Icon: Smartphone, title: 'App Issues',           desc: 'Bugs, crashes, login problems.' },
         { Icon: ShieldCheck, title: 'Safety & Incidents',  desc: 'Report an accident or safety concern.' },
-        { Icon: UserRound, title: 'Account Info',         desc: 'Update vehicle, documents, phone number.' },
+        { Icon: UserRound, title: 'Onboarding & Docs',     desc: 'License, insurance, registration, approval status.' },
     ];
 
     const faqs = [
         {
             q: 'How is pay calculated?',
-            a: 'Pay is based on base fare + mileage + wait time + 100% of tips. TrueServe shows an estimated pay breakdown before you accept every order.',
+            a: 'Drivers earn $20/hr daily pay for tracked shift time plus 100% of customer tips. TrueServe also shows delivery-level pay details so you can see what each shift produced.',
+        },
+        {
+            q: 'What should I do after signing up?',
+            a: 'Use the driver start guide: confirm your profile, upload license/insurance/registration, connect Stripe payouts, and set your zones. Admins review your documents before you are marked active.',
+        },
+        {
+            q: 'Can Serv approve my documents?',
+            a: 'No. Serv can explain what is missing and where to upload it, but human admins verify, reject, or approve driver documents.',
         },
         {
             q: 'How do I cancel an order?',
@@ -19,7 +27,7 @@ export default function DriverHelp() {
         },
         {
             q: 'When do I get paid?',
-            a: 'Your balance is available for instant cash-out at any time from the Settlements page. There are no holds or delays.',
+            a: 'Daily payouts depend on tracked shift time, admin readiness, and Stripe payout status. If Stripe is not complete, the dashboard will show what still needs to be finished.',
         },
         {
             q: 'How do tips work?',
@@ -81,13 +89,13 @@ export default function DriverHelp() {
             ` }} />
 
             <div className="help-title">Help <span>&amp; Support</span></div>
-            <span className="help-sub">24/7 assistance for drivers</span>
+            <span className="help-sub">Serv guidance plus human review when it matters</span>
 
             {/* CTA */}
             <div className="help-cta">
-                <h2>Need immediate help?</h2>
-                <p>Our support team is available around the clock for active delivery issues.</p>
-                <button className="help-chat-btn"><MessageCircle size={15} aria-hidden="true" /> Chat with Support</button>
+                <h2>Ask Serv or reach Driver Operations</h2>
+                <p>Serv can guide portal steps fast. Documents, approvals, payout exceptions, and safety issues still go to a human reviewer.</p>
+                <button className="help-chat-btn"><MessageCircle size={15} aria-hidden="true" /> Ask Serv</button>
             </div>
 
             {/* Categories */}
@@ -119,8 +127,8 @@ export default function DriverHelp() {
             <div className="help-contact">
                 <div className="help-contact-hd">Other Ways to Reach Us</div>
                 {[
-                    { Icon: Mail, label: 'Email Support', sub: 'drivers@trueserve.com — reply within 4 hours' },
-                    { Icon: Phone, label: 'Phone (Active Delivery)', sub: '1-800-TRUESERVE — press 2 for drivers' },
+                    { Icon: Mail, label: 'Driver Operations', sub: 'drivers@trueserve.delivery — documents, approvals, and payout questions' },
+                    { Icon: MessageCircle, label: 'Ask Serv', sub: 'Best for portal navigation, document upload steps, payouts, and zones' },
                     { Icon: AlertTriangle, label: 'Emergency Only', sub: 'For safety incidents during an active order' },
                 ].map(({ Icon, label, sub }) => (
                     <div key={label} className="help-contact-row">

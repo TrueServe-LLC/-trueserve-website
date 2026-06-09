@@ -163,6 +163,101 @@ export default async function DriverDashboard() {
     const dropoffAddress = primaryOrder?.deliveryAddress || "";
     const pickupMapUrl = pickupAddress ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pickupAddress)}` : "";
     const dropoffMapUrl = dropoffAddress ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dropoffAddress)}` : "";
+    const driverStatusRaw = String((driver as any)?.status || (driver as any)?.applicationStatus || (isPreview ? "ACTIVE" : "PENDING_DOCUMENTS")).toUpperCase();
+    const docsApproved = ["ACTIVE", "APPROVED", "READY_FOR_REVIEW"].includes(driverStatusRaw) || Boolean((driver as any)?.documentsVerified);
+    const hasLocation = driverLat !== null && driverLng !== null;
+    const hasWorkedToday = Boolean(activeShift) || todayShiftMinutes > 0 || stats.trips > 0;
+    const driverGuideSteps = [
+        {
+            id: "profile",
+            label: "Confirm your driver profile",
+            desc: "Keep phone, vehicle, and contact details current before accepting offers.",
+            done: Boolean((driver as any)?.name),
+            href: "/driver/dashboard/account",
+            cta: "Open profile",
+        },
+        {
+            id: "docs",
+            label: "Upload and keep documents current",
+            desc: "License, insurance, and registration stay in review until an admin verifies them.",
+            done: docsApproved,
+            href: "/driver/dashboard/compliance",
+            cta: "Review docs",
+        },
+        {
+            id: "payouts",
+            label: "Connect Stripe payouts",
+            desc: "Daily pay and cash-out depend on a completed payout account.",
+            done: stripeReady,
+            href: "/driver/dashboard/account",
+            cta: stripeReady ? "Payouts active" : "Finish payouts",
+        },
+        {
+            id: "zones",
+            label: "Set zones and availability",
+            desc: "Choose where you want to work so offers match your market.",
+            done: hasLocation,
+            href: "/driver/dashboard/preferences",
+            cta: "Set zones",
+        },
+        {
+            id: "shift",
+            label: "Run your first shift",
+            desc: "Start online, accept a test-ready order, and confirm delivery steps are clear.",
+            done: hasWorkedToday,
+            href: "/driver/dashboard",
+            cta: "Start shift",
+        },
+    ];
+    const driverGuideCompleted = driverGuideSteps.filter((step) => step.done).length;
+    const driverGuideProgress = Math.round((driverGuideCompleted / driverGuideSteps.length) * 100);
+    const currentStateLabel = activeShift ? "Online" : docsApproved && stripeReady ? "Ready" : "Setup needed";
+    const nextActionHref = !docsApproved
+        ? "/driver/dashboard/compliance"
+        : !stripeReady
+            ? "/driver/dashboard/account"
+            : !hasLocation
+                ? "/driver/dashboard/preferences"
+                : "/driver/dashboard";
+    const nextActionText = !docsApproved
+        ? "Finish documents"
+        : !stripeReady
+            ? "Connect payouts"
+            : !hasLocation
+                ? "Set work zone"
+                : activeShift
+                    ? "Review offers"
+                    : "Clock in below";
+    const driverReadinessCards = [
+        {
+            label: "Clearance",
+            value: docsApproved ? "Cleared" : "Docs pending",
+            detail: docsApproved ? "Admin review complete or ready for review." : "Upload license, insurance, and registration.",
+            tone: docsApproved ? "good" : "warn",
+            href: "/driver/dashboard/compliance",
+        },
+        {
+            label: "Daily pay",
+            value: "$20/hr",
+            detail: stripeReady ? "Payouts active through Stripe." : "Connect Stripe before cash-out.",
+            tone: stripeReady ? "good" : "warn",
+            href: "/driver/dashboard/account",
+        },
+        {
+            label: "Work zone",
+            value: hasLocation ? "Located" : "Not set",
+            detail: hasLocation ? "Offers can match your current market." : "Set location and preferred zones.",
+            tone: hasLocation ? "good" : "warn",
+            href: "/driver/dashboard/preferences",
+        },
+        {
+            label: "Live offers",
+            value: String(availableOrders.length),
+            detail: primaryOrder ? "Finish the active route before stacking more." : "Available orders appear here when markets are live.",
+            tone: availableOrders.length > 0 ? "good" : "neutral",
+            href: "/driver/dashboard",
+        },
+    ];
 
     return (
         <>
@@ -183,6 +278,178 @@ export default async function DriverDashboard() {
             />
         )}
         <style>{`
+            .driver-command-center {
+                margin: 0 0 16px;
+                border: 1px solid rgba(249,115,22,0.18);
+                border-radius: 16px;
+                overflow: hidden;
+                background:
+                    radial-gradient(circle at 88% 0%, rgba(20,184,166,0.15), transparent 28%),
+                    linear-gradient(145deg, rgba(20,26,24,0.98), rgba(8,10,9,0.98));
+                box-shadow: 0 20px 55px rgba(0,0,0,0.26);
+            }
+            .driver-command-hero {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
+                gap: 16px;
+                padding: 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+            }
+            .driver-command-kicker {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0 0 10px;
+                color: #5bd6ca;
+                font-size: 10px;
+                font-weight: 950;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+            }
+            .driver-command-kicker::before {
+                content: "";
+                width: 9px;
+                height: 9px;
+                border-radius: 999px;
+                background: #3ecf6e;
+                box-shadow: 0 0 0 6px rgba(62,207,110,0.1);
+            }
+            .driver-command-title {
+                margin: 0;
+                color: #fff;
+                font-size: clamp(24px, 3.2vw, 40px);
+                line-height: 1.05;
+                letter-spacing: -0.035em;
+                font-weight: 950;
+            }
+            .driver-command-title span { color: #f97316; }
+            .driver-command-sub {
+                margin: 10px 0 0;
+                color: #aab4c8;
+                font-size: 13px;
+                line-height: 1.6;
+                max-width: 760px;
+            }
+            .driver-command-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 14px;
+            }
+            .driver-command-primary,
+            .driver-command-secondary {
+                min-height: 42px;
+                border-radius: 10px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 16px;
+                font-size: 11px;
+                font-weight: 950;
+                letter-spacing: 0.11em;
+                text-transform: uppercase;
+                text-decoration: none;
+            }
+            .driver-command-primary {
+                border: 1px solid #f97316;
+                background: #f97316;
+                color: #050505;
+                box-shadow: 0 10px 28px rgba(249,115,22,0.22);
+            }
+            .driver-command-secondary {
+                border: 1px solid rgba(255,255,255,0.09);
+                background: rgba(255,255,255,0.04);
+                color: #d8ded9;
+            }
+            .driver-command-status {
+                display: grid;
+                gap: 10px;
+                align-self: stretch;
+            }
+            .driver-command-status-card {
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px;
+                background: rgba(4,6,5,0.62);
+                padding: 14px;
+            }
+            .driver-command-status-card small {
+                display: block;
+                margin-bottom: 6px;
+                color: #777;
+                font-size: 9px;
+                font-weight: 950;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+            }
+            .driver-command-status-card strong {
+                display: block;
+                color: #fff;
+                font-size: 22px;
+                font-weight: 950;
+                letter-spacing: -0.03em;
+                line-height: 1;
+            }
+            .driver-command-status-card strong.good { color: #3ecf6e; }
+            .driver-command-status-card span {
+                display: block;
+                margin-top: 5px;
+                color: #8a918b;
+                font-size: 11px;
+                line-height: 1.35;
+                font-weight: 700;
+            }
+            .driver-command-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                border-top: 1px solid rgba(255,255,255,0.02);
+            }
+            .driver-command-card {
+                display: block;
+                min-width: 0;
+                padding: 16px;
+                border-right: 1px solid rgba(255,255,255,0.07);
+                text-decoration: none;
+                background: rgba(255,255,255,0.015);
+            }
+            .driver-command-card:last-child { border-right: 0; }
+            .driver-command-card:hover {
+                background: rgba(249,115,22,0.05);
+            }
+            .driver-command-label {
+                color: #8a918b;
+                font-size: 9px;
+                font-weight: 950;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                margin-bottom: 8px;
+            }
+            .driver-command-value {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #fff;
+                font-size: 18px;
+                font-weight: 950;
+                line-height: 1.1;
+                margin-bottom: 7px;
+            }
+            .driver-command-value::before {
+                content: "";
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: #707a74;
+                flex-shrink: 0;
+            }
+            .driver-command-card.good .driver-command-value::before { background: #3ecf6e; box-shadow: 0 0 0 5px rgba(62,207,110,0.08); }
+            .driver-command-card.warn .driver-command-value::before { background: #f97316; box-shadow: 0 0 0 5px rgba(249,115,22,0.08); }
+            .driver-command-detail {
+                margin: 0;
+                color: #8a918b;
+                font-size: 11px;
+                line-height: 1.5;
+                font-weight: 700;
+            }
             /* STAT BLOCK */
             .dd-stat-grid {
                 display: grid; grid-template-columns: repeat(3, 1fr);
@@ -885,8 +1152,178 @@ export default async function DriverDashboard() {
                 letter-spacing: 0.1em;
                 text-decoration: none;
             }
+            .dd-start-guide {
+                margin: 0 0 16px;
+                padding: 18px;
+                border-radius: 14px;
+                border: 1px solid rgba(20,184,166,0.18);
+                background:
+                    radial-gradient(circle at 12% 0%, rgba(20,184,166,0.14), transparent 34%),
+                    linear-gradient(145deg, rgba(20,26,24,0.96), rgba(12,14,13,0.98));
+                box-shadow: 0 18px 45px rgba(0,0,0,0.22);
+            }
+            .dd-guide-head {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 14px;
+            }
+            .dd-guide-kicker {
+                margin: 0 0 5px;
+                color: #5bd6ca;
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+            }
+            .dd-guide-title {
+                margin: 0;
+                color: #fff;
+                font-size: 20px;
+                font-weight: 900;
+                letter-spacing: -0.02em;
+            }
+            .dd-guide-sub {
+                margin: 6px 0 0;
+                color: #aab4c8;
+                font-size: 12px;
+                line-height: 1.55;
+                max-width: 640px;
+            }
+            .dd-guide-progress {
+                min-width: 138px;
+                text-align: right;
+            }
+            .dd-guide-progress strong {
+                display: block;
+                color: #fff;
+                font-size: 24px;
+                font-weight: 900;
+                line-height: 1;
+            }
+            .dd-guide-progress span {
+                color: #8a918b;
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+            .dd-guide-track {
+                height: 6px;
+                margin-top: 8px;
+                overflow: hidden;
+                border-radius: 999px;
+                background: rgba(255,255,255,0.08);
+            }
+            .dd-guide-fill {
+                height: 100%;
+                border-radius: inherit;
+                background: linear-gradient(90deg, #5bd6ca, #f97316);
+            }
+            .dd-guide-list {
+                display: grid;
+                gap: 8px;
+            }
+            .dd-guide-row {
+                display: grid;
+                grid-template-columns: 22px minmax(0, 1fr) auto;
+                align-items: center;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 11px;
+                border: 1px solid rgba(255,255,255,0.07);
+                background: rgba(7,9,8,0.62);
+            }
+            .dd-guide-dot {
+                width: 18px;
+                height: 18px;
+                border-radius: 999px;
+                border: 2px solid rgba(255,255,255,0.18);
+                background: rgba(255,255,255,0.04);
+            }
+            .dd-guide-dot.done {
+                border-color: #3ecf6e;
+                background: #3ecf6e;
+                box-shadow: 0 0 0 5px rgba(62,207,110,0.08);
+            }
+            .dd-guide-row h3 {
+                margin: 0 0 3px;
+                color: #fff;
+                font-size: 13px;
+                font-weight: 900;
+            }
+            .dd-guide-row p {
+                margin: 0;
+                color: #8a918b;
+                font-size: 11px;
+                line-height: 1.45;
+            }
+            .dd-guide-link {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 34px;
+                padding: 0 12px;
+                border-radius: 9px;
+                border: 1px solid rgba(249,115,22,0.28);
+                background: rgba(249,115,22,0.08);
+                color: #f97316;
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: 0.11em;
+                text-transform: uppercase;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+            .dd-serv-note {
+                margin-top: 10px;
+                padding: 11px 12px;
+                border-radius: 10px;
+                border: 1px solid rgba(20,184,166,0.14);
+                background: rgba(20,184,166,0.06);
+                color: #aab4c8;
+                font-size: 11px;
+                line-height: 1.55;
+            }
+            .dd-serv-note strong { color: #5bd6ca; }
+
+            .driver-polish-guard,
+            .dd-panel,
+            .dd-stat-card,
+            .dd-weather-card,
+            .dd-stripe-banner,
+            .dd-order-card,
+            .dd-avail-card,
+            .dd-start-guide,
+            .dd-transparency,
+            .driver-shift-card {
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+            .dd-panel,
+            .dd-stat-card,
+            .dd-weather-card,
+            .dd-stripe-banner,
+            .dd-order-card,
+            .dd-avail-card,
+            .driver-shift-card {
+                border-radius: 14px;
+            }
+            .dd-btn-gold,
+            .dd-btn-ghost,
+            .dd-accept-btn,
+            .dd-stripe-btn,
+            .dd-guide-link,
+            .driver-shift-btn {
+                min-height: 44px;
+            }
 
             @media (max-width: 1024px) {
+                .driver-command-hero { grid-template-columns: 1fr; }
+                .driver-command-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                .driver-command-card:nth-child(2) { border-right: 0; }
+                .driver-command-card:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.07); }
                 .dd-two-col, .dd-bottom-grid { grid-template-columns: 1fr; }
                 .dd-stat-grid { grid-template-columns: repeat(3, 1fr); }
                 .driver-shift-grid { grid-template-columns: repeat(2, 1fr); }
@@ -895,6 +1332,15 @@ export default async function DriverDashboard() {
                 .dd-transparency-card:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.07); }
             }
             @media (max-width: 640px) {
+                .driver-command-hero { padding: 16px; }
+                .driver-command-title { font-size: 28px; }
+                .driver-command-actions { display: grid; grid-template-columns: 1fr; }
+                .driver-command-grid { grid-template-columns: 1fr; }
+                .driver-command-card {
+                    border-right: 0;
+                    border-bottom: 1px solid rgba(255,255,255,0.07);
+                }
+                .driver-command-card:last-child { border-bottom: 0; }
                 .driver-app-card { align-items: stretch; flex-direction: column; padding: 14px; }
                 .driver-app-status h2 { font-size: 18px; }
                 .driver-app-actions { display: grid; grid-template-columns: 1fr 1fr; justify-content: stretch; }
@@ -918,6 +1364,10 @@ export default async function DriverDashboard() {
                 .driver-shift-grid { grid-template-columns: 1fr; }
                 .driver-shift-btn, .driver-shift-actions form { width: 100%; }
                 .dd-transparency-head { flex-direction: column; }
+                .dd-guide-head { flex-direction: column; }
+                .dd-guide-progress { min-width: 0; width: 100%; text-align: left; }
+                .dd-guide-row { grid-template-columns: 22px minmax(0, 1fr); }
+                .dd-guide-link { grid-column: 1 / -1; }
                 .dd-transparency-grid { grid-template-columns: 1fr; }
                 .dd-transparency-card {
                     border-right: 0;
@@ -928,6 +1378,46 @@ export default async function DriverDashboard() {
             }
         `}</style>
 
+        <section className="driver-command-center" aria-label="TrueServe Driver command center">
+            <div className="driver-command-hero">
+                <div>
+                    <div className="driver-command-kicker">TrueServe Driver</div>
+                    <h1 className="driver-command-title">
+                        Shift-ready control, <span>daily pay visible.</span>
+                    </h1>
+                    <p className="driver-command-sub">
+                        A driver app should make the next step obvious. Your documents, payout status,
+                        active route, work zone, and support path are all visible before you accept an order.
+                    </p>
+                    <div className="driver-command-actions">
+                        <Link className="driver-command-primary" href={nextActionHref}>{nextActionText}</Link>
+                        <Link className="driver-command-secondary" href="/driver/dashboard/help">Ask Serv or support</Link>
+                    </div>
+                </div>
+                <div className="driver-command-status" aria-label="Driver live status">
+                    <div className="driver-command-status-card">
+                        <small>Current state</small>
+                        <strong className={activeShift ? "good" : ""}>{currentStateLabel}</strong>
+                        <span>{activeShift ? "You are clocked in and can work active offers." : "Clock in when documents, zones, and payouts are ready."}</span>
+                    </div>
+                    <div className="driver-command-status-card">
+                        <small>Today&apos;s tracked shift</small>
+                        <strong>${todayShiftPay.toFixed(2)}</strong>
+                        <span>{todayShiftHours.toFixed(1)} hour{todayShiftHours === 1 ? "" : "s"} at the $20/hr daily pay model.</span>
+                    </div>
+                </div>
+            </div>
+            <div className="driver-command-grid">
+                {driverReadinessCards.map((card) => (
+                    <Link key={card.label} className={`driver-command-card ${card.tone}`} href={card.href}>
+                        <div className="driver-command-label">{card.label}</div>
+                        <div className="driver-command-value">{card.value}</div>
+                        <p className="driver-command-detail">{card.detail}</p>
+                    </Link>
+                ))}
+            </div>
+        </section>
+
         <DriverAppControls availableCount={availableOrders.length} activeOrderStatus={primaryOrder?.status ?? null} />
 
         <HustleAssistant
@@ -936,6 +1426,42 @@ export default async function DriverDashboard() {
             activeOrderPay={primaryOrder?.totalPay ?? primaryOrder?.driverPay ?? null}
             activeOrderDistance={primaryOrder?.distance ?? null}
         />
+
+        <section className="dd-start-guide" aria-label="Driver start guide">
+            <div className="dd-guide-head">
+                <div>
+                    <div className="dd-guide-kicker">Driver start guide</div>
+                    <h2 className="dd-guide-title">Know what to finish before your next shift.</h2>
+                    <p className="dd-guide-sub">
+                        This keeps onboarding, documents, payouts, zones, and first-shift readiness in one place.
+                        Serv can explain each step, while human admins still make approval decisions.
+                    </p>
+                </div>
+                <div className="dd-guide-progress" aria-label={`${driverGuideCompleted} of ${driverGuideSteps.length} driver setup steps complete`}>
+                    <strong>{driverGuideProgress}%</strong>
+                    <span>{driverGuideCompleted}/{driverGuideSteps.length} complete</span>
+                    <div className="dd-guide-track" aria-hidden="true">
+                        <div className="dd-guide-fill" style={{ width: `${driverGuideProgress}%` }} />
+                    </div>
+                </div>
+            </div>
+            <div className="dd-guide-list">
+                {driverGuideSteps.map((step) => (
+                    <div key={step.id} className="dd-guide-row">
+                        <span className={`dd-guide-dot${step.done ? " done" : ""}`} aria-hidden="true" />
+                        <div>
+                            <h3>{step.label}</h3>
+                            <p>{step.desc}</p>
+                        </div>
+                        <Link className="dd-guide-link" href={step.href}>{step.cta}</Link>
+                    </div>
+                ))}
+            </div>
+            <div className="dd-serv-note">
+                <strong>Serv can help:</strong> Ask about documents, payouts, zones, account setup, or what to do next.
+                Rejected documents, safety incidents, and approval decisions still route to a human reviewer.
+            </div>
+        </section>
 
         {/* STAT CARDS */}
         <div className="dd-stat-grid">

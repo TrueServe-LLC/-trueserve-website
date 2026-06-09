@@ -1,15 +1,35 @@
 {
     "name": "TrueServe Delivery",
     "short_name": "TrueServe",
-    "id": "/driver/dashboard",
-    "start_url": "/driver/dashboard",
+    "id": "/driver/app",
+    "start_url": "/driver/app",
     "scope": "/",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#0a0a0a",
     "theme_color": "#0a0c09",
-    "description": "TrueServe driver, merchant, and local delivery tools.",
+    "description": "TrueServe driver-first mobile app, merchant tools, and local delivery workflows.",
+    "categories": ["food", "business", "productivity"],
+    "prefer_related_applications": false,
     "shortcuts": [
+        {
+            "name": "Driver App",
+            "short_name": "Driver App",
+            "url": "/driver/app",
+            "description": "Open the mobile-first TrueServe driver app hub."
+        },
+        {
+            "name": "Apply to Drive",
+            "short_name": "Apply",
+            "url": "/driver/signup",
+            "description": "Start a TrueServe driver application."
+        },
+        {
+            "name": "Driver Sign In",
+            "short_name": "Sign In",
+            "url": "/driver/login",
+            "description": "Sign in to the TrueServe driver portal."
+        },
         {
             "name": "Driver Dashboard",
             "short_name": "Driver",

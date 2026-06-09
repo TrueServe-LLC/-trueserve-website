@@ -75,12 +75,91 @@ export default function DriverApplicationActions({
     };
 
     return (
-        <div className="um-app-action-stack">
-            <div className="um-app-action-row">
+        <div className="driver-action-controls um-app-action-stack">
+            <style>{`
+                .driver-action-controls {
+                    width: 100%;
+                    display: grid;
+                    gap: 8px;
+                    justify-items: stretch;
+                }
+                .driver-action-controls .driver-action-row {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(112px, 1fr));
+                    gap: 8px;
+                    width: 100%;
+                    min-width: 0;
+                }
+                .driver-action-controls .driver-action-button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 38px;
+                    border-radius: 10px;
+                    border: 1px solid rgba(255,255,255,0.1);
+                    background: rgba(255,255,255,0.04);
+                    color: rgba(255,255,255,0.82);
+                    padding: 0 12px;
+                    font-size: 12px;
+                    font-weight: 800;
+                    line-height: 1;
+                    white-space: nowrap;
+                    cursor: pointer;
+                    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+                }
+                .driver-action-controls .driver-action-button:hover:not(:disabled) {
+                    transform: translateY(-1px);
+                    border-color: rgba(255,255,255,0.18);
+                }
+                .driver-action-controls .driver-action-button:disabled {
+                    opacity: 0.45;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+                .driver-action-controls .driver-action-button-ready {
+                    color: #fbbf24;
+                    border-color: rgba(251,191,36,0.26);
+                    background: rgba(251,191,36,0.08);
+                }
+                .driver-action-controls .driver-action-button-approve {
+                    color: #34d399;
+                    border-color: rgba(52,211,153,0.26);
+                    background: rgba(52,211,153,0.08);
+                }
+                .driver-action-controls .driver-action-button-reject {
+                    color: #f87171;
+                    border-color: rgba(248,113,113,0.26);
+                    background: rgba(248,113,113,0.08);
+                }
+                .driver-action-controls .driver-action-message {
+                    width: 100%;
+                    border-radius: 10px;
+                    padding: 9px 10px;
+                    font-size: 12px;
+                    line-height: 1.45;
+                    font-weight: 700;
+                }
+                .driver-action-controls .driver-action-message.success {
+                    border: 1px solid rgba(52,211,153,0.25);
+                    background: rgba(52,211,153,0.08);
+                    color: #8df0c7;
+                }
+                .driver-action-controls .driver-action-message.error {
+                    border: 1px solid rgba(248,113,113,0.26);
+                    background: rgba(248,113,113,0.08);
+                    color: #fca5a5;
+                }
+                @media (max-width: 720px) {
+                    .driver-action-controls .driver-action-row {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            `}</style>
+            <div className="driver-action-row um-app-action-row">
                 {readyAction && (
                     <button
                         type="button"
-                        className="um-app-btn ready"
+                        className="driver-action-button driver-action-button-ready um-app-btn ready"
                         disabled={isPending || readyDisabled}
                         title={readyDisabled ? readyDisabledReason : "Move this driver into the Ready for Review lane"}
                         onClick={() => runAction("ready")}
@@ -90,7 +169,7 @@ export default function DriverApplicationActions({
                 )}
                 <button
                     type="button"
-                    className="um-app-btn approve"
+                    className="driver-action-button driver-action-button-approve um-app-btn approve"
                     disabled={isPending}
                     onClick={() => runAction("approve")}
                 >
@@ -98,7 +177,7 @@ export default function DriverApplicationActions({
                 </button>
                 <button
                     type="button"
-                    className="um-app-btn reject"
+                    className="driver-action-button driver-action-button-reject um-app-btn reject"
                     disabled={isPending}
                     onClick={() => runAction("reject")}
                 >
@@ -106,7 +185,7 @@ export default function DriverApplicationActions({
                 </button>
             </div>
             {message && (
-                <div className={`um-app-action-message ${message.type}`}>
+                <div className={`driver-action-message um-app-action-message ${message.type}`}>
                     {message.text}
                 </div>
             )}

@@ -379,10 +379,11 @@ export default function DriverComplianceClient({
                 {chatOpen && (
                     <div className="comp-chat-wrap">
                         <ChatBot
-                            title="Compliance Help"
+                            title="Serv"
+                            subtitle="Driver document and compliance guidance. Human admins still approve documents."
                             placeholder="Ask about food safety, bag sanitation, temperature control…"
                             onSendMessage={handleBotMessage}
-                            initialMessage="Hi! I'm your compliance assistant. Ask me about food safety training, bag sanitation, temperature control, or anything else to help you pass compliance checks."
+                            initialMessage="Hi, I'm Serv. I can explain driver document requirements, compliance checks, and next steps, but a human admin still verifies approvals."
                         />
                     </div>
                 )}

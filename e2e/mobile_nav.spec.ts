@@ -12,19 +12,15 @@ test.describe('Mobile Navigation End-to-End Tests', () => {
         // The page should render without error
         await expect(page.locator('body')).toBeVisible();
 
-        // Nav bar at top should be visible
-        const topNav = page.locator('nav');
-        await expect(topNav.first()).toBeVisible();
+        // The current public shell uses a banner with a hamburger menu on mobile.
+        await expect(page.getByRole('banner')).toBeVisible();
+        await expect(page.getByRole('button', { name: /open menu/i })).toBeVisible();
 
-        // Bottom mobile nav — look for fixed bottom navigation
-        const bottomNav = page.locator('.fixed.bottom-0, [class*="fixed"][class*="bottom"]');
-        if (await bottomNav.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-            // If bottom nav exists, verify core tabs
-            const homeTab = bottomNav.locator('text=/Home/i');
-            if (await homeTab.isVisible().catch(() => false)) {
-                await expect(homeTab).toBeVisible();
-            }
-        }
+        await page.getByRole('button', { name: /open menu/i }).click();
+        const mobileMenu = page.locator('#site-mobile-menu');
+        await expect(mobileMenu.getByRole('link', { name: /^home$/i })).toBeVisible();
+        await expect(mobileMenu.getByRole('link', { name: /^drive$/i })).toBeVisible();
+        await expect(mobileMenu.getByRole('link', { name: /^for merchants$/i })).toBeVisible();
     });
 
     test('Mobile Navigation remains hidden on login path', async ({ page }) => {
