@@ -19,16 +19,16 @@ export default function SupportWidget({ role = "CUSTOMER" }: { role?: "CUSTOMER"
                 "Document or onboarding help",
             ]
             : [
-                "Help with an order",
-                "POS or menu issue",
-                "Payout question",
+                "Walk me through going live",
+                "Where do I connect POS?",
+                "How do I fix payout setup?",
             ];
 
     const welcomeCopy = role === "CUSTOMER"
         ? "Serv can help with quick TrueServe questions. Send a short note, and if it needs a person, we will hand it to the right support lane."
         : role === "DRIVER"
             ? "Serv can collect the first details for Driver Ops. Send the issue and we will route it to the right place."
-            : "Serv can collect the first details for Restaurant Onboarding. Send the issue and we will help with orders, menus, POS, or payouts.";
+            : "Serv can guide Restaurant Onboarding step by step. Ask where to update menus, connect POS, upload permits, check payouts, or see why your restaurant is not live yet.";
 
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);

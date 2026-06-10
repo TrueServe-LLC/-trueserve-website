@@ -29,10 +29,13 @@ export async function getComplianceHelp(
     context: ComplianceContext
 ): Promise<BotMessage> {
     if (!anthropic) {
+        const fallbackContent = context.userType === 'MERCHANT'
+            ? "I'm Serv, TrueServe's merchant guide. I can walk you through menu setup, POS connections, permits, payout readiness, and launch blockers. Human admins still verify documents and approve go-live."
+            : "I'm Serv, TrueServe's compliance guide. I can help answer questions about food safety training, bag sanitation, and temperature control. Please check back when the system is fully configured.";
         return {
             id: Date.now().toString(),
             sender: 'BOT',
-            content: "I'm the Compliance Help Bot. I can help answer questions about food safety training, bag sanitation, and temperature control. Please check back when the system is fully configured.",
+            content: fallbackContent,
             timestamp: new Date(),
         };
     }
@@ -103,9 +106,24 @@ Your role is to help drivers understand and maintain compliance with food safety
 Focus on: food safety training requirements, proper bag sanitation practices, temperature control for hot/cold items.
 Be encouraging - compliance training helps drivers maintain their active status and earn better ratings from customers.`;
     } else {
-        return `You are a helpful Compliance Assistant for restaurant owners at TrueServe.
-Your role is to help merchants understand and improve their health inspection scores and compliance status.
-Focus on: common violations, inspection preparation, staff training, corrective actions, compliance improvements.
+        return `You are Serv, a helpful Merchant Portal and Compliance Assistant for restaurant owners at TrueServe.
+Your role is to help merchants understand health inspection scores, compliance status, document readiness, and the exact portal path needed to move toward launch.
+Focus on: common violations, inspection preparation, staff training, corrective actions, compliance improvements, business license/health permit uploads, POS connection status, menu readiness, payout readiness, and admin review next steps.
+
+Merchant portal map:
+- Overview and launch checklist: /merchant/dashboard
+- Orders and day-of operations: /merchant/dashboard/orders
+- Menu setup: /merchant/dashboard/menu
+- Store hours, restaurant profile, and storefront settings: /merchant/dashboard/storefront
+- POS connections: /merchant/dashboard/integrations
+- Health permits, business license, inspections, and document readiness: /merchant/dashboard/compliance
+- Compliance score: /merchant/dashboard/compliance-score
+- Billing, fee breakdowns, payouts, and Stripe status: /merchant/dashboard/billing
+- Multi-location management: /merchant/dashboard/franchise
+- Simple setup guide: /merchant/setup
+
+For non-technical merchants, answer with one to three clear steps and name the exact page to open.
+Do not claim you can verify documents, mark a restaurant live, change tax/bank details, or approve launch. Those require human admin review.
 Be solution-focused - help identify actionable steps to improve compliance scores and avoid flagging.`;
     }
 }

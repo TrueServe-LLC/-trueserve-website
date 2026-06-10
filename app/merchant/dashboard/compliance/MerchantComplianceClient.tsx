@@ -822,7 +822,7 @@ export default function MerchantComplianceClient({
                             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#f97316]">Compliance assistant</p>
                             <h2 className="mt-1 text-lg font-bold text-white">Need help interpreting this?</h2>
                             <p className="mt-1 max-w-2xl text-sm leading-6 text-white/55">
-                                Ask about health inspection timing, required documents, recurring violations, or what to prioritize before the next review.
+                                Ask about inspection timing, required documents, recurring violations, POS readiness, payout setup, or the next step before launch.
                             </p>
                         </div>
                         <button
@@ -838,10 +838,10 @@ export default function MerchantComplianceClient({
                             <div className="h-[320px] max-h-[52vh]">
                                 <ChatBot
                                     title="Serv"
-                                    subtitle="Merchant compliance guidance. Human admins still verify launch readiness."
-                                    placeholder="Ask about violations, documents, inspections..."
+                                    subtitle="Merchant portal guidance. Human admins still verify launch readiness."
+                                    placeholder="Ask about documents, POS, payouts, launch..."
                                     onSendMessage={handleBotMessage}
-                                    initialMessage="Hi, I'm Serv. I can help you understand inspection requirements, document readiness, violation patterns, and launch next steps before your next review."
+                                    initialMessage="Hi, I'm Serv. I can walk you through compliance, documents, POS, payouts, menu readiness, and launch next steps. I can guide you to the right page, but a human admin still verifies documents and approves go-live."
                                 />
                             </div>
                         </div>
