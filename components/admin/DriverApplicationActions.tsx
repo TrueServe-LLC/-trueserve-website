@@ -75,17 +75,18 @@ export default function DriverApplicationActions({
     };
 
     return (
-        <div className="driver-action-controls um-app-action-stack">
+        <div className="driver-action-controls">
             <style>{`
                 .driver-action-controls {
                     width: 100%;
+                    min-width: min(100%, 360px);
                     display: grid;
                     gap: 8px;
                     justify-items: stretch;
                 }
                 .driver-action-controls .driver-action-row {
                     display: grid;
-                    grid-template-columns: repeat(3, minmax(112px, 1fr));
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
                     gap: 8px;
                     width: 100%;
                     min-width: 0;
@@ -102,8 +103,9 @@ export default function DriverApplicationActions({
                     padding: 0 12px;
                     font-size: 12px;
                     font-weight: 800;
-                    line-height: 1;
-                    white-space: nowrap;
+                    line-height: 1.15;
+                    text-align: center;
+                    white-space: normal;
                     cursor: pointer;
                     transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
                 }
@@ -155,11 +157,11 @@ export default function DriverApplicationActions({
                     }
                 }
             `}</style>
-            <div className="driver-action-row um-app-action-row">
+            <div className="driver-action-row">
                 {readyAction && (
                     <button
                         type="button"
-                        className="driver-action-button driver-action-button-ready um-app-btn ready"
+                        className="driver-action-button driver-action-button-ready"
                         disabled={isPending || readyDisabled}
                         title={readyDisabled ? readyDisabledReason : "Move this driver into the Ready for Review lane"}
                         onClick={() => runAction("ready")}
@@ -169,7 +171,7 @@ export default function DriverApplicationActions({
                 )}
                 <button
                     type="button"
-                    className="driver-action-button driver-action-button-approve um-app-btn approve"
+                    className="driver-action-button driver-action-button-approve"
                     disabled={isPending}
                     onClick={() => runAction("approve")}
                 >
@@ -177,7 +179,7 @@ export default function DriverApplicationActions({
                 </button>
                 <button
                     type="button"
-                    className="driver-action-button driver-action-button-reject um-app-btn reject"
+                    className="driver-action-button driver-action-button-reject"
                     disabled={isPending}
                     onClick={() => runAction("reject")}
                 >
@@ -185,7 +187,7 @@ export default function DriverApplicationActions({
                 </button>
             </div>
             {message && (
-                <div className={`driver-action-message um-app-action-message ${message.type}`}>
+                <div className={`driver-action-message ${message.type}`}>
                     {message.text}
                 </div>
             )}

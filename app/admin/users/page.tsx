@@ -238,7 +238,8 @@ export default async function UsersPage({
                 .um-app-list { display: flex; flex-direction: column; gap: 10px; }
                 .um-app-item { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid #1e2420; border-radius: 6px; background: #101512; }
                 .um-app-status { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(249,115,22,0.18); background: rgba(249,115,22,0.08); color: #f97316; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-                .um-app-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; }
+                .um-app-actions { display: grid; grid-template-columns: repeat(3, minmax(0, auto)); gap: 8px; justify-content: end; align-items: start; min-width: min(100%, 430px); }
+                .um-app-actions > .driver-action-controls { grid-column: 1 / -1; justify-self: stretch; min-width: min(100%, 360px); max-width: 460px; }
                 .um-app-action-stack { display: flex; flex-direction: column; gap: 7px; align-items: flex-end; }
                 .um-app-action-row { display: inline-flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
                 .um-app-action-message { max-width: 260px; padding: 7px 9px; border-radius: 6px; font-size: 10px; line-height: 1.35; text-align: right; }
@@ -259,7 +260,8 @@ export default async function UsersPage({
                 .um-doc-meta { min-width: 0; }
                 .um-doc-name { color: #fff; font-size: 13px; font-weight: 500; margin-bottom: 2px; }
                 .um-doc-sub { color: #777; font-size: 11px; line-height: 1.45; }
-                .um-doc-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; }
+                .um-doc-links { display: grid; grid-template-columns: repeat(3, minmax(0, auto)); gap: 8px; justify-content: end; align-items: start; min-width: min(100%, 430px); }
+                .um-doc-links > .driver-action-controls { grid-column: 1 / -1; justify-self: stretch; min-width: min(100%, 360px); max-width: 460px; }
                 .um-doc-link { display: inline-flex; align-items: center; gap: 6px; background: #0f1311; border: 1px solid #24302a; color: #34d399; border-radius: 6px; padding: 7px 10px; font-size: 11px; font-weight: 500; text-decoration: none; }
                 .um-doc-link:hover { border-color: rgba(52,211,153,0.45); }
                 .um-doc-link.missing { color: #555; border-color: #1e2420; background: #0c0f0d; cursor: not-allowed; }
@@ -279,7 +281,9 @@ export default async function UsersPage({
                 .um-review-guide-actions a.primary { background: #f97316; color: #0b0f0d; border-color: #f97316; }
                 @media (max-width: 760px) {
                     .um-app-item, .um-doc-item { flex-direction: column; align-items: stretch; }
-                    .um-app-actions, .um-doc-links, .um-app-action-stack, .um-app-action-row { justify-content: flex-start; align-items: stretch; }
+                    .um-app-actions, .um-doc-links { grid-template-columns: 1fr; min-width: 0; justify-content: stretch; }
+                    .um-app-actions > .driver-action-controls, .um-doc-links > .driver-action-controls { min-width: 0; max-width: none; }
+                    .um-app-action-stack, .um-app-action-row { justify-content: flex-start; align-items: stretch; }
                     .um-app-btn, .um-doc-link { flex: 1 1 auto; min-height: 38px; }
                     .um-app-action-message { max-width: none; text-align: left; }
                 }

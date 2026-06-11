@@ -4,7 +4,16 @@ import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { v4 as uuidv4 } from "uuid";
 
+function isDemoRouteEnabled() {
+    const isProductionRuntime = process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_APP_ENV === "production";
+    return !isProductionRuntime || process.env.ALLOW_DEMO_AUTH === "true";
+}
+
 export async function GET() {
+    if (!isDemoRouteEnabled()) {
+        return new Response("Demo access is disabled in production.", { status: 404 });
+    }
+
     const cookieStore = await cookies();
     const DEMO_DRIVER_ID = "a18a0115-5238-4e82-a2e1-0020e2c40ba1";
 
@@ -45,7 +54,7 @@ export async function GET() {
     cookieStore.set("preview_mode", "true", {
         path: "/",
         httpOnly: false,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 12
     });
 

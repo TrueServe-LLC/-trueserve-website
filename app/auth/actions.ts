@@ -32,6 +32,20 @@ export type AuthState = {
 const MIN_PASSWORD_LENGTH = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+function isProductionRuntime() {
+    return process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_APP_ENV === "production";
+}
+
+function isDemoAuthAllowed() {
+    return process.env.ALLOW_DEMO_AUTH === "true";
+}
+
+function assertDemoAuthAllowed() {
+    if (isProductionRuntime() && !isDemoAuthAllowed()) {
+        throw new Error("Demo access is disabled in production.");
+    }
+}
+
 export async function loginWithPassword(formData: FormData): Promise<AuthState> {
     const rawEmail = formData.get("email") as string;
     const rawPassword = formData.get("password") as string;
@@ -47,12 +61,10 @@ export async function loginWithPassword(formData: FormData): Promise<AuthState> 
         return { message: "Email and Password are required", error: true };
     }
 
-    // --- DEV/PREVIEW BYPASS (never runs on production) ---
-    // NEXT_PUBLIC_APP_ENV must be explicitly set to 'production' on production deploys.
-    // In local dev it is undefined; on Vercel preview it is 'preview' — both allow bypass.
-    const isProductionEnv = (process.env.NEXT_PUBLIC_APP_ENV as string) === 'production';
+    // --- DEV/PREVIEW BYPASS (never runs on production unless explicitly enabled) ---
+    const isProductionEnv = isProductionRuntime();
     if (
-        !isProductionEnv &&
+        (!isProductionEnv || isDemoAuthAllowed()) &&
         email === "test@trueserve.com" &&
         password === "trueserve2026"
     ) {
@@ -460,6 +472,7 @@ export async function syncUserSession() {
 }
 
 export async function loginAsDemoDriver() {
+    assertDemoAuthAllowed();
     const cookieStore = await cookies();
     
     // We'll use a known driver ID from the database for the demo
@@ -518,7 +531,7 @@ export async function loginAsDemoDriver() {
     cookieStore.set("preview_mode", "true", {
         path: "/",
         httpOnly: false,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 12
     });
     
@@ -526,6 +539,7 @@ export async function loginAsDemoDriver() {
 }
 
 export async function loginAsPilot() {
+    assertDemoAuthAllowed();
     const cookieStore = await cookies();
     
     console.log("[AUTH] Atomic Reset: Clearing cached sessions for Pilot access...");
@@ -539,7 +553,7 @@ export async function loginAsPilot() {
     cookieStore.set("preview_mode", "true", { 
         path: "/", 
         httpOnly: false, 
-        secure: false, // Ensure visibility on localtunnel HTTPS
+        secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 12 // 12 hours
     });
     
@@ -547,6 +561,7 @@ export async function loginAsPilot() {
 }
 
 export async function loginAsDemoMerchant() {
+    assertDemoAuthAllowed();
     const cookieStore = await cookies();
     const DEMO_MERCHANT_ID = "merchant-demo-2026";
     
@@ -566,7 +581,7 @@ export async function loginAsDemoMerchant() {
     cookieStore.set("preview_mode", "true", { 
         path: "/", 
         httpOnly: false, 
-        secure: false, // Ensure visibility on localtunnel HTTPS
+        secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 12 // 12 hours
     });
 
