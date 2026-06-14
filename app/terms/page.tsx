@@ -255,7 +255,8 @@ export default function TermsPage() {
             <p>
               We may suspend or close accounts that violate these Terms, present a safety risk, or are
               required to be closed by law. You may delete your account at any time from your{" "}
-              <Link href="/account">account page</Link>. Some provisions of these Terms survive termination,
+              <Link href="/account">account page</Link> or through our{" "}
+              <Link href="/account-deletion">account deletion page</Link>. Some provisions of these Terms survive termination,
               including payment obligations, dispute resolution, and intellectual-property terms.
             </p>
           </section>

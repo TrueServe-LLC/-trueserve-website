@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { getDriverOrRedirect } from "@/lib/driver-auth";
 import { createDriverStripeAccount } from "../../actions";
 import { Camera, CheckCircle2, IdCard, LockKeyhole, WalletCards } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -221,6 +222,21 @@ export default async function DriverAccount() {
                                 </div>
 
                                 <button className="acct-save-btn">Save Profile</button>
+                            </div>
+                        </div>
+
+                        <div className="acct-card">
+                            <div className="acct-card-hd">
+                                <span className="acct-card-hd-left"><LockKeyhole aria-hidden="true" /> Delete Account</span>
+                            </div>
+                            <div className="acct-card-body">
+                                <p className="acct-note" style={{ marginTop: 0 }}>
+                                    Request deletion of your driver login, profile identifiers, and uploaded
+                                    documents. Legally required payout and delivery records may be retained.
+                                </p>
+                                <Link href="/account-deletion" className="acct-stripe-btn pending">
+                                    Request deletion
+                                </Link>
                             </div>
                         </div>
                     </div>

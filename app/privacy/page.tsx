@@ -192,7 +192,7 @@ export default function PrivacyPage() {
             </p>
             <ul>
               <li>Export a copy of your data from your account settings.</li>
-              <li>Delete your account from <Link href="/account">your account page</Link> at any time.</li>
+              <li>Delete your account from <Link href="/account">your account page</Link>, or use our <Link href="/account-deletion">web deletion request</Link> if you cannot sign in.</li>
               <li>Email <a href="mailto:privacy@trueservedelivery.com">privacy@trueservedelivery.com</a> for any request we don't have an in-app control for yet.</li>
             </ul>
           </section>

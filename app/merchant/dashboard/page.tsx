@@ -18,7 +18,7 @@ import HoursPanel from "@/app/merchant/dashboard/HoursPanel";
 import CoverPhotoPanel from "@/app/merchant/dashboard/CoverPhotoPanel";
 import RevenueSparkline from "@/app/merchant/dashboard/RevenueSparkline";
 import MerchantPortalRecovery from "./MerchantPortalRecovery";
-import { ArrowRight, CheckCircle2, CreditCard, DollarSign, Package, UtensilsCrossed } from "lucide-react";
+import { ArrowRight, CheckCircle2, CreditCard, DollarSign, Package, ShieldAlert, UtensilsCrossed } from "lucide-react";
 import LaunchCenter from "@/app/merchant/dashboard/LaunchCenter";
 import GrowthConsultant from "@/app/merchant/dashboard/GrowthConsultant";
 
@@ -679,6 +679,31 @@ export default async function MerchantDashboard({
                     restaurantId={restaurant.id}
                     schedules={restaurant.schedules || []}
                 />
+            </div>
+
+            <div style={{
+                marginBottom: 14,
+                border: "1px solid rgba(239,68,68,.28)",
+                background: "rgba(239,68,68,.06)",
+                borderRadius: 10,
+                padding: "14px 16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+                flexWrap: "wrap",
+            }}>
+                <div>
+                    <strong style={{ color: "#fca5a5", display: "flex", alignItems: "center", gap: 8 }}>
+                        <ShieldAlert size={16} /> Privacy & account deletion
+                    </strong>
+                    <p style={{ color: "#9ca3af", fontSize: 12, margin: "6px 0 0", lineHeight: 1.5 }}>
+                        Request deletion of the merchant login and direct account identifiers.
+                    </p>
+                </div>
+                <Link href="/account-deletion" className="mch-tab-pill">
+                    Request deletion
+                </Link>
             </div>
 
             {/* ISSUES TOAST */}

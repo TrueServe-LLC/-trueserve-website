@@ -1,0 +1,17 @@
+.deletion-page { min-height: 100vh; background: #0b0d0c; color: #fff; padding: 40px 16px; }
+.deletion-container { width: min(100%, 672px); margin: 0 auto; }
+.deletion-card { margin-top: 32px; border: 1px solid #1e293b; border-radius: 18px; background: #121615; padding: 32px; }
+.deletion-kicker { margin: 0; color: #fb923c; font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.deletion-card h1 { margin: 12px 0 0; font-size: clamp(30px, 6vw, 42px); line-height: 1.08; font-weight: 800; }
+.deletion-lead { margin: 16px 0 26px; color: #cbd5e1; line-height: 1.7; }
+.deletion-form { display: grid; gap: 18px; }
+.deletion-form label { display: grid; gap: 8px; color: #e2e8f0; font-size: 14px; font-weight: 700; }
+.deletion-form input, .deletion-form textarea { width: 100%; border: 1px solid #334155; border-radius: 10px; background: #0b0d0c; color: #fff; padding: 12px; font: inherit; }
+.deletion-form button { border: 0; border-radius: 10px; background: #dc2626; color: #fff; padding: 13px 18px; font-weight: 800; cursor: pointer; }
+.deletion-form button:disabled { opacity: .6; cursor: wait; }
+.deletion-honeypot { position: absolute; left: -9999px; }
+.deletion-error { color: #fca5a5; margin: 0; }
+.deletion-success { border: 1px solid #166534; border-radius: 12px; background: rgba(2, 44, 34, .45); color: #a7f3d0; padding: 18px; line-height: 1.6; }
+.deletion-footer { margin-top: 32px; border-top: 1px solid #1e293b; padding-top: 20px; color: #94a3b8; font-size: 14px; line-height: 1.65; }
+.deletion-footer a { color: #fb923c; }
+@media (max-width: 640px) { .deletion-page { padding-top: 24px; } .deletion-card { margin-top: 22px; padding: 22px 18px; } }

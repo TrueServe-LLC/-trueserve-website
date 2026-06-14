@@ -241,6 +241,15 @@ export default async function UserSettings() {
                     <h2><WalletCards size={25} /> Wallets</h2>
                     <WalletUI userId={userId} />
                 </section>
+
+                <section className="ts-account-card ts-account-full">
+                    <h2>Privacy & account deletion</h2>
+                    <p className="ts-account-empty">
+                        Request deletion of your login and direct account identifiers. Records required
+                        for tax, audit, fraud prevention, payouts, or disputes may be retained.
+                    </p>
+                    <Link href="/account-deletion">Request account deletion</Link>
+                </section>
             </main>
         </div>
     );
