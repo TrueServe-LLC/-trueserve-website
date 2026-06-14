@@ -5,7 +5,7 @@ import { approveDriver, markDriverReadyForReview, rejectDriver, requestDriverDoc
 import AdminPortalWrapper from "@/app/admin/AdminPortalWrapper";
 import DriverApplicationActions from "@/components/admin/DriverApplicationActions";
 import DriverPipeline from "@/components/admin/DriverPipeline";
-import { filterAdminUsers, isMockAdminRecord, shouldHideMockAdminData } from "@/lib/admin-data";
+import { isMockAdminRecord } from "@/lib/admin-data";
 import { resolveDriverDocumentUrl } from "@/lib/driver-documents";
 import { canAccessAdminSection } from "@/lib/rbac";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -59,10 +59,9 @@ export default async function AdminDriversPage({
         return { ...driver, licenseUrl, insuranceUrl, registrationUrl };
     }));
 
-    const visibleDrivers = (shouldHideMockAdminData()
-        ? driverDocs.filter((driver: any) => !isMockAdminRecord(driver.user))
-        : driverDocs
-    ).filter((driver: any) => {
+    // The admin review queue must include QA/test applications. Hiding records
+    // based on names or email domains made newly submitted drivers disappear.
+    const visibleDrivers = driverDocs.filter((driver: any) => {
         if (!query) return true;
         return [driver.user?.name, driver.user?.email, driver.user?.phone, driver.status, driver.complianceStatus, driver.vehicleType].some((value) =>
             String(value || "").toLowerCase().includes(query)
@@ -184,7 +183,10 @@ export default async function AdminDriversPage({
                     {visibleDrivers.map((driver: any) => (
                         <div key={driver.id} className="drv-row">
                             <div>
-                                <div className="drv-name">{driver.user?.name || "Driver"} · {driver.user?.email || "No email"}</div>
+                                <div className="drv-name">
+                                    {driver.user?.name || "Driver"} · {driver.user?.email || "No email"}
+                                    {isMockAdminRecord(driver.user) ? " · Test/QA" : ""}
+                                </div>
                                 <div className="drv-meta">{driver.user?.phone || "No phone"} · {docCount(driver)}/3 docs · {driver.complianceStatus || driver.status || "NEW_APPLICATION"}</div>
                             </div>
                             <div className="drv-review-tools">
