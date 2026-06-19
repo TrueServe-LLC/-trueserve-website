@@ -21,9 +21,10 @@ export default async function UsersPage({
     const resolvedSearchParams = searchParams ? await searchParams : {};
     const query = (resolvedSearchParams.q || "").trim().toLowerCase();
     const cookieStore = await cookies();
-    const adminSession = cookieStore.get("admin_session");
+    const adminRole = cookieStore.get("admin_role")?.value;
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, 'users'));
+    const effectiveRole = role || adminRole;
+    const isAuthorized = isAuth && canAccessAdminSection(effectiveRole, 'users');
     if (!isAuthorized) redirect("/admin/login");
 
     const { data: users } = await supabaseAdmin
@@ -222,7 +223,7 @@ export default async function UsersPage({
     );
 
     return (
-        <AdminPortalWrapper role={role}>
+        <AdminPortalWrapper role={effectiveRole}>
             <style>{`
                 .um-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
                 .um-badge { background: #141a18; border: 1px solid #1e2420; border-radius: 6px; padding: 10px 16px; }

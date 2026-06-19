@@ -8,6 +8,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
 import { normalizePhoneNumber } from "@/lib/phoneUtils";
 import { syncSignupLeadToGHL } from "@/lib/ghl-sync";
+import { isAdminRole } from "@/lib/rbac";
 
 const CUSTOMER_REWARDS_CHECKOUT_COPY: Record<"Plus" | "Premium", { name: string; description: string; amount: number }> = {
     Plus: {
@@ -417,7 +418,9 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             .eq('id', userId)
             .maybeSingle();
 
-        if (!role && publicUser?.role) {
+        if (publicUser?.role && isAdminRole(publicUser.role) && publicUser.role !== role) {
+            role = publicUser.role;
+        } else if (!role && publicUser?.role) {
             role = publicUser.role;
         } else if (!role) {
             // ID Mismatch fallback: Try by email

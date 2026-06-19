@@ -24,9 +24,10 @@ export default async function AdminDriversPage({
     const resolvedSearchParams = searchParams ? await searchParams : {};
     const query = (resolvedSearchParams.q || "").trim().toLowerCase();
     const cookieStore = await cookies();
-    const adminSession = cookieStore.get("admin_session");
+    const adminRole = cookieStore.get("admin_role")?.value;
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, "drivers"));
+    const effectiveRole = role || adminRole;
+    const isAuthorized = isAuth && canAccessAdminSection(effectiveRole, "drivers");
     if (!isAuthorized) redirect("/admin/login");
 
     const { data: drivers } = await supabaseAdmin
@@ -74,7 +75,7 @@ export default async function AdminDriversPage({
     const open = visibleDrivers.length - active;
 
     return (
-        <AdminPortalWrapper role={role}>
+        <AdminPortalWrapper role={effectiveRole}>
             <style>{`
                 .drv-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
                 .drv-card, .drv-list, .drv-workflow {
