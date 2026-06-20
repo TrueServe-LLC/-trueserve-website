@@ -16,7 +16,8 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
     const [copied, setCopied] = useState(false);
     
     // External Integrations
-    const [externalPos, setExternalPos] = useState(posType === 'Clover' ? 'None' : posType);
+    const supportedPos = ['Square', 'Toast'].includes(posType) ? posType : 'None';
+    const [externalPos, setExternalPos] = useState(supportedPos);
     const [clientId, setClientId] = useState("");
     const [clientSecret, setClientSecret] = useState("");
 
@@ -46,19 +47,6 @@ export default function POSIntegration({ currentApiKey, posType = "None" }: POSI
             ],
             clientIdLabel: 'Client ID',
             clientSecretLabel: 'Client Secret',
-        },
-        {
-            id: 'Lightspeed',
-            label: 'Lightspeed',
-            webhookUrl: 'https://trueserve.delivery/api/webhook/pos/lightspeed',
-            instructions: [
-                'Log into your Lightspeed account → Settings → API',
-                'Create a new API key with order read permissions',
-                'Set up the webhook URL below in your Lightspeed settings',
-                'Enter your API key as the Client Secret',
-            ],
-            clientIdLabel: 'Account ID',
-            clientSecretLabel: 'API Key',
         },
     ];
 

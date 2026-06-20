@@ -189,6 +189,8 @@ export const ROLE_PERMISSIONS: Record<AppRole, Permission[]> = {
         'view_analytics',
         'view_orders',
         'intervene_orders',
+        'approve_drivers',
+        'review_driver_documents',
         'manage_feature_flags',
         'access_qa_toolbox',
         'view_users',

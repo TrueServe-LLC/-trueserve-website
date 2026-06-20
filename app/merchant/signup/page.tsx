@@ -202,7 +202,6 @@ export default function MerchantSignupPage() {
                     <select value={posSystem} onChange={(e) => setPosSystem(e.target.value)}>
                       <option value="Toast">Toast</option>
                       <option value="Square">Square</option>
-                      <option value="Clover">Clover</option>
                       <option value="None">None</option>
                     </select>
                   </label>
