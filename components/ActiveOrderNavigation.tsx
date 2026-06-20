@@ -10,6 +10,10 @@ interface ActiveOrderNavigationProps {
     driverLng: number;
 }
 
+function stripRouteInstructionHtml(value: unknown) {
+    return String(value ?? "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
+
 export default function ActiveOrderNavigation({ order, driverLat, driverLng }: ActiveOrderNavigationProps) {
     const [steps, setSteps] = useState<any[]>([]);
     const [eta, setEta] = useState<string>("Calculating...");
@@ -91,10 +95,9 @@ export default function ActiveOrderNavigation({ order, driverLat, driverLng }: A
                             <div key={i} className="flex gap-4 items-start py-2 border-b border-white/5 last:border-0">
                                 <span className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-xs shrink-0 text-slate-400 border border-white/5">{i + 1}</span>
                                 <div className="space-y-1">
-                                    <div
-                                        className="text-xs text-slate-200 font-medium leading-normal"
-                                        dangerouslySetInnerHTML={{ __html: step.instructions }}
-                                    />
+                                    <div className="text-xs text-slate-200 font-medium leading-normal">
+                                        {stripRouteInstructionHtml(step.instructions)}
+                                    </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-[10px] font-bold text-primary">{step.distance.text}</span>
                                         <span className="w-1 h-1 bg-white/10 rounded-full"></span>

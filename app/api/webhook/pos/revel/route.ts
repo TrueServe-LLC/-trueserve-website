@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { validateRevelSignature } from '@/lib/posWebhooks';
 
 /**
  * Revel Webhook Handler
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+    const body = JSON.parse(rawBody);
     const signature = req.headers.get('X-Revel-Signature');
+    const signingSecret = process.env.REVEL_API_SECRET;
 
-    // Security validation placeholder
-    // if (!validateRevelSignature(JSON.stringify(body), signature, process.env.REVEL_API_SECRET)) {
-    //   return NextResponse.json({ error: 'Invalid Signature' }, { status: 401 });
-    // }
+    if (!signingSecret) {
+      return NextResponse.json({ error: 'Revel webhook signing secret is not configured' }, { status: 503 });
+    }
+
+    if (!validateRevelSignature(rawBody, signature, signingSecret)) {
+      return NextResponse.json({ error: 'Invalid Signature' }, { status: 401 });
+    }
 
     const supabase = await createClient();
 

@@ -252,10 +252,15 @@ export class DataPortalStateAPI extends BaseStateAPI {
     this.datasetId = datasetId;
   }
 
+  private escapeSoqlString(value: string): string {
+    return value.replace(/'/g, "''");
+  }
+
   async getInspections(establishmentId: string): Promise<InspectionRecord[]> {
     try {
+      const safeEstablishmentId = this.escapeSoqlString(establishmentId.trim());
       // Socrata SoQL query
-      const query = `SELECT * WHERE establishment_id='${establishmentId}' ORDER BY inspection_date DESC LIMIT 100`;
+      const query = `SELECT * WHERE establishment_id='${safeEstablishmentId}' ORDER BY inspection_date DESC LIMIT 100`;
       const url = `${this.portalUrl}/resource/${this.datasetId}.json?$where=${encodeURIComponent(query)}`;
 
       const response = await this.makeRequest(url);
@@ -284,7 +289,13 @@ export class DataPortalStateAPI extends BaseStateAPI {
 
   async searchEstablishments(query: string): Promise<EstablishmentRecord[]> {
     try {
-      const soqlQuery = `SELECT * WHERE contains(business_name, '${query}') LIMIT 50`;
+      const safeQuery = this.escapeSoqlString(query.trim()).slice(0, 100);
+
+      if (!safeQuery) {
+        return [];
+      }
+
+      const soqlQuery = `SELECT * WHERE contains(business_name, '${safeQuery}') LIMIT 50`;
       const url = `${this.portalUrl}/resource/${this.datasetId}.json?$where=${encodeURIComponent(soqlQuery)}`;
 
       const response = await this.makeRequest(url);

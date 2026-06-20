@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { validateLightspeedSignature } from '@/lib/posWebhooks';
 
 /**
  * Lightspeed Webhook Handler
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+    const body = JSON.parse(rawBody);
     const signature = req.headers.get('X-Lightspeed-Signature');
+    const signingSecret = process.env.LIGHTSPEED_API_KEY;
 
-    // Security validation placeholder
-    // if (!validateLightspeedSignature(JSON.stringify(body), signature, process.env.LIGHTSPEED_API_KEY)) {
-    //   return NextResponse.json({ error: 'Invalid Signature' }, { status: 401 });
-    // }
+    if (!signingSecret) {
+      return NextResponse.json({ error: 'Lightspeed webhook signing secret is not configured' }, { status: 503 });
+    }
+
+    if (!validateLightspeedSignature(rawBody, signature, signingSecret)) {
+      return NextResponse.json({ error: 'Invalid Signature' }, { status: 401 });
+    }
 
     const supabase = await createClient();
 

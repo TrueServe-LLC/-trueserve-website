@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { syncAllServiceCosts, checkAndCreateAnomalies } from "@/app/admin/cost-management/actions";
 import { getAuthSession } from "@/app/auth/actions";
+import { hasAnyPermission } from "@/lib/rbac";
 
 /**
  * Manual cost sync endpoint
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
     try {
         // Verify authentication
         const session = await getAuthSession();
-        if (!session?.userId) {
+        if (!session?.userId || !hasAnyPermission(session.role, ["manage_system_settings", "manage_payouts"])) {
             return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
 

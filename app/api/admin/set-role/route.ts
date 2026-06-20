@@ -1,22 +1,35 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getAuthSession } from "@/app/auth/actions";
+import { ADMIN_ROLES } from "@/lib/rbac";
 
 /**
- * TEMPORARY: Set user role to ADMIN
- * This is a temporary endpoint for setup purposes
- * Should be removed after initial admin setup
+ * Protected admin role update endpoint.
+ * Used by authorized admins to assign internal application roles.
  */
 export async function POST(request: Request) {
     try {
-        const { email, role } = await request.json();
+        const { isAuth, role: authRole } = await getAuthSession();
+
+        if (!isAuth || authRole !== "ADMIN") {
+            return Response.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const { email, role: requestedRole } = await request.json();
 
         if (!email) {
             return Response.json({ error: "Email required" }, { status: 400 });
         }
 
+        const nextRole = requestedRole || "ADMIN";
+
+        if (!ADMIN_ROLES.includes(nextRole as any)) {
+            return Response.json({ error: "Invalid admin role" }, { status: 400 });
+        }
+
         // Update user role
         const { data, error } = await supabaseAdmin
             .from("User")
-            .update({ role: role || "ADMIN" })
+            .update({ role: nextRole })
             .eq("email", email)
             .select();
 
@@ -26,7 +39,7 @@ export async function POST(request: Request) {
 
         return Response.json({
             success: true,
-            message: `Updated ${email} to role ${role || "ADMIN"}`,
+            message: `Updated ${email} to role ${nextRole}`,
             user: data?.[0],
         });
     } catch (error) {

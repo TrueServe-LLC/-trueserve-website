@@ -8,11 +8,12 @@ export async function middleware(request: NextRequest) {
 
   // --- 1. PREVIEW BYPASS ---
   // --- 1. PREVIEW BYPASS ---
-  const isPreviewParam = url.searchParams.get('preview') === 'true'
+  const allowPreviewMode = process.env.NODE_ENV !== 'production' || process.env.ALLOW_PORTAL_PREVIEW === 'true'
+  const isPreviewParam = allowPreviewMode && url.searchParams.get('preview') === 'true'
   const isPreviewCookie = request.cookies.get('preview_mode')?.value === 'true'
   const isTunnel = host.includes('lhr.life') || host.includes('loca.lt')
   const isAuthPath = path === '/login' || path.startsWith('/auth')
-  const isPreview = isPreviewParam || isPreviewCookie || (isTunnel && (path.startsWith('/driver') || isAuthPath))
+  const isPreview = allowPreviewMode && (isPreviewParam || isPreviewCookie || (isTunnel && (path.startsWith('/driver') || isAuthPath)))
   
   if (isPreviewParam && !isPreviewCookie) {
     const previewResponse = NextResponse.redirect(new URL(url.pathname, request.url))

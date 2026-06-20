@@ -23,6 +23,21 @@ export type MerchantActionState = {
     error?: boolean;
 };
 
+async function requireOwnedRestaurantId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, restaurantId: string) {
+    const { data: restaurant, error } = await supabase
+        .from('Restaurant')
+        .select('id')
+        .eq('id', restaurantId)
+        .eq('ownerId', userId)
+        .single();
+
+    if (error || !restaurant) {
+        throw new Error("You do not have permission to modify this restaurant.");
+    }
+
+    return restaurant.id;
+}
+
 export async function addMenuItem(prevState: MerchantActionState, formData: FormData): Promise<MerchantActionState> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -149,6 +164,16 @@ export async function updateMenuItem(prevState: MerchantActionState, formData: F
     }
 
     try {
+        const { data: existingItem, error: itemError } = await supabase
+            .from('MenuItem')
+            .select('id, restaurant:Restaurant(ownerId)')
+            .eq('id', itemId)
+            .single();
+
+        if (itemError || !existingItem || (existingItem.restaurant as any)?.ownerId !== user.id) {
+            throw new Error("You do not have permission to update this item.");
+        }
+
         let imageUrl = formData.get("currentImageUrl") as string || null;
 
         if (image && image.size > 0) {
@@ -936,6 +961,16 @@ export async function toggleItemStock(itemId: string, currentStatus: boolean) {
     if (!user) return { error: "Unauthorized" };
 
     try {
+        const { data: item, error: itemError } = await supabase
+            .from('MenuItem')
+            .select('id, restaurant:Restaurant(ownerId)')
+            .eq('id', itemId)
+            .single();
+
+        if (itemError || !item || (item.restaurant as any)?.ownerId !== user.id) {
+            throw new Error("You do not have permission to update this item.");
+        }
+
         const { error } = await supabase
             .from('MenuItem')
             .update({ isAvailable: !currentStatus, updatedAt: new Date().toISOString() })
@@ -1008,12 +1043,26 @@ export async function upsertBusyZone(restaurantId: string, schedule: any) {
     if (!user) return { error: "Unauthorized" };
 
     try {
+        await requireOwnedRestaurantId(supabase, user.id, restaurantId);
+
+        if (schedule.id) {
+            const { data: existingSchedule, error: scheduleError } = await supabase
+                .from('MerchantSchedule')
+                .select('id, restaurantId')
+                .eq('id', schedule.id)
+                .single();
+
+            if (scheduleError || !existingSchedule || existingSchedule.restaurantId !== restaurantId) {
+                throw new Error("You do not have permission to update this schedule.");
+            }
+        }
+
         const { error } = await supabase
             .from('MerchantSchedule')
             .upsert({
                 id: schedule.id || uuidv4(),
-                restaurantId,
                 ...schedule,
+                restaurantId,
                 updatedAt: new Date().toISOString()
             });
 
@@ -1031,6 +1080,16 @@ export async function deleteBusyZone(id: string) {
     if (!user) return { error: "Unauthorized" };
 
     try {
+        const { data: schedule, error: scheduleError } = await supabase
+            .from('MerchantSchedule')
+            .select('id, restaurant:Restaurant(ownerId)')
+            .eq('id', id)
+            .single();
+
+        if (scheduleError || !schedule || (schedule.restaurant as any)?.ownerId !== user.id) {
+            throw new Error("You do not have permission to delete this schedule.");
+        }
+
         const { error } = await supabase
             .from('MerchantSchedule')
             .delete()
@@ -1143,8 +1202,7 @@ import { analyzeMerchantSentiment } from "@/lib/customerPulse";
 export async function savePosCredentials(posSystem: string, clientId: string, clientSecret: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id || (await cookies()).get("userId")?.value;
-    if (!userId) return { error: "Unauthorized" };
+    if (!user?.id) return { error: "Unauthorized" };
 
     try {
         const updatePayload: Record<string, any> = {
@@ -1160,13 +1218,13 @@ export async function savePosCredentials(posSystem: string, clientId: string, cl
         const { error } = await supabaseAdmin
             .from('Restaurant')
             .update(updatePayload)
-            .eq('ownerId', userId);
+            .eq('ownerId', user.id);
 
         if (error) throw error;
         
         await logAuditAction({ 
             action: "UPDATE_POS_CREDENTIALS", 
-            targetId: userId, 
+            targetId: user.id,
             entityType: "Restaurant", 
             message: `Updated integration for ${posSystem}` 
         });

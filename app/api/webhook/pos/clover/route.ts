@@ -7,7 +7,8 @@ import { validateCloverSignature } from '@/lib/posWebhooks';
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+    const body = JSON.parse(rawBody);
 
     // Handle Clover webhook verification challenge before any other processing
     if (body.verificationCode) {
@@ -15,11 +16,15 @@ export async function POST(req: Request) {
     }
 
     const signature = req.headers.get('X-Clover-Signature');
+    const signingSecret = process.env.CLOVER_SIGNING_SECRET;
 
-    // Security validation placeholder
-    // if (!validateCloverSignature(JSON.stringify(body), signature, process.env.CLOVER_SIGNING_SECRET)) {
-    //   return NextResponse.json({ error: 'Invalid Signature' }, { status: 401 });
-    // }
+    if (!signingSecret) {
+      return NextResponse.json({ error: 'Clover webhook signing secret is not configured' }, { status: 503 });
+    }
+
+    if (!validateCloverSignature(rawBody, signature, signingSecret)) {
+      return NextResponse.json({ error: 'Invalid Signature' }, { status: 401 });
+    }
 
     const supabase = await createClient();
 

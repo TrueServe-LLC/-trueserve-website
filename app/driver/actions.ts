@@ -539,6 +539,14 @@ export async function pickupOrder(orderId: string) {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Unauthorized");
 
+        const { data: driver } = await supabase
+            .from('Driver')
+            .select('id')
+            .eq('userId', user.id)
+            .single();
+
+        if (!driver) throw new Error("Driver profile not found");
+
         const { data: order } = await supabase
             .from('Order')
             .select('status, driverId')
@@ -548,6 +556,9 @@ export async function pickupOrder(orderId: string) {
         if (!order || order.status !== 'READY_FOR_PICKUP') {
             throw new Error("Order not ready for pickup.");
         }
+        if (order.driverId !== driver.id) {
+            throw new Error("This order is not assigned to your driver account.");
+        }
 
         let { error } = await supabase
             .from('Order')
@@ -556,7 +567,8 @@ export async function pickupOrder(orderId: string) {
                 pickedUpAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             })
-            .eq('id', orderId);
+            .eq('id', orderId)
+            .eq('driverId', driver.id);
 
         if (error && (error.code === 'PGRST204' || error.message?.includes('pickedUpAt'))) {
             const fallback = await supabase
@@ -565,7 +577,8 @@ export async function pickupOrder(orderId: string) {
                     status: 'PICKED_UP',
                     updatedAt: new Date().toISOString()
                 })
-                .eq('id', orderId);
+                .eq('id', orderId)
+                .eq('driverId', driver.id);
             error = fallback.error;
         }
 
@@ -620,6 +633,14 @@ export async function confirmPickupWithPhoto(formData: FormData) {
 
         if (!orderId) throw new Error("Missing order ID.");
 
+        const { data: driver } = await supabase
+            .from('Driver')
+            .select('id')
+            .eq('userId', user.id)
+            .single();
+
+        if (!driver) throw new Error("Driver profile not found");
+
         const { data: order } = await supabase
             .from('Order')
             .select('status, driverId')
@@ -628,6 +649,9 @@ export async function confirmPickupWithPhoto(formData: FormData) {
 
         if (!order || order.status !== 'READY_FOR_PICKUP') {
             throw new Error("Order not ready for pickup.");
+        }
+        if (order.driverId !== driver.id) {
+            throw new Error("This order is not assigned to your driver account.");
         }
 
         let pickupPhotoUrl = null;
@@ -670,7 +694,8 @@ export async function confirmPickupWithPhoto(formData: FormData) {
         let { error } = await supabase
             .from('Order')
             .update(updateData)
-            .eq('id', orderId);
+            .eq('id', orderId)
+            .eq('driverId', driver.id);
 
         if (error && (error.code === 'PGRST204' || error.message?.includes('pickedUpAt'))) {
             const fallback = await supabase
@@ -680,7 +705,8 @@ export async function confirmPickupWithPhoto(formData: FormData) {
                     pickupPhotoUrl,
                     updatedAt: new Date().toISOString(),
                 })
-                .eq('id', orderId);
+                .eq('id', orderId)
+                .eq('driverId', driver.id);
             error = fallback.error;
         }
 
@@ -761,6 +787,16 @@ export async function unassignOrder(orderId: string, reason: string) {
 export async function completeDelivery(orderId: string, deliveryPin?: string, driverLat?: number, driverLng?: number) {
     try {
         const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
+
+        const { data: driver } = await supabase
+            .from('Driver')
+            .select('id')
+            .eq('userId', user.id)
+            .single();
+
+        if (!driver) throw new Error("Driver profile not found");
 
         // 1. Fetch order details for payout calculation
         const { data: order } = await supabase
@@ -770,6 +806,9 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
             .single();
 
         if (!order) throw new Error("Order not found");
+        if (order.driverId !== driver.id) {
+            throw new Error("This order is not assigned to your driver account.");
+        }
 
         // Geo-Fenced Safe Drop Protocol
         if (driverLat && driverLng && order.deliveryLat && order.deliveryLng) {
@@ -796,6 +835,7 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
                 updatedAt: new Date().toISOString()
             })
             .eq('id', orderId)
+            .eq('driverId', driver.id)
             .eq('status', 'PICKED_UP');
 
         if (error && (error.code === 'PGRST204' || error.message?.includes('deliveredAt'))) {
@@ -806,6 +846,7 @@ export async function completeDelivery(orderId: string, deliveryPin?: string, dr
                     updatedAt: new Date().toISOString()
                 })
                 .eq('id', orderId)
+                .eq('driverId', driver.id)
                 .eq('status', 'PICKED_UP');
             error = fallback.error;
         }
@@ -880,6 +921,16 @@ export async function completePhotoDelivery(formData: FormData) {
         if (!orderId) throw new Error("Order ID is required");
 
         const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
+
+        const { data: driver } = await supabase
+            .from('Driver')
+            .select('id')
+            .eq('userId', user.id)
+            .single();
+
+        if (!driver) throw new Error("Driver profile not found");
 
         // 1. Fetch order details for payout calculation
         const { data: order } = await supabase
@@ -889,6 +940,9 @@ export async function completePhotoDelivery(formData: FormData) {
             .single();
 
         if (!order) throw new Error("Order not found");
+        if (order.driverId !== driver.id) {
+            throw new Error("This order is not assigned to your driver account.");
+        }
 
         // Geo-Fenced Safe Drop Protocol
         if (!isNaN(driverLat) && !isNaN(driverLng) && order.deliveryLat && order.deliveryLng) {
@@ -934,6 +988,7 @@ export async function completePhotoDelivery(formData: FormData) {
                 updatedAt: new Date().toISOString()
             })
             .eq('id', orderId)
+            .eq('driverId', driver.id)
             .eq('status', 'PICKED_UP');
 
         if (error && (error.code === 'PGRST204' || error.message?.includes('deliveredAt'))) {
@@ -942,6 +997,7 @@ export async function completePhotoDelivery(formData: FormData) {
                 .from('Order')
                 .update({ status: 'DELIVERED', updatedAt: new Date().toISOString() })
                 .eq('id', orderId)
+                .eq('driverId', driver.id)
                 .eq('status', 'PICKED_UP');
             error = fallback.error;
         }
