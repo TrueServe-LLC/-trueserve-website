@@ -12210,7 +12210,7 @@ nav {
 }
 
 .ts-fig-help-page main {
-  width: min(1180px, calc(100% - 48px));
+  width: 100%;
   padding-bottom: 0;
 }
 
