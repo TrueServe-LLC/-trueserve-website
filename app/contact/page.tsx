@@ -142,12 +142,12 @@ export default function ContactPage() {
               <button
                 type="button"
                 className="ts-help-action-card"
-                onClick={() => openServ("I need live chat support.")}
+                onClick={() => openServ("I need a human support agent for this issue.")}
               >
                 <MessageCircle size={30} aria-hidden="true" />
-                <strong>Live chat</strong>
-                <span>Avg. under 2 min</span>
-                <em>Start chat <ArrowRight size={19} aria-hidden="true" /></em>
+                <strong>Live Support</strong>
+                <span>Human takeover when Serv cannot finish it</span>
+                <em>Request support <ArrowRight size={19} aria-hidden="true" /></em>
               </button>
               <a className="ts-help-action-card" href="tel:8008787378">
                 <Phone size={30} aria-hidden="true" />
@@ -187,7 +187,7 @@ export default function ContactPage() {
             <span>Support without the runaround</span>
             <h2>Order questions, account help, and real people when you need them.</h2>
             <p>
-              Ask Serv handles quick answers first. If something needs a human, we keep the context and route it to support.
+              Ask Serv handles the first response. If the issue needs a person, the same thread is handed to human support so users do not have to start over.
             </p>
           </div>
           <div className="ts-help-video-frame" aria-hidden="true">
