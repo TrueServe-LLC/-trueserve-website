@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import {
   BadgeDollarSign,
   BarChart3,
@@ -48,6 +49,53 @@ const TIMELINE = [
 ];
 
 export default function MerchantLanding() {
+  const commissionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [showCommission, setShowCommission] = useState(false);
+
+  useEffect(() => {
+    const card = commissionRef.current;
+    if (!card) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowCommission(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const startPlayback = () => {
+      video.muted = true;
+      void video.play().catch(() => {
+        // Browsers can briefly reject play before enough media is buffered.
+      });
+    };
+    const resumeWhenVisible = () => {
+      if (document.visibilityState === "visible") startPlayback();
+    };
+
+    video.addEventListener("loadeddata", startPlayback);
+    video.addEventListener("canplay", startPlayback);
+    document.addEventListener("visibilitychange", resumeWhenVisible);
+    startPlayback();
+
+    return () => {
+      video.removeEventListener("loadeddata", startPlayback);
+      video.removeEventListener("canplay", startPlayback);
+      document.removeEventListener("visibilitychange", resumeWhenVisible);
+    };
+  }, []);
+
   return (
     <div className="ts-fig ts-fig-merchant-page">
       <SiteHeader />
@@ -73,15 +121,19 @@ export default function MerchantLanding() {
               </div>
             </div>
 
-            <aside className="ts-fig-commission ts-fig-animate-up" aria-label="Commission comparison">
+            <aside
+              ref={commissionRef}
+              className={`ts-fig-commission ts-fig-animate-up${showCommission ? " is-visible" : ""}`}
+              aria-label="Commission comparison"
+            >
               <div className="ts-fig-commission-title">Commission comparison</div>
               <div className="ts-fig-commission-row bad">
                 <div className="row-head"><span>Other platforms</span><span>30%</span></div>
-                <div className="row-bar"><span style={{ width: "100%", animation: "figScaleIn 1.1s var(--fig-ease) both" }} /></div>
+                <div className="row-bar"><span style={{ width: "100%" }} /></div>
               </div>
               <div className="ts-fig-commission-row good">
                 <div className="row-head"><span>TrueServe</span><span>15%</span></div>
-                <div className="row-bar"><span style={{ width: "50%", animation: "figScaleIn 1.1s .25s var(--fig-ease) both" }} /></div>
+                <div className="row-bar"><span style={{ width: "50%" }} /></div>
               </div>
               <div className="ts-fig-commission-savings">
                 <small>On $10,000/month in sales</small>
@@ -111,11 +163,12 @@ export default function MerchantLanding() {
             <div className="ts-fig-merchant-ops-media" aria-label="Restaurant support and service coordination preview">
               <div className="ts-fig-merchant-ops-video">
                 <video
+                  ref={videoRef}
                   autoPlay
                   loop
                   muted
                   playsInline
-                  preload="metadata"
+                  preload="auto"
                   src="/videos/merchant-hospitality-support.mp4"
                 />
               </div>

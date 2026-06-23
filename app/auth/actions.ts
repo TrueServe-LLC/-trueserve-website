@@ -404,7 +404,7 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
         let role = adminSession && adminRole ? adminRole : undefined;
         const supabase = await createClient();
         const { data: { user: authUser } } = await supabase.auth.getUser();
-        const userId = authUser?.id || cookieUserId;
+        let userId = authUser?.id || cookieUserId;
 
         if (!userId) {
             return { isAuth: false };
@@ -413,7 +413,7 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
         // Try getting by ID first
         let { data: publicUser } = await supabaseAdmin
             .from('User')
-            .select('role, name, stripeAccountId')
+            .select('id, role, name, stripeAccountId')
             .eq('id', userId)
             .maybeSingle();
 
@@ -425,11 +425,13 @@ export async function getAuthSession(): Promise<{ isAuth: boolean; userId?: stri
             if (resolvedAuthUser?.email) {
                 const { data: publicUserByEmail } = await supabaseAdmin
                     .from('User')
-                    .select('role')
+                    .select('id, role, name, stripeAccountId')
                     .eq('email', resolvedAuthUser.email)
                     .maybeSingle();
                 
-                if (publicUserByEmail?.role) {
+                if (publicUserByEmail) {
+                    publicUser = publicUserByEmail;
+                    userId = publicUserByEmail.id;
                     role = publicUserByEmail.role;
                 }
             }

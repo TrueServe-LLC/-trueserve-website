@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: "Reputation",  icon: "Rating", color: "#f97316" },
   { label: "Compliance",  icon: "Done", color: "#4dca80" },
   { label: "Profile",     icon: "User", color: "#6b8ee8" },
+  { label: "Disputes",    icon: "Alert", color: "#f97316" },
   { label: "Help",        icon: "Support", color: "#e84040" },
 ];
 
@@ -216,10 +217,33 @@ const SECTIONS = [
   },
   {
     step: 6,
+    label: "Disputes",
+    title: "Report and Track Delivery Issues",
+    body: "Disputes is where you document order problems, upload supporting details, and track the review status. Use it for delivery exceptions that cannot be resolved during the active trip.",
+    navIndex: 5,
+    content: (
+      <div className="space-y-3">
+        <div className="overflow-hidden rounded-[8px] border border-white/8">
+          <div className="border-b border-white/8 px-4 py-2.5"><span className="text-[10px] font-black uppercase text-white/40">Recent Reports</span></div>
+          {[
+            { issue: "Restaurant wait time", status: "Reviewed", tone: "text-[#4dca80]" },
+            { issue: "Customer unavailable", status: "Open", tone: "text-[#f97316]" },
+          ].map((item, i) => (
+            <div key={item.issue} className={`flex items-center justify-between gap-3 px-4 py-3 ${i === 0 ? "border-b border-white/[0.05]" : ""}`}>
+              <p className="text-[12px] font-semibold text-white/85">{item.issue}</p><span className={`text-[10px] font-bold ${item.tone}`}>{item.status}</span>
+            </div>
+          ))}
+        </div>
+        <button className="w-full rounded-[8px] border border-[#f97316]/30 bg-[#f97316]/[0.06] py-2.5 text-[11px] font-bold text-[#f97316]">Report a Delivery Issue</button>
+      </div>
+    ),
+  },
+  {
+    step: 7,
     label: "Help",
     title: "Support Center",
     body: "Help gives you instant access to FAQs, live chat with a support agent, and the ability to report issues with specific orders. Available 24/7 — tap Support anytime during a delivery.",
-    navIndex: 5,
+    navIndex: 6,
     content: (
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-2">
@@ -252,7 +276,7 @@ export default function DriverTutorialPreviewPage() {
   const isLast = step === SECTIONS.length - 1;
 
   return (
-    <div className="food-app-shell min-h-screen overflow-x-hidden">
+    <div className="food-app-shell min-h-screen overflow-x-hidden" style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
         <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] items-center justify-between gap-4 py-3">
           <div className="flex items-center gap-3">
@@ -326,7 +350,7 @@ export default function DriverTutorialPreviewPage() {
 
             <div className="flex" style={{minHeight: 380}}>
               {/* Sidebar nav */}
-              <div className="flex flex-col border-r border-white/8 bg-black/20 py-3" style={{width: 140, flexShrink: 0}}>
+              <div className="hidden flex-col border-r border-white/8 bg-black/20 py-3 sm:flex" style={{width: 140, flexShrink: 0}}>
                 {NAV_ITEMS.map((nav, i) => (
                   <button
                     key={i}
@@ -348,7 +372,7 @@ export default function DriverTutorialPreviewPage() {
               </div>
 
               {/* Content area */}
-              <div className="flex-1 overflow-hidden p-4">
+              <div className="min-w-0 flex-1 overflow-hidden p-3 sm:p-4">
                 <div className="mb-3">
                   <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">
                     Step {cur.step} of {SECTIONS.length}
@@ -399,7 +423,7 @@ export default function DriverTutorialPreviewPage() {
                 </button>
                 {isLast ? (
                   <Link href="/driver/login" className="ts-pill-btn ts-pill-btn-sm flex-1 text-center">
-                    Done Done
+                    Done
                   </Link>
                 ) : (
                   <button

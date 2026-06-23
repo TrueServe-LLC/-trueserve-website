@@ -6,10 +6,12 @@ import Logo from "@/components/Logo";
 
 const NAV_ITEMS = [
   { label: "Dashboard",    icon: "Analytics", color: "#f97316" },
+  { label: "Menu",         icon: "Menu", color: "#f97316" },
   { label: "Compliance",   icon: "Done", color: "#4dca80" },
   { label: "Integrations", icon: "Link", color: "#6b8ee8" },
   { label: "Storefront",   icon: "Store", color: "#f97316" },
   { label: "Franchise",    icon: "Restaurant", color: "#4dca80" },
+  { label: "Billing",      icon: "Billing", color: "#a78bfa" },
 ];
 
 const SECTIONS = [
@@ -57,10 +59,38 @@ const SECTIONS = [
   },
   {
     step: 2,
+    label: "Menu",
+    title: "Build and Publish Your Menu",
+    body: "Menu is where you add categories, items, prices, availability, and photos. Keep sold-out items accurate and preview changes before customers see them.",
+    navIndex: 1,
+    content: (
+      <div className="space-y-3">
+        <div className="overflow-hidden rounded-[8px] border border-white/8">
+          <div className="flex items-center justify-between border-b border-white/8 px-4 py-2.5">
+            <span className="text-[10px] font-black uppercase text-white/40">Menu Items</span>
+            <span className="text-[10px] font-bold text-[#4dca80]">12 available</span>
+          </div>
+          {[
+            { item: "Classic Burger", price: "$12.00", status: "Available" },
+            { item: "Crispy Chicken Wrap", price: "$10.50", status: "Available" },
+            { item: "Seasonal Salad", price: "$9.00", status: "Sold out" },
+          ].map((item, i) => (
+            <div key={item.item} className={`flex items-center justify-between gap-3 px-4 py-3 ${i < 2 ? "border-b border-white/[0.05]" : ""}`}>
+              <div><p className="text-[12px] font-semibold text-white/85">{item.item}</p><p className="text-[10px] text-white/40">{item.price}</p></div>
+              <span className={`text-[10px] font-bold ${item.status === "Available" ? "text-[#4dca80]" : "text-[#f97316]"}`}>{item.status}</span>
+            </div>
+          ))}
+        </div>
+        <button className="w-full rounded-[8px] border border-[#f97316]/30 bg-[#f97316]/[0.06] py-2.5 text-[11px] font-bold text-[#f97316]">+ Add Menu Item</button>
+      </div>
+    ),
+  },
+  {
+    step: 3,
     label: "Compliance",
     title: "Stay Approved",
     body: "Compliance tracks your health inspection grade, business license, and approval status. Keeping documents current ensures your storefront stays live. TrueServe flags anything expiring so you can renew before orders are paused.",
-    navIndex: 1,
+    navIndex: 2,
     content: (
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-2">
@@ -96,11 +126,11 @@ const SECTIONS = [
     ),
   },
   {
-    step: 3,
+    step: 4,
     label: "Integrations",
     title: "Connect Your POS",
     body: "Integrations is where you link your POS system (Toast, Square, etc.) so orders flow directly into your kitchen. Enter your API credentials, run a connection test, and your menu syncs automatically.",
-    navIndex: 2,
+    navIndex: 3,
     content: (
       <div className="space-y-3">
         <div className="overflow-hidden rounded-[8px] border border-[#6b8ee8]/30 bg-[#6b8ee8]/[0.04]">
@@ -134,11 +164,11 @@ const SECTIONS = [
     ),
   },
   {
-    step: 4,
+    step: 5,
     label: "Storefront",
     title: "Your Public Page",
     body: "Storefront controls what customers see when they browse TrueServe — your banner image, restaurant description, hours, and menu categories. You can also grab your embeddable order widget to add to your own website.",
-    navIndex: 3,
+    navIndex: 4,
     content: (
       <div className="space-y-3">
         <div className="overflow-hidden rounded-[8px] border border-white/8">
@@ -169,11 +199,11 @@ const SECTIONS = [
     ),
   },
   {
-    step: 5,
+    step: 6,
     label: "Franchise",
     title: "Multiple Locations",
     body: "If you operate more than one location, Franchise lets you manage all of them from a single account. Switch between locations, set per-location hours and menus, and see consolidated revenue across the portfolio.",
-    navIndex: 4,
+    navIndex: 5,
     content: (
       <div className="space-y-3">
         <div className="overflow-hidden rounded-[8px] border border-white/8">
@@ -202,6 +232,22 @@ const SECTIONS = [
       </div>
     ),
   },
+  {
+    step: 7,
+    label: "Billing",
+    title: "Plans, Payouts, and Billing",
+    body: "Billing shows your TrueServe plan, commission rate, payment method, invoices, and payout readiness. Review this page before launch so there are no surprises when orders begin.",
+    navIndex: 6,
+    content: (
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-[8px] border border-[#4dca80]/20 bg-[#4dca80]/[0.04] px-4 py-3 text-center"><p className="text-[10px] font-black uppercase text-white/35">Commission</p><p className="mt-1 text-[20px] font-black text-[#4dca80]">15%</p></div>
+          <div className="rounded-[8px] border border-white/8 bg-black/20 px-4 py-3 text-center"><p className="text-[10px] font-black uppercase text-white/35">Payout Status</p><p className="mt-1 text-[20px] font-black text-white">Ready</p></div>
+        </div>
+        <div className="rounded-[8px] border border-white/8 px-4 py-3"><p className="text-[10px] font-black uppercase text-white/40">Current Plan</p><p className="mt-1 text-[13px] font-semibold text-white/75">Founding Partner · first 30 days free</p></div>
+      </div>
+    ),
+  },
 ];
 
 export default function MerchantTutorialPreviewPage() {
@@ -211,7 +257,7 @@ export default function MerchantTutorialPreviewPage() {
   const isLast = step === SECTIONS.length - 1;
 
   return (
-    <div className="food-app-shell min-h-screen overflow-x-hidden">
+    <div className="food-app-shell min-h-screen overflow-x-hidden" style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       <header className="food-app-nav sticky top-0 z-50 border-b border-white/10">
         <div className="mx-auto flex w-[min(1240px,calc(100%-24px))] items-center justify-between gap-4 py-3">
           <div className="flex items-center gap-3">
@@ -284,7 +330,7 @@ export default function MerchantTutorialPreviewPage() {
 
             <div className="flex" style={{minHeight: 380}}>
               {/* Sidebar nav */}
-              <div className="flex flex-col border-r border-white/8 bg-black/20 py-3" style={{width: 140, flexShrink: 0}}>
+              <div className="hidden flex-col border-r border-white/8 bg-black/20 py-3 sm:flex" style={{width: 140, flexShrink: 0}}>
                 {NAV_ITEMS.map((nav, i) => (
                   <button
                     key={i}
@@ -306,7 +352,7 @@ export default function MerchantTutorialPreviewPage() {
               </div>
 
               {/* Content area */}
-              <div className="flex-1 overflow-hidden p-4">
+              <div className="min-w-0 flex-1 overflow-hidden p-3 sm:p-4">
                 <div className="mb-3">
                   <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#f97316]/60">
                     Step {cur.step} of {SECTIONS.length}

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { isStaffEmail, resolveStaffRole } from '@/lib/admin-config'
 import { ADMIN_ROLES } from '@/lib/rbac'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
@@ -17,13 +18,13 @@ export async function GET(request: Request) {
 
         if (!error && data?.user) {
             // SYNC: Ensure the user exists in our public User table
-            const { data: profileById } = await supabase
+            const { data: profileById } = await supabaseAdmin
                 .from('User')
                 .select('id, role')
                 .eq('id', data.user.id)
                 .maybeSingle();
 
-            const { data: profileByEmail } = await supabase
+            const { data: profileByEmail } = await supabaseAdmin
                 .from('User')
                 .select('id, role')
                 .eq('email', data.user.email)
@@ -38,7 +39,7 @@ export async function GET(request: Request) {
                 role = resolvedStaffRole || (isStaffEmail(data.user.email) ? 'READONLY' : 'CUSTOMER');
 
                 // First time logging in with Google - create the profile
-                await supabase.from('User').insert({
+                const { error: profileError } = await supabaseAdmin.from('User').insert({
                     id: sessionUserId,
                     email: data.user.email,
                     name: data.user.user_metadata.full_name || data.user.user_metadata.name || data.user.email?.split('@')[0],
@@ -46,19 +47,21 @@ export async function GET(request: Request) {
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 });
+                if (profileError) {
+                    console.error('OAuth profile sync failed:', profileError);
+                    return NextResponse.redirect(`${origin}/auth/auth-code-error?reason=profile_sync`)
+                }
             } else {
                 role = profileById?.role || profileByEmail?.role || role;
                 // Sync the role if we have an explicit staff mapping.
                 if (resolvedStaffRole && role !== resolvedStaffRole) {
                     role = resolvedStaffRole;
-                    const { supabaseAdmin } = await import("@/lib/supabase-admin");
                     await supabaseAdmin
                         .from('User')
                         .update({ role: resolvedStaffRole, updatedAt: new Date().toISOString() })
                         .eq('id', profileById?.id || profileByEmail?.id || data.user.id);
                 } else if (isStaffEmail(data.user.email) && !ADMIN_ROLES.includes(role as any)) {
                     role = 'READONLY';
-                    const { supabaseAdmin } = await import("@/lib/supabase-admin");
                     await supabaseAdmin
                         .from('User')
                         .update({ role: 'READONLY', updatedAt: new Date().toISOString() })
