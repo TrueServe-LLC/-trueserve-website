@@ -138,7 +138,7 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    model: process.env.OPENAI_MENU_MODEL || "gpt-5.4-mini",
+                    model: process.env.OPENAI_MENU_MODEL || "gpt-4.1-mini",
                     input: [{
                         role: "user",
                         content: [
