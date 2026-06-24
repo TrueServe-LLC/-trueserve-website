@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import DriverLoginForm from "./DriverLoginForm";
 import { Clock3, DollarSign, MapPin, ShieldCheck, WalletCards } from "lucide-react";
 
@@ -19,6 +19,7 @@ export default function DriverLoginPage() {
       typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("tour") === "1";
     const nextPath = wantsTour ? "/driver/dashboard?tour=1" : "/driver/dashboard";
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {

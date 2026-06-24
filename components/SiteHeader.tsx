@@ -18,6 +18,7 @@ const NAV_LINKS = [
 export default function SiteHeader() {
   const pathname = usePathname() || "/";
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [accountRole, setAccountRole] = useState<string | null>(null);
   const [accountHref, setAccountHref] = useState("/user/settings");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -34,6 +35,7 @@ export default function SiteHeader() {
         const session = await response.json();
         if (!mounted) return;
         setIsAuthenticated(Boolean(session.authenticated));
+        setAccountRole(session.role || null);
         setAccountHref(session.accountHref || "/user/settings");
       } catch (error) {
         console.error("Unable to refresh header session:", error);
@@ -64,6 +66,20 @@ export default function SiteHeader() {
     return pathname.startsWith(href);
   };
 
+  const normalizedRole = accountRole?.toUpperCase() || "CUSTOMER";
+  const isDriver = normalizedRole === "DRIVER";
+  const isMerchant = normalizedRole === "MERCHANT";
+  const isStaff = ["ADMIN", "PM", "OPS", "SUPPORT", "FINANCE", "QA_TESTER", "READONLY"].includes(normalizedRole);
+  const accountLabel = isDriver ? "Driver Profile" : isMerchant ? "Merchant Portal" : isStaff ? "Admin Portal" : "Account";
+  const primaryHref = isDriver
+    ? "/driver/dashboard"
+    : isMerchant
+      ? "/merchant/dashboard"
+      : isStaff
+        ? "/admin/dashboard"
+        : "/restaurants";
+  const primaryLabel = isDriver ? "Driver Portal" : isMerchant ? "Open Dashboard" : isStaff ? "Open Dashboard" : "Order now";
+
   return (
     <header className="ts-fig-header">
       <div className="ts-fig-container ts-fig-header-inner">
@@ -77,10 +93,10 @@ export default function SiteHeader() {
         </div>
         <div className="ts-fig-header-actions">
           <Link href={isAuthenticated ? accountHref : "/login"} className="ts-fig-link">
-            {isAuthenticated ? "Account" : "Sign In"}
+            {isAuthenticated ? accountLabel : "Sign In"}
           </Link>
-          <Link href={isAuthenticated ? "/restaurants" : "/signup"} className="ts-fig-btn">
-            {isAuthenticated ? "Order now" : "Sign Up"}
+          <Link href={isAuthenticated ? primaryHref : "/signup"} className="ts-fig-btn">
+            {isAuthenticated ? primaryLabel : "Sign Up"}
           </Link>
           <button
             type="button"
@@ -106,10 +122,10 @@ export default function SiteHeader() {
           </Link>
         ))}
         <Link className="ts-fig-mobile-menu-secondary" href={isAuthenticated ? accountHref : "/login"} onClick={() => setMenuOpen(false)}>
-          {isAuthenticated ? "Account" : "Sign In"}
+          {isAuthenticated ? accountLabel : "Sign In"}
         </Link>
-        <Link className="ts-fig-mobile-menu-primary" href={isAuthenticated ? "/restaurants" : "/signup"} onClick={() => setMenuOpen(false)}>
-          {isAuthenticated ? "Order now" : "Sign Up"}
+        <Link className="ts-fig-mobile-menu-primary" href={isAuthenticated ? primaryHref : "/signup"} onClick={() => setMenuOpen(false)}>
+          {isAuthenticated ? primaryLabel : "Sign Up"}
         </Link>
       </div>
     </header>

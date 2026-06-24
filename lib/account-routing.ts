@@ -22,7 +22,7 @@ export function getAccountHomeHref(role?: string | null) {
     }
 
     if (normalizedRole === "DRIVER") {
-        return "/driver/dashboard";
+        return "/driver/dashboard/account";
     }
 
     if (ADMIN_ROLES.includes(normalizedRole)) {
