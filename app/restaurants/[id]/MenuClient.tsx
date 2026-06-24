@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CalendarClock, Clock3, Gift, MapPin, PackageCheck, ReceiptText, Route, ShieldCheck, Sparkles, Star, X, Zap, ZoomIn, ZoomOut } from "lucide-react";
@@ -91,6 +91,9 @@ export default function MenuClient({
     const [accessCode, setAccessCode] = useState("");
     const [deliverySpeed, setDeliverySpeed] = useState<DeliverySpeed>("STANDARD");
     const [scheduledFor, setScheduledFor] = useState("");
+    const [minimumScheduledFor] = useState(() =>
+        new Date(Date.now() + 45 * 60 * 1000).toISOString().slice(0, 16)
+    );
     const [deliveryPinAdjusted, setDeliveryPinAdjusted] = useState(false);
     const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
@@ -104,6 +107,7 @@ export default function MenuClient({
     const [checkoutEta, setCheckoutEta] = useState<string>("Calculating...");
     const [checkoutDistance, setCheckoutDistance] = useState<string>("");
     const [menuZoom, setMenuZoom] = useState<MenuZoomLevel>("comfortable");
+    const checkoutDetailsRef = useRef<HTMLDivElement>(null);
     
     // GHL State
     const [isGHLOpen, setIsGHLOpen] = useState(false);
@@ -125,6 +129,7 @@ export default function MenuClient({
 
     // Cart calculations
     const cartItems = Object.entries(cart).filter(([_, qty]) => qty > 0);
+    const cartItemCount = cartItems.reduce((sum, [, qty]) => sum + qty, 0);
     const subtotal = cartItems.reduce((sum, [id, qty]) => {
         const item = items.find(i => i.id === id);
         return sum + (item ? item.price * qty : 0);
@@ -602,6 +607,10 @@ export default function MenuClient({
         });
     }
 
+    function revealCheckout() {
+        checkoutDetailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     return (
         <div className="menu-body">
             <div className="menu-content-column">
@@ -862,7 +871,21 @@ export default function MenuClient({
                 </div>
 
                 {cartItems.length > 0 && (
-                    <div className="cart-ft" style={{ display: 'block', padding: '20px', borderTop: '1px solid var(--border)' }}>
+                    <>
+                    <div className="cart-review-bar">
+                        <div>
+                            <span>{cartItemCount} {cartItemCount === 1 ? "item" : "items"}</span>
+                            <strong>${total.toFixed(2)}</strong>
+                        </div>
+                        <button type="button" onClick={revealCheckout}>
+                            Review checkout
+                        </button>
+                    </div>
+                    <div ref={checkoutDetailsRef} className="cart-ft checkout-details">
+                        <div className="checkout-step-heading">
+                            <span>Checkout</span>
+                            <strong>Delivery details and payment</strong>
+                        </div>
                         <div className="checkout-clarity-panel" aria-label="Checkout transparency">
                             <div>
                                 <ReceiptText size={14} aria-hidden="true" />
@@ -922,7 +945,7 @@ export default function MenuClient({
                                     <input
                                         type="datetime-local"
                                         value={scheduledFor}
-                                        min={new Date(Date.now() + 45 * 60 * 1000).toISOString().slice(0, 16)}
+                                        min={minimumScheduledFor}
                                         onChange={e => setScheduledFor(e.target.value)}
                                         style={{ width: '100%', background: '#111', border: '1px solid #222', borderRadius: 10, padding: '9px 10px', fontSize: 12, color: '#fff', outline: 'none' }}
                                     />
@@ -1115,7 +1138,7 @@ export default function MenuClient({
                                             } catch { }
                                         }}
                                     />
-                                    <div style={{
+                                    <div className="delivery-preferences-card" style={{
                                         marginTop: 10,
                                         display: 'grid',
                                         gap: 8,
@@ -1157,7 +1180,7 @@ export default function MenuClient({
                                                 );
                                             })}
                                         </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                                        <div className="checkout-field-grid">
                                             <input
                                                 type="text"
                                                 value={unit}
@@ -1184,8 +1207,8 @@ export default function MenuClient({
                                             style={{ width: '100%', background: '#111', border: '1px solid #222', borderRadius: 10, padding: '9px 10px', fontSize: 12, color: '#fff', outline: 'none', resize: 'none' }}
                                         />
                                     </div>
-                                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
-                                        <div className="px-4 py-3 border-b border-white/10 grid gap-3" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(86px, 112px)' }}>
+                                    <div className="checkout-map-card mt-4 rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                                        <div className="checkout-map-heading px-4 py-3 border-b border-white/10 grid gap-3">
                                             <div className="min-w-0 flex-1">
                                                 <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Confirm Drop-Off Pin</div>
                                                 <div className="text-[11px] font-semibold text-white/70 mt-1 break-words leading-snug">{locationLabel}</div>
@@ -1231,9 +1254,9 @@ export default function MenuClient({
                                                 onDistanceUpdate={setCheckoutDistance}
                                             />
                                         ) : (
-                                            <div className="h-[220px] px-6 py-6 flex items-center justify-center text-center">
+                                            <div className="checkout-map-empty px-6 py-6 flex items-center justify-center text-center">
                                                 <div className="max-w-[280px]">
-                                                    <div className="text-2xl mb-3 opacity-70">Map</div>
+                                                    <MapPin className="checkout-map-empty-icon" size={22} aria-hidden="true" />
                                                     <div className="text-sm font-semibold text-white/70">Select a suggested address</div>
                                                     <div className="mt-2 text-xs text-slate-500">
                                                         Choose an address from Google suggestions to preview the route and distance.
@@ -1343,6 +1366,15 @@ export default function MenuClient({
                             <Link href={`/login?redirect=/restaurants/${restaurant.id}`} className="co-btn" style={{ textAlign: 'center', display: 'block' }}>Sign In to Order</Link>
                         )}
                     </div>
+
+                    <div className="mobile-checkout-dock" aria-label="Cart checkout summary">
+                        <div>
+                            <span>{cartItemCount} {cartItemCount === 1 ? "item" : "items"}</span>
+                            <strong>${total.toFixed(2)}</strong>
+                        </div>
+                        <button type="button" onClick={revealCheckout}>Checkout</button>
+                    </div>
+                    </>
                 )}
             </div>
         </div>
