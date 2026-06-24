@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/app/auth/actions";
 import { approveDriver, markDriverReadyForReview, rejectDriver, requestDriverDocuments } from "@/app/admin/actions";
@@ -23,10 +22,11 @@ export default async function AdminDriversPage({
 }) {
     const resolvedSearchParams = searchParams ? await searchParams : {};
     const query = (resolvedSearchParams.q || "").trim().toLowerCase();
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get("admin_session");
     const { isAuth, role } = await getAuthSession();
-    const isAuthorized = !!adminSession || (isAuth && canAccessAdminSection(role, "drivers"));
+    // Do not let a stale legacy admin_session cookie render controls that the
+    // server actions will reject. Review access and mutations now use the same
+    // authenticated user/role check.
+    const isAuthorized = isAuth && canAccessAdminSection(role, "drivers");
     if (!isAuthorized) redirect("/admin/login");
 
     const { data: drivers } = await supabaseAdmin

@@ -2,10 +2,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { scanMenuAction, confirmAIImport } from "../ai-actions";
+import { FileText, ScanLine, Upload, X } from "lucide-react";
 
+const MAX_MENU_FILE_BYTES = 10 * 1024 * 1024;
 
 export default function MenuScanner({ restaurantId }: { restaurantId: string }) {
+    const router = useRouter();
     const [scanning, setScanning] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const [results, setResults] = useState<any[]>([]);
@@ -16,6 +20,13 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
+            if (file.size > MAX_MENU_FILE_BYTES) {
+                setSelectedFile(null);
+                setPreviewUrl(null);
+                setMessage("That file is over 10 MB. Choose a smaller PDF or image.");
+                e.target.value = "";
+                return;
+            }
             if (file.type.startsWith('image/') || file.type === 'application/pdf') {
                 setSelectedFile(file);
                 setMessage("");
@@ -48,8 +59,7 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
         reader.onload = async () => {
             const base64 = reader.result as string;
 
-            // Artificial delay for "Scanning" feel
-            await new Promise(r => setTimeout(r, 1500));
+            await new Promise(r => setTimeout(r, 250));
             setMessage("Extracting item details and pricing...");
 
             const result = await scanMenuAction(restaurantId, base64);
@@ -71,13 +81,14 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
         const res = await confirmAIImport(restaurantId, results);
         if (res.success) {
             setMessage("Menu successfully imported!");
+            router.refresh();
             setTimeout(() => {
                 setShowResults(false);
                 setMessage("");
                 setResults([]);
                 setSelectedFile(null);
                 setPreviewUrl(null);
-            }, 2000);
+            }, 800);
         } else {
             setMessage("Import failed: " + res.error);
         }
@@ -116,27 +127,27 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                 onClick={() => setShowResults(!showResults)}
                 className="btn btn-outline border-primary/30 text-primary hover:bg-primary/10 px-5 py-2.5 text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2 rounded-2xl backdrop-blur-md transition-all active:scale-95"
             >
-                <span className="text-sm">✨</span> AI Menu Importer
+                <Upload size={15} aria-hidden="true" /> Import menu PDF / photo
             </button>
 
             {showResults && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
-                    <div className="bg-[#0c121e] border border-white/10 rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-[#0c121e] border border-white/10 rounded-[2rem] w-full max-w-2xl max-h-[calc(100dvh-2rem)] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
 
                         {/* Header */}
-                        <div className="p-8 border-b border-white/5 flex justify-between items-center bg-gradient-to-br from-primary/10 via-transparent to-transparent">
+                        <div className="p-5 sm:p-7 border-b border-white/5 flex justify-between items-center bg-gradient-to-br from-primary/10 via-transparent to-transparent shrink-0">
                             <div>
                                 <h3 className="text-2xl font-black flex items-center gap-3 tracking-tight">
-                                    <span className="p-2 bg-primary/10 rounded-xl"></span> Smart Sync
+                                    <span className="p-2 bg-primary/10 rounded-xl"><ScanLine size={18} /></span> Menu import
                                 </h3>
                                 <p className="text-xs text-slate-500 mt-1 font-bold uppercase tracking-widest opacity-60">Comparing Extract with Database</p>
                             </div>
-                            <button onClick={() => setShowResults(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all font-black text-xl">&times;</button>
+                            <button type="button" aria-label="Close menu importer" onClick={() => setShowResults(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"><X size={18} /></button>
                         </div>
 
                         {/* Summary Bar */}
                         {results.length > 0 && (
-                            <div className="px-8 py-4 bg-white/[0.02] border-b border-white/5 flex gap-6">
+                            <div className="px-5 sm:px-7 py-4 bg-white/[0.02] border-b border-white/5 flex gap-6 shrink-0">
                                 <div className="text-center">
                                     <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">New</p>
                                     <p className="text-lg font-black text-primary">{results.filter(r => r.changeType === 'NEW').length}</p>
@@ -153,7 +164,7 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                         )}
 
                         {/* Content */}
-                        <div className="p-8 max-h-[60vh] overflow-y-auto space-y-4 custom-scrollbar">
+                        <div className="p-5 sm:p-7 min-h-0 flex-1 overflow-y-auto space-y-4 custom-scrollbar">
                             {results.length > 0 ? (
                                 <div className="space-y-4">
                                     {results.map((item, i) => (
@@ -199,7 +210,7 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                                                     <img src={previewUrl} alt="Preview" className={`w-full h-full object-cover transition-opacity ${scanning ? 'opacity-40 brightness-50' : 'opacity-80'}`} />
                                                 ) : (
                                                     <div className="flex flex-col items-center gap-4 py-8">
-                                                        <span className="text-5xl animate-bounce"></span>
+                                                        <FileText size={42} className="text-primary" aria-hidden="true" />
                                                         <div className="text-center">
                                                             <p className="text-white font-black tracking-tight text-lg">Upload your menu</p>
                                                             <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Image or PDF • Max 10MB</p>
@@ -224,7 +235,7 @@ export default function MenuScanner({ restaurantId }: { restaurantId: string }) 
                         </div>
 
                         {/* Footer */}
-                        <div className="p-8 bg-black/40 border-t border-white/5 flex flex-col gap-6">
+                        <div className="p-5 sm:p-7 bg-black/40 border-t border-white/5 flex flex-col gap-4 shrink-0">
                             {message && (
                                 <div className="flex items-center justify-center gap-3">
                                     {scanning && <div className="w-2 h-2 rounded-full bg-primary animate-ping" />}

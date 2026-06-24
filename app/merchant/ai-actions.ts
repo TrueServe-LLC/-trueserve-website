@@ -1,13 +1,13 @@
 
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+const supabase = createAdminClient(supabaseUrl, supabaseServiceRoleKey);
 
 const CATEGORY_NORMALIZATION: Record<string, string> = {
     // Only normalize truly ambiguous or plural/singular variations
@@ -71,12 +71,18 @@ function sanitizeScannedItems(rawItems: unknown[]): any[] {
  * Parses an image or text and returns a JSON menu using Gemini 1.5 Flash
  */
 export async function scanMenuAction(restaurantId: string, imageBase64: string) {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
+    const authClient = await createServerClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    const userId = user?.id;
 
     if (!userId) {
         return { success: false, error: "Unauthorized. Please log in." };
     }
+
+    const supportedFile = /^data:(application\/pdf|image\/(png|jpeg|webp|gif));base64,/.test(imageBase64);
+    const encodedSize = imageBase64.includes("base64,") ? imageBase64.split("base64,")[1].length : imageBase64.length;
+    if (!supportedFile) return { success: false, error: "Upload a PDF, JPG, PNG, WebP, or GIF menu." };
+    if (encodedSize > 14_000_000) return { success: false, error: "Menu files must be 10 MB or smaller." };
 
     try {
         // SECURITY: Verify user owns this restaurant
@@ -93,19 +99,10 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
 
         console.log(`[AI Importer] Real Scan started for restaurant ${restaurantId}`);
 
-        const apiKey = process.env.ANTHROPIC_API_KEY;
-        if (!apiKey) {
-            console.warn("ANTHROPIC_API_KEY is missing. Falling back to simulated response for demo.");
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            return {
-                success: true,
-                items: [
-                    { name: "Crispy Calamari", price: 14.00, description: "Lemon aioli, fresh parsley.", category: "Starters" },
-                    { name: "Luxury Wagyu Burger", price: 24.99, description: "Truffle aioli, vintage cheddar.", category: "Mains" },
-                    { name: "Warm Lava Cake", price: 9.50, description: "Vanilla bean gelato, berry coulis.", category: "Desserts" }
-                ],
-                message: "Demo Mode: ANTHROPIC_API_KEY not found. Showing sample items."
-            };
+        const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+        const openAIApiKey = process.env.OPENAI_API_KEY;
+        if (!anthropicApiKey && !openAIApiKey) {
+            return { success: false, error: "Menu import is not configured. Contact TrueServe support." };
         }
 
         // Prepare context for Claude 3.5 Sonnet
@@ -119,34 +116,82 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
             mimeType = imageBase64.split(';')[0].split(':')[1];
         }
 
-        const { default: Anthropic } = await import('@anthropic-ai/sdk');
-        const anthropic = new Anthropic({ apiKey });
+        const prompt = `Extract all food and drink items from this restaurant menu. For each item return: 'name' (string), 'price' (number), 'description' (string, empty if none), and 'category' (string — use the EXACT section heading from the menu, e.g. "Burgers", "Milkshakes", "Wood-Fired Pizza", "Sushi Rolls". Do NOT flatten into generic labels like "Mains" — preserve the menu's own category names). Return ONLY a valid JSON array. No markdown, no extra text.`;
+        let rawText = "[]";
 
-        const prompt = `Extract all food and drink items from this menu image. For each item return: 'name' (string), 'price' (number), 'description' (string, empty if none), and 'category' (string — use the EXACT section heading from the menu, e.g. "Steakburgers", "Milkshakes", "Wood-Fired Pizza", "Sushi Rolls". Do NOT flatten into generic labels like "Mains" — preserve the menu's own category names). Return ONLY a valid JSON array. No markdown, no extra text.`;
-
-        const response = await anthropic.messages.create({
-            model: "claude-3-5-sonnet-latest",
-            max_tokens: 4096,
-            temperature: 0.1,
-            messages: [
-                {
-                    role: "user",
-                    content: [
-                        { type: "text", text: prompt },
-                        {
-                            type: "image",
-                            source: {
-                                type: "base64",
-                                media_type: mimeType as any,
-                                data: base64Data
-                            }
-                        }
-                    ]
+        if (openAIApiKey) {
+            const fileContent = mimeType === "application/pdf"
+                ? {
+                    type: "input_file",
+                    filename: "merchant-menu.pdf",
+                    file_data: base64Data,
                 }
-            ]
-        });
+                : {
+                    type: "input_image",
+                    image_url: imageBase64,
+                };
 
-        const rawText = response.content[0].type === 'text' ? response.content[0].text : "[]";
+            const response = await fetch("https://api.openai.com/v1/responses", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${openAIApiKey}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: process.env.OPENAI_MENU_MODEL || "gpt-5.4-mini",
+                    input: [{
+                        role: "user",
+                        content: [
+                            fileContent,
+                            { type: "input_text", text: prompt },
+                        ],
+                    }],
+                    max_output_tokens: 4096,
+                }),
+            });
+
+            const payload = await response.json();
+            if (!response.ok) {
+                throw new Error(payload?.error?.message || "OpenAI could not read this menu.");
+            }
+
+            rawText = (payload.output || [])
+                .flatMap((item: any) => item.content || [])
+                .filter((content: any) => content.type === "output_text")
+                .map((content: any) => content.text || "")
+                .join("\n") || "[]";
+        } else if (anthropicApiKey) {
+            const { default: Anthropic } = await import('@anthropic-ai/sdk');
+            const anthropic = new Anthropic({ apiKey: anthropicApiKey });
+            const menuDocument = mimeType === "application/pdf"
+                ? {
+                    type: "document" as const,
+                    source: {
+                        type: "base64" as const,
+                        media_type: "application/pdf" as const,
+                        data: base64Data,
+                    },
+                }
+                : {
+                    type: "image" as const,
+                    source: {
+                        type: "base64" as const,
+                        media_type: mimeType as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
+                        data: base64Data,
+                    },
+                };
+
+            const response = await anthropic.messages.create({
+                model: process.env.ANTHROPIC_MENU_MODEL || "claude-sonnet-4-5",
+                max_tokens: 4096,
+                temperature: 0.1,
+                messages: [{
+                    role: "user",
+                    content: [{ type: "text", text: prompt }, menuDocument],
+                }],
+            });
+            rawText = response.content[0].type === "text" ? response.content[0].text : "[]";
+        }
 
         // Clean markdown backticks if AI returns them
         let cleanedText = rawText.replace(/```json/i, "").replace(/```/i, "").trim();
@@ -177,7 +222,7 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
                 .from('MenuItem')
                 .select('name, price, description')
                 .eq('restaurantId', restaurantId);
-            currentItems = fallback.data || [];
+            currentItems = (fallback.data || []).map(item => ({ ...item, category: null }));
         }
 
         const currentMap = new Map(currentItems?.map(i => [i.name.toLowerCase(), i]));
@@ -223,10 +268,13 @@ export async function scanMenuAction(restaurantId: string, imageBase64: string) 
  * Bulk insert/update items found by AI (Smart Sync)
  */
 export async function confirmAIImport(restaurantId: string, items: any[]) {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
+    const authClient = await createServerClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    const userId = user?.id;
 
     if (!userId) return { success: false, error: "Unauthorized" };
+    const reviewedItems = sanitizeScannedItems(Array.isArray(items) ? items : []).slice(0, 250);
+    if (reviewedItems.length === 0) return { success: false, error: "No valid menu items were selected." };
 
     try {
         // SECURITY: Verify user owns this restaurant
@@ -247,8 +295,7 @@ export async function confirmAIImport(restaurantId: string, items: any[]) {
 
         const idMap = new Map(currentItems?.map(i => [i.name.toLowerCase(), i.id]));
 
-        const itemsToUpsert = items
-            .filter(item => item.changeType !== 'MATCH') // Skip identical
+        const itemsToUpsert = reviewedItems
             .map(item => {
                 const existingId = idMap.get(item.name.toLowerCase());
                 return {
@@ -283,6 +330,8 @@ export async function confirmAIImport(restaurantId: string, items: any[]) {
         }
 
         revalidatePath('/merchant/dashboard');
+        revalidatePath('/merchant/dashboard/menu');
+        revalidatePath('/restaurants');
         return { success: true };
     } catch (err: any) {
         return { success: false, error: err.message };

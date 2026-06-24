@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import MenuRow from "@/app/merchant/dashboard/MenuRow";
 import AddItemForm from "@/app/merchant/dashboard/AddItemForm";
 import InventoryManager from "@/app/merchant/dashboard/InventoryManager";
+import MenuScanner from "@/app/merchant/dashboard/MenuScanner";
 import MerchantPortalRecovery from "../MerchantPortalRecovery";
 import { Ban, CheckCircle2, Clock3, Sparkles, UtensilsCrossed } from "lucide-react";
 
@@ -133,7 +134,10 @@ export default async function MerchantMenuPage() {
                         Add items, remove old menu items, mark 86s, and promote limited-time specials for nearby customers browsing your restaurant page.
                     </p>
                 </div>
-                <div className="menu-feature-badge">{activeSpecials} active specials</div>
+                <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+                    <MenuScanner restaurantId={restaurantId} />
+                    <div className="menu-feature-badge">{activeSpecials} active specials</div>
+                </div>
             </section>
 
             {/* Stats row */}
@@ -195,7 +199,7 @@ export default async function MerchantMenuPage() {
             {/* Add item form */}
             <div style={{ marginBottom: 32 }}>
                 <div className="menu-section-hd">Add New Item</div>
-                <AddItemForm restaurantId={restaurantId} />
+                <AddItemForm />
             </div>
 
             {/* Inventory / ingredient manager */}
