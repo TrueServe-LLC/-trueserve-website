@@ -9,9 +9,11 @@ import {
     MapPin,
     Plus,
     ReceiptText,
+    ShieldCheck,
     Star,
     Target,
     Trophy,
+    UserRound,
     WalletCards,
     Zap,
 } from "lucide-react";
@@ -92,6 +94,12 @@ export default async function UserSettings() {
             </header>
 
             <main>
+                <section className="ts-account-intro">
+                    <span>Customer account</span>
+                    <h1>Your block, saved.</h1>
+                    <p>Manage the details that make ordering faster, then keep rewards, favorites, and order history close by.</p>
+                </section>
+
                 <section className="ts-account-hero">
                     <div className="ts-account-avatar">
                         <ProfileAvatar
@@ -123,6 +131,29 @@ export default async function UserSettings() {
                         <div><strong>{money(points * 0.01)}</strong><span>Credit value</span></div>
                     </div>
                 </section>
+
+                <nav className="ts-account-control-grid" aria-label="Account settings">
+                    <Link href="/user/settings/info">
+                        <UserRound size={22} aria-hidden="true" />
+                        <span><strong>Profile details</strong><small>Name, email, and account information</small></span>
+                        <ArrowRight size={18} aria-hidden="true" />
+                    </Link>
+                    <Link href="/user/settings/addresses">
+                        <MapPin size={22} aria-hidden="true" />
+                        <span><strong>Saved addresses</strong><small>Delivery locations and defaults</small></span>
+                        <ArrowRight size={18} aria-hidden="true" />
+                    </Link>
+                    <a href="#wallet">
+                        <WalletCards size={22} aria-hidden="true" />
+                        <span><strong>Wallet</strong><small>Payment methods and checkout</small></span>
+                        <ArrowRight size={18} aria-hidden="true" />
+                    </a>
+                    <Link href="/privacy">
+                        <ShieldCheck size={22} aria-hidden="true" />
+                        <span><strong>Privacy & data</strong><small>Policy and account controls</small></span>
+                        <ArrowRight size={18} aria-hidden="true" />
+                    </Link>
+                </nav>
 
                 <nav className="ts-account-tabs" aria-label="Account sections">
                     <a href="#overview"><Trophy size={19} /> Overview</a>
