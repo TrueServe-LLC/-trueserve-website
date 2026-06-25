@@ -67,7 +67,7 @@ export default function SiteHeader() {
   return (
     <header className="ts-fig-header">
       <div className="ts-fig-container ts-fig-header-inner">
-        <Logo size="sm" />
+        <Logo size="md" />
         <div className="ts-fig-nav" role="navigation" aria-label="Primary">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} className={isActive(link.href) ? "active" : undefined}>
