@@ -83,12 +83,7 @@ function LiveNearYouCard({ kitchens, hasLocation }: { kitchens: LiveKitchen[]; h
   }, [kitchens.length, shouldReduceMotion]);
 
   return (
-    <motion.div
-      className="ts-fig-live-card"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div className="ts-fig-live-card">
       <div className="ts-fig-live-card-head">
         <span className="ts-fig-live-dot">{hasLocation ? "Live near you" : "Ready when you are"}</span>
         <span className="updated">{hasLocation ? "Updated just now" : "Location first"}</span>
@@ -132,7 +127,7 @@ function LiveNearYouCard({ kitchens, hasLocation }: { kitchens: LiveKitchen[]; h
           />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -377,50 +372,28 @@ export default function Home() {
       <section className="ts-fig-hero">
         <div className="ts-fig-container ts-fig-hero-inner">
           <div>
-            <motion.span
-              className="ts-fig-chip"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <span className="ts-fig-chip">
               <span className="ts-fig-chip-dot" />
               Neighborhood kitchens, real food
-            </motion.span>
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </span>
+            <h1>
               Your block&apos;s{" "}
               <span className="o">best food,</span>
               <span className="t">delivered.</span>
-            </motion.h1>
-            <motion.p
-              className="ts-fig-hero-sub"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </h1>
+            <p className="ts-fig-hero-sub">
               Real restaurants from your neighborhood — not ghost kitchens, not chains. Enter your address to discover what&apos;s cooking nearby.
-            </motion.p>
-            <motion.div
-              className="ts-fig-hero-search"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </p>
+            <div className="ts-fig-hero-search">
               <LandingSearch />
-            </motion.div>
-            <motion.button
+            </div>
+            <button
               type="button"
               className="ts-fig-locate"
               onClick={handleLocate}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Navigation size={16} /> Or <u>use my current location</u>
-            </motion.button>
+            </button>
           </div>
 
           <LiveNearYouCard kitchens={liveKitchens} hasLocation={hasLocationContext} />
@@ -466,50 +439,40 @@ export default function Home() {
               </motion.article>
             ))}
           </div>
+          <motion.div className="ts-fig-steps-cta" {...fadeIn(0.25)}>
+            <div>
+              <strong>Make ordering feel easy.</strong>
+              <span>Create your profile to save delivery addresses, dietary preferences, and earn TruePoints on every order.</span>
+            </div>
+            <Link href="/signup" className="ts-fig-btn">
+              Sign Up <span className="ts-fig-btn-icon"><ArrowRight size={16} /></span>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
-      {/* TRUST BAND */}
+      {/* WHY TRUESERVE */}
       <section className="ts-fig-section ts-fig-section-haze">
         <div className="ts-fig-container">
-          <div className="ts-fig-trust">
-            <motion.div className="ts-fig-trust-card dark" {...fadeIn(0)}>
-              <div className="ts-fig-trust-icon"><ShieldCheck size={20} /></div>
+          <motion.div {...fadeIn(0)}>
+            <span className="ts-fig-kicker teal">Why TrueServe</span>
+            <h2>Built for you,<br />not an algorithm.</h2>
+          </motion.div>
+          <div className="ts-fig-why">
+            <motion.div className="ts-fig-why-card orange" {...fadeIn(0)}>
+              <div className="ts-fig-why-icon"><ShieldCheck size={20} /></div>
+              <div className="ts-fig-why-glyph" aria-hidden="true">
+                <ShieldCheck size={220} strokeWidth={1.2} />
+              </div>
               <h3>Safe &amp; secure</h3>
               <p>Bank-level encryption. Your payment info stays yours.</p>
-              <div className="ts-fig-trust-badge">256-bit SSL</div>
+              <div className="ts-fig-why-foot">256-bit SSL</div>
             </motion.div>
-
-            <motion.div className="ts-fig-trust-card" {...fadeIn(0.1)}>
-              <div className="ts-fig-trust-icon"><Navigation size={20} /></div>
-              <h3>Real-time tracking</h3>
-              <p>Know exactly where your order is, the moment it moves.</p>
-              <div className="ts-fig-trust-slider">
-                <div className="ts-fig-trust-slider-track">
-                  <motion.div
-                    className="ts-fig-trust-slider-fill"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: "64%" }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                  <motion.div
-                    className="ts-fig-trust-slider-thumb"
-                    initial={{ left: 0 }}
-                    whileInView={{ left: "64%" }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                </div>
-                <div className="ts-fig-trust-slider-labels">
-                  <span>Kitchen</span>
-                  <span>Your door</span>
-                </div>
+            <motion.div className="ts-fig-why-card teal" {...fadeIn(0.1)}>
+              <div className="ts-fig-why-icon"><MapPin size={20} /></div>
+              <div className="ts-fig-why-glyph" aria-hidden="true">
+                <MapPin size={220} strokeWidth={1.2} />
               </div>
-            </motion.div>
-
-            <motion.div className="ts-fig-trust-card teal" {...fadeIn(0.2)}>
-              <div className="ts-fig-trust-icon"><Users size={20} /></div>
               <h3>
                 {networkStats.totalRestaurants ? (
                   <><CountUp to={networkStats.totalRestaurants} suffix="+" /> local kitchens</>
@@ -518,28 +481,9 @@ export default function Home() {
                 )}
               </h3>
               <p>Real neighborhood restaurants. Not chains, not ghost kitchens.</p>
-              <div className="ts-fig-trust-emojis" aria-hidden="true">
-                <span>ETA</span>
-                <span>GPS</span>
-                <span>Pay</span>
-                <span>Tips</span>
-                <span>Care</span>
-                <span className="more">+{Math.max(95, (networkStats.totalRestaurants || 100) - 5)}</span>
-              </div>
+              <div className="ts-fig-why-foot">Real-time tracking</div>
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* WHY TRUESERVE */}
-      <section className="ts-fig-section">
-        <div className="ts-fig-container">
-          <motion.div {...fadeIn(0)}>
-            <span className="ts-fig-kicker teal">Why TrueServe</span>
-            <h2>Built for your block,<br />not the algorithm.</h2>
-          </motion.div>
-          <div className="ts-fig-why">
-            <motion.div className="ts-fig-why-card orange" {...fadeIn(0)}>
+            <motion.div className="ts-fig-why-card gold" {...fadeIn(0.2)}>
               <div className="ts-fig-why-icon"><Award size={20} /></div>
               <div className="ts-fig-why-glyph" aria-hidden="true">
                 <Award size={220} strokeWidth={1.2} />
@@ -548,7 +492,7 @@ export default function Home() {
               <p>Points that actually add up. Redeem for free delivery, discounts, and exclusive kitchen perks.</p>
               <div className="ts-fig-why-foot">{networkStats.averageRating ? networkStats.averageRating.toFixed(1) : "4.8"}★ avg rating</div>
             </motion.div>
-            <motion.div className="ts-fig-why-card teal" {...fadeIn(0.1)}>
+            <motion.div className="ts-fig-why-card brown" {...fadeIn(0.3)}>
               <div className="ts-fig-why-icon"><Heart size={20} /></div>
               <div className="ts-fig-why-glyph" aria-hidden="true">
                 <Heart size={220} strokeWidth={1.2} />
@@ -565,19 +509,7 @@ export default function Home() {
       <section className="ts-fig-section ts-fig-section-haze">
         <div className="ts-fig-container">
           <div className="ts-fig-merchant">
-            <motion.div {...fadeIn(0)}>
-              <div className="ts-fig-commission">
-                <div className="ts-fig-commission-title">Commission comparison</div>
-                <CommissionBar percent={30} color="bad" label="Other platforms" />
-                <CommissionBar percent={15} color="good" label="TrueServe" />
-                <div className="ts-fig-commission-savings">
-                  <small>On $10,000/month in sales</small>
-                  <strong>You keep <span className="accent">$1,500 more</span> every month.</strong>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div className="ts-fig-merchant-copy" {...fadeIn(0.1)}>
+            <motion.div className="ts-fig-merchant-copy" {...fadeIn(0)}>
               <span className="ts-fig-kicker">For restaurants</span>
               <h2>Grow your restaurant on fair terms.</h2>
               <p>Lower fees, more customers, and direct relationships with your community. You built the food — you should keep the upside.</p>
@@ -607,6 +539,18 @@ export default function Home() {
               <Link href="/merchant" className="ts-fig-btn ts-fig-btn-dark">
                 Become a Partner <span className="ts-fig-btn-icon"><ArrowRight size={16} /></span>
               </Link>
+            </motion.div>
+
+            <motion.div {...fadeIn(0.1)}>
+              <div className="ts-fig-commission">
+                <div className="ts-fig-commission-title">Commission comparison</div>
+                <CommissionBar percent={30} color="bad" label="Other platforms" />
+                <CommissionBar percent={15} color="good" label="TrueServe" />
+                <div className="ts-fig-commission-savings">
+                  <small>On $10,000/month in sales</small>
+                  <strong>You keep <span className="accent">$1,500 more</span> every month.</strong>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>

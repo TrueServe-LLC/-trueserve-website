@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
-import { getAccountHomeHref } from "@/lib/account-routing";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -18,26 +17,47 @@ const NAV_LINKS = [
 
 export default function SiteHeader() {
   const pathname = usePathname() || "/";
-  const [userId, setUserId] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accountHref, setAccountHref] = useState("/user/settings");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!mounted || !data.user?.id) return;
-      setUserId(data.user.id);
-      const { data: profile } = await supabase
-        .from("User")
-        .select("role")
-        .eq("id", data.user.id)
-        .maybeSingle();
-      if (mounted) setAccountHref(getAccountHomeHref(profile?.role));
+
+    const refreshHeaderSession = async () => {
+      try {
+        const response = await fetch("/api/auth/header-session", {
+          cache: "no-store",
+          credentials: "include",
+        });
+        if (!response.ok) return;
+        const session = await response.json();
+        if (!mounted) return;
+        setIsAuthenticated(Boolean(session.authenticated));
+        setAccountHref(session.accountHref || "/user/settings");
+      } catch (error) {
+        console.error("Unable to refresh header session:", error);
+      }
+    };
+
+    void refreshHeaderSession();
+    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+      void refreshHeaderSession();
     });
+
+    const handleFocus = () => void refreshHeaderSession();
+    window.addEventListener("focus", handleFocus);
+
     return () => {
       mounted = false;
+      authListener.subscription.unsubscribe();
+      window.removeEventListener("focus", handleFocus);
     };
   }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -47,7 +67,7 @@ export default function SiteHeader() {
   return (
     <header className="ts-fig-header">
       <div className="ts-fig-container ts-fig-header-inner">
-        <Logo size="sm" />
+        <Logo size="md" />
         <div className="ts-fig-nav" role="navigation" aria-label="Primary">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} className={isActive(link.href) ? "active" : undefined}>
@@ -56,23 +76,25 @@ export default function SiteHeader() {
           ))}
         </div>
         <div className="ts-fig-header-actions">
-          <Link href={userId ? accountHref : "/login"} className="ts-fig-link">
-            {userId ? "Account" : "Sign In"}
+          <Link href={isAuthenticated ? accountHref : "/login"} className="ts-fig-link">
+            {isAuthenticated ? "Account" : "Sign In"}
           </Link>
-          <Link href={userId ? "/restaurants" : "/signup"} className="ts-fig-btn">
-            {userId ? "Order now" : "Sign Up"}
+          <Link href={isAuthenticated ? "/restaurants" : "/signup"} className="ts-fig-btn">
+            {isAuthenticated ? "Order now" : "Sign Up"}
           </Link>
           <button
             type="button"
             className="ts-fig-mobile-toggle"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-controls="site-mobile-menu"
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
-      <div className={`ts-fig-mobile-menu${menuOpen ? " is-open" : ""}`}>
+      <div id="site-mobile-menu" className={`ts-fig-mobile-menu${menuOpen ? " is-open" : ""}`}>
         {NAV_LINKS.map((link) => (
           <Link
             key={link.href}
@@ -83,8 +105,11 @@ export default function SiteHeader() {
             {link.label}
           </Link>
         ))}
-        <Link href={userId ? accountHref : "/login"} onClick={() => setMenuOpen(false)}>
-          {userId ? "Account" : "Sign In"}
+        <Link className="ts-fig-mobile-menu-secondary" href={isAuthenticated ? accountHref : "/login"} onClick={() => setMenuOpen(false)}>
+          {isAuthenticated ? "Account" : "Sign In"}
+        </Link>
+        <Link className="ts-fig-mobile-menu-primary" href={isAuthenticated ? "/restaurants" : "/signup"} onClick={() => setMenuOpen(false)}>
+          {isAuthenticated ? "Order now" : "Sign Up"}
         </Link>
       </div>
     </header>
