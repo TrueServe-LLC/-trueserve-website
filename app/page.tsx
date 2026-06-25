@@ -1,639 +1,642 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { ArrowRight, BadgeDollarSign, CarFront, MapPin, Menu, Route, Share2, ShoppingBag, Star, Store, UtensilsCrossed, X } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion, useInView, animate, useMotionValue } from "motion/react";
-
-const InstagramIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-    <circle cx="12" cy="12" r="4" />
-    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-  </svg>
-);
-
-const FacebookIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-  </svg>
-);
-import Logo from "@/components/Logo";
+import type { ComponentType } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Award,
+  BarChart3,
+  ChevronRight,
+  Clock,
+  Heart,
+  MapPin,
+  Navigation,
+  Percent,
+  ShieldCheck,
+  Store,
+  TrendingUp,
+  Truck,
+  Users,
+  Wallet,
+} from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import LandingSearch from "@/components/LandingSearch";
-import ThreeHandoffs from "@/components/ThreeHandoffs";
 import { supabase } from "@/lib/supabase";
 import {
+  addDistanceMiles,
   getLiveRestaurants,
-  summarizeRestaurantNetwork,
+  normalizeSearchText,
+  type PublicRestaurantRecord,
 } from "@/lib/public-restaurants";
-import { getAccountHomeHref } from "@/lib/account-routing";
 
-const HERO_FALLBACK_VISUALS = [
-  {
-    title: "Late-night comfort",
-    detail: "Curated local kitchens",
-    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80",
-  },
-  {
-    title: "Fresh and fast",
-    detail: "Built for direct ordering",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80",
-  },
-  {
-    title: "Delivered local",
-    detail: "Real restaurants, real routes",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80",
-  },
+type FeaturedRestaurant = PublicRestaurantRecord & {
+  distanceMiles?: number | null;
+};
+
+type LiveKitchen = {
+  name: string;
+  cuisine: string;
+  rating?: string;
+  eta: string;
+  distance: string;
+  Icon: ComponentType<{ size?: number; "aria-hidden"?: boolean | "true" | "false" }>;
+  popular?: boolean;
+};
+
+const LOCATION_PROMPTS: LiveKitchen[] = [
+  { name: "Enter your address", cuisine: "Show kitchens that deliver to you", eta: "Start here", distance: "Local", Icon: MapPin },
+  { name: "Live order tracking", cuisine: "Prep, pickup, and doorstep updates", eta: "Included", distance: "Clear ETAs", Icon: Navigation },
+  { name: "Rewards on every order", cuisine: "Earn TruePoints when you create an account", eta: "Ready", distance: "Member perks", Icon: Award },
 ];
 
-const HERO_WORDS = ["craving", "ordering", "eating", "feeling"];
+const INTRO_MARQUEE = [
+  { name: "Enter your address", cuisine: "Unlock nearby kitchens" },
+  { name: "Real local restaurants", cuisine: "No ghost feeds" },
+  { name: "Live delivery updates", cuisine: "Clear handoffs" },
+  { name: "TrueServe Rewards", cuisine: "Earn on every bite" },
+  { name: "Drive & Earn", cuisine: "$20/hr daily pay" },
+  { name: "Restaurant partners", cuisine: "Fairer local fees" },
+];
 
-function RotatingWord() {
-  const [index, setIndex] = useState(0);
+function fadeIn(delay = 0) {
+  return {
+    initial: { opacity: 0, y: 24 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-80px" },
+    transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
+  };
+}
+
+function LiveNearYouCard({ kitchens, hasLocation }: { kitchens: LiveKitchen[]; hasLocation: boolean }) {
   const shouldReduceMotion = useReducedMotion();
+  const [activeIndex, setActiveIndex] = useState(2);
 
   useEffect(() => {
     if (shouldReduceMotion) return;
-    const id = setInterval(() => setIndex(i => (i + 1) % HERO_WORDS.length), 3000);
+    const id = setInterval(() => {
+      setActiveIndex((i) => (i + 1) % kitchens.length);
+    }, 2600);
     return () => clearInterval(id);
-  }, [shouldReduceMotion]);
-
-  const word = HERO_WORDS[index];
+  }, [kitchens.length, shouldReduceMotion]);
 
   return (
-    <motion.span layout className="inline-block" style={{ position: "relative" }}>
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={word}
-          className="accent"
-          style={{ display: "inline-block" }}
-          initial={shouldReduceMotion ? false : { opacity: 0, filter: "blur(14px)", scale: 0.92 }}
-          animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-          exit={shouldReduceMotion ? undefined : { opacity: 0, filter: "blur(14px)", scale: 0.92 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {word}
-        </motion.span>
-      </AnimatePresence>
-    </motion.span>
+    <div className="ts-fig-live-card">
+      <div className="ts-fig-live-card-head">
+        <span className="ts-fig-live-dot">{hasLocation ? "Live near you" : "Ready when you are"}</span>
+        <span className="updated">{hasLocation ? "Updated just now" : "Location first"}</span>
+      </div>
+      <div>
+        {kitchens.map((k, i) => (
+          <div key={k.name} className={`ts-fig-live-row${i === activeIndex ? " is-active" : ""}`}>
+            <div className="ts-fig-emoji">
+              <k.Icon size={18} aria-hidden="true" />
+            </div>
+            <div>
+              <div className="ts-fig-live-name">
+                {k.name}
+                {k.popular ? <span className="ts-fig-live-pop">Popular</span> : null}
+              </div>
+              <div className="ts-fig-live-meta">
+                {k.rating ? (
+                  <>
+                    <span>★ {k.rating}</span>
+                    <span>·</span>
+                  </>
+                ) : null}
+                <span><Clock size={12} /> {k.eta}</span>
+                <span>·</span>
+                <span>{k.distance}</span>
+              </div>
+            </div>
+            <span className="ts-fig-live-chev"><ChevronRight size={16} /></span>
+          </div>
+        ))}
+      </div>
+      <div className="ts-fig-live-progress">
+        <strong>{hasLocation ? "Delivery updates stay visible" : "Restaurants appear after address"}</strong>
+        <span className="eta">{hasLocation ? "ETA 11 min" : "1 tap"}</span>
+        <div className="ts-fig-live-progress-bar">
+          <motion.span
+            initial={{ width: "15%" }}
+            animate={{ width: ["15%", "35%", "60%", "85%", "15%"] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            style={{ display: "block", height: "100%", background: "linear-gradient(90deg, #FF6B35, #14B8A6)", borderRadius: "999px" }}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
-function AnimatedCounter({ from = 0, to, prefix = "", suffix = "", duration = 1.4 }: {
-  from?: number; to: number; prefix?: string; suffix?: string; duration?: number;
-}) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.8 });
-  const motionVal = useMotionValue(from);
-  const [display, setDisplay] = useState(prefix + String(from) + suffix);
+function CuisineMarquee({ items }: { items: { name: string; cuisine: string }[] }) {
+  const list = [...items, ...items];
+  return (
+    <section className="ts-fig-marquee" aria-label="Local kitchens">
+      <div className="ts-fig-marquee-track">
+        {list.map((item, i) => (
+          <span key={`${item.name}-${i}`}>
+            {item.name}
+            <small>{item.cuisine}</small>
+            <i>•</i>
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CommissionBar({ percent, color, label }: { percent: number; color: "bad" | "good"; label: string }) {
+  return (
+    <div className={`ts-fig-commission-row ${color}`}>
+      <div className="row-head">
+        <span>{label}</span>
+        <span>{percent}%</span>
+      </div>
+      <div className="row-bar">
+        <motion.span
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: percent / 30 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          style={{ display: "block", height: "100%", borderRadius: "999px" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function CountUp({ to, prefix = "", suffix = "", duration = 1.2 }: { to: number; prefix?: string; suffix?: string; duration?: number }) {
   const shouldReduceMotion = useReducedMotion();
-
+  const [value, setValue] = useState(shouldReduceMotion ? to : 0);
   useEffect(() => {
-    if (!isInView) return;
-    if (shouldReduceMotion) { setDisplay(prefix + String(to) + suffix); return; }
-    const controls = animate(motionVal, to, {
-      duration,
-      ease: [0.22, 1, 0.36, 1],
-      onUpdate: (v) => setDisplay(prefix + Math.round(v).toString() + suffix),
-    });
-    return controls.stop;
-  }, [isInView, shouldReduceMotion]);
+    if (shouldReduceMotion) {
+      setValue(to);
+      return;
+    }
+    let start: number | null = null;
+    let raf = 0;
+    const tick = (t: number) => {
+      if (start === null) start = t;
+      const p = Math.min(1, (t - start) / (duration * 1000));
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(to * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to, duration, shouldReduceMotion]);
+  return <>{prefix}{value.toLocaleString()}{suffix}</>;
+}
 
-  return <span ref={ref}>{display}</span>;
+function cityFromAddress(address: string | null): string {
+  if (!address) return "";
+  const parts = address
+    .split(",")
+    .map((p) => normalizeSearchText(p))
+    .filter(Boolean);
+  if (parts.length >= 3) return parts[parts.length - 2];
+  if (parts.length >= 2) return parts[0];
+  return parts[0] || "";
+}
+
+function etaFromDistance(distanceMiles: number | null | undefined): string {
+  if (typeof distanceMiles !== "number") return "25 min";
+  if (distanceMiles <= 1) return "15 min";
+  if (distanceMiles <= 2) return "20 min";
+  if (distanceMiles <= 4) return "28 min";
+  return "35 min";
+}
+
+function distanceLabel(distanceMiles: number | null | undefined, fallbackCity?: string): string {
+  if (typeof distanceMiles === "number") return `${distanceMiles.toFixed(1)} mi`;
+  return fallbackCity || "Nearby";
 }
 
 export default function Home() {
-  const shouldReduceMotion = useReducedMotion();
-  const [userId, setUserId] = useState<string | null>(null);
-  const [accountHref, setAccountHref] = useState("/account");
   const [networkStats, setNetworkStats] = useState({
     totalRestaurants: 0,
-    verifiedCount: 0,
-    markets: 0,
     averageRating: null as number | null,
   });
-  const [menuOpen, setMenuOpen] = useState(false);
-  const socialLinks = [
-    {
-      label: "Instagram",
-      href: "https://www.instagram.com/trueserve_delivery/",
-      icon: InstagramIcon,
-    },
-    {
-      label: "Facebook",
-      href: "https://www.facebook.com/share/1EHeS1jdoq/?mibextid=wwXIfr",
-      icon: FacebookIcon,
-    },
-    {
-      label: "LinkedIn",
-      href: "https://www.linkedin.com/company/112360123/admin/dashboard/",
-      icon: Share2,
-    },
-  ];
-  const howItWorks = [
-    {
-      step: "01",
-      title: "Drop your address",
-      detail: "Start with your delivery location so we can route you into the right market and handoff flow.",
-      icon: MapPin,
-    },
-    {
-      step: "02",
-      title: "Place the order fast",
-      detail: "Move from search to checkout with a cleaner, lower-friction flow designed for repeat local ordering.",
-      icon: ShoppingBag,
-    },
-    {
-      step: "03",
-      title: "Track every handoff",
-      detail: "See prep, driver movement, and support touchpoints in one place instead of guessing what happens next.",
-      icon: Route,
-    },
-  ];
-  const platformPaths = [
-    {
-      title: "For Customers",
-      detail: "Save addresses, earn rewards, and track every order from kitchen to doorstep.",
-      href: userId ? accountHref : "/signup",
-      cta: userId ? "Open Account" : "Create Account",
-      icon: UtensilsCrossed,
-    },
-    {
-      title: "For Merchants",
-      detail: "Launch a branded storefront, share direct-order links, and give your team better operational tools.",
-      href: "/merchant/signup",
-      cta: "Grow With TrueServe",
-      icon: Store,
-    },
-    {
-      title: "For Drivers",
-      detail: "Onboard cleanly, upload docs, complete payout setup, and stay supported while you deliver.",
-      href: "/driver/signup",
-      cta: "Apply To Drive",
-      icon: CarFront,
-    },
-  ];
-
-  const revealTransition = shouldReduceMotion
-    ? { duration: 0 }
-    : { duration: 0.62, ease: [0.22, 1, 0.36, 1] as const };
-
-  const heroVisuals = HERO_FALLBACK_VISUALS;
+  const [liveRestaurants, setLiveRestaurants] = useState<FeaturedRestaurant[]>([]);
+  const [nearbyRestaurants, setNearbyRestaurants] = useState<FeaturedRestaurant[]>([]);
+  const [hasLocationContext, setHasLocationContext] = useState(false);
 
   useEffect(() => {
-    const match = document.cookie.match(new RegExp('(^| )userId=([^;]+)'));
-    if (match) setUserId(match[2]);
-    supabase.auth.getUser().then(async ({ data }) => {
-      const authUser = data.user;
-      if (!authUser?.id) return;
+    let mounted = true;
 
-      // Fallback: set userId from Supabase session if cookie wasn't set
-      if (!document.cookie.match(new RegExp('(^| )userId=([^;]+)'))) {
-        setUserId(authUser.id);
+    // 1. Read any locally-saved address (typed into the hero search) — has the
+    //    best signal because it's already geocoded into lat/lng.
+    let savedAddress = "";
+    let savedLat: number | null = null;
+    let savedLng: number | null = null;
+    try {
+      savedAddress = localStorage.getItem("ts.delivery.address")?.trim() || "";
+      const lat = Number(localStorage.getItem("ts.delivery.lat"));
+      const lng = Number(localStorage.getItem("ts.delivery.lng"));
+      if (Number.isFinite(lat)) savedLat = lat;
+      if (Number.isFinite(lng)) savedLng = lng;
+    } catch {}
+
+    // 2. Try to load signed-in user's saved address from User table.
+    //    Falls back to localStorage if the user isn't signed in or has no address.
+    async function resolveLocation() {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (data?.user?.id) {
+          const { data: profile } = await supabase
+            .from("User")
+            .select("address")
+            .eq("id", data.user.id)
+            .maybeSingle();
+          if (profile?.address && !savedAddress) {
+            savedAddress = String(profile.address).trim();
+          }
+        }
+      } catch {}
+      return { savedAddress, savedLat, savedLng };
+    }
+
+    async function load() {
+      const loc = await resolveLocation();
+      const restaurantsResult = await supabase
+        .from("Restaurant")
+        .select("*, healthGrade, complianceStatus, complianceScore, createdAt")
+        .limit(80);
+      if (!mounted || restaurantsResult.error) return;
+
+      const live = getLiveRestaurants(restaurantsResult.data || []) as FeaturedRestaurant[];
+      const ratings = live
+        .map((r) => Number(r.rating))
+        .filter((n) => Number.isFinite(n) && n > 0);
+      const avg = ratings.length ? ratings.reduce((s, n) => s + n, 0) / ratings.length : null;
+
+      setNetworkStats({ totalRestaurants: live.length, averageRating: avg });
+      setLiveRestaurants(live);
+
+      const hasCoords = loc.savedLat !== null && loc.savedLng !== null;
+      const hasAddress = Boolean(loc.savedAddress);
+      const cityToken = cityFromAddress(loc.savedAddress);
+
+      let nearby: FeaturedRestaurant[] = [];
+      if (hasCoords) {
+        nearby = addDistanceMiles(live, loc.savedLat, loc.savedLng)
+          .filter(
+            (r) =>
+              typeof r.distanceMiles === "number" &&
+              Number(r.distanceMiles) <= 25,
+          )
+          .sort(
+            (a, b) =>
+              Number(a.distanceMiles ?? 9999) - Number(b.distanceMiles ?? 9999),
+          );
+      } else if (hasAddress && cityToken) {
+        nearby = live.filter(
+          (r) => normalizeSearchText(String(r.city || "")) === cityToken,
+        );
       }
 
-      const { data: profile } = await supabase
-        .from('User')
-        .select('role')
-        .eq('id', authUser.id)
-        .maybeSingle();
+      setHasLocationContext((hasCoords || hasAddress) && nearby.length > 0);
+      setNearbyRestaurants(nearby);
+    }
 
-      setAccountHref(getAccountHomeHref(profile?.role));
-    }).catch((error) => {
-      console.error('Account role fetch error:', error);
-    });
-
-    supabase
-      .from('Restaurant')
-      .select('*, healthGrade, complianceStatus, complianceScore, createdAt')
-      .limit(60)
-      .then((restaurantsResult) => {
-      if (restaurantsResult.error) {
-        console.error('Restaurant fetch error:', JSON.stringify(restaurantsResult.error));
-        return;
-      }
-
-      const restaurantData = restaurantsResult.data || [];
-      const live = getLiveRestaurants(restaurantData);
-      setNetworkStats(summarizeRestaurantNetwork(live));
-    });
+    load();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
+  const liveKitchens = useMemo<LiveKitchen[]>(() => {
+    if (!hasLocationContext || nearbyRestaurants.length < 1) return LOCATION_PROMPTS;
+    return nearbyRestaurants.slice(0, 3).map((r, i) => ({
+      name: r.name ?? "Local Kitchen",
+      cuisine: String(r.cuisineType || r.category || "Local"),
+      rating: r.rating ? String(r.rating) : "4.8",
+      eta: etaFromDistance(r.distanceMiles),
+      distance: distanceLabel(r.distanceMiles, String(r.city || "Nearby")),
+      Icon: Store,
+      popular: i === 0,
+    }));
+  }, [hasLocationContext, nearbyRestaurants]);
+
+  // Marquee = distinct cuisines from nearby restaurants only. If we don't
+  // have any nearby (no address saved, or no partners in their area yet),
+  // fall back to the intro marquee.
+  const marqueeItems = useMemo(() => {
+    if (!hasLocationContext || nearbyRestaurants.length < 3) return INTRO_MARQUEE;
+
+    // Build distinct (restaurant -> cuisine) pairs preserving order.
+    const seenCuisines = new Set<string>();
+    const items: { name: string; cuisine: string }[] = [];
+    for (const r of nearbyRestaurants) {
+      const cuisine = String(r.cuisineType || r.category || "Local").trim();
+      if (!cuisine) continue;
+      const key = cuisine.toLowerCase();
+      if (seenCuisines.has(key)) continue;
+      seenCuisines.add(key);
+      items.push({ name: r.name ?? "Local Kitchen", cuisine });
+      if (items.length >= 8) break;
+    }
+    return items.length >= 3 ? items : INTRO_MARQUEE;
+  }, [hasLocationContext, nearbyRestaurants]);
+
+  const handleLocate = () => {
+    if (!navigator.geolocation) {
+      window.location.href = "/restaurants";
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        try {
+          localStorage.setItem("ts.delivery.address", "Current location");
+          localStorage.setItem("ts.delivery.lat", String(coords.latitude));
+          localStorage.setItem("ts.delivery.lng", String(coords.longitude));
+        } catch {}
+        window.location.href = `/restaurants?lat=${coords.latitude}&lng=${coords.longitude}&address=${encodeURIComponent("Current location")}`;
+      },
+      () => {
+        window.location.href = "/restaurants";
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    );
+  };
+
   return (
-    <div className="food-app-shell home-shell">
-      <nav className="food-app-nav">
-        <div className="flex items-center gap-3">
-          <button
-            className="md:hidden hamburger-btn"
-            onClick={() => setMenuOpen(o => !o)}
-            aria-label="Open menu"
-          >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-          <Logo size="sm" />
-        </div>
-        <div className="nav-links hidden md:flex">
-          <Link href="/restaurants">Order Food</Link>
-          <Link href="/rewards">Rewards</Link>
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/merchant/signup">For Merchants</Link>
-          <Link href="/driver/signup">For Drivers</Link>
-          <Link href="/contact">Contact</Link>
-        </div>
-        <div className="nav-r">
-          {userId ? (
-            <Link href={accountHref} className="btn btn-ghost">Account</Link>
-          ) : (
-            <Link href="/login" className="btn btn-ghost">Sign In</Link>
-          )}
-        </div>
+    <div className="ts-fig">
+      <SiteHeader />
 
-      </nav>
-
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
-            animate={shouldReduceMotion ? undefined : { opacity: 1 }}
-            exit={shouldReduceMotion ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(4px)"}}
-            onClick={() => setMenuOpen(false)}
-          >
-            <motion.div
-              initial={shouldReduceMotion ? false : { y: -22, opacity: 0 }}
-              animate={shouldReduceMotion ? undefined : { y: 0, opacity: 1 }}
-              exit={shouldReduceMotion ? undefined : { y: -18, opacity: 0 }}
-              transition={revealTransition}
-              style={{position:"absolute",top:0,left:0,right:0,background:"#0d0d10",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"0 16px 20px"}}
-              onClick={e => e.stopPropagation()}
+      {/* HERO */}
+      <section className="ts-fig-hero">
+        <div className="ts-fig-container ts-fig-hero-inner">
+          <div>
+            <span className="ts-fig-chip">
+              <span className="ts-fig-chip-dot" />
+              Neighborhood kitchens, real food
+            </span>
+            <h1>
+              Your block&apos;s{" "}
+              <span className="o">best food,</span>
+              <span className="t">delivered.</span>
+            </h1>
+            <p className="ts-fig-hero-sub">
+              Real restaurants from your neighborhood — not ghost kitchens, not chains. Enter your address to discover what&apos;s cooking nearby.
+            </p>
+            <div className="ts-fig-hero-search">
+              <LandingSearch />
+            </div>
+            <button
+              type="button"
+              className="ts-fig-locate"
+              onClick={handleLocate}
             >
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:62}}>
-                <Logo size="sm" />
-                <button onClick={() => setMenuOpen(false)} style={{display:"flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.8)",cursor:"pointer"}}>
-                  <X size={20} />
-                </button>
-              </div>
-              <div style={{display:"flex",flexDirection:"column",gap:8,paddingTop:8}}>
-                {[
-                  { href:"/driver/signup", icon:CarFront, label:"For Drivers", sub:"Earn delivering food" },
-                  { href:"/merchant/signup", icon:Store, label:"For Merchants", sub:"List your restaurant" },
-                  { href:"/restaurants", icon:UtensilsCrossed, label:"Order Food", sub:"Browse local restaurants" },
-                  { href:"/rewards", icon:Star, label:"Rewards", sub:"Earn points on every order" },
-                  { href:"/pricing", icon:BadgeDollarSign, label:"Pricing", sub:"Zero commission plans" },
-                ].map((item, index) => (
-                  <motion.div
-                    key={item.href}
-                    initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
-                    animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                    exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
-                    transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: index * 0.04 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={() => setMenuOpen(false)}
-                      style={{display:"flex",alignItems:"center",gap:16,padding:"14px 16px",borderRadius:14,border:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.03)",color:"#fff",textDecoration:"none"}}
-                    >
-                      <span style={{display:"flex",alignItems:"center",justifyContent:"center",width:44,height:44,flexShrink:0,borderRadius:12,background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.88)"}}>
-                        <item.icon size={20} strokeWidth={2.1} />
-                      </span>
-                      <div>
-                        <div style={{fontWeight:700,fontSize:15,color:"#fff"}}>{item.label}</div>
-                        <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginTop:2}}>{item.sub}</div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-                <motion.div
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
-                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                  exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
-                  transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.2 }}
-                  style={{marginTop:4,borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:12}}
-                >
-                  <Link
-                    href={userId ? accountHref : "/login"}
-                    onClick={() => setMenuOpen(false)}
-                    style={{display:"block",textAlign:"center",padding:"13px",borderRadius:12,border:"1px solid rgba(255,255,255,0.15)",background:"transparent",color:"#fff",fontWeight:700,fontSize:14}}
-                  >
-                    {userId ? "Account" : "Sign In"}
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <main className="food-app-main">
-        <section className="food-hero-card">
-          <div className="home-bg-img"></div>
-          <div className="home-bg-grad"></div>
-          <div className="food-hero-content">
-            <motion.div
-              className="space-y-6"
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
-              animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={revealTransition}
-            >
-              <div className="space-y-3">
-                <motion.h1
-                  className="food-title"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                  transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.05 }}
-                >
-                  What are you<br /><RotatingWord /> tonight?
-                </motion.h1>
-                <motion.p
-                  className="food-subtitle"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                  transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.12 }}
-                >
-                  Browse local favorites, place your order in seconds, and watch your food travel from kitchen to doorstep in real time.
-                </motion.p>
-              </div>
-
-              <motion.div
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.2 }}
-              >
-                <LandingSearch />
-              </motion.div>
-
-              <motion.div
-                className="food-chip-row"
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.26 }}
-              >
-                {[
-                  "Local restaurants",
-                  "Live tracking",
-                  "Avg. 30 min",
-                ].map((feature) => (
-                  <motion.div
-                    key={feature}
-                    className="food-chip"
-                    whileHover={shouldReduceMotion ? undefined : { y: -2, borderColor: "rgba(249,115,22,0.36)" }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <span className="food-chip-dot" />
-                    {feature}
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              className="food-panel food-hero-right flex-col gap-5"
-              initial={shouldReduceMotion ? false : { opacity: 0, x: 22 }}
-              animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
-              transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.16 }}
-            >
-              <div className="space-y-4">
-                <p className="food-kicker">Ready to eat?</p>
-                <h2 className="food-heading">Pick a spot. <span className="accent">Dig in.</span></h2>
-                <p className="food-subtitle !text-sm !max-w-none">
-                  From breakfast burritos to late-night pizza — find what you're craving from local restaurants near you.
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="food-stat">
-                  <strong>Live</strong>
-                  <span>Delivery ETAs update in real time</span>
-                </div>
-                <div className="food-stat">
-                  <strong>Verified</strong>
-                  <span>Restaurant reviews come from Google</span>
-                </div>
-              </div>
-
-              <div className="hero-preview-grid">
-                {heroVisuals.map((visual, index) => (
-                  <motion.div
-                    key={`${visual.title}-${index}`}
-                    className={`hero-preview-card${index === 0 ? " hero-preview-card-lg" : ""}`}
-                    initial={shouldReduceMotion ? false : { opacity: 0, y: 16, scale: 0.98 }}
-                    animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
-                    transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: 0.22 + index * 0.08 }}
-                    whileHover={shouldReduceMotion ? undefined : { y: -4, scale: 1.01 }}
-                  >
-                    <motion.div
-                      className="hero-preview-image"
-                      style={{ backgroundImage: `linear-gradient(180deg, rgba(8,10,14,.12), rgba(8,10,14,.76)), url('${visual.image}')` }}
-                      animate={shouldReduceMotion ? undefined : { scale: [1, 1.03, 1] }}
-                      transition={shouldReduceMotion ? undefined : { duration: 9, repeat: Infinity, ease: "easeInOut", delay: index * 0.4 }}
-                    />
-                    <div className="hero-preview-copy">
-                      <div className="hero-preview-title">{visual.title}</div>
-                      <div className="hero-preview-detail">{visual.detail}</div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Link href="/restaurants" className="portal-btn-gold portal-btn-gold-block">
-                  Start Ordering
-                </Link>
-                {!userId ? (
-                  <Link
-                    href="/signup"
-                    className="portal-btn-outline portal-btn-outline-block"
-                  >
-                    Create Account
-                  </Link>
-                ) : (
-                  <Link href="/orders" className="portal-btn-outline portal-btn-outline-block">
-                    View Orders
-                  </Link>
-                )}
-              </div>
-              {!userId ? (
-                <p className="text-center text-[11px] text-gray-400">
-                  New here? Create an account to save addresses and track orders.
-                </p>
-              ) : null}
-            </motion.div>
+              <Navigation size={16} /> Or <u>use my current location</u>
+            </button>
           </div>
-        </section>
 
-        {/* Trust bar */}
-        <motion.div
-          style={{ display:"flex", alignItems:"center", justifyContent:"center", flexWrap:"wrap", gap:0, padding:"14px 24px 6px" }}
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
-          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={revealTransition}
-        >
-          {([
-            { icon:"📍", label:"Local Restaurants" },
-            { icon:"📡", label:"Live Tracking" },
-            { icon:"⚡", label:"Avg. 30 min" },
-            { icon:"⭐", label:"Google Reviews" },
-          ] as const).map((item, i, arr) => (
-            <React.Fragment key={item.label}>
-              <motion.div
-                style={{ display:"flex", alignItems:"center", gap:7, padding:"4px 18px", whiteSpace:"nowrap" }}
-                whileHover={shouldReduceMotion ? undefined : { y: -1, color: "rgba(255,255,255,0.78)" }}
-              >
-                <span style={{ fontSize:14 }}>{item.icon}</span>
-                <span style={{ fontSize:11, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.14em", color:"rgba(255,255,255,0.45)" }}>{item.label}</span>
-              </motion.div>
-              {i < arr.length - 1 && <div style={{ width:1, height:14, background:"rgba(255,255,255,0.1)", flexShrink:0 }} />}
-            </React.Fragment>
-          ))}
-        </motion.div>
+          <LiveNearYouCard kitchens={liveKitchens} hasLocation={hasLocationContext} />
+        </div>
+      </section>
 
-        <motion.section
-          className="mt-8 food-panel overflow-hidden"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={revealTransition}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/5">
+      <CuisineMarquee items={marqueeItems} />
+
+      {/* HOW IT WORKS */}
+      <section className="ts-fig-section">
+        <div className="ts-fig-container">
+          <motion.div {...fadeIn(0)}>
+            <span className="ts-fig-kicker">How it works</span>
+            <h2>Three steps, then dinner.</h2>
+          </motion.div>
+          <div className="ts-fig-steps">
+            <div className="ts-fig-steps-connector" aria-hidden="true" />
             {[
-              { kicker: "Our commission", value: 15, suffix: "%", detail: "Flat. No monthly fees." },
-              { kicker: "Kitchen screening", value: 100, suffix: "%", detail: "Public health verified." },
-              { kicker: "Hidden fees", value: 0, prefix: "$", detail: "Price shown = price paid." },
-              { kicker: "Avg. delivery", value: 30, prefix: "~", suffix: " min", detail: "Kitchen to doorstep." },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.kicker}
-                className="flex flex-col items-center text-center px-4 py-6 gap-1"
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-                whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: index * 0.07 }}
-              >
-                <p className="food-kicker mb-2">{stat.kicker}</p>
-                <h2 className="food-heading !text-[36px] mb-1 tabular-nums">
-                  <AnimatedCounter from={0} to={stat.value} prefix={stat.prefix ?? ""} suffix={stat.suffix ?? ""} />
-                </h2>
-                <p className="text-xs text-white/40 font-medium leading-relaxed">{stat.detail}</p>
-              </motion.div>
+              {
+                icon: <MapPin size={28} />,
+                num: "01",
+                title: "Drop your pin",
+                copy: "Tell us where you are and we'll surface kitchens that can actually reach you — no algorithm-ranked guesses.",
+              },
+              {
+                icon: <Heart size={28} />,
+                num: "02",
+                title: "Browse real menus",
+                copy: "Actual neighborhood restaurants, updated daily. Not algorithm-ranked feeds.",
+              },
+              {
+                icon: <Truck size={28} />,
+                num: "03",
+                title: "Watch it arrive",
+                copy: "Live GPS tracking from the moment your driver picks up. No guessing, no wondering.",
+              },
+            ].map((step, i) => (
+              <motion.article key={step.num} className="ts-fig-step" {...fadeIn(0.1 * (i + 1))}>
+                <div className="ts-fig-step-icon">{step.icon}</div>
+                <span className="ts-fig-step-num">{step.num}</span>
+                <h3>{step.title}</h3>
+                <p>{step.copy}</p>
+              </motion.article>
             ))}
           </div>
-        </motion.section>
-
-
-        <motion.section
-          className="mt-8"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={revealTransition}
-        >
-          <ThreeHandoffs />
-        </motion.section>
-
-        <motion.section
-          className="mt-8"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={revealTransition}
-        >
-          <div className="mb-5">
-            <p className="food-kicker mb-2">Built for every side</p>
-            <h2 className="food-heading">One platform for <span className="accent">customers, merchants, and drivers</span></h2>
-          </div>
-          <div className="home-paths-grid grid gap-4 lg:grid-cols-3">
-            {platformPaths.map((path, index) => {
-              const Icon = path.icon;
-              return (
-                <motion.div
-                  key={path.title}
-                  className="food-card home-path-card"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
-                  whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  transition={shouldReduceMotion ? undefined : { ...revealTransition, delay: index * 0.07 }}
-                  whileHover={shouldReduceMotion ? undefined : { y: -4 }}
-                >
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[16px] border border-white/10 bg-white/5 text-white/80">
-                    <Icon size={22} strokeWidth={2.1} />
-                  </div>
-                  <h3 className="mb-3 text-[30px] font-black uppercase tracking-[0.06em] text-white">{path.title}</h3>
-                  <p className="mb-6 text-sm leading-7 text-white/68">{path.detail}</p>
-                  <Link href={path.href} className="portal-btn-outline portal-btn-outline-block home-inline-cta">
-                    <span>{path.cta}</span>
-                    <ArrowRight size={15} strokeWidth={2.2} />
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.section>
-
-        {/* CTA strip replacing redundant utility cards */}
-        <motion.section
-          className="mt-8 food-panel"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={revealTransition}
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <motion.div className="ts-fig-steps-cta" {...fadeIn(0.25)}>
             <div>
-              <p className="food-kicker mb-2">Built for every side</p>
-              <h2 className="food-heading !text-[28px] md:!text-[34px]">Local. Direct. <span className="accent">Fair to everyone.</span></h2>
+              <strong>Make ordering feel easy.</strong>
+              <span>Create your profile to save delivery addresses, dietary preferences, and earn TruePoints on every order.</span>
             </div>
-            <div className="flex flex-wrap gap-3 shrink-0">
-              <Link href="/rewards" className="portal-btn-outline flex items-center gap-2 whitespace-nowrap">
-                <Star size={14} /> Rewards
-              </Link>
-              <Link href="/pricing" className="portal-btn-outline flex items-center gap-2 whitespace-nowrap">
-                <BadgeDollarSign size={14} /> Pricing
-              </Link>
-              <Link href="/restaurants" className="portal-btn-gold flex items-center gap-2 whitespace-nowrap">
-                Order Now <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
-        </motion.section>
+            <Link href="/signup" className="ts-fig-btn">
+              Sign Up <span className="ts-fig-btn-icon"><ArrowRight size={16} /></span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
 
-
-        <footer className="mt-8 border-t border-white/5 px-2 pt-10 pb-12 text-center">
-          <div className="mx-auto flex max-w-7xl flex-col items-center gap-6">
-            <Logo size="md" />
-            <div className="flex items-center justify-center gap-6 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
-              <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-              <Link href="/rewards" className="hover:text-[#f97316] transition-colors">Rewards</Link>
-              <Link href="/pricing" className="hover:text-[#f97316] transition-colors">Pricing</Link>
-              <Link href="/merchant/signup" className="hover:text-[#f97316] transition-colors">Merchants</Link>
-              <Link href="/driver/signup" className="hover:text-[#f97316] transition-colors">Drivers</Link>
-              <Link href="/contact" className="hover:text-[#f97316] transition-colors">Contact</Link>
-              <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-            </div>
-            <div className="flex items-center gap-5">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-gray-500 transition-colors hover:text-[#f97316]"
-                    aria-label={social.label}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </a>
-                );
-              })}
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
-              © {new Date().getFullYear()} TrueServe · Bringing local flavor to your doorstep.
-            </p>
+      {/* WHY TRUESERVE */}
+      <section className="ts-fig-section ts-fig-section-haze">
+        <div className="ts-fig-container">
+          <motion.div {...fadeIn(0)}>
+            <span className="ts-fig-kicker teal">Why TrueServe</span>
+            <h2>Built for you,<br />not an algorithm.</h2>
+          </motion.div>
+          <div className="ts-fig-why">
+            <motion.div className="ts-fig-why-card orange" {...fadeIn(0)}>
+              <div className="ts-fig-why-icon"><ShieldCheck size={20} /></div>
+              <div className="ts-fig-why-glyph" aria-hidden="true">
+                <ShieldCheck size={220} strokeWidth={1.2} />
+              </div>
+              <h3>Safe &amp; secure</h3>
+              <p>Bank-level encryption. Your payment info stays yours.</p>
+              <div className="ts-fig-why-foot">256-bit SSL</div>
+            </motion.div>
+            <motion.div className="ts-fig-why-card teal" {...fadeIn(0.1)}>
+              <div className="ts-fig-why-icon"><MapPin size={20} /></div>
+              <div className="ts-fig-why-glyph" aria-hidden="true">
+                <MapPin size={220} strokeWidth={1.2} />
+              </div>
+              <h3>
+                {networkStats.totalRestaurants ? (
+                  <><CountUp to={networkStats.totalRestaurants} suffix="+" /> local kitchens</>
+                ) : (
+                  "Local kitchens"
+                )}
+              </h3>
+              <p>Real neighborhood restaurants. Not chains, not ghost kitchens.</p>
+              <div className="ts-fig-why-foot">Real-time tracking</div>
+            </motion.div>
+            <motion.div className="ts-fig-why-card gold" {...fadeIn(0.2)}>
+              <div className="ts-fig-why-icon"><Award size={20} /></div>
+              <div className="ts-fig-why-glyph" aria-hidden="true">
+                <Award size={220} strokeWidth={1.2} />
+              </div>
+              <h3>Earn with every order</h3>
+              <p>Points that actually add up. Redeem for free delivery, discounts, and exclusive kitchen perks.</p>
+              <div className="ts-fig-why-foot">{networkStats.averageRating ? networkStats.averageRating.toFixed(1) : "4.8"}★ avg rating</div>
+            </motion.div>
+            <motion.div className="ts-fig-why-card brown" {...fadeIn(0.3)}>
+              <div className="ts-fig-why-icon"><Heart size={20} /></div>
+              <div className="ts-fig-why-glyph" aria-hidden="true">
+                <Heart size={220} strokeWidth={1.2} />
+              </div>
+              <h3>Support local</h3>
+              <p>Every order keeps a neighborhood kitchen alive. Not a chain, not a ghost kitchen — your neighbor&apos;s livelihood.</p>
+              <div className="ts-fig-why-foot">100% of tips to drivers</div>
+            </motion.div>
           </div>
-        </footer>
-      </main>
+        </div>
+      </section>
+
+      {/* FOR RESTAURANTS */}
+      <section className="ts-fig-section ts-fig-section-haze">
+        <div className="ts-fig-container">
+          <div className="ts-fig-merchant">
+            <motion.div className="ts-fig-merchant-copy" {...fadeIn(0)}>
+              <span className="ts-fig-kicker">For restaurants</span>
+              <h2>Grow your restaurant on fair terms.</h2>
+              <p>Lower fees, more customers, and direct relationships with your community. You built the food — you should keep the upside.</p>
+              <ul className="ts-fig-feature-list">
+                <li>
+                  <div className="ts-fig-feat-icon"><Percent size={16} /></div>
+                  <div>
+                    <strong>15% commission (not 30%)</strong>
+                    <span>Keep more of what you earn vs 30% on other platforms</span>
+                  </div>
+                </li>
+                <li>
+                  <div className="ts-fig-feat-icon"><Users size={16} /></div>
+                  <div>
+                    <strong>Own your customers</strong>
+                    <span>Build direct relationships, not marketplace dependency</span>
+                  </div>
+                </li>
+                <li>
+                  <div className="ts-fig-feat-icon"><BarChart3 size={16} /></div>
+                  <div>
+                    <strong>Simple dashboard</strong>
+                    <span>Manage orders and track performance in real-time</span>
+                  </div>
+                </li>
+              </ul>
+              <Link href="/merchant" className="ts-fig-btn ts-fig-btn-dark">
+                Become a Partner <span className="ts-fig-btn-icon"><ArrowRight size={16} /></span>
+              </Link>
+            </motion.div>
+
+            <motion.div {...fadeIn(0.1)}>
+              <div className="ts-fig-commission">
+                <div className="ts-fig-commission-title">Commission comparison</div>
+                <CommissionBar percent={30} color="bad" label="Other platforms" />
+                <CommissionBar percent={15} color="good" label="TrueServe" />
+                <div className="ts-fig-commission-savings">
+                  <small>On $10,000/month in sales</small>
+                  <strong>You keep <span className="accent">$1,500 more</span> every month.</strong>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* DRIVE WITH US */}
+      <section className="ts-fig-section">
+        <div className="ts-fig-container">
+          <div className="ts-fig-drive">
+            <motion.div {...fadeIn(0)}>
+              <span className="ts-fig-kicker teal">Drive with us</span>
+              <h2>Earn on your terms.<br />Keep your tips.</h2>
+              <p style={{ color: "var(--fig-muted)", fontSize: 16, lineHeight: 1.65, margin: "0 0 28px", maxWidth: 460 }}>
+                Flexible hours, real earnings, and you keep every cent of your tips.
+              </p>
+              <ul className="ts-fig-feature-list">
+                <li>
+                  <div className="ts-fig-feat-icon" style={{ background: "var(--fig-teal-soft)", color: "var(--fig-teal-deep)" }}><Wallet size={16} /></div>
+                  <div>
+                    <strong>Earn $20+/hour</strong>
+                    <span>Plus 100% of tips straight to you</span>
+                  </div>
+                </li>
+                <li>
+                  <div className="ts-fig-feat-icon" style={{ background: "var(--fig-teal-soft)", color: "var(--fig-teal-deep)" }}><Clock size={16} /></div>
+                  <div>
+                    <strong>Work when you want</strong>
+                    <span>No minimums, no schedules, just flexibility</span>
+                  </div>
+                </li>
+                <li>
+                  <div className="ts-fig-feat-icon" style={{ background: "var(--fig-teal-soft)", color: "var(--fig-teal-deep)" }}><TrendingUp size={16} /></div>
+                  <div>
+                    <strong>Weekly bonuses</strong>
+                    <span>Peak-hour pay and top-performer rewards</span>
+                  </div>
+                </li>
+              </ul>
+              <Link href="/drive" className="ts-fig-btn ts-fig-btn-teal">
+                Start Driving Today <span className="ts-fig-btn-icon"><ArrowRight size={16} /></span>
+              </Link>
+            </motion.div>
+
+            <motion.div className="ts-fig-earnings" {...fadeIn(0.1)}>
+              <div className="ts-fig-earnings-title">This week&apos;s earnings</div>
+              <div className="ts-fig-earnings-amount">
+                $<CountUp to={233} />
+              </div>
+              <div className="ts-fig-earnings-days">
+                {[
+                  { lbl: "M", h: 28, active: true },
+                  { lbl: "T", h: 52, active: true },
+                  { lbl: "W", h: 36, active: true },
+                  { lbl: "T", h: 64, active: true },
+                  { lbl: "F", h: 78, active: true },
+                  { lbl: "S", h: 44, active: false },
+                  { lbl: "S", h: 20, active: false },
+                ].map((d, i) => (
+                  <div key={i} className={`ts-fig-earnings-day${d.active ? " active" : ""}`}>
+                    <motion.div
+                      className="bar"
+                      initial={{ height: 12 }}
+                      whileInView={{ height: d.h }}
+                      viewport={{ once: true, margin: "-80px" }}
+                      transition={{ duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                    <span className="lbl">{d.lbl}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="ts-fig-earnings-tip">
+                <div>
+                  <small>Tips earned</small>
+                  <strong>$48.00</strong>
+                </div>
+                <div>
+                  <small>Yours to keep</small>
+                  <strong>100%</strong>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <SiteFooter />
     </div>
   );
 }
