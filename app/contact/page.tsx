@@ -142,12 +142,12 @@ export default function ContactPage() {
               <button
                 type="button"
                 className="ts-help-action-card"
-                onClick={() => openServ("I need live chat support.")}
+                onClick={() => openServ("I need live support. Please connect me to a person if Serv cannot resolve this.")}
               >
                 <MessageCircle size={30} aria-hidden="true" />
-                <strong>Live chat</strong>
-                <span>Avg. under 2 min</span>
-                <em>Start chat <ArrowRight size={19} aria-hidden="true" /></em>
+                <strong>Live support</strong>
+                <span>Serv collects context first, then hands off to a person when needed.</span>
+                <em>Start support <ArrowRight size={19} aria-hidden="true" /></em>
               </button>
               <a className="ts-help-action-card" href="tel:8008787378">
                 <Phone size={30} aria-hidden="true" />

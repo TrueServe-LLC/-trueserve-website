@@ -73,19 +73,23 @@ export default function MerchantLanding() {
               </div>
             </div>
 
-            <aside className="ts-fig-commission ts-fig-animate-up" aria-label="Commission comparison">
-              <div className="ts-fig-commission-title">Commission comparison</div>
-              <div className="ts-fig-commission-row bad">
-                <div className="row-head"><span>Other platforms</span><span>30%</span></div>
-                <div className="row-bar"><span style={{ width: "100%", animation: "figScaleIn 1.1s var(--fig-ease) both" }} /></div>
+            <aside className="ts-fig-commission ts-fig-merchant-control-card ts-fig-animate-up" aria-label="Merchant control preview">
+              <div className="ts-fig-commission-title">Restaurant control center</div>
+              <div className="ts-fig-merchant-control-row">
+                <span>Menu changes</span>
+                <strong>Add, hide, or edit items anytime</strong>
               </div>
-              <div className="ts-fig-commission-row good">
-                <div className="row-head"><span>TrueServe</span><span>15%</span></div>
-                <div className="row-bar"><span style={{ width: "50%", animation: "figScaleIn 1.1s .25s var(--fig-ease) both" }} /></div>
+              <div className="ts-fig-merchant-control-row">
+                <span>Customer relationship</span>
+                <strong>Your restaurant stays front and center</strong>
+              </div>
+              <div className="ts-fig-merchant-control-row">
+                <span>Launch model</span>
+                <strong>Fair monthly plans, not marketplace drag</strong>
               </div>
               <div className="ts-fig-commission-savings">
-                <small>On $10,000/month in sales</small>
-                <strong>You keep <span className="accent">$1,500 more</span> every month.</strong>
+                <small>Built for operators</small>
+                <strong>Orders, menus, documents, and QR codes live in one dashboard.</strong>
               </div>
             </aside>
           </div>
